@@ -11,7 +11,6 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.ResultCallback;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.EmojiThemes;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ChatBackgroundDrawable;
@@ -73,13 +72,13 @@ public class ChatThemeController extends BaseController {
 
         boolean needReload = System.currentTimeMillis() - lastReloadTimeMs > reloadTimeoutMs;
         if (allChatThemes == null || allChatThemes.isEmpty() || needReload) {
-            TL_account.getChatThemes request = new TL_account.getChatThemes();
+            TLRPC.TL_account_getChatThemes request = new TLRPC.TL_account_getChatThemes();
             request.hash = themesHash;
             ConnectionsManager.getInstance(UserConfig.selectedAccount).sendRequest(request, (response, error) -> chatThemeQueue.postRunnable(() -> {
                 boolean isError = false;
                 final List<EmojiThemes> chatThemes;
-                if (response instanceof TL_account.TL_themes) {
-                    TL_account.TL_themes resp = (TL_account.TL_themes) response;
+                if (response instanceof TLRPC.TL_account_themes) {
+                    TLRPC.TL_account_themes resp = (TLRPC.TL_account_themes) response;
                     themesHash = resp.hash;
                     lastReloadTimeMs = System.currentTimeMillis();
 
@@ -100,7 +99,7 @@ public class ChatThemeController extends BaseController {
                         chatThemes.add(chatTheme);
                     }
                     editor.apply();
-                } else if (response instanceof TL_account.TL_themesNotModified) {
+                } else if (response instanceof TLRPC.TL_account_themesNotModified) {
                    // if (allChatThemes == null || allChatThemes.isEmpty()) {
                         chatThemes = getAllChatThemesFromPrefs();
 //                    } else {

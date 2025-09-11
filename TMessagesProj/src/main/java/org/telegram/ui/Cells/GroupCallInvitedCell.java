@@ -82,23 +82,15 @@ public class GroupCallInvitedCell extends FrameLayout {
         return nameTextView.getText();
     }
 
-    public void setData(int account, Long uid, boolean calling, boolean isShadyJoin, boolean isShadyLeft) {
+    public void setData(int account, Long uid) {
         currentUser = MessagesController.getInstance(account).getUser(uid);
-        if (currentUser == null) {
-            avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_ANONYMOUS);
-        } else {
-            avatarDrawable.setInfo(currentUser);
-        }
+        avatarDrawable.setInfo(currentUser);
 
-        nameTextView.setText(UserObject.getUserName(currentUser));
+        String lastName = UserObject.getUserName(currentUser);
+        nameTextView.setText(lastName);
+
         avatarImageView.getImageReceiver().setCurrentAccount(account);
         avatarImageView.setForUserOrChat(currentUser, avatarDrawable);
-
-        statusTextView.setText(LocaleController.getString(isShadyLeft ? R.string.ShadyLeaving : isShadyJoin ? R.string.ShadyJoining : (calling ? R.string.ConferenceCalling : R.string.Invited)));
-        avatarImageView.setAlpha(isShadyJoin || isShadyLeft ? 0.5f : 1.0f);
-        nameTextView.setAlpha(isShadyJoin || isShadyLeft ? 0.5f : 1.0f);
-        statusTextView.setAlpha(isShadyJoin || isShadyLeft ? 0.5f : 1.0f);
-        muteButton.setAlpha(isShadyJoin || isShadyLeft ? 0f : 1.0f);
     }
 
     public void setDrawDivider(boolean draw) {

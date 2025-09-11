@@ -7,9 +7,12 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Person;
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.media.AudioAttributes;
@@ -18,11 +21,14 @@ import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.os.IBinder;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.style.ForegroundColorSpan;
+
+import androidx.annotation.Nullable;
 
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -36,13 +42,10 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.XiaomiUtilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_phone;
 import org.telegram.ui.Components.PermissionRequest;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.VoIPFragment;
 import org.telegram.ui.VoIPPermissionActivity;
-
-import java.util.ArrayList;
 
 public class VoIPPreNotificationService { // } extends Service implements AudioManager.OnAudioFocusChangeListener {
 
@@ -50,10 +53,10 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
 
         private final int currentAccount;
         private final long userId;
-        private final TL_phone.PhoneCall call;
+        private final TLRPC.PhoneCall call;
         private boolean destroyed;
 
-        public State(int currentAccount, long userId, TL_phone.PhoneCall phoneCall) {
+        public State(int currentAccount, long userId, TLRPC.PhoneCall phoneCall) {
             this.currentAccount = currentAccount;
             this.userId = userId;
             this.call = phoneCall;
@@ -75,16 +78,8 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
         }
 
         @Override
-        public TL_phone.PhoneCall getPrivateCall() {
+        public TLRPC.PhoneCall getPrivateCall() {
             return call;
-        }
-
-        @Override
-        public boolean isCallingVideo() {
-            if (call != null) {
-                return call.video;
-            }
-            return false;
         }
 
         @Override
@@ -108,21 +103,6 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
             if (VoIPFragment.getInstance() != null) {
                 VoIPFragment.getInstance().onStateChanged(getCallState());
             }
-        }
-
-        @Override
-        public boolean isConference() {
-            return false;
-        }
-
-        @Override
-        public TLRPC.GroupCall getGroupCall() {
-            return null;
-        }
-
-        @Override
-        public ArrayList<TLRPC.GroupCallParticipant> getGroupParticipants() {
-            return null;
         }
     }
 
@@ -311,7 +291,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
     private static MediaPlayer ringtonePlayer;
     private static Vibrator vibrator;
 
-    public static void startRinging(Context context, int account, long user_id) {
+    private static void startRinging(Context context, int account, long user_id) {
         SharedPreferences prefs = MessagesController.getNotificationsSettings(account);
         AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
         boolean needRing = am.getRingerMode() != AudioManager.RINGER_MODE_SILENT;
@@ -389,7 +369,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
         }
     }
 
-    public static void stopRinging() {
+    private static void stopRinging() {
         synchronized (sync) {
             if (ringtonePlayer != null) {
                 ringtonePlayer.stop();
@@ -411,16 +391,16 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
 //        }
 //    }
 
-    public static TL_phone.PhoneCall pendingCall;
+    public static TLRPC.PhoneCall pendingCall;
     public static Intent pendingVoIP;
     public static State currentState;
 //    public static Intent pendingNotificationService;
 
-    public static void show(Context context, Intent intent, TL_phone.PhoneCall call) {
+    public static void show(Context context, Intent intent, TLRPC.PhoneCall call) {
         FileLog.d("VoIPPreNotification.show()");
 
         if (call == null || intent == null) {
-            dismiss(context, false);
+            dismiss(context);
             FileLog.d("VoIPPreNotification.show(): call or intent is null");
             return;
         }
@@ -429,7 +409,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
             return;
         }
 
-        dismiss(context, false);
+        dismiss(context);
 
         pendingVoIP = intent;
         pendingCall = call;
@@ -450,8 +430,8 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
         });
     }
 
-    private static void acknowledge(Context context, int currentAccount, TL_phone.PhoneCall call, Runnable whenAcknowledged) {
-        if (call instanceof TL_phone.TL_phoneCallDiscarded) {
+    private static void acknowledge(Context context, int currentAccount, TLRPC.PhoneCall call, Runnable whenAcknowledged) {
+        if (call instanceof TLRPC.TL_phoneCallDiscarded) {
             if (BuildVars.LOGS_ENABLED) {
                 FileLog.w("Call " + call.id + " was discarded before the voip pre notification started, stopping");
             }
@@ -475,7 +455,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
                 return;
             }
         }
-        final TL_phone.receivedCall req = new TL_phone.receivedCall();
+        TLRPC.TL_phone_receivedCall req = new TLRPC.TL_phone_receivedCall();
         req.peer = new TLRPC.TL_inputPhoneCall();
         req.peer.id = call.id;
         req.peer.access_hash = call.access_hash;
@@ -492,7 +472,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
                 if (currentState != null) {
                     currentState.destroy();
                 }
-                dismiss(context, false);
+                dismiss(context);
             } else if (whenAcknowledged != null) {
                 whenAcknowledged.run();
             }
@@ -513,7 +493,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
             context.startService(pendingVoIP);
         }
         pendingVoIP = null;
-        dismiss(context, true);
+        dismiss(context);
         return true;
     }
 
@@ -553,7 +533,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
             }
             pendingVoIP = null;
         }
-        dismiss(context, true);
+        dismiss(context);
     }
 
     public static void decline(Context context, int reason) {
@@ -563,7 +543,7 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
             return;
         }
         final int account = pendingVoIP.getIntExtra("account", UserConfig.selectedAccount);
-        final TL_phone.discardCall req = new TL_phone.discardCall();
+        final TLRPC.TL_phone_discardCall req = new TLRPC.TL_phone_discardCall();
         req.peer = new TLRPC.TL_inputPhoneCall();
         req.peer.access_hash = pendingCall.access_hash;
         req.peer.id = pendingCall.id;
@@ -600,10 +580,10 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
                 }
             }
         }, ConnectionsManager.RequestFlagFailOnServerErrors);
-        dismiss(context, false);
+        dismiss(context);
     }
 
-    public static void dismiss(Context context, boolean answered) {
+    public static void dismiss(Context context) {
         FileLog.d("VoIPPreNotification.dismiss()");
         pendingVoIP = null;
         pendingCall = null;
@@ -613,11 +593,6 @@ public class VoIPPreNotificationService { // } extends Service implements AudioM
         final NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         nm.cancel(VoIPService.ID_INCOMING_CALL_PRENOTIFICATION);
         stopRinging();
-        if (!answered) {
-            for (int i = 0; i < UserConfig.MAX_ACCOUNT_COUNT; ++i) {
-                MessagesController.getInstance(i).ignoreSetOnline = false;
-            }
-        }
 //        if (pendingNotificationService != null) {
 //            context.stopService(pendingNotificationService);
 //        }

@@ -7,12 +7,10 @@ attribute vec3 vPosition;
 varying vec3 vNormal;
 varying vec2 vUV;
 varying vec3 modelViewVertex;
-varying float depth;
 
 void main() {
    vUV = a_TexCoordinate;
    vNormal = a_Normal;
    gl_Position = uMVPMatrix * vec4(vPosition, 1.0);
-   modelViewVertex = vPosition;
-   depth = gl_Position.z;
+   modelViewVertex = vec3(gl_Position);
 }

@@ -22,6 +22,7 @@ import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
 import android.view.Gravity;
@@ -61,7 +62,7 @@ public class ViewPagerFixed extends FrameLayout {
     private Theme.ResourcesProvider resourcesProvider;
     public int currentPosition;
     public float currentProgress = 1f;
-    protected int nextPosition;
+    int nextPosition;
     protected View[] viewPages;
     private int[] viewTypes;
     private int[] pageIds;
@@ -109,7 +110,7 @@ public class ViewPagerFixed extends FrameLayout {
     private Rect rect = new Rect();
     private boolean allowDisallowInterceptTouch = true;
 
-    public void onTabAnimationUpdate(boolean manual) {
+    protected void onTabAnimationUpdate(boolean manual) {
 
     }
 
@@ -199,11 +200,11 @@ public class ViewPagerFixed extends FrameLayout {
         updateViewForIndex(1);
 
         onTabPageSelected(page);
-        final int tX = viewPages[0] != null ? viewPages[0].getMeasuredWidth() : 0;
+        int trasnlationX = viewPages[0] != null ? viewPages[0].getMeasuredWidth() : 0;
         if (forward) {
-            setTranslationX(viewPages[1], tX);
+            viewPages[1].setTranslationX(trasnlationX);
         } else {
-            setTranslationX(viewPages[1], -tX);
+            viewPages[1].setTranslationX(-trasnlationX);
         }
 
         manualScrolling = ValueAnimator.ofFloat(0, 1);
@@ -213,11 +214,11 @@ public class ViewPagerFixed extends FrameLayout {
                 return;
             }
             if (animatingForward) {
-                setTranslationX(viewPages[1], viewPages[0].getMeasuredWidth() * (1f - progress));
-                setTranslationX(viewPages[0], -viewPages[0].getMeasuredWidth() * progress);
+                viewPages[1].setTranslationX(viewPages[0].getMeasuredWidth() * (1f - progress));
+                viewPages[0].setTranslationX(-viewPages[0].getMeasuredWidth() * progress);
             } else {
-                setTranslationX(viewPages[1], -viewPages[0].getMeasuredWidth() * (1f - progress));
-                setTranslationX(viewPages[0], viewPages[0].getMeasuredWidth() * progress);
+                viewPages[1].setTranslationX(-viewPages[0].getMeasuredWidth() * (1f - progress));
+                viewPages[0].setTranslationX(viewPages[0].getMeasuredWidth() * progress);
             }
             currentProgress = progress;
             onTabAnimationUpdate(true);
@@ -229,7 +230,7 @@ public class ViewPagerFixed extends FrameLayout {
                     swapViews();
                     viewsByType.put(viewTypes[1], viewPages[1]);
                     removeView(viewPages[1]);
-                    setTranslationX(viewPages[0], 0);
+                    viewPages[0].setTranslationX(0);
                     viewPages[1] = null;
                 }
                 manualScrolling = null;
@@ -264,17 +265,11 @@ public class ViewPagerFixed extends FrameLayout {
                 int trasnlationX = viewPages[0] != null ? viewPages[0].getMeasuredWidth() : 0;
                 if (viewPages[1] != null) {
                     if (forward) {
-                        setTranslationX(viewPages[1], trasnlationX);
+                        viewPages[1].setTranslationX(trasnlationX);
                     } else {
-                        setTranslationX(viewPages[1], -trasnlationX);
+                        viewPages[1].setTranslationX(-trasnlationX);
                     }
                 }
-            }
-
-            @Override
-            public boolean needsTab(int page) {
-                if (adapter == null) return true;
-                return adapter.needsTab(page);
             }
 
             @Override
@@ -284,7 +279,7 @@ public class ViewPagerFixed extends FrameLayout {
                         swapViews();
                         viewsByType.put(viewTypes[1], viewPages[1]);
                         removeView(viewPages[1]);
-                        setTranslationX(viewPages[0], 0);
+                        viewPages[0].setTranslationX(0);
                         viewPages[1] = null;
                     }
                     onTabScrollEnd(currentPosition);
@@ -294,11 +289,11 @@ public class ViewPagerFixed extends FrameLayout {
                     return;
                 }
                 if (animatingForward) {
-                    setTranslationX(viewPages[1], viewPages[0].getMeasuredWidth() * (1f - progress));
-                    setTranslationX(viewPages[0], -viewPages[0].getMeasuredWidth() * progress);
+                    viewPages[1].setTranslationX(viewPages[0].getMeasuredWidth() * (1f - progress));
+                    viewPages[0].setTranslationX(-viewPages[0].getMeasuredWidth() * progress);
                 } else {
-                    setTranslationX(viewPages[1], -viewPages[0].getMeasuredWidth() * (1f - progress));
-                    setTranslationX(viewPages[0], viewPages[0].getMeasuredWidth() * progress);
+                    viewPages[1].setTranslationX(-viewPages[0].getMeasuredWidth() * (1f - progress));
+                    viewPages[0].setTranslationX(viewPages[0].getMeasuredWidth() * progress);
                 }
                 onTabAnimationUpdate(false);
             }
@@ -322,27 +317,6 @@ public class ViewPagerFixed extends FrameLayout {
         return tabsView;
     }
 
-    protected ValueAnimator translateAnimator(View view, float toTx) {
-        ValueAnimator a = ValueAnimator.ofFloat(view.getTranslationX(), toTx);
-        a.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-            @Override
-            public void onAnimationUpdate(@NonNull ValueAnimator animation) {
-                setTranslationX(view, (float) animation.getAnimatedValue());
-            }
-        });
-        a.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                setTranslationX(view, toTx);
-            }
-        });
-        return a;
-    }
-
-    protected void setTranslationX(View view, float tx) {
-        view.setTranslationX(tx);
-    }
-
     protected void invalidateBlur() {
 
     }
@@ -357,9 +331,9 @@ public class ViewPagerFixed extends FrameLayout {
         }
         maybeStartTracking = true;
         startedTracking = false;
-        setTranslationX(viewPages[0], 0);
+        viewPages[0].setTranslationX(0);
         if (viewPages[1] != null) {
-            setTranslationX(viewPages[1], animatingForward ? viewPages[0].getMeasuredWidth() : -viewPages[0].getMeasuredWidth());
+            viewPages[1].setTranslationX(animatingForward ? viewPages[0].getMeasuredWidth() : -viewPages[0].getMeasuredWidth());
         }
         nextPosition = 0;
         currentProgress = 1f;
@@ -426,8 +400,7 @@ public class ViewPagerFixed extends FrameLayout {
         if (adapter != null && tabsView != null) {
             tabsView.removeTabs();
             for (int i = 0; i < adapter.getItemCount(); i++) {
-                if (adapter.needsTab(i))
-                    tabsView.addTab(adapter.getItemId(i), adapter.getItemTitle(i));
+                tabsView.addTab(adapter.getItemId(i), adapter.getItemTitle(i));
             }
             addMoreTabs();
             if (animated) {
@@ -451,9 +424,6 @@ public class ViewPagerFixed extends FrameLayout {
         if (forward && !canScrollForward(ev)) {
             return false;
         }
-        if (adapter != null && !adapter.canScrollTo(currentPosition + (forward ? +1 : -1))) {
-            return false;
-        }
 
         getParent().requestDisallowInterceptTouchEvent(true);
         maybeStartTracking = false;
@@ -470,9 +440,9 @@ public class ViewPagerFixed extends FrameLayout {
         updateViewForIndex(1);
         if (viewPages[1] != null) {
             if (forward) {
-                setTranslationX(viewPages[1], viewPages[0].getMeasuredWidth());
+                viewPages[1].setTranslationX(viewPages[0].getMeasuredWidth());
             } else {
-                setTranslationX(viewPages[1], -viewPages[0].getMeasuredWidth());
+                viewPages[1].setTranslationX(-viewPages[0].getMeasuredWidth());
             }
         }
         onTabAnimationUpdate(false);
@@ -564,9 +534,9 @@ public class ViewPagerFixed extends FrameLayout {
                 if (!prepareForMoving(ev, dx < 0)) {
                     maybeStartTracking = true;
                     startedTracking = false;
-                    setTranslationX(viewPages[0], 0);
+                    viewPages[0].setTranslationX(0);
                     if (viewPages[1] != null) {
-                        setTranslationX(viewPages[1], animatingForward ? viewPages[0].getMeasuredWidth() : -viewPages[0].getMeasuredWidth());
+                        viewPages[1].setTranslationX(animatingForward ? viewPages[0].getMeasuredWidth() : -viewPages[0].getMeasuredWidth());
                     }
                     nextPosition = 0;
                     currentProgress = 1f;
@@ -586,12 +556,12 @@ public class ViewPagerFixed extends FrameLayout {
                 if (nextPosition == -1) {
                     onBackProgress(backProgress = scrollProgress);
                 } else {
-                    setTranslationX(viewPages[0], dx);
+                    viewPages[0].setTranslationX(dx);
                     if (viewPages[1] != null) {
                         if (animatingForward) {
-                            setTranslationX(viewPages[1], viewPages[0].getMeasuredWidth() + dx);
+                            viewPages[1].setTranslationX(viewPages[0].getMeasuredWidth() + dx);
                         } else {
-                            setTranslationX(viewPages[1], dx - viewPages[0].getMeasuredWidth());
+                            viewPages[1].setTranslationX(dx - viewPages[0].getMeasuredWidth());
                         }
                     }
                 }
@@ -644,27 +614,27 @@ public class ViewPagerFixed extends FrameLayout {
                 if (backAnimation) {
                     dx = Math.abs(x);
                     if (animatingForward) {
-                        tabsAnimation.playTogether(translateAnimator(viewPages[0], 0));
+                        tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[0], View.TRANSLATION_X, 0));
                         if (viewPages[1] != null) {
-                            tabsAnimation.playTogether(translateAnimator(viewPages[1], viewPages[1].getMeasuredWidth()));
+                            tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[1], View.TRANSLATION_X, viewPages[1].getMeasuredWidth()));
                         }
                     } else {
-                        tabsAnimation.playTogether(translateAnimator(viewPages[0], 0));
+                        tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[0], View.TRANSLATION_X, 0));
                         if (viewPages[1] != null) {
-                            tabsAnimation.playTogether(translateAnimator(viewPages[1], -viewPages[1].getMeasuredWidth()));
+                            tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[1], View.TRANSLATION_X, -viewPages[1].getMeasuredWidth()));
                         }
                     }
                 } else if (nextPosition >= 0) {
                     dx = viewPages[0].getMeasuredWidth() - Math.abs(x);
                     if (animatingForward) {
-                        tabsAnimation.playTogether(translateAnimator(viewPages[0], -viewPages[0].getMeasuredWidth()));
+                        tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[0], View.TRANSLATION_X, -viewPages[0].getMeasuredWidth()));
                         if (viewPages[1] != null) {
-                            tabsAnimation.playTogether(translateAnimator(viewPages[1], 0));
+                            tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[1], View.TRANSLATION_X, 0));
                         }
                     } else {
-                        tabsAnimation.playTogether(translateAnimator(viewPages[0], viewPages[0].getMeasuredWidth()));
+                        tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[0], View.TRANSLATION_X, viewPages[0].getMeasuredWidth()));
                         if (viewPages[1] != null) {
-                            tabsAnimation.playTogether(translateAnimator(viewPages[1], 0));
+                            tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[1], View.TRANSLATION_X, 0));
                         }
                     }
                 }
@@ -742,7 +712,7 @@ public class ViewPagerFixed extends FrameLayout {
         return startedTracking || maybeStartTracking;
     }
 
-    protected void swapViews() {
+    private void swapViews() {
         View page = viewPages[0];
         viewPages[0] = viewPages[1];
         viewPages[1] = page;
@@ -767,16 +737,16 @@ public class ViewPagerFixed extends FrameLayout {
             boolean cancel = false;
             if (backAnimation) {
                 if (Math.abs(viewPages[0].getTranslationX()) < 1) {
-                    setTranslationX(viewPages[0], 0);
+                    viewPages[0].setTranslationX(0);
                     if (viewPages[1] != null) {
-                        setTranslationX(viewPages[1], viewPages[0].getMeasuredWidth() * (animatingForward ? 1 : -1));
+                        viewPages[1].setTranslationX(viewPages[0].getMeasuredWidth() * (animatingForward ? 1 : -1));
                     }
                     cancel = true;
                 }
             } else if (Math.abs(viewPages[1].getTranslationX()) < 1) {
-                setTranslationX(viewPages[0], viewPages[0].getMeasuredWidth() * (animatingForward ? -1 : 1));
+                viewPages[0].setTranslationX(viewPages[0].getMeasuredWidth() * (animatingForward ? -1 : 1));
                 if (viewPages[1] != null) {
-                    setTranslationX(viewPages[1], 0);
+                    viewPages[1].setTranslationX(0);
                 }
                 cancel = true;
             }
@@ -821,7 +791,7 @@ public class ViewPagerFixed extends FrameLayout {
             View oldView = viewPages[0];
             updateViewForIndex(0);
             onItemSelected(viewPages[0], oldView, currentPosition, oldPosition);
-            setTranslationX(viewPages[0], 0);
+            viewPages[0].setTranslationX(0);
             if (tabsView != null) {
                 tabsView.selectTab(currentPosition, nextPosition, currentProgress);
             }
@@ -837,7 +807,7 @@ public class ViewPagerFixed extends FrameLayout {
                 removeView(viewPages[1]);
                 viewPages[1] = null;
             }
-            setTranslationX(viewPages[0], 0);
+            viewPages[0].setTranslationX(0);
             onTabAnimationUpdate(true);
         }
     }
@@ -911,25 +881,25 @@ public class ViewPagerFixed extends FrameLayout {
         if (animated) {
             tabsAnimation = new AnimatorSet();
             if (viewPages[1] != null) {
-                setTranslationX(viewPages[1], 0);
+                viewPages[1].setTranslationX(0);
             }
             if (!toRight) {
                 if (viewPages[0] != null) {
-                    setTranslationX(viewPages[0], getMeasuredWidth());
+                    viewPages[0].setTranslationX(getMeasuredWidth());
                 }
                 if (viewPages[1] != null) {
-                    tabsAnimation.playTogether(translateAnimator(viewPages[1], -getMeasuredWidth()));
+                    tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[1], View.TRANSLATION_X, -getMeasuredWidth()));
                 }
             } else {
                 if (viewPages[0] != null) {
-                    setTranslationX(viewPages[0], -getMeasuredWidth());
+                    viewPages[0].setTranslationX(-getMeasuredWidth());
                 }
                 if (viewPages[1] != null) {
-                    tabsAnimation.playTogether(translateAnimator(viewPages[1], getMeasuredWidth()));
+                    tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[1], View.TRANSLATION_X, getMeasuredWidth()));
                 }
             }
             if (viewPages[0] != null) {
-                tabsAnimation.playTogether(translateAnimator(viewPages[0], 0));
+                tabsAnimation.playTogether(ObjectAnimator.ofFloat(viewPages[0], View.TRANSLATION_X, 0));
             }
             onTabAnimationUpdate(true);
 
@@ -1000,14 +970,6 @@ public class ViewPagerFixed extends FrameLayout {
         public boolean hasStableId() {
             return false;
         }
-
-        public boolean needsTab(int position) {
-            return true;
-        }
-
-        public boolean canScrollTo(int position) {
-            return true;
-        }
     }
 
     @Override
@@ -1033,133 +995,6 @@ public class ViewPagerFixed extends FrameLayout {
         return currentPosition;
     }
 
-    public void cancelTouches() {
-        if (velocityTracker != null) {
-            velocityTracker.computeCurrentVelocity(1000, maximumVelocity);
-        }
-        float velX = 0;
-        float velY = 0;
-        if (startedTracking) {
-            float x = viewPages[0].getX();
-            tabsAnimation = new AnimatorSet();
-            if (additionalOffset != 0) {
-                if (Math.abs(velX) > 1500) {
-                    backAnimation = animatingForward ? velX > 0 : velX < 0;
-                } else {
-                    if (animatingForward) {
-                        if (viewPages[1] != null) {
-                            backAnimation = (viewPages[1].getX() > (viewPages[0].getMeasuredWidth() >> 1));
-                        } else {
-                            backAnimation = false;
-                        }
-                    } else {
-                        backAnimation = (viewPages[0].getX() < (viewPages[0].getMeasuredWidth() >> 1));
-                    }
-                }
-            } else {
-                backAnimation = Math.abs(x) < viewPages[0].getMeasuredWidth() / 3.0f && (Math.abs(velX) < 3500 || Math.abs(velX) < Math.abs(velY));
-            }
-            float distToMove;
-            float dx = 0;
-            if (backAnimation) {
-                dx = Math.abs(x);
-                if (animatingForward) {
-                    tabsAnimation.playTogether(translateAnimator(viewPages[0], 0));
-                    if (viewPages[1] != null) {
-                        tabsAnimation.playTogether(translateAnimator(viewPages[1], viewPages[1].getMeasuredWidth()));
-                    }
-                } else {
-                    tabsAnimation.playTogether(translateAnimator(viewPages[0], 0));
-                    if (viewPages[1] != null) {
-                        tabsAnimation.playTogether(translateAnimator(viewPages[1], -viewPages[1].getMeasuredWidth()));
-                    }
-                }
-            } else if (nextPosition >= 0) {
-                dx = viewPages[0].getMeasuredWidth() - Math.abs(x);
-                if (animatingForward) {
-                    tabsAnimation.playTogether(translateAnimator(viewPages[0], -viewPages[0].getMeasuredWidth()));
-                    if (viewPages[1] != null) {
-                        tabsAnimation.playTogether(translateAnimator(viewPages[1], 0));
-                    }
-                } else {
-                    tabsAnimation.playTogether(translateAnimator(viewPages[0], viewPages[0].getMeasuredWidth()));
-                    if (viewPages[1] != null) {
-                        tabsAnimation.playTogether(translateAnimator(viewPages[1], 0));
-                    }
-                }
-            }
-            if (nextPosition < 0) {
-                ValueAnimator backAnimator = ValueAnimator.ofFloat(backProgress, backAnimation ? 0f : 1f);
-                backAnimator.addUpdateListener(anm -> {
-                    onBackProgress(backProgress = (float) anm.getAnimatedValue());
-                });
-                tabsAnimation.playTogether(backAnimator);
-            }
-            ValueAnimator animator = ValueAnimator.ofFloat(0,1f);
-            animator.addUpdateListener(updateTabProgress);
-            tabsAnimation.playTogether(animator);
-            tabsAnimation.setInterpolator(interpolator);
-
-            int width = getMeasuredWidth();
-            int halfWidth = width / 2;
-            float distanceRatio = Math.min(1.0f, 1.0f * dx / (float) width);
-            float distance = (float) halfWidth + (float) halfWidth * distanceInfluenceForSnapDuration(distanceRatio);
-            velX = Math.abs(velX);
-            int duration;
-            if (velX > 0) {
-                duration = 4 * Math.round(1000.0f * Math.abs(distance / velX));
-            } else {
-                float pageDelta = dx / getMeasuredWidth();
-                duration = (int) ((pageDelta + 1.0f) * 100.0f);
-            }
-            duration = Math.max(150, Math.min(duration, 600));
-
-            tabsAnimation.setDuration(duration);
-            tabsAnimation.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animator) {
-                    tabsAnimation = null;
-                    if (nextPosition < 0) {
-                        onBack();
-                    }
-                    if (viewPages[1] != null) {
-                        if (!backAnimation) {
-                            swapViews();
-                        }
-
-                        viewsByType.put(viewTypes[1], viewPages[1]);
-                        removeView(viewPages[1]);
-                        viewPages[1].setVisibility(View.GONE);
-                        viewPages[1] = null;
-                    }
-                    tabsAnimationInProgress = false;
-                    maybeStartTracking = false;
-                    if (tabsView != null) {
-                        tabsView.setEnabled(true);
-                    }
-
-                    onTabAnimationUpdate(false);
-                    onScrollEnd();
-                    notificationsLocker.unlock();
-                }
-            });
-            tabsAnimation.start();
-            tabsAnimationInProgress = true;
-            startedTracking = false;
-
-            onTabAnimationUpdate(false);
-        } else {
-            maybeStartTracking = false;
-            if (tabsView != null) {
-                tabsView.setEnabled(true);
-            }
-        }
-        if (velocityTracker != null) {
-            velocityTracker.recycle();
-            velocityTracker = null;
-        }
-    }
-
     public static class TabsView extends FrameLayout {
 
         private float overrideFromX;
@@ -1172,7 +1007,6 @@ public class ViewPagerFixed extends FrameLayout {
             default void onSamePageSelected() {};
             default void invalidateBlur() {};
             default boolean canPerformActions() { return true; };
-            default boolean needsTab(int page) { return true; }
         }
 
         private static class Tab {
@@ -1300,7 +1134,7 @@ public class ViewPagerFixed extends FrameLayout {
                 int textX = (getMeasuredWidth() - tabWidth) / 2;
                 if (!TextUtils.equals(currentTab.title, currentText)) {
                     currentText = currentTab.title;
-                    CharSequence text = Emoji.replaceEmoji(currentText, textPaint.getFontMetricsInt(), false);
+                    CharSequence text = Emoji.replaceEmoji(currentText, textPaint.getFontMetricsInt(), dp(15), false);
                     textLayout = new StaticLayout(text, textPaint, dp(400), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0, false);
                     textHeight = textLayout.getHeight();
                     textOffsetX = (int) -textLayout.getLineLeft(0);
@@ -1633,11 +1467,8 @@ public class ViewPagerFixed extends FrameLayout {
             scrollingToChild = -1;
             previousPosition = currentPosition;
             previousId = selectedTabId;
-            final boolean moveTab = delegate == null || delegate.needsTab(position);
-            if (moveTab) {
-                currentPosition = position;
-                selectedTabId = id;
-            }
+            currentPosition = position;
+            selectedTabId = id;
 
             if (tabsAnimator != null) {
                 tabsAnimator.cancel();
@@ -1655,7 +1486,7 @@ public class ViewPagerFixed extends FrameLayout {
             if (delegate != null) {
                 delegate.onPageSelected(position, scrollingForward);
             }
-            scrollToChild(currentPosition);
+            scrollToChild(position);
             tabsAnimator = ValueAnimator.ofFloat(0,1f);
             tabsAnimator.addUpdateListener(anm -> {
                 float progress = (float) anm.getAnimatedValue();
@@ -1915,11 +1746,7 @@ public class ViewPagerFixed extends FrameLayout {
             selectedTabId = positionToId.get(currentPosition);
 
             if (progress > 0) {
-                if (delegate == null || delegate.needsTab(nextPosition)) {
-                    manualScrollingToPosition = nextPosition;
-                } else {
-                    manualScrollingToPosition = currentPosition;
-                }
+                manualScrollingToPosition = nextPosition;
                 manualScrollingToId = positionToId.get(nextPosition);
             } else {
                 manualScrollingToPosition = -1;

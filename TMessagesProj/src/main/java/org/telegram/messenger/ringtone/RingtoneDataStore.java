@@ -15,7 +15,6 @@ import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_account;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -57,15 +56,15 @@ public class RingtoneDataStore {
 
     public void loadUserRingtones(boolean force) {
         boolean needReload = force || System.currentTimeMillis() - lastReloadTimeMs > reloadTimeoutMs;
-        TL_account.getSavedRingtones req = new TL_account.getSavedRingtones();
+        TLRPC.TL_account_getSavedRingtones req = new TLRPC.TL_account_getSavedRingtones();
         req.hash = queryHash;
         if (needReload) {
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 if (response != null) {
-                    if (response instanceof TL_account.TL_savedRingtonesNotModified) {
+                    if (response instanceof TLRPC.TL_account_savedRingtonesNotModified) {
                         loadFromPrefs(true);
-                    } else if (response instanceof TL_account.TL_savedRingtones) {
-                        TL_account.TL_savedRingtones res = (TL_account.TL_savedRingtones) response;
+                    } else if (response instanceof TLRPC.TL_account_savedRingtones) {
+                        TLRPC.TL_account_savedRingtones res = (TLRPC.TL_account_savedRingtones) response;
                         saveTones(res.ringtones);
                         getSharedPreferences().edit()
                                 .putLong("hash", queryHash = res.hash)

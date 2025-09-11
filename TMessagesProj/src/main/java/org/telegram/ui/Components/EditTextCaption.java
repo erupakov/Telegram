@@ -135,10 +135,6 @@ public class EditTextCaption extends EditTextBoldCursor {
         allowTextEntitiesIntersection = value;
     }
 
-    public boolean getAllowTextEntitiesIntersection() {
-        return allowTextEntitiesIntersection;
-    }
-
     public void makeSelectedBold() {
         TextStyleSpan.TextStyleRun run = new TextStyleSpan.TextStyleRun();
         run.flags |= TextStyleSpan.FLAG_STYLE_BOLD;

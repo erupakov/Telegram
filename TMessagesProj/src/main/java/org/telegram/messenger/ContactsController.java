@@ -31,12 +31,12 @@ import android.util.SparseArray;
 import androidx.annotation.NonNull;
 import androidx.collection.LongSparseArray;
 
+import com.google.android.exoplayer2.util.Log;
+
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.Vector;
-import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.Components.Bulletin;
 
@@ -84,9 +84,7 @@ public class ContactsController extends BaseController {
     private ArrayList<TLRPC.PrivacyRule> addedByPhonePrivacyRules;
     private ArrayList<TLRPC.PrivacyRule> voiceMessagesRules;
     private ArrayList<TLRPC.PrivacyRule> birthdayPrivacyRules;
-    private ArrayList<TLRPC.PrivacyRule> giftsPrivacyRules;
-    private ArrayList<TLRPC.PrivacyRule> noPaidMessagesPrivacyRules;
-    private TLRPC.GlobalPrivacySettings globalPrivacySettings;
+    private TLRPC.TL_globalPrivacySettings globalPrivacySettings;
 
     public final static int PRIVACY_RULES_TYPE_LASTSEEN = 0;
     public final static int PRIVACY_RULES_TYPE_INVITE = 1;
@@ -100,10 +98,8 @@ public class ContactsController extends BaseController {
     public final static int PRIVACY_RULES_TYPE_BIO = 9;
     public final static int PRIVACY_RULES_TYPE_MESSAGES = 10;
     public final static int PRIVACY_RULES_TYPE_BIRTHDAY = 11;
-    public final static int PRIVACY_RULES_TYPE_GIFTS = 12;
-    public final static int PRIVACY_RULES_TYPE_NO_PAID_MESSAGES = 13;
 
-    public final static int PRIVACY_RULES_TYPE_COUNT = 14;
+    public final static int PRIVACY_RULES_TYPE_COUNT = 12;
 
     private class MyContentObserver extends ContentObserver {
 
@@ -335,7 +331,6 @@ public class ContactsController extends BaseController {
         profilePhotoPrivacyRules = null;
         bioPrivacyRules = null;
         birthdayPrivacyRules = null;
-        giftsPrivacyRules = null;
         forwardsPrivacyRules = null;
         phonePrivacyRules = null;
 
@@ -388,7 +383,7 @@ public class ContactsController extends BaseController {
         Utilities.globalQueue.postRunnable(() -> {
             AccountManager am = AccountManager.get(ApplicationLoader.applicationContext);
             try {
-                Account[] accounts = am.getAccountsByType("org.telegram.messenger");
+                Account[] accounts = am.getAccountsByType("org.chatengine.messenger");
                 for (int a = 0; a < accounts.length; a++) {
                     Account acc = accounts[a];
                     boolean found = false;
@@ -420,7 +415,7 @@ public class ContactsController extends BaseController {
                 readContacts();
                 if (systemAccount == null) {
                     try {
-                        systemAccount = new Account("" + getUserConfig().getClientUserId(), "org.telegram.messenger");
+                        systemAccount = new Account("" + getUserConfig().getClientUserId(), "org.chatengine.messenger");
                         am.addAccountExplicitly(systemAccount, "", null);
                     } catch (Exception ignore) {
 
@@ -434,7 +429,7 @@ public class ContactsController extends BaseController {
         try {
             systemAccount = null;
             AccountManager am = AccountManager.get(ApplicationLoader.applicationContext);
-            Account[] accounts = am.getAccountsByType("org.telegram.messenger");
+            Account[] accounts = am.getAccountsByType("org.chatengine.messenger");
             for (int a = 0; a < accounts.length; a++) {
                 Account acc = accounts[a];
                 boolean found = false;
@@ -510,7 +505,7 @@ public class ContactsController extends BaseController {
                 AndroidUtilities.runOnUIThread(() -> {
                     AccountManager am = AccountManager.get(ApplicationLoader.applicationContext);
                     try {
-                        Account[] accounts = am.getAccountsByType("org.telegram.messenger");
+                        Account[] accounts = am.getAccountsByType("org.chatengine.messenger");
                         systemAccount = null;
                         for (int a = 0; a < accounts.length; a++) {
                             Account acc = accounts[a];
@@ -528,7 +523,7 @@ public class ContactsController extends BaseController {
 
                     }
                     try {
-                        systemAccount = new Account("" + getUserConfig().getClientUserId(), "org.telegram.messenger");
+                        systemAccount = new Account("" + getUserConfig().getClientUserId(), "org.chatengine.messenger");
                         am.addAccountExplicitly(systemAccount, "", null);
                     } catch (Exception ignore) {
 
@@ -2295,7 +2290,7 @@ public class ContactsController extends BaseController {
 
         builder = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI);
         builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
-        builder.withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile");
+        builder.withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.org.chatengine.messenger.android.profile");
         builder.withValue(ContactsContract.Data.DATA1, user.id);
         builder.withValue(ContactsContract.Data.DATA2, "Telegram Profile");
         builder.withValue(ContactsContract.Data.DATA3, LocaleController.formatString("ContactShortcutMessage", R.string.ContactShortcutMessage, phoneOrName));
@@ -2304,7 +2299,7 @@ public class ContactsController extends BaseController {
 
         builder = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI);
         builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
-        builder.withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.org.telegram.messenger.android.call");
+        builder.withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.org.chatengine.messenger.android.call");
         builder.withValue(ContactsContract.Data.DATA1, user.id);
         builder.withValue(ContactsContract.Data.DATA2, "Telegram Voice Call");
         builder.withValue(ContactsContract.Data.DATA3, LocaleController.formatString("ContactShortcutVoiceCall", R.string.ContactShortcutVoiceCall, phoneOrName));
@@ -2313,7 +2308,7 @@ public class ContactsController extends BaseController {
 
         builder = ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI);
         builder.withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactId);
-        builder.withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.org.telegram.messenger.android.call.video");
+        builder.withValue(ContactsContract.Data.MIMETYPE, "vnd.android.cursor.item/vnd.org.chatengine.messenger.android.call.video");
         builder.withValue(ContactsContract.Data.DATA1, user.id);
         builder.withValue(ContactsContract.Data.DATA2, "Telegram Video Call");
         builder.withValue(ContactsContract.Data.DATA3, LocaleController.formatString("ContactShortcutVideoCall", R.string.ContactShortcutVideoCall, phoneOrName));
@@ -2587,10 +2582,10 @@ public class ContactsController extends BaseController {
         editor.putBoolean("needGetStatuses", true).commit();
         TLRPC.TL_contacts_getStatuses req = new TLRPC.TL_contacts_getStatuses();
         getConnectionsManager().sendRequest(req, (response, error) -> {
-            if (response instanceof Vector) {
+            if (error == null) {
                 AndroidUtilities.runOnUIThread(() -> {
                     editor.remove("needGetStatuses").commit();
-                    Vector vector = (Vector) response;
+                    TLRPC.Vector vector = (TLRPC.Vector) response;
                     if (!vector.objects.isEmpty()) {
                         ArrayList<TLRPC.User> dbUsersStatus = new ArrayList<>();
                         for (Object object : vector.objects) {
@@ -2626,10 +2621,10 @@ public class ContactsController extends BaseController {
     public void loadGlobalPrivacySetting() {
         if (loadingGlobalSettings == 0) {
             loadingGlobalSettings = 1;
-            TL_account.getGlobalPrivacySettings req = new TL_account.getGlobalPrivacySettings();
+            TLRPC.TL_account_getGlobalPrivacySettings req = new TLRPC.TL_account_getGlobalPrivacySettings();
             getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 if (error == null) {
-                    globalPrivacySettings = (TLRPC.GlobalPrivacySettings) response;
+                    globalPrivacySettings = (TLRPC.TL_globalPrivacySettings) response;
                     loadingGlobalSettings = 2;
                 } else {
                     loadingGlobalSettings = 0;
@@ -2640,12 +2635,9 @@ public class ContactsController extends BaseController {
     }
 
     public void loadPrivacySettings() {
-        loadPrivacySettings(false);
-    }
-    public void loadPrivacySettings(boolean force) {
         if (loadingDeleteInfo == 0) {
             loadingDeleteInfo = 1;
-            TL_account.getAccountTTL req = new TL_account.getAccountTTL();
+            TLRPC.TL_account_getAccountTTL req = new TLRPC.TL_account_getAccountTTL();
             getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 if (error == null) {
                     TLRPC.TL_accountDaysTTL ttl = (TLRPC.TL_accountDaysTTL) response;
@@ -2659,13 +2651,13 @@ public class ContactsController extends BaseController {
         }
         loadGlobalPrivacySetting();
         for (int a = 0; a < loadingPrivacyInfo.length; a++) {
-            if (force ? loadingPrivacyInfo[a] == 1 : loadingPrivacyInfo[a] != 0) {
+            if (loadingPrivacyInfo[a] != 0) {
                 continue;
             }
             loadingPrivacyInfo[a] = 1;
             final int num = a;
 
-            TL_account.getPrivacy req = new TL_account.getPrivacy();
+            TLRPC.TL_account_getPrivacy req = new TLRPC.TL_account_getPrivacy();
 
             switch (num) {
                 case PRIVACY_RULES_TYPE_LASTSEEN:
@@ -2698,12 +2690,6 @@ public class ContactsController extends BaseController {
                 case PRIVACY_RULES_TYPE_BIRTHDAY:
                     req.key = new TLRPC.TL_inputPrivacyKeyBirthday();
                     break;
-                case PRIVACY_RULES_TYPE_GIFTS:
-                    req.key = new TLRPC.TL_inputPrivacyKeyStarGiftsAutoSave();
-                    break;
-                case PRIVACY_RULES_TYPE_NO_PAID_MESSAGES:
-                    req.key = new TLRPC.TL_inputPrivacyKeyNoPaidMessages();
-                    break;
                 case PRIVACY_RULES_TYPE_ADDED_BY_PHONE:
                     req.key = new TLRPC.TL_inputPrivacyKeyAddedByPhone();
                     break;
@@ -2713,7 +2699,7 @@ public class ContactsController extends BaseController {
 
             getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 if (error == null) {
-                    TL_account.privacyRules rules = (TL_account.privacyRules) response;
+                    TLRPC.TL_account_privacyRules rules = (TLRPC.TL_account_privacyRules) response;
                     getMessagesController().putUsers(rules.users, false);
                     getMessagesController().putChats(rules.chats, false);
 
@@ -2738,12 +2724,6 @@ public class ContactsController extends BaseController {
                             break;
                         case PRIVACY_RULES_TYPE_BIRTHDAY:
                             birthdayPrivacyRules = rules.rules;
-                            break;
-                        case PRIVACY_RULES_TYPE_GIFTS:
-                            giftsPrivacyRules = rules.rules;
-                            break;
-                        case PRIVACY_RULES_TYPE_NO_PAID_MESSAGES:
-                            noPaidMessagesPrivacyRules = rules.rules;
                             break;
                         case PRIVACY_RULES_TYPE_FORWARDS:
                             forwardsPrivacyRules = rules.rules;
@@ -2789,7 +2769,7 @@ public class ContactsController extends BaseController {
         return loadingPrivacyInfo[type] != 2;
     }
 
-    public TLRPC.GlobalPrivacySettings getGlobalPrivacySettings() {
+    public TLRPC.TL_globalPrivacySettings getGlobalPrivacySettings() {
         return globalPrivacySettings;
     }
 
@@ -2809,10 +2789,6 @@ public class ContactsController extends BaseController {
                 return bioPrivacyRules;
             case PRIVACY_RULES_TYPE_BIRTHDAY:
                 return birthdayPrivacyRules;
-            case PRIVACY_RULES_TYPE_GIFTS:
-                return giftsPrivacyRules;
-            case PRIVACY_RULES_TYPE_NO_PAID_MESSAGES:
-                return noPaidMessagesPrivacyRules;
             case PRIVACY_RULES_TYPE_FORWARDS:
                 return forwardsPrivacyRules;
             case PRIVACY_RULES_TYPE_PHONE:
@@ -2847,12 +2823,6 @@ public class ContactsController extends BaseController {
                 break;
             case PRIVACY_RULES_TYPE_BIRTHDAY:
                 birthdayPrivacyRules = rules;
-                break;
-            case PRIVACY_RULES_TYPE_GIFTS:
-                giftsPrivacyRules = rules;
-                break;
-            case PRIVACY_RULES_TYPE_NO_PAID_MESSAGES:
-                noPaidMessagesPrivacyRules = rules;
                 break;
             case PRIVACY_RULES_TYPE_FORWARDS:
                 forwardsPrivacyRules = rules;
@@ -3090,18 +3060,5 @@ public class ContactsController extends BaseController {
         String lookup_key;
         String name;
         String phone;
-    }
-
-
-    public static <T extends TLRPC.PrivacyRule> T findRule(ArrayList<TLRPC.PrivacyRule> rules, Class<T> clazz) {
-        if (rules == null) {
-            return null;
-        }
-        for (TLRPC.PrivacyRule rule : rules) {
-            if (clazz.isInstance(rule)) {
-                return clazz.cast(rule);
-            }
-        }
-        return null;
     }
 }

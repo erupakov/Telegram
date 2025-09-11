@@ -3,7 +3,6 @@ package org.telegram.ui.Stories.recorder;
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.dpf2;
 import static org.telegram.messenger.AndroidUtilities.translitSafe;
-import static org.telegram.messenger.LocaleController.formatPluralStringComma;
 import static org.telegram.messenger.LocaleController.getString;
 
 import android.animation.Animator;
@@ -138,9 +137,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
 
     private boolean allowScreenshots = true;
     private boolean keepOnMyPage = false;
-    private boolean allowCover = true;
     private boolean canChangePeer = true;
-    private int storiesCount = 1;
 
     private HashSet<Long> mergeUsers(ArrayList<Long> users, HashMap<Long, ArrayList<Long>> usersByGroup) {
         HashSet<Long> set = new HashSet<>();
@@ -1108,7 +1105,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
                     items.add(ItemInner.asShadow(LocaleController.formatPluralString(containsPrivacy ? "StoryKeepInfo" : (isChannel ? "StoryKeepChannelInfo" : "StoryKeepGroupInfo"), (storyPeriod == Integer.MAX_VALUE ? 86400 : storyPeriod) / 3600)));
                     pad.subtractHeight += dp(80);
                 }
-                if (keepOnMyPage && allowCover && whenCoverClicked != null) {
+                if (keepOnMyPage && whenCoverClicked != null) {
                     items.add(ItemInner.asButton(getString(R.string.StoryEditCover), coverDrawable));
                     pad.subtractHeight += dp(50);
                     items.add(ItemInner.asShadow(getString(R.string.StoryEditCoverInfo)));
@@ -1450,11 +1447,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
                 if (isEdit) {
                     button.setText(getString(R.string.StoryPrivacyButtonSave), animated);
                 } else {
-                    if (storiesCount == 1) {
-                        button.setText(getString(R.string.StoryPrivacyButtonPost), animated);
-                    } else {
-                        button.setText(formatPluralStringComma("StoryPrivacyButtonPostMultiple", storiesCount), animated);
-                    }
+                    button.setText(getString(R.string.StoryPrivacyButtonPost), animated);
 //                    if (selectedType == TYPE_CLOSE_FRIENDS) {
 //                        button.setText(LocaleController.getString(R.string.StoryPrivacyButtonCloseFriends), animated);
 //                        button.setCount(getCloseFriends().size(), animated);
@@ -2023,7 +2016,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
 
         viewPager = new ViewPagerFixed(context) {
             @Override
-            public void onTabAnimationUpdate(boolean manual) {
+            protected void onTabAnimationUpdate(boolean manual) {
                 containerView.invalidate();
             }
 
@@ -2317,32 +2310,6 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
     }
     public StoryPrivacyBottomSheet whenSelectedPeer(Utilities.Callback<TLRPC.InputPeer> onSelectedPeer) {
         this.onSelectedPeer = onSelectedPeer;
-        return this;
-    }
-    public StoryPrivacyBottomSheet allowCover(boolean allowCover) {
-        this.allowCover = allowCover;
-        if (viewPager != null) {
-            View[] viewPages = viewPager.getViewPages();
-            for (int i = 0; i < viewPages.length; ++i) {
-                View view = viewPages[i];
-                if (view instanceof Page) {
-                    ((Page) view).updateButton(false);
-                }
-            }
-        }
-        return this;
-    }
-    public StoryPrivacyBottomSheet setCount(int storiesCount) {
-        this.storiesCount = storiesCount;
-        if (viewPager != null) {
-            View[] viewPages = viewPager.getViewPages();
-            for (int i = 0; i < viewPages.length; ++i) {
-                View view = viewPages[i];
-                if (view instanceof Page) {
-                    ((Page) view).updateButton(false);
-                }
-            }
-        }
         return this;
     }
     public StoryPrivacyBottomSheet enableSharing(boolean enable) {

@@ -1,11 +1,8 @@
 package org.telegram.tgnet.tl;
 
 import org.telegram.tgnet.AbstractSerializedData;
-import org.telegram.tgnet.InputSerializedData;
-import org.telegram.tgnet.OutputSerializedData;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.Vector;
 
 import java.util.ArrayList;
 
@@ -15,7 +12,7 @@ public class TL_chatlists {
 
         public int filter_id;
 
-        public static TL_inputChatlistDialogFilter TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+        public static TL_inputChatlistDialogFilter TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
             if (TL_inputChatlistDialogFilter.constructor != constructor) {
                 if (exception) {
                     throw new RuntimeException(String.format("can't parse magic %x in TL_inputChatlistDialogFilter", constructor));
@@ -28,11 +25,11 @@ public class TL_chatlists {
             return result;
         }
 
-        public void readParams(InputSerializedData stream, boolean exception) {
+        public void readParams(AbstractSerializedData stream, boolean exception) {
             filter_id = stream.readInt32(exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeInt32(filter_id);
         }
@@ -44,7 +41,7 @@ public class TL_chatlists {
         public TLRPC.DialogFilter filter;
         public TL_exportedChatlistInvite invite;
 
-        public static TL_chatlists_exportedChatlistInvite TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+        public static TL_chatlists_exportedChatlistInvite TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
             if (TL_chatlists_exportedChatlistInvite.constructor != constructor) {
                 if (exception) {
                     throw new RuntimeException(String.format("can't parse magic %x in TL_chatlists_exportedChatlistInvite", constructor));
@@ -57,12 +54,12 @@ public class TL_chatlists {
             return result;
         }
 
-        public void readParams(InputSerializedData stream, boolean exception) {
+        public void readParams(AbstractSerializedData stream, boolean exception) {
             filter = TLRPC.DialogFilter.TLdeserialize(stream, stream.readInt32(exception), exception);
             invite = TL_exportedChatlistInvite.TLdeserialize(stream, stream.readInt32(exception), exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             filter.serializeToStream(stream);
             invite.serializeToStream(stream);
@@ -78,7 +75,7 @@ public class TL_chatlists {
         public String url;
         public ArrayList<TLRPC.Peer> peers = new ArrayList<>();
 
-        public static TL_exportedChatlistInvite TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+        public static TL_exportedChatlistInvite TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
             if (TL_exportedChatlistInvite.constructor != constructor) {
                 if (exception) {
                     throw new RuntimeException(String.format("can't parse magic %x in TL_exportedChatlistInvite", constructor));
@@ -91,21 +88,40 @@ public class TL_chatlists {
             return result;
         }
 
-        public void readParams(InputSerializedData stream, boolean exception) {
+        public void readParams(AbstractSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
             revoked = (flags & 1) != 0;
             title = stream.readString(exception);
             url = stream.readString(exception);
-            peers = Vector.deserialize(stream, TLRPC.Peer::TLdeserialize, exception);
+            int magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            int count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.Peer object = TLRPC.Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                peers.add(object);
+            }
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             flags = revoked ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(title);
             stream.writeString(url);
-            Vector.serialize(stream, peers);
+            stream.writeInt32(0x1cb5c415);
+            int count = peers.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                peers.get(a).serializeToStream(stream);
+            }
         }
     }
 
@@ -116,7 +132,7 @@ public class TL_chatlists {
         public ArrayList<TLRPC.Chat> chats = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
 
-        public static TL_chatlists_exportedInvites TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+        public static TL_chatlists_exportedInvites TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
             if (TL_chatlists_exportedInvites.constructor != constructor) {
                 if (exception) {
                     throw new RuntimeException(String.format("can't parse magic %x in TL_chatlists_exportedInvites", constructor));
@@ -129,33 +145,87 @@ public class TL_chatlists {
             return result;
         }
 
-        public void readParams(InputSerializedData stream, boolean exception) {
-            invites = Vector.deserialize(stream, TL_exportedChatlistInvite::TLdeserialize, exception);
-            chats = Vector.deserialize(stream, TLRPC.Chat::TLdeserialize, exception);
-            users = Vector.deserialize(stream, TLRPC.User::TLdeserialize, exception);
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            int magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            int count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TL_exportedChatlistInvite object = TL_exportedChatlistInvite.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                invites.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.Chat object = TLRPC.Chat.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                chats.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.User object = TLRPC.User.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                users.add(object);
+            }
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            Vector.serialize(stream, invites);
-            Vector.serialize(stream, chats);
-            Vector.serialize(stream, users);
+            stream.writeInt32(0x1cb5c415);
+            int count = invites.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                invites.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(0x1cb5c415);
+            count = chats.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                chats.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(0x1cb5c415);
+            count = users.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                users.get(a).serializeToStream(stream);
+            }
         }
     }
 
     public static abstract class chatlist_ChatlistInvite extends TLObject {
 
-        public static chatlist_ChatlistInvite TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+        public static chatlist_ChatlistInvite TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
             chatlist_ChatlistInvite result = null;
             switch (constructor) {
-                case TL_chatlists_chatlistInviteAlready.constructor:
+                case 0xfa87f659:
                     result = new TL_chatlists_chatlistInviteAlready();
                     break;
-                case TL_chatlists_chatlistInvite.constructor:
+                case 0x1dcd839d:
                     result = new TL_chatlists_chatlistInvite();
-                    break;
-                case TL_chatlists_chatlistInvite_layer195.constructor:
-                    result = new TL_chatlists_chatlistInvite_layer195();
                     break;
             }
             if (result == null && exception) {
@@ -177,85 +247,182 @@ public class TL_chatlists {
         public ArrayList<TLRPC.Chat> chats = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
 
-        public void readParams(InputSerializedData stream, boolean exception) {
+        public void readParams(AbstractSerializedData stream, boolean exception) {
             filter_id = stream.readInt32(exception);
-            missing_peers = Vector.deserialize(stream, TLRPC.Peer::TLdeserialize, exception);
-            already_peers = Vector.deserialize(stream, TLRPC.Peer::TLdeserialize, exception);
-            chats = Vector.deserialize(stream, TLRPC.Chat::TLdeserialize, exception);
-            users = Vector.deserialize(stream, TLRPC.User::TLdeserialize, exception);
+            int magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            int count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.Peer object = TLRPC.Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                missing_peers.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.Peer object = TLRPC.Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                already_peers.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.Chat object = TLRPC.Chat.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                chats.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.User object = TLRPC.User.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                users.add(object);
+            }
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeInt32(filter_id);
-            Vector.serialize(stream, missing_peers);
-            Vector.serialize(stream, chats);
-            Vector.serialize(stream, users);
+            stream.writeInt32(0x1cb5c415);
+            int count = missing_peers.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                missing_peers.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(0x1cb5c415);
+            count = chats.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                chats.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(0x1cb5c415);
+            count = users.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                users.get(a).serializeToStream(stream);
+            }
         }
     }
 
     public static class TL_chatlists_chatlistInvite extends chatlist_ChatlistInvite {
-        public static final int constructor = 0xf10ece2f;
+        public static final int constructor = 0x1dcd839d;
 
         public int flags;
-        public boolean title_noanimate;
-        public TLRPC.TL_textWithEntities title = new TLRPC.TL_textWithEntities();
+        public String title;
         public String emoticon;
         public ArrayList<TLRPC.Peer> peers = new ArrayList<>();
         public ArrayList<TLRPC.Chat> chats = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
 
-        public void readParams(InputSerializedData stream, boolean exception) {
+        public void readParams(AbstractSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
-            title_noanimate = (flags & 2) != 0;
-            title = TLRPC.TL_textWithEntities.TLdeserialize(stream, stream.readInt32(exception), exception);
+            title = stream.readString(exception);
             if ((flags & 1) > 0) {
                 emoticon = stream.readString(exception);
             }
-            peers = Vector.deserialize(stream, TLRPC.Peer::TLdeserialize, exception);
-            chats = Vector.deserialize(stream, TLRPC.Chat::TLdeserialize, exception);
-            users = Vector.deserialize(stream, TLRPC.User::TLdeserialize, exception);
+            int magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            int count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.Peer object = TLRPC.Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                peers.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.Chat object = TLRPC.Chat.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                chats.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.User object = TLRPC.User.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                users.add(object);
+            }
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = title_noanimate ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
-            title.serializeToStream(stream);
+            stream.writeString(title);
             if ((flags & 1) > 0) {
                 stream.writeString(emoticon);
             }
-            Vector.serialize(stream, peers);
-            Vector.serialize(stream, chats);
-            Vector.serialize(stream, users);
-        }
-    }
-
-    public static class TL_chatlists_chatlistInvite_layer195 extends TL_chatlists_chatlistInvite {
-        public static final int constructor = 0x1dcd839d;
-
-        public void readParams(InputSerializedData stream, boolean exception) {
-            flags = stream.readInt32(exception);
-            title = new TLRPC.TL_textWithEntities();
-            title.text = stream.readString(exception);
-            if ((flags & 1) > 0) {
-                emoticon = stream.readString(exception);
+            stream.writeInt32(0x1cb5c415);
+            int count = peers.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                peers.get(a).serializeToStream(stream);
             }
-            peers = Vector.deserialize(stream, TLRPC.Peer::TLdeserialize, exception);
-            chats = Vector.deserialize(stream, TLRPC.Chat::TLdeserialize, exception);
-            users = Vector.deserialize(stream, TLRPC.User::TLdeserialize, exception);
-        }
-
-        public void serializeToStream(OutputSerializedData stream) {
-            stream.writeInt32(constructor);
-            stream.writeInt32(flags);
-            title.serializeToStream(stream);
-            if ((flags & 1) > 0) {
-                stream.writeString(emoticon);
+            stream.writeInt32(0x1cb5c415);
+            count = chats.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                chats.get(a).serializeToStream(stream);
             }
-            Vector.serialize(stream, peers);
-            Vector.serialize(stream, chats);
-            Vector.serialize(stream, users);
+            stream.writeInt32(0x1cb5c415);
+            count = users.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                users.get(a).serializeToStream(stream);
+            }
         }
     }
 
@@ -266,7 +433,7 @@ public class TL_chatlists {
         public ArrayList<TLRPC.Chat> chats = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
 
-        public static TL_chatlists_chatlistUpdates TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+        public static TL_chatlists_chatlistUpdates TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
             if (TL_chatlists_chatlistUpdates.constructor != constructor) {
                 if (exception) {
                     throw new RuntimeException(String.format("can't parse magic %x in TL_chatlists_chatlistUpdates", constructor));
@@ -279,17 +446,74 @@ public class TL_chatlists {
             return result;
         }
 
-        public void readParams(InputSerializedData stream, boolean exception) {
-            missing_peers = Vector.deserialize(stream, TLRPC.Peer::TLdeserialize, exception);
-            chats = Vector.deserialize(stream, TLRPC.Chat::TLdeserialize, exception);
-            users = Vector.deserialize(stream, TLRPC.User::TLdeserialize, exception);
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            int magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            int count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.Peer object = TLRPC.Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                missing_peers.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.Chat object = TLRPC.Chat.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                chats.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TLRPC.User object = TLRPC.User.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                users.add(object);
+            }
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            Vector.serialize(stream, missing_peers);
-            Vector.serialize(stream, chats);
-            Vector.serialize(stream, users);
+            stream.writeInt32(0x1cb5c415);
+            int count = missing_peers.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                missing_peers.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(0x1cb5c415);
+            count = chats.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                chats.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(0x1cb5c415);
+            count = users.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                users.get(a).serializeToStream(stream);
+            }
         }
     }
 
@@ -300,15 +524,20 @@ public class TL_chatlists {
         public String title;
         public ArrayList<TLRPC.InputPeer> peers = new ArrayList<>();
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TL_chatlists_exportedChatlistInvite.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             chatlist.serializeToStream(stream);
             stream.writeString(title);
-            Vector.serialize(stream, peers);
+            stream.writeInt32(0x1cb5c415);
+            int count = peers.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                peers.get(a).serializeToStream(stream);
+            }
         }
     }
 
@@ -318,11 +547,11 @@ public class TL_chatlists {
         public TL_inputChatlistDialogFilter chatlist;
         public String slug;
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TLRPC.Bool.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             chatlist.serializeToStream(stream);
             stream.writeString(slug);
@@ -339,11 +568,11 @@ public class TL_chatlists {
         public String title;
         public ArrayList<TLRPC.InputPeer> peers = new ArrayList<>();
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TL_exportedChatlistInvite.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             flags = revoked ? (flags | 1) : (flags &~ 1);
             stream.writeInt32(flags);
@@ -353,7 +582,12 @@ public class TL_chatlists {
                 stream.writeString(title);
             }
             if ((flags & 4) != 0) {
-                Vector.serialize(stream, peers);
+                stream.writeInt32(0x1cb5c415);
+                int count = peers.size();
+                stream.writeInt32(count);
+                for (int a = 0; a < count; a++) {
+                    peers.get(a).serializeToStream(stream);
+                }
             }
         }
     }
@@ -363,11 +597,11 @@ public class TL_chatlists {
 
         public TL_inputChatlistDialogFilter chatlist;
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TL_chatlists_exportedInvites.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             chatlist.serializeToStream(stream);
         }
@@ -378,11 +612,11 @@ public class TL_chatlists {
 
         public String slug;
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return chatlist_ChatlistInvite.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeString(slug);
         }
@@ -394,14 +628,19 @@ public class TL_chatlists {
         public String slug;
         public ArrayList<TLRPC.InputPeer> peers = new ArrayList<>();
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TLRPC.Updates.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeString(slug);
-            Vector.serialize(stream, peers);
+            stream.writeInt32(0x1cb5c415);
+            int count = peers.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                peers.get(a).serializeToStream(stream);
+            }
         }
     }
 
@@ -410,11 +649,11 @@ public class TL_chatlists {
 
         public TL_inputChatlistDialogFilter chatlist;
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TL_chatlists_chatlistUpdates.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             chatlist.serializeToStream(stream);
         }
@@ -426,14 +665,19 @@ public class TL_chatlists {
         public TL_inputChatlistDialogFilter chatlist;
         public ArrayList<TLRPC.InputPeer> peers = new ArrayList<>();
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TLRPC.Updates.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             chatlist.serializeToStream(stream);
-            Vector.serialize(stream, peers);
+            stream.writeInt32(0x1cb5c415);
+            int count = peers.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                peers.get(a).serializeToStream(stream);
+            }
         }
     }
 
@@ -442,11 +686,11 @@ public class TL_chatlists {
 
         public TL_inputChatlistDialogFilter chatlist;
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TLRPC.Bool.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             chatlist.serializeToStream(stream);
         }
@@ -457,11 +701,20 @@ public class TL_chatlists {
 
         public TL_inputChatlistDialogFilter chatlist;
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
-            return Vector.TLDeserialize(stream, constructor, exception, TLRPC.Peer::TLdeserialize);
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            TLRPC.Vector vector = new TLRPC.Vector();
+            int size = stream.readInt32(exception);
+            for (int a = 0; a < size; a++) {
+                TLRPC.Peer object = TLRPC.Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return vector;
+                }
+                vector.objects.add(object);
+            }
+            return vector;
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             chatlist.serializeToStream(stream);
         }
@@ -473,14 +726,19 @@ public class TL_chatlists {
         public TL_inputChatlistDialogFilter chatlist;
         public ArrayList<TLRPC.InputPeer> peers = new ArrayList<>();
 
-        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TLRPC.Updates.TLdeserialize(stream, constructor, exception);
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             chatlist.serializeToStream(stream);
-            Vector.serialize(stream, peers);
+            stream.writeInt32(0x1cb5c415);
+            int count = peers.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                peers.get(a).serializeToStream(stream);
+            }
         }
     }
 }

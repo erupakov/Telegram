@@ -15,19 +15,23 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BotWebViewVibrationEffect;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.NotificationsController;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.HeaderCell;
 import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
+import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.Bulletin;
+import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.ListView.AdapterWithDiffUtils;
+import org.telegram.ui.Components.Premium.PremiumFeatureBottomSheet;
+import org.telegram.ui.Components.Premium.PremiumPreviewBottomSheet;
 import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
@@ -39,7 +43,7 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
     private ListAdapter adapter;
 
     private boolean changed = false;
-    private TLRPC.GlobalPrivacySettings settings;
+    private TLRPC.TL_globalPrivacySettings settings;
     
     private int shiftDp = -3;
 
@@ -47,7 +51,7 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(true);
-        actionBar.setTitle(LocaleController.getString(R.string.ArchiveSettings));
+        actionBar.setTitle(LocaleController.getString("ArchiveSettings"));
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(int id) {
@@ -266,7 +270,7 @@ public class ArchiveSettingsActivity extends BaseFragment implements Notificatio
         super.onFragmentDestroy();
 
         if (changed) {
-            TL_account.setGlobalPrivacySettings req = new TL_account.setGlobalPrivacySettings();
+            TLRPC.TL_account_setGlobalPrivacySettings req = new TLRPC.TL_account_setGlobalPrivacySettings();
             req.settings = settings;
             getConnectionsManager().sendRequest(req, (response, error) -> {});
             changed = false;

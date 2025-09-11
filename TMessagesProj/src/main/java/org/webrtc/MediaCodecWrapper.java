@@ -11,7 +11,6 @@
 package org.webrtc;
 
 import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
 import android.media.MediaCrypto;
 import android.media.MediaFormat;
 import android.os.Bundle;
@@ -42,19 +41,13 @@ interface MediaCodecWrapper {
 
   void releaseOutputBuffer(int index, boolean render);
 
-  MediaFormat getInputFormat();
-
   MediaFormat getOutputFormat();
 
-  MediaFormat getOutputFormat(int index);
+  ByteBuffer[] getInputBuffers();
 
-  ByteBuffer getInputBuffer(int index);
-
-  ByteBuffer getOutputBuffer(int index);
+  ByteBuffer[] getOutputBuffers();
 
   Surface createInputSurface();
 
   void setParameters(Bundle params);
-
-  MediaCodecInfo getCodecInfo();
 }

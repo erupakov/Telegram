@@ -196,16 +196,14 @@ public class MessagePreviewParams {
     public boolean webpagePhoto;
 
     public boolean noforwards;
-    public boolean monoforum;
     public boolean hasSecretMessages;
 
     public TLRPC.WebPage webpage;
     public CharacterStyle currentLink;
 
-    public MessagePreviewParams(boolean secret, boolean noforwards, boolean monoforum) {
+    public MessagePreviewParams(boolean secret, boolean noforwards) {
         this.isSecret = secret;
         this.noforwards = secret || noforwards;
-        this.monoforum = monoforum;
     }
 
     public void updateReply(MessageObject replyMessageObject, MessageObject.GroupedMessages group, long dialogId, ChatActivity.ReplyQuote replyQuote) {
@@ -437,11 +435,6 @@ public class MessagePreviewParams {
         } else {
             this.forwardMessages = null;
         }
-    }
-
-    public int getForwardedMessagesCount() {
-        if (forwardMessages == null) return 0;
-        return forwardMessages.selectedIds.size();
     }
 
     private MessageObject toPreviewMessage(MessageObject messageObject, Boolean out, final int msgtype) {

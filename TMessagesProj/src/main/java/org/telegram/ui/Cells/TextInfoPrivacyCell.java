@@ -33,10 +33,9 @@ import java.util.ArrayList;
 
 public class TextInfoPrivacyCell extends FrameLayout {
 
-    private LinkSpanDrawable.LinksTextView textView;
+    private TextView textView;
     private LinkSpanDrawable.LinkCollector links;
     private int linkTextColorKey = Theme.key_windowBackgroundWhiteLinkText;
-    private Integer linkTextRippleColor;
     private int topPadding = 10;
     private int bottomPadding = 17;
     private int fixedSize;
@@ -68,21 +67,12 @@ public class TextInfoPrivacyCell extends FrameLayout {
                 super.onDraw(canvas);
                 afterTextDraw();
             }
-
-            @Override
-            public int overrideColor() {
-                if (linkTextRippleColor != null) {
-                    return linkTextRippleColor;
-                }
-                return super.overrideColor();
-            }
         };
         textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         textView.setGravity(LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT);
         textView.setPadding(0, AndroidUtilities.dp(10), 0, AndroidUtilities.dp(17));
         textView.setMovementMethod(LinkMovementMethod.getInstance());
         textView.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText4));
-        textView.setEmojiColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText4));
         textView.setLinkTextColor(getThemedColor(linkTextColorKey));
         textView.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
         addView(textView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.TOP, padding, 0, padding, 0));
@@ -188,12 +178,8 @@ public class TextInfoPrivacyCell extends FrameLayout {
         textView.setTag(key);
     }
 
-    public LinkSpanDrawable.LinksTextView getTextView() {
+    public TextView getTextView() {
         return textView;
-    }
-
-    public void setLinkTextRippleColor(Integer color) {
-        linkTextRippleColor = color;
     }
 
     public int length() {

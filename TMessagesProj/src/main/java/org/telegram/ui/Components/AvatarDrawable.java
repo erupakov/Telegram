@@ -100,7 +100,6 @@ public class AvatarDrawable extends Drawable {
     public static final int AVATAR_TYPE_NEW_CHATS = 24;
     public static final int AVATAR_TYPE_PREMIUM = 25;
     public static final int AVATAR_TYPE_STARS = 26;
-    public static final int AVATAR_TYPE_SUGGESTION = 27;
 
     /**
      * Matches {@link org.telegram.ui.Components.AvatarConstructorFragment#defaultColors}
@@ -257,7 +256,7 @@ public class AvatarDrawable extends Drawable {
             color = color2 = Theme.getColor(Theme.key_chats_actionBackground);
         } else if (avatarType == AVATAR_TYPE_ARCHIVED) {
             color = color2 = getThemedColor(Theme.key_avatar_backgroundArchivedHidden);
-        } else if (avatarType == AVATAR_TYPE_SUGGESTION || avatarType == AVATAR_TYPE_REPLIES || avatarType == AVATAR_TYPE_SAVED || avatarType == AVATAR_TYPE_OTHER_CHATS) {
+        } else if (avatarType == AVATAR_TYPE_REPLIES || avatarType == AVATAR_TYPE_SAVED || avatarType == AVATAR_TYPE_OTHER_CHATS) {
             hasGradient = true;
             color = getThemedColor(Theme.key_avatar_backgroundSaved);
             color2 = getThemedColor(Theme.key_avatar_background2Saved);
@@ -327,7 +326,7 @@ public class AvatarDrawable extends Drawable {
             color = getThemedColor(Theme.keys_avatar_background[getColorIndex(4)]);
             color2 = getThemedColor(Theme.keys_avatar_background2[getColorIndex(4)]);
         }
-        needApplyColorAccent = avatarType != AVATAR_TYPE_ARCHIVED && avatarType != AVATAR_TYPE_SAVED && avatarType != AVATAR_TYPE_STORY && avatarType != AVATAR_TYPE_ANONYMOUS && avatarType != AVATAR_TYPE_SUGGESTION && avatarType != AVATAR_TYPE_REPLIES && avatarType != AVATAR_TYPE_OTHER_CHATS;
+        needApplyColorAccent = avatarType != AVATAR_TYPE_ARCHIVED && avatarType != AVATAR_TYPE_SAVED && avatarType != AVATAR_TYPE_STORY && avatarType != AVATAR_TYPE_ANONYMOUS && avatarType != AVATAR_TYPE_REPLIES && avatarType != AVATAR_TYPE_OTHER_CHATS;
     }
 
     public void setArchivedAvatarHiddenProgress(float progress) {
@@ -393,17 +392,6 @@ public class AvatarDrawable extends Drawable {
             return text.substring(0, ranges.get(0).end);
         }
         return text.substring(0, text.offsetByCodePoints(0, Math.min(text.codePointCount(0, text.length()), 1)));
-    }
-
-    public void setInfo(long id) {
-        invalidateTextLayout = true;
-        hasGradient = true;
-        hasAdvancedGradient = false;
-        color = getThemedColor(Theme.keys_avatar_background[getColorIndex(id)]);
-        color2 = getThemedColor(Theme.keys_avatar_background2[getColorIndex(id)]);
-        avatarType = AVATAR_TYPE_NORMAL;
-        drawDeleted = false;
-        getAvatarSymbols("", "", "", stringBuilder);
     }
 
     public void setInfo(long id, String firstName, String lastName, String custom) {
@@ -541,21 +529,6 @@ public class AvatarDrawable extends Drawable {
         }
     }
 
-    private Drawable customIconDrawable;
-    private int iconTx, iconTy;
-    public void setCustomIcon(Drawable drawable) {
-        customIconDrawable = drawable;
-    }
-
-    public void setIconTranslation(int tx, int ty) {
-        this.iconTx = tx;
-        this.iconTy = ty;
-    }
-
-    public Drawable getCustomIcon() {
-        return customIconDrawable;
-    }
-
     @Override
     public void draw(Canvas canvas) {
         Rect bounds = getBounds();
@@ -627,12 +600,10 @@ public class AvatarDrawable extends Drawable {
             Theme.dialogs_archiveAvatarDrawable.setBounds(x, y, x + w, y + h);
             Theme.dialogs_archiveAvatarDrawable.draw(canvas);
             canvas.restore();
-        } else if (avatarType != 0 || customIconDrawable != null) {
+        } else if (avatarType != 0) {
             Drawable drawable;
 
-            if (customIconDrawable != null) {
-                drawable = customIconDrawable;
-            } else if (avatarType == AVATAR_TYPE_SAVED) {
+            if (avatarType == AVATAR_TYPE_SAVED) {
                 drawable = Theme.avatarDrawables[0];
             } else if (avatarType == AVATAR_TYPE_FILTER_CONTACTS) {
                 drawable = Theme.avatarDrawables[2];
@@ -676,16 +647,14 @@ public class AvatarDrawable extends Drawable {
                 drawable = Theme.avatarDrawables[22];
             } else if (avatarType == AVATAR_TYPE_STARS) {
                 drawable = Theme.avatarDrawables[23];
-            } else if (avatarType == AVATAR_TYPE_SUGGESTION) {
-                drawable = Theme.avatarDrawables[24];
-            }else {
+            } else {
                 drawable = Theme.avatarDrawables[9];
             }
             if (drawable != null) {
-                final int w = (int) (drawable.getIntrinsicWidth() * scaleSize);
-                final int h = (int) (drawable.getIntrinsicHeight() * scaleSize);
-                final int x = (size - w) / 2 + iconTx;
-                final int y = (size - h) / 2 + iconTy;
+                int w = (int) (drawable.getIntrinsicWidth() * scaleSize);
+                int h = (int) (drawable.getIntrinsicHeight() * scaleSize);
+                int x = (size - w) / 2;
+                int y = (size - h) / 2;
                 drawable.setBounds(x, y, x + w, y + h);
                 if (alpha != 255) {
                     drawable.setAlpha(alpha);
@@ -712,7 +681,7 @@ public class AvatarDrawable extends Drawable {
                 invalidateTextLayout = false;
                 if (stringBuilder.length() > 0) {
                     CharSequence text = stringBuilder.toString().toUpperCase();
-                    text = Emoji.replaceEmoji(text, namePaint.getFontMetricsInt(), true);
+                    text = Emoji.replaceEmoji(text, namePaint.getFontMetricsInt(), dp(16), true);
                     if (textLayout == null || !TextUtils.equals(text, textLayout.getText())) {
                         try {
                             textLayout = new StaticLayout(text, namePaint, dp(100), Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);

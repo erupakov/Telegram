@@ -24,9 +24,6 @@ import org.telegram.ui.ActionBar.SimpleTextView;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.UItem;
-import org.telegram.ui.Components.UniversalAdapter;
-import org.telegram.ui.Components.UniversalRecyclerView;
 
 public class PremiumFeatureCell extends FrameLayout {
 
@@ -104,12 +101,6 @@ public class PremiumFeatureCell extends FrameLayout {
 
     private Drawable premiumStar;
     public void setEmoji(long documentId, boolean animated) {
-        if (imageDrawable == null) {
-            imageDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(this, false, dp(24), AnimatedEmojiDrawable.CACHE_TYPE_ALERT_PREVIEW_STATIC);
-            if (isAttachedToWindow()) {
-                imageDrawable.attach();
-            }
-        }
         if (documentId == 0) {
             if (premiumStar == null) {
                 premiumStar = getContext().getResources().getDrawable(R.drawable.msg_premium_prolfilestar).mutate();
@@ -157,25 +148,5 @@ public class PremiumFeatureCell extends FrameLayout {
             imageDrawable.detach();
         }
         super.onDetachedFromWindow();
-    }
-
-    public static class Factory extends UItem.UItemFactory<PremiumFeatureCell> {
-        static { setup(new Factory()); }
-
-        @Override
-        public PremiumFeatureCell createView(Context context, int currentAccount, int classGuid, Theme.ResourcesProvider resourcesProvider) {
-            return new PremiumFeatureCell(context, resourcesProvider);
-        }
-
-        @Override
-        public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
-            ((PremiumFeatureCell) view).setData((PremiumPreviewFragment.PremiumFeatureData) item.object, divider);
-        }
-
-        public static UItem of(PremiumPreviewFragment.PremiumFeatureData data) {
-            UItem item = UItem.ofFactory(Factory.class);
-            item.object = data;
-            return item;
-        }
     }
 }

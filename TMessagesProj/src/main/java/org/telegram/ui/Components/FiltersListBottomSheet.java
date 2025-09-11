@@ -28,7 +28,6 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.LocaleController;
-import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
@@ -64,7 +63,6 @@ public class FiltersListBottomSheet extends BottomSheet implements NotificationC
 
     public FiltersListBottomSheet(DialogsActivity baseFragment, ArrayList<Long> selectedDialogs) {
         super(baseFragment.getParentActivity(), false);
-        fixNavigationBar();
         this.selectedDialogs = selectedDialogs;
         this.fragment = baseFragment;
 //        dialogFilters = getCanAddDialogFilters(baseFragment, selectedDialogs);
@@ -433,11 +431,7 @@ public class FiltersListBottomSheet extends BottomSheet implements NotificationC
                 } else {
                     icon = R.drawable.msg_folders;
                 }
-                CharSequence title = filter.name;
-                title = Emoji.replaceEmoji(title, cell.getTextView().getPaint().getFontMetricsInt(), false);
-                title = MessageObject.replaceAnimatedEmoji(title, filter.entities, cell.getTextView().getPaint().getFontMetricsInt());
-                cell.setTextAndIcon(title, 0, new FolderDrawable(getContext(), icon, filter.color), false);
-                cell.getTextView().setEmojiColor(Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider));
+                cell.setTextAndIcon(Emoji.replaceEmoji(filter.name, cell.getTextView().getPaint().getFontMetricsInt(), false), 0, new FolderDrawable(getContext(), icon, filter.color), false);
                 boolean isChecked = true;
                 for (int i = 0; i < selectedDialogs.size(); ++i) {
                     long did = selectedDialogs.get(i);

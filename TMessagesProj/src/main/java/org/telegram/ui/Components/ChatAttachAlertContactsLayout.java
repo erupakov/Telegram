@@ -73,9 +73,9 @@ public class ChatAttachAlertContactsLayout extends ChatAttachAlert.AttachAlertLa
     private boolean multipleSelectionAllowed;
 
     public interface PhonebookShareAlertDelegate {
-        void didSelectContact(TLRPC.User user, boolean notify, int scheduleDate, long effectId, boolean invertMedia, long payStars);
+        void didSelectContact(TLRPC.User user, boolean notify, int scheduleDate, long effectId, boolean invertMedia);
 
-        default void didSelectContacts(ArrayList<TLRPC.User> users, String caption, boolean notify, int scheduleDate, long effectId, boolean invertMedia, long payStars) {
+        default void didSelectContacts(ArrayList<TLRPC.User> users, String caption, boolean notify, int scheduleDate, long effectId, boolean invertMedia) {
 
         }
     }
@@ -118,7 +118,7 @@ public class ChatAttachAlertContactsLayout extends ChatAttachAlert.AttachAlertLa
             nameTextView = new SimpleTextView(context) {
                 @Override
                 public boolean setText(CharSequence value, boolean force) {
-                    value = Emoji.replaceEmoji(value, getPaint().getFontMetricsInt(), false);
+                    value = Emoji.replaceEmoji(value, getPaint().getFontMetricsInt(), AndroidUtilities.dp(14), false);
                     return super.setText(value, force);
                 }
             };
@@ -484,9 +484,9 @@ public class ChatAttachAlertContactsLayout extends ChatAttachAlert.AttachAlertLa
                 }
 
                 PhonebookShareAlert phonebookShareAlert = new PhonebookShareAlert(parentAlert.baseFragment, contact, null, null, null, firstName, lastName, resourcesProvider);
-                phonebookShareAlert.setDelegate((user, notify, scheduleDate, effectId, invertMedia, payStars) -> {
+                phonebookShareAlert.setDelegate((user, notify, scheduleDate, effectId, invertMedia) -> {
                     parentAlert.dismiss(true);
-                    delegate.didSelectContact(user, notify, scheduleDate, effectId, invertMedia, payStars);
+                    delegate.didSelectContact(user, notify, scheduleDate, effectId, invertMedia);
                 });
                 phonebookShareAlert.show();
             }
@@ -691,21 +691,20 @@ public class ChatAttachAlertContactsLayout extends ChatAttachAlert.AttachAlertLa
     }
 
     @Override
-    public boolean sendSelectedItems(boolean notify, int scheduleDate, long effectId, boolean invertMedia) {
+    public void sendSelectedItems(boolean notify, int scheduleDate, long effectId, boolean invertMedia) {
         if (selectedContacts.size() == 0 && delegate == null || sendPressed) {
-            return false;
+            return;
         }
         sendPressed = true;
 
         ArrayList<TLRPC.User> users = new ArrayList<>(selectedContacts.size());
+
         for (ListItemID id : selectedContactsOrder) {
             Object object = selectedContacts.get(id);
             users.add(prepareContact(object));
         }
-        return AlertsCreator.ensurePaidMessageConfirmation(parentAlert.currentAccount, parentAlert.getDialogId(), users.size() + parentAlert.getAdditionalMessagesCount(), payStars -> {
-            delegate.didSelectContacts(users, parentAlert.getCommentView().getText().toString(), notify, scheduleDate, effectId, invertMedia, payStars);
-            parentAlert.dismiss();
-        });
+
+        delegate.didSelectContacts(users, parentAlert.commentTextView.getText().toString(), notify, scheduleDate, effectId, invertMedia);
     }
 
     public ArrayList<TLRPC.User> getSelected() {

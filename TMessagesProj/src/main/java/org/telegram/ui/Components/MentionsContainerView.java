@@ -28,14 +28,17 @@ import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.ImageReceiver;
+import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
 import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.NotificationCenter;
+import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.VideoEditedInfo;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Adapters.MentionsAdapter;
@@ -44,6 +47,7 @@ import org.telegram.ui.Business.QuickRepliesActivity;
 import org.telegram.ui.Cells.ContextLinkCell;
 import org.telegram.ui.Cells.MentionCell;
 import org.telegram.ui.Cells.StickerCell;
+import org.telegram.ui.ChatActivity;
 import org.telegram.ui.ContentPreviewViewer;
 import org.telegram.ui.PhotoViewer;
 
@@ -147,7 +151,7 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
                             }
                         }
                     } else if (inlineResult.photo != null) {
-                        TLRPC.PhotoSize photoSize = FileLoader.getClosestPhotoSizeWithSize(inlineResult.photo.sizes, AndroidUtilities.getPhotoSize());
+                        TLRPC.PhotoSize photoSize = FileLoader.getClosestPhotoSizeWithSize(inlineResult.photo.sizes, AndroidUtilities.photoSize);
                         if (photoSize != null) {
                             size.width = photoSize.w;
                             size.height = photoSize.h;
@@ -237,7 +241,7 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
                 MentionsContainerView.this.onContextClick(result);
             }
 
-        }, resourcesProvider, isStories());
+        }, resourcesProvider);
         paddedAdapter = new PaddedListAdapter(adapter);
         listView.setAdapter(paddedAdapter);
 
@@ -284,11 +288,9 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
     }
 
     public void setReversed(boolean reversed) {
-        if (reversed != isReversed()) {
-            scrollToFirst = true;
-            linearLayoutManager.setReverseLayout(reversed);
-            adapter.setIsReversed(reversed);
-        }
+        scrollToFirst = true;
+        linearLayoutManager.setReverseLayout(reversed);
+        adapter.setIsReversed(reversed);
     }
 
     public boolean isReversed() {
@@ -326,7 +328,6 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
         boolean reversed = isReversed();
         boolean topPadding = (adapter.isStickers() || adapter.isBotContext()) && adapter.isMediaLayout() && adapter.getBotContextSwitch() == null && adapter.getBotWebViewSwitch() == null;
         containerPadding = AndroidUtilities.dp(2 + (topPadding ? 2 : 0));
-        canvas.save();
 
         float r = AndroidUtilities.dp(6);
         float wasContainerTop = containerTop;
@@ -337,7 +338,6 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
             rect.set(0, (int) (containerTop = 0), getMeasuredWidth(), (int) (containerBottom = top));
             r = Math.min(r, Math.abs(getMeasuredHeight() - containerBottom));
             if (r > 0) {
-                canvas.clipRect(0, 0, getWidth(), getHeight());
                 rect.top -= (int) r;
             }
         } else {
@@ -351,7 +351,6 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
             rect.set(0, (int) (containerTop = top), getMeasuredWidth(), (int) (containerBottom = getMeasuredHeight()));
             r = Math.min(r, Math.abs(containerTop));
             if (r > 0) {
-                canvas.clipRect(0, 0, getWidth(), getHeight());
                 rect.bottom += (int) r;
             }
         }
@@ -384,6 +383,7 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
         } else {
             drawRoundRect(canvas, rect, r);
         }
+        canvas.save();
         canvas.clipRect(rect);
         super.dispatchDraw(canvas);
         canvas.restore();
@@ -559,7 +559,7 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
     private PhotoViewer.PhotoViewerProvider botContextProvider = new PhotoViewer.EmptyPhotoViewerProvider() {
 
         @Override
-        public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview, boolean closing) {
+        public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview) {
             if (index < 0 || index >= botContextResults.size()) {
                 return null;
             }
@@ -611,17 +611,6 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
             Object object = getAdapter().getItem(position);
             int start = getAdapter().getResultStartPosition();
             int len = getAdapter().getResultLength();
-            if (getAdapter().isLocalHashtagHint(position)) {
-                TLRPC.Chat currentChat = getAdapter().chat;
-                if (currentChat == null && getAdapter().parentFragment != null) {
-                    currentChat = getAdapter().parentFragment.getCurrentChat();
-                }
-                delegate.replaceText(start, len, getAdapter().getHashtagHint() + (currentChat != null ? "@" + ChatObject.getPublicUsername(currentChat) : "") + " ", false);
-                return;
-            } else if (getAdapter().isGlobalHashtagHint(position)) {
-                delegate.replaceText(start, len, getAdapter().getHashtagHint() + " ", false);
-                return;
-            }
             if (object instanceof TLRPC.TL_document) {
                 MessageObject.SendAnimationData sendAnimationData = null;
                 if (view instanceof StickerCell) {
@@ -719,7 +708,6 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
                     }
                     int visibleItemCount = lastVisibleItem == RecyclerView.NO_POSITION ? 0 : lastVisibleItem;
                     if (visibleItemCount > 0 && lastVisibleItem > adapter.getLastItemCount() - 5) {
-//                        adapter.loadMoreStickers();
                         adapter.searchForContextBotForNextOffset();
                     }
 
@@ -908,10 +896,6 @@ public class MentionsContainerView extends BlurredFrameLayout implements Notific
                 }
             });
         }
-    }
-
-    protected boolean isStories() {
-        return false;
     }
 
 }

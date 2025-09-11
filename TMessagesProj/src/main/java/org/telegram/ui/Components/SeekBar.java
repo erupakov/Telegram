@@ -19,6 +19,7 @@ import android.text.Spanned;
 import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.Pair;
+import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -338,7 +339,7 @@ public class SeekBar {
                         float position = seconds * 1000L / (float) videoDuration;
                         String label = link.label;
                         SpannableStringBuilder builder = new SpannableStringBuilder(label);
-                        Emoji.replaceEmoji(builder, timestampLabelPaint.getFontMetricsInt(), false);
+                        Emoji.replaceEmoji(builder, timestampLabelPaint.getFontMetricsInt(), AndroidUtilities.dp(14), false);
                         timestamps.add(new Pair<>(position, link));
                     }
                 }

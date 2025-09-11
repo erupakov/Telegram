@@ -17,7 +17,6 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import org.telegram.messenger.AndroidUtilities;
-import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MessagesController;
@@ -62,7 +61,7 @@ public class BackButtonMenu {
             return null;
         }
         ArrayList<PulledDialog> dialogs;
-        if (topicId != 0 && !ChatObject.isMonoForum(thisFragment.getCurrentAccount(), currentDialogId)) {
+        if (topicId != 0) {
             dialogs = getStackedHistoryForTopic(thisFragment, currentDialogId, topicId);
         } else {
             dialogs = getStackedHistoryDialogs(thisFragment, currentDialogId);
@@ -80,7 +79,6 @@ public class BackButtonMenu {
 
         AtomicReference<ActionBarPopupWindow> scrimPopupWindowRef = new AtomicReference<>();
 
-        boolean hadDialogs = false;
         for (int i = 0; i < dialogs.size(); ++i) {
             final PulledDialog pDialog = dialogs.get(i);
             final TLRPC.Chat chat = pDialog.chat;
@@ -109,7 +107,6 @@ public class BackButtonMenu {
             Drawable thumb = avatarDrawable;
             boolean addDivider = false;
             if (topic != null) {
-                hadDialogs = true;
                 if (topic.id == 1) {
                     thumb = ForumUtilities.createGeneralTopicDrawable(fragmentView.getContext(), 1f, Theme.getColor(Theme.key_chat_inMenu, resourcesProvider), false);
                     imageView.setImageDrawable(thumb);
@@ -122,7 +119,6 @@ public class BackButtonMenu {
                 }
                 titleView.setText(topic.title);
             } else if (chat != null) {
-                hadDialogs = true;
                 avatarDrawable.setInfo(thisFragment.getCurrentAccount(), chat);
                 if (chat.photo != null && chat.photo.strippedBitmap != null) {
                     thumb = chat.photo.strippedBitmap;
@@ -130,7 +126,6 @@ public class BackButtonMenu {
                 imageView.setImage(ImageLocation.getForChat(chat, ImageLocation.TYPE_SMALL), "50_50", thumb, chat);
                 titleView.setText(chat.title);
             } else if (user != null) {
-                hadDialogs = true;
                 String name;
                 if (user.photo != null && user.photo.strippedBitmap != null) {
                     thumb = user.photo.strippedBitmap;
@@ -211,8 +206,6 @@ public class BackButtonMenu {
                 layout.addView(gap, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 8));
             }
         }
-
-        if (!hadDialogs) return null;
 
         ActionBarPopupWindow scrimPopupWindow = new ActionBarPopupWindow(layout, LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT);
         scrimPopupWindowRef.set(scrimPopupWindow);

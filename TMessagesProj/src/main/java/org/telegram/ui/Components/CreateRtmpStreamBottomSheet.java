@@ -22,7 +22,6 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_phone;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.TextDetailCell;
@@ -75,13 +74,13 @@ public class CreateRtmpStreamBottomSheet extends BottomSheetWithRecyclerListView
         fixNavigationBar();
         updateTitle();
 
-        TL_phone.getGroupCallStreamRtmpUrl req = new TL_phone.getGroupCallStreamRtmpUrl();
+        TLRPC.TL_phone_getGroupCallStreamRtmpUrl req = new TLRPC.TL_phone_getGroupCallStreamRtmpUrl();
         req.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
         req.revoke = false;
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
             if (response != null) {
-                if (response instanceof TL_phone.groupCallStreamRtmpUrl) {
-                    TL_phone.groupCallStreamRtmpUrl rtmpUrl = (TL_phone.groupCallStreamRtmpUrl) response;
+                if (response instanceof TLRPC.TL_phone_groupCallStreamRtmpUrl) {
+                    TLRPC.TL_phone_groupCallStreamRtmpUrl rtmpUrl = (TLRPC.TL_phone_groupCallStreamRtmpUrl) response;
                     this.rtmpUrl = rtmpUrl.url;
                     this.rtmpKey = rtmpUrl.key;
                     adapter.update(false);
@@ -161,7 +160,7 @@ public class CreateRtmpStreamBottomSheet extends BottomSheetWithRecyclerListView
         }
 
         @Override
-        public void bindView(View view, UItem item, boolean divider, UniversalAdapter adapter, UniversalRecyclerView listView) {
+        public void bindView(View view, UItem item, boolean divider) {
             ((TextDetailCell) view).setTextAndValue(item.text, item.textValue, !item.hideDivider);
         }
 

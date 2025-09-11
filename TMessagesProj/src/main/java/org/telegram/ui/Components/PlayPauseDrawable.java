@@ -37,10 +37,6 @@ public class PlayPauseDrawable extends Drawable {
         paint.setColor(Color.WHITE);
     }
 
-    public void setColor(int color) {
-        paint.setColor(color);
-    }
-
     @Override
     public void draw(@NonNull Canvas canvas) {
         long newUpdateTime = AnimationUtils.currentAnimationTimeMillis();

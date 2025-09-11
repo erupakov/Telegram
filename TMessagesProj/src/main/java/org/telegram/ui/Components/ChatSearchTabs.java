@@ -52,11 +52,9 @@ public class ChatSearchTabs extends BlurredFrameLayout {
 
     }
 
-    private boolean shown;
     private float actionBarTagsT;
     private ValueAnimator actionBarTagsAnimator;
     public void show(boolean show) {
-        shown = show;
         if (actionBarTagsAnimator != null) {
             Animator a = actionBarTagsAnimator;
             actionBarTagsAnimator = null;
@@ -88,16 +86,13 @@ public class ChatSearchTabs extends BlurredFrameLayout {
         actionBarTagsAnimator.start();
     }
 
-    public boolean isShown() {
-        return shown;
-    }
-
     public boolean shown() {
         return shownT > 0.5f;
     }
     public int getCurrentHeight() {
         return (int) (getMeasuredHeight() * shownT);
     }
+
     private Paint backgroundPaint2;
     @Override
     public void setBackgroundColor(int color) {

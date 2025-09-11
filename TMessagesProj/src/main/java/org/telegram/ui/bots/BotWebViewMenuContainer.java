@@ -171,11 +171,6 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
         return false;
     }
 
-    @Override
-    public boolean hadDialog() {
-        return false;
-    }
-
     public BottomSheetTabs.WebTabData saveState() {
         preserving = true;
         BottomSheetTabs.WebTabData tab = new BottomSheetTabs.WebTabData();
@@ -226,7 +221,7 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
         if (tab.webView != null) {
 //            tab.webView.resumeTimers();
             tab.webView.onResume();
-            webViewContainer.replaceWebView(currentAccount, tab.webView, tab.proxy);
+            webViewContainer.replaceWebView(tab.webView, tab.proxy);
         } else {
             tab.props.response = null;
             tab.props.responseTime = 0;
@@ -283,9 +278,8 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
 
         webViewContainer = new BotWebViewContainer(context, parentEnterView.getParentFragment().getResourceProvider(), getColor(Theme.key_windowBackgroundWhite), true) {
             @Override
-            public void onWebViewCreated(MyWebView webView) {
-                super.onWebViewCreated(webView);
-                swipeContainer.setWebView(webView);
+            public void onWebViewCreated() {
+                swipeContainer.setWebView(webViewContainer.getWebView());
             }
         };
         webViewContainer.setDelegate(webViewDelegate = new BotWebViewContainer.Delegate() {
@@ -534,7 +528,10 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
         });
         swipeContainer.setScrollEndListener(()-> webViewContainer.invalidateViewPortHeight(true));
         swipeContainer.addView(webViewContainer);
-        swipeContainer.setDelegate(byTap -> {
+        swipeContainer.setDelegate(() -> {
+//            if (!onCheckDismissByUser()) {
+//                swipeContainer.stickTo(0);
+//            }
             dismiss(true, null);
         });
         swipeContainer.setTopActionBarOffsetY(ActionBar.getCurrentActionBarHeight() + AndroidUtilities.statusBarHeight - AndroidUtilities.dp(24));
@@ -1084,8 +1081,7 @@ public class BotWebViewMenuContainer extends FrameLayout implements Notification
 
         webViewContainer = new BotWebViewContainer(getContext(), parentEnterView.getParentFragment().getResourceProvider(), getColor(Theme.key_windowBackgroundWhite), true) {
             @Override
-            public void onWebViewCreated(MyWebView webView) {
-                super.onWebViewCreated(webView);
+            public void onWebViewCreated() {
                 swipeContainer.setWebView(webViewContainer.getWebView());
             }
         };

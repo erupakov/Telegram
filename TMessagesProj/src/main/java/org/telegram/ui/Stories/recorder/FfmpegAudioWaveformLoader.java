@@ -1,14 +1,10 @@
 package org.telegram.ui.Stories.recorder;
 
-import androidx.annotation.Keep;
-
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Utilities;
 
-@Keep
 public class FfmpegAudioWaveformLoader {
 
-    @Keep
     private volatile boolean running = true;
 
     private native void init(String path, int count);
@@ -21,7 +17,6 @@ public class FfmpegAudioWaveformLoader {
     }
 
     private Utilities.Callback2<short[], Integer> onChunkReceived;
-    @Keep
     private void receiveChunk(short[] data, int len) {
         AndroidUtilities.runOnUIThread(() -> {
             onChunkReceived.run(data, len);

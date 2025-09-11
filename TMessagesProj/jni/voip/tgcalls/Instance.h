@@ -10,25 +10,23 @@
 #include "Stats.h"
 #include "DirectConnectionChannel.h"
 
-#include "platform/PlatformInterface.h"
-
 namespace rtc {
 template <typename VideoFrameT>
 class VideoSinkInterface;
+template <class T>
+class scoped_refptr;
 } // namespace rtc
 
 namespace webrtc {
 class VideoFrame;
 class AudioDeviceModule;
 class TaskQueueFactory;
-template <class T>
-class scoped_refptr;
 } // namespace webrtc
 
 namespace tgcalls {
 
-class WrappedAudioDeviceModule;
 class VideoCaptureInterface;
+class PlatformContext;
 
 struct FilePath {
 #ifndef _WIN32
@@ -123,19 +121,18 @@ struct Config {
     bool enableHighBitrateVideo = false;
     std::vector<std::string> preferredVideoCodecs;
     ProtocolVersion protocolVersion = ProtocolVersion::V0;
-    std::string customParameters = "";
 };
 
 struct EncryptionKey {
 	static constexpr int kSize = 256;
 
-	std::shared_ptr<std::array<uint8_t, kSize>> value;
+	std::shared_ptr<const std::array<uint8_t, kSize>> value;
 	bool isOutgoing = false;
 
     EncryptionKey(
 		std::shared_ptr<std::array<uint8_t, kSize>> value,
-		bool isOutgoing
-    ): value(value), isOutgoing(isOutgoing) {
+		bool isOutgoing)
+	: value(std::move(value)), isOutgoing(isOutgoing) {
     }
 };
 
@@ -238,8 +235,7 @@ struct Descriptor {
 	std::function<void(AudioState, VideoState)> remoteMediaStateUpdated;
     std::function<void(float)> remotePrefferedAspectRatioUpdated;
 	std::function<void(const std::vector<uint8_t> &)> signalingDataEmitted;
-	std::function<webrtc::scoped_refptr<webrtc::AudioDeviceModule>(webrtc::TaskQueueFactory*)> createAudioDeviceModule;
-    std::function<webrtc::scoped_refptr<WrappedAudioDeviceModule>(webrtc::TaskQueueFactory*)> createWrappedAudioDeviceModule;
+	std::function<rtc::scoped_refptr<webrtc::AudioDeviceModule>(webrtc::TaskQueueFactory*)> createAudioDeviceModule;
     std::string initialInputDeviceId;
     std::string initialOutputDeviceId;
     std::shared_ptr<DirectConnectionChannel> directConnectionChannel;

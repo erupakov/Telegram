@@ -23,7 +23,6 @@ import android.content.Context;
 import android.media.AudioDeviceInfo;
 import android.media.AudioTrack;
 import android.media.MediaCodec;
-import android.opengl.EGLContext;
 import android.os.Looper;
 import android.os.Process;
 import android.view.Surface;
@@ -453,7 +452,6 @@ public interface ExoPlayer extends Player {
   final class Builder {
 
     /* package */ final Context context;
-    public EGLContext eglContext;
 
     /* package */ Clock clock;
     /* package */ long foregroundModeTimeoutMs;
@@ -1714,12 +1712,4 @@ public interface ExoPlayer extends Player {
    * @see Player.Listener#onTracksChanged(Tracks)
    */
   boolean isTunnelingEnabled();
-
-
-  /*  */
-
-  void addVideoListener(com.google.android.exoplayer2.video.VideoListener listener);
-
-  void removeVideoListener(com.google.android.exoplayer2.video.VideoListener listener);
-
 }

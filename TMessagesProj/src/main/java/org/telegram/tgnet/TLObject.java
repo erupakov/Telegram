@@ -20,17 +20,19 @@ public class TLObject {
         }
     };
 
-    public TLObject() {}
-
-    public void readParams(InputSerializedData stream, boolean exception) {
+    public TLObject() {
 
     }
 
-    public void serializeToStream(OutputSerializedData stream) {
+    public void readParams(AbstractSerializedData stream, boolean exception) {
 
     }
 
-    public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+    public void serializeToStream(AbstractSerializedData stream) {
+
+    }
+
+    public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
         return null;
     }
 

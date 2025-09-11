@@ -13,7 +13,6 @@ import static org.telegram.messenger.MessagesController.LOAD_AROUND_MESSAGE;
 import static org.telegram.messenger.MessagesController.LOAD_BACKWARD;
 import static org.telegram.messenger.MessagesController.LOAD_FORWARD;
 import static org.telegram.messenger.MessagesController.LOAD_FROM_UNREAD;
-import static org.telegram.messenger.MessagesController.findUpdates;
 
 import android.appwidget.AppWidgetManager;
 import android.content.SharedPreferences;
@@ -35,21 +34,16 @@ import org.telegram.SQLite.SQLiteDatabase;
 import org.telegram.SQLite.SQLiteException;
 import org.telegram.SQLite.SQLitePreparedStatement;
 import org.telegram.messenger.support.LongSparseIntArray;
-import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.NativeByteBuffer;
 import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.Vector;
-import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_bots;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Adapters.DialogsSearchAdapter;
 import org.telegram.ui.ChatActivity;
-import org.telegram.ui.Components.Forum.ForumUtilities;
 import org.telegram.ui.Components.Reactions.ReactionsLayoutInBubble;
-import org.telegram.ui.Components.VideoPlayer;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.EditWidgetActivity;
 
@@ -76,8 +70,8 @@ public class MessagesStorage extends BaseController {
     private File cacheFile;
     private File walCacheFile;
     private File shmCacheFile;
-    private final AtomicLong lastTaskId = new AtomicLong(System.currentTimeMillis());
-    private final SparseArray<ArrayList<Runnable>> tasks = new SparseArray<>();
+    private AtomicLong lastTaskId = new AtomicLong(System.currentTimeMillis());
+    private SparseArray<ArrayList<Runnable>> tasks = new SparseArray<>();
 
     private int lastDateValue = 0;
     private int lastPtsValue = 0;
@@ -92,16 +86,16 @@ public class MessagesStorage extends BaseController {
     private int lastSavedDate = 0;
     private int lastSavedQts = 0;
 
-    private final ArrayList<MessagesController.DialogFilter> dialogFilters = new ArrayList<>();
-    private final SparseArray<MessagesController.DialogFilter> dialogFiltersMap = new SparseArray<>();
-    private final LongSparseArray<Boolean> unknownDialogsIds = new LongSparseArray<>();
+    private ArrayList<MessagesController.DialogFilter> dialogFilters = new ArrayList<>();
+    private SparseArray<MessagesController.DialogFilter> dialogFiltersMap = new SparseArray<>();
+    private LongSparseArray<Boolean> unknownDialogsIds = new LongSparseArray<>();
     private int mainUnreadCount;
     private int archiveUnreadCount;
     private volatile int pendingMainUnreadCount;
     private volatile int pendingArchiveUnreadCount;
     private boolean databaseCreated;
 
-    private final CountDownLatch openSync = new CountDownLatch(1);
+    private CountDownLatch openSync = new CountDownLatch(1);
 
     private static volatile MessagesStorage[] Instance = new MessagesStorage[UserConfig.MAX_ACCOUNT_COUNT];
     private static final Object[] lockObjects = new Object[UserConfig.MAX_ACCOUNT_COUNT];
@@ -111,12 +105,10 @@ public class MessagesStorage extends BaseController {
         }
     }
 
-    public final static int LAST_DB_VERSION = 165;
+    public final static int LAST_DB_VERSION = 159;
     private boolean databaseMigrationInProgress;
     public boolean showClearDatabaseAlert;
-    private final LongSparseIntArray dialogIsForum = new LongSparseIntArray();
-    private final LongSparseIntArray dialogIsMonoForum = new LongSparseIntArray();
-    private final LongSparseIntArray dialogIsForumOrMonoForumWithTabs = new LongSparseIntArray();
+    private LongSparseIntArray dialogIsForum = new LongSparseIntArray();
 
     public static MessagesStorage getInstance(int num) {
         MessagesStorage localInstance = Instance[num];
@@ -545,12 +537,11 @@ public class MessagesStorage extends BaseController {
         database.executeFast("CREATE INDEX IF NOT EXISTS idx_to_reply_messages_v2 ON messages_v2(reply_to_message_id, mid);").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS uid_mid_groupid_messages_v2 ON messages_v2(uid, mid, group_id);").stepThis().dispose();
 
-        database.executeFast("CREATE TABLE saved_dialogs(did INTEGER, date INTEGER, last_mid INTEGER, pinned INTEGER, flags INTEGER, folder_id INTEGER, last_mid_group INTEGER, count INTEGER, forumChatId INTEGER, unread_count INTEGER, max_read_id INTEGER, read_outbox INTEGER, PRIMARY KEY (did, forumChatId))").stepThis().dispose();
+        database.executeFast("CREATE TABLE saved_dialogs(did INTEGER PRIMARY KEY, date INTEGER, last_mid INTEGER, pinned INTEGER, flags INTEGER, folder_id INTEGER, last_mid_group INTEGER, count INTEGER)").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS date_idx_dialogs ON saved_dialogs(date);").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS last_mid_idx_dialogs ON saved_dialogs(last_mid);").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS folder_id_idx_dialogs ON saved_dialogs(folder_id);").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS flags_idx_dialogs ON saved_dialogs(flags);").stepThis().dispose();
-        database.executeFast("CREATE INDEX IF NOT EXISTS forum_idx_dialogs ON saved_dialogs(forumChatId);").stepThis().dispose();
 
         database.executeFast("CREATE TABLE download_queue(uid INTEGER, type INTEGER, date INTEGER, data BLOB, parent TEXT, PRIMARY KEY (uid, type));").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS type_date_idx_download_queue ON download_queue(type, date);").stepThis().dispose();
@@ -568,7 +559,7 @@ public class MessagesStorage extends BaseController {
         database.executeFast("CREATE INDEX IF NOT EXISTS folder_id_idx_dialogs ON dialogs(folder_id);").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS flags_idx_dialogs ON dialogs(flags);").stepThis().dispose();
 
-        database.executeFast("CREATE TABLE dialog_filter(id INTEGER PRIMARY KEY, ord INTEGER, unread_count INTEGER, flags INTEGER, title TEXT, color INTEGER DEFAULT -1, entities BLOB, noanimate INTEGER)").stepThis().dispose();
+        database.executeFast("CREATE TABLE dialog_filter(id INTEGER PRIMARY KEY, ord INTEGER, unread_count INTEGER, flags INTEGER, title TEXT, color INTEGER DEFAULT -1)").stepThis().dispose();
         database.executeFast("CREATE TABLE dialog_filter_ep(id INTEGER, peer INTEGER, PRIMARY KEY (id, peer))").stepThis().dispose();
         database.executeFast("CREATE TABLE dialog_filter_pin_v2(id INTEGER, peer INTEGER, pin INTEGER, PRIMARY KEY (id, peer))").stepThis().dispose();
 
@@ -693,7 +684,7 @@ public class MessagesStorage extends BaseController {
         database.executeFast("CREATE TABLE media_holes_topics(uid INTEGER, topic_id INTEGER, type INTEGER, start INTEGER, end INTEGER, PRIMARY KEY(uid, topic_id, type, start));").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS uid_end_media_holes_topics ON media_holes_topics(uid, topic_id, type, end);").stepThis().dispose();
 
-        database.executeFast("CREATE TABLE topics(did INTEGER, topic_id INTEGER, data BLOB, top_message INTEGER, topic_message BLOB, unread_count INTEGER, max_read_id INTEGER, unread_mentions INTEGER, unread_reactions INTEGER, read_outbox INTEGER, pinned INTEGER, total_messages_count INTEGER, hidden INTEGER, edit_date INTEGER, nopaid_messages_exception INTEGER, PRIMARY KEY(did, topic_id));").stepThis().dispose();
+        database.executeFast("CREATE TABLE topics(did INTEGER, topic_id INTEGER, data BLOB, top_message INTEGER, topic_message BLOB, unread_count INTEGER, max_read_id INTEGER, unread_mentions INTEGER, unread_reactions INTEGER, read_outbox INTEGER, pinned INTEGER, total_messages_count INTEGER, hidden INTEGER, edit_date INTEGER, PRIMARY KEY(did, topic_id));").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS did_top_message_topics ON topics(did, top_message);").stepThis().dispose();
         database.executeFast("CREATE INDEX IF NOT EXISTS did_topics ON topics(did);").stepThis().dispose();
 
@@ -733,7 +724,7 @@ public class MessagesStorage extends BaseController {
 
         database.executeFast("CREATE TABLE business_links(data BLOB, order_value INTEGER);").stepThis().dispose();
         database.executeFast("CREATE TABLE fact_checks(hash INTEGER PRIMARY KEY, data BLOB, expires INTEGER);").stepThis().dispose();
-        database.executeFast("CREATE TABLE popular_bots(uid INTEGER PRIMARY KEY, time INTEGER, offset TEXT, pos INTEGER);").stepThis().dispose();
+        database.executeFast("CREATE TABLE popular_bots(uid INTEGER PRIMARY KEY, time INTEGER, offset TEXT);").stepThis().dispose();
 
         database.executeFast("CREATE TABLE star_gifts2(id INTEGER PRIMARY KEY, data BLOB, hash INTEGER, time INTEGER, pos INTEGER);").stepThis().dispose();
 
@@ -1550,19 +1541,18 @@ public class MessagesStorage extends BaseController {
             if (replace) {
                 database.executeFast("DELETE FROM topics WHERE did = " + dialogId).stepThis().dispose();
             }
-            state = database.executeFast("REPLACE INTO topics VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            state = database.executeFast("REPLACE INTO topics VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             if (inTransaction) {
                 database.beginTransaction();
             }
 
             for (int i = 0; i < topics.size(); i++) {
                 TLRPC.TL_forumTopic topic = topics.get(i);
-                long topicId = isMonoForum(dialogId) ? DialogObject.getPeerDialogId(topic.from_id): topic.id;
                 boolean exist = existingTopics.contains(i);
 
                 state.requery();
                 state.bindLong(1, dialogId);
-                state.bindLong(2, topicId);
+                state.bindInteger(2, topic.id);
                 NativeByteBuffer data = new NativeByteBuffer(topic.getObjectSize());
                 topic.serializeToStream(data);
 
@@ -1585,24 +1575,23 @@ public class MessagesStorage extends BaseController {
                 state.bindInteger(12, topic.totalMessagesCount);
                 state.bindInteger(13, topic.hidden ? 1 : 0);
                 state.bindInteger(14, date);
-                state.bindInteger(15, topic.nopaid_messages_exception ? 1 : 0);
 
                 state.step();
                 messageData.reuse();
                 data.reuse();
 
                 if (exist) {
-                    closeHolesInTable("messages_holes_topics", dialogId, topic.top_message, topic.top_message, topicId);
+                    closeHolesInTable("messages_holes_topics", dialogId, topic.top_message, topic.top_message, topic.id);
                     closeHolesInMedia(dialogId, topic.top_message, topic.top_message, -1, 0);
                 } else {
-                    database.executeFast(String.format(Locale.ENGLISH, "DELETE FROM messages_holes_topics WHERE uid = %d AND topic_id = %d", dialogId, topicId)).stepThis().dispose();
-                    database.executeFast(String.format(Locale.ENGLISH, "DELETE FROM media_holes_topics WHERE uid = %d AND topic_id = %d", dialogId, topicId)).stepThis().dispose();
-                    database.executeFast(String.format(Locale.ENGLISH, "DELETE FROM messages_topics WHERE uid = %d AND topic_id = %d", dialogId, topicId)).stepThis().dispose();
-                    database.executeFast(String.format(Locale.ENGLISH, "DELETE FROM media_topics WHERE uid = %d AND topic_id = %d", dialogId, topicId)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.ENGLISH, "DELETE FROM messages_holes_topics WHERE uid = %d AND topic_id = %d", dialogId, topic.id)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.ENGLISH, "DELETE FROM media_holes_topics WHERE uid = %d AND topic_id = %d", dialogId, topic.id)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.ENGLISH, "DELETE FROM messages_topics WHERE uid = %d AND topic_id = %d", dialogId, topic.id)).stepThis().dispose();
+                    database.executeFast(String.format(Locale.ENGLISH, "DELETE FROM media_topics WHERE uid = %d AND topic_id = %d", dialogId, topic.id)).stepThis().dispose();
 
                     SQLitePreparedStatement state_holes = database.executeFast("REPLACE INTO messages_holes_topics VALUES(?, ?, ?, ?)");
                     SQLitePreparedStatement state_media_holes = database.executeFast("REPLACE INTO media_holes_topics VALUES(?, ?, ?, ?, ?)");
-                    createFirstHoles(dialogId, state_holes, state_media_holes, topic.top_message, topicId);
+                    createFirstHoles(dialogId, state_holes, state_media_holes, topic.top_message, topic.id);
                     state_holes.dispose();
                     state_holes.dispose();
                 }
@@ -1637,7 +1626,7 @@ public class MessagesStorage extends BaseController {
                     state.requery();
                     state.bindInteger(1, fromTopic.totalMessagesCount);
                     state.bindLong(2, dialogId);
-                    state.bindLong(3, isMonoForum(dialogId) ? DialogObject.getPeerDialogId(fromTopic.from_id) : fromTopic.id);
+                    state.bindInteger(3, fromTopic.id);
                     state.step();
                     state.dispose();
                     if (flags == TopicsController.TOPIC_FLAG_TOTAL_MESSAGES_COUNT) {
@@ -1686,7 +1675,7 @@ public class MessagesStorage extends BaseController {
                     state.bindInteger(3, topicToUpdate.hidden ? 1 : 0);
                     state.bindInteger(4, date);
                     state.bindLong(5, dialogId);
-                    state.bindLong(6, topicToUpdate.id);
+                    state.bindInteger(6, topicToUpdate.id);
                     state.step();
                     data.reuse();
 
@@ -1714,7 +1703,7 @@ public class MessagesStorage extends BaseController {
             ArrayList<TLRPC.TL_forumTopic> topics = null;
             SQLiteCursor cursor = null;
             try {
-                cursor = database.queryFinalized(String.format(Locale.US, "SELECT top_message, data, topic_message, unread_count, max_read_id, unread_mentions, unread_reactions, read_outbox, pinned, total_messages_count, nopaid_messages_exception FROM topics WHERE did = %d ORDER BY pinned ASC", dialogId));
+                cursor = database.queryFinalized(String.format(Locale.US, "SELECT top_message, data, topic_message, unread_count, max_read_id, unread_mentions, unread_reactions, read_outbox, pinned, total_messages_count FROM topics WHERE did = %d ORDER BY pinned ASC", dialogId));
 
                 SparseArray<ArrayList<TLRPC.TL_forumTopic>> topicsByTopMessageId = null;
                 HashSet<Integer> topMessageIds = null;
@@ -1754,7 +1743,6 @@ public class MessagesStorage extends BaseController {
                             topic.pinnedOrder = cursor.intValue(8) - 1;
                             topic.pinned = topic.pinnedOrder >= 0;
                             topic.totalMessagesCount = cursor.intValue(9);
-                            topic.nopaid_messages_exception = cursor.intValue(10) != 0;
                         }
 
                         data.reuse();
@@ -1792,8 +1780,7 @@ public class MessagesStorage extends BaseController {
                                 if (message != null && message.reply_to != null && message.reply_to.reply_to_msg_id != 0 && (
                                     message.action instanceof TLRPC.TL_messageActionPinMessage ||
                                     message.action instanceof TLRPC.TL_messageActionPaymentSent ||
-                                    message.action instanceof TLRPC.TL_messageActionGameScore ||
-                                    message.action instanceof TLRPC.TL_messageActionSuggestedPostApproval
+                                    message.action instanceof TLRPC.TL_messageActionGameScore
                                 )) {
                                     if (!cursor2.isNull(2)) {
                                         NativeByteBuffer data2 = cursor2.byteBufferValue(2);
@@ -1843,21 +1830,6 @@ public class MessagesStorage extends BaseController {
                             }
                         } catch (Exception e) {
                             checkSQLException(e);
-                        }
-                    }
-                    for (TLRPC.TL_forumTopic topic : topics) {
-                        long fromId = DialogObject.getPeerDialogId(topic.from_id);
-                        if (fromId == 0) {
-                            continue;
-                        }
-                        if (fromId > 0) {
-                            if (!usersToLoad.contains(fromId)) {
-                                usersToLoad.add(fromId);
-                            }
-                        } else {
-                            if (!chatsToLoad.contains(fromId)) {
-                                chatsToLoad.add(fromId);
-                            }
                         }
                     }
 
@@ -2060,15 +2032,10 @@ public class MessagesStorage extends BaseController {
         });
     }
 
-    public void removeTopic(long dialogId, long topicId) {
+    public void removeTopic(long dialogId, int topicId) {
         storageQueue.postRunnable(() -> {
             try {
                 database.executeFast(String.format(Locale.US, "DELETE FROM topics WHERE did = %d AND topic_id = %d", dialogId, topicId)).stepThis().dispose();
-                database.executeFast(String.format(Locale.US,
-                    "DELETE FROM messages_v2 WHERE uid = %d AND mid IN (" +
-                            "SELECT mid FROM messages_topics WHERE uid = %d AND topic_id = %d" +
-                            ")",
-                    dialogId, dialogId, topicId)).stepThis().dispose();
                 database.executeFast(String.format(Locale.US, "DELETE FROM messages_topics WHERE uid = %d AND topic_id = %d", dialogId, topicId)).stepThis().dispose();
             } catch (SQLiteException e) {
                 e.printStackTrace();
@@ -2076,20 +2043,11 @@ public class MessagesStorage extends BaseController {
         });
     }
 
-    public void removeTopics(long dialogId, ArrayList<Long> topicIds) {
+    public void removeTopics(long dialogId, ArrayList<Integer> topicIds) {
         storageQueue.postRunnable(() -> {
             try {
                 String topics = TextUtils.join(", ", topicIds);
                 database.executeFast(String.format(Locale.US, "DELETE FROM topics WHERE did = %d AND topic_id IN (%s)", dialogId, topics)).stepThis().dispose();
-                try {
-                    database.executeFast(String.format(Locale.US,
-                        "DELETE FROM messages_v2 WHERE uid = %d AND mid IN (" +
-                                "SELECT mid FROM messages_topics WHERE uid = %d AND topic_id IN (%s)" +
-                                ")",
-                        dialogId, dialogId, topics)).stepThis().dispose();
-                } catch (SQLiteException e) {
-                    e.printStackTrace();
-                }
                 database.executeFast(String.format(Locale.US, "DELETE FROM messages_topics WHERE uid = %d AND topic_id IN (%s)", dialogId, topics)).stepThis().dispose();
             } catch (SQLiteException e) {
                 e.printStackTrace();
@@ -2231,7 +2189,7 @@ public class MessagesStorage extends BaseController {
                     for (int a = 0; a < dialogs.size(); a++) {
                         long did = dialogs.keyAt(a);
                         ReadDialog dialog = dialogs.valueAt(a);
-                        if (getMessagesController().isForum(did) || getMessagesController().isMonoForumWithManageRights(did)) {
+                        if (getMessagesController().isForum(did)) {
                             getMessagesController().markAllTopicsAsRead(did);
                         }
                         getMessagesController().markDialogAsRead(did, dialog.lastMid, dialog.lastMid, dialog.date, false, 0, dialog.unreadCount, true, 0);
@@ -2310,10 +2268,8 @@ public class MessagesStorage extends BaseController {
                         try {
                             if (message.reply_to != null && message.reply_to.reply_to_msg_id != 0 && (
                                     message.action instanceof TLRPC.TL_messageActionPinMessage ||
-                                    message.action instanceof TLRPC.TL_messageActionPaymentSent ||
-                                    message.action instanceof TLRPC.TL_messageActionGameScore ||
-                                    message.action instanceof TLRPC.TL_messageActionSuggestedPostApproval
-                            )) {
+                                            message.action instanceof TLRPC.TL_messageActionPaymentSent ||
+                                            message.action instanceof TLRPC.TL_messageActionGameScore)) {
                                 if (!cursor.isNull(13)) {
                                     NativeByteBuffer data2 = cursor.byteBufferValue(13);
                                     if (data2 != null) {
@@ -2403,11 +2359,9 @@ public class MessagesStorage extends BaseController {
 
                             try {
                                 if (message.reply_to != null && message.reply_to.reply_to_msg_id != 0 && (
-                                    message.action instanceof TLRPC.TL_messageActionPinMessage ||
-                                    message.action instanceof TLRPC.TL_messageActionPaymentSent ||
-                                    message.action instanceof TLRPC.TL_messageActionGameScore ||
-                                    message.action instanceof TLRPC.TL_messageActionSuggestedPostApproval
-                                )) {
+                                        message.action instanceof TLRPC.TL_messageActionPinMessage ||
+                                                message.action instanceof TLRPC.TL_messageActionPaymentSent ||
+                                                message.action instanceof TLRPC.TL_messageActionGameScore)) {
                                     if (!cursor.isNull(6)) {
                                         NativeByteBuffer data2 = cursor.byteBufferValue(6);
                                         if (data2 != null) {
@@ -2481,7 +2435,7 @@ public class MessagesStorage extends BaseController {
 
                 usersToLoad.add(getUserConfig().getClientUserId());
 
-                filtersCursor = database.queryFinalized("SELECT id, ord, unread_count, flags, title, color, entities, noanimate FROM dialog_filter WHERE 1");
+                filtersCursor = database.queryFinalized("SELECT id, ord, unread_count, flags, title, color FROM dialog_filter WHERE 1");
 
                 boolean updateCounters = false;
                 boolean hasDefaultFilter = false;
@@ -2493,13 +2447,6 @@ public class MessagesStorage extends BaseController {
                     filter.flags = filtersCursor.intValue(3);
                     filter.name = filtersCursor.stringValue(4);
                     filter.color = filtersCursor.intValue(5);
-                    filter.entities = new ArrayList<>();
-                    NativeByteBuffer buff = filtersCursor.byteBufferValue(6);
-                    if (buff != null) {
-                        filter.entities = Vector.deserialize(buff, TLRPC.MessageEntity::TLdeserialize, false);
-                        buff.reuse();
-                    }
-                    filter.title_noanimate = filtersCursor.intValue(7) == 1;
                     dialogFilters.add(filter);
                     dialogFiltersMap.put(filter.id, filter);
                     filtersById.put(filter.id, filter);
@@ -2569,21 +2516,15 @@ public class MessagesStorage extends BaseController {
                     dialogFiltersMap.put(filter.id, filter);
                     filtersById.put(filter.id, filter);
 
-                    state = database.executeFast("REPLACE INTO dialog_filter VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
+                    state = database.executeFast("REPLACE INTO dialog_filter VALUES(?, ?, ?, ?, ?, ?)");
                     state.bindInteger(1, filter.id);
                     state.bindInteger(2, filter.order);
                     state.bindInteger(3, filter.unreadCount);
                     state.bindInteger(4, filter.flags);
                     state.bindString(5, filter.name);
                     state.bindInteger(6, filter.color);
-                    final Vector<TLRPC.MessageEntity> entitiesVector = new Vector<>(TLRPC.MessageEntity::TLdeserialize);
-                    final NativeByteBuffer entitiesBuffer = new NativeByteBuffer(entitiesVector.getObjectSize());
-                    entitiesVector.serializeToStream(entitiesBuffer);
-                    state.bindByteBuffer(7, entitiesBuffer);
-                    state.bindInteger(8, filter.title_noanimate ? 1 : 0);
                     state.stepThis().dispose();
                     state = null;
-                    entitiesBuffer.reuse();
                 }
 
                 Collections.sort(dialogFilters, (o1, o2) -> {
@@ -2667,22 +2608,11 @@ public class MessagesStorage extends BaseController {
             cursor = database.queryFinalized("SELECT DISTINCT did FROM topics WHERE unread_count > 0 OR unread_mentions > 0");
             while (cursor.next()) {
                 long dialogId = cursor.longValue(0);
-                if (isForum(dialogId) || isMonoForum(dialogId)) {
+                if (isForum(dialogId)) {
                     forumUnreadCount.put(dialogId, 1);
                 }
             }
             cursor.dispose();
-/*
-            LongSparseIntArray monoForumUnreadCount = new LongSparseIntArray();
-            cursor = database.queryFinalized("SELECT DISTINCT forumChatId FROM saved_dialogs WHERE unread_count > 0");
-            while (cursor.next()) {
-                long dialogId = cursor.longValue(0);
-                if (isMonoForum(dialogId)) {
-                    monoForumUnreadCount.put(dialogId, 1);
-                }
-            }
-            cursor.dispose();
-*/
             cursor = database.queryFinalized("SELECT did, folder_id, unread_count, unread_count_i FROM dialogs WHERE unread_count > 0 OR flags > 0 UNION ALL " +
                     "SELECT did, folder_id, unread_count, unread_count_i FROM dialogs WHERE unread_count_i > 0");
             while (cursor.next()) {
@@ -2690,7 +2620,7 @@ public class MessagesStorage extends BaseController {
                 long did = cursor.longValue(0);
                 int unread;
                 int mentions = 0;
-                if (isForum(did) || isMonoForum(did)) {
+                if (isForum(did)) {
                     unread = forumUnreadCount.get(did, 0);
                     if (unread == 0) {
                         continue;
@@ -3065,22 +2995,15 @@ public class MessagesStorage extends BaseController {
                 dialogFiltersMap.put(filter.id, filter);
             }
 
-            state = database.executeFast("REPLACE INTO dialog_filter VALUES(?, ?, ?, ?, ?, ?, ?, ?)");
+            state = database.executeFast("REPLACE INTO dialog_filter VALUES(?, ?, ?, ?, ?, ?)");
             state.bindInteger(1, filter.id);
             state.bindInteger(2, filter.order);
             state.bindInteger(3, filter.unreadCount);
             state.bindInteger(4, filter.flags);
             state.bindString(5, filter.id == 0 ? "ALL_CHATS" : filter.name);
             state.bindInteger(6, filter.color);
-            final Vector<TLRPC.MessageEntity> entitiesVector = new Vector<>(TLRPC.MessageEntity::TLdeserialize);
-            entitiesVector.objects.addAll(filter.entities);
-            final NativeByteBuffer entitiesBuffer = new NativeByteBuffer(entitiesVector.getObjectSize());
-            entitiesVector.serializeToStream(entitiesBuffer);
-            state.bindByteBuffer(7, entitiesBuffer);
-            state.bindInteger(8, filter.title_noanimate ? 1 : 0);
             state.step();
             state.dispose();
-            entitiesBuffer.reuse();
             state = null;
             if (peers) {
                 database.executeFast("DELETE FROM dialog_filter_ep WHERE id = " + filter.id).stepThis().dispose();
@@ -3214,14 +3137,9 @@ public class MessagesStorage extends BaseController {
                         filtersToDelete.remove(newFilter.id);
                         boolean changed = false;
                         boolean unreadChanged = false;
-                        if (!TextUtils.equals(filter.name, newFilter.title.text) || !MediaDataController.entitiesEqual(filter.entities, newFilter.title.entities)) {
+                        if (!TextUtils.equals(filter.name, newFilter.title)) {
                             changed = true;
-                            filter.name = newFilter.title.text;
-                            filter.entities = newFilter.title.entities;
-                        }
-                        if (filter.title_noanimate != newFilter.title_noanimate) {
-                            changed = true;
-                            filter.title_noanimate= newFilter.title_noanimate;
+                            filter.name = newFilter.title;
                         }
                         final int color = (newFilter.flags & 134217728) != 0 ? newFilter.color : -1;
                         if (filter.color != color) {
@@ -3361,9 +3279,7 @@ public class MessagesStorage extends BaseController {
                         filter = new MessagesController.DialogFilter();
                         filter.id = newFilter.id;
                         filter.flags = newFlags;
-                        filter.name = newFilter.title.text;
-                        filter.entities = newFilter.title.entities;
-                        filter.title_noanimate = newFilter.title_noanimate;
+                        filter.name = newFilter.title;
                         filter.color = (newFilter.flags & 134217728) != 0 ? newFilter.color : -1;
                         filter.pendingUnreadCount = -1;
                         for (int c = 0; c < 2; c++) {
@@ -3758,11 +3674,9 @@ public class MessagesStorage extends BaseController {
 
                             try {
                                 if (message.reply_to != null && message.reply_to.reply_to_msg_id != 0 && (
-                                    message.action instanceof TLRPC.TL_messageActionPinMessage ||
-                                    message.action instanceof TLRPC.TL_messageActionPaymentSent ||
-                                    message.action instanceof TLRPC.TL_messageActionGameScore ||
-                                    message.action instanceof TLRPC.TL_messageActionSuggestedPostApproval
-                                )) {
+                                        message.action instanceof TLRPC.TL_messageActionPinMessage ||
+                                                message.action instanceof TLRPC.TL_messageActionPaymentSent ||
+                                                message.action instanceof TLRPC.TL_messageActionGameScore)) {
                                     if (!cursor.isNull(6)) {
                                         data = cursor.byteBufferValue(6);
                                         if (data != null) {
@@ -4673,99 +4587,6 @@ public class MessagesStorage extends BaseController {
         });
     }
 
-    public void toggleTodo(long dialogId, int messageId, int taskId, boolean enable) {
-        final long myself = getUserConfig().getClientUserId();
-        final int date = getConnectionsManager().getCurrentTime();
-        storageQueue.postRunnable(() -> {
-            SQLiteCursor cursor = null;
-            SQLitePreparedStatement state = null;
-            try {
-                cursor = database.queryFinalized("SELECT data FROM messages_v2 WHERE uid = " + dialogId + " AND mid = " + messageId);
-                if (cursor.next()) {
-                    NativeByteBuffer data = cursor.byteBufferValue(0);
-                    if (data != null) {
-                        final TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
-                        message.readAttachPath(data, myself);
-                        data.reuse();
-
-                        if (message.media instanceof TLRPC.TL_messageMediaToDo) {
-                            final TLRPC.TL_messageMediaToDo mediaTodo = (TLRPC.TL_messageMediaToDo) message.media;
-                            MessageObject.toggleTodo(mediaTodo, taskId, enable, myself, date);
-                            cursor.dispose();
-                            cursor = null;
-
-                            state = database.executeFast("UPDATE messages_v2 SET data = ? WHERE mid = ? AND uid = ?");
-                            state.requery();
-                            data = new NativeByteBuffer(message.getObjectSize());
-                            message.serializeToStream(data);
-                            state.bindByteBuffer(1, data);
-                            state.bindInteger(2, messageId);
-                            state.bindLong(3, dialogId);
-                            state.step();
-                            state.dispose();
-                            state = null;
-                            data.reuse();
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                FileLog.e(e);
-            } finally {
-                if (cursor != null) {
-                    cursor.dispose();
-                    cursor = null;
-                }
-                if (state != null) {
-                    state.dispose();
-                    state = null;
-                }
-            }
-            if (isForumOrMonoForum(dialogId)) {
-                try {
-                    cursor = database.queryFinalized("SELECT data FROM messages_topics WHERE uid = " + dialogId + " AND mid = " + messageId);
-                    if (cursor.next()) {
-                        NativeByteBuffer data = cursor.byteBufferValue(0);
-                        if (data != null) {
-                            final TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
-                            message.readAttachPath(data, myself);
-                            data.reuse();
-
-                            if (message.media instanceof TLRPC.TL_messageMediaToDo) {
-                                final TLRPC.TL_messageMediaToDo mediaTodo = (TLRPC.TL_messageMediaToDo) message.media;
-                                MessageObject.toggleTodo(mediaTodo, taskId, enable, myself, date);
-                                cursor.dispose();
-                                cursor = null;
-
-                                state = database.executeFast("UPDATE messages_topics SET data = ? WHERE mid = ? AND uid = ?");
-                                state.requery();
-                                data = new NativeByteBuffer(message.getObjectSize());
-                                message.serializeToStream(data);
-                                state.bindByteBuffer(1, data);
-                                state.bindInteger(2, messageId);
-                                state.bindLong(3, dialogId);
-                                state.step();
-                                state.dispose();
-                                state = null;
-                                data.reuse();
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    FileLog.e(e);
-                } finally {
-                    if (cursor != null) {
-                        cursor.dispose();
-                        cursor = null;
-                    }
-                    if (state != null) {
-                        state.dispose();
-                        state = null;
-                    }
-                }
-            }
-        });
-    }
-
     public void updateMessagePollResults(long pollId, TLRPC.Poll poll, TLRPC.PollResults results) {
         storageQueue.postRunnable(() -> {
             SQLiteCursor cursor = null;
@@ -5493,7 +5314,7 @@ public class MessagesStorage extends BaseController {
                     if (data != null) {
                         TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
                         data.reuse();
-                        topicId = MessageObject.getTopicId(currentAccount, message, isForum(dialogId), isMonoForum(dialogId));
+                        topicId = MessageObject.getTopicId(currentAccount, message, isForum(dialogId));
                     }
                 }
                 cursor.dispose();
@@ -6451,14 +6272,6 @@ public class MessagesStorage extends BaseController {
                             }
                         }
 
-                        int oldMaxId = 0;
-                        SQLiteCursor cursor = database.queryFinalized("SELECT inbox_max FROM dialogs WHERE did = " + key);
-                        if (cursor.next()) {
-                            oldMaxId = cursor.intValue(0);
-                        }
-                        cursor.dispose();
-                        cursor = null;
-
                         FileLog.d(key + " set inbox max " + messageId);
                         SQLitePreparedStatement state = database.executeFast("UPDATE dialogs SET inbox_max = max((SELECT inbox_max FROM dialogs WHERE did = ?), ?) WHERE did = ?");
                         state.requery();
@@ -6467,10 +6280,6 @@ public class MessagesStorage extends BaseController {
                         state.bindLong(3, key);
                         state.step();
                         state.dispose();
-
-                        if (isMonoForumOrForumWithTabs(key)) {
-                            updateTopicsWithReadFromAllInternal(key, oldMaxId, messageId);
-                        }
                     }
                 }
                 if (!isEmpty(mentions)) {
@@ -6560,7 +6369,7 @@ public class MessagesStorage extends BaseController {
                     SQLitePreparedStatement state = database.executeFast("UPDATE dialogs SET unread_count_i = ? WHERE did = ?");
                     for (int a = 0; a < dialogsToUpdateMentions.size(); a++) {
                         long did = dialogsToUpdateMentions.keyAt(a);
-                        if (isForum(did) || isMonoForum(did)) {
+                        if (isForum(did)) {
                             dialogsToUpdateMentions.removeAt(a);
                             a--;
                             continue;
@@ -7002,7 +6811,7 @@ public class MessagesStorage extends BaseController {
         });
     }
 
-    public void updateUserInfoContactBlocked(long userId, TL_account.RequirementToContact value) {
+    public void updateUserInfoPremiumBlocked(long userId, boolean contact_require_premium) {
         storageQueue.postRunnable(() -> {
             SQLiteCursor cursor = null;
             SQLitePreparedStatement state = null;
@@ -7020,12 +6829,10 @@ public class MessagesStorage extends BaseController {
                 }
                 cursor.dispose();
                 cursor = null;
-                if (!exist || userFull == null) {
+                if (!exist || userFull == null || userFull.contact_require_premium == contact_require_premium) {
                     return;
                 }
-                if (!UserObject.applyRequirementToContact(userFull, value)) {
-                    return;
-                }
+                userFull.contact_require_premium = contact_require_premium;
                 state = database.executeFast("REPLACE INTO user_settings VALUES(?, ?, ?)");
                 NativeByteBuffer data = new NativeByteBuffer(userFull.getObjectSize());
                 userFull.serializeToStream(data);
@@ -7757,7 +7564,6 @@ public class MessagesStorage extends BaseController {
                 }
                 cursor.dispose();
                 cursor = null;
-                int oldMaxId = currentMaxId;
 
                 database.beginTransaction();
 
@@ -7832,10 +7638,6 @@ public class MessagesStorage extends BaseController {
 
                 database.commitTransaction();
 
-                if (isMonoForumOrForumWithTabs(dialogId)) {
-                    updateTopicsWithReadFromAllInternal(dialogId, oldMaxId, currentMaxId);
-                }
-
                 //TODO topics maybe read all topics when all messages read
                 if (prevUnreadCount != 0 && unreadCount == 0 && !isForum(dialogId)) {
                     LongSparseIntArray dialogsToUpdate = new LongSparseIntArray();
@@ -7857,23 +7659,6 @@ public class MessagesStorage extends BaseController {
                 }
             }
         });
-    }
-
-    private void updateTopicsWithReadFromAllInternal(long dialogId, long oldMessageId, long newMessageId) {
-        SQLiteCursor cursor = null;
-        try {
-            cursor = database.queryFinalized(String.format(Locale.US, "SELECT topic_id FROM topics WHERE did = %d AND max_read_id < %d AND (top_message > %d OR unread_count > 0)", dialogId, newMessageId, oldMessageId));
-            while (cursor.next()) {
-                long topicId = cursor.longValue(0);
-                updateRepliesMaxReadIdInternal(-dialogId, topicId, (int) newMessageId, -1);
-            }
-        } catch (Exception e) {
-            checkSQLException(e);
-        } finally {
-            if (cursor != null) {
-                cursor.dispose();
-            }
-        }
     }
 
     public void putContacts(ArrayList<TLRPC.TL_contact> contacts, boolean deleteAll) {
@@ -9516,14 +9301,6 @@ public class MessagesStorage extends BaseController {
         });
     }
 
-    public static final int SENT_FILE_TYPE_PHOTO = 0;
-    public static final int SENT_FILE_TYPE_AUDIO = 1;
-    public static final int SENT_FILE_TYPE_VIDEO = 2;
-    public static final int SENT_FILE_TYPE_PHOTO_ENCRYPTED = 3;
-    public static final int SENT_FILE_TYPE_AUDIO_ENCRYPTED = 4;
-    public static final int SENT_FILE_TYPE_VIDEO_ENCRYPTED = 5;
-    public static final int SENT_FILE_TYPE_PHOTO_HIGH_QUALITY = 6;
-    public static final int SENT_FILE_TYPE_PHOTO_HIGH_QUALITY_ENCRYPTED = 7;
     public Object[] getSentFile(String path, int type) {
         if (path == null || path.toLowerCase().endsWith("attheme")) {
             return null;
@@ -10366,12 +10143,6 @@ public class MessagesStorage extends BaseController {
                                 oldChat.megagroup = chat.megagroup;
                                 oldChat.call_not_empty = chat.call_not_empty;
                                 oldChat.call_active = chat.call_active;
-                                oldChat.monoforum = chat.monoforum;
-                                oldChat.broadcast_messages_allowed = chat.broadcast_messages_allowed;
-                                if ((chat.flags2 & 262144) != 0) {
-                                    oldChat.linked_monoforum_id = chat.linked_monoforum_id;
-                                    oldChat.flags2 |= 262144;
-                                }
                                 if (chat.default_banned_rights != null) {
                                     oldChat.default_banned_rights = chat.default_banned_rights;
                                     oldChat.flags |= 262144;
@@ -10418,7 +10189,6 @@ public class MessagesStorage extends BaseController {
             state.step();
             data.reuse();
             dialogIsForum.put(-chat.id, chat.forum ? 1 : 0);
-            dialogIsMonoForum.put(-chat.id, chat.monoforum ? 1 : 0);
         }
         state.dispose();
     }
@@ -10514,7 +10284,6 @@ public class MessagesStorage extends BaseController {
         if (chatsToLoad == null || chatsToLoad.length() == 0 || result == null) {
             return;
         }
-        ArrayList<Long> loadMore = null;
         SQLiteCursor cursor = database.queryFinalized(String.format(Locale.US, "SELECT data FROM chats WHERE uid IN(%s)", chatsToLoad));
         while (cursor.next()) {
             try {
@@ -10524,12 +10293,6 @@ public class MessagesStorage extends BaseController {
                     data.reuse();
                     if (chat != null) {
                         result.add(chat);
-                        if (chat.linked_monoforum_id != 0) {
-                            if (loadMore == null) {
-                                loadMore = new ArrayList<>();
-                            }
-                            loadMore.add(chat.linked_monoforum_id);
-                        }
                     }
                 }
             } catch (Exception e) {
@@ -10537,24 +10300,6 @@ public class MessagesStorage extends BaseController {
             }
         }
         cursor.dispose();
-        if (loadMore != null) {
-            cursor = database.queryFinalized(String.format(Locale.US, "SELECT data FROM chats WHERE uid IN(%s)", TextUtils.join(", ", loadMore)));
-            while (cursor.next()) {
-                try {
-                    NativeByteBuffer data = cursor.byteBufferValue(0);
-                    if (data != null) {
-                        TLRPC.Chat chat = TLRPC.Chat.TLdeserialize(data, data.readInt32(false), false, parseFullData);
-                        data.reuse();
-                        if (chat != null) {
-                            result.add(chat);
-                        }
-                    }
-                } catch (Exception e) {
-                    checkSQLException(e);
-                }
-            }
-            cursor.dispose();
-        }
     }
 
     public void getEncryptedChatsInternal(String chatsToLoad, ArrayList<TLRPC.EncryptedChat> result, ArrayList<Long> usersToLoad) throws Exception {
@@ -11084,12 +10829,12 @@ public class MessagesStorage extends BaseController {
         });
     }
 
-    private void updateRepliesMaxReadIdInternal(long chatId, long mid, int readMaxId, int unreadCount) {
+    private void updateRepliesMaxReadIdInternal(long chatId, int mid, int readMaxId, int unreadCount) {
         SQLitePreparedStatement state = null;
         SQLiteCursor cursor = null;
         try {
             long dialogId = -chatId;
-            if (!isForum(-chatId) && !isMonoForum(-chatId)) {
+            if (!isForum(-chatId)) {
                 state = database.executeFast("UPDATE messages_v2 SET replies_data = ? WHERE mid = ? AND uid = ?");
                 TLRPC.MessageReplies currentReplies = null;
                 cursor = database.queryFinalized(String.format(Locale.US, "SELECT replies_data FROM messages_v2 WHERE mid = %d AND uid = %d", mid, dialogId));
@@ -11109,7 +10854,7 @@ public class MessagesStorage extends BaseController {
                     NativeByteBuffer data = new NativeByteBuffer(currentReplies.getObjectSize());
                     currentReplies.serializeToStream(data);
                     state.bindByteBuffer(1, data);
-                    state.bindInteger(2, (int) mid);
+                    state.bindInteger(2, mid);
                     state.bindLong(3, dialogId);
                     state.step();
                     data.reuse();
@@ -11117,6 +10862,7 @@ public class MessagesStorage extends BaseController {
                 state.dispose();
                 state = null;
             }
+
 
             cursor = database.queryFinalized(String.format(Locale.US, "SELECT max_read_id FROM topics WHERE did = %d AND topic_id = %d", -chatId, mid));
             boolean updateTopic = false;
@@ -11153,14 +10899,12 @@ public class MessagesStorage extends BaseController {
                     cursor = null;
 
                     int currentUnreadMentions = 0;
-                    if (!isMonoForum(-chatId)) {
-                        cursor = database.queryFinalized(String.format(Locale.US, "SELECT unread_mentions FROM topics WHERE did = %d AND topic_id = %d", -chatId, mid));
-                        if (cursor.next()) {
-                            currentUnreadMentions = cursor.intValue(0);
-                        }
-                        cursor.dispose();
-                        cursor = null;
+                    cursor = database.queryFinalized(String.format(Locale.US, "SELECT unread_mentions FROM topics WHERE did = %d AND topic_id = %d", -chatId, mid));
+                    if (cursor.next()) {
+                        currentUnreadMentions = cursor.intValue(0);
                     }
+                    cursor.dispose();
+                    cursor = null;
                     if (unreadMentionsCount > currentUnreadMentions) {
                         unreadMentionsCount = currentUnreadMentions;
                     }
@@ -11171,8 +10915,6 @@ public class MessagesStorage extends BaseController {
 
 
             if (updateTopic) {
-                final boolean isMonoForum = isMonoForum(-chatId);
-
                 if (unreadMentionsCount >= 0) {
                     if (BuildVars.DEBUG_PRIVATE_VERSION && unreadMentionsCount > 0) {
                         FileLog.d("(updateRepliesMaxReadIdInternal) new unread mentions " + unreadMentionsCount + " for dialog_id=" + -chatId + " topic_id=" + mid);
@@ -11230,7 +10972,7 @@ public class MessagesStorage extends BaseController {
         }
     }
 
-    public void updateRepliesMaxReadId(long chatId, long mid, int readMaxId, int unreadCount, boolean useQueue) {
+    public void updateRepliesMaxReadId(long chatId, int mid, int readMaxId, int unreadCount, boolean useQueue) {
         if (useQueue) {
             storageQueue.postRunnable(() -> updateRepliesMaxReadIdInternal(chatId, mid, readMaxId, unreadCount));
         } else {
@@ -11354,33 +11096,11 @@ public class MessagesStorage extends BaseController {
         SQLitePreparedStatement state_topics_update = null;
         SQLitePreparedStatement state_media_topics = null;
         SQLiteCursor cursor = null;
-        ArrayList<Pair<Long, Integer>> reportMessagesDelivery = null;
         try {
             if (messages != null && !messages.isEmpty() && MessageObject.isQuickReply(messages.get(0))) {
                 mode = ChatActivity.MODE_QUICK_REPLIES;
                 if (threadMessageId == 0) {
                     threadMessageId = MessageObject.getQuickReplyId(currentAccount, messages.get(0));
-                }
-            }
-            if (messages != null && mode == ChatActivity.MODE_DEFAULT) {
-                int currentTime = -1;
-                for (int i = 0; i < messages.size(); ++i) {
-                    TLRPC.Message msg = messages.get(i);
-                    if (msg != null && msg.report_delivery_until_date != 0) {
-                        if (currentTime < 0) {
-                            currentTime = getConnectionsManager().getCurrentTime();
-                        }
-                        if (currentTime <= msg.report_delivery_until_date) {
-                            final long did = MessageObject.getDialogId(msg);
-                            final int mid = msg.id;
-                            if (reportMessagesDelivery == null) {
-                                reportMessagesDelivery = new ArrayList<>();
-                            }
-                            reportMessagesDelivery.add(new Pair<>(did, mid));
-                        }
-                        msg.flags2 &=~ 32;
-                        msg.report_delivery_until_date = 0;
-                    }
                 }
             }
             final boolean scheduled = mode == ChatActivity.MODE_SCHEDULED;
@@ -11580,7 +11300,7 @@ public class MessagesStorage extends BaseController {
 
                     int messageId = message.id;
                     MessageObject.getDialogId(message);
-                    long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id), isMonoForum(message.dialog_id));
+                    long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id));
 
                     if (message.mentioned && message.media_unread) {
                         ArrayList<Integer> ids = dialogMentionsIdsMap.get(message.dialog_id);
@@ -11974,7 +11694,7 @@ public class MessagesStorage extends BaseController {
                         continue;
                     }
                     fixUnsupportedMedia(message);
-                    long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id), isMonoForum(message.dialog_id));
+                    long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id));
 
                     state_messages.requery();
                     int messageId = message.id;
@@ -12207,20 +11927,12 @@ public class MessagesStorage extends BaseController {
                     }
                     data.reuse();
 
-                    if (downloadMask != 0 && (message.peer_id.channel_id == 0 || message.post) && message.date >= getConnectionsManager().getCurrentTime() - 15 * 60 && getDownloadController().canDownloadMedia(message) == 1) {
-                        final long dialogId = MessageObject.getDialogId(message);
-                        if (getDialogFolderIdInternal(dialogId) != 1 && (message.media instanceof TLRPC.TL_messageMediaPhoto || message.media instanceof TLRPC.TL_messageMediaDocument || message.media instanceof TLRPC.TL_messageMediaWebPage)) {
+                    if (downloadMask != 0 && (message.peer_id.channel_id == 0 || message.post) && message.date >= getConnectionsManager().getCurrentTime() - 60 * 60 && getDownloadController().canDownloadMedia(message) == 1) {
+                        if (message.media instanceof TLRPC.TL_messageMediaPhoto || message.media instanceof TLRPC.TL_messageMediaDocument || message.media instanceof TLRPC.TL_messageMediaWebPage) {
                             int type = 0;
                             long id = 0;
                             TLRPC.MessageMedia object = null;
                             TLRPC.Document document = MessageObject.getDocument(message);
-                            ArrayList<VideoPlayer.Quality> qualities = VideoPlayer.getQualities(currentAccount, message.media, true);
-                            if (qualities != null) {
-                                VideoPlayer.VideoUri v = VideoPlayer.getQualityForThumb(qualities);
-                                if (v != null) {
-                                    document = v.document;
-                                }
-                            }
                             TLRPC.Photo photo = MessageObject.getPhoto(message);
                             if (MessageObject.isVoiceMessage(message)) {
                                 id = document.id;
@@ -12432,6 +12144,7 @@ public class MessagesStorage extends BaseController {
                 state_dialogs_replace.dispose();
                 state_dialogs_replace = null;
 
+
                 ArrayList<TopicsController.TopicUpdate> topicUpdatesInUi = new ArrayList<>();
                 Iterator<TopicKey> iterator = topicMessagesMap.keySet().iterator();
                 while (iterator.hasNext()) {
@@ -12461,7 +12174,6 @@ public class MessagesStorage extends BaseController {
                     }
                     cursor.dispose();
                     cursor = null;
-
                     if (!exist) {
                         if (topicUpdatesInUi == null) {
                             topicUpdatesInUi = new ArrayList<>();
@@ -12500,17 +12212,16 @@ public class MessagesStorage extends BaseController {
                     if (BuildVars.DEBUG_PRIVATE_VERSION && newUnreadMentions > 0) {
                         FileLog.d("(putMessagesInternal)" + " new unread mentions " + newUnreadMentions + " for dialog_id=" + topicKey.dialogId + " topic_id=" + topicKey.topicId);
                     }
-
                     state_topics_update.requery();
                     state_topics_update.bindInteger(1, newUnreadCount);
-                    state_topics_update.bindInteger(2, messageId);
-                    state_topics_update.bindInteger(3, newUnreadMentions);
-                    state_topics_update.bindInteger(4, newTotalMessagesCount);
+                    state_topics_update.bindInteger(2,  messageId);
+                    state_topics_update.bindInteger(3,  newUnreadMentions);
+                    state_topics_update.bindInteger(4,  newTotalMessagesCount);
                     state_topics_update.bindLong(5, topicKey.dialogId);
                     state_topics_update.bindLong(6, topicKey.topicId);
                     state_topics_update.step();
 
-                    if (isForum(topicKey.dialogId) || isMonoForum(topicKey.dialogId)) {
+                    if (isForum(topicKey.dialogId)) {
                         if (oldUnreadCount == 0 && newUnreadCount != 0) {
                             newMessagesCounts.put(topicKey.dialogId, 1);
                         }
@@ -12684,14 +12395,6 @@ public class MessagesStorage extends BaseController {
             if (cursor != null) {
                 cursor = null;
             }
-            if (reportMessagesDelivery != null) {
-                final ArrayList<Pair<Long, Integer>> finalReportMessagesDelivery = reportMessagesDelivery;
-                AndroidUtilities.runOnUIThread(() -> {
-                    for (Pair<Long, Integer> p : finalReportMessagesDelivery) {
-                        getMessagesController().reportMessageDelivery(p.first, p.second, false);
-                    }
-                });
-            }
         }
     }
 
@@ -12777,41 +12480,6 @@ public class MessagesStorage extends BaseController {
                 }
             } catch (Exception e) {
                 checkSQLException(e);
-            }
-        });
-    }
-
-    public void markMessageAsSendErrorWithParams(TLRPC.Message msg, long errorAllowedPriceStars, long errorNewPriceStars) {
-        final long selfId = getUserConfig().getClientUserId();
-        storageQueue.postRunnable(() -> {
-            SQLiteCursor cursor = null;
-            try {
-                final long messageId = msg.id;
-                final long dialogId = MessageObject.getDialogId(msg);
-                for (int i = 0; i < 2; ++i) {
-                    final String table = i == 0 ? "messages_v2" : "messages_topics";
-
-                    cursor = database.queryFinalized(String.format(Locale.US, "SELECT data FROM messages_v2 WHERE mid = %d AND uid = %d LIMIT 1", messageId, dialogId));
-                    if (cursor.next()) {
-                        NativeByteBuffer data = cursor.byteBufferValue(0);
-                        if (data != null) {
-                            TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
-                            message.readAttachPath(data, selfId);
-                            data.reuse();
-
-
-                        }
-                    }
-
-                    database.executeFast(String.format(Locale.US, "UPDATE "+table+" SET send_state = 2 WHERE mid = %d AND uid = %d", messageId, dialogId)).stepThis().dispose();
-                    database.executeFast(String.format(Locale.US, "UPDATE "+table+" SET send_state = 2 WHERE mid = %d AND uid = %d", messageId, dialogId)).stepThis().dispose();
-                }
-            } catch (Exception e) {
-                checkSQLException(e);
-            } finally {
-                if (cursor != null) {
-                    cursor.dispose();
-                }
             }
         });
     }
@@ -13591,7 +13259,7 @@ public class MessagesStorage extends BaseController {
                                     }
                                     topicsToDelete.add(TopicKey.of(did, message.id));
                                 }
-                                topicId = MessageObject.getTopicId(currentAccount, message, isForum(did), isMonoForum(did));
+                                topicId = MessageObject.getTopicId(currentAccount, message, isForum(did));
                             }
                             if (topicId != 0) {
                                 TopicKey topicKey = TopicKey.of(dialogId, topicId);
@@ -13691,8 +13359,6 @@ public class MessagesStorage extends BaseController {
                 if (!topicsMessagesToUpdate.isEmpty()) {
                     HashSet<Long> dialogsToCheck = null;
                     for (TopicKey topicKey : topicsMessagesToUpdate.keySet()) {
-                        final boolean isMonoForum = isMonoForum(topicKey.dialogId);
-
                         cursor = database.queryFinalized(String.format(Locale.US, "SELECT unread_count, unread_mentions, total_messages_count FROM topics WHERE did = %d AND topic_id = %d", topicKey.dialogId, topicKey.topicId));
                         int old_unread_count = 0;
                         int old_mentions_count = 0;
@@ -13737,9 +13403,6 @@ public class MessagesStorage extends BaseController {
                         topicUpdate.unreadCount = newUnreadCount;
                         topicUpdate.totalMessagesCount = newTotalCount;
                         topicUpdate.onlyCounters = true;
-                        if ((old_total_count - counts[2]) <= 0 && old_total_count > 0 && isMonoForum) {
-                            topicUpdate.checkForDelete = true;
-                        }
                         if (topicUpdatesInUi == null) {
                             topicUpdatesInUi = new ArrayList<>();
                         }
@@ -14771,7 +14434,7 @@ public class MessagesStorage extends BaseController {
                 final long selfId = getUserConfig().getClientUserId();
                 for (int i = 0; i < 2; i++) {
                     boolean isTopic = i == 1;
-                    long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id), isMonoForum(message.dialog_id));
+                    long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id));
                     long dialogId = message.dialog_id;
                     boolean removeSavedPeerIdLater = false;
                     if (isTopic) {
@@ -14874,7 +14537,7 @@ public class MessagesStorage extends BaseController {
                 if (MediaDataController.canAddMessageToMedia(message)) {
                     for (int i = 0; i < 2; i++) {
                         boolean isTopic = i == 1;
-                        long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id), isMonoForum(message.dialog_id));
+                        long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id));
                         if (isTopic && topicId == 0) {
                             continue;
                         }
@@ -15276,7 +14939,7 @@ public class MessagesStorage extends BaseController {
                             long topicId = threadMessageId;
                             if (isTopicMessage) {
                                 if (topicId == 0) {
-                                    topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id), isMonoForum(message.dialog_id));
+                                    topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id));
                                 }
                                 if (topicId == 0) {
                                     continue;
@@ -15400,7 +15063,7 @@ public class MessagesStorage extends BaseController {
                                 }
                             }
                         }
-                        long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id), isMonoForum(message.dialog_id));
+                        long topicId = MessageObject.getTopicId(currentAccount, message, isForum(message.dialog_id));
                         if (threadMessageId != 0 || (load_type == -2 && topicId != 0)) {
                             if (MediaDataController.canAddMessageToMedia(message)) {
                                 state_media_topics.requery();
@@ -15450,7 +15113,7 @@ public class MessagesStorage extends BaseController {
                         }
 
                         if (load_type == 0 && isValidKeyboardToSave(message)) {
-                            TopicKey topicKey = TopicKey.of(dialogId, MessageObject.getTopicId(currentAccount, message, isForum(dialogId), isMonoForum(dialogId)));
+                            TopicKey topicKey = TopicKey.of(dialogId, MessageObject.getTopicId(currentAccount, message, isForum(dialogId)));
                             TLRPC.Message currentBotKeyboard = botKeyboards == null ? null : botKeyboards.get(topicKey);
                             if (currentBotKeyboard == null || currentBotKeyboard.id < message.id) {
                                 if (botKeyboards == null) {
@@ -15870,10 +15533,8 @@ public class MessagesStorage extends BaseController {
                                 try {
                                     if (message.reply_to != null && message.reply_to.reply_to_msg_id != 0 && (
                                             message.action instanceof TLRPC.TL_messageActionPinMessage ||
-                                            message.action instanceof TLRPC.TL_messageActionPaymentSent ||
-                                            message.action instanceof TLRPC.TL_messageActionGameScore ||
-                                            message.action instanceof TLRPC.TL_messageActionSuggestedPostApproval
-                                    )) {
+                                                    message.action instanceof TLRPC.TL_messageActionPaymentSent ||
+                                                    message.action instanceof TLRPC.TL_messageActionGameScore)) {
                                         if (!cursor.isNull(13)) {
                                             NativeByteBuffer data2 = cursor.byteBufferValue(13);
                                             if (data2 != null) {
@@ -15967,11 +15628,9 @@ public class MessagesStorage extends BaseController {
 
                                     try {
                                         if (message.reply_to != null && message.reply_to.reply_to_msg_id != 0 && (
-                                            message.action instanceof TLRPC.TL_messageActionPinMessage ||
-                                            message.action instanceof TLRPC.TL_messageActionPaymentSent ||
-                                            message.action instanceof TLRPC.TL_messageActionGameScore ||
-                                            message.action instanceof TLRPC.TL_messageActionSuggestedPostApproval
-                                        )) {
+                                                message.action instanceof TLRPC.TL_messageActionPinMessage ||
+                                                        message.action instanceof TLRPC.TL_messageActionPaymentSent ||
+                                                        message.action instanceof TLRPC.TL_messageActionGameScore)) {
                                             if (!cursor.isNull(7)) {
                                                 NativeByteBuffer data2 = cursor.byteBufferValue(7);
                                                 if (data2 != null) {
@@ -16222,7 +15881,7 @@ public class MessagesStorage extends BaseController {
                         messageDate = Math.max(message.date, messageDate);
 
                         if (isValidKeyboardToSave(message)) {
-                            TopicKey topicKey = TopicKey.of(dialog.id, MessageObject.getTopicId(currentAccount, message, isForum(dialog.id), isMonoForum(dialog.id)));
+                            TopicKey topicKey = TopicKey.of(dialog.id, MessageObject.getTopicId(currentAccount, message, isForum(dialog.id)));
                             getMediaDataController().putBotKeyboard(topicKey, message);
                         }
 
@@ -16436,32 +16095,6 @@ public class MessagesStorage extends BaseController {
                 state_tasks.dispose();
             }
         }
-    }
-
-    private int getDialogFolderIdInternal(long dialogId) {
-        SQLiteCursor cursor = null;
-        try {
-            int folderId;
-            if (unknownDialogsIds.get(dialogId) != null) {
-                folderId = -1;
-            } else {
-                cursor = database.queryFinalized("SELECT folder_id FROM dialogs WHERE did = ?", dialogId);
-                if (cursor.next()) {
-                    folderId = cursor.intValue(0);
-                } else {
-                    folderId = -1;
-                }
-                cursor.dispose();
-            }
-            return folderId;
-        } catch (Exception e) {
-            checkSQLException(e);
-        } finally {
-            if (cursor != null) {
-                cursor.dispose();
-            }
-        }
-        return 0;
     }
 
     public void getDialogFolderId(long dialogId, IntCallback callback) {
@@ -16817,37 +16450,6 @@ public class MessagesStorage extends BaseController {
         });
     }
 
-    public int getDialogReadMaxSync(boolean outbox, long dialog_id) {
-        int max = 0;
-        SQLiteCursor cursor = null;
-        try {
-            if (outbox) {
-                cursor = database.queryFinalized("SELECT outbox_max FROM dialogs WHERE did = " + dialog_id);
-                if (cursor.next()) {
-                    max = cursor.intValue(0);
-                }
-            } else {
-                cursor = database.queryFinalized("SELECT last_mid, inbox_max FROM dialogs WHERE did = " + dialog_id);
-                if (cursor.next()) {
-                    int lastMid = cursor.intValue(0);
-                    int inboxMax = cursor.intValue(1);
-                    if (inboxMax > lastMid) {
-                        max = 0;
-                    } else {
-                        max = inboxMax;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            checkSQLException(e);
-        } finally {
-            if (cursor != null) {
-                cursor.dispose();
-            }
-        }
-        return max;
-    }
-
     public int getDialogReadMax(boolean outbox, long dialog_id) {
         CountDownLatch countDownLatch = new CountDownLatch(1);
         Integer[] max = new Integer[]{0};
@@ -17184,28 +16786,10 @@ public class MessagesStorage extends BaseController {
                                 if (dialogsType == DialogsActivity.DIALOGS_TYPE_CHANNELS_ONLY && !ChatObject.isChannelAndNotMegaGroup(chat)) {
                                     continue;
                                 }
-
-                                if (chat.monoforum) {
-                                    name = ForumUtilities.getMonoForumTitle(currentAccount, chat, true);
-                                    if (name == null) {
-                                        name = "";
-                                    }
-                                    name = name.toLowerCase();
-                                    tName = LocaleController.getInstance().getTranslitString(name);
-                                    if (name.equals(tName)) {
-                                        tName = null;
-                                    }
-
-                                    boolean ok = name.startsWith(q) || name.contains(" " + q) || tName != null && (tName.startsWith(q) || tName.contains(" " + q));
-                                    if (!ok) {
-                                        continue;
-                                    }
-                                }
-
                                 if (!(chat == null || chat.deactivated || ChatObject.isChannel(chat) && ChatObject.isNotInChat(chat))) {
                                     long dialog_id = -chat.id;
                                     DialogsSearchAdapter.DialogSearchResult dialogSearchResult = dialogsResult.get(dialog_id);
-                                    dialogSearchResult.name = AndroidUtilities.generateSearchName(chat.monoforum ? ForumUtilities.getMonoForumTitle(currentAccount, chat):chat.title, null, q);
+                                    dialogSearchResult.name = AndroidUtilities.generateSearchName(chat.title, null, q);
                                     dialogSearchResult.object = chat;
                                     resultCount++;
                                 }
@@ -17615,30 +17199,6 @@ public class MessagesStorage extends BaseController {
             TLRPC.Chat chat = getChat(-dialogId);
             v = chat != null && chat.forum ? 1 : 0;
             dialogIsForum.put(dialogId, v);
-        }
-        return v == 1;
-    }
-
-    public boolean isMonoForum(long dialogId) {
-        int v = dialogIsMonoForum.get(dialogId, -1);
-        if (v == -1) {
-            TLRPC.Chat chat = getChat(-dialogId);
-            v = chat != null && chat.monoforum ? 1 : 0;
-            dialogIsMonoForum.put(dialogId, v);
-        }
-        return v == 1;
-    }
-
-    private boolean isForumOrMonoForum(long dialogId) {
-        return isForum(dialogId) || isMonoForum(dialogId);
-    }
-
-    private boolean isMonoForumOrForumWithTabs(long dialogId) {
-        int v = dialogIsForumOrMonoForumWithTabs.get(dialogId, -1);
-        if (v == -1) {
-            TLRPC.Chat chat = getChat(-dialogId);
-            v = chat != null && (chat.monoforum || chat.forum && chat.forum_tabs) ? 1 : 0;
-            dialogIsForumOrMonoForumWithTabs.put(dialogId, v);
         }
         return v == 1;
     }

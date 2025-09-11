@@ -405,9 +405,7 @@ public class LimitPreviewView extends LinearLayout {
                 if (v > 1f && animatingRotate) {
                     if (!wasHaptic) {
                         wasHaptic = true;
-                        try {
-                            limitIcon.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                        } catch (Exception ignored) {}
+                        limitIcon.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                     }
                     limitIcon.setRotation(limitIconRotation + (v - 1f) * 60);
                 } else if (!animatingRotation) {

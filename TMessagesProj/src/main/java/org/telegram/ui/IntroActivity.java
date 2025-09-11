@@ -8,6 +8,8 @@
 
 package org.telegram.ui;
 
+import static androidx.core.content.ContentProviderCompat.requireContext;
+
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
@@ -42,10 +44,14 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.compose.ui.platform.ComposeView;
+import androidx.compose.ui.platform.ViewCompositionStrategy;
+import androidx.compose.ui.text.android.style.PlaceholderSpan;
 import androidx.core.graphics.ColorUtils;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.telegram.divo.screen.onboarding.OnboardingScreen;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BuildVars;
@@ -61,7 +67,6 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.Vector;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -82,6 +87,9 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL10;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
 
 public class IntroActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     private final static int ICON_WIDTH_DP = 200, ICON_HEIGHT_DP = 150;
@@ -145,256 +153,25 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
     public View createView(Context context) {
         actionBar.setAddToContainer(false);
 
-        ScrollView scrollView = new ScrollView(context);
-        scrollView.setFillViewport(true);
+        ComposeView composeView = new ComposeView(context);
+        composeView.setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed.INSTANCE
+        );
+        OnboardingScreen.mountOnboarding(
+                composeView,
+                new kotlin.jvm.functions.Function0<kotlin.Unit>() {
+                    @Override
+                    public kotlin.Unit invoke() {
+                        // Mark onboarding as seen (optional but recommended)
+                        getContext().getSharedPreferences("kit_prefs", Context.MODE_PRIVATE)
+                                .edit().putBoolean("onboarding_seen", true).apply();
 
-        RLottieImageView themeIconView = new RLottieImageView(context);
-        FrameLayout themeFrameLayout = new FrameLayout(context);
-        themeFrameLayout.addView(themeIconView, LayoutHelper.createFrame(28, 28, Gravity.CENTER));
-
-        int themeMargin = 4;
-        frameContainerView = new FrameLayout(context) {
-
-            @Override
-            protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-                super.onLayout(changed, left, top, right, bottom);
-
-                int oneFourth = (bottom - top) / 4;
-
-                int y = (oneFourth * 3 - AndroidUtilities.dp(275)) / 2;
-                frameLayout2.layout(0, y, frameLayout2.getMeasuredWidth(), y + frameLayout2.getMeasuredHeight());
-                y += AndroidUtilities.dp(ICON_HEIGHT_DP);
-                y += AndroidUtilities.dp(122);
-                int x = (getMeasuredWidth() - bottomPages.getMeasuredWidth()) / 2;
-                bottomPages.layout(x, y, x + bottomPages.getMeasuredWidth(), y + bottomPages.getMeasuredHeight());
-                viewPager.layout(0, 0, viewPager.getMeasuredWidth(), viewPager.getMeasuredHeight());
-
-                y = oneFourth * 3 + (oneFourth - startMessagingButton.getMeasuredHeight()) / 2;
-                x = (getMeasuredWidth() - startMessagingButton.getMeasuredWidth()) / 2;
-                startMessagingButton.layout(x, y, x + startMessagingButton.getMeasuredWidth(), y + startMessagingButton.getMeasuredHeight());
-                y -= AndroidUtilities.dp(30);
-                x = (getMeasuredWidth() - switchLanguageTextView.getMeasuredWidth()) / 2;
-                switchLanguageTextView.layout(x, y - switchLanguageTextView.getMeasuredHeight(), x + switchLanguageTextView.getMeasuredWidth(), y);
-
-                MarginLayoutParams marginLayoutParams = (MarginLayoutParams) themeFrameLayout.getLayoutParams();
-                int newTopMargin = AndroidUtilities.dp(themeMargin) + (AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight);
-                if (marginLayoutParams.topMargin != newTopMargin) {
-                    marginLayoutParams.topMargin = newTopMargin;
-                    themeFrameLayout.requestLayout();
-                }
-            }
-        };
-        scrollView.addView(frameContainerView, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
-
-        darkThemeDrawable = new RLottieDrawable(R.raw.sun, String.valueOf(R.raw.sun), AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
-        darkThemeDrawable.setPlayInDirectionOfCustomEndFrame(true);
-        darkThemeDrawable.beginApplyLayerColors();
-        darkThemeDrawable.commitApplyLayerColors();
-
-        darkThemeDrawable.setCustomEndFrame(Theme.getCurrentTheme().isDark() ? darkThemeDrawable.getFramesCount() - 1 : 0);
-        darkThemeDrawable.setCurrentFrame(Theme.getCurrentTheme().isDark() ? darkThemeDrawable.getFramesCount() - 1 : 0, false);
-        themeIconView.setContentDescription(LocaleController.getString(Theme.getCurrentTheme().isDark() ? R.string.AccDescrSwitchToDayTheme : R.string.AccDescrSwitchToNightTheme));
-
-        themeIconView.setAnimation(darkThemeDrawable);
-        themeFrameLayout.setOnClickListener(v -> {
-            if (DrawerProfileCell.switchingTheme) return;
-            DrawerProfileCell.switchingTheme = true;
-
-            // TODO: Generify this part, currently it's a clone of another theme switch toggle
-            String dayThemeName = "Blue";
-            String nightThemeName = "Night";
-
-            Theme.ThemeInfo themeInfo;
-            boolean toDark;
-            if (toDark = !Theme.isCurrentThemeDark()) {
-                themeInfo = Theme.getTheme(nightThemeName);
-            } else {
-                themeInfo = Theme.getTheme(dayThemeName);
-            }
-
-            Theme.selectedAutoNightType = Theme.AUTO_NIGHT_TYPE_NONE;
-            Theme.saveAutoNightThemeConfig();
-            Theme.cancelAutoNightThemeCallbacks();
-
-            darkThemeDrawable.setCustomEndFrame(toDark ? darkThemeDrawable.getFramesCount() - 1 : 0);
-            themeIconView.playAnimation();
-
-            int[] pos = new int[2];
-            themeIconView.getLocationInWindow(pos);
-            pos[0] += themeIconView.getMeasuredWidth() / 2;
-            pos[1] += themeIconView.getMeasuredHeight() / 2;
-            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.needSetDayNightTheme, themeInfo, false, pos, -1, toDark, themeIconView);
-            themeIconView.setContentDescription(LocaleController.getString(toDark ? R.string.AccDescrSwitchToDayTheme : R.string.AccDescrSwitchToNightTheme));
-        });
-
-        frameLayout2 = new FrameLayout(context);
-        frameContainerView.addView(frameLayout2, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 0, 78, 0, 0));
-
-        TextureView textureView = new TextureView(context);
-        frameLayout2.addView(textureView, LayoutHelper.createFrame(ICON_WIDTH_DP, ICON_HEIGHT_DP, Gravity.CENTER));
-        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
-            @Override
-            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-                if (eglThread == null && surface != null) {
-                    eglThread = new EGLThread(surface);
-                    eglThread.setSurfaceTextureSize(width, height);
-                    eglThread.postRunnable(()->{
-                        float time = (System.currentTimeMillis() - currentDate) / 1000.0f;
-                        Intro.setPage(currentViewPagerPage);
-                        Intro.setDate(time);
-                        Intro.onDrawFrame(0);
-                        if (eglThread != null && eglThread.isAlive() && eglThread.eglDisplay != null && eglThread.eglSurface != null) {
-                            try {
-                                eglThread.egl10.eglSwapBuffers(eglThread.eglDisplay, eglThread.eglSurface);
-                            } catch (Exception ignored) {} // If display or surface already destroyed
-                        }
-                    });
-                    eglThread.postRunnable(eglThread.drawRunnable);
-                }
-            }
-
-            @Override
-            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, final int width, final int height) {
-                if (eglThread != null) {
-                    eglThread.setSurfaceTextureSize(width, height);
-                }
-            }
-
-            @Override
-            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-                if (eglThread != null) {
-                    eglThread.shutdown();
-                    eglThread = null;
-                }
-                return true;
-            }
-
-            @Override
-            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
-            }
-        });
-
-        viewPager = new ViewPager(context);
-        viewPager.setAdapter(new IntroAdapter());
-        viewPager.setPageMargin(0);
-        viewPager.setOffscreenPageLimit(1);
-        frameContainerView.addView(viewPager, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                bottomPages.setPageOffset(position, positionOffset);
-
-                float width = viewPager.getMeasuredWidth();
-                if (width == 0) {
-                    return;
-                }
-                float offset = (position * width + positionOffsetPixels - currentViewPagerPage * width) / width;
-                Intro.setScrollOffset(offset);
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                currentViewPagerPage = i;
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-                if (i == ViewPager.SCROLL_STATE_DRAGGING) {
-                    dragging = true;
-                    startDragX = viewPager.getCurrentItem() * viewPager.getMeasuredWidth();
-                } else if (i == ViewPager.SCROLL_STATE_IDLE || i == ViewPager.SCROLL_STATE_SETTLING) {
-                    if (dragging) {
-                        justEndDragging = true;
-                        dragging = false;
+                        presentFragment(new LoginActivity(), true);
+                        destroyed = true;
+                        return kotlin.Unit.INSTANCE;
                     }
-                    if (lastPage != viewPager.getCurrentItem()) {
-                        lastPage = viewPager.getCurrentItem();
-                    }
-                }
-            }
-        });
-
-        startMessagingButton = new TextView(context) {
-            CellFlickerDrawable cellFlickerDrawable;
-
-            @Override
-            protected void onDraw(Canvas canvas) {
-                super.onDraw(canvas);
-                if (cellFlickerDrawable == null) {
-                    cellFlickerDrawable = new CellFlickerDrawable();
-                    cellFlickerDrawable.drawFrame = false;
-                    cellFlickerDrawable.repeatProgress = 2f;
-                }
-                cellFlickerDrawable.setParentWidth(getMeasuredWidth());
-                AndroidUtilities.rectTmp.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
-                cellFlickerDrawable.draw(canvas, AndroidUtilities.rectTmp, AndroidUtilities.dp(4), null);
-                invalidate();
-            }
-
-            @Override
-            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                int size = MeasureSpec.getSize(widthMeasureSpec);
-                if (size > AndroidUtilities.dp(260)) {
-                    super.onMeasure(MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(320), MeasureSpec.EXACTLY), heightMeasureSpec);
-                } else {
-                    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-                }
-            }
-        };
-        startMessagingButton.setText(LocaleController.getString(R.string.StartMessaging));
-        startMessagingButton.setGravity(Gravity.CENTER);
-        startMessagingButton.setTypeface(AndroidUtilities.bold());
-        startMessagingButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
-        startMessagingButton.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
-        frameContainerView.addView(startMessagingButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 50, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 16, 0, 16, 76));
-        startMessagingButton.setOnClickListener(view -> {
-            if (startPressed) {
-                return;
-            }
-            startPressed = true;
-
-            presentFragment(new LoginActivity().setIntroView(frameContainerView, startMessagingButton), true);
-            destroyed = true;
-        });
-
-        bottomPages = new BottomPagesView(context, viewPager, 6);
-        frameContainerView.addView(bottomPages, LayoutHelper.createFrame(66, 5, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, ICON_HEIGHT_DP + 200, 0, 0));
-
-        switchLanguageTextView = new TextView(context);
-        switchLanguageTextView.setGravity(Gravity.CENTER);
-        switchLanguageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-        frameContainerView.addView(switchLanguageTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 30, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0, 0, 20));
-        switchLanguageTextView.setOnClickListener(v -> {
-            if (startPressed || localeInfo == null) {
-                return;
-            }
-            startPressed = true;
-
-            AlertDialog loaderDialog = new AlertDialog(v.getContext(), AlertDialog.ALERT_TYPE_SPINNER);
-            loaderDialog.setCanCancel(false);
-            loaderDialog.showDelayed(1000);
-
-            NotificationCenter.getGlobalInstance().addObserver(new NotificationCenter.NotificationCenterDelegate() {
-                @Override
-                public void didReceivedNotification(int id, int account, Object... args) {
-                    if (id == NotificationCenter.reloadInterface) {
-                        loaderDialog.dismiss();
-
-                        NotificationCenter.getGlobalInstance().removeObserver(this, id);
-                        AndroidUtilities.runOnUIThread(()->{
-                            presentFragment(new LoginActivity().setIntroView(frameContainerView, startMessagingButton), true);
-                            destroyed = true;
-                        }, 100);
-                    }
-                }
-            }, NotificationCenter.reloadInterface);
-            LocaleController.getInstance().applyLanguage(localeInfo, true, false, currentAccount);
-        });
-
-        frameContainerView.addView(themeFrameLayout, LayoutHelper.createFrame(64, 64, Gravity.TOP | Gravity.RIGHT, 0, themeMargin, themeMargin, 0));
-
-        fragmentView = scrollView;
+                }::invoke // Java can't pass lambdas easily; using Function0 and method ref works
+        );
 
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.suggestedLangpack);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.configLoaded);
@@ -402,26 +179,292 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         LocaleController.getInstance().loadRemoteLanguages(currentAccount);
         checkContinueText();
         justCreated = true;
-
-        updateColors(false);
-
+        fragmentView = composeView;
         return fragmentView;
     }
+
+
+//    @Override
+//    public View createView(Context context) {
+//        actionBar.setAddToContainer(false);
+//
+//        ScrollView scrollView = new ScrollView(context);
+//        scrollView.setFillViewport(true);
+//
+//        RLottieImageView themeIconView = new RLottieImageView(context);
+//        FrameLayout themeFrameLayout = new FrameLayout(context);
+//        themeFrameLayout.addView(themeIconView, LayoutHelper.createFrame(28, 28, Gravity.CENTER));
+//
+//        int themeMargin = 4;
+//        frameContainerView = new FrameLayout(context) {
+//
+//            @Override
+//            protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+//                super.onLayout(changed, left, top, right, bottom);
+//
+//                int oneFourth = (bottom - top) / 4;
+//
+//                int y = (oneFourth * 3 - AndroidUtilities.dp(275)) / 2;
+//                frameLayout2.layout(0, y, frameLayout2.getMeasuredWidth(), y + frameLayout2.getMeasuredHeight());
+//                y += AndroidUtilities.dp(ICON_HEIGHT_DP);
+//                y += AndroidUtilities.dp(122);
+//                int x = (getMeasuredWidth() - bottomPages.getMeasuredWidth()) / 2;
+//                bottomPages.layout(x, y, x + bottomPages.getMeasuredWidth(), y + bottomPages.getMeasuredHeight());
+//                viewPager.layout(0, 0, viewPager.getMeasuredWidth(), viewPager.getMeasuredHeight());
+//
+//                y = oneFourth * 3 + (oneFourth - startMessagingButton.getMeasuredHeight()) / 2;
+//                x = (getMeasuredWidth() - startMessagingButton.getMeasuredWidth()) / 2;
+//                startMessagingButton.layout(x, y, x + startMessagingButton.getMeasuredWidth(), y + startMessagingButton.getMeasuredHeight());
+//                y -= AndroidUtilities.dp(30);
+//                x = (getMeasuredWidth() - switchLanguageTextView.getMeasuredWidth()) / 2;
+//                switchLanguageTextView.layout(x, y - switchLanguageTextView.getMeasuredHeight(), x + switchLanguageTextView.getMeasuredWidth(), y);
+//
+//                MarginLayoutParams marginLayoutParams = (MarginLayoutParams) themeFrameLayout.getLayoutParams();
+//                int newTopMargin = AndroidUtilities.dp(themeMargin) + (AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight);
+//                if (marginLayoutParams.topMargin != newTopMargin) {
+//                    marginLayoutParams.topMargin = newTopMargin;
+//                    themeFrameLayout.requestLayout();
+//                }
+//            }
+//        };
+//        scrollView.addView(frameContainerView, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP));
+//
+//        darkThemeDrawable = new RLottieDrawable(R.raw.sun, String.valueOf(R.raw.sun), AndroidUtilities.dp(28), AndroidUtilities.dp(28), true, null);
+//        darkThemeDrawable.setPlayInDirectionOfCustomEndFrame(true);
+//        darkThemeDrawable.beginApplyLayerColors();
+//        darkThemeDrawable.commitApplyLayerColors();
+//
+//        darkThemeDrawable.setCustomEndFrame(Theme.getCurrentTheme().isDark() ? darkThemeDrawable.getFramesCount() - 1 : 0);
+//        darkThemeDrawable.setCurrentFrame(Theme.getCurrentTheme().isDark() ? darkThemeDrawable.getFramesCount() - 1 : 0, false);
+//        themeIconView.setContentDescription(LocaleController.getString(Theme.getCurrentTheme().isDark() ? R.string.AccDescrSwitchToDayTheme : R.string.AccDescrSwitchToNightTheme));
+//
+//        themeIconView.setAnimation(darkThemeDrawable);
+//        themeFrameLayout.setOnClickListener(v -> {
+//            if (DrawerProfileCell.switchingTheme) return;
+//            DrawerProfileCell.switchingTheme = true;
+//
+//            // TODO: Generify this part, currently it's a clone of another theme switch toggle
+//            String dayThemeName = "Blue";
+//            String nightThemeName = "Night";
+//
+//            Theme.ThemeInfo themeInfo;
+//            boolean toDark;
+//            if (toDark = !Theme.isCurrentThemeDark()) {
+//                themeInfo = Theme.getTheme(nightThemeName);
+//            } else {
+//                themeInfo = Theme.getTheme(dayThemeName);
+//            }
+//
+//            Theme.selectedAutoNightType = Theme.AUTO_NIGHT_TYPE_NONE;
+//            Theme.saveAutoNightThemeConfig();
+//            Theme.cancelAutoNightThemeCallbacks();
+//
+//            darkThemeDrawable.setCustomEndFrame(toDark ? darkThemeDrawable.getFramesCount() - 1 : 0);
+//            themeIconView.playAnimation();
+//
+//            int[] pos = new int[2];
+//            themeIconView.getLocationInWindow(pos);
+//            pos[0] += themeIconView.getMeasuredWidth() / 2;
+//            pos[1] += themeIconView.getMeasuredHeight() / 2;
+//            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.needSetDayNightTheme, themeInfo, false, pos, -1, toDark, themeIconView);
+//            themeIconView.setContentDescription(LocaleController.getString(toDark ? R.string.AccDescrSwitchToDayTheme : R.string.AccDescrSwitchToNightTheme));
+//        });
+//
+//        frameLayout2 = new FrameLayout(context);
+//        frameContainerView.addView(frameLayout2, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.TOP, 0, 78, 0, 0));
+//
+//        TextureView textureView = new TextureView(context);
+//        frameLayout2.addView(textureView, LayoutHelper.createFrame(ICON_WIDTH_DP, ICON_HEIGHT_DP, Gravity.CENTER));
+//        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
+//            @Override
+//            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+//                if (eglThread == null && surface != null) {
+//                    eglThread = new EGLThread(surface);
+//                    eglThread.setSurfaceTextureSize(width, height);
+//                    eglThread.postRunnable(()->{
+//                        float time = (System.currentTimeMillis() - currentDate) / 1000.0f;
+//                        Intro.setPage(currentViewPagerPage);
+//                        Intro.setDate(time);
+//                        Intro.onDrawFrame(0);
+//                        if (eglThread != null && eglThread.isAlive() && eglThread.eglDisplay != null && eglThread.eglSurface != null) {
+//                            try {
+//                                eglThread.egl10.eglSwapBuffers(eglThread.eglDisplay, eglThread.eglSurface);
+//                            } catch (Exception ignored) {} // If display or surface already destroyed
+//                        }
+//                    });
+//                    eglThread.postRunnable(eglThread.drawRunnable);
+//                }
+//            }
+//
+//            @Override
+//            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, final int width, final int height) {
+//                if (eglThread != null) {
+//                    eglThread.setSurfaceTextureSize(width, height);
+//                }
+//            }
+//
+//            @Override
+//            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+//                if (eglThread != null) {
+//                    eglThread.shutdown();
+//                    eglThread = null;
+//                }
+//                return true;
+//            }
+//
+//            @Override
+//            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+//
+//            }
+//        });
+//
+//        viewPager = new ViewPager(context);
+//        viewPager.setAdapter(new IntroAdapter());
+//        viewPager.setPageMargin(0);
+//        viewPager.setOffscreenPageLimit(1);
+//        frameContainerView.addView(viewPager, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+//        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                bottomPages.setPageOffset(position, positionOffset);
+//
+//                float width = viewPager.getMeasuredWidth();
+//                if (width == 0) {
+//                    return;
+//                }
+//                float offset = (position * width + positionOffsetPixels - currentViewPagerPage * width) / width;
+//                Intro.setScrollOffset(offset);
+//            }
+//
+//            @Override
+//            public void onPageSelected(int i) {
+//                currentViewPagerPage = i;
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int i) {
+//                if (i == ViewPager.SCROLL_STATE_DRAGGING) {
+//                    dragging = true;
+//                    startDragX = viewPager.getCurrentItem() * viewPager.getMeasuredWidth();
+//                } else if (i == ViewPager.SCROLL_STATE_IDLE || i == ViewPager.SCROLL_STATE_SETTLING) {
+//                    if (dragging) {
+//                        justEndDragging = true;
+//                        dragging = false;
+//                    }
+//                    if (lastPage != viewPager.getCurrentItem()) {
+//                        lastPage = viewPager.getCurrentItem();
+//                    }
+//                }
+//            }
+//        });
+//
+//        startMessagingButton = new TextView(context) {
+//            CellFlickerDrawable cellFlickerDrawable;
+//
+//            @Override
+//            protected void onDraw(Canvas canvas) {
+//                super.onDraw(canvas);
+//                if (cellFlickerDrawable == null) {
+//                    cellFlickerDrawable = new CellFlickerDrawable();
+//                    cellFlickerDrawable.drawFrame = false;
+//                    cellFlickerDrawable.repeatProgress = 2f;
+//                }
+//                cellFlickerDrawable.setParentWidth(getMeasuredWidth());
+//                AndroidUtilities.rectTmp.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+//                cellFlickerDrawable.draw(canvas, AndroidUtilities.rectTmp, AndroidUtilities.dp(4), null);
+//                invalidate();
+//            }
+//
+//            @Override
+//            protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+//                int size = MeasureSpec.getSize(widthMeasureSpec);
+//                if (size > AndroidUtilities.dp(260)) {
+//                    super.onMeasure(MeasureSpec.makeMeasureSpec(AndroidUtilities.dp(320), MeasureSpec.EXACTLY), heightMeasureSpec);
+//                } else {
+//                    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//                }
+//            }
+//        };
+//        startMessagingButton.setText(LocaleController.getString(R.string.StartMessaging));
+//        startMessagingButton.setGravity(Gravity.CENTER);
+//        startMessagingButton.setTypeface(AndroidUtilities.bold());
+//        startMessagingButton.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
+//        startMessagingButton.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
+//        frameContainerView.addView(startMessagingButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 50, Gravity.CENTER_HORIZONTAL | Gravity.BOTTOM, 16, 0, 16, 76));
+//        startMessagingButton.setOnClickListener(view -> {
+//            if (startPressed) {
+//                return;
+//            }
+//            startPressed = true;
+//
+//            presentFragment(new LoginActivity().setIntroView(frameContainerView, startMessagingButton), true);
+//            destroyed = true;
+//        });
+//
+//        bottomPages = new BottomPagesView(context, viewPager, 6);
+//        frameContainerView.addView(bottomPages, LayoutHelper.createFrame(66, 5, Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, ICON_HEIGHT_DP + 200, 0, 0));
+//
+//        switchLanguageTextView = new TextView(context);
+//        switchLanguageTextView.setGravity(Gravity.CENTER);
+//        switchLanguageTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+//        frameContainerView.addView(switchLanguageTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 30, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL, 0, 0, 0, 20));
+//        switchLanguageTextView.setOnClickListener(v -> {
+//            if (startPressed || localeInfo == null) {
+//                return;
+//            }
+//            startPressed = true;
+//
+//            AlertDialog loaderDialog = new AlertDialog(v.getContext(), AlertDialog.ALERT_TYPE_SPINNER);
+//            loaderDialog.setCanCancel(false);
+//            loaderDialog.showDelayed(1000);
+//
+//            NotificationCenter.getGlobalInstance().addObserver(new NotificationCenter.NotificationCenterDelegate() {
+//                @Override
+//                public void didReceivedNotification(int id, int account, Object... args) {
+//                    if (id == NotificationCenter.reloadInterface) {
+//                        loaderDialog.dismiss();
+//
+//                        NotificationCenter.getGlobalInstance().removeObserver(this, id);
+//                        AndroidUtilities.runOnUIThread(()->{
+//                            presentFragment(new LoginActivity().setIntroView(frameContainerView, startMessagingButton), true);
+//                            destroyed = true;
+//                        }, 100);
+//                    }
+//                }
+//            }, NotificationCenter.reloadInterface);
+//            LocaleController.getInstance().applyLanguage(localeInfo, true, false, currentAccount);
+//        });
+//
+//        frameContainerView.addView(themeFrameLayout, LayoutHelper.createFrame(64, 64, Gravity.TOP | Gravity.RIGHT, 0, themeMargin, themeMargin, 0));
+//
+//        fragmentView = scrollView;
+//
+//        NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.suggestedLangpack);
+//        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.configLoaded);
+//        ConnectionsManager.getInstance(currentAccount).updateDcSettings();
+//        LocaleController.getInstance().loadRemoteLanguages(currentAccount);
+//        checkContinueText();
+//        justCreated = true;
+//
+//        updateColors(false);
+//
+//        return fragmentView;
+//    }
 
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onResume() {
         super.onResume();
-        if (justCreated) {
-            if (LocaleController.isRTL) {
-                viewPager.setCurrentItem(6);
-                lastPage = 6;
-            } else {
-                viewPager.setCurrentItem(0);
-                lastPage = 0;
-            }
-            justCreated = false;
-        }
+//        if (justCreated) {
+//            if (LocaleController.isRTL) {
+//                viewPager.setCurrentItem(6);
+//                lastPage = 6;
+//            } else {
+//                viewPager.setCurrentItem(0);
+//                lastPage = 0;
+//            }
+//            justCreated = false;
+//        }
         if (!AndroidUtilities.isTablet()) {
             Activity activity = getParentActivity();
             if (activity != null) {
@@ -496,8 +539,8 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         req.keys.add("ContinueOnThisLanguage");
         String finalSystemLang = systemLang;
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> {
-            if (response instanceof Vector) {
-                Vector vector = (Vector) response;
+            if (response != null) {
+                TLRPC.Vector vector = (TLRPC.Vector) response;
                 if (vector.objects.isEmpty()) {
                     return;
                 }
@@ -594,8 +637,8 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         @Override
         public void setPrimaryItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             super.setPrimaryItem(container, position, object);
-            bottomPages.setCurrentPage(position);
-            currentViewPagerPage = position;
+          //  bottomPages.setCurrentPage(position);
+           // currentViewPagerPage = position;
         }
 
         @Override
@@ -770,10 +813,11 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
             loadTexture(R.drawable.intro_private_door, 19);
             loadTexture(R.drawable.intro_private_screw, 20);
             loadTexture(R.drawable.intro_tg_plane, 21);
+
             loadTexture(v -> {
                 Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-                paint.setColor(0xFF2CA5E0); // It's logo color, it should not be colored by the theme
-                int size = AndroidUtilities.dp(ICON_HEIGHT_DP);
+                paint.setColor(0xFF00997A); // It's logo color, it should not be colored by the theme
+                int size = AndroidUtilities.dp(160);
                 Bitmap bm = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
                 Canvas c = new Canvas(bm);
                 c.drawCircle(size / 2f, size / 2f, size / 2f, paint);

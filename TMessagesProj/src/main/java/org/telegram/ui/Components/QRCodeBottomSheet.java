@@ -44,10 +44,7 @@ public class QRCodeBottomSheet extends BottomSheet {
     RLottieImageView iconImage;
 
     public QRCodeBottomSheet(Context context, String title, String link, String helpMessage, boolean includeShareLink) {
-        this(context, title, link, helpMessage, includeShareLink, null);
-    }
-    public QRCodeBottomSheet(Context context, String title, String link, String helpMessage, boolean includeShareLink, Theme.ResourcesProvider resourcesProvider) {
-        super(context, false, resourcesProvider);
+        super(context, false);
         fixNavigationBar();
 
         setTitle(title, true);
@@ -183,17 +180,17 @@ public class QRCodeBottomSheet extends BottomSheet {
     }
 
     void updateColors() {
-        buttonTextView.setTextColor(getThemedColor(Theme.key_featuredStickers_buttonText));
-        buttonTextView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(6), getThemedColor(Theme.key_featuredStickers_addButton), getThemedColor(Theme.key_featuredStickers_addButtonPressed)));
+        buttonTextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
+        buttonTextView.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(6), Theme.getColor(Theme.key_featuredStickers_addButton), Theme.getColor(Theme.key_featuredStickers_addButtonPressed)));
         if (button2TextView != null) {
-            button2TextView.setTextColor(getThemedColor(Theme.key_featuredStickers_addButton));
-            button2TextView.setBackground(Theme.createSelectorDrawable(ColorUtils.setAlphaComponent(getThemedColor(Theme.key_featuredStickers_addButton), Math.min(255, Color.alpha(getThemedColor(Theme.key_listSelector)) * 2)), Theme.RIPPLE_MASK_ROUNDRECT_6DP));
+            button2TextView.setTextColor(Theme.getColor(Theme.key_featuredStickers_addButton));
+            button2TextView.setBackground(Theme.createSelectorDrawable(ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_featuredStickers_addButton), Math.min(255, Color.alpha(Theme.getColor(Theme.key_listSelector)) * 2)), Theme.RIPPLE_MASK_ROUNDRECT_6DP));
         }
-        help.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText));
-        help.setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteGrayText));
+        help.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
+        help.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
         if (getTitleView() != null) {
-            getTitleView().setTextColor(getThemedColor(Theme.key_windowBackgroundWhiteBlackText));
+            getTitleView().setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         }
-        setBackgroundColor(getThemedColor(Theme.key_dialogBackground));
+        setBackgroundColor(Theme.getColor(Theme.key_dialogBackground));
     }
 }

@@ -101,9 +101,7 @@ public class CarouselView extends View implements PagerHeaderView {
                                 toAngle = -(360 - toAngle);
                             }
                             scrollToInternal(offsetAngle + (float) toAngle);
-                            try {
-                                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                            } catch (Exception ignored) {}
+                            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                         }
                         return true;
                     }
@@ -158,9 +156,7 @@ public class CarouselView extends View implements PagerHeaderView {
         int selected = ((int) (offsetAngle / aStep));
         if (lastSelected != selected) {
             lastSelected = selected;
-            try {
-                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-            } catch (Exception ignored) {}
+            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
         }
     }
 

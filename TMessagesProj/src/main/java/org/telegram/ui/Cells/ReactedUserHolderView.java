@@ -126,7 +126,7 @@ public class ReactedUserHolderView extends FrameLayout {
         titleView = new SimpleTextView(context) {
             @Override
             public boolean setText(CharSequence value) {
-                value = Emoji.replaceEmoji(value, getPaint().getFontMetricsInt(), false);
+                value = Emoji.replaceEmoji(value, getPaint().getFontMetricsInt(), AndroidUtilities.dp(14), false);
                 return super.setText(value);
             }
         };

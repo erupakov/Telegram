@@ -92,7 +92,6 @@ import java.util.List;
 
 public class ReactionsContainerLayout extends FrameLayout implements NotificationCenter.NotificationCenterDelegate {
 
-    public boolean forceAttachToParent = false;
     public final static Property<ReactionsContainerLayout, Float> TRANSITION_PROGRESS_VALUE = new Property<ReactionsContainerLayout, Float>(Float.class, "transitionProgress") {
         @Override
         public Float get(ReactionsContainerLayout reactionsContainerLayout) {
@@ -146,8 +145,8 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
         }
     }
 
-    private final Paint bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-    private final Paint leftShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
+    private Paint bgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private Paint leftShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG),
             rightShadowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private float leftAlpha, rightAlpha;
     private float transitionProgress = 1f;
@@ -293,9 +292,7 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
                     boolean b1 = oldProgress > 1f;
                     boolean b2 = newProgress > 1f;
                     if (b1 != b2) {
-                        try {
-                            recyclerListView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                        } catch (Exception ignore) {}
+                        recyclerListView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                     }
                     if (pullingLeftOffset < 0) {
                         dx = (int) pullingLeftOffset;
@@ -326,9 +323,7 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
                     boolean b1 = oldProgress > 1f;
                     boolean b2 = newProgress > 1f;
                     if (b1 != b2) {
-                        try {
-                            recyclerListView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                        } catch (Exception ignore) {}
+                        recyclerListView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                     }
                     if (customReactionsContainer != null) {
                         customReactionsContainer.invalidate();
@@ -504,7 +499,7 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
         if (reactionsWindow != null) {
             return;
         }
-        reactionsWindow = new CustomEmojiReactionsWindow(type, fragment, allReactionsList, selectedReactions, this, resourcesProvider, forceAttachToParent);
+        reactionsWindow = new CustomEmojiReactionsWindow(type, fragment, allReactionsList, selectedReactions, this, resourcesProvider);
         invalidateLoopViews();
         reactionsWindow.onDismissListener(() -> {
             reactionsWindow = null;
@@ -515,10 +510,6 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
         });
         onShownCustomEmojiReactionDialog();
         //animatePullingBack();
-    }
-
-    public View getWindowView() {
-        return reactionsWindow == null ? null : reactionsWindow.windowView;
     }
 
     protected void onShownCustomEmojiReactionDialog() {
@@ -2172,9 +2163,7 @@ public class ReactionsContainerLayout extends FrameLayout implements Notificatio
         Runnable longPressRunnable = new Runnable() {
             @Override
             public void run() {
-                try {
-                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                } catch (Exception ignored) {}
+                performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
                 pressedReactionPosition = visibleReactionsList.indexOf(currentReaction);
                 pressedReaction = currentReaction;
                 ReactionsContainerLayout.this.invalidate();

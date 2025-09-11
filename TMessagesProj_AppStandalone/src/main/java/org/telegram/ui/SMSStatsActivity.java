@@ -2,7 +2,6 @@ package org.telegram.ui;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.dpf2;
-import static org.telegram.messenger.AndroidUtilities.isInAirplaneMode;
 import static org.telegram.messenger.LocaleController.formatPluralString;
 import static org.telegram.messenger.LocaleController.formatString;
 import static org.telegram.messenger.LocaleController.getString;
@@ -516,7 +515,7 @@ public class SMSStatsActivity extends GradientHeaderActivity implements Notifica
         errorDrawable.setColorFilter(new PorterDuffColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN));
         errorChipTextView.setCompoundDrawables(errorDrawable, null, null, null);
         underTitleView.addView(errorChipTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 0, 0, 0));
-        if (isInAirplaneMode(getContext())) {
+        if (isAirplaneMode(getContext())) {
             underTitleView.setPadding(0, dp(12), 0, 0);
             errorChipTextView.setVisibility(View.VISIBLE);
         } else {
@@ -530,9 +529,16 @@ public class SMSStatsActivity extends GradientHeaderActivity implements Notifica
     }
 
     private boolean lastAirplaneMode;
+    public static boolean isAirplaneMode(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            return Settings.System.getInt(context.getContentResolver(), Settings.System.AIRPLANE_MODE_ON, 0) != 0;
+        } else {
+            return Settings.Global.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0;
+        }
+    }
 
     private Runnable checkAirplaneMode = () -> {
-        final boolean airplane = isInAirplaneMode(getContext());
+        final boolean airplane = isAirplaneMode(getContext());
         if (lastAirplaneMode != airplane) {
             lastAirplaneMode = airplane;
             update(true);
@@ -555,7 +561,7 @@ public class SMSStatsActivity extends GradientHeaderActivity implements Notifica
             allowInternational = status != null && status.allow_international;
         }
 
-        if (isInAirplaneMode(getContext())) {
+        if (isAirplaneMode(getContext())) {
             if (errorChipTextView != null) {
                 errorChipTextView.setVisibility(View.VISIBLE);
             }

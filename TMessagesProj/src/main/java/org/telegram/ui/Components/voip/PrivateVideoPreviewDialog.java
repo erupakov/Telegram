@@ -57,12 +57,12 @@ public abstract class PrivateVideoPreviewDialog extends FrameLayout implements V
     private boolean isDismissed;
     private float outProgress;
 
-    private final ViewPager viewPager;
-    private final TextView positiveButton;
-    private final LinearLayout titlesLayout;
+    private ViewPager viewPager;
+    private TextView positiveButton;
+    private LinearLayout titlesLayout;
     private RLottieImageView micIconView;
-    private final TextView[] titles;
-    private final VoIPTextureView textureView;
+    private TextView[] titles;
+    private VoIPTextureView textureView;
     private int currentTexturePage = 1;
     private int visibleCameraPage = 1;
     private boolean cameraReady;

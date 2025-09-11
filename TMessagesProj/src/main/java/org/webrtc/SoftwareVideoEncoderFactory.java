@@ -11,48 +11,41 @@
 package org.webrtc;
 
 import androidx.annotation.Nullable;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class SoftwareVideoEncoderFactory implements VideoEncoderFactory {
-  private static final String TAG = "SoftwareVideoEncoderFactory";
-
-  private final long nativeFactory;
-
-  public SoftwareVideoEncoderFactory() {
-    this.nativeFactory = nativeCreateFactory();
-  }
-
   @Nullable
   @Override
   public VideoEncoder createEncoder(VideoCodecInfo info) {
-    long nativeEncoder = nativeCreateEncoder(nativeFactory, info);
-    if (nativeEncoder == 0) {
-      Logging.w(TAG, "Trying to create encoder for unsupported format. " + info);
-      return null;
+    if (info.name.equalsIgnoreCase("VP8")) {
+      return new LibvpxVp8Encoder();
+    }
+    if (info.name.equalsIgnoreCase("VP9") && LibvpxVp9Encoder.nativeIsSupported()) {
+      return new LibvpxVp9Encoder();
+    }
+    if (info.name.equalsIgnoreCase("H264")) {
+      return new OpenH264Encoder();
     }
 
-    return new WrappedNativeVideoEncoder() {
-      @Override
-      public long createNativeVideoEncoder() {
-        return nativeEncoder;
-      }
-
-      @Override
-      public boolean isHardwareEncoder() {
-        return false;
-      }
-    };
+    return null;
   }
 
   @Override
   public VideoCodecInfo[] getSupportedCodecs() {
-    return nativeGetSupportedCodecs(nativeFactory).toArray(new VideoCodecInfo[0]);
+    return supportedCodecs();
   }
 
-  private static native long nativeCreateFactory();
+  static VideoCodecInfo[] supportedCodecs() {
+    List<VideoCodecInfo> codecs = new ArrayList<VideoCodecInfo>();
 
-  private static native long nativeCreateEncoder(long factory, VideoCodecInfo videoCodecInfo);
+    codecs.add(new VideoCodecInfo("VP8", new HashMap<>()));
+    codecs.add(new VideoCodecInfo("H264", new HashMap<>()));
+    if (LibvpxVp9Encoder.nativeIsSupported()) {
+      codecs.add(new VideoCodecInfo("VP9", new HashMap<>()));
+    }
 
-  private static native List<VideoCodecInfo> nativeGetSupportedCodecs(long factory);
+    return codecs.toArray(new VideoCodecInfo[codecs.size()]);
+  }
 }

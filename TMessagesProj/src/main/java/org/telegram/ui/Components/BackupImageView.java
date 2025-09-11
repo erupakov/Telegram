@@ -25,8 +25,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.ImageReceiver;
@@ -41,7 +39,6 @@ public class BackupImageView extends View {
     protected int width = -1;
     protected int height = -1;
     public AnimatedEmojiDrawable animatedEmojiDrawable;
-    public ColorFilter animatedEmojiDrawableColorFilter;
     private AvatarDrawable avatarDrawable;
     boolean attached;
 
@@ -289,7 +286,7 @@ public class BackupImageView extends View {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         attached = false;
-        if (applyAttach) imageReceiver.onDetachedFromWindow();
+        imageReceiver.onDetachedFromWindow();
         if (blurAllowed) {
             blurImageReceiver.onDetachedFromWindow();
         }
@@ -298,13 +295,11 @@ public class BackupImageView extends View {
         }
     }
 
-    public boolean applyAttach = true;
-
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         attached = true;
-        if (applyAttach) imageReceiver.onAttachedToWindow();
+        imageReceiver.onAttachedToWindow();
         if (blurAllowed) {
             blurImageReceiver.onAttachedToWindow();
         }
@@ -318,9 +313,6 @@ public class BackupImageView extends View {
         ImageReceiver imageReceiver = animatedEmojiDrawable != null ? animatedEmojiDrawable.getImageReceiver() : this.imageReceiver;
         if (imageReceiver == null) {
             return;
-        }
-        if (animatedEmojiDrawable != null && animatedEmojiDrawableColorFilter != null) {
-            animatedEmojiDrawable.setColorFilter(animatedEmojiDrawableColorFilter);
         }
         if (width != -1 && height != -1) {
             if (drawFromStart) {
@@ -361,11 +353,6 @@ public class BackupImageView extends View {
         if (attached && animatedEmojiDrawable != null) {
             animatedEmojiDrawable.addView(this);
         }
-        invalidate();
-    }
-
-    public void setEmojiColorFilter(ColorFilter colorFilter) {
-        animatedEmojiDrawableColorFilter = colorFilter;
         invalidate();
     }
 
@@ -447,10 +434,5 @@ public class BackupImageView extends View {
         }
         blurText.draw(canvas, l + dp(9), cy, 0xFFFFFFFF, alpha);
         canvas.restore();
-    }
-
-    @Override
-    protected boolean verifyDrawable(@NonNull Drawable who) {
-        return who == imageReceiver.getDrawable() || who == imageReceiver.getImageDrawable() || super.verifyDrawable(who);
     }
 }

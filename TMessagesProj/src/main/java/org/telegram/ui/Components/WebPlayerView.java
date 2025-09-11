@@ -41,8 +41,6 @@ import android.webkit.WebView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.annotation.Keep;
-
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
@@ -437,7 +435,6 @@ public class WebPlayerView extends ViewGroup implements VideoPlayer.VideoPlayerD
             callJavaResultInterface = callJavaResult;
         }
 
-        @Keep
         @JavascriptInterface
         public void returnResultToJava(String value) {
             callJavaResultInterface.jsCallFinished(value);
@@ -2090,12 +2087,12 @@ public class WebPlayerView extends ViewGroup implements VideoPlayer.VideoPlayerD
     }
 
     public static String getYouTubeVideoId(String url) {
-        if (url == null) return null;
-        final Matcher matcher = youtubeIdRegex.matcher(url);
-        if (!matcher.find()) {
-            return null;
+        Matcher matcher = youtubeIdRegex.matcher(url);
+        String id = null;
+        if (matcher.find()) {
+            id = matcher.group(1);
         }
-        return matcher.group(1);
+        return id;
     }
 
     public boolean canHandleUrl(String url) {

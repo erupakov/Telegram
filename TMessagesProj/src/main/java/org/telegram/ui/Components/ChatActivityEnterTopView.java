@@ -5,7 +5,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Space;
 import android.widget.TextView;
 
 public class ChatActivityEnterTopView extends FrameLayout {
@@ -33,26 +32,15 @@ public class ChatActivityEnterTopView extends FrameLayout {
     }
 
     public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
-        replyView.setVisibility(editMode ? GONE : VISIBLE);
-        editView.setVisibility(editMode ? VISIBLE : GONE);
-    }
-
-    public void setEditSuggestionMode(boolean editMode) {
-        setEditMode(editMode);
-        if (editMode) {
-            replyView.setVisibility(VISIBLE);
+        if (editMode != this.editMode) {
+            this.editMode = editMode;
+            replyView.setVisibility(editMode ? GONE : VISIBLE);
+            editView.setVisibility(editMode ? VISIBLE : GONE);
         }
-        editView.buttons[0].setOnlyIconMode(editMode);
-        editView.buttons[1].setOnlyIconMode(editMode);
     }
 
     public boolean isEditMode() {
         return editMode;
-    }
-
-    public View getReplyView() {
-        return replyView;
     }
 
     public EditView getEditView() {
@@ -89,7 +77,6 @@ public class ChatActivityEnterTopView extends FrameLayout {
 
         private ImageView imageView;
         private TextView textView;
-        private Space space;
         private boolean editButton;
 
         public EditViewButton(Context context) {
@@ -99,12 +86,6 @@ public class ChatActivityEnterTopView extends FrameLayout {
         public void addImageView(ImageView imageView, LayoutParams layoutParams) {
             if (this.imageView == null) {
                 addView(this.imageView = imageView, layoutParams);
-            }
-        }
-
-        public void addSpaceView(Space space, LayoutParams layoutParams) {
-            if (this.space == null) {
-                addView(this.space = space, layoutParams);
             }
         }
 
@@ -128,15 +109,6 @@ public class ChatActivityEnterTopView extends FrameLayout {
 
         public boolean isEditButton() {
             return editButton;
-        }
-
-        public void setOnlyIconMode(boolean onlyIconMode) {
-            if (textView != null) {
-                textView.setVisibility(onlyIconMode ? GONE : VISIBLE);
-            }
-            if (space != null) {
-                space.setVisibility(onlyIconMode ? GONE : VISIBLE);
-            }
         }
 
         public abstract void updateColors();

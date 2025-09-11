@@ -49,8 +49,6 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
 import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.AbstractSerializedData;
-import org.telegram.tgnet.InputSerializedData;
-import org.telegram.tgnet.OutputSerializedData;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.BubbleActivity;
 import org.telegram.ui.Cells.PhotoEditRadioCell;
@@ -252,7 +250,7 @@ public class PhotoFilterView extends FrameLayout implements FilterShaders.Filter
             return Math.abs(blacksLevel - 0) < 0.00001 && Math.abs(shadowsLevel - 25) < 0.00001 && Math.abs(midtonesLevel - 50) < 0.00001 && Math.abs(highlightsLevel - 75) < 0.00001 && Math.abs(whitesLevel - 100) < 0.00001;
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeFloat(blacksLevel);
             stream.writeFloat(shadowsLevel);
             stream.writeFloat(midtonesLevel);
@@ -260,7 +258,7 @@ public class PhotoFilterView extends FrameLayout implements FilterShaders.Filter
             stream.writeFloat(whitesLevel);
         }
 
-        public void readParams(InputSerializedData stream, boolean exception) {
+        public void readParams(AbstractSerializedData stream, boolean exception) {
             blacksLevel = previousBlacksLevel = stream.readFloat(exception);
             shadowsLevel = previousShadowsLevel = stream.readFloat(exception);
             midtonesLevel = previousMidtonesLevel = stream.readFloat(exception);
@@ -308,14 +306,14 @@ public class PhotoFilterView extends FrameLayout implements FilterShaders.Filter
             return luminanceCurve.isDefault() && redCurve.isDefault() && greenCurve.isDefault() && blueCurve.isDefault();
         }
 
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             luminanceCurve.serializeToStream(stream);
             redCurve.serializeToStream(stream);
             greenCurve.serializeToStream(stream);
             blueCurve.serializeToStream(stream);
         }
 
-        public void readParams(InputSerializedData stream, boolean exception) {
+        public void readParams(AbstractSerializedData stream, boolean exception) {
             luminanceCurve.readParams(stream, exception);
             redCurve.readParams(stream, exception);
             greenCurve.readParams(stream, exception);
@@ -413,12 +411,6 @@ public class PhotoFilterView extends FrameLayout implements FilterShaders.Filter
                     if (eglThread != null) {
                         eglThread.updateUiBlurTransform(transform, getWidth(), getHeight());
                     }
-                }
-
-                @Override
-                protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                    final int width = MeasureSpec.getSize(widthMeasureSpec);
-                    super.onMeasure(widthMeasureSpec, heightMeasureSpec);
                 }
             };
             if (ownLayout) {

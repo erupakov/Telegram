@@ -1,5 +1,25 @@
-<?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/icon_background_sa" />
-    <item android:drawable="@mipmap/icon_background_clip_round" />
-</layer-list>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+  <group>
+    <clip-path
+        android:pathData="M54,0L54,0A54,54 0,0 1,108 54L108,54A54,54 0,0 1,54 108L54,108A54,54 0,0 1,0 54L0,54A54,54 0,0 1,54 0z"/>
+    <path
+        android:pathData="M108,0H0V108H108V0Z">
+      <aapt:attr name="android:fillColor">
+        <gradient 
+            android:startX="54"
+            android:startY="-0"
+            android:endX="53.74"
+            android:endY="109.56"
+            android:type="linear">
+          <item android:offset="0" android:color="#FF00997A"/>
+          <item android:offset="0.97" android:color="#FF036954"/>
+        </gradient>
+      </aapt:attr>
+    </path>
+  </group>
+</vector>

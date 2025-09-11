@@ -98,11 +98,12 @@ _remoteBatteryLevelIsLowUpdated(std::move(descriptor.remoteBatteryLevelIsLowUpda
 _remotePrefferedAspectRatioUpdated(std::move(descriptor.remotePrefferedAspectRatioUpdated)),
 _signalingDataEmitted(std::move(descriptor.signalingDataEmitted)),
 _signalBarsUpdated(std::move(descriptor.signalBarsUpdated)),
-_audioLevelsUpdated(std::move(descriptor.audioLevelsUpdated)),
+_audioLevelUpdated(std::move(descriptor.audioLevelsUpdated)),
 _createAudioDeviceModule(std::move(descriptor.createAudioDeviceModule)),
 _enableHighBitrateVideo(descriptor.config.enableHighBitrateVideo),
 _dataSaving(descriptor.config.dataSaving),
 _platformContext(descriptor.platformContext) {
+
 	assert(_thread->IsCurrent());
 	assert(_stateUpdated != nullptr);
 	assert(_signalingDataEmitted != nullptr);
@@ -157,14 +158,14 @@ void Manager::start() {
 		});
 	};
 	_networkManager.reset(new ThreadLocalObject<NetworkManager>(StaticThreads::getNetworkThread(), [weak, thread, sendSignalingMessage, encryptionKey = _encryptionKey, enableP2P = _enableP2P, enableTCP = _enableTCP, enableStunMarking = _enableStunMarking, rtcServers = _rtcServers, proxy = std::move(_proxy)] () mutable {
-		return std::make_shared<NetworkManager>(
+		return new NetworkManager(
             StaticThreads::getNetworkThread(),
 			encryptionKey,
 			enableP2P,
             enableTCP,
             enableStunMarking,
 			rtcServers,
-            std::move(proxy),
+			std::move(proxy),
 			[=](const NetworkManager::State &state) {
 				thread->PostTask([=] {
 					const auto strong = weak.lock();
@@ -222,8 +223,8 @@ void Manager::start() {
 			});
 	}));
 	bool isOutgoing = _encryptionKey.isOutgoing;
-	_mediaManager.reset(new ThreadLocalObject<MediaManager>(StaticThreads::getMediaThread(), [weak, isOutgoing, protocolVersion = _protocolVersion, thread, sendSignalingMessage, videoCapture = _videoCapture, mediaDevicesConfig = _mediaDevicesConfig, enableHighBitrateVideo = _enableHighBitrateVideo, signalBarsUpdated = _signalBarsUpdated, audioLevelsUpdated = _audioLevelsUpdated, preferredCodecs = _preferredCodecs, createAudioDeviceModule = _createAudioDeviceModule, platformContext = _platformContext]() {
-		return std::make_shared<MediaManager>(
+	_mediaManager.reset(new ThreadLocalObject<MediaManager>(StaticThreads::getMediaThread(), [weak, isOutgoing, protocolVersion = _protocolVersion, thread, sendSignalingMessage, videoCapture = _videoCapture, mediaDevicesConfig = _mediaDevicesConfig, enableHighBitrateVideo = _enableHighBitrateVideo, signalBarsUpdated = _signalBarsUpdated, audioLevelsUpdated = _audioLevelUpdated, preferredCodecs = _preferredCodecs, createAudioDeviceModule = _createAudioDeviceModule, platformContext = _platformContext]() {
+		return new MediaManager(
             StaticThreads::getMediaThread(),
 			isOutgoing,
             protocolVersion,

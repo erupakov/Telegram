@@ -69,15 +69,12 @@ public class SizeNotifierFrameLayoutPhoto extends SizeNotifierFrameLayout {
 
     @Override
     public void notifyHeightChanged() {
-        if (super.delegate != null || !super.delegates.isEmpty()) {
+        if (super.delegate != null) {
             keyboardHeight = measureKeyboardHeight();
             final boolean isWidthGreater = AndroidUtilities.displaySize.x > AndroidUtilities.displaySize.y;
             post(() -> {
                 if (delegate != null) {
                     delegate.onSizeChanged(keyboardHeight, isWidthGreater);
-                }
-                for (int i = 0; i < super.delegates.size(); ++i) {
-                    super.delegates.get(i).onSizeChanged(keyboardHeight, isWidthGreater);
                 }
             });
         }

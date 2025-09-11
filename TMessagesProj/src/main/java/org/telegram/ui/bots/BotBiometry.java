@@ -8,13 +8,10 @@ import android.security.keystore.KeyGenParameterSpec;
 import android.security.keystore.KeyProperties;
 import android.text.TextUtils;
 import android.util.Log;
-import android.util.LongSparseArray;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.view.WindowCallbackWrapper;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
@@ -50,7 +47,6 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.Executor;
 
 import javax.crypto.Cipher;
@@ -73,18 +69,7 @@ public class BotBiometry {
     private String encrypted_token;
     private String iv;
 
-    private final static WeakHashMap<Pair<Integer, Long>, BotBiometry> instances = new WeakHashMap<>();
-
-    public static BotBiometry get(Context context, int currentAccount, long botId) {
-        final Pair<Integer, Long> key = new Pair<>(currentAccount, botId);
-        BotBiometry instance = instances.get(key);
-        if (instance == null) {
-            instances.put(key, instance = new BotBiometry(context, currentAccount, botId));
-        }
-        return instance;
-    }
-
-    private BotBiometry(Context context, int currentAccount, long botId) {
+    public BotBiometry(Context context, int currentAccount, long botId) {
         this.context = context;
         this.currentAccount = currentAccount;
         this.botId = botId;
@@ -98,20 +83,6 @@ public class BotBiometry {
         this.access_granted = this.encrypted_token != null;
         this.access_requested = this.access_granted || prefs.getBoolean(botId + "_requested", false);
         this.disabled = prefs.getBoolean(botId + "_disabled", false);
-    }
-
-    public boolean asked() {
-        return access_requested;
-    }
-
-    public boolean granted() {
-        return access_granted;
-    }
-
-    public void setGranted(boolean granted) {
-        this.access_requested = true;
-        this.access_granted = granted;
-        save();
     }
 
     @Nullable
@@ -432,7 +403,7 @@ public class BotBiometry {
 
         final HashMap<Long, Boolean> botEnabled = new HashMap<>();
         for (long botId : botIds) {
-            final BotBiometry biometry = BotBiometry.get(context, currentAccount, botId);
+            final BotBiometry biometry = new BotBiometry(context, currentAccount, botId);
             if (!biometry.access_granted || !biometry.access_requested) continue;
             botEnabled.put(botId, !biometry.disabled);
         }
@@ -500,7 +471,6 @@ public class BotBiometry {
             final SharedPreferences prefs = context.getSharedPreferences(PREF + i, Activity.MODE_PRIVATE);
             prefs.edit().clear().apply();
         }
-        instances.clear();
     }
 
 }

@@ -15,7 +15,6 @@ package org.webrtc;
  * video_error_codes.h.
  */
 public enum VideoCodecStatus {
-  TARGET_BITRATE_OVERSHOOT(5),
   REQUEST_SLI(2),
   NO_OUTPUT(1),
   OK(0),
@@ -27,7 +26,8 @@ public enum VideoCodecStatus {
   TIMEOUT(-6),
   UNINITIALIZED(-7),
   ERR_REQUEST_SLI(-12),
-  FALLBACK_SOFTWARE(-13);
+  FALLBACK_SOFTWARE(-13),
+  TARGET_BITRATE_OVERSHOOT(-14);
 
   private final int number;
 

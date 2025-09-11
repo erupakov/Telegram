@@ -1019,7 +1019,7 @@ public class CameraScanActivity extends BaseFragment {
         backgroundHandlerThread.quitSafely();
     }
 
-    private final Runnable requestShot = new Runnable() {
+    private Runnable requestShot = new Runnable() {
         @Override
         public void run() {
             if (cameraView != null && !recognized && cameraView.getCameraSession() != null) {

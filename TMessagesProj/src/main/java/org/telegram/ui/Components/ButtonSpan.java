@@ -10,9 +10,7 @@ import android.graphics.Paint;
 import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.text.style.ReplacementSpan;
 import android.view.MotionEvent;
@@ -35,7 +33,7 @@ public class ButtonSpan extends ReplacementSpan {
     private final Runnable onClickListener;
     private ButtonBounce bounce;
 
-    public ButtonSpan(CharSequence buttonText, Runnable onClick, Theme.ResourcesProvider resourcesProvider) {
+    private ButtonSpan(CharSequence buttonText, Runnable onClick, Theme.ResourcesProvider resourcesProvider) {
         this.resourcesProvider = resourcesProvider;
         this.onClickListener = onClick;
         text = new Text(buttonText, 12);
@@ -102,10 +100,7 @@ public class ButtonSpan extends ReplacementSpan {
             ButtonSpan[] spans = spanned.getSpans(layout.getLineStart(line), layout.getLineEnd(line), ButtonSpan.class);
             for (int i = 0; i < spans.length; ++i) {
                 ButtonSpan span = spans[i];
-                if (
-                    spanned.getSpanStart(span) <= offset && spanned.getSpanEnd(span) >= offset &&
-                    layout.getPrimaryHorizontal(spanned.getSpanStart(span)) <= x && layout.getPrimaryHorizontal(spanned.getSpanEnd(span)) >= x
-                ) {
+                if (spanned.getSpanStart(span) <= offset && spanned.getSpanEnd(span) >= offset) {
                     return span;
                 }
             }
@@ -118,7 +113,7 @@ public class ButtonSpan extends ReplacementSpan {
         @Override
         public boolean onTouchEvent(MotionEvent event) {
             int action = event.getAction();
-            ButtonSpan span = findSpan(event.getX() - getPaddingLeft(), (int) event.getY() - getPaddingTop());
+            ButtonSpan span = findSpan(event.getX(), (int) event.getY());
             if (action == MotionEvent.ACTION_DOWN) {
                 pressedSpan = span;
                 if (pressedSpan != null) {
@@ -140,31 +135,6 @@ public class ButtonSpan extends ReplacementSpan {
                 }
             }
             return pressedSpan != null || super.onTouchEvent(event);
-        }
-
-        @Override
-        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
-
-        @Override
-        protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-            super.onLayout(changed, left, top, right, bottom);
-            if (buttonToBeAdded != null && getMeasuredWidth() > 0) {
-                SpannableString btn = new SpannableString(" btn");
-                btn.setSpan(buttonToBeAdded, 1, btn.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                SpannableStringBuilder sb = new SpannableStringBuilder(
-                        TextUtils.ellipsize(getText(), getPaint(), getMeasuredWidth() - getPaddingLeft() - getPaddingRight() - buttonToBeAdded.getSize() - dp(4), TextUtils.TruncateAt.END)
-                );
-                sb.append(btn);
-                setText(sb);
-                buttonToBeAdded = null;
-            }
-        }
-
-        ButtonSpan buttonToBeAdded;
-        public void addButton(ButtonSpan span) {
-            buttonToBeAdded = span;
         }
     }
 }

@@ -1557,11 +1557,6 @@ import org.checkerframework.checker.nullness.qual.RequiresNonNull;
       sampleMimeType = sampleFormat.sampleMimeType;
     }
 
-    sampleFormat.cached = playlistFormat.cached;
-    sampleFormat.documentId = playlistFormat.documentId;
-    sampleFormat.currentAccount = playlistFormat.currentAccount;
-    sampleFormat.documentFilename = playlistFormat.documentFilename;
-
     Format.Builder formatBuilder =
         sampleFormat
             .buildUpon()
@@ -1572,11 +1567,7 @@ import org.checkerframework.checker.nullness.qual.RequiresNonNull;
             .setRoleFlags(playlistFormat.roleFlags)
             .setAverageBitrate(propagateBitrates ? playlistFormat.averageBitrate : Format.NO_VALUE)
             .setPeakBitrate(propagateBitrates ? playlistFormat.peakBitrate : Format.NO_VALUE)
-            .setCodecs(codecs)
-            .setCurrentAccount(playlistFormat.currentAccount)
-            .setDocumentId(playlistFormat.documentId)
-            .setCached(playlistFormat.cached)
-            .setDocumentFilename(playlistFormat.documentFilename);
+            .setCodecs(codecs);
 
     if (sampleTrackType == C.TRACK_TYPE_VIDEO) {
       formatBuilder

@@ -38,8 +38,7 @@ public class RtpTransceiver {
     SEND_RECV(0),
     SEND_ONLY(1),
     RECV_ONLY(2),
-    INACTIVE(3),
-    STOPPED(4);
+    INACTIVE(3);
 
     private final int nativeIndex;
 
@@ -215,11 +214,6 @@ public class RtpTransceiver {
     nativeStopInternal(nativeRtpTransceiver);
   }
 
-  public void setCodecPreferences(List<RtpCapabilities.CodecCapability> codecs) {
-    checkRtpTransceiverExists();
-    nativeSetCodecPreferences(nativeRtpTransceiver, codecs);
-  }
-
   /**
    * The StopInternal method stops the RtpTransceiver, like Stop, but goes
    * immediately to Stopped state.
@@ -268,6 +262,4 @@ public class RtpTransceiver {
   private static native void nativeStopStandard(long rtpTransceiver);
   private static native boolean nativeSetDirection(
       long rtpTransceiver, RtpTransceiverDirection rtpTransceiverDirection);
-  private static native void nativeSetCodecPreferences(
-      long rtpTransceiver, List<RtpCapabilities.CodecCapability> codecs);
 }

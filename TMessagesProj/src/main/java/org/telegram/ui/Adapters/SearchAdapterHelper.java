@@ -55,7 +55,7 @@ public class SearchAdapterHelper {
             return null;
         }
 
-        default LongSparseArray<TLRPC.GroupCallParticipant> getExcludeCallParticipants() {
+        default LongSparseArray<TLRPC.TL_groupCallParticipant> getExcludeCallParticipants() {
             return null;
         }
 
@@ -484,7 +484,7 @@ public class SearchAdapterHelper {
                 }
             }
         }
-        LongSparseArray<TLRPC.GroupCallParticipant> ignoreParticipants = delegate.getExcludeCallParticipants();
+        LongSparseArray<TLRPC.TL_groupCallParticipant> ignoreParticipants = delegate.getExcludeCallParticipants();
         if (ignoreParticipants != null) {
             for (int a = 0, size = ignoreParticipants.size(); a < size; a++) {
                 TLRPC.User u = (TLRPC.User) globalSearchMap.get(ignoreParticipants.keyAt(a));

@@ -907,9 +907,7 @@ public class CalendarActivity extends BaseFragment implements NotificationCenter
                     PeriodDay periodDay = getDayAtCoord(e.getX(), e.getY());
 
                     if (periodDay != null) {
-                        try {
-                            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                        } catch (Exception ignored) {}
+                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 
                         Bundle bundle = new Bundle();
                         if (dialogId > 0) {

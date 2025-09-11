@@ -31,7 +31,6 @@ import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.RequestDelegate;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.Vector;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.AnimatedEmojiSpan;
@@ -57,7 +56,7 @@ public class StoryContainsEmojiButton extends View {
 
     private ArrayList<TLRPC.StickerSetCovered> sets;
     private ArrayList<TLRPC.InputStickerSet> inputSets;
-    private Vector<TLRPC.StickerSetCovered> vector;
+    private TLRPC.Vector vector;
     private boolean emoji, stickers;
     private Object parentObject;
     private float loadT;
@@ -161,7 +160,7 @@ public class StoryContainsEmojiButton extends View {
     }
 
     private static Object lastRequestParentObject;
-    private static Vector<TLRPC.StickerSetCovered> lastResponse;
+    private static TLRPC.Vector lastResponse;
 
     public void load(int currentAccount, boolean requestStickers, TLObject obj, ArrayList<TLRPC.InputStickerSet> additionalEmojiSets, Object parentObject) {
         final boolean animate[] = new boolean[] { true };
@@ -207,14 +206,14 @@ public class StoryContainsEmojiButton extends View {
                 req.media = inputStickeredMediaDocument;
             }
             final RequestDelegate requestDelegate = (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                if (!(response instanceof Vector)) {
+                if (response == null) {
                     return;
                 }
-                Vector<TLRPC.StickerSetCovered> vector = this.vector = (Vector<TLRPC.StickerSetCovered>) response;
+                TLRPC.Vector vector = this.vector = (TLRPC.Vector) response;
                 lastRequestParentObject = parentObject;
                 lastResponse = vector;
                 for (int i = 0; i < vector.objects.size(); ++i) {
-                    TLRPC.StickerSetCovered setCovered = vector.objects.get(i);
+                    TLRPC.StickerSetCovered setCovered = (TLRPC.StickerSetCovered) vector.objects.get(i);
                     sets.add(setCovered);
                     if (setCovered.set != null) {
                         inputSets.add(MediaDataController.getInputStickerSet(setCovered.set));

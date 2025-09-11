@@ -61,7 +61,6 @@ public class CreateGroupCallBottomSheet extends BottomSheetWithRecyclerListView 
     private final JoinCallAlert.JoinCallAlertDelegate joinCallDelegate;
     private final List<TLRPC.Peer> chats;
     private final boolean needSelector;
-    private final boolean canRtmpStream;
     private final boolean isChannelOrGiga;
     private boolean isScheduleSelected;
     private TLRPC.Peer selectedPeer;
@@ -80,7 +79,6 @@ public class CreateGroupCallBottomSheet extends BottomSheetWithRecyclerListView 
         this.isChannelOrGiga = ChatObject.isChannelOrGiga(chat);
         this.selectedPeer = chats.get(0);
         this.needSelector = chats.size() > 1;
-        this.canRtmpStream = ChatObject.canManageCalls(chat);
 
         Context context = containerView.getContext();
         View divider = new View(context) {
@@ -100,8 +98,8 @@ public class CreateGroupCallBottomSheet extends BottomSheetWithRecyclerListView 
         startBtn.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         startBtn.setTypeface(AndroidUtilities.bold());
         startBtn.setText(isChannelOrGiga
-                ? LocaleController.formatString(R.string.VoipChannelStartVoiceChat)
-                : LocaleController.formatString(R.string.VoipGroupStartVoiceChat)
+                ? LocaleController.formatString("VoipChannelStartVoiceChat", R.string.VoipChannelStartVoiceChat)
+                : LocaleController.formatString("VoipGroupStartVoiceChat", R.string.VoipGroupStartVoiceChat)
         );
         startBtn.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
         startBtn.setBackground(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(8), Theme.getColor(Theme.key_featuredStickers_addButton), ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_windowBackgroundWhite), 120)));
@@ -114,8 +112,8 @@ public class CreateGroupCallBottomSheet extends BottomSheetWithRecyclerListView 
         scheduleBtn.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         scheduleBtn.setTypeface(AndroidUtilities.bold());
         scheduleBtn.setText(isChannelOrGiga
-                ? LocaleController.formatString(R.string.VoipChannelScheduleVoiceChat)
-                : LocaleController.formatString(R.string.VoipGroupScheduleVoiceChat)
+                ? LocaleController.formatString("VoipChannelScheduleVoiceChat", R.string.VoipChannelScheduleVoiceChat)
+                : LocaleController.formatString("VoipGroupScheduleVoiceChat", R.string.VoipGroupScheduleVoiceChat)
         );
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             scheduleBtn.setLetterSpacing(0.025f);
@@ -257,7 +255,7 @@ public class CreateGroupCallBottomSheet extends BottomSheetWithRecyclerListView 
 
             @Override
             public int getItemCount() {
-                return needSelector ? CONTENT_VIEWS_COUNT + chats.size() : (canRtmpStream ? 2 : 1);
+                return needSelector ? CONTENT_VIEWS_COUNT + chats.size() : 1;
             }
         };
     }
@@ -277,8 +275,8 @@ public class CreateGroupCallBottomSheet extends BottomSheetWithRecyclerListView 
             TextView title = new TextView(context);
             title.setTypeface(AndroidUtilities.bold());
             title.setText(isChannelOrGiga
-                    ? LocaleController.formatString(R.string.StartVoipChannelTitle)
-                    : LocaleController.formatString(R.string.StartVoipChatTitle)
+                    ? LocaleController.formatString("StartVoipChannelTitle", R.string.StartVoipChannelTitle)
+                    : LocaleController.formatString("StartVoipChatTitle", R.string.StartVoipChatTitle)
             );
             title.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
             title.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
@@ -289,8 +287,8 @@ public class CreateGroupCallBottomSheet extends BottomSheetWithRecyclerListView 
             description.setGravity(Gravity.CENTER_HORIZONTAL);
             description.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
             description.setText(isChannelOrGiga
-                    ? LocaleController.formatString(R.string.VoipChannelStart2)
-                    : LocaleController.formatString(R.string.VoipGroupStart2)
+                    ? LocaleController.formatString("VoipChannelStart2", R.string.VoipChannelStart2)
+                    : LocaleController.formatString("VoipGroupStart2", R.string.VoipGroupStart2)
             );
             description.setLineSpacing(description.getLineSpacingExtra(), description.getLineSpacingMultiplier() * 1.1f);
             addView(description, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 28, 0, 28, 17));

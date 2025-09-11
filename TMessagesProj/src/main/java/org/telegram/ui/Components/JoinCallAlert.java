@@ -40,7 +40,6 @@ import org.telegram.messenger.UserObject;
 import org.telegram.messenger.voip.VoIPService;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_phone;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.BottomSheet;
@@ -204,7 +203,7 @@ public class JoinCallAlert extends BottomSheet {
             return;
         }
         final AlertDialog progressDialog = new AlertDialog(context, AlertDialog.ALERT_TYPE_SPINNER);
-        TL_phone.getGroupCallJoinAs req = new TL_phone.getGroupCallJoinAs();
+        TLRPC.TL_phone_getGroupCallJoinAs req = new TLRPC.TL_phone_getGroupCallJoinAs();
         req.peer = accountInstance.getMessagesController().getInputPeer(did);
         int reqId = accountInstance.getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
             try {
@@ -213,7 +212,7 @@ public class JoinCallAlert extends BottomSheet {
                 FileLog.e(e);
             }
             if (response != null) {
-                TL_phone.joinAsPeers res = (TL_phone.joinAsPeers) response;
+                TLRPC.TL_phone_joinAsPeers res = (TLRPC.TL_phone_joinAsPeers) response;
                 cachedChats = res.peers;
                 lastCacheDid = did;
                 lastCacheTime = SystemClock.elapsedRealtime();
@@ -244,7 +243,7 @@ public class JoinCallAlert extends BottomSheet {
             }
         } else {
             final AlertDialog progressDialog = new AlertDialog(context, AlertDialog.ALERT_TYPE_SPINNER);
-            TL_phone.getGroupCallJoinAs req = new TL_phone.getGroupCallJoinAs();
+            TLRPC.TL_phone_getGroupCallJoinAs req = new TLRPC.TL_phone_getGroupCallJoinAs();
             req.peer = accountInstance.getMessagesController().getInputPeer(did);
             int reqId = accountInstance.getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 try {
@@ -253,7 +252,7 @@ public class JoinCallAlert extends BottomSheet {
                     FileLog.e(e);
                 }
                 if (response != null) {
-                    TL_phone.joinAsPeers res = (TL_phone.joinAsPeers) response;
+                    TLRPC.TL_phone_joinAsPeers res = (TLRPC.TL_phone_joinAsPeers) response;
                     if (res.peers.size() == 1) {
                         TLRPC.InputPeer peer = accountInstance.getMessagesController().getInputPeer(MessageObject.getPeerId(res.peers.get(0)));
                         delegate.didSelectChat(peer, false, false, false);

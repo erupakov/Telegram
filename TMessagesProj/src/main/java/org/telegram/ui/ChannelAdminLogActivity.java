@@ -102,7 +102,6 @@ import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.Vector;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.ActionBarMenuItem;
@@ -254,7 +253,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
     private PhotoViewer.PhotoViewerProvider provider = new PhotoViewer.EmptyPhotoViewerProvider() {
 
         @Override
-        public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview, boolean closing) {
+        public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview) {
             int count = chatListView.getChildCount();
 
             for (int a = 0; a < count; a++) {
@@ -1667,7 +1666,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                     stickerSet = action.prev_stickerset;
                 }
                 if (stickerSet != null) {
-                    showDialog(new StickersAlert(getParentActivity(), ChannelAdminLogActivity.this, stickerSet, null, null, false));
+                    showDialog(new StickersAlert(getParentActivity(), ChannelAdminLogActivity.this, stickerSet, null, null));
                     return true;
                 }
             } else if (selectedObject.currentEvent != null && selectedObject.currentEvent.action instanceof TLRPC.TL_channelAdminLogEventActionChangeEmojiStickerSet) {
@@ -1925,39 +1924,15 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                 getMessagesController().getChannelParticipant(currentChat, user, participant -> AndroidUtilities.runOnUIThread(() -> {
                     selectedParticipant = participant;
                     if (participant != null) {
-
-                        boolean isAdmin = false;
-                        if (participant.peer instanceof TLRPC.TL_peerUser) {
-                            if (ChatObject.isChannel(currentChat)) {
-                                TLRPC.ChannelParticipant p = getMessagesController().getAdminInChannel(participant.peer.user_id, currentChat.id);
-                                isAdmin = p != null && (p instanceof TLRPC.TL_channelParticipantCreator || p.admin_rights.manage_call);
-                            } else {
-                                TLRPC.ChatFull chatFull = getMessagesController().getChatFull(currentChat.id);
-                                if (chatFull != null && chatFull.participants != null) {
-                                    for (int a = 0, N = chatFull.participants.participants.size(); a < N; a++) {
-                                        TLRPC.ChatParticipant chatParticipant = chatFull.participants.participants.get(a);
-                                        if (chatParticipant.user_id == participant.peer.user_id) {
-                                            isAdmin = chatParticipant instanceof TLRPC.TL_chatParticipantAdmin || chatParticipant instanceof TLRPC.TL_chatParticipantCreator;
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            isAdmin = false;
+                        if (ChatObject.canUserDoAction(currentChat, participant, ChatObject.ACTION_SEND) || ChatObject.canUserDoAction(currentChat, participant, ChatObject.ACTION_SEND_MEDIA)) {
+                            items.add(getString(R.string.Restrict));
+                            icons.add(R.drawable.msg_block2);
+                            options.add(OPTION_RESTRICT);
                         }
 
-                        if (!isAdmin || currentChat.creator) {
-                            if ((ChatObject.canUserDoAction(currentChat, participant, ChatObject.ACTION_SEND) || ChatObject.canUserDoAction(currentChat, participant, ChatObject.ACTION_SEND_MEDIA))) {
-                                items.add(getString(R.string.Restrict));
-                                icons.add(R.drawable.msg_block2);
-                                options.add(OPTION_RESTRICT);
-                            }
-
-                            items.add(getString(R.string.Ban));
-                            icons.add(R.drawable.msg_block);
-                            options.add(OPTION_BAN);
-                        }
+                        items.add(getString(R.string.Ban));
+                        icons.add(R.drawable.msg_block);
+                        options.add(OPTION_BAN);
                     }
                     proceed.run();
                 }));
@@ -2234,7 +2209,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                 break;
             }
             case OPTION_SAVE_STICKER: {
-                showDialog(new StickersAlert(getParentActivity(), this, selectedObject.getInputStickerSet(), null, null, false));
+                showDialog(new StickersAlert(getParentActivity(), this, selectedObject.getInputStickerSet(), null, null));
                 break;
             }
             case OPTION_SAVE_TO_DOWNLOADS_OR_MUSIC: {
@@ -2452,8 +2427,8 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
         inputUser.user_id = userId;
         req.id.add(inputUser);
         ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> {
-            if (res instanceof Vector) {
-                ArrayList<Object> objects = ((Vector) res).objects;
+            if (res instanceof TLRPC.Vector) {
+                ArrayList<Object> objects = ((TLRPC.Vector) res).objects;
                 ArrayList<TLRPC.User> users = new ArrayList<>();
                 for (int i = 0; i < objects.size(); ++i) {
                     if (objects.get(i) instanceof TLRPC.User) {
@@ -3106,7 +3081,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                     }
 
                     @Override
-                    public void didPressReplyMessage(ChatMessageCell cell, int id, float x, float y, boolean longpress) {
+                    public void didPressReplyMessage(ChatMessageCell cell, int id) {
                         MessageObject messageObject = cell.getMessageObject();
                         MessageObject reply = messageObject.replyMessageObject;
                         if (reply.getDialogId() == -currentChat.id) {
@@ -3130,10 +3105,10 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                     }
 
                     @Override
-                    public void didPressImage(ChatMessageCell cell, float x, float y, boolean fullPreview) {
+                    public void didPressImage(ChatMessageCell cell, float x, float y) {
                         MessageObject message = cell.getMessageObject();
                         if (message.getInputStickerSet() != null) {
-                            showDialog(new StickersAlert(getParentActivity(), ChannelAdminLogActivity.this, message.getInputStickerSet(), null, null, false));
+                            showDialog(new StickersAlert(getParentActivity(), ChannelAdminLogActivity.this, message.getInputStickerSet(), null, null));
                         } else if (message.isVideo() || message.type == MessageObject.TYPE_PHOTO || message.type == MessageObject.TYPE_TEXT && !message.isWebpageDocument() || message.isGif()) {
                             PhotoViewer.getInstance().setParentActivity(ChannelAdminLogActivity.this);
                             PhotoViewer.getInstance().openPhoto(message, null, 0, 0, 0, provider);
@@ -3426,7 +3401,7 @@ public class ChannelAdminLogActivity extends BaseFragment implements Notificatio
                     } else {
                         pinnedTop = false;
                     }
-                    messageCell.setMessageObject(message, null, pinnedBotton, pinnedTop, false);
+                    messageCell.setMessageObject(message, null, pinnedBotton, pinnedTop);
                     messageCell.setHighlighted(false);
                     messageCell.setHighlightedText(searchQuery);
                 } else if (view instanceof ChatActionCell) {

@@ -28,7 +28,6 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
-import org.telegram.ui.Cells.ChatActionCell;
 import org.telegram.ui.Cells.ChatMessageCell;
 import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
@@ -58,6 +57,7 @@ public class ReactionsEffectOverlay {
     private final AnimationView emojiImageView;
     private final AnimationView emojiStaticImageView;
     private final FrameLayout container;
+    private final BaseFragment fragment;
     private final int currentAccount;
     private ReactionsEffectOverlay nextReactionOverlay;
     boolean animateIn;
@@ -81,7 +81,7 @@ public class ReactionsEffectOverlay {
     private ReactionsContainerLayout.ReactionHolderView holderView = null;
     private SelectAnimatedEmojiDialog.ImageViewEmoji holderView2 = null;
     private boolean wasScrolled;
-    private View cell;
+    private ChatMessageCell cell;
     private boolean useWindow;
     private ViewGroup decorView;
     private static long lastHapticTime;
@@ -90,19 +90,13 @@ public class ReactionsEffectOverlay {
     public boolean isStories;
     boolean isFinished;
 
-    public ReactionsEffectOverlay(Context context, BaseFragment fragment, ReactionsContainerLayout reactionsLayout, View cell, View fromAnimationView, float x, float y, ReactionsLayoutInBubble.VisibleReaction visibleReaction, int currentAccount, int animationType, boolean isStories) {
+    public ReactionsEffectOverlay(Context context, BaseFragment fragment, ReactionsContainerLayout reactionsLayout, ChatMessageCell cell, View fromAnimationView, float x, float y, ReactionsLayoutInBubble.VisibleReaction visibleReaction, int currentAccount, int animationType, boolean isStories) {
+        this.fragment = fragment;
         this.isStories = isStories;
-        final MessageObject messageObject;
-        if (cell instanceof ChatMessageCell) {
-            messageObject = ((ChatMessageCell) cell).getMessageObject();
-            this.messageId = messageObject.getId();
-            this.groupId = messageObject.getGroupId();
-        } else if (cell instanceof ChatActionCell) {
-            messageObject = ((ChatActionCell) cell).getMessageObject();
-            this.messageId = messageObject.getId();
-            this.groupId = 0;
+        if (cell != null) {
+            this.messageId = cell.getMessageObject().getId();
+            this.groupId = cell.getMessageObject().getGroupId();
         } else {
-            messageObject = null;
             this.messageId = 0;
             this.groupId = 0;
         }
@@ -111,10 +105,8 @@ public class ReactionsEffectOverlay {
         this.currentAccount = currentAccount;
         this.cell = cell;
         ReactionsLayoutInBubble.ReactionButton reactionButton = null;
-        if (cell instanceof ChatMessageCell) {
-            reactionButton = ((ChatMessageCell) cell).getReactionButton(visibleReaction);
-        } else if (cell instanceof ChatActionCell) {
-            reactionButton = ((ChatActionCell) cell).getReactionButton(visibleReaction);
+        if (cell != null) {
+            reactionButton = cell.getReactionButton(visibleReaction);
         }
         if (isStories && animationType == ONLY_MOVE_ANIMATION) {
             ReactionsEffectOverlay.currentShortOverlay = nextReactionOverlay = new ReactionsEffectOverlay(context, fragment, reactionsLayout, cell, fromAnimationView, x, y, visibleReaction, currentAccount, SHORT_ANIMATION, true);
@@ -135,8 +127,8 @@ public class ReactionsEffectOverlay {
         if (animationType == SHORT_ANIMATION) {
             Random random = new Random();
             ArrayList<TLRPC.MessagePeerReaction> recentReactions = null;
-            if (messageObject != null && messageObject.messageOwner.reactions != null) {
-                recentReactions = messageObject.messageOwner.reactions.recent_reactions;
+            if (cell != null && cell.getMessageObject().messageOwner.reactions != null) {
+                recentReactions = cell.getMessageObject().messageOwner.reactions.recent_reactions;
             }
             if (recentReactions != null && chatActivity != null && chatActivity.getDialogId() < 0) {
                 for (int i = 0; i < recentReactions.size(); i++) {
@@ -239,7 +231,7 @@ public class ReactionsEffectOverlay {
         } else if (cell != null) {
             ((View) cell.getParent()).getLocationInWindow(loc);
             fromX = loc[0] + x;
-            fromY = loc[1] + y + (cell instanceof ChatMessageCell ? ((ChatMessageCell) cell).starsPriceTopPadding : 0);
+            fromY = loc[1] + y;
             fromHeight = 0;
         } else {
             fromX = x;
@@ -304,44 +296,36 @@ public class ReactionsEffectOverlay {
                         holderView.pressedBackupImageView.setAlpha(0);
                     }
                 }
-                View drawingCell;
+                ChatMessageCell drawingCell;
                 if (fragment instanceof ChatActivity) {
-                    drawingCell = ((ChatActivity) fragment).findCell(messageId, false);
+                    drawingCell = ((ChatActivity) fragment).findMessageCell(messageId, false);
                 } else {
                     drawingCell = cell;
                 }
                 float toX, toY, toH;
 
                 if (isStories) {
-                    toH = SharedConfig.deviceIsHigh() ? AndroidUtilities.dp(120) : AndroidUtilities.dp(50);
-                } else if (messageObject != null && messageObject.shouldDrawReactionsInLayout()) {
+                    toH =  SharedConfig.deviceIsHigh() ? AndroidUtilities.dp(120) : AndroidUtilities.dp(50);
+                } else if (cell != null && cell.getMessageObject().shouldDrawReactionsInLayout()) {
                     toH = AndroidUtilities.dp(20);
                 } else {
                     toH = AndroidUtilities.dp(14);
                 }
                 if (drawingCell != null) {
-                    drawingCell.getLocationInWindow(loc);
+                    cell.getLocationInWindow(loc);
 
+                    ReactionsLayoutInBubble.ReactionButton reactionButton = cell.getReactionButton(reaction);
                     toX = loc[0];
                     toY = loc[1];
-                    ReactionsLayoutInBubble.ReactionButton reactionButton = null;
-                    if (drawingCell instanceof ChatMessageCell) {
-                        ChatMessageCell messageCell = (ChatMessageCell) drawingCell;
-                        reactionButton = messageCell.getReactionButton(reaction);
-                        if (messageCell.drawPinnedBottom && !messageCell.shouldDrawTimeOnMedia()) {
-                            toY += AndroidUtilities.dp(2);
-                        }
-                        toY += messageCell.getPaddingTop();
-                    } else if (drawingCell instanceof ChatActionCell) {
-                        reactionButton = ((ChatActionCell) drawingCell).getReactionButton(reaction);
-                        toY += drawingCell.getPaddingTop();
-                    }
                     if (reactionButton != null) {
                         toX += reactionButton.drawingImageRect.left;
                         toY += reactionButton.drawingImageRect.top;
                     }
                     if (chatActivity != null) {
                         toY += chatActivity.drawingChatListViewYoffset;
+                    }
+                    if (drawingCell.drawPinnedBottom && !drawingCell.shouldDrawTimeOnMedia()) {
+                        toY += AndroidUtilities.dp(2);
                     }
                     lastDrawnToX = toX;
                     lastDrawnToY = toY;
@@ -463,9 +447,7 @@ public class ReactionsEffectOverlay {
                             if (isStories && animationType == ONLY_MOVE_ANIMATION) {
                                 if (!isFinished) {
                                     isFinished = true;
-                                    try {
-                                        performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
-                                    } catch (Exception ignored) {}
+                                    performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
 
                                     ViewGroup viewGroup = (ViewGroup) getParent();
                                     viewGroup.addView(nextReactionOverlay.windowView);
@@ -486,10 +468,8 @@ public class ReactionsEffectOverlay {
                         }
                         if (ReactionsEffectOverlay.this.animateOutProgress >= 1f) {
                             if (animationType == LONG_ANIMATION || animationType == ONLY_MOVE_ANIMATION) {
-                                if (cell instanceof ChatMessageCell) {
-                                    ((ChatMessageCell) cell).reactionsLayoutInBubble.animateReaction(reaction);
-                                } else if (cell instanceof ChatActionCell) {
-                                    ((ChatActionCell) cell).reactionsLayoutInBubble.animateReaction(reaction);
+                                if (cell != null) {
+                                    cell.reactionsLayoutInBubble.animateReaction(reaction);
                                 }
                             }
                             ReactionsEffectOverlay.this.animateOutProgress = 1f;
@@ -500,7 +480,7 @@ public class ReactionsEffectOverlay {
                             }
                             if (cell != null) {
                                 cell.invalidate();
-                                if (cell instanceof ChatMessageCell && ((ChatMessageCell) cell).getCurrentMessagesGroup() != null && cell.getParent() != null) {
+                                if (cell.getCurrentMessagesGroup() != null && cell.getParent() != null) {
                                     ((View) cell.getParent()).invalidate();
                                 }
                             }
@@ -647,12 +627,12 @@ public class ReactionsEffectOverlay {
                 if (animationType == LONG_ANIMATION || animationType == SHORT_ANIMATION) {
                     AnimatedEmojiDrawable animatedEmojiDrawable = new AnimatedEmojiDrawable(AnimatedEmojiDrawable.CACHE_TYPE_KEYBOARD, currentAccount, visibleReaction.documentId);
                     int color;
-                    if (messageObject != null) {
+                    if (cell != null) {
                         color = Theme.getColor(
-                            messageObject.shouldDrawWithoutBackground() ?
-                                messageObject.isOutOwner() ? Theme.key_chat_outReactionButtonBackground : Theme.key_chat_inReactionButtonBackground :
-                                messageObject.isOutOwner() ? Theme.key_chat_outReactionButtonTextSelected : Theme.key_chat_inReactionButtonTextSelected,
-                            fragment != null ? fragment.getResourceProvider() : null
+                                cell.getMessageObject().shouldDrawWithoutBackground() ?
+                                        cell.getMessageObject().isOutOwner() ? Theme.key_chat_outReactionButtonBackground : Theme.key_chat_inReactionButtonBackground :
+                                        cell.getMessageObject().isOutOwner() ? Theme.key_chat_outReactionButtonTextSelected : Theme.key_chat_inReactionButtonTextSelected,
+                                fragment != null ? fragment.getResourceProvider() : null
                         );
                     } else {
                         color = Color.WHITE;
@@ -740,7 +720,7 @@ public class ReactionsEffectOverlay {
         }
     }
 
-    public static void show(BaseFragment baseFragment, ReactionsContainerLayout reactionsLayout, View cell, View fromAnimationView, float x, float y, ReactionsLayoutInBubble.VisibleReaction visibleReaction, int currentAccount, int animationType) {
+    public static void show(BaseFragment baseFragment, ReactionsContainerLayout reactionsLayout, ChatMessageCell cell, View fromAnimationView, float x, float y, ReactionsLayoutInBubble.VisibleReaction visibleReaction, int currentAccount, int animationType) {
         if (cell == null || visibleReaction == null || baseFragment == null || baseFragment.getParentActivity() == null) {
             return;
         }
@@ -783,7 +763,7 @@ public class ReactionsEffectOverlay {
             reactionsEffectOverlay.decorView.addView(reactionsEffectOverlay.windowView);
         }
         cell.invalidate();
-        if (cell instanceof ChatMessageCell && ((ChatMessageCell) cell).getCurrentMessagesGroup() != null && cell.getParent() != null) {
+        if (cell.getCurrentMessagesGroup() != null && cell.getParent() != null) {
             ((View) cell.getParent()).invalidate();
         }
 
@@ -800,11 +780,7 @@ public class ReactionsEffectOverlay {
         } else {
             startShortAnimation();
             if (currentShortOverlay != null) {
-                if (currentShortOverlay.cell instanceof ChatMessageCell) {
-                    ((ChatMessageCell) currentShortOverlay.cell).reactionsLayoutInBubble.animateReaction(currentShortOverlay.reaction);
-                } else if (currentShortOverlay.cell instanceof ChatActionCell) {
-                    ((ChatActionCell) currentShortOverlay.cell).reactionsLayoutInBubble.animateReaction(currentShortOverlay.reaction);
-                }
+                currentShortOverlay.cell.reactionsLayoutInBubble.animateReaction(currentShortOverlay.reaction);
             }
         }
     }

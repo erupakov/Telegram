@@ -92,7 +92,7 @@ public class BoostPagerBottomSheet extends BottomSheet {
             }
 
             @Override
-            public void onTabAnimationUpdate(boolean manual) {
+            protected void onTabAnimationUpdate(boolean manual) {
                 float percent = viewPager.getPositionAnimated();
                 if (percent > 0f && percent < 1f) {
                     if (!isScrolling) {

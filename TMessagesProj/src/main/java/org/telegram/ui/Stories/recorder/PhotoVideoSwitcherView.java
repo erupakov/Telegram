@@ -180,10 +180,6 @@ public class PhotoVideoSwitcherView extends View implements FlashViews.Invertabl
         canvas.restore();
     }
 
-    protected boolean allowTouch() {
-        return true;
-    }
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (mVelocityTracker == null) {
@@ -193,9 +189,6 @@ public class PhotoVideoSwitcherView extends View implements FlashViews.Invertabl
 
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                if (!allowTouch()) {
-                    return false;
-                }
                 mIsTouch = true;
                 modeAtTouchDown = mode;
                 mLastTouchTime = System.currentTimeMillis();

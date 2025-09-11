@@ -1,20 +1,15 @@
+#include <tgnet/FileLog.h>
 #include "AndroidContext.h"
 
 #include "sdk/android/native_api/jni/jvm.h"
-#include "tgnet/FileLog.h"
 
 namespace tgcalls {
 
-AndroidContext::AndroidContext(JNIEnv *env, jobject peerInstance, jobject groupInstance, bool screencast) {
+AndroidContext::AndroidContext(JNIEnv *env, jobject instance, bool screencast) {
     VideoCapturerDeviceClass = (jclass) env->NewGlobalRef(env->FindClass("org/telegram/messenger/voip/VideoCapturerDevice"));
     jmethodID initMethodId = env->GetMethodID(VideoCapturerDeviceClass, "<init>", "(Z)V");
     javaCapturer = env->NewGlobalRef(env->NewObject(VideoCapturerDeviceClass, initMethodId, screencast));
-    if (peerInstance) {
-        javaPeerInstance = env->NewGlobalRef(peerInstance);
-    }
-    if (groupInstance) {
-        javaGroupInstance = env->NewGlobalRef(groupInstance);
-    }
+    javaInstance = env->NewGlobalRef(instance);
 }
 
 AndroidContext::~AndroidContext() {
@@ -27,28 +22,17 @@ AndroidContext::~AndroidContext() {
 
     env->DeleteGlobalRef(VideoCapturerDeviceClass);
 
-    if (javaPeerInstance) {
-        env->DeleteGlobalRef(javaPeerInstance);
-    }
-    if (javaGroupInstance) {
-        env->DeleteGlobalRef(javaGroupInstance);
+    if (javaInstance) {
+        env->DeleteGlobalRef(javaInstance);
     }
 }
 
-void AndroidContext::setJavaPeerInstance(JNIEnv *env, jobject instance) {
-    javaPeerInstance = env->NewGlobalRef(instance);
+void AndroidContext::setJavaInstance(JNIEnv *env, jobject instance) {
+    javaInstance = env->NewGlobalRef(instance);
 }
 
-void AndroidContext::setJavaGroupInstance(JNIEnv *env, jobject instance) {
-    javaGroupInstance = env->NewGlobalRef(instance);
-}
-
-jobject AndroidContext::getJavaPeerInstance() {
-    return javaPeerInstance;
-}
-
-jobject AndroidContext::getJavaGroupInstance() {
-    return javaGroupInstance;
+jobject AndroidContext::getJavaInstance() {
+    return javaInstance;
 }
 
 jobject AndroidContext::getJavaCapturer() {

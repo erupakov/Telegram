@@ -2,9 +2,6 @@ package org.telegram.ui.ActionBar;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
@@ -18,24 +15,20 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.core.graphics.ColorUtils;
-
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.LocaleController;
-import org.telegram.ui.Components.AnimatedEmojiSpan;
 import org.telegram.ui.Components.AnimatedTextView;
 import org.telegram.ui.Components.CheckBox2;
-import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.RLottieImageView;
 
 public class ActionBarMenuSubItem extends FrameLayout {
 
-    public AnimatedEmojiSpan.TextViewEmojis textView;
+    private TextView textView;
     public TextView subtextView;
     public RLottieImageView imageView;
-    public boolean checkViewLeft;
-    public CheckBox2 checkView;
+    private boolean checkViewLeft;
+    private CheckBox2 checkView;
     private ImageView rightIcon;
 
     private int textColor;
@@ -47,7 +40,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
     boolean bottom;
 
     private int itemHeight = 48;
-    protected final Theme.ResourcesProvider resourcesProvider;
+    private final Theme.ResourcesProvider resourcesProvider;
     public Runnable openSwipeBackLayout;
 
     public ActionBarMenuSubItem(Context context, boolean top, boolean bottom) {
@@ -85,7 +78,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
         imageView.setColorFilter(new PorterDuffColorFilter(iconColor, PorterDuff.Mode.MULTIPLY));
         addView(imageView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 40, Gravity.CENTER_VERTICAL | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT)));
 
-        textView = new AnimatedEmojiSpan.TextViewEmojis(context);
+        textView = new TextView(context);
         textView.setLines(1);
         textView.setSingleLine(true);
         textView.setGravity(Gravity.LEFT);
@@ -95,12 +88,8 @@ public class ActionBarMenuSubItem extends FrameLayout {
         addView(textView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_VERTICAL));
 
         checkViewLeft = LocaleController.isRTL;
-        makeCheckView(needCheck);
-    }
-
-    public void makeCheckView(int needCheck) {
         if (needCheck > 0) {
-            checkView = new CheckBox2(getContext(), 26, resourcesProvider);
+            checkView = new CheckBox2(context, 26, resourcesProvider);
             checkView.setDrawUnchecked(false);
             checkView.setColor(-1, -1, Theme.key_radioBackgroundChecked);
             checkView.setDrawBackgroundAsArc(-1);
@@ -113,10 +102,6 @@ public class ActionBarMenuSubItem extends FrameLayout {
                 textView.setPadding(LocaleController.isRTL ? dp(34) : 0, 0, LocaleController.isRTL ? 0 : dp(34), 0);
             }
         }
-    }
-
-    public void setEmojiCacheType(int cacheType) {
-        textView.setCacheType(cacheType);
     }
 
     @Override
@@ -204,16 +189,13 @@ public class ActionBarMenuSubItem extends FrameLayout {
         textView.setText(text);
         if (icon != 0 || iconDrawable != null || checkView != null) {
             if (iconDrawable != null) {
-                iconResId = 0;
                 imageView.setImageDrawable(iconDrawable);
             } else {
-                iconResId = icon;
                 imageView.setImageResource(icon);
             }
             imageView.setVisibility(VISIBLE);
             textView.setPadding(checkViewLeft ? (checkView != null ? dp(43) : 0) : dp(icon != 0 || iconDrawable != null ? 43 : 0), 0, checkViewLeft ? dp(icon != 0 || iconDrawable != null ? 43 : 0) : (checkView != null ? dp(43) : 0), 0);
         } else {
-            iconResId = 0;
             imageView.setVisibility(INVISIBLE);
             textView.setPadding(0, 0, 0, 0);
         }
@@ -237,70 +219,15 @@ public class ActionBarMenuSubItem extends FrameLayout {
         }
     }
 
-    private ValueAnimator enabledAnimator;
-    private boolean enabled;
-    public void setEnabledByColor(boolean enabled, int colorDisabled, int colorEnabled) {
-        if (enabledAnimator != null) {
-            enabledAnimator.cancel();
-        }
-        enabledAnimator = ValueAnimator.ofFloat(this.enabled ? 1.0f : 0.0f, enabled ? 1.0f : 0.0f);
-        this.enabled = enabled;
-        enabledAnimator.addUpdateListener(anm -> {
-            final float t = (float) anm.getAnimatedValue();
-            setTextColor(ColorUtils.blendARGB(colorDisabled, colorEnabled, t));
-            setIconColor(ColorUtils.blendARGB(colorDisabled, colorEnabled, t));
-        });
-        enabledAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                final float t = enabled ? 1.0f : 0.0f;
-                setTextColor(ColorUtils.blendARGB(colorDisabled, colorEnabled, t));
-                setIconColor(ColorUtils.blendARGB(colorDisabled, colorEnabled, t));
-            }
-        });
-        enabledAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
-        enabledAnimator.start();
-    }
-
-    public void setEnabledByColor(boolean enabled, int textColorDisabled, int iconColorDisabled, int colorEnabled) {
-        if (enabledAnimator != null) {
-            enabledAnimator.cancel();
-        }
-        enabledAnimator = ValueAnimator.ofFloat(this.enabled ? 1.0f : 0.0f, enabled ? 1.0f : 0.0f);
-        this.enabled = enabled;
-        enabledAnimator.addUpdateListener(anm -> {
-            final float t = (float) anm.getAnimatedValue();
-            setTextColor(ColorUtils.blendARGB(textColorDisabled, colorEnabled, t));
-            setIconColor(ColorUtils.blendARGB(iconColorDisabled, colorEnabled, t));
-        });
-        enabledAnimator.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                final float t = enabled ? 1.0f : 0.0f;
-                setTextColor(ColorUtils.blendARGB(textColorDisabled, colorEnabled, t));
-                setIconColor(ColorUtils.blendARGB(iconColorDisabled, colorEnabled, t));
-            }
-        });
-        enabledAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
-        enabledAnimator.start();
-    }
-
-    private int iconResId;
-    public int getIconResId() {
-        return iconResId;
-    }
-
     public void setIcon(int resId) {
-        imageView.setImageResource(iconResId = resId);
+        imageView.setImageResource(resId);
     }
 
     public void setIcon(Drawable drawable) {
-        iconResId = 0;
         imageView.setImageDrawable(drawable);
     }
 
     public void setAnimatedIcon(int resId) {
-        iconResId = 0;
         imageView.setAnimation(resId, 24, 24);
     }
 
@@ -320,7 +247,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
         }
     }
 
-    public void setSubtext(CharSequence text) {
+    public void setSubtext(String text) {
         if (subtextView == null) {
             subtextView = new TextView(getContext());
             subtextView.setLines(1);
@@ -344,7 +271,7 @@ public class ActionBarMenuSubItem extends FrameLayout {
         subtextView.setText(text);
     }
 
-    public AnimatedEmojiSpan.TextViewEmojis getTextView() {
+    public TextView getTextView() {
         return textView;
     }
 

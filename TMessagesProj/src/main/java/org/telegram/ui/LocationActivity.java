@@ -8,6 +8,7 @@
 
 package org.telegram.ui;
 
+import static androidx.core.view.ViewCompat.TYPE_TOUCH;
 import static org.telegram.messenger.AndroidUtilities.dp;
 
 import android.Manifest;
@@ -19,6 +20,7 @@ import android.animation.StateListAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Notification;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -45,6 +47,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -75,7 +78,6 @@ import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.DialogObject;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.IMapsProvider;
-import org.telegram.messenger.ImageReceiver;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.LocationController;
 import org.telegram.messenger.MessageObject;
@@ -326,11 +328,11 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             lastPressedMarkerView.setOnClickListener(v -> {
                 if (parentFragment != null && parentFragment.isInScheduleMode()) {
                     AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate) -> {
-                        delegate.didSelectLocation(location.venue, locationType, notify, scheduleDate, 0);
+                        delegate.didSelectLocation(location.venue, locationType, notify, scheduleDate);
                         finishFragment();
                     });
                 } else {
-                    delegate.didSelectLocation(location.venue, locationType, true, 0, 0);
+                    delegate.didSelectLocation(location.venue, locationType, true, 0);
                     finishFragment();
                 }
             });
@@ -431,7 +433,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
     }
 
     public interface LocationActivityDelegate {
-        void didSelectLocation(TLRPC.MessageMedia location, int live, boolean notify, int scheduleDate, long payStars);
+        void didSelectLocation(TLRPC.MessageMedia location, int live, boolean notify, int scheduleDate);
     }
 
     public LocationActivity(int type) {
@@ -1171,7 +1173,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                         return;
                     }
                     if (dialogId == 0) {
-                        delegate.didSelectLocation(venue, LOCATION_TYPE_GROUP, true, 0, 0);
+                        delegate.didSelectLocation(venue, LOCATION_TYPE_GROUP, true, 0);
                         finishFragment();
                     } else {
                         final AlertDialog[] progressDialog = new AlertDialog[]{new AlertDialog(getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER)};
@@ -1188,7 +1190,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
 
                             }
                             progressDialog[0] = null;
-                            delegate.didSelectLocation(venue, LOCATION_TYPE_GROUP, true, 0, 0);
+                            delegate.didSelectLocation(venue, LOCATION_TYPE_GROUP, true, 0);
                             finishFragment();
                         }));
                         progressDialog[0].setOnCancelListener(dialog -> getConnectionsManager().cancelRequest(requestId, true));
@@ -1214,11 +1216,11 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                         location.geo._long = AndroidUtilities.fixLocationCoord(userLocation.getLongitude());
                         if (parentFragment != null && parentFragment.isInScheduleMode()) {
                             AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate) -> {
-                                delegate.didSelectLocation(location, locationType, notify, scheduleDate, 0);
+                                delegate.didSelectLocation(location, locationType, notify, scheduleDate);
                                 finishFragment();
                             });
                         } else {
-                            delegate.didSelectLocation(location, locationType, true, 0, 0);
+                            delegate.didSelectLocation(location, locationType, true, 0);
                             finishFragment();
                         }
                     }
@@ -1242,11 +1244,11 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                 if (object instanceof TLRPC.TL_messageMediaVenue) {
                     if (parentFragment != null && parentFragment.isInScheduleMode()) {
                         AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate) -> {
-                            delegate.didSelectLocation((TLRPC.TL_messageMediaVenue) object, locationType, notify, scheduleDate, 0);
+                            delegate.didSelectLocation((TLRPC.TL_messageMediaVenue) object, locationType, notify, scheduleDate);
                             finishFragment();
                         });
                     } else {
-                        delegate.didSelectLocation((TLRPC.TL_messageMediaVenue) object, locationType, true, 0, 0);
+                        delegate.didSelectLocation((TLRPC.TL_messageMediaVenue) object, locationType, true, 0);
                         finishFragment();
                     }
                 } else if (object instanceof LiveLocation) {
@@ -1418,11 +1420,11 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                 } else if (object != null && delegate != null) {
                     if (parentFragment != null && parentFragment.isInScheduleMode()) {
                         AlertsCreator.createScheduleDatePickerDialog(getParentActivity(), parentFragment.getDialogId(), (notify, scheduleDate) -> {
-                            delegate.didSelectLocation(object, locationType, notify, scheduleDate, 0);
+                            delegate.didSelectLocation(object, locationType, notify, scheduleDate);
                             finishFragment();
                         });
                     } else {
-                        delegate.didSelectLocation(object, locationType, true, 0, 0);
+                        delegate.didSelectLocation(object, locationType, true, 0);
                         finishFragment();
                     }
                 }
@@ -1597,21 +1599,8 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
             Paint roundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             RectF bitmapRect = new RectF();
             canvas.save();
-
-            canvas.save();
-            AvatarDrawable avatarDrawable = new AvatarDrawable();
-            if (liveLocation.user != null) {
-                avatarDrawable.setInfo(currentAccount, liveLocation.user);
-            } else if (liveLocation.chat != null) {
-                avatarDrawable.setInfo(currentAccount, liveLocation.chat);
-            }
-            canvas.translate(dp(6), dp(6));
-            avatarDrawable.setBounds(0, 0, dp(50), dp(50));
-            avatarDrawable.draw(canvas);
-            canvas.restore();
-
             if (photo != null) {
-                File path = ImageReceiver.getAvatarLocalFile(currentAccount, liveLocation.user != null ? liveLocation.user : liveLocation.chat);
+                File path = getFileLoader().getPathToAttach(photo, true);
                 Bitmap bitmap = BitmapFactory.decodeFile(path.toString());
                 if (bitmap != null) {
                     BitmapShader shader = new BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
@@ -1624,8 +1613,17 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
                     bitmapRect.set(dp(6), dp(6), dp(50 + 6), dp(50 + 6));
                     canvas.drawRoundRect(bitmapRect, dp(25), dp(25), roundPaint);
                 }
+            } else {
+                AvatarDrawable avatarDrawable = new AvatarDrawable();
+                if (liveLocation.user != null) {
+                    avatarDrawable.setInfo(currentAccount, liveLocation.user);
+                } else if (liveLocation.chat != null) {
+                    avatarDrawable.setInfo(currentAccount, liveLocation.chat);
+                }
+                canvas.translate(dp(6), dp(6));
+                avatarDrawable.setBounds(0, 0, dp(50), dp(50));
+                avatarDrawable.draw(canvas);
             }
-
             canvas.restore();
             try {
                 canvas.setBitmap(null);
@@ -1794,7 +1792,7 @@ public class LocationActivity extends BaseFragment implements NotificationCenter
         location.period = period;
         location.proximity_notification_radius = radius;
         location.flags |= 8;
-        delegate.didSelectLocation(location, locationType, true, 0, 0);
+        delegate.didSelectLocation(location, locationType, true, 0);
         if (radius > 0) {
             proximitySheet.setRadiusSet();
             proximityButton.setImageResource(R.drawable.msg_location_alert2);

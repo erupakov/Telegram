@@ -21,7 +21,6 @@ import android.graphics.RectF;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
-import android.text.TextUtils;
 import android.util.LongSparseArray;
 import android.util.SparseArray;
 import android.view.GestureDetector;
@@ -70,7 +69,6 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ArticleViewer;
 import org.telegram.ui.Cells.ChatActionCell;
-import org.telegram.ui.Cells.ChatMessageCell;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.LayoutHelper;
@@ -455,9 +453,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                             if (swipeToReplyOffset > maxOffset && !swipeToReplyWaitingKeyboard) {
                                 swipeToReplyWaitingKeyboard = true;
                                 showKeyboard();
-                                try {
-                                    windowView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                                } catch (Exception ignored) {}
+                                windowView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                             }
                             swipeToReplyProgress = Utilities.clamp(swipeToReplyOffset / maxOffset, 1f, 0);
                             if (storiesViewPager.getCurrentPeerView() != null) {
@@ -510,9 +506,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                     if (swipeToReplyOffset != 0 && storiesIntro == null) {
                         if (velocityY < -1000 && !swipeToReplyWaitingKeyboard) {
                             swipeToReplyWaitingKeyboard = true;
-                            try {
-                                windowView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
-                            } catch (Exception ignored) {}
+                            windowView.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP);
                             showKeyboard();
                         }
                     }
@@ -966,7 +960,8 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                                     if ((int) (nowSeek * 10) != (int) (wasSeek * 10)) {
                                         try {
                                             peerView.performHapticFeedback(9, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-                                        } catch (Exception ignore) {}
+                                        } catch (Exception ignore) {
+                                        }
                                     }
                                     peerView.storyContainer.invalidate();
                                     lastTouchX = x;
@@ -1338,7 +1333,9 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                         scope.player = null;
                         return;
                     }
-                    boolean sameUri = TextUtils.equals(lastUri == null ? null : lastUri.toString(), uri == null ? null : uri.toString());
+                    String lastAutority = lastUri == null ? null : lastUri.getAuthority();
+                    String autority = uri == null ? null : uri.getAuthority();
+                    boolean sameUri = Objects.equals(lastAutority, autority);
                     if (!sameUri || playerHolder == null) {
                         lastUri = uri;
                         if (playerHolder != null) {
@@ -1384,7 +1381,7 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                                 currentPlayerScope.firstFrameRendered = true;
                             }
                             FileLog.d("StoryViewer requestPlayer: currentPlayerScope.player start " + uri);
-                            currentPlayerScope.player.start(false, isPaused(), uri, t, isInSilentMode, currentSpeed);
+                            currentPlayerScope.player.start(isPaused(), uri, t, isInSilentMode, currentSpeed);
                             currentPlayerScope.invalidate();
                         } else {
                             FileLog.d("StoryViewer requestPlayer: url is null (1)");
@@ -1960,9 +1957,6 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                 if (transitionViewHolder.view != null) {
                     int[] loc = new int[2];
                     transitionViewHolder.view.getLocationOnScreen(loc);
-                    if (transitionViewHolder.view instanceof ChatMessageCell) {
-                        loc[1] += transitionViewHolder.view.getPaddingTop();
-                    }
                     fromXCell = loc[0];
                     fromYCell = loc[1];
                     if (transitionViewHolder.view instanceof StoriesListPlaceProvider.AvatarOverlaysView) {
@@ -2680,19 +2674,15 @@ public class StoryViewer implements NotificationCenter.NotificationCenterDelegat
                 if (fragment.getParentActivity() != null) {
                     if (allowScreenshots) {
                         fragment.getParentActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                        AndroidUtilities.logFlagSecure();
                     } else {
                         fragment.getParentActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
-                        AndroidUtilities.logFlagSecure();
                     }
                 }
             } else {
                 if (allowScreenshots) {
                     windowLayoutParams.flags &= ~WindowManager.LayoutParams.FLAG_SECURE;
-                    AndroidUtilities.logFlagSecure();
                 } else {
                     windowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_SECURE;
-                    AndroidUtilities.logFlagSecure();
                 }
                 try {
                     windowManager.updateViewLayout(windowView, windowLayoutParams);

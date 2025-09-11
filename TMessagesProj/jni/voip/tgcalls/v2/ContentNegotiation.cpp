@@ -100,7 +100,7 @@ cricket::ContentInfo convertSingalingContentToContentInfo(std::string const &con
             auto audioDescription = std::make_unique<cricket::AudioContentDescription>();
 
             for (const auto &payloadType : content.payloadTypes) {
-                cricket::AudioCodec mappedCodec = cricket::CreateAudioCodec((int)payloadType.id, payloadType.name, (int)payloadType.clockrate, payloadType.channels);
+                cricket::AudioCodec mappedCodec((int)payloadType.id, payloadType.name, (int)payloadType.clockrate, 0, payloadType.channels);
                 for (const auto &parameter : payloadType.parameters) {
                     mappedCodec.params.insert(parameter);
                 }
@@ -118,12 +118,10 @@ cricket::ContentInfo convertSingalingContentToContentInfo(std::string const &con
             auto videoDescription = std::make_unique<cricket::VideoContentDescription>();
 
             for (const auto &payloadType : content.payloadTypes) {
-                webrtc::SdpVideoFormat videoFormat(payloadType.name);
+                cricket::VideoCodec mappedCodec((int)payloadType.id, payloadType.name);
                 for (const auto &parameter : payloadType.parameters) {
-                    videoFormat.parameters.insert(parameter);
+                    mappedCodec.params.insert(parameter);
                 }
-                cricket::VideoCodec mappedCodec = cricket::CreateVideoCodec(videoFormat);
-                mappedCodec.id = (int)payloadType.id;
                 for (const auto &feedbackParam : payloadType.feedbackTypes) {
                     mappedCodec.AddFeedbackParam(cricket::FeedbackParam(feedbackParam.type, feedbackParam.subtype));
                 }
@@ -194,16 +192,17 @@ std::string contentIdBySsrc(uint32_t ssrc) {
 
 }
 
-ContentNegotiationContext::ContentNegotiationContext(const webrtc::FieldTrialsView& fieldTrials, bool isOutgoing, cricket::MediaEngineInterface *mediaEngine, rtc::UniqueRandomIdGenerator *uniqueRandomIdGenerator) :
+ContentNegotiationContext::ContentNegotiationContext(const webrtc::WebRtcKeyValueConfig& fieldTrials, bool isOutgoing, rtc::UniqueRandomIdGenerator *uniqueRandomIdGenerator) :
 _isOutgoing(isOutgoing),
 _uniqueRandomIdGenerator(uniqueRandomIdGenerator) {
     _transportDescriptionFactory = std::make_unique<cricket::TransportDescriptionFactory>(fieldTrials);
 
     // tempCertificate is only used to fill in the local SDP
     auto tempCertificate = rtc::RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(rtc::KT_ECDSA), absl::nullopt);
+    _transportDescriptionFactory->set_secure(cricket::SecurePolicy::SEC_REQUIRED);
     _transportDescriptionFactory->set_certificate(tempCertificate);
-    
-    _sessionDescriptionFactory = std::make_unique<cricket::MediaSessionDescriptionFactory>(mediaEngine, true, uniqueRandomIdGenerator, _transportDescriptionFactory.get());
+
+    _sessionDescriptionFactory = std::make_unique<cricket::MediaSessionDescriptionFactory>(_transportDescriptionFactory.get(), uniqueRandomIdGenerator);
 
     _needNegotiation = true;
 }
@@ -336,22 +335,7 @@ std::unique_ptr<cricket::SessionDescription> ContentNegotiationContext::currentS
 
                 auto mappedContent = convertSingalingContentToContentInfo(contentIdBySsrc(channel.ssrc), channel, webrtc::RtpTransceiverDirection::kRecvOnly);
 
-                // only required for content negotiation
-                auto localCertificate = rtc::RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(rtc::KT_ECDSA), absl::nullopt);
-                std::unique_ptr<rtc::SSLFingerprint> fingerprint;
-                if (localCertificate) {
-                    fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*localCertificate.get());
-                }
-                
-                std::vector<std::string> transportOptions;
-                cricket::TransportDescription transportDescription(
-                    transportOptions,
-                    "ufrag",
-                    "pwd",
-                    cricket::IceMode::ICEMODE_FULL,
-                    cricket::ConnectionRole::CONNECTIONROLE_ACTPASS,
-                    fingerprint.get()
-                );
+                cricket::TransportDescription transportDescription;
                 cricket::TransportInfo transportInfo(contentIdBySsrc(channel.ssrc), transportDescription);
                 sessionDescription->AddTransportInfo(transportInfo);
 
@@ -367,22 +351,7 @@ std::unique_ptr<cricket::SessionDescription> ContentNegotiationContext::currentS
 
                 auto mappedContent = convertSingalingContentToContentInfo(channel.id, channel.content, webrtc::RtpTransceiverDirection::kSendOnly);
 
-                // only required for content negotiation
-                auto localCertificate = rtc::RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(rtc::KT_ECDSA), absl::nullopt);
-                std::unique_ptr<rtc::SSLFingerprint> fingerprint;
-                if (localCertificate) {
-                    fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*localCertificate.get());
-                }
-                
-                std::vector<std::string> transportOptions;
-                cricket::TransportDescription transportDescription(
-                    transportOptions,
-                    "ufrag",
-                    "pwd",
-                    cricket::IceMode::ICEMODE_FULL,
-                    cricket::ConnectionRole::CONNECTIONROLE_ACTPASS,
-                    fingerprint.get()
-                );
+                cricket::TransportDescription transportDescription;
                 cricket::TransportInfo transportInfo(mappedContent.name, transportDescription);
                 sessionDescription->AddTransportInfo(transportInfo);
 
@@ -395,22 +364,7 @@ std::unique_ptr<cricket::SessionDescription> ContentNegotiationContext::currentS
         if (!found) {
             auto mappedContent = createInactiveContentInfo("_" + id);
 
-            // only required for content negotiation
-            auto localCertificate = rtc::RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(rtc::KT_ECDSA), absl::nullopt);
-            std::unique_ptr<rtc::SSLFingerprint> fingerprint;
-            if (localCertificate) {
-                fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*localCertificate.get());
-            }
-            
-            std::vector<std::string> transportOptions;
-            cricket::TransportDescription transportDescription(
-                transportOptions,
-                "ufrag",
-                "pwd",
-                cricket::IceMode::ICEMODE_FULL,
-                cricket::ConnectionRole::CONNECTIONROLE_ACTPASS,
-                fingerprint.get()
-            );
+            cricket::TransportDescription transportDescription;
             cricket::TransportInfo transportInfo(mappedContent.name, transportDescription);
             sessionDescription->AddTransportInfo(transportInfo);
 
@@ -494,11 +448,7 @@ std::unique_ptr<ContentNegotiationContext::NegotiationContents> ContentNegotiati
         }
     }
 
-    auto offerOrError = _sessionDescriptionFactory->CreateOfferOrError(offerOptions, currentSessionDescription.get());
-    if (!offerOrError.ok()) {
-        return nullptr;
-    }
-    auto offer = offerOrError.MoveValue();
+    std::unique_ptr<cricket::SessionDescription> offer = _sessionDescriptionFactory->CreateOffer(offerOptions, currentSessionDescription.get());
 
     auto mappedOffer = std::make_unique<ContentNegotiationContext::NegotiationContents>();
 
@@ -569,22 +519,7 @@ std::unique_ptr<ContentNegotiationContext::NegotiationContents> ContentNegotiati
                 }
                 answerOptions.media_description_options.push_back(contentDescription);
 
-                // only required for content negotiation
-                auto localCertificate = rtc::RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(rtc::KT_ECDSA), absl::nullopt);
-                std::unique_ptr<rtc::SSLFingerprint> fingerprint;
-                if (localCertificate) {
-                    fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*localCertificate.get());
-                }
-                
-                std::vector<std::string> transportOptions;
-                cricket::TransportDescription transportDescription(
-                    transportOptions,
-                    "ufrag",
-                    "pwd",
-                    cricket::IceMode::ICEMODE_FULL,
-                    cricket::ConnectionRole::CONNECTIONROLE_ACTPASS,
-                    fingerprint.get()
-                );
+                cricket::TransportDescription transportDescription;
                 cricket::TransportInfo transportInfo(channel.id, transportDescription);
                 mappedOffer->AddTransportInfo(transportInfo);
 
@@ -606,22 +541,7 @@ std::unique_ptr<ContentNegotiationContext::NegotiationContents> ContentNegotiati
                 }
                 answerOptions.media_description_options.push_back(contentDescription);
 
-                // only required for content negotiation
-                auto localCertificate = rtc::RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(rtc::KT_ECDSA), absl::nullopt);
-                std::unique_ptr<rtc::SSLFingerprint> fingerprint;
-                if (localCertificate) {
-                    fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*localCertificate.get());
-                }
-                
-                std::vector<std::string> transportOptions;
-                cricket::TransportDescription transportDescription(
-                    transportOptions,
-                    "ufrag",
-                    "pwd",
-                    cricket::IceMode::ICEMODE_FULL,
-                    cricket::ConnectionRole::CONNECTIONROLE_ACTPASS,
-                    fingerprint.get()
-                );
+                cricket::TransportDescription transportDescription;
                 cricket::TransportInfo transportInfo(mappedContent.mid(), transportDescription);
                 mappedOffer->AddTransportInfo(transportInfo);
 
@@ -637,22 +557,7 @@ std::unique_ptr<ContentNegotiationContext::NegotiationContents> ContentNegotiati
             cricket::MediaDescriptionOptions contentDescription(cricket::MediaType::MEDIA_TYPE_AUDIO, "_" + id, webrtc::RtpTransceiverDirection::kInactive, false);
             answerOptions.media_description_options.push_back(contentDescription);
 
-            // only required for content negotiation
-            auto localCertificate = rtc::RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(rtc::KT_ECDSA), absl::nullopt);
-            std::unique_ptr<rtc::SSLFingerprint> fingerprint;
-            if (localCertificate) {
-                fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*localCertificate.get());
-            }
-            
-            std::vector<std::string> transportOptions;
-            cricket::TransportDescription transportDescription(
-                transportOptions,
-                "ufrag",
-                "pwd",
-                cricket::IceMode::ICEMODE_FULL,
-                cricket::ConnectionRole::CONNECTIONROLE_ACTPASS,
-                fingerprint.get()
-            );
+            cricket::TransportDescription transportDescription;
             cricket::TransportInfo transportInfo(mappedContent.mid(), transportDescription);
             mappedOffer->AddTransportInfo(transportInfo);
 
@@ -668,22 +573,7 @@ std::unique_ptr<ContentNegotiationContext::NegotiationContents> ContentNegotiati
 
             auto mappedContent = convertSingalingContentToContentInfo(contentIdBySsrc(content.ssrc), content, webrtc::RtpTransceiverDirection::kSendOnly);
 
-            // only required for content negotiation
-            auto localCertificate = rtc::RTCCertificateGenerator::GenerateCertificate(rtc::KeyParams(rtc::KT_ECDSA), absl::nullopt);
-            std::unique_ptr<rtc::SSLFingerprint> fingerprint;
-            if (localCertificate) {
-                fingerprint = rtc::SSLFingerprint::CreateFromCertificate(*localCertificate.get());
-            }
-            
-            std::vector<std::string> transportOptions;
-            cricket::TransportDescription transportDescription(
-                transportOptions,
-                "ufrag",
-                "pwd",
-                cricket::IceMode::ICEMODE_FULL,
-                cricket::ConnectionRole::CONNECTIONROLE_ACTPASS,
-                fingerprint.get()
-            );
+            cricket::TransportDescription transportDescription;
             cricket::TransportInfo transportInfo(mappedContent.mid(), transportDescription);
             mappedOffer->AddTransportInfo(transportInfo);
 
@@ -691,11 +581,7 @@ std::unique_ptr<ContentNegotiationContext::NegotiationContents> ContentNegotiati
         }
     }
 
-    auto answerOrError = _sessionDescriptionFactory->CreateAnswerOrError(mappedOffer.get(), answerOptions, currentSessionDescription.get());
-    if (!answerOrError.ok()) {
-        return nullptr;
-    }
-    auto answer = answerOrError.MoveValue();
+    std::unique_ptr<cricket::SessionDescription> answer = _sessionDescriptionFactory->CreateAnswer(mappedOffer.get(), answerOptions, currentSessionDescription.get());
 
     auto mappedAnswer = std::make_unique<NegotiationContents>();
 

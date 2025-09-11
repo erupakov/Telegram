@@ -5,12 +5,12 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -38,7 +38,7 @@ public abstract class BaseCell extends FrameLayout {
     protected final BackupImageView imageView;
 
     protected final SimpleTextView titleTextView;
-    public final SimpleTextView subtitleTextView;
+    protected final SimpleTextView subtitleTextView;
 
     protected final RadioButton radioButton;
 
@@ -64,7 +64,7 @@ public abstract class BaseCell extends FrameLayout {
         titleTextView = new SimpleTextView(context) {
             @Override
             public boolean setText(CharSequence value) {
-                value = Emoji.replaceEmoji(value, getPaint().getFontMetricsInt(), false);
+                value = Emoji.replaceEmoji(value, getPaint().getFontMetricsInt(), AndroidUtilities.dp(15), false);
                 return super.setText(value);
             }
         };
@@ -132,8 +132,8 @@ public abstract class BaseCell extends FrameLayout {
         return finalText;
     }
 
-    public void setSubtitle(CharSequence text) {
-        if (TextUtils.isEmpty(text)) {
+    protected void setSubtitle(CharSequence text) {
+        if (text == null) {
             titleTextView.setTranslationY(0);
             subtitleTextView.setVisibility(View.GONE);
         } else {

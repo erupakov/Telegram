@@ -23,7 +23,6 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
-import org.telegram.ui.ChatActivity;
 import org.telegram.ui.Components.AvatarsImageView;
 import org.telegram.ui.Components.BlurredFrameLayout;
 import org.telegram.ui.Components.LayoutHelper;
@@ -40,9 +39,8 @@ public class ChatActivityMemberRequestsDelegate {
     private final TLRPC.Chat currentChat;
     private final int currentAccount;
 
-    public FrameLayout root;
+    private FrameLayout root;
     private AvatarsImageView avatarsView;
-    private LinearLayout requestsDataLayout;
     private TextView requestsCountTextView;
     private ImageView closeView;
 
@@ -78,9 +76,9 @@ public class ChatActivityMemberRequestsDelegate {
             });
             root.addView(pendingRequestsSelector, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 0, 0, 0, 2));
 
-            requestsDataLayout = new LinearLayout(fragment.getParentActivity());
+            LinearLayout requestsDataLayout = new LinearLayout(fragment.getParentActivity());
             requestsDataLayout.setOrientation(LinearLayout.HORIZONTAL);
-            root.addView(requestsDataLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, 0, 36 + 64, 0));
+            root.addView(requestsDataLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, 0, 36, 0));
 
             avatarsView = new AvatarsImageView(fragment.getParentActivity(), false) {
                 @Override
@@ -117,22 +115,16 @@ public class ChatActivityMemberRequestsDelegate {
             });
             root.addView(closeView, LayoutHelper.createFrame(36, LayoutHelper.MATCH_PARENT, Gravity.RIGHT | Gravity.TOP, 0, 0, 2, 0));
             if (chatInfo != null) {
-                setPendingRequests((ChatActivity.DEBUG_TOP_PANELS ? 1 : 0) + chatInfo.requests_pending, chatInfo.recent_requesters, false);
+                setPendingRequests(chatInfo.requests_pending, chatInfo.recent_requesters, false);
             }
         }
         return root;
     }
 
-    public void setLeftMargin(float leftMargin) {
-        if (requestsDataLayout != null) {
-            requestsDataLayout.setTranslationX(leftMargin);
-        }
-    }
-
     public void setChatInfo(@Nullable TLRPC.ChatFull chatInfo, boolean animated) {
         this.chatInfo = chatInfo;
         if (chatInfo != null) {
-            setPendingRequests((ChatActivity.DEBUG_TOP_PANELS ? 1 : 0) + chatInfo.requests_pending, chatInfo.recent_requesters, animated);
+            setPendingRequests(chatInfo.requests_pending, chatInfo.recent_requesters, animated);
         }
     }
 

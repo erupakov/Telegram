@@ -1,15 +1,16 @@
 package org.telegram.messenger;
 
+import android.content.Context;
+
 import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.SQLite.SQLiteDatabase;
 import org.telegram.SQLite.SQLitePreparedStatement;
 import org.telegram.tgnet.AbstractSerializedData;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.NativeByteBuffer;
-import org.telegram.tgnet.OutputSerializedData;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_account;
+import org.telegram.ui.ActionBar.BottomSheet;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -286,7 +287,7 @@ public class UnconfirmedAuthController {
         }
 
         @Override
-        public void serializeToStream(OutputSerializedData stream) {
+        public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(0x7ab6618c);
             stream.writeInt64(hash);
             stream.writeInt32(date);
@@ -303,7 +304,7 @@ public class UnconfirmedAuthController {
         }
 
         public void confirm(Utilities.Callback<Boolean> whenDone) {
-            TL_account.changeAuthorizationSettings req = new TL_account.changeAuthorizationSettings();
+            TLRPC.TL_account_changeAuthorizationSettings req = new TLRPC.TL_account_changeAuthorizationSettings();
             req.hash = hash;
             req.confirmed = true;
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> {
@@ -317,7 +318,7 @@ public class UnconfirmedAuthController {
         }
 
         public void deny(Utilities.Callback<Boolean> whenDone) {
-            TL_account.resetAuthorization req = new TL_account.resetAuthorization();
+            TLRPC.TL_account_resetAuthorization req = new TLRPC.TL_account_resetAuthorization();
             req.hash = hash;
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (res, err) -> {
                 AndroidUtilities.runOnUIThread(() -> {

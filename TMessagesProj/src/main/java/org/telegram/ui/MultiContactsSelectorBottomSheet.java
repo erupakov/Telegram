@@ -30,7 +30,6 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
-import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -61,7 +60,7 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
         void onUserSelected(List<Long> ids);
     }
 
-    public static void open(Boolean bots, Boolean premium, int maxCount, SelectorListener selectorListener) {
+    public static void open(int maxCount, SelectorListener selectorListener) {
         BaseFragment fragment = LaunchActivity.getLastFragment();
         if (fragment == null) {
             return;
@@ -69,7 +68,7 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
         if (instance != null) {
             return;
         }
-        MultiContactsSelectorBottomSheet sheet = new MultiContactsSelectorBottomSheet(fragment, true, maxCount, bots, premium, selectorListener);
+        MultiContactsSelectorBottomSheet sheet = new MultiContactsSelectorBottomSheet(fragment, true, maxCount, selectorListener);
         sheet.show();
         instance = sheet;
     }
@@ -87,30 +86,18 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
     private final HashSet<Long> selectedIds = new HashSet<>();
     private final List<TLRPC.TL_contact> contacts = new ArrayList<>();
     private final List<TLRPC.TL_topPeer> hints = new ArrayList<>();
-    private final List<TLRPC.User> foundUsers = new ArrayList<>();
+    private final List<TLRPC.User> foundedUsers = new ArrayList<>();
     private final Map<String, List<TLRPC.TL_contact>> contactsMap = new HashMap<>();
     private final List<String> contactsLetters = new ArrayList<>();
     private final HashMap<Long, TLRPC.User> allSelectedObjects = new LinkedHashMap<>();
     private String query;
     private SelectorAdapter selectorAdapter;
     private int listPaddingTop = AndroidUtilities.dp(56 + 64);
-    private int lastRequestId = -1;
+    private int lastRequestId;
     private float recipientsBtnExtraSpace;
     private ReplacementSpan recipientsBtnSpaceSpan;
     private int maxCount;
     private SelectorListener selectorListener;
-
-    private Boolean filterBots;
-    private Boolean filterPremium;
-    private boolean filter(TLRPC.User user) {
-        if (user == null)
-            return false;
-        if (filterBots != null && UserObject.isBot(user) != filterBots)
-            return false;
-        if (filterPremium != null && user != null && user.premium != filterPremium)
-            return false;
-        return true;
-    }
 
     private final Runnable remoteSearchRunnable = new Runnable() {
         @Override
@@ -123,36 +110,10 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
     };
 
     private void loadData(String query) {
-        if (lastRequestId >= 0) {
-            ConnectionsManager.getInstance(currentAccount).cancelRequest(lastRequestId, true);
-            lastRequestId = -1;
-        }
-        BoostRepository.searchContactsLocally(query, filterBots != null && filterBots, users -> {
-            HashSet<Long> foundUserIds = new HashSet<>();
-            foundUsers.clear();
-            if (users != null) {
-                for (TLRPC.User user : users) {
-                    if (user != null && !foundUserIds.contains(user.id) && filter(user)) {
-                        foundUsers.add(user);
-                        foundUserIds.add(user.id);
-                    }
-                }
-            }
-            if (filterBots != null && filterBots) {
-                lastRequestId = BoostRepository.searchContacts(query, true, newUsers -> {
-                    if (newUsers != null) {
-                        for (TLRPC.User user : newUsers) {
-                            if (user != null && !foundUserIds.contains(user.id) && filter(user)) {
-                                foundUsers.add(user);
-                                foundUserIds.add(user.id);
-                            }
-                        }
-                    }
-                    updateList(true, true);
-                });
-            } else {
-                updateList(true, true);
-            }
+        lastRequestId = BoostRepository.searchContacts(lastRequestId, query, arg -> {
+            foundedUsers.clear();
+            foundedUsers.addAll(arg);
+            updateList(true, true);
         });
     }
 
@@ -170,14 +131,10 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
         };
     }
 
-    public MultiContactsSelectorBottomSheet(BaseFragment fragment, boolean needFocus, int maxCount, Boolean bot, Boolean premium, SelectorListener selectorListener) {
+    public MultiContactsSelectorBottomSheet(BaseFragment fragment, boolean needFocus, int maxCount, SelectorListener selectorListener) {
         super(fragment, needFocus, false, false, fragment.getResourceProvider());
         this.maxCount = maxCount;
-        this.filterBots = bot;
-        this.filterPremium = premium;
         this.selectorListener = selectorListener;
-        actionBar.setTitle(getTitle());
-
         headerView = new SelectorHeaderCell(getContext(), resourcesProvider) {
             @Override
             protected int getHeaderHeight() {
@@ -308,9 +265,6 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
         contactsMap.putAll(ContactsController.getInstance(currentAccount).usersSectionsDict);
         contactsLetters.addAll(ContactsController.getInstance(currentAccount).sortedUsersSectionsArray);
         hints.addAll(MediaDataController.getInstance(currentAccount).hints);
-        if (filterBots != null && filterBots) {
-            hints.addAll(MediaDataController.getInstance(currentAccount).webapps);
-        }
         updateList(false, true);
         fixNavigationBar();
     }
@@ -409,11 +363,7 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
         SpannableStringBuilder stringBuilder = new SpannableStringBuilder();
         if (selectedIds.size() == 0) {
             stringBuilder.append("d").setSpan(recipientsBtnSpaceSpan, 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if (filterBots != null && filterBots) {
-                stringBuilder.append(LocaleController.getString(maxCount > 1 ? R.string.ChooseBots : R.string.ChooseBot));
-            } else {
-                stringBuilder.append(LocaleController.getString(R.string.ChooseUsers));
-            }
+            stringBuilder.append(LocaleController.getString(R.string.ChooseUsers));
         } else {
             stringBuilder.append(LocaleController.getString(R.string.GiftPremiumProceedBtn));
         }
@@ -464,7 +414,7 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
 
         int h = 0;
         if (isSearching()) {
-            for (TLRPC.User foundedUser : foundUsers) {
+            for (TLRPC.User foundedUser : foundedUsers) {
                 h += dp(56);
                 items.add(SelectorAdapter.Item.asUser(foundedUser, selectedIds.contains(foundedUser.id)));
             }
@@ -476,9 +426,6 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
                     if (user.self || user.bot || UserObject.isService(user.id) || UserObject.isDeleted(user)) {
                         continue;
                     }
-                    if (!filter(user)) {
-                        continue;
-                    }
                     h += dp(56);
                     userItems.add(SelectorAdapter.Item.asUser(user, selectedIds.contains(user.id)));
                 }
@@ -488,38 +435,15 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
                     items.addAll(userItems);
                 }
             }
-            final long self = UserConfig.getInstance(currentAccount).getClientUserId();
-            if (filterBots != null && filterBots) {
-                List<SelectorAdapter.Item> userItems = new ArrayList<>();
-                for (TLRPC.Dialog dialog : MessagesController.getInstance(currentAccount).getAllDialogs()) {
-                    if (dialog.id < 0) continue;
-                    final TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(dialog.id);
-                    if (!filter(user)) {
-                        continue;
-                    }
-                    h += dp(56);
-                    userItems.add(SelectorAdapter.Item.asUser(user, selectedIds.contains(user.id)));
-                }
-                if (!userItems.isEmpty()) {
-                    h += dp(32);
-                    items.add(SelectorAdapter.Item.asTopSection(LocaleController.getString(R.string.SearchApps)));
-                    items.addAll(userItems);
-                }
-            }
             for (String contactLetter : contactsLetters) {
                 List<SelectorAdapter.Item> userItems = new ArrayList<>();
-                List<TLRPC.TL_contact> contacts = contactsMap.get(contactLetter);
-                if (contacts == null) continue;
-
-                for (final TLRPC.TL_contact contact : contacts) {
-                    if (contact.user_id == self) {
-                        continue;
-                    }
-                    final TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(contact.user_id);
-                    if (!filter(user)) {
+                for (TLRPC.TL_contact contact : contactsMap.get(contactLetter)) {
+                    long myUid = UserConfig.getInstance(currentAccount).getClientUserId();
+                    if (contact.user_id == myUid) {
                         continue;
                     }
                     h += dp(56);
+                    TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(contact.user_id);
                     userItems.add(SelectorAdapter.Item.asUser(user, selectedIds.contains(user.id)));
                 }
 
@@ -557,9 +481,6 @@ public class MultiContactsSelectorBottomSheet extends BottomSheetWithRecyclerLis
 
     @Override
     protected CharSequence getTitle() {
-        if (filterBots != null && filterBots) {
-            return LocaleController.getString(maxCount > 1 ? R.string.ChooseBots : R.string.ChooseBot);
-        }
         return LocaleController.getString(R.string.ChooseUsers);
     }
 

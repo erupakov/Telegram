@@ -12,6 +12,8 @@ package org.webrtc;
 
 import android.opengl.GLES20;
 
+import org.telegram.messenger.FileLog;
+
 import java.nio.FloatBuffer;
 
 // Helper class for handling OpenGL shaders and shader programs.
@@ -61,9 +63,9 @@ public class GlShader {
     // part of the program object."
     // But in practice, detaching shaders from the program seems to break some devices. Deleting the
     // shaders are fine however - it will delete them when they are no longer attached to a program.
-    GLES20.glDeleteShader(vertexShader);
-    GLES20.glDeleteShader(fragmentShader);
-    GlUtil.checkNoGLES2Error("Creating GlShader");
+    //GLES20.glDeleteShader(vertexShader); delete crashes on xiaomi
+    //GLES20.glDeleteShader(fragmentShader);
+    //GlUtil.checkNoGLES2Error("Creating GlShader");
   }
 
   public int getAttribLocation(String label) {
@@ -78,16 +80,16 @@ public class GlShader {
   }
 
   /**
-   * Enable and upload a vertex array for attribute `label`. The vertex data is specified in
-   * `buffer` with `dimension` number of components per vertex.
+   * Enable and upload a vertex array for attribute |label|. The vertex data is specified in
+   * |buffer| with |dimension| number of components per vertex.
    */
   public void setVertexAttribArray(String label, int dimension, FloatBuffer buffer) {
     setVertexAttribArray(label, dimension, 0 /* stride */, buffer);
   }
 
   /**
-   * Enable and upload a vertex array for attribute `label`. The vertex data is specified in
-   * `buffer` with `dimension` number of components per vertex and specified `stride`.
+   * Enable and upload a vertex array for attribute |label|. The vertex data is specified in
+   * |buffer| with |dimension| number of components per vertex and specified |stride|.
    */
   public void setVertexAttribArray(String label, int dimension, int stride, FloatBuffer buffer) {
     if (program == -1) {
@@ -117,7 +119,11 @@ public class GlShader {
     synchronized (EglBase.lock) {
       GLES20.glUseProgram(program);
     }
-    GlUtil.checkNoGLES2Error("glUseProgram");
+    try {
+      GlUtil.checkNoGLES2Error("glUseProgram");
+    } catch (Exception e) {
+      FileLog.e(e);
+    }
   }
 
   public void release() {

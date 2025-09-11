@@ -2,8 +2,7 @@ last exo player commit:
 f72ca833
 
 change ExoPlayerImpl.java
-change SimpleExoPlayer.java
-change ExoPlayer.java
+change Player.java
 add VideoListener.java
     add support VideoListener
 

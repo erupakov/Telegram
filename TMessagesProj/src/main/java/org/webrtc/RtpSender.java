@@ -12,7 +12,6 @@ package org.webrtc;
 
 import androidx.annotation.Nullable;
 import java.util.List;
-import org.webrtc.MediaStreamTrack;
 
 /** Java wrapper for a C++ RtpSenderInterface. */
 public class RtpSender {
@@ -28,12 +27,8 @@ public class RtpSender {
     long nativeTrack = nativeGetTrack(nativeRtpSender);
     cachedTrack = MediaStreamTrack.createMediaStreamTrack(nativeTrack);
 
-    if (nativeGetMediaType(nativeRtpSender).equalsIgnoreCase(MediaStreamTrack.AUDIO_TRACK_KIND)) {
-      long nativeDtmfSender = nativeGetDtmfSender(nativeRtpSender);
-      dtmfSender = (nativeDtmfSender != 0) ? new DtmfSender(nativeDtmfSender) : null;
-    } else {
-      dtmfSender = null;
-    }
+    long nativeDtmfSender = nativeGetDtmfSender(nativeRtpSender);
+    dtmfSender = (nativeDtmfSender != 0) ? new DtmfSender(nativeDtmfSender) : null;
   }
 
   /**
@@ -44,7 +39,7 @@ public class RtpSender {
    *
    * @param takeOwnership If true, the RtpSender takes ownership of the track
    *                      from the caller, and will auto-dispose of it when no
-   *                      longer needed. `takeOwnership` should only be used if
+   *                      longer needed. |takeOwnership| should only be used if
    *                      the caller owns the track; it is not appropriate when
    *                      the track is owned by, for example, another RtpSender
    *                      or a MediaStream.
@@ -148,6 +143,4 @@ public class RtpSender {
   private static native String nativeGetId(long rtpSender);
 
   private static native void nativeSetFrameEncryptor(long rtpSender, long nativeFrameEncryptor);
-
-  private static native String nativeGetMediaType(long rtpSender);
 };

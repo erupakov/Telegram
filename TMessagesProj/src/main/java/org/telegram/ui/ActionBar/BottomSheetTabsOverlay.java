@@ -68,7 +68,6 @@ public class BottomSheetTabsOverlay extends FrameLayout {
         public void release();
         public boolean isFullSize();
 
-        public default boolean hadDialog() { return false; };
         public boolean setDialog(BottomSheetTabDialog dialog);
 
         default void setLastVisible(boolean lastVisible) {};
@@ -504,7 +503,8 @@ public class BottomSheetTabsOverlay extends FrameLayout {
 
         dismissingSheet = sheet;
         sheet.setLastVisible(false);
-//        sheet.getWindowView().setDrawingFromOverlay(true);
+        sheet.getWindowView().setDrawingFromOverlay(true);
+        invalidate();
 
         if (animator != null) {
             animator.cancel();
@@ -512,12 +512,6 @@ public class BottomSheetTabsOverlay extends FrameLayout {
 
         BottomSheetTabs.WebTabData tab = sheet.saveState();
         dismissingTab = tabsView.pushTab(tab);
-        post(() -> {
-            if (sheet != null && sheet.getWindowView() != null) {
-                sheet.getWindowView().setDrawingFromOverlay(true);
-            }
-        });
-        invalidate();
 
         dismissProgress = 0;
         animator = ValueAnimator.ofFloat(0, 1);
@@ -552,8 +546,11 @@ public class BottomSheetTabsOverlay extends FrameLayout {
                 invalidate();
             }
         });
-        AndroidUtilities.applySpring(animator, 220, 30, 1);
-        animator.setDuration((long) (animator.getDuration() * 1.1f));
+        if (slowerDismiss || sheet.isFullSize()) {
+            AndroidUtilities.applySpring(animator, 220, 30, 1);
+        } else {
+            AndroidUtilities.applySpring(animator, 350, 30, 1);
+        }
         animator.start();
 
         slowerDismiss = false;
@@ -807,8 +804,9 @@ public class BottomSheetTabsOverlay extends FrameLayout {
             float alpha = 1f;
             float top, bottom, y;
             top = paddingTop + dp(6) * Math.min(5, position);
-            bottom = thisHeight - paddingBottom - height * .26f;
+            bottom = thisHeight - paddingBottom - height * .26f;// - dp(6) * Math.min(5, count - position);
             y = top + (bottom - top) * scroll;
+            alpha = 1f; // Utilities.clamp(oscrollT * 4f + 1f, 1f, 0f);
 
             if (alpha <= 0) continue;
 

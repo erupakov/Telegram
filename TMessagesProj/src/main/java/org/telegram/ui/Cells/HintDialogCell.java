@@ -34,7 +34,6 @@ import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedFloat;
 import org.telegram.ui.Components.AvatarDrawable;
@@ -65,11 +64,9 @@ public class HintDialogCell extends FrameLayout {
     CheckBox2 checkBox;
     private final boolean drawCheckbox;
 
-    private boolean showPremiumBlocked;
     private final AnimatedFloat premiumBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
+    private boolean showPremiumBlocked;
     private boolean premiumBlocked;
-    private final AnimatedFloat starsBlockedT = new AnimatedFloat(this, 0, 350, CubicBezierInterpolator.EASE_OUT_QUINT);
-    private long starsPriceBlocked;
 
     public boolean isBlocked() {
         return premiumBlocked;
@@ -86,7 +83,7 @@ public class HintDialogCell extends FrameLayout {
         nameTextView = new TextView(context) {
             @Override
             public void setText(CharSequence text, BufferType type) {
-                text = Emoji.replaceEmoji(text, getPaint().getFontMetricsInt(), false);
+                text = Emoji.replaceEmoji(text, getPaint().getFontMetricsInt(), AndroidUtilities.dp(10), false);
                 super.setText(text, type);
             }
         };
@@ -130,13 +127,11 @@ public class HintDialogCell extends FrameLayout {
     }
 
     private void updatePremiumBlocked(boolean animated) {
-        final TL_account.RequirementToContact r = showPremiumBlocked && currentUser != null ? MessagesController.getInstance(currentAccount).isUserContactBlocked(currentUser.id) : null;
-        if (premiumBlocked != DialogObject.isPremiumBlocked(r) || starsPriceBlocked != DialogObject.getMessagesStarsPrice(r)) {
-            premiumBlocked = DialogObject.isPremiumBlocked(r);
-            starsPriceBlocked = DialogObject.getMessagesStarsPrice(r);
+        final boolean wasPremiumBlocked =premiumBlocked;
+        premiumBlocked = showPremiumBlocked && currentUser != null && MessagesController.getInstance(currentAccount).isUserPremiumBlocked(currentUser.id);
+        if (wasPremiumBlocked != premiumBlocked) {
             if (!animated) {
                 premiumBlockedT.set(premiumBlocked, true);
-                starsBlockedT.set(starsPriceBlocked > 0, true);
             }
             invalidate();
         }

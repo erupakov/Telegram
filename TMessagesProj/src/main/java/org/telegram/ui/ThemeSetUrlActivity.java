@@ -42,7 +42,6 @@ import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
 import org.telegram.ui.ActionBar.AlertDialog;
@@ -509,7 +508,7 @@ public class ThemeSetUrlActivity extends BaseFragment implements NotificationCen
             setCheckText(LocaleController.getString(R.string.SetUrlChecking), Theme.key_windowBackgroundWhiteGrayText8);
             lastCheckName = url;
             checkRunnable = () -> {
-                TL_account.createTheme req = new TL_account.createTheme();
+                TLRPC.TL_account_createTheme req = new TLRPC.TL_account_createTheme();
                 req.slug = url;
                 req.title = "";
                 req.document = new TLRPC.TL_inputDocumentEmpty();
@@ -587,7 +586,7 @@ public class ThemeSetUrlActivity extends BaseFragment implements NotificationCen
 
         progressDialog = new AlertDialog(getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER);
 
-        final TL_account.updateTheme req = new TL_account.updateTheme();
+        final TLRPC.TL_account_updateTheme req = new TLRPC.TL_account_updateTheme();
         TLRPC.TL_inputTheme inputTheme = new TLRPC.TL_inputTheme();
         inputTheme.id = info.id;
         inputTheme.access_hash = info.access_hash;

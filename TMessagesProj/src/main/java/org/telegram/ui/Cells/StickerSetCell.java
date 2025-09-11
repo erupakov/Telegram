@@ -184,7 +184,7 @@ public class StickerSetCell extends FrameLayout {
         textView = new TextView(context) {
             @Override
             public void setText(CharSequence text, BufferType type) {
-                text = Emoji.replaceEmoji(text, getPaint().getFontMetricsInt(), false);
+                text = Emoji.replaceEmoji(text, getPaint().getFontMetricsInt(), AndroidUtilities.dp(14), false);
                 super.setText(text, type);
             }
         };
