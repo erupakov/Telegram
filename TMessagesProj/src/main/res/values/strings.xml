@@ -11,7 +11,7 @@
     <string name="YourPhone">Your Phone</string>
     <string name="StartText">Please confirm your country code and enter your phone number.</string>
     <string name="Country">Country</string>
-    <string name="YourNumber">Your phone number</string>
+    <string name="YourNumber">Your phone</string>
     <string name="PhoneNumber">Phone number</string>
     <string name="ChooseCountry">Choose a country</string>
     <string name="WrongCountry">Invalid country code</string>

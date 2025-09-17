@@ -39,16 +39,16 @@ import java.util.HashMap;
 
 public class TLRPC {
 
-    public static final int USER_FLAG_ACCESS_HASH           = 0x00000001;
-    public static final int USER_FLAG_FIRST_NAME            = 0x00000002;
-    public static final int USER_FLAG_LAST_NAME             = 0x00000004;
-    public static final int USER_FLAG_USERNAME              = 0x00000008;
-    public static final int USER_FLAG_PHONE                 = 0x00000010;
-    public static final int USER_FLAG_PHOTO                 = 0x00000020;
-    public static final int USER_FLAG_STATUS                = 0x00000040;
-    public static final int USER_FLAG_UNUSED                = 0x00000080;
-    public static final int USER_FLAG_UNUSED2               = 0x00000100;
-    public static final int USER_FLAG_UNUSED3               = 0x00000200;
+    public static final int USER_FLAG_ACCESS_HASH = 0x00000001;
+    public static final int USER_FLAG_FIRST_NAME = 0x00000002;
+    public static final int USER_FLAG_LAST_NAME = 0x00000004;
+    public static final int USER_FLAG_USERNAME = 0x00000008;
+    public static final int USER_FLAG_PHONE = 0x00000010;
+    public static final int USER_FLAG_PHOTO = 0x00000020;
+    public static final int USER_FLAG_STATUS = 0x00000040;
+    public static final int USER_FLAG_UNUSED = 0x00000080;
+    public static final int USER_FLAG_UNUSED2 = 0x00000100;
+    public static final int USER_FLAG_UNUSED3 = 0x00000200;
     //public static final int USER_FLAG_SELF                  = 0x00000400;
     //public static final int USER_FLAG_CONTACT               = 0x00000800;
     //public static final int USER_FLAG_MUTUAL_CONTACT        = 0x00001000;
@@ -64,22 +64,22 @@ public class TLRPC {
     //public static final int CHAT_FLAG_USER_IS_EDITOR        = 0x00000008;
     //public static final int CHAT_FLAG_USER_IS_MODERATOR     = 0x00000010;
     //public static final int CHAT_FLAG_IS_BROADCAST          = 0x00000020;
-    public static final int CHAT_FLAG_IS_PUBLIC             = 0x00000040;
+    public static final int CHAT_FLAG_IS_PUBLIC = 0x00000040;
     //public static final int CHAT_FLAG_IS_VERIFIED           = 0x00000080;
 
     //public static final int MESSAGE_FLAG_UNREAD             = 0x00000001;
     //public static final int MESSAGE_FLAG_OUT                = 0x00000002;
-    public static final int MESSAGE_FLAG_FWD                = 0x00000004;
-    public static final int MESSAGE_FLAG_REPLY              = 0x00000008;
+    public static final int MESSAGE_FLAG_FWD = 0x00000004;
+    public static final int MESSAGE_FLAG_REPLY = 0x00000008;
     //public static final int MESSAGE_FLAG_MENTION            = 0x00000010;
     //public static final int MESSAGE_FLAG_CONTENT_UNREAD     = 0x00000020;
-    public static final int MESSAGE_FLAG_HAS_MARKUP         = 0x00000040;
-    public static final int MESSAGE_FLAG_HAS_ENTITIES       = 0x00000080;
-    public static final int MESSAGE_FLAG_HAS_FROM_ID        = 0x00000100;
-    public static final int MESSAGE_FLAG_HAS_MEDIA          = 0x00000200;
-    public static final int MESSAGE_FLAG_HAS_VIEWS          = 0x00000400;
-    public static final int MESSAGE_FLAG_HAS_BOT_ID         = 0x00000800;
-    public static final int MESSAGE_FLAG_EDITED             = 0x00008000;
+    public static final int MESSAGE_FLAG_HAS_MARKUP = 0x00000040;
+    public static final int MESSAGE_FLAG_HAS_ENTITIES = 0x00000080;
+    public static final int MESSAGE_FLAG_HAS_FROM_ID = 0x00000100;
+    public static final int MESSAGE_FLAG_HAS_MEDIA = 0x00000200;
+    public static final int MESSAGE_FLAG_HAS_VIEWS = 0x00000400;
+    public static final int MESSAGE_FLAG_HAS_BOT_ID = 0x00000800;
+    public static final int MESSAGE_FLAG_EDITED = 0x00008000;
 
     public static final int LAYER = 191;
 
@@ -354,26 +354,26 @@ public class TLRPC {
             } else {
                 send_messages = false;
             }
-            flags = view_messages ? (flags | 1) : (flags &~ 1);
-            flags = send_messages ? (flags | 2) : (flags &~ 2);
-            flags = send_media ? (flags | 4) : (flags &~ 4);
-            flags = send_stickers ? (flags | 8) : (flags &~ 8);
-            flags = send_gifs ? (flags | 16) : (flags &~ 16);
-            flags = send_games ? (flags | 32) : (flags &~ 32);
-            flags = send_inline ? (flags | 64) : (flags &~ 64);
-            flags = embed_links ? (flags | 128) : (flags &~ 128);
-            flags = send_polls ? (flags | 256) : (flags &~ 256);
-            flags = change_info ? (flags | 1024) : (flags &~ 1024);
-            flags = invite_users ? (flags | 32768) : (flags &~ 32768);
-            flags = pin_messages ? (flags | 131072) : (flags &~ 131072);
-            flags = manage_topics ? (flags | 262144) : (flags &~ 262144);
-            flags = send_photos ? (flags | 524288) : (flags &~ 524288);
-            flags = send_videos ? (flags | 1048576) : (flags &~ 1048576);
-            flags = send_roundvideos ? (flags | 2097152) : (flags &~ 2097152);
-            flags = send_audios ? (flags | 4194304) : (flags &~ 4194304);
-            flags = send_voices ? (flags | 8388608) : (flags &~ 8388608);
-            flags = send_docs ? (flags | 16777216) : (flags &~ 16777216);
-            flags = send_plain ? (flags | 33554432) : (flags &~ 33554432);
+            flags = view_messages ? (flags | 1) : (flags & ~1);
+            flags = send_messages ? (flags | 2) : (flags & ~2);
+            flags = send_media ? (flags | 4) : (flags & ~4);
+            flags = send_stickers ? (flags | 8) : (flags & ~8);
+            flags = send_gifs ? (flags | 16) : (flags & ~16);
+            flags = send_games ? (flags | 32) : (flags & ~32);
+            flags = send_inline ? (flags | 64) : (flags & ~64);
+            flags = embed_links ? (flags | 128) : (flags & ~128);
+            flags = send_polls ? (flags | 256) : (flags & ~256);
+            flags = change_info ? (flags | 1024) : (flags & ~1024);
+            flags = invite_users ? (flags | 32768) : (flags & ~32768);
+            flags = pin_messages ? (flags | 131072) : (flags & ~131072);
+            flags = manage_topics ? (flags | 262144) : (flags & ~262144);
+            flags = send_photos ? (flags | 524288) : (flags & ~524288);
+            flags = send_videos ? (flags | 1048576) : (flags & ~1048576);
+            flags = send_roundvideos ? (flags | 2097152) : (flags & ~2097152);
+            flags = send_audios ? (flags | 4194304) : (flags & ~4194304);
+            flags = send_voices ? (flags | 8388608) : (flags & ~8388608);
+            flags = send_docs ? (flags | 16777216) : (flags & ~16777216);
+            flags = send_plain ? (flags | 33554432) : (flags & ~33554432);
             stream.writeInt32(flags);
             stream.writeInt32(until_date);
         }
@@ -516,8 +516,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_webpage ? (flags | 2) : (flags &~ 2);
-            flags = invert_media ? (flags | 64) : (flags &~ 64);
+            flags = no_webpage ? (flags | 2) : (flags & ~2);
+            flags = invert_media ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 reply_to.serializeToStream(stream);
@@ -577,8 +577,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_webpage ? (flags | 2) : (flags &~ 2);
-            flags = invert_media ? (flags | 64) : (flags &~ 64);
+            flags = no_webpage ? (flags | 2) : (flags & ~2);
+            flags = invert_media ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 reply_to.serializeToStream(stream);
@@ -634,7 +634,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_webpage ? (flags | 2) : (flags &~ 2);
+            flags = no_webpage ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(reply_to instanceof TLRPC.TL_inputReplyToMessage ? ((TL_inputReplyToMessage) reply_to).reply_to_msg_id : 0);
@@ -667,7 +667,7 @@ public class TLRPC {
             return TLdeserialize(stream, constructor, exception, true);
         }
 
-        public static ChatPhoto TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception,  boolean allowStripedThumb) {
+        public static ChatPhoto TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception, boolean allowStripedThumb) {
             ChatPhoto result = null;
             switch (constructor) {
                 case 0x1c6e1c11:
@@ -732,7 +732,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_video ? (flags | 1) : (flags &~ 1);
+            flags = has_video ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(photo_id);
             if ((flags & 2) != 0) {
@@ -799,7 +799,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_video ? (flags | 1) : (flags &~ 1);
+            flags = has_video ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             photo_small.serializeToStream(stream);
             photo_big.serializeToStream(stream);
@@ -831,7 +831,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_video ? (flags | 1) : (flags &~ 1);
+            flags = has_video ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             photo_small.serializeToStream(stream);
             photo_big.serializeToStream(stream);
@@ -892,7 +892,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = popup ? (flags | 1) : (flags &~ 1);
+            flags = popup ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             id.serializeToStream(stream);
             stream.writeString(text);
@@ -1422,8 +1422,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = current ? (flags | 2) : (flags &~ 2);
-            flags = can_purchase_upgrade ? (flags | 4) : (flags &~ 4);
+            flags = current ? (flags | 2) : (flags & ~2);
+            flags = can_purchase_upgrade ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 8) != 0) {
                 stream.writeString(transaction);
@@ -1595,7 +1595,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = request_write_access ? (flags | 1) : (flags &~ 1);
+            flags = request_write_access ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             bot.serializeToStream(stream);
             stream.writeString(domain);
@@ -1863,7 +1863,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = mask ? (flags | 2) : (flags &~ 2);
+            flags = mask ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeString(alt);
             stickerset.serializeToStream(stream);
@@ -1920,9 +1920,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = round_message ? (flags | 1) : (flags &~ 1);
-            flags = supports_streaming ? (flags | 2) : (flags &~ 2);
-            flags = nosound ? (flags | 8) : (flags &~ 8);
+            flags = round_message ? (flags | 1) : (flags & ~1);
+            flags = supports_streaming ? (flags | 2) : (flags & ~2);
+            flags = nosound ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeDouble(duration);
             stream.writeInt32(w);
@@ -1960,9 +1960,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = round_message ? (flags | 1) : (flags &~ 1);
-            flags = supports_streaming ? (flags | 2) : (flags &~ 2);
-            flags = nosound ? (flags | 8) : (flags &~ 8);
+            flags = round_message ? (flags | 1) : (flags & ~1);
+            flags = supports_streaming ? (flags | 2) : (flags & ~2);
+            flags = nosound ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeDouble(duration);
             stream.writeInt32(w);
@@ -1994,9 +1994,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = round_message ? (flags | 1) : (flags &~ 1);
-            flags = supports_streaming ? (flags | 2) : (flags &~ 2);
-            flags = nosound ? (flags | 8) : (flags &~ 8);
+            flags = round_message ? (flags | 1) : (flags & ~1);
+            flags = supports_streaming ? (flags | 2) : (flags & ~2);
+            flags = nosound ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeDouble(duration);
             stream.writeInt32(w);
@@ -2021,8 +2021,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = round_message ? (flags | 1) : (flags &~ 1);
-            flags = supports_streaming ? (flags | 2) : (flags &~ 2);
+            flags = round_message ? (flags | 1) : (flags & ~1);
+            flags = supports_streaming ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32((int) duration);
             stream.writeInt32(w);
@@ -2138,7 +2138,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = voice ? (flags | 1024) : (flags &~ 1024);
+            flags = voice ? (flags | 1024) : (flags & ~1024);
             stream.writeInt32(flags);
             stream.writeInt32((int) duration);
             if ((flags & 1) != 0) {
@@ -2169,8 +2169,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = free ? (flags | 1) : (flags &~ 1);
-            flags = text_color ? (flags | 2) : (flags &~ 2);
+            flags = free ? (flags | 1) : (flags & ~1);
+            flags = text_color ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeString(alt);
             stickerset.serializeToStream(stream);
@@ -2524,9 +2524,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = alert ? (flags | 2) : (flags &~ 2);
-            flags = has_url ? (flags | 8) : (flags &~ 8);
-            flags = native_ui ? (flags | 16) : (flags &~ 16);
+            flags = alert ? (flags | 2) : (flags & ~2);
+            flags = has_url ? (flags | 8) : (flags & ~8);
+            flags = native_ui ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeString(message);
@@ -2668,14 +2668,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = join_muted ? (flags | 2) : (flags &~ 2);
-            flags = can_change_join_muted ? (flags | 4) : (flags &~ 4);
-            flags = join_date_asc ? (flags | 64) : (flags &~ 64);
-            flags = schedule_start_subscribed ? (flags | 256) : (flags &~ 256);
-            flags = can_start_video ? (flags | 512) : (flags &~ 512);
-            flags = record_video_active ? (flags | 2048) : (flags &~ 2048);
-            flags = rtmp_stream ? (flags | 4096) : (flags &~ 4096);
-            flags = listeners_hidden ? (flags | 8192) : (flags &~ 8192);
+            flags = join_muted ? (flags | 2) : (flags & ~2);
+            flags = can_change_join_muted ? (flags | 4) : (flags & ~4);
+            flags = join_date_asc ? (flags | 64) : (flags & ~64);
+            flags = schedule_start_subscribed ? (flags | 256) : (flags & ~256);
+            flags = can_start_video ? (flags | 512) : (flags & ~512);
+            flags = record_video_active ? (flags | 2048) : (flags & ~2048);
+            flags = rtmp_stream ? (flags | 4096) : (flags & ~4096);
+            flags = listeners_hidden ? (flags | 8192) : (flags & ~8192);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -2742,14 +2742,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = view_messages ? (flags | 1) : (flags &~ 1);
-            flags = send_messages ? (flags | 2) : (flags &~ 2);
-            flags = send_media ? (flags | 4) : (flags &~ 4);
-            flags = send_stickers ? (flags | 8) : (flags &~ 8);
-            flags = send_gifs ? (flags | 16) : (flags &~ 16);
-            flags = send_games ? (flags | 32) : (flags &~ 32);
-            flags = send_inline ? (flags | 64) : (flags &~ 64);
-            flags = embed_links ? (flags | 128) : (flags &~ 128);
+            flags = view_messages ? (flags | 1) : (flags & ~1);
+            flags = send_messages ? (flags | 2) : (flags & ~2);
+            flags = send_media ? (flags | 4) : (flags & ~4);
+            flags = send_stickers ? (flags | 8) : (flags & ~8);
+            flags = send_gifs ? (flags | 16) : (flags & ~16);
+            flags = send_games ? (flags | 32) : (flags & ~32);
+            flags = send_inline ? (flags | 64) : (flags & ~64);
+            flags = embed_links ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             stream.writeInt32(until_date);
         }
@@ -2857,8 +2857,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = big ? (flags | 1) : (flags &~ 1);
-            flags = unread ? (flags | 2) : (flags &~ 2);
+            flags = big ? (flags | 1) : (flags & ~1);
+            flags = unread ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer_id.serializeToStream(stream);
             stream.writeInt32(date);
@@ -2879,8 +2879,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = big ? (flags | 1) : (flags &~ 1);
-            flags = unread ? (flags | 2) : (flags &~ 2);
+            flags = big ? (flags | 1) : (flags & ~1);
+            flags = unread ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer_id.serializeToStream(stream);
             reaction.serializeToStream(stream);
@@ -2901,8 +2901,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = big ? (flags | 1) : (flags &~ 1);
-            flags = unread ? (flags | 2) : (flags &~ 2);
+            flags = big ? (flags | 1) : (flags & ~1);
+            flags = unread ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer_id.serializeToStream(stream);
             if (reaction instanceof TL_reactionEmoji)
@@ -3009,7 +3009,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = setup_password_required ? (flags | 2) : (flags &~ 2);
+            flags = setup_password_required ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(otherwise_relogin_days);
@@ -3342,8 +3342,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pm ? (flags | 1) : (flags &~ 1);
-            flags = group ? (flags | 2) : (flags &~ 2);
+            flags = pm ? (flags | 1) : (flags & ~1);
+            flags = group ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             if ((flags & 4) != 0) {
                 stream.writeString(title);
@@ -3389,9 +3389,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = autofill_new_broadcasts ? (flags | 1) : (flags &~ 1);
-            flags = autofill_public_groups ? (flags | 2) : (flags &~ 2);
-            flags = autofill_new_correspondents ? (flags | 4) : (flags &~ 4);
+            flags = autofill_new_broadcasts ? (flags | 1) : (flags & ~1);
+            flags = autofill_public_groups ? (flags | 2) : (flags & ~2);
+            flags = autofill_new_correspondents ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeString(title);
@@ -3503,7 +3503,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = inexact ? (flags | 2) : (flags &~ 2);
+            flags = inexact ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(count);
             if ((flags & 1) != 0) {
@@ -3683,7 +3683,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = inexact ? (flags | 2) : (flags &~ 2);
+            flags = inexact ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(pts);
             stream.writeInt32(count);
@@ -3730,7 +3730,6 @@ public class TLRPC {
             stream.writeInt32(count);
         }
     }
-
 
 
     public static class PaymentForm extends TLObject {
@@ -3856,8 +3855,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_save_credentials ? (flags | 4) : (flags &~ 4);
-            flags = password_missing ? (flags | 8) : (flags &~ 8);
+            flags = can_save_credentials ? (flags | 4) : (flags & ~4);
+            flags = password_missing ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt64(form_id);
             stream.writeInt64(bot_id);
@@ -3904,7 +3903,6 @@ public class TLRPC {
     }
 
 
-
     public static class TL_payments_paymentFormStars extends PaymentForm {
         public static final int constructor = 0x7bf6b15c;
 
@@ -3937,8 +3935,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_save_credentials ? (flags | 4) : (flags &~ 4);
-            flags = password_missing ? (flags | 8) : (flags &~ 8);
+            flags = can_save_credentials ? (flags | 4) : (flags & ~4);
+            flags = password_missing ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt64(form_id);
             stream.writeInt64(bot_id);
@@ -4558,7 +4556,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = update_app ? (flags | 1) : (flags &~ 1);
+            flags = update_app ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(message);
             if ((flags & 2) != 0) {
@@ -4626,21 +4624,21 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = change_info ? (flags | 1) : (flags &~ 1);
-            flags = post_messages ? (flags | 2) : (flags &~ 2);
-            flags = edit_messages ? (flags | 4) : (flags &~ 4);
-            flags = delete_messages ? (flags | 8) : (flags &~ 8);
-            flags = ban_users ? (flags | 16) : (flags &~ 16);
-            flags = invite_users ? (flags | 32) : (flags &~ 32);
-            flags = pin_messages ? (flags | 128) : (flags &~ 128);
-            flags = add_admins ? (flags | 512) : (flags &~ 512);
-            flags = anonymous ? (flags | 1024) : (flags &~ 1024);
-            flags = manage_call ? (flags | 2048) : (flags &~ 2048);
-            flags = other ? (flags | 4096) : (flags &~ 4096);
-            flags = manage_topics ? (flags | 8192) : (flags &~ 8192);
-            flags = post_stories ? (flags | 16384) : (flags &~ 16384);
-            flags = edit_stories ? (flags | 32768) : (flags &~ 32768);
-            flags = delete_stories ? (flags | 65536) : (flags &~ 65536);
+            flags = change_info ? (flags | 1) : (flags & ~1);
+            flags = post_messages ? (flags | 2) : (flags & ~2);
+            flags = edit_messages ? (flags | 4) : (flags & ~4);
+            flags = delete_messages ? (flags | 8) : (flags & ~8);
+            flags = ban_users ? (flags | 16) : (flags & ~16);
+            flags = invite_users ? (flags | 32) : (flags & ~32);
+            flags = pin_messages ? (flags | 128) : (flags & ~128);
+            flags = add_admins ? (flags | 512) : (flags & ~512);
+            flags = anonymous ? (flags | 1024) : (flags & ~1024);
+            flags = manage_call ? (flags | 2048) : (flags & ~2048);
+            flags = other ? (flags | 4096) : (flags & ~4096);
+            flags = manage_topics ? (flags | 8192) : (flags & ~8192);
+            flags = post_stories ? (flags | 16384) : (flags & ~16384);
+            flags = edit_stories ? (flags | 32768) : (flags & ~32768);
+            flags = delete_stories ? (flags | 65536) : (flags & ~65536);
             stream.writeInt32(flags);
         }
     }
@@ -4715,7 +4713,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = min ? (flags | 1) : (flags &~ 1);
+            flags = min ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -4777,7 +4775,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = min ? (flags | 1) : (flags &~ 1);
+            flags = min ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -4867,7 +4865,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = min ? (flags | 1) : (flags &~ 1);
+            flags = min ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -4969,7 +4967,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = min ? (flags | 1) : (flags &~ 1);
+            flags = min ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -5070,7 +5068,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = min ? (flags | 1) : (flags &~ 1);
+            flags = min ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -5329,8 +5327,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = chosen ? (flags | 1) : (flags &~ 1);
-            flags = correct ? (flags | 2) : (flags &~ 2);
+            flags = chosen ? (flags | 1) : (flags & ~1);
+            flags = correct ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeByteArray(option);
             stream.writeInt32(voters);
@@ -5469,12 +5467,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = current ? (flags | 1) : (flags &~ 1);
-            flags = official_app ? (flags | 2) : (flags &~ 2);
-            flags = password_pending ? (flags | 4) : (flags &~ 4);
-            flags = encrypted_requests_disabled ? (flags | 8) : (flags &~ 8);
-            flags = call_requests_disabled ? (flags | 16) : (flags &~ 16);
-            flags = unconfirmed ? (flags | 32) : (flags &~ 32);
+            flags = current ? (flags | 1) : (flags & ~1);
+            flags = official_app ? (flags | 2) : (flags & ~2);
+            flags = password_pending ? (flags | 4) : (flags & ~4);
+            flags = encrypted_requests_disabled ? (flags | 8) : (flags & ~8);
+            flags = call_requests_disabled ? (flags | 16) : (flags & ~16);
+            flags = unconfirmed ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt64(hash);
             stream.writeString(device_model);
@@ -6239,16 +6237,16 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = channel ? (flags | 1) : (flags &~ 1);
-            flags = broadcast ? (flags | 2) : (flags &~ 2);
-            flags = isPublic ? (flags | 4) : (flags &~ 4);
-            flags = megagroup ? (flags | 8) : (flags &~ 8);
-            flags = about != null ? (flags | 32) : (flags &~ 32);
-            flags = request_needed ? (flags | 64) : (flags &~ 64);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = scam ? (flags | 256) : (flags &~ 256);
-            flags = fake ? (flags | 512) : (flags &~ 512);
-            flags = can_refulfill_subscription ? (flags | 2048) : (flags &~ 2048);
+            flags = channel ? (flags | 1) : (flags & ~1);
+            flags = broadcast ? (flags | 2) : (flags & ~2);
+            flags = isPublic ? (flags | 4) : (flags & ~4);
+            flags = megagroup ? (flags | 8) : (flags & ~8);
+            flags = about != null ? (flags | 32) : (flags & ~32);
+            flags = request_needed ? (flags | 64) : (flags & ~64);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = scam ? (flags | 256) : (flags & ~256);
+            flags = fake ? (flags | 512) : (flags & ~512);
+            flags = can_refulfill_subscription ? (flags | 2048) : (flags & ~2048);
             stream.writeInt32(flags);
             stream.writeString(title);
             if (about != null) {
@@ -6316,15 +6314,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = channel ? (flags | 1) : (flags &~ 1);
-            flags = broadcast ? (flags | 2) : (flags &~ 2);
-            flags = isPublic ? (flags | 4) : (flags &~ 4);
-            flags = megagroup ? (flags | 8) : (flags &~ 8);
-            flags = about != null ? (flags | 32) : (flags &~ 32);
-            flags = request_needed ? (flags | 64) : (flags &~ 64);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = scam ? (flags | 256) : (flags &~ 256);
-            flags = fake ? (flags | 512) : (flags &~ 512);
+            flags = channel ? (flags | 1) : (flags & ~1);
+            flags = broadcast ? (flags | 2) : (flags & ~2);
+            flags = isPublic ? (flags | 4) : (flags & ~4);
+            flags = megagroup ? (flags | 8) : (flags & ~8);
+            flags = about != null ? (flags | 32) : (flags & ~32);
+            flags = request_needed ? (flags | 64) : (flags & ~64);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = scam ? (flags | 256) : (flags & ~256);
+            flags = fake ? (flags | 512) : (flags & ~512);
             stream.writeInt32(flags);
             stream.writeString(title);
             if (about != null) {
@@ -6388,15 +6386,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = channel ? (flags | 1) : (flags &~ 1);
-            flags = broadcast ? (flags | 2) : (flags &~ 2);
-            flags = isPublic ? (flags | 4) : (flags &~ 4);
-            flags = megagroup ? (flags | 8) : (flags &~ 8);
-            flags = about != null ? (flags | 32) : (flags &~ 32);
-            flags = request_needed ? (flags | 64) : (flags &~ 64);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = scam ? (flags | 256) : (flags &~ 256);
-            flags = fake ? (flags | 512) : (flags &~ 512);
+            flags = channel ? (flags | 1) : (flags & ~1);
+            flags = broadcast ? (flags | 2) : (flags & ~2);
+            flags = isPublic ? (flags | 4) : (flags & ~4);
+            flags = megagroup ? (flags | 8) : (flags & ~8);
+            flags = about != null ? (flags | 32) : (flags & ~32);
+            flags = request_needed ? (flags | 64) : (flags & ~64);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = scam ? (flags | 256) : (flags & ~256);
+            flags = fake ? (flags | 512) : (flags & ~512);
             stream.writeInt32(flags);
             stream.writeString(title);
             if (about != null) {
@@ -6549,7 +6547,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_not_skip ? (flags | 1) : (flags &~ 1);
+            flags = can_not_skip ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeString(version);
@@ -6806,8 +6804,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = official ? (flags | 1) : (flags &~ 1);
-            flags = rtl ? (flags | 4) : (flags &~ 4);
+            flags = official ? (flags | 1) : (flags & ~1);
+            flags = rtl ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeString(name);
             stream.writeString(native_name);
@@ -6862,8 +6860,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = requested ? (flags | 1) : (flags &~ 1);
-            flags = via_chatlist ? (flags | 8) : (flags &~ 8);
+            flags = requested ? (flags | 1) : (flags & ~1);
+            flags = via_chatlist ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt64(user_id);
             stream.writeInt32(date);
@@ -7333,8 +7331,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = apple_signin_allowed ? (flags | 1) : (flags &~ 1);
-            flags = google_signin_allowed ? (flags | 2) : (flags &~ 2);
+            flags = apple_signin_allowed ? (flags | 1) : (flags & ~1);
+            flags = google_signin_allowed ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeString(email_pattern);
             stream.writeInt32(length);
@@ -7358,8 +7356,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = apple_signin_allowed ? (flags | 1) : (flags &~ 1);
-            flags = google_signin_allowed ? (flags | 2) : (flags &~ 2);
+            flags = apple_signin_allowed ? (flags | 1) : (flags & ~1);
+            flags = google_signin_allowed ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
         }
     }
@@ -7643,17 +7641,17 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = report_spam ? (flags | 1) : (flags &~ 1);
-            flags = add_contact ? (flags | 2) : (flags &~ 2);
-            flags = block_contact ? (flags | 4) : (flags &~ 4);
-            flags = share_contact ? (flags | 8) : (flags &~ 8);
-            flags = need_contacts_exception ? (flags | 16) : (flags &~ 16);
-            flags = report_geo ? (flags | 32) : (flags &~ 32);
-            flags = autoarchived ? (flags | 128) : (flags &~ 128);
-            flags = invite_members ? (flags | 256) : (flags &~ 256);
-            flags = request_chat_broadcast ? (flags | 1024) : (flags &~ 1024);
-            flags = business_bot_paused ? (flags | 2048) : (flags &~ 2048);
-            flags = business_bot_can_reply ? (flags | 4096) : (flags &~ 4096);
+            flags = report_spam ? (flags | 1) : (flags & ~1);
+            flags = add_contact ? (flags | 2) : (flags & ~2);
+            flags = block_contact ? (flags | 4) : (flags & ~4);
+            flags = share_contact ? (flags | 8) : (flags & ~8);
+            flags = need_contacts_exception ? (flags | 16) : (flags & ~16);
+            flags = report_geo ? (flags | 32) : (flags & ~32);
+            flags = autoarchived ? (flags | 128) : (flags & ~128);
+            flags = invite_members ? (flags | 256) : (flags & ~256);
+            flags = request_chat_broadcast ? (flags | 1024) : (flags & ~1024);
+            flags = business_bot_paused ? (flags | 2048) : (flags & ~2048);
+            flags = business_bot_can_reply ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             if ((flags & 64) != 0) {
                 stream.writeInt32(geo_distance);
@@ -7700,15 +7698,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = report_spam ? (flags | 1) : (flags &~ 1);
-            flags = add_contact ? (flags | 2) : (flags &~ 2);
-            flags = block_contact ? (flags | 4) : (flags &~ 4);
-            flags = share_contact ? (flags | 8) : (flags &~ 8);
-            flags = need_contacts_exception ? (flags | 16) : (flags &~ 16);
-            flags = report_geo ? (flags | 32) : (flags &~ 32);
-            flags = autoarchived ? (flags | 128) : (flags &~ 128);
-            flags = invite_members ? (flags | 256) : (flags &~ 256);
-            flags = request_chat_broadcast ? (flags | 1024) : (flags &~ 1024);
+            flags = report_spam ? (flags | 1) : (flags & ~1);
+            flags = add_contact ? (flags | 2) : (flags & ~2);
+            flags = block_contact ? (flags | 4) : (flags & ~4);
+            flags = share_contact ? (flags | 8) : (flags & ~8);
+            flags = need_contacts_exception ? (flags | 16) : (flags & ~16);
+            flags = report_geo ? (flags | 32) : (flags & ~32);
+            flags = autoarchived ? (flags | 128) : (flags & ~128);
+            flags = invite_members ? (flags | 256) : (flags & ~256);
+            flags = request_chat_broadcast ? (flags | 1024) : (flags & ~1024);
             stream.writeInt32(flags);
             if ((flags & 64) != 0) {
                 stream.writeInt32(geo_distance);
@@ -8062,7 +8060,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = message_colors_animated ? (flags | 4) : (flags &~ 4);
+            flags = message_colors_animated ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             base_theme.serializeToStream(stream);
             stream.writeInt32(accent_color);
@@ -8112,7 +8110,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = message_colors_animated ? (flags | 4) : (flags &~ 4);
+            flags = message_colors_animated ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             base_theme.serializeToStream(stream);
             stream.writeInt32(accent_color);
@@ -8469,11 +8467,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = header ? (flags | 1) : (flags &~ 1);
-            flags = align_center ? (flags | 8) : (flags &~ 8);
-            flags = align_right ? (flags | 16) : (flags &~ 16);
-            flags = valign_middle ? (flags | 32) : (flags &~ 32);
-            flags = valign_bottom ? (flags | 64) : (flags &~ 64);
+            flags = header ? (flags | 1) : (flags & ~1);
+            flags = align_center ? (flags | 8) : (flags & ~8);
+            flags = align_right ? (flags | 16) : (flags & ~16);
+            flags = valign_middle ? (flags | 32) : (flags & ~32);
+            flags = valign_bottom ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             if ((flags & 128) != 0) {
                 text.serializeToStream(stream);
@@ -8530,7 +8528,7 @@ public class TLRPC {
     }
 
     public static class MessageExtendedMedia extends TLObject {
-        
+
         public String attachPath; // custom
         public float downloadProgress, uploadProgress; // custom
 
@@ -8641,8 +8639,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = shipping_address_requested ? (flags | 2) : (flags &~ 2);
-            flags = test ? (flags | 8) : (flags &~ 8);
+            flags = shipping_address_requested ? (flags | 2) : (flags & ~2);
+            flags = test ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeString(title);
             stream.writeString(description);
@@ -8685,8 +8683,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = shipping_address_requested ? (flags | 2) : (flags &~ 2);
-            flags = test ? (flags | 8) : (flags &~ 8);
+            flags = shipping_address_requested ? (flags | 2) : (flags & ~2);
+            flags = test ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeString(title);
             stream.writeString(description);
@@ -8822,11 +8820,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = nopremium ? (flags | 8) : (flags &~ 8);
-            flags = spoiler ? (flags | 16) : (flags &~ 16);
-            flags = video ? (flags | 64) : (flags &~ 64);
-            flags = round ? (flags | 128) : (flags &~ 128);
-            flags = voice ? (flags | 256) : (flags &~ 256);
+            flags = nopremium ? (flags | 8) : (flags & ~8);
+            flags = spoiler ? (flags | 16) : (flags & ~16);
+            flags = video ? (flags | 64) : (flags & ~64);
+            flags = round ? (flags | 128) : (flags & ~128);
+            flags = voice ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 document.serializeToStream(stream);
@@ -8868,11 +8866,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = nopremium ? (flags | 8) : (flags &~ 8);
-            flags = spoiler ? (flags | 16) : (flags &~ 16);
-            flags = video ? (flags | 64) : (flags &~ 64);
-            flags = round ? (flags | 128) : (flags &~ 128);
-            flags = voice ? (flags | 256) : (flags &~ 256);
+            flags = nopremium ? (flags | 8) : (flags & ~8);
+            flags = spoiler ? (flags | 16) : (flags & ~16);
+            flags = video ? (flags | 64) : (flags & ~64);
+            flags = round ? (flags | 128) : (flags & ~128);
+            flags = voice ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 document.serializeToStream(stream);
@@ -8906,9 +8904,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = nopremium ? (flags | 8) : (flags &~ 8);
-            flags = spoiler ? (flags | 16) : (flags &~ 16);
-            flags = document != null ? (flags | 1) : (flags &~ 1);
+            flags = nopremium ? (flags | 8) : (flags & ~8);
+            flags = spoiler ? (flags | 16) : (flags & ~16);
+            flags = document != null ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 document.serializeToStream(stream);
@@ -9001,7 +8999,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = spoiler ? (flags | 8) : (flags &~ 8);
+            flags = spoiler ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 photo.serializeToStream(stream);
@@ -9332,10 +9330,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = force_large_media ? (flags | 1) : (flags &~ 1);
-            flags = force_small_media ? (flags | 2) : (flags &~ 2);
-            flags = manual ? (flags | 8) : (flags &~ 8);
-            flags = safe ? (flags | 16) : (flags &~ 16);
+            flags = force_large_media ? (flags | 1) : (flags & ~1);
+            flags = force_small_media ? (flags | 2) : (flags & ~2);
+            flags = manual ? (flags | 8) : (flags & ~8);
+            flags = safe ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
             webpage.serializeToStream(stream);
         }
@@ -9805,8 +9803,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = show_previews ? (flags | 1) : (flags &~ 1);
-            flags = silent ? (flags | 2) : (flags &~ 2);
+            flags = show_previews ? (flags | 1) : (flags & ~1);
+            flags = silent ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(mute_until);
             stream.writeString(sound);
@@ -10445,11 +10443,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = archive_and_mute_new_noncontact_peers ? (flags | 1) : (flags &~ 1);
-            flags = keep_archived_unmuted ? (flags | 2) : (flags &~ 2);
-            flags = keep_archived_folders ? (flags | 4) : (flags &~ 4);
-            flags = hide_read_marks ? (flags | 8) : (flags &~ 8);
-            flags = new_noncontact_peers_require_premium ? (flags | 16) : (flags &~ 16);
+            flags = archive_and_mute_new_noncontact_peers ? (flags | 1) : (flags & ~1);
+            flags = keep_archived_unmuted ? (flags | 2) : (flags & ~2);
+            flags = keep_archived_folders ? (flags | 4) : (flags & ~4);
+            flags = hide_read_marks ? (flags | 8) : (flags & ~8);
+            flags = new_noncontact_peers_require_premium ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
         }
     }
@@ -11359,7 +11357,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = hidden ? (flags | 1) : (flags &~ 1);
+            flags = hidden ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(iso2);
             stream.writeString(default_name);
@@ -11595,7 +11593,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = comments ? (flags | 1) : (flags &~ 1);
+            flags = comments ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(replies);
             stream.writeInt32(replies_pts);
@@ -11658,7 +11656,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = comments ? (flags | 1) : (flags &~ 1);
+            flags = comments ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(replies);
             stream.writeInt32(replies_pts);
@@ -11923,10 +11921,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = resize ? (flags | 1) : (flags &~ 1);
-            flags = single_use ? (flags | 2) : (flags &~ 2);
-            flags = selective ? (flags | 4) : (flags &~ 4);
-            flags = is_persistent ? (flags | 16) : (flags &~ 16);
+            flags = resize ? (flags | 1) : (flags & ~1);
+            flags = single_use ? (flags | 2) : (flags & ~2);
+            flags = selective ? (flags | 4) : (flags & ~4);
+            flags = is_persistent ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = rows.size();
@@ -11951,7 +11949,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = selective ? (flags | 4) : (flags &~ 4);
+            flags = selective ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
         }
     }
@@ -11971,8 +11969,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = single_use ? (flags | 2) : (flags &~ 2);
-            flags = selective ? (flags | 4) : (flags &~ 4);
+            flags = single_use ? (flags | 2) : (flags & ~2);
+            flags = selective ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 8) != 0) {
                 stream.writeString(placeholder);
@@ -12008,9 +12006,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = resize ? (flags | 1) : (flags &~ 1);
-            flags = single_use ? (flags | 2) : (flags &~ 2);
-            flags = selective ? (flags | 4) : (flags &~ 4);
+            flags = resize ? (flags | 1) : (flags & ~1);
+            flags = single_use ? (flags | 2) : (flags & ~2);
+            flags = selective ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = rows.size();
@@ -12033,8 +12031,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = single_use ? (flags | 2) : (flags &~ 2);
-            flags = selective ? (flags | 4) : (flags &~ 4);
+            flags = single_use ? (flags | 2) : (flags & ~2);
+            flags = selective ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
         }
     }
@@ -12159,8 +12157,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = emojis ? (flags | 1) : (flags &~ 1);
-            flags = text_color ? (flags | 2) : (flags &~ 2);
+            flags = emojis ? (flags | 1) : (flags & ~1);
+            flags = text_color ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = stickers.size();
@@ -12379,9 +12377,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = native_names ? (flags | 1) : (flags &~ 1);
-            flags = selfie_required ? (flags | 2) : (flags &~ 2);
-            flags = translation_required ? (flags | 4) : (flags &~ 4);
+            flags = native_names ? (flags | 1) : (flags & ~1);
+            flags = selfie_required ? (flags | 2) : (flags & ~2);
+            flags = translation_required ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             type.serializeToStream(stream);
         }
@@ -13175,13 +13173,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_view_stats ? (flags | 4096) : (flags &~ 4096);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_view_stats ? (flags | 4096) : (flags & ~4096);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -13297,8 +13295,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -13444,14 +13442,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -13583,8 +13581,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -13711,14 +13709,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -13845,8 +13843,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -13941,8 +13939,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -14100,14 +14098,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -14254,8 +14252,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -14368,8 +14366,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -14556,14 +14554,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -14799,14 +14797,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -15024,14 +15022,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -15199,8 +15197,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -15333,8 +15331,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -15474,8 +15472,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -15703,26 +15701,26 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
-            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 &~ 1);
-            flags2 = antispam ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = participants_hidden ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = translations_disabled ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 &~ 32);
-            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 &~ 64);
-            flags2 = restricted_sponsored ? (flags2 | 2048) : (flags2 &~ 2048);
-            flags2 = can_view_revenue ? (flags2 | 4096) : (flags2 &~ 4096);
-            flags2 = paid_media_allowed ? (flags2 | 16384) : (flags2 &~ 16384);
-            flags2 = can_view_stars_revenue ? (flags2 | 32768) : (flags2 &~ 32768);
-            flags2 = paid_reactions_available ? (flags2 | 65536) : (flags2 &~ 65536);
+            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 & ~1);
+            flags2 = antispam ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = participants_hidden ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = translations_disabled ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 & ~32);
+            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 & ~64);
+            flags2 = restricted_sponsored ? (flags2 | 2048) : (flags2 & ~2048);
+            flags2 = can_view_revenue ? (flags2 | 4096) : (flags2 & ~4096);
+            flags2 = paid_media_allowed ? (flags2 | 16384) : (flags2 & ~16384);
+            flags2 = can_view_stars_revenue ? (flags2 | 32768) : (flags2 & ~32768);
+            flags2 = paid_reactions_available ? (flags2 | 65536) : (flags2 & ~65536);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -16011,24 +16009,24 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
-            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 &~ 1);
-            flags2 = antispam ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = participants_hidden ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = translations_disabled ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 &~ 32);
-            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 &~ 64);
-            flags2 = restricted_sponsored ? (flags2 | 2048) : (flags2 &~ 2048);
-            flags2 = can_view_revenue ? (flags2 | 4096) : (flags2 &~ 4096);
-            flags2 = can_view_stars_revenue ? (flags2 | 32768) : (flags2 &~ 32768);
+            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 & ~1);
+            flags2 = antispam ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = participants_hidden ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = translations_disabled ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 & ~32);
+            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 & ~64);
+            flags2 = restricted_sponsored ? (flags2 | 2048) : (flags2 & ~2048);
+            flags2 = can_view_revenue ? (flags2 | 4096) : (flags2 & ~4096);
+            flags2 = can_view_stars_revenue ? (flags2 | 32768) : (flags2 & ~32768);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -16311,21 +16309,21 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
-            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 &~ 1);
-            flags2 = antispam ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = participants_hidden ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = translations_disabled ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 &~ 32);
-            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 &~ 64);
+            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 & ~1);
+            flags2 = antispam ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = participants_hidden ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = translations_disabled ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 & ~32);
+            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 & ~64);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -16598,21 +16596,21 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
-            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 &~ 1);
-            flags2 = antispam ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = participants_hidden ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = translations_disabled ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 &~ 32);
-            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 &~ 64);
+            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 & ~1);
+            flags2 = antispam ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = participants_hidden ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = translations_disabled ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 & ~32);
+            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 & ~64);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -16873,21 +16871,21 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
-            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 &~ 1);
-            flags2 = antispam ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = participants_hidden ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = translations_disabled ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 &~ 32);
-            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 &~ 64);
+            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 & ~1);
+            flags2 = antispam ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = participants_hidden ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = translations_disabled ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_pinned_available ? (flags2 | 32) : (flags2 & ~32);
+            flags2 = view_forum_as_messages ? (flags2 | 64) : (flags2 & ~64);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -17140,19 +17138,19 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
-            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 &~ 1);
-            flags2 = antispam ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = participants_hidden ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = translations_disabled ? (flags2 | 8) : (flags2 &~ 8);
+            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 & ~1);
+            flags2 = antispam ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = participants_hidden ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = translations_disabled ? (flags2 | 8) : (flags2 & ~8);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -17409,16 +17407,16 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
-            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 &~ 1);
+            flags2 = can_delete_channel ? (flags2 | 1) : (flags2 & ~1);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -17678,14 +17676,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -17911,14 +17909,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(about);
@@ -18101,14 +18099,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -18276,14 +18274,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
-            flags = has_scheduled ? (flags | 524288) : (flags &~ 524288);
-            flags = can_view_stats ? (flags | 1048576) : (flags &~ 1048576);
-            flags = blocked ? (flags | 4194304) : (flags &~ 4194304);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
+            flags = has_scheduled ? (flags | 524288) : (flags & ~524288);
+            flags = can_view_stats ? (flags | 1048576) : (flags & ~1048576);
+            flags = blocked ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -18433,12 +18431,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_view_stats ? (flags | 4096) : (flags &~ 4096);
-            flags = can_set_location ? (flags | 65536) : (flags &~ 65536);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_view_stats ? (flags | 4096) : (flags & ~4096);
+            flags = can_set_location ? (flags | 65536) : (flags & ~65536);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -18575,11 +18573,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_view_stats ? (flags | 4096) : (flags &~ 4096);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_view_stats ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -18710,11 +18708,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_view_stats ? (flags | 4096) : (flags &~ 4096);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_view_stats ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -18838,11 +18836,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
-            flags = can_view_stats ? (flags | 4096) : (flags &~ 4096);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
+            flags = can_view_stats ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19007,10 +19005,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19126,10 +19124,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
-            flags = hidden_prehistory ? (flags | 1024) : (flags &~ 1024);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
+            flags = hidden_prehistory ? (flags | 1024) : (flags & ~1024);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19238,9 +19236,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
-            flags = can_set_stickers ? (flags | 128) : (flags &~ 128);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
+            flags = can_set_stickers ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19332,8 +19330,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19409,8 +19407,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 256) : (flags &~ 256);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19479,7 +19477,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_set_username ? (flags | 128) : (flags &~ 128);
+            flags = can_set_username ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19624,8 +19622,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19721,8 +19719,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19815,8 +19813,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
-            flags = can_set_username ? (flags | 64) : (flags &~ 64);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
+            flags = can_set_username ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19905,7 +19903,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -19970,7 +19968,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_view_participants ? (flags | 8) : (flags &~ 8);
+            flags = can_view_participants ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(about);
@@ -20205,13 +20203,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = allow_flashcall ? (flags | 1) : (flags &~ 1);
-            flags = current_number ? (flags | 2) : (flags &~ 2);
-            flags = allow_app_hash ? (flags | 16) : (flags &~ 16);
-            flags = allow_missed_call ? (flags | 32) : (flags &~ 32);
-            flags = allow_firebase ? (flags | 128) : (flags &~ 128);
-            flags = app_sandbox ? (flags | 256) : (flags &~ 256);
-            flags = unknown_number ? (flags | 512) : (flags &~ 512);
+            flags = allow_flashcall ? (flags | 1) : (flags & ~1);
+            flags = current_number ? (flags | 2) : (flags & ~2);
+            flags = allow_app_hash ? (flags | 16) : (flags & ~16);
+            flags = allow_missed_call ? (flags | 32) : (flags & ~32);
+            flags = allow_firebase ? (flags | 128) : (flags & ~128);
+            flags = app_sandbox ? (flags | 256) : (flags & ~256);
+            flags = unknown_number ? (flags | 512) : (flags & ~512);
             stream.writeInt32(flags);
             if ((flags & 64) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -20796,8 +20794,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = part ? (flags | 1) : (flags &~ 1);
-            flags = rtl ? (flags | 2) : (flags &~ 2);
+            flags = part ? (flags | 1) : (flags & ~1);
+            flags = rtl ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeString(url);
             stream.writeInt32(0x1cb5c415);
@@ -20883,9 +20881,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = part ? (flags | 1) : (flags &~ 1);
-            flags = rtl ? (flags | 2) : (flags &~ 2);
-            flags = v2 ? (flags | 4) : (flags &~ 4);
+            flags = part ? (flags | 1) : (flags & ~1);
+            flags = rtl ? (flags | 2) : (flags & ~2);
+            flags = v2 ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeString(url);
             stream.writeInt32(0x1cb5c415);
@@ -21197,7 +21195,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = same_peer ? (flags | 1) : (flags &~ 1);
+            flags = same_peer ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(text);
             stream.writeString(query);
@@ -21233,7 +21231,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = same_peer ? (flags | 1) : (flags &~ 1);
+            flags = same_peer ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(text);
             stream.writeString(query);
@@ -21305,7 +21303,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = request_write_access ? (flags | 1) : (flags &~ 1);
+            flags = request_write_access ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(text);
             if ((flags & 2) != 0) {
@@ -21395,7 +21393,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = requires_password ? (flags | 1) : (flags &~ 1);
+            flags = requires_password ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(text);
             stream.writeByteArray(data);
@@ -21946,7 +21944,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_webpage ? (flags | 1) : (flags &~ 1);
+            flags = no_webpage ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(message);
             if ((flags & 2) != 0) {
@@ -22060,11 +22058,11 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = invert_media ? (flags | 8) : (flags &~ 8);
-            flags = force_large_media ? (flags | 8) : (flags &~ 16);
-            flags = force_small_media ? (flags | 32) : (flags &~ 32);
-            flags = manual ? (flags | 128) : (flags &~ 128);
-            flags = safe ? (flags | 256) : (flags &~ 256);
+            flags = invert_media ? (flags | 8) : (flags & ~8);
+            flags = force_large_media ? (flags | 8) : (flags & ~16);
+            flags = force_small_media ? (flags | 32) : (flags & ~32);
+            flags = manual ? (flags | 128) : (flags & ~128);
+            flags = safe ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeString(message);
             if ((flags & 2) != 0) {
@@ -22110,8 +22108,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = shipping_address_requested ? (flags | 2) : (flags &~ 2);
-            flags = test ? (flags | 8) : (flags &~ 8);
+            flags = shipping_address_requested ? (flags | 2) : (flags & ~2);
+            flags = test ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeString(title);
             stream.writeString(description);
@@ -22361,7 +22359,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = inexact ? (flags | 2) : (flags &~ 2);
+            flags = inexact ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             filter.serializeToStream(stream);
             stream.writeInt32(count);
@@ -23224,7 +23222,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = premium ? (flags | 1) : (flags &~ 1);
+            flags = premium ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(hash);
             stream.writeInt32(count);
@@ -23806,7 +23804,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_my_invites ? (flags | 67108864) : (flags &~ 67108864);
+            flags = has_my_invites ? (flags | 67108864) : (flags & ~67108864);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeString(title);
@@ -23876,7 +23874,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_my_invites ? (flags | 67108864) : (flags &~ 67108864);
+            flags = has_my_invites ? (flags | 67108864) : (flags & ~67108864);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeString(title);
@@ -23977,14 +23975,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = contacts ? (flags | 1) : (flags &~ 1);
-            flags = non_contacts ? (flags | 2) : (flags &~ 2);
-            flags = groups ? (flags | 4) : (flags &~ 4);
-            flags = broadcasts ? (flags | 8) : (flags &~ 8);
-            flags = bots ? (flags | 16) : (flags &~ 16);
-            flags = exclude_muted ? (flags | 2048) : (flags &~ 2048);
-            flags = exclude_read ? (flags | 4096) : (flags &~ 4096);
-            flags = exclude_archived ? (flags | 8192) : (flags &~ 8192);
+            flags = contacts ? (flags | 1) : (flags & ~1);
+            flags = non_contacts ? (flags | 2) : (flags & ~2);
+            flags = groups ? (flags | 4) : (flags & ~4);
+            flags = broadcasts ? (flags | 8) : (flags & ~8);
+            flags = bots ? (flags | 16) : (flags & ~16);
+            flags = exclude_muted ? (flags | 2048) : (flags & ~2048);
+            flags = exclude_read ? (flags | 4096) : (flags & ~4096);
+            flags = exclude_archived ? (flags | 8192) : (flags & ~8192);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeString(title);
@@ -24082,14 +24080,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = contacts ? (flags | 1) : (flags &~ 1);
-            flags = non_contacts ? (flags | 2) : (flags &~ 2);
-            flags = groups ? (flags | 4) : (flags &~ 4);
-            flags = broadcasts ? (flags | 8) : (flags &~ 8);
-            flags = bots ? (flags | 16) : (flags &~ 16);
-            flags = exclude_muted ? (flags | 2048) : (flags &~ 2048);
-            flags = exclude_read ? (flags | 4096) : (flags &~ 4096);
-            flags = exclude_archived ? (flags | 8192) : (flags &~ 8192);
+            flags = contacts ? (flags | 1) : (flags & ~1);
+            flags = non_contacts ? (flags | 2) : (flags & ~2);
+            flags = groups ? (flags | 4) : (flags & ~4);
+            flags = broadcasts ? (flags | 8) : (flags & ~8);
+            flags = bots ? (flags | 16) : (flags & ~16);
+            flags = exclude_muted ? (flags | 2048) : (flags & ~2048);
+            flags = exclude_read ? (flags | 4096) : (flags & ~4096);
+            flags = exclude_archived ? (flags | 8192) : (flags & ~8192);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeString(title);
@@ -24403,7 +24401,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = big ? (flags | 1) : (flags &~ 1);
+            flags = big ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt64(photo_id);
@@ -24865,7 +24863,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = video ? (flags | 64) : (flags &~ 64);
+            flags = video ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -24916,8 +24914,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = p2p_allowed ? (flags | 32) : (flags &~ 32);
-            flags = video ? (flags | 64) : (flags &~ 64);
+            flags = p2p_allowed ? (flags | 32) : (flags & ~32);
+            flags = video ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -24976,8 +24974,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = p2p_allowed ? (flags | 32) : (flags &~ 32);
-            flags = video ? (flags | 64) : (flags &~ 64);
+            flags = p2p_allowed ? (flags | 32) : (flags & ~32);
+            flags = video ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -25029,7 +25027,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = video ? (flags | 64) : (flags &~ 64);
+            flags = video ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -25061,7 +25059,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = video ? (flags | 64) : (flags &~ 64);
+            flags = video ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -25095,9 +25093,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = need_rating ? (flags | 4) : (flags &~ 4);
-            flags = need_debug ? (flags | 8) : (flags &~ 8);
-            flags = video ? (flags | 64) : (flags &~ 64);
+            flags = need_rating ? (flags | 4) : (flags & ~4);
+            flags = need_debug ? (flags | 8) : (flags & ~8);
+            flags = video ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 1) != 0) {
@@ -25506,32 +25504,32 @@ public class TLRPC {
                 flags = flags & ~8;
             }
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
-            flags = apply_min_photo ? (flags | 33554432) : (flags &~ 33554432);
-            flags = fake ? (flags | 67108864) : (flags &~ 67108864);
-            flags = bot_attach_menu ? (flags | 134217728) : (flags &~ 134217728);
-            flags = premium ? (flags | 268435456) : (flags &~ 268435456);
-            flags = attach_menu_enabled ? (flags | 536870912) : (flags &~ 536870912);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
+            flags = apply_min_photo ? (flags | 33554432) : (flags & ~33554432);
+            flags = fake ? (flags | 67108864) : (flags & ~67108864);
+            flags = bot_attach_menu ? (flags | 134217728) : (flags & ~134217728);
+            flags = premium ? (flags | 268435456) : (flags & ~268435456);
+            flags = attach_menu_enabled ? (flags | 536870912) : (flags & ~536870912);
             stream.writeInt32(flags);
-            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = close_friend ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_hidden ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 &~ 16);
-            flags2 = contact_require_premium ? (flags2 | 1024) : (flags2 &~ 1024);
-            flags2 = bot_business ? (flags2 | 2048) : (flags2 &~ 2048);
-            flags2 = bot_has_main_app ? (flags2 | 8192) : (flags2 &~ 8192);
+            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = close_friend ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_hidden ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 & ~16);
+            flags2 = contact_require_premium ? (flags2 | 1024) : (flags2 & ~1024);
+            flags2 = bot_business ? (flags2 | 2048) : (flags2 & ~2048);
+            flags2 = bot_has_main_app ? (flags2 | 8192) : (flags2 & ~8192);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 1) != 0) {
@@ -25725,31 +25723,31 @@ public class TLRPC {
                 flags = flags & ~8;
             }
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
-            flags = apply_min_photo ? (flags | 33554432) : (flags &~ 33554432);
-            flags = fake ? (flags | 67108864) : (flags &~ 67108864);
-            flags = bot_attach_menu ? (flags | 134217728) : (flags &~ 134217728);
-            flags = premium ? (flags | 268435456) : (flags &~ 268435456);
-            flags = attach_menu_enabled ? (flags | 536870912) : (flags &~ 536870912);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
+            flags = apply_min_photo ? (flags | 33554432) : (flags & ~33554432);
+            flags = fake ? (flags | 67108864) : (flags & ~67108864);
+            flags = bot_attach_menu ? (flags | 134217728) : (flags & ~134217728);
+            flags = premium ? (flags | 268435456) : (flags & ~268435456);
+            flags = attach_menu_enabled ? (flags | 536870912) : (flags & ~536870912);
             stream.writeInt32(flags);
-            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = close_friend ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_hidden ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 &~ 16);
-            flags2 = contact_require_premium ? (flags2 | 1024) : (flags2 &~ 1024);
-            flags2 = bot_business ? (flags2 | 2048) : (flags2 &~ 2048);
+            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = close_friend ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_hidden ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 & ~16);
+            flags2 = contact_require_premium ? (flags2 | 1024) : (flags2 & ~1024);
+            flags2 = bot_business ? (flags2 | 2048) : (flags2 & ~2048);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 1) != 0) {
@@ -25940,31 +25938,31 @@ public class TLRPC {
                 flags = flags & ~8;
             }
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
-            flags = apply_min_photo ? (flags | 33554432) : (flags &~ 33554432);
-            flags = fake ? (flags | 67108864) : (flags &~ 67108864);
-            flags = bot_attach_menu ? (flags | 134217728) : (flags &~ 134217728);
-            flags = premium ? (flags | 268435456) : (flags &~ 268435456);
-            flags = attach_menu_enabled ? (flags | 536870912) : (flags &~ 536870912);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
+            flags = apply_min_photo ? (flags | 33554432) : (flags & ~33554432);
+            flags = fake ? (flags | 67108864) : (flags & ~67108864);
+            flags = bot_attach_menu ? (flags | 134217728) : (flags & ~134217728);
+            flags = premium ? (flags | 268435456) : (flags & ~268435456);
+            flags = attach_menu_enabled ? (flags | 536870912) : (flags & ~536870912);
             stream.writeInt32(flags);
-            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = close_friend ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_hidden ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 &~ 16);
-            flags2 = contact_require_premium ? (flags2 | 1024) : (flags2 &~ 1024);
-            flags2 = bot_business ? (flags2 | 2048) : (flags2 &~ 2048);
+            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = close_friend ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_hidden ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 & ~16);
+            flags2 = contact_require_premium ? (flags2 | 1024) : (flags2 & ~1024);
+            flags2 = bot_business ? (flags2 | 2048) : (flags2 & ~2048);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 1) != 0) {
@@ -26154,29 +26152,29 @@ public class TLRPC {
                 flags = flags & ~8;
             }
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
-            flags = apply_min_photo ? (flags | 33554432) : (flags &~ 33554432);
-            flags = fake ? (flags | 67108864) : (flags &~ 67108864);
-            flags = bot_attach_menu ? (flags | 134217728) : (flags &~ 134217728);
-            flags = premium ? (flags | 268435456) : (flags &~ 268435456);
-            flags = attach_menu_enabled ? (flags | 536870912) : (flags &~ 536870912);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
+            flags = apply_min_photo ? (flags | 33554432) : (flags & ~33554432);
+            flags = fake ? (flags | 67108864) : (flags & ~67108864);
+            flags = bot_attach_menu ? (flags | 134217728) : (flags & ~134217728);
+            flags = premium ? (flags | 268435456) : (flags & ~268435456);
+            flags = attach_menu_enabled ? (flags | 536870912) : (flags & ~536870912);
             stream.writeInt32(flags);
-            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = close_friend ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_hidden ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 &~ 16);
+            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = close_friend ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_hidden ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 & ~16);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 1) != 0) {
@@ -26350,29 +26348,29 @@ public class TLRPC {
                 flags = flags & ~8;
             }
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
-            flags = apply_min_photo ? (flags | 33554432) : (flags &~ 33554432);
-            flags = fake ? (flags | 67108864) : (flags &~ 67108864);
-            flags = bot_attach_menu ? (flags | 134217728) : (flags &~ 134217728);
-            flags = premium ? (flags | 268435456) : (flags &~ 268435456);
-            flags = attach_menu_enabled ? (flags | 536870912) : (flags &~ 536870912);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
+            flags = apply_min_photo ? (flags | 33554432) : (flags & ~33554432);
+            flags = fake ? (flags | 67108864) : (flags & ~67108864);
+            flags = bot_attach_menu ? (flags | 134217728) : (flags & ~134217728);
+            flags = premium ? (flags | 268435456) : (flags & ~268435456);
+            flags = attach_menu_enabled ? (flags | 536870912) : (flags & ~536870912);
             stream.writeInt32(flags);
-            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = close_friend ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_hidden ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 &~ 16);
+            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = close_friend ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_hidden ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = stories_unavailable ? (flags2 | 16) : (flags2 & ~16);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 1) != 0) {
@@ -26532,27 +26530,27 @@ public class TLRPC {
                 flags = flags & ~8;
             }
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
-            flags = apply_min_photo ? (flags | 33554432) : (flags &~ 33554432);
-            flags = fake ? (flags | 67108864) : (flags &~ 67108864);
-            flags = bot_attach_menu ? (flags | 134217728) : (flags &~ 134217728);
-            flags = premium ? (flags | 268435456) : (flags &~ 268435456);
-            flags = attach_menu_enabled ? (flags | 536870912) : (flags &~ 536870912);
-            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = close_friend ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_hidden ? (flags2 | 32) : (flags2 &~ 32);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
+            flags = apply_min_photo ? (flags | 33554432) : (flags & ~33554432);
+            flags = fake ? (flags | 67108864) : (flags & ~67108864);
+            flags = bot_attach_menu ? (flags | 134217728) : (flags & ~134217728);
+            flags = premium ? (flags | 268435456) : (flags & ~268435456);
+            flags = attach_menu_enabled ? (flags | 536870912) : (flags & ~536870912);
+            flags2 = bot_can_edit ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = close_friend ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_hidden ? (flags2 | 32) : (flags2 & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
@@ -26686,24 +26684,24 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
-            flags = apply_min_photo ? (flags | 33554432) : (flags &~ 33554432);
-            flags = fake ? (flags | 67108864) : (flags &~ 67108864);
-            flags = bot_attach_menu ? (flags | 134217728) : (flags &~ 134217728);
-            flags = premium ? (flags | 268435456) : (flags &~ 268435456);
-            flags = attach_menu_enabled ? (flags | 536870912) : (flags &~ 536870912);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
+            flags = apply_min_photo ? (flags | 33554432) : (flags & ~33554432);
+            flags = fake ? (flags | 67108864) : (flags & ~67108864);
+            flags = bot_attach_menu ? (flags | 134217728) : (flags & ~134217728);
+            flags = premium ? (flags | 268435456) : (flags & ~268435456);
+            flags = attach_menu_enabled ? (flags | 536870912) : (flags & ~536870912);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 1) != 0) {
@@ -26824,23 +26822,23 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
-            flags = apply_min_photo ? (flags | 33554432) : (flags &~ 33554432);
-            flags = fake ? (flags | 67108864) : (flags &~ 67108864);
-            flags = bot_attach_menu ? (flags | 134217728) : (flags &~ 134217728);
-            flags = premium ? (flags | 268435456) : (flags &~ 268435456);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
+            flags = apply_min_photo ? (flags | 33554432) : (flags & ~33554432);
+            flags = fake ? (flags | 67108864) : (flags & ~67108864);
+            flags = bot_attach_menu ? (flags | 134217728) : (flags & ~134217728);
+            flags = premium ? (flags | 268435456) : (flags & ~268435456);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 1) != 0) {
@@ -26957,21 +26955,21 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
-            flags = apply_min_photo ? (flags | 33554432) : (flags &~ 33554432);
-            flags = fake ? (flags | 67108864) : (flags &~ 67108864);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
+            flags = apply_min_photo ? (flags | 33554432) : (flags & ~33554432);
+            flags = fake ? (flags | 67108864) : (flags & ~67108864);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 1) != 0) {
@@ -27072,19 +27070,19 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = support ? (flags | 8388608) : (flags &~ 8388608);
-            flags = scam ? (flags | 16777216) : (flags &~ 16777216);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = support ? (flags | 8388608) : (flags & ~8388608);
+            flags = scam ? (flags | 16777216) : (flags & ~16777216);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 1) != 0) {
@@ -27383,17 +27381,17 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = restricted ? (flags | 262144) : (flags &~ 262144);
-            flags = min ? (flags | 1048576) : (flags &~ 1048576);
-            flags = bot_inline_geo ? (flags | 2097152) : (flags &~ 2097152);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = restricted ? (flags | 262144) : (flags & ~262144);
+            flags = min ? (flags | 1048576) : (flags & ~1048576);
+            flags = bot_inline_geo ? (flags | 2097152) : (flags & ~2097152);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 1) != 0) {
@@ -27473,15 +27471,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = self ? (flags | 1024) : (flags &~ 1024);
-            flags = contact ? (flags | 2048) : (flags &~ 2048);
-            flags = mutual_contact ? (flags | 4096) : (flags &~ 4096);
-            flags = deleted ? (flags | 8192) : (flags &~ 8192);
-            flags = bot ? (flags | 16384) : (flags &~ 16384);
-            flags = bot_chat_history ? (flags | 32768) : (flags &~ 32768);
-            flags = bot_nochats ? (flags | 65536) : (flags &~ 65536);
-            flags = verified ? (flags | 131072) : (flags &~ 131072);
-            flags = explicit_content ? (flags | 262144) : (flags &~ 262144);
+            flags = self ? (flags | 1024) : (flags & ~1024);
+            flags = contact ? (flags | 2048) : (flags & ~2048);
+            flags = mutual_contact ? (flags | 4096) : (flags & ~4096);
+            flags = deleted ? (flags | 8192) : (flags & ~8192);
+            flags = bot ? (flags | 16384) : (flags & ~16384);
+            flags = bot_chat_history ? (flags | 32768) : (flags & ~32768);
+            flags = bot_nochats ? (flags | 65536) : (flags & ~65536);
+            flags = verified ? (flags | 131072) : (flags & ~131072);
+            flags = explicit_content ? (flags | 262144) : (flags & ~262144);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 1) != 0) {
@@ -28958,8 +28956,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = same ? (flags | 1) : (flags &~ 1);
-            flags = for_both ? (flags | 2) : (flags &~ 2);
+            flags = same ? (flags | 1) : (flags & ~1);
+            flags = for_both ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             wallpaper.serializeToStream(stream);
         }
@@ -29181,7 +29179,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = video ? (flags | 4) : (flags &~ 4);
+            flags = video ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt64(call_id);
             if ((flags & 1) != 0) {
@@ -29249,8 +29247,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = recurring_init ? (flags | 4) : (flags &~ 4);
-            flags = recurring_used ? (flags | 8) : (flags &~ 8);
+            flags = recurring_init ? (flags | 4) : (flags & ~4);
+            flags = recurring_used ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeString(currency);
             stream.writeInt64(total_amount);
@@ -29297,8 +29295,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = attach_menu ? (flags | 2) : (flags &~ 2);
-            flags = from_request ? (flags | 8) : (flags &~ 8);
+            flags = attach_menu ? (flags | 2) : (flags & ~2);
+            flags = from_request ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeString(domain);
@@ -29453,8 +29451,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = recurring_init ? (flags | 4) : (flags &~ 4);
-            flags = recurring_used ? (flags | 8) : (flags &~ 8);
+            flags = recurring_init ? (flags | 4) : (flags & ~4);
+            flags = recurring_used ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeString(currency);
             stream.writeInt64(total_amount);
@@ -29829,7 +29827,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = silent ? (flags | 32) : (flags &~ 32);
+            flags = silent ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt64(random_id);
             stream.writeInt32(ttl);
@@ -30076,15 +30074,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = test ? (flags | 1) : (flags &~ 1);
-            flags = name_requested ? (flags | 2) : (flags &~ 2);
-            flags = phone_requested ? (flags | 4) : (flags &~ 4);
-            flags = email_requested ? (flags | 8) : (flags &~ 8);
-            flags = shipping_address_requested ? (flags | 16) : (flags &~ 16);
-            flags = flexible ? (flags | 32) : (flags &~ 32);
-            flags = phone_to_provider ? (flags | 64) : (flags &~ 64);
-            flags = email_to_provider ? (flags | 128) : (flags &~ 128);
-            flags = recurring ? (flags | 512) : (flags &~ 512);
+            flags = test ? (flags | 1) : (flags & ~1);
+            flags = name_requested ? (flags | 2) : (flags & ~2);
+            flags = phone_requested ? (flags | 4) : (flags & ~4);
+            flags = email_requested ? (flags | 8) : (flags & ~8);
+            flags = shipping_address_requested ? (flags | 16) : (flags & ~16);
+            flags = flexible ? (flags | 32) : (flags & ~32);
+            flags = phone_to_provider ? (flags | 64) : (flags & ~64);
+            flags = email_to_provider ? (flags | 128) : (flags & ~128);
+            flags = recurring ? (flags | 512) : (flags & ~512);
             stream.writeInt32(flags);
             stream.writeString(currency);
             stream.writeInt32(0x1cb5c415);
@@ -30163,15 +30161,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = test ? (flags | 1) : (flags &~ 1);
-            flags = name_requested ? (flags | 2) : (flags &~ 2);
-            flags = phone_requested ? (flags | 4) : (flags &~ 4);
-            flags = email_requested ? (flags | 8) : (flags &~ 8);
-            flags = shipping_address_requested ? (flags | 16) : (flags &~ 16);
-            flags = flexible ? (flags | 32) : (flags &~ 32);
-            flags = phone_to_provider ? (flags | 64) : (flags &~ 64);
-            flags = email_to_provider ? (flags | 128) : (flags &~ 128);
-            flags = recurring ? (flags | 512) : (flags &~ 512);
+            flags = test ? (flags | 1) : (flags & ~1);
+            flags = name_requested ? (flags | 2) : (flags & ~2);
+            flags = phone_requested ? (flags | 4) : (flags & ~4);
+            flags = email_requested ? (flags | 8) : (flags & ~8);
+            flags = shipping_address_requested ? (flags | 16) : (flags & ~16);
+            flags = flexible ? (flags | 32) : (flags & ~32);
+            flags = phone_to_provider ? (flags | 64) : (flags & ~64);
+            flags = email_to_provider ? (flags | 128) : (flags & ~128);
+            flags = recurring ? (flags | 512) : (flags & ~512);
             stream.writeInt32(flags);
             stream.writeString(currency);
             stream.writeInt32(0x1cb5c415);
@@ -30405,7 +30403,7 @@ public class TLRPC {
     }
 
     public static class MessageReactor extends TLObject {
-    
+
         public int flags;
         public boolean top;
         public boolean my;
@@ -30449,9 +30447,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = top ? (flags | 1) : (flags &~ 1);
-            flags = my ? (flags | 2) : (flags &~ 2);
-            flags = anonymous ? (flags | 4) : (flags &~ 4);
+            flags = top ? (flags | 1) : (flags & ~1);
+            flags = my ? (flags | 2) : (flags & ~2);
+            flags = anonymous ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 8) != 0) {
                 peer_id.serializeToStream(stream);
@@ -30473,8 +30471,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = top ? (flags | 1) : (flags &~ 1);
-            flags = my ? (flags | 2) : (flags &~ 2);
+            flags = top ? (flags | 1) : (flags & ~1);
+            flags = my ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer_id.serializeToStream(stream);
             stream.writeInt32(count);
@@ -30578,9 +30576,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = min ? (flags | 1) : (flags &~ 1);
-            flags = can_see_list ? (flags | 4) : (flags &~ 4);
-            flags = reactions_as_tags ? (flags | 8) : (flags &~ 8);
+            flags = min ? (flags | 1) : (flags & ~1);
+            flags = can_see_list ? (flags | 4) : (flags & ~4);
+            flags = reactions_as_tags ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = results.size();
@@ -30651,9 +30649,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = min ? (flags | 1) : (flags &~ 1);
-            flags = can_see_list ? (flags | 4) : (flags &~ 4);
-            flags = reactions_as_tags ? (flags | 8) : (flags &~ 8);
+            flags = min ? (flags | 1) : (flags & ~1);
+            flags = can_see_list ? (flags | 4) : (flags & ~4);
+            flags = reactions_as_tags ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = results.size();
@@ -30869,8 +30867,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = min ? (flags | 1) : (flags &~ 1);
-            flags = can_see_list ? (flags | 4) : (flags &~ 4);
+            flags = min ? (flags | 1) : (flags & ~1);
+            flags = can_see_list ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = results.size();
@@ -30914,7 +30912,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = min ? (flags | 1) : (flags &~ 1);
+            flags = min ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = results.size();
@@ -31203,7 +31201,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = save ? (flags | 1) : (flags &~ 1);
+            flags = save ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             data.serializeToStream(stream);
         }
@@ -31318,7 +31316,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = paused ? (flags | 1) : (flags &~ 1);
+            flags = paused ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(endpoint);
             stream.writeInt32(0x1cb5c415);
@@ -31589,9 +31587,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = reply_to_scheduled ? (flags | 4) : (flags &~ 4);
-            flags = forum_topic ? (flags | 8) : (flags &~ 8);
-            flags = quote ? (flags | 512) : (flags &~ 512);
+            flags = reply_to_scheduled ? (flags | 4) : (flags & ~4);
+            flags = forum_topic ? (flags | 8) : (flags & ~8);
+            flags = quote ? (flags | 512) : (flags & ~512);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 stream.writeInt32(reply_to_msg_id);
@@ -31672,9 +31670,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = reply_to_scheduled ? (flags | 4) : (flags &~ 4);
-            flags = forum_topic ? (flags | 8) : (flags &~ 8);
-            flags = quote ? (flags | 512) : (flags &~ 512);
+            flags = reply_to_scheduled ? (flags | 4) : (flags & ~4);
+            flags = forum_topic ? (flags | 8) : (flags & ~8);
+            flags = quote ? (flags | 512) : (flags & ~512);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 stream.writeInt32(reply_to_msg_id);
@@ -31748,8 +31746,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = reply_to_scheduled ? (flags | 4) : (flags &~ 4);
-            flags = forum_topic ? (flags | 8) : (flags &~ 8);
+            flags = reply_to_scheduled ? (flags | 4) : (flags & ~4);
+            flags = forum_topic ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 stream.writeInt32(reply_to_msg_id);
@@ -31795,8 +31793,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = reply_to_scheduled ? (flags | 4) : (flags &~ 4);
-            flags = forum_topic ? (flags | 8) : (flags &~ 8);
+            flags = reply_to_scheduled ? (flags | 4) : (flags & ~4);
+            flags = forum_topic ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt32(reply_to_msg_id);
             if ((flags & 1) != 0) {
@@ -33611,8 +33609,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = full_width ? (flags | 1) : (flags &~ 1);
-            flags = allow_scrolling ? (flags | 8) : (flags &~ 8);
+            flags = full_width ? (flags | 1) : (flags & ~1);
+            flags = allow_scrolling ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeString(url);
@@ -33697,7 +33695,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = open ? (flags | 1) : (flags &~ 1);
+            flags = open ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = blocks.size();
@@ -33743,8 +33741,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = autoplay ? (flags | 1) : (flags &~ 1);
-            flags = loop ? (flags | 2) : (flags &~ 2);
+            flags = autoplay ? (flags | 1) : (flags & ~1);
+            flags = loop ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(video_id);
             caption.serializeToStream(stream);
@@ -33780,8 +33778,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = full_width ? (flags | 1) : (flags &~ 1);
-            flags = allow_scrolling ? (flags | 8) : (flags &~ 8);
+            flags = full_width ? (flags | 1) : (flags & ~1);
+            flags = allow_scrolling ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeString(url);
@@ -33864,8 +33862,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = bordered ? (flags | 1) : (flags &~ 1);
-            flags = striped ? (flags | 2) : (flags &~ 2);
+            flags = bordered ? (flags | 1) : (flags & ~1);
+            flags = striped ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             title.serializeToStream(stream);
             stream.writeInt32(0x1cb5c415);
@@ -34456,7 +34454,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = spoiler ? (flags | 4) : (flags &~ 4);
+            flags = spoiler ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             id.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -34528,7 +34526,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = spoiler ? (flags | 2) : (flags &~ 2);
+            flags = spoiler ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeString(url);
             if ((flags & 1) != 0) {
@@ -34650,7 +34648,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = spoiler ? (flags | 4) : (flags &~ 4);
+            flags = spoiler ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             file.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -34712,7 +34710,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = stopped ? (flags | 1) : (flags &~ 1);
+            flags = stopped ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             geo_point.serializeToStream(stream);
             if ((flags & 4) != 0) {
@@ -34780,9 +34778,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = nosound_video ? (flags | 8) : (flags &~ 8);
-            flags = force_file ? (flags | 16) : (flags &~ 16);
-            flags = spoiler ? (flags | 32) : (flags &~ 32);
+            flags = nosound_video ? (flags | 8) : (flags & ~8);
+            flags = force_file ? (flags | 16) : (flags & ~16);
+            flags = spoiler ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             file.serializeToStream(stream);
             if ((flags & 4) != 0) {
@@ -34825,7 +34823,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = spoiler ? (flags | 2) : (flags &~ 2);
+            flags = spoiler ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeString(url);
             if ((flags & 1) != 0) {
@@ -34852,9 +34850,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = force_large_media ? (flags | 1) : (flags &~ 1);
-            flags = force_small_media ? (flags | 2) : (flags &~ 2);
-            flags = optional ? (flags | 4) : (flags &~ 4);
+            flags = force_large_media ? (flags | 1) : (flags & ~1);
+            flags = force_small_media ? (flags | 2) : (flags & ~2);
+            flags = optional ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeString(url);
         }
@@ -34960,7 +34958,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = spoiler ? (flags | 2) : (flags &~ 2);
+            flags = spoiler ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             id.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -35537,25 +35535,25 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = join ? (flags | 1) : (flags &~ 1);
-            flags = leave ? (flags | 2) : (flags &~ 2);
-            flags = invite ? (flags | 4) : (flags &~ 4);
-            flags = ban ? (flags | 8) : (flags &~ 8);
-            flags = unban ? (flags | 16) : (flags &~ 16);
-            flags = kick ? (flags | 32) : (flags &~ 32);
-            flags = unkick ? (flags | 64) : (flags &~ 64);
-            flags = promote ? (flags | 128) : (flags &~ 128);
-            flags = demote ? (flags | 256) : (flags &~ 256);
-            flags = info ? (flags | 512) : (flags &~ 512);
-            flags = settings ? (flags | 1024) : (flags &~ 1024);
-            flags = pinned ? (flags | 2048) : (flags &~ 2048);
-            flags = edit ? (flags | 4096) : (flags &~ 4096);
-            flags = delete ? (flags | 8192) : (flags &~ 8192);
-            flags = group_call ? (flags | 16384) : (flags &~ 16384);
-            flags = invites ? (flags | 32768) : (flags &~ 32768);
-            flags = send ? (flags | 65536) : (flags &~ 65536);
-            flags = forums ? (flags | 131072) : (flags &~ 131072);
-            flags = sub_extend ? (flags | 262144) : (flags &~ 262144);
+            flags = join ? (flags | 1) : (flags & ~1);
+            flags = leave ? (flags | 2) : (flags & ~2);
+            flags = invite ? (flags | 4) : (flags & ~4);
+            flags = ban ? (flags | 8) : (flags & ~8);
+            flags = unban ? (flags | 16) : (flags & ~16);
+            flags = kick ? (flags | 32) : (flags & ~32);
+            flags = unkick ? (flags | 64) : (flags & ~64);
+            flags = promote ? (flags | 128) : (flags & ~128);
+            flags = demote ? (flags | 256) : (flags & ~256);
+            flags = info ? (flags | 512) : (flags & ~512);
+            flags = settings ? (flags | 1024) : (flags & ~1024);
+            flags = pinned ? (flags | 2048) : (flags & ~2048);
+            flags = edit ? (flags | 4096) : (flags & ~4096);
+            flags = delete ? (flags | 8192) : (flags & ~8192);
+            flags = group_call ? (flags | 16384) : (flags & ~16384);
+            flags = invites ? (flags | 32768) : (flags & ~32768);
+            flags = send ? (flags | 65536) : (flags & ~65536);
+            flags = forums ? (flags | 131072) : (flags & ~131072);
+            flags = sub_extend ? (flags | 262144) : (flags & ~262144);
             stream.writeInt32(flags);
         }
     }
@@ -35614,7 +35612,7 @@ public class TLRPC {
 
 
         public void readParams(AbstractSerializedData stream, boolean exception) {
-            
+
         }
 
         public void serializeToStream(AbstractSerializedData stream) {
@@ -35647,7 +35645,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = by_me ? flags | 1 : flags &~ 1;
+            flags = by_me ? flags | 1 : flags & ~1;
             stream.writeInt32(flags);
         }
     }
@@ -35686,7 +35684,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = by_me ? flags | 1 : flags &~ 1;
+            flags = by_me ? flags | 1 : flags & ~1;
             stream.writeInt32(flags);
         }
     }
@@ -35729,7 +35727,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = by_me ? flags | 1 : flags &~ 1;
+            flags = by_me ? flags | 1 : flags & ~1;
             stream.writeInt32(flags);
         }
     }
@@ -35873,7 +35871,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = caption ? (flags | 1) : (flags &~ 1);
+            flags = caption ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
         }
     }
@@ -36585,8 +36583,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = masks ? (flags | 1) : (flags &~ 1);
-            flags = emojis ? (flags | 2) : (flags &~ 2);
+            flags = masks ? (flags | 1) : (flags & ~1);
+            flags = emojis ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(stickerset);
         }
@@ -36767,7 +36765,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 1) : (flags &~ 1);
+            flags = pinned ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(channel_id);
             stream.writeInt32(0x1cb5c415);
@@ -36947,7 +36945,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 1) : (flags &~ 1);
+            flags = pinned ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(folder_id);
@@ -37092,8 +37090,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = masks ? (flags | 1) : (flags &~ 1);
-            flags = emojis ? (flags | 2) : (flags &~ 2);
+            flags = masks ? (flags | 1) : (flags & ~1);
+            flags = emojis ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
         }
     }
@@ -37246,7 +37244,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = presentation ? (flags | 1) : (flags &~ 1);
+            flags = presentation ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             params.serializeToStream(stream);
         }
@@ -37668,8 +37666,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = popup ? (flags | 1) : (flags &~ 1);
-            flags = invert_media ? (flags | 4) : (flags &~ 4);
+            flags = popup ? (flags | 1) : (flags & ~1);
+            flags = invert_media ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(inbox_date);
@@ -37715,7 +37713,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pending ? (flags | 1) : (flags &~ 1);
+            flags = pending ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(msg_id);
@@ -37903,7 +37901,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
+            flags = unread ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
         }
@@ -38091,8 +38089,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = blocked_my_stories_from ? (flags | 2) : (flags &~ 2);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = blocked_my_stories_from ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer_id.serializeToStream(stream);
         }
@@ -38129,7 +38127,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 1) : (flags &~ 1);
+            flags = pinned ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(0x1cb5c415);
@@ -38178,7 +38176,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = isFinal ? (flags | 1) : (flags &~ 1);
+            flags = isFinal ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(transcription_id);
             stream.writeString(text);
@@ -38755,8 +38753,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = masks ? (flags | 1) : (flags &~ 1);
-            flags = emojis ? (flags | 2) : (flags &~ 2);
+            flags = masks ? (flags | 1) : (flags & ~1);
+            flags = emojis ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = order.size();
@@ -38948,7 +38946,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 1) : (flags &~ 1);
+            flags = pinned ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(channel_id);
             stream.writeInt32(topic_id);
@@ -39661,9 +39659,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_recovery ? (flags | 1) : (flags &~ 1);
-            flags = has_secure_values ? (flags | 2) : (flags &~ 2);
-            flags = has_password ? (flags | 4) : (flags &~ 4);
+            flags = has_recovery ? (flags | 1) : (flags & ~1);
+            flags = has_secure_values ? (flags | 2) : (flags & ~2);
+            flags = has_password ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 4) != 0) {
                 current_algo.serializeToStream(stream);
@@ -39725,9 +39723,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_recovery ? (flags | 1) : (flags &~ 1);
-            flags = has_secure_values ? (flags | 2) : (flags &~ 2);
-            flags = has_password ? (flags | 4) : (flags &~ 4);
+            flags = has_recovery ? (flags | 1) : (flags & ~1);
+            flags = has_secure_values ? (flags | 2) : (flags & ~2);
+            flags = has_password ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 4) != 0) {
                 current_algo.serializeToStream(stream);
@@ -39884,7 +39882,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_video ? (flags | 1) : (flags &~ 1);
+            flags = has_video ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(photo_id);
             photo_small.serializeToStream(stream);
@@ -39918,7 +39916,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_video ? (flags | 1) : (flags &~ 1);
+            flags = has_video ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(photo_id);
             photo_small.serializeToStream(stream);
@@ -40024,8 +40022,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_video ? (flags | 1) : (flags &~ 1);
-            flags = personal ? (flags | 4) : (flags &~ 4);
+            flags = has_video ? (flags | 1) : (flags & ~1);
+            flags = personal ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt64(photo_id);
             if ((flags & 2) != 0) {
@@ -40402,7 +40400,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = collapsed ? (flags | 1) : (flags &~ 1);
+            flags = collapsed ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(offset);
             stream.writeInt32(length);
@@ -40623,7 +40621,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_stickers ? (flags | 1) : (flags &~ 1);
+            flags = has_stickers ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -40810,7 +40808,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_stickers ? (flags | 1) : (flags &~ 1);
+            flags = has_stickers ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -40874,7 +40872,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_stickers ? (flags | 1) : (flags &~ 1);
+            flags = has_stickers ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -40927,7 +40925,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_stickers ? (flags | 1) : (flags &~ 1);
+            flags = has_stickers ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -41139,7 +41137,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = history_deleted ? (flags | 1) : (flags &~ 1);
+            flags = history_deleted ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(id);
         }
@@ -41634,11 +41632,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = default_p2p_contacts ? (flags | 8) : (flags &~ 8);
-            flags = preload_featured_stickers ? (flags | 16) : (flags &~ 16);
-            flags = revoke_pm_inbox ? (flags | 64) : (flags &~ 64);
-            flags = blocked_mode ? (flags | 256) : (flags &~ 256);
-            flags = force_try_ipv6 ? (flags | 16384) : (flags &~ 16384);
+            flags = default_p2p_contacts ? (flags | 8) : (flags & ~8);
+            flags = preload_featured_stickers ? (flags | 16) : (flags & ~16);
+            flags = revoke_pm_inbox ? (flags | 64) : (flags & ~64);
+            flags = blocked_mode ? (flags | 256) : (flags & ~256);
+            flags = force_try_ipv6 ? (flags | 16384) : (flags & ~16384);
             stream.writeInt32(flags);
             stream.writeInt32(date);
             stream.writeInt32(expires);
@@ -42170,7 +42168,7 @@ public class TLRPC {
             return result;
         }
     }
-    
+
     public static class TL_poll extends Poll {
         public static final int constructor = 0x58747131;
 
@@ -42208,10 +42206,10 @@ public class TLRPC {
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeInt64(id);
-            flags = closed ? (flags | 1) : (flags &~ 1);
-            flags = public_voters ? (flags | 2) : (flags &~ 2);
-            flags = multiple_choice ? (flags | 4) : (flags &~ 4);
-            flags = quiz ? (flags | 8) : (flags &~ 8);
+            flags = closed ? (flags | 1) : (flags & ~1);
+            flags = public_voters ? (flags | 2) : (flags & ~2);
+            flags = multiple_choice ? (flags | 4) : (flags & ~4);
+            flags = quiz ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             question.serializeToStream(stream);
             stream.writeInt32(0x1cb5c415);
@@ -42268,10 +42266,10 @@ public class TLRPC {
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeInt64(id);
-            flags = closed ? (flags | 1) : (flags &~ 1);
-            flags = public_voters ? (flags | 2) : (flags &~ 2);
-            flags = multiple_choice ? (flags | 4) : (flags &~ 4);
-            flags = quiz ? (flags | 8) : (flags &~ 8);
+            flags = closed ? (flags | 1) : (flags & ~1);
+            flags = public_voters ? (flags | 2) : (flags & ~2);
+            flags = multiple_choice ? (flags | 4) : (flags & ~4);
+            flags = quiz ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeString(question == null ? "" : question.text);
             stream.writeInt32(0x1cb5c415);
@@ -42325,10 +42323,10 @@ public class TLRPC {
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeInt64(id);
-            flags = closed ? (flags | 1) : (flags &~ 1);
-            flags = public_voters ? (flags | 2) : (flags &~ 2);
-            flags = multiple_choice ? (flags | 4) : (flags &~ 4);
-            flags = quiz ? (flags | 8) : (flags &~ 8);
+            flags = closed ? (flags | 1) : (flags & ~1);
+            flags = public_voters ? (flags | 2) : (flags & ~2);
+            flags = multiple_choice ? (flags | 4) : (flags & ~4);
+            flags = quiz ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeString(question == null ? "" : question.text);
             stream.writeInt32(0x1cb5c415);
@@ -42376,10 +42374,10 @@ public class TLRPC {
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeInt64(id);
-            flags = closed ? (flags | 1) : (flags &~ 1);
-            flags = public_voters ? (flags | 2) : (flags &~ 2);
-            flags = multiple_choice ? (flags | 4) : (flags &~ 4);
-            flags = quiz ? (flags | 8) : (flags &~ 8);
+            flags = closed ? (flags | 1) : (flags & ~1);
+            flags = public_voters ? (flags | 2) : (flags & ~2);
+            flags = multiple_choice ? (flags | 4) : (flags & ~4);
+            flags = quiz ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeString(question == null ? "" : question.text);
             stream.writeInt32(0x1cb5c415);
@@ -42459,7 +42457,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = gallery ? (flags | 1) : (flags &~ 1);
+            flags = gallery ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(query_id);
             if ((flags & 2) != 0) {
@@ -42543,7 +42541,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = gallery ? (flags | 1) : (flags &~ 1);
+            flags = gallery ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(query_id);
             if ((flags & 2) != 0) {
@@ -42620,7 +42618,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = gallery ? (flags | 1) : (flags &~ 1);
+            flags = gallery ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(query_id);
             if ((flags & 2) != 0) {
@@ -42725,7 +42723,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = tcp ? (flags | 1) : (flags &~ 1);
+            flags = tcp ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(ip);
@@ -42753,8 +42751,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = turn ? (flags | 1) : (flags &~ 1);
-            flags = stun ? (flags | 2) : (flags &~ 2);
+            flags = turn ? (flags | 1) : (flags & ~1);
+            flags = stun ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(ip);
@@ -42970,9 +42968,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = isDefault ? (flags | 2) : (flags &~ 2);
-            flags = for_chat ? (flags | 32) : (flags &~ 32);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = isDefault ? (flags | 2) : (flags & ~2);
+            flags = for_chat ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -43045,9 +43043,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = isDefault ? (flags | 2) : (flags &~ 2);
-            flags = for_chat ? (flags | 32) : (flags &~ 32);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = isDefault ? (flags | 2) : (flags & ~2);
+            flags = for_chat ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -43096,8 +43094,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = isDefault ? (flags | 2) : (flags &~ 2);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = isDefault ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -43133,8 +43131,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = isDefault ? (flags | 2) : (flags &~ 2);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = isDefault ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -43207,7 +43205,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = isFinal ? (flags | 1) : (flags &~ 1);
+            flags = isFinal ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(pts);
             if ((flags & 2) != 0) {
@@ -43291,7 +43289,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = isFinal ? (flags | 1) : (flags &~ 1);
+            flags = isFinal ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(pts);
             if ((flags & 2) != 0) {
@@ -43384,7 +43382,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = isFinal ? (flags | 1) : (flags &~ 1);
+            flags = isFinal ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(timeout);
@@ -43512,8 +43510,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = recommended ? (flags | 32) : (flags &~ 32);
-            flags = can_report ? (flags | 4096) : (flags &~ 4096);
+            flags = recommended ? (flags | 32) : (flags & ~32);
+            flags = can_report ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             stream.writeByteArray(random_id);
             stream.writeString(url);
@@ -43923,7 +43921,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = exclude_new_messages ? (flags | 2) : (flags &~ 2);
+            flags = exclude_new_messages ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = ranges.size();
@@ -44484,7 +44482,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = proxy ? (flags | 1) : (flags &~ 1);
+            flags = proxy ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(expires);
             peer.serializeToStream(stream);
@@ -44687,7 +44685,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = via_invite ? (flags | 1) : (flags &~ 1);
+            flags = via_invite ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(user_id);
             stream.writeInt64(inviter_id);
@@ -44711,7 +44709,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = via_invite ? (flags | 1) : (flags &~ 1);
+            flags = via_invite ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(user_id);
             stream.writeInt64(inviter_id);
@@ -44786,8 +44784,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_edit ? (flags | 1) : (flags &~ 1);
-            flags = self ? (flags | 2) : (flags &~ 2);
+            flags = can_edit ? (flags | 1) : (flags & ~1);
+            flags = self ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(peer.user_id);
             if ((flags & 2) != 0) {
@@ -44817,7 +44815,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = left ? (flags | 1) : (flags &~ 1);
+            flags = left ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt64(kicked_by);
@@ -44842,7 +44840,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = left ? (flags | 1) : (flags &~ 1);
+            flags = left ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32((int) peer.user_id);
             stream.writeInt32((int) kicked_by);
@@ -44895,7 +44893,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = left ? (flags | 1) : (flags &~ 1);
+            flags = left ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32((int) kicked_by);
@@ -44997,8 +44995,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_edit ? (flags | 1) : (flags &~ 1);
-            flags = self ? (flags | 2) : (flags &~ 2);
+            flags = can_edit ? (flags | 1) : (flags & ~1);
+            flags = self ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32((int) peer.user_id);
             if ((flags & 2) != 0) {
@@ -45117,7 +45115,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_edit ? (flags | 1) : (flags &~ 1);
+            flags = can_edit ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32((int) peer.user_id);
             stream.writeInt32((int) inviter_id);
@@ -45147,8 +45145,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_edit ? (flags | 1) : (flags &~ 1);
-            flags = self ? (flags | 2) : (flags &~ 2);
+            flags = can_edit ? (flags | 1) : (flags & ~1);
+            flags = self ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32((int) peer.user_id);
             if ((flags & 2) != 0) {
@@ -45380,8 +45378,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blur ? (flags | 2) : (flags &~ 2);
-            flags = motion ? (flags | 4) : (flags &~ 4);
+            flags = blur ? (flags | 2) : (flags & ~2);
+            flags = motion ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(background_color);
@@ -45416,8 +45414,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blur ? (flags | 2) : (flags &~ 2);
-            flags = motion ? (flags | 4) : (flags &~ 4);
+            flags = blur ? (flags | 2) : (flags & ~2);
+            flags = motion ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(background_color);
@@ -45467,8 +45465,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blur ? (flags | 2) : (flags &~ 2);
-            flags = motion ? (flags | 4) : (flags &~ 4);
+            flags = blur ? (flags | 2) : (flags & ~2);
+            flags = motion ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(background_color);
@@ -45524,8 +45522,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blur ? (flags | 2) : (flags &~ 2);
-            flags = motion ? (flags | 4) : (flags &~ 4);
+            flags = blur ? (flags | 2) : (flags & ~2);
+            flags = motion ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(background_color);
@@ -46964,8 +46962,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = inactive ? (flags | 1) : (flags &~ 1);
-            flags = premium ? (flags | 4) : (flags &~ 4);
+            flags = inactive ? (flags | 1) : (flags & ~1);
+            flags = premium ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeString(reaction);
             stream.writeString(title);
@@ -47569,7 +47567,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = via_chatlist ? (flags | 1) : (flags &~ 1);
+            flags = via_chatlist ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             invite.serializeToStream(stream);
         }
@@ -48402,10 +48400,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = disabled ? (flags | 1) : (flags &~ 1);
-            flags = video_preload_large ? (flags | 2) : (flags &~ 2);
-            flags = audio_preload_next ? (flags | 4) : (flags &~ 4);
-            flags = phonecalls_less_data ? (flags | 8) : (flags &~ 8);
+            flags = disabled ? (flags | 1) : (flags & ~1);
+            flags = video_preload_large ? (flags | 2) : (flags & ~2);
+            flags = audio_preload_next ? (flags | 4) : (flags & ~4);
+            flags = phonecalls_less_data ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt32(photo_size_max);
             stream.writeInt64(video_size_max);
@@ -48576,15 +48574,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = change_info ? (flags | 1) : (flags &~ 1);
-            flags = post_messages ? (flags | 2) : (flags &~ 2);
-            flags = edit_messages ? (flags | 4) : (flags &~ 4);
-            flags = delete_messages ? (flags | 8) : (flags &~ 8);
-            flags = ban_users ? (flags | 16) : (flags &~ 16);
-            flags = invite_users ? (flags | 32) : (flags &~ 32);
-            flags = pin_messages ? (flags | 128) : (flags &~ 128);
-            flags = add_admins ? (flags | 512) : (flags &~ 512);
-            flags = manage_call ? (flags | 1024) : (flags &~ 1024);
+            flags = change_info ? (flags | 1) : (flags & ~1);
+            flags = post_messages ? (flags | 2) : (flags & ~2);
+            flags = edit_messages ? (flags | 4) : (flags & ~4);
+            flags = delete_messages ? (flags | 8) : (flags & ~8);
+            flags = ban_users ? (flags | 16) : (flags & ~16);
+            flags = invite_users ? (flags | 32) : (flags & ~32);
+            flags = pin_messages ? (flags | 128) : (flags & ~128);
+            flags = add_admins ? (flags | 512) : (flags & ~512);
+            flags = manage_call ? (flags | 1024) : (flags & ~1024);
             stream.writeInt32(flags);
         }
     }
@@ -48834,10 +48832,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = kicked ? (flags | 2) : (flags &~ 2);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = deactivated ? (flags | 32) : (flags &~ 32);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = kicked ? (flags | 2) : (flags & ~2);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = deactivated ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(title);
@@ -48883,13 +48881,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = kicked ? (flags | 2) : (flags &~ 2);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = deactivated ? (flags | 32) : (flags &~ 32);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = noforwards ? (flags | 33554432) : (flags &~ 33554432);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = kicked ? (flags | 2) : (flags & ~2);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = deactivated ? (flags | 32) : (flags & ~32);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = noforwards ? (flags | 33554432) : (flags & ~33554432);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(title);
@@ -48940,12 +48938,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = kicked ? (flags | 2) : (flags &~ 2);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = deactivated ? (flags | 32) : (flags &~ 32);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = kicked ? (flags | 2) : (flags & ~2);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = deactivated ? (flags | 32) : (flags & ~32);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(title);
@@ -48983,8 +48981,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -49013,8 +49011,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeInt64(access_hash);
@@ -49040,8 +49038,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeInt64(access_hash);
@@ -49079,15 +49077,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = kicked ? (flags | 2) : (flags &~ 2);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = moderator ? (flags | 16) : (flags &~ 16);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = kicked ? (flags | 2) : (flags & ~2);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = moderator ? (flags | 16) : (flags & ~16);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeInt64(access_hash);
@@ -49220,30 +49218,30 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
-            flags = noforwards ? (flags | 134217728) : (flags &~ 134217728);
-            flags = join_to_send ? (flags | 268435456) : (flags &~ 268435456);
-            flags = join_request ? (flags | 536870912) : (flags &~ 536870912);
-            flags = forum ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
+            flags = noforwards ? (flags | 134217728) : (flags & ~134217728);
+            flags = join_to_send ? (flags | 268435456) : (flags & ~268435456);
+            flags = join_request ? (flags | 536870912) : (flags & ~536870912);
+            flags = forum ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = stories_hidden ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 &~ 8);
+            flags2 = stories_hidden ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 & ~8);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 8192) != 0) {
@@ -49396,30 +49394,30 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
-            flags = noforwards ? (flags | 134217728) : (flags &~ 134217728);
-            flags = join_to_send ? (flags | 268435456) : (flags &~ 268435456);
-            flags = join_request ? (flags | 536870912) : (flags &~ 536870912);
-            flags = forum ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
+            flags = noforwards ? (flags | 134217728) : (flags & ~134217728);
+            flags = join_to_send ? (flags | 268435456) : (flags & ~268435456);
+            flags = join_request ? (flags | 536870912) : (flags & ~536870912);
+            flags = forum ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = stories_hidden ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 &~ 8);
+            flags2 = stories_hidden ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 & ~8);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 8192) != 0) {
@@ -49582,31 +49580,31 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
-            flags = noforwards ? (flags | 134217728) : (flags &~ 134217728);
-            flags = join_to_send ? (flags | 268435456) : (flags &~ 268435456);
-            flags = join_request ? (flags | 536870912) : (flags &~ 536870912);
-            flags = forum ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
+            flags = noforwards ? (flags | 134217728) : (flags & ~134217728);
+            flags = join_to_send ? (flags | 268435456) : (flags & ~268435456);
+            flags = join_request ? (flags | 536870912) : (flags & ~536870912);
+            flags = forum ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = stories_hidden ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 &~ 8);
-            flags2 = signature_profiles ? (flags2 | 4096) : (flags2 &~ 4096);
+            flags2 = stories_hidden ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 & ~8);
+            flags2 = signature_profiles ? (flags2 | 4096) : (flags2 & ~4096);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 8192) != 0) {
@@ -49771,30 +49769,30 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
-            flags = noforwards ? (flags | 134217728) : (flags &~ 134217728);
-            flags = join_to_send ? (flags | 268435456) : (flags &~ 268435456);
-            flags = join_request ? (flags | 536870912) : (flags &~ 536870912);
-            flags = forum ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
+            flags = noforwards ? (flags | 134217728) : (flags & ~134217728);
+            flags = join_to_send ? (flags | 268435456) : (flags & ~268435456);
+            flags = join_request ? (flags | 536870912) : (flags & ~536870912);
+            flags = forum ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = stories_hidden ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 &~ 8);
+            flags2 = stories_hidden ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 & ~8);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 8192) != 0) {
@@ -49947,30 +49945,30 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
-            flags = noforwards ? (flags | 134217728) : (flags &~ 134217728);
-            flags = join_to_send ? (flags | 268435456) : (flags &~ 268435456);
-            flags = join_request ? (flags | 536870912) : (flags &~ 536870912);
-            flags = forum ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
+            flags = noforwards ? (flags | 134217728) : (flags & ~134217728);
+            flags = join_to_send ? (flags | 268435456) : (flags & ~268435456);
+            flags = join_request ? (flags | 536870912) : (flags & ~536870912);
+            flags = forum ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = stories_hidden ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 &~ 8);
+            flags2 = stories_hidden ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 & ~8);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 8192) != 0) {
@@ -50121,30 +50119,30 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
-            flags = noforwards ? (flags | 134217728) : (flags &~ 134217728);
-            flags = join_to_send ? (flags | 268435456) : (flags &~ 268435456);
-            flags = join_request ? (flags | 536870912) : (flags &~ 536870912);
-            flags = forum ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
+            flags = noforwards ? (flags | 134217728) : (flags & ~134217728);
+            flags = join_to_send ? (flags | 268435456) : (flags & ~268435456);
+            flags = join_request ? (flags | 536870912) : (flags & ~536870912);
+            flags = forum ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = stories_hidden ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 &~ 8);
+            flags2 = stories_hidden ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 & ~8);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 8192) != 0) {
@@ -50293,30 +50291,30 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
-            flags = noforwards ? (flags | 134217728) : (flags &~ 134217728);
-            flags = join_to_send ? (flags | 268435456) : (flags &~ 268435456);
-            flags = join_request ? (flags | 536870912) : (flags &~ 536870912);
-            flags = forum ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
+            flags = noforwards ? (flags | 134217728) : (flags & ~134217728);
+            flags = join_to_send ? (flags | 268435456) : (flags & ~268435456);
+            flags = join_request ? (flags | 536870912) : (flags & ~536870912);
+            flags = forum ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = stories_hidden ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 &~ 4);
-            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 &~ 8);
+            flags2 = stories_hidden ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 & ~4);
+            flags2 = stories_unavailable ? (flags2 | 8) : (flags2 & ~8);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 8192) != 0) {
@@ -50458,29 +50456,29 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
-            flags = noforwards ? (flags | 134217728) : (flags &~ 134217728);
-            flags = join_to_send ? (flags | 268435456) : (flags &~ 268435456);
-            flags = join_request ? (flags | 536870912) : (flags &~ 536870912);
-            flags = forum ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
+            flags = noforwards ? (flags | 134217728) : (flags & ~134217728);
+            flags = join_to_send ? (flags | 268435456) : (flags & ~268435456);
+            flags = join_request ? (flags | 536870912) : (flags & ~536870912);
+            flags = forum ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = stories_hidden ? (flags2 | 2) : (flags2 &~ 2);
-            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 &~ 4);
+            flags2 = stories_hidden ? (flags2 | 2) : (flags2 & ~2);
+            flags2 = stories_hidden_min ? (flags2 | 4) : (flags2 & ~4);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 8192) != 0) {
@@ -50592,26 +50590,26 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
-            flags = noforwards ? (flags | 134217728) : (flags &~ 134217728);
-            flags = join_to_send ? (flags | 268435456) : (flags &~ 268435456);
-            flags = join_request ? (flags | 536870912) : (flags &~ 536870912);
-            flags = forum ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
+            flags = noforwards ? (flags | 134217728) : (flags & ~134217728);
+            flags = join_to_send ? (flags | 268435456) : (flags & ~268435456);
+            flags = join_request ? (flags | 536870912) : (flags & ~536870912);
+            flags = forum ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 8192) != 0) {
@@ -50711,16 +50709,16 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = kicked ? (flags | 2) : (flags &~ 2);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = moderator ? (flags | 16) : (flags &~ 16);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = kicked ? (flags | 2) : (flags & ~2);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = moderator ? (flags | 16) : (flags & ~16);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 8192) != 0) {
@@ -50765,14 +50763,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = kicked ? (flags | 2) : (flags &~ 2);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = moderator ? (flags | 16) : (flags &~ 16);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = explicit_content ? (flags | 512) : (flags &~ 512);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = kicked ? (flags | 2) : (flags & ~2);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = moderator ? (flags | 16) : (flags & ~16);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = explicit_content ? (flags | 512) : (flags & ~512);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeInt64(access_hash);
@@ -50877,22 +50875,22 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
-            flags = call_active ? (flags | 8388608) : (flags &~ 8388608);
-            flags = call_not_empty ? (flags | 16777216) : (flags &~ 16777216);
-            flags = fake ? (flags | 33554432) : (flags &~ 33554432);
-            flags = gigagroup ? (flags | 67108864) : (flags &~ 67108864);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
+            flags = call_active ? (flags | 8388608) : (flags & ~8388608);
+            flags = call_not_empty ? (flags | 16777216) : (flags & ~16777216);
+            flags = fake ? (flags | 33554432) : (flags & ~33554432);
+            flags = gigagroup ? (flags | 67108864) : (flags & ~67108864);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 8192) != 0) {
@@ -50976,18 +50974,18 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
-            flags = scam ? (flags | 524288) : (flags &~ 524288);
-            flags = has_link ? (flags | 1048576) : (flags &~ 1048576);
-            flags = has_geo ? (flags | 2097152) : (flags &~ 2097152);
-            flags = slowmode_enabled ? (flags | 4194304) : (flags &~ 4194304);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
+            flags = scam ? (flags | 524288) : (flags & ~524288);
+            flags = has_link ? (flags | 1048576) : (flags & ~1048576);
+            flags = has_geo ? (flags | 2097152) : (flags & ~2097152);
+            flags = slowmode_enabled ? (flags | 4194304) : (flags & ~4194304);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 8192) != 0) {
@@ -51035,7 +51033,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = left ? (flags | 1) : (flags &~ 1);
+            flags = left ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32((int) peer.user_id);
             stream.writeInt32((int) kicked_by);
@@ -51086,14 +51084,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 8192) != 0) {
@@ -51160,15 +51158,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = kicked ? (flags | 2) : (flags &~ 2);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = kicked ? (flags | 2) : (flags & ~2);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 8192) != 0) {
@@ -51235,14 +51233,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = broadcast ? (flags | 32) : (flags &~ 32);
-            flags = verified ? (flags | 128) : (flags &~ 128);
-            flags = megagroup ? (flags | 256) : (flags &~ 256);
-            flags = restricted ? (flags | 512) : (flags &~ 512);
-            flags = signatures ? (flags | 2048) : (flags &~ 2048);
-            flags = min ? (flags | 4096) : (flags &~ 4096);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = broadcast ? (flags | 32) : (flags & ~32);
+            flags = verified ? (flags | 128) : (flags & ~128);
+            flags = megagroup ? (flags | 256) : (flags & ~256);
+            flags = restricted ? (flags | 512) : (flags & ~512);
+            flags = signatures ? (flags | 2048) : (flags & ~2048);
+            flags = min ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             if ((flags & 8192) != 0) {
@@ -51292,10 +51290,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = kicked ? (flags | 2) : (flags &~ 2);
-            flags = left ? (flags | 4) : (flags &~ 4);
-            flags = deactivated ? (flags | 32) : (flags &~ 32);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = kicked ? (flags | 2) : (flags & ~2);
+            flags = left ? (flags | 4) : (flags & ~4);
+            flags = deactivated ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32((int) id);
             stream.writeString(title);
@@ -51483,13 +51481,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = archived ? (flags | 2) : (flags &~ 2);
-            flags = official ? (flags | 4) : (flags &~ 4);
-            flags = masks ? (flags | 8) : (flags &~ 8);
-            flags = emojis ? (flags | 128) : (flags &~ 128);
-            flags = text_color ? (flags | 512) : (flags &~ 512);
-            flags = channel_emoji_status ? (flags | 1024) : (flags &~ 1024);
-            flags = creator ? (flags | 2048) : (flags &~ 2048);
+            flags = archived ? (flags | 2) : (flags & ~2);
+            flags = official ? (flags | 4) : (flags & ~4);
+            flags = masks ? (flags | 8) : (flags & ~8);
+            flags = emojis ? (flags | 128) : (flags & ~128);
+            flags = text_color ? (flags | 512) : (flags & ~512);
+            flags = channel_emoji_status ? (flags | 1024) : (flags & ~1024);
+            flags = creator ? (flags | 2048) : (flags & ~2048);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(installed_date);
@@ -51568,10 +51566,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = archived ? (flags | 2) : (flags &~ 2);
-            flags = official ? (flags | 4) : (flags &~ 4);
-            flags = masks ? (flags | 8) : (flags &~ 8);
-            flags = emojis ? (flags | 128) : (flags &~ 128);
+            flags = archived ? (flags | 2) : (flags & ~2);
+            flags = official ? (flags | 4) : (flags & ~4);
+            flags = masks ? (flags | 8) : (flags & ~8);
+            flags = emojis ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(installed_date);
@@ -51624,9 +51622,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = archived ? (flags | 2) : (flags &~ 2);
-            flags = official ? (flags | 4) : (flags &~ 4);
-            flags = masks ? (flags | 8) : (flags &~ 8);
+            flags = archived ? (flags | 2) : (flags & ~2);
+            flags = official ? (flags | 4) : (flags & ~4);
+            flags = masks ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(installed_date);
@@ -51668,9 +51666,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = archived ? (flags | 2) : (flags &~ 2);
-            flags = official ? (flags | 4) : (flags &~ 4);
-            flags = masks ? (flags | 8) : (flags &~ 8);
+            flags = archived ? (flags | 2) : (flags & ~2);
+            flags = official ? (flags | 4) : (flags & ~4);
+            flags = masks ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(installed_date);
@@ -51729,9 +51727,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = archived ? (flags | 2) : (flags &~ 2);
-            flags = official ? (flags | 4) : (flags &~ 4);
-            flags = masks ? (flags | 8) : (flags &~ 8);
+            flags = archived ? (flags | 2) : (flags & ~2);
+            flags = official ? (flags | 4) : (flags & ~4);
+            flags = masks ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(installed_date);
@@ -51787,9 +51785,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = archived ? (flags | 2) : (flags &~ 2);
-            flags = official ? (flags | 4) : (flags &~ 4);
-            flags = masks ? (flags | 8) : (flags &~ 8);
+            flags = archived ? (flags | 2) : (flags & ~2);
+            flags = official ? (flags | 4) : (flags & ~4);
+            flags = masks ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(installed_date);
@@ -51829,10 +51827,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = installed ? (flags | 1) : (flags &~ 1);
-            flags = archived ? (flags | 2) : (flags &~ 2);
-            flags = official ? (flags | 4) : (flags &~ 4);
-            flags = masks ? (flags | 8) : (flags &~ 8);
+            flags = installed ? (flags | 1) : (flags & ~1);
+            flags = archived ? (flags | 2) : (flags & ~2);
+            flags = official ? (flags | 4) : (flags & ~4);
+            flags = masks ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeInt64(access_hash);
@@ -52320,7 +52318,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = missed ? (flags | 1) : (flags &~ 1);
+            flags = missed ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
         }
     }
@@ -52706,8 +52704,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = imported ? (flags | 128) : (flags &~ 128);
-            flags = saved_out ? (flags | 2048) : (flags &~ 2048);
+            flags = imported ? (flags | 128) : (flags & ~128);
+            flags = saved_out ? (flags | 2048) : (flags & ~2048);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 from_id.serializeToStream(stream);
@@ -52776,7 +52774,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = imported ? (flags | 128) : (flags &~ 128);
+            flags = imported ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 from_id.serializeToStream(stream);
@@ -53588,9 +53586,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = revoked ? (flags | 1) : (flags &~ 1);
-            flags = permanent ? (flags | 32) : (flags &~ 32);
-            flags = request_needed ? (flags | 64) : (flags &~ 64);
+            flags = revoked ? (flags | 1) : (flags & ~1);
+            flags = permanent ? (flags | 32) : (flags & ~32);
+            flags = request_needed ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeString(link);
             stream.writeInt64(admin_id);
@@ -53655,9 +53653,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = revoked ? (flags | 1) : (flags &~ 1);
-            flags = permanent ? (flags | 32) : (flags &~ 32);
-            flags = request_needed ? (flags | 64) : (flags &~ 64);
+            flags = revoked ? (flags | 1) : (flags & ~1);
+            flags = permanent ? (flags | 32) : (flags & ~32);
+            flags = request_needed ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeString(link);
             stream.writeInt64(admin_id);
@@ -53709,8 +53707,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = revoked ? (flags | 1) : (flags &~ 1);
-            flags = permanent ? (flags | 32) : (flags &~ 32);
+            flags = revoked ? (flags | 1) : (flags & ~1);
+            flags = permanent ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeString(link);
             stream.writeInt64(admin_id);
@@ -53766,8 +53764,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = revoked ? (flags | 1) : (flags &~ 1);
-            flags = permanent ? (flags | 32) : (flags &~ 32);
+            flags = revoked ? (flags | 1) : (flags & ~1);
+            flags = permanent ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeString(link);
             stream.writeInt32((int) admin_id);
@@ -54388,21 +54386,21 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
-            flags = translations_disabled ? (flags | 8388608) : (flags &~ 8388608);
-            flags = stories_pinned_available ? (flags | 67108864) : (flags &~ 67108864);
-            flags = blocked_my_stories_from ? (flags | 134217728) : (flags &~ 134217728);
-            flags = wallpaper_overridden ? (flags | 268435456) : (flags &~ 268435456);
-            flags = contact_require_premium ? (flags | 536870912) : (flags &~ 536870912);
-            flags = read_dates_private ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
+            flags = translations_disabled ? (flags | 8388608) : (flags & ~8388608);
+            flags = stories_pinned_available ? (flags | 67108864) : (flags & ~67108864);
+            flags = blocked_my_stories_from ? (flags | 134217728) : (flags & ~134217728);
+            flags = wallpaper_overridden ? (flags | 268435456) : (flags & ~268435456);
+            flags = contact_require_premium ? (flags | 536870912) : (flags & ~536870912);
+            flags = read_dates_private ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = sponsored_enabled ? (flags2 | 128) : (flags2 &~ 128);
+            flags2 = sponsored_enabled ? (flags2 | 128) : (flags2 & ~128);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -54595,21 +54593,21 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
-            flags = translations_disabled ? (flags | 8388608) : (flags &~ 8388608);
-            flags = stories_pinned_available ? (flags | 67108864) : (flags &~ 67108864);
-            flags = blocked_my_stories_from ? (flags | 134217728) : (flags &~ 134217728);
-            flags = wallpaper_overridden ? (flags | 268435456) : (flags &~ 268435456);
-            flags = contact_require_premium ? (flags | 536870912) : (flags &~ 536870912);
-            flags = read_dates_private ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
+            flags = translations_disabled ? (flags | 8388608) : (flags & ~8388608);
+            flags = stories_pinned_available ? (flags | 67108864) : (flags & ~67108864);
+            flags = blocked_my_stories_from ? (flags | 134217728) : (flags & ~134217728);
+            flags = wallpaper_overridden ? (flags | 268435456) : (flags & ~268435456);
+            flags = contact_require_premium ? (flags | 536870912) : (flags & ~536870912);
+            flags = read_dates_private ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
-            flags2 = sponsored_enabled ? (flags2 | 128) : (flags2 &~ 128);
+            flags2 = sponsored_enabled ? (flags2 | 128) : (flags2 & ~128);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -54794,19 +54792,19 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
-            flags = translations_disabled ? (flags | 8388608) : (flags &~ 8388608);
-            flags = stories_pinned_available ? (flags | 67108864) : (flags &~ 67108864);
-            flags = blocked_my_stories_from ? (flags | 134217728) : (flags &~ 134217728);
-            flags = wallpaper_overridden ? (flags | 268435456) : (flags &~ 268435456);
-            flags = contact_require_premium ? (flags | 536870912) : (flags &~ 536870912);
-            flags = read_dates_private ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
+            flags = translations_disabled ? (flags | 8388608) : (flags & ~8388608);
+            flags = stories_pinned_available ? (flags | 67108864) : (flags & ~67108864);
+            flags = blocked_my_stories_from ? (flags | 134217728) : (flags & ~134217728);
+            flags = wallpaper_overridden ? (flags | 268435456) : (flags & ~268435456);
+            flags = contact_require_premium ? (flags | 536870912) : (flags & ~536870912);
+            flags = read_dates_private ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
@@ -54985,19 +54983,19 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
-            flags = translations_disabled ? (flags | 8388608) : (flags &~ 8388608);
-            flags = stories_pinned_available ? (flags | 67108864) : (flags &~ 67108864);
-            flags = blocked_my_stories_from ? (flags | 134217728) : (flags &~ 134217728);
-            flags = wallpaper_overridden ? (flags | 268435456) : (flags &~ 268435456);
-            flags = contact_require_premium ? (flags | 536870912) : (flags &~ 536870912);
-            flags = read_dates_private ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
+            flags = translations_disabled ? (flags | 8388608) : (flags & ~8388608);
+            flags = stories_pinned_available ? (flags | 67108864) : (flags & ~67108864);
+            flags = blocked_my_stories_from ? (flags | 134217728) : (flags & ~134217728);
+            flags = wallpaper_overridden ? (flags | 268435456) : (flags & ~268435456);
+            flags = contact_require_premium ? (flags | 536870912) : (flags & ~536870912);
+            flags = read_dates_private ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
@@ -55170,19 +55168,19 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
-            flags = translations_disabled ? (flags | 8388608) : (flags &~ 8388608);
-            flags = stories_pinned_available ? (flags | 67108864) : (flags &~ 67108864);
-            flags = blocked_my_stories_from ? (flags | 134217728) : (flags &~ 134217728);
-            flags = wallpaper_overridden ? (flags | 268435456) : (flags &~ 268435456);
-            flags = contact_require_premium ? (flags | 536870912) : (flags &~ 536870912);
-            flags = read_dates_private ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
+            flags = translations_disabled ? (flags | 8388608) : (flags & ~8388608);
+            flags = stories_pinned_available ? (flags | 67108864) : (flags & ~67108864);
+            flags = blocked_my_stories_from ? (flags | 134217728) : (flags & ~134217728);
+            flags = wallpaper_overridden ? (flags | 268435456) : (flags & ~268435456);
+            flags = contact_require_premium ? (flags | 536870912) : (flags & ~536870912);
+            flags = read_dates_private ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
             stream.writeInt32(flags2);
             stream.writeInt64(id);
@@ -55253,6 +55251,7 @@ public class TLRPC {
             }
         }
     }
+
     public static class TL_userFull_layer175 extends TL_userFull {
         public static final int constructor = 0xb9b12c6c;
 
@@ -55338,19 +55337,19 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
-            flags = translations_disabled ? (flags | 8388608) : (flags &~ 8388608);
-            flags = stories_pinned_available ? (flags | 67108864) : (flags &~ 67108864);
-            flags = blocked_my_stories_from ? (flags | 134217728) : (flags &~ 134217728);
-            flags = wallpaper_overridden ? (flags | 268435456) : (flags &~ 268435456);
-            flags = contact_require_premium ? (flags | 536870912) : (flags &~ 536870912);
-            flags = read_dates_private ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
+            flags = translations_disabled ? (flags | 8388608) : (flags & ~8388608);
+            flags = stories_pinned_available ? (flags | 67108864) : (flags & ~67108864);
+            flags = blocked_my_stories_from ? (flags | 134217728) : (flags & ~134217728);
+            flags = wallpaper_overridden ? (flags | 268435456) : (flags & ~268435456);
+            flags = contact_require_premium ? (flags | 536870912) : (flags & ~536870912);
+            flags = read_dates_private ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -55491,16 +55490,16 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
-            flags = translations_disabled ? (flags | 8388608) : (flags &~ 8388608);
-            flags = stories_pinned_available ? (flags | 67108864) : (flags &~ 67108864);
-            flags = blocked_my_stories_from ? (flags | 134217728) : (flags &~ 134217728);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
+            flags = translations_disabled ? (flags | 8388608) : (flags & ~8388608);
+            flags = stories_pinned_available ? (flags | 67108864) : (flags & ~67108864);
+            flags = blocked_my_stories_from ? (flags | 134217728) : (flags & ~134217728);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -55636,14 +55635,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
-            flags = translations_disabled ? (flags | 8388608) : (flags &~ 8388608);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
+            flags = translations_disabled ? (flags | 8388608) : (flags & ~8388608);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -55773,14 +55772,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
-            flags = translations_disabled ? (flags | 8388608) : (flags &~ 8388608);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
+            flags = translations_disabled ? (flags | 8388608) : (flags & ~8388608);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -55903,13 +55902,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -56026,13 +56025,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
-            flags = voice_messages_forbidden ? (flags | 1048576) : (flags &~ 1048576);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
+            flags = voice_messages_forbidden ? (flags | 1048576) : (flags & ~1048576);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -56128,12 +56127,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -56215,12 +56214,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
             stream.writeInt32(flags);
             stream.writeInt64(id);
             if ((flags & 2) != 0) {
@@ -56294,12 +56293,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
             stream.writeInt32(flags);
             user.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -56362,10 +56361,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             user.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -56419,10 +56418,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             user.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -56481,12 +56480,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
-            flags = video_calls_available ? (flags | 8192) : (flags &~ 8192);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
+            flags = video_calls_available ? (flags | 8192) : (flags & ~8192);
             stream.writeInt32(flags);
             user.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -56548,11 +56547,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = blocked ? (flags | 1) : (flags &~ 1);
-            flags = phone_calls_available ? (flags | 16) : (flags &~ 16);
-            flags = phone_calls_private ? (flags | 32) : (flags &~ 32);
-            flags = can_pin_message ? (flags | 128) : (flags &~ 128);
-            flags = has_scheduled ? (flags | 4096) : (flags &~ 4096);
+            flags = blocked ? (flags | 1) : (flags & ~1);
+            flags = phone_calls_available ? (flags | 16) : (flags & ~16);
+            flags = phone_calls_private ? (flags | 32) : (flags & ~32);
+            flags = can_pin_message ? (flags | 128) : (flags & ~128);
+            flags = has_scheduled ? (flags | 4096) : (flags & ~4096);
             stream.writeInt32(flags);
             user.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -56961,10 +56960,10 @@ public class TLRPC {
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeInt64(id);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = isDefault ? (flags | 2) : (flags &~ 2);
-            flags = pattern ? (flags | 8) : (flags &~ 8);
-            flags = dark ? (flags | 16) : (flags &~ 16);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = isDefault ? (flags | 2) : (flags & ~2);
+            flags = pattern ? (flags | 8) : (flags & ~8);
+            flags = dark ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
             stream.writeInt64(access_hash);
             stream.writeString(slug);
@@ -56992,8 +56991,8 @@ public class TLRPC {
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeInt64(id);
-            flags = creator ? (flags | 1) : (flags &~ 1);
-            flags = isDefault ? (flags | 2) : (flags &~ 2);
+            flags = creator ? (flags | 1) : (flags & ~1);
+            flags = isDefault ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(access_hash);
             stream.writeString(slug);
@@ -57016,8 +57015,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = isDefault ? (flags | 2) : (flags &~ 2);
-            flags = dark ? (flags | 16) : (flags &~ 16);
+            flags = isDefault ? (flags | 2) : (flags & ~2);
+            flags = dark ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
             if ((flags & 4) != 0) {
                 settings.serializeToStream(stream);
@@ -57042,8 +57041,8 @@ public class TLRPC {
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             stream.writeInt64(id);
-            flags = isDefault ? (flags | 2) : (flags &~ 2);
-            flags = dark ? (flags | 16) : (flags &~ 16);
+            flags = isDefault ? (flags | 2) : (flags & ~2);
+            flags = dark ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
             if ((flags & 4) != 0) {
                 settings.serializeToStream(stream);
@@ -57453,7 +57452,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = has_saved_credentials ? (flags | 2) : (flags &~ 2);
+            flags = has_saved_credentials ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 saved_info.serializeToStream(stream);
@@ -58374,11 +58373,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = ipv6 ? (flags | 1) : (flags &~ 1);
-            flags = media_only ? (flags | 2) : (flags &~ 2);
-            flags = tcpo_only ? (flags | 4) : (flags &~ 4);
-            flags = cdn ? (flags | 8) : (flags &~ 8);
-            flags = isStatic ? (flags | 16) : (flags &~ 16);
+            flags = ipv6 ? (flags | 1) : (flags & ~1);
+            flags = media_only ? (flags | 2) : (flags & ~2);
+            flags = tcpo_only ? (flags | 4) : (flags & ~4);
+            flags = cdn ? (flags | 8) : (flags & ~8);
+            flags = isStatic ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeString(ip_address);
@@ -58592,16 +58591,16 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = muted ? (flags | 1) : (flags &~ 1);
-            flags = left ? (flags | 2) : (flags &~ 2);
-            flags = can_self_unmute ? (flags | 4) : (flags &~ 4);
-            flags = just_joined ? (flags | 16) : (flags &~ 16);
-            flags = versioned ? (flags | 32) : (flags &~ 32);
-            flags = min ? (flags | 256) : (flags &~ 256);
-            flags = muted_by_you ? (flags | 512) : (flags &~ 512);
-            flags = volume_by_admin ? (flags | 1024) : (flags &~ 1024);
-            flags = self ? (flags | 4096) : (flags &~ 4096);
-            flags = video_joined ? (flags | 32768) : (flags &~ 32768);
+            flags = muted ? (flags | 1) : (flags & ~1);
+            flags = left ? (flags | 2) : (flags & ~2);
+            flags = can_self_unmute ? (flags | 4) : (flags & ~4);
+            flags = just_joined ? (flags | 16) : (flags & ~16);
+            flags = versioned ? (flags | 32) : (flags & ~32);
+            flags = min ? (flags | 256) : (flags & ~256);
+            flags = muted_by_you ? (flags | 512) : (flags & ~512);
+            flags = volume_by_admin ? (flags | 1024) : (flags & ~1024);
+            flags = self ? (flags | 4096) : (flags & ~4096);
+            flags = video_joined ? (flags | 32768) : (flags & ~32768);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(date);
@@ -59249,7 +59248,8 @@ public class TLRPC {
             if (this instanceof TL_reactionEmpty && other instanceof TL_reactionEmpty)
                 return true;
             if (this instanceof TL_reactionEmoji && other instanceof TL_reactionEmoji)
-                return ((TL_reactionEmoji) this).emoticon == ((TL_reactionEmoji) other).emoticon;;
+                return ((TL_reactionEmoji) this).emoticon == ((TL_reactionEmoji) other).emoticon;
+            ;
             if (this instanceof TL_reactionCustomEmoji && other instanceof TL_reactionCustomEmoji)
                 return ((TL_reactionCustomEmoji) this).document_id == ((TL_reactionCustomEmoji) other).document_id;
             return false;
@@ -59409,7 +59409,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = disabled ? (flags | 1) : (flags &~ 1);
+            flags = disabled ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
         }
@@ -59436,24 +59436,135 @@ public class TLRPC {
         }
     }
 
-    public static class TL_auth_signUp extends TLObject {
-        public static final int constructor = 0x80eee427;
+//    public static class TL_auth_signUp extends TLObject {
+//        public static final int constructor = 0x80eee427;
+//
+//        public String phone_number;
+//        public String phone_code_hash;
+//        public String first_name;
+//        public String last_name;
+//
+//        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+//            return auth_Authorization.TLdeserialize(stream, constructor, exception);
+//        }
+//
+//        public void serializeToStream(AbstractSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            stream.writeString(phone_number);
+//            stream.writeString(phone_code_hash);
+//            stream.writeString(first_name);
+//            stream.writeString(last_name);
+//        }
+//    }
 
-        public String phone_number;
-        public String phone_code_hash;
-        public String first_name;
-        public String last_name;
+    public static class TL_modelInfo extends TLObject {
+        public static int constructor = 0x75b4fe1f;
 
-        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
-            return auth_Authorization.TLdeserialize(stream, constructor, exception);
+        public int flags;
+        public int type_id;
+        public int gender;
+        public int age;
+        public String name;
+        public String agency_name;
+
+        public static TL_modelInfo TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_modelInfo.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_modelInfo", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_modelInfo result = new TL_modelInfo();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+
+            type_id = stream.readInt32(exception);
+            if ((flags & 2) != 0) {
+                gender = stream.readInt32(exception);
+            }
+            if ((flags & 4) != 0) {
+                age = stream.readInt32(exception);
+            }
+            if ((flags & 8) != 0) {
+                name = stream.readString(exception);
+            }
+            if ((flags & 16) != 0) {
+                agency_name = stream.readString(exception);
+            }
         }
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
+            stream.writeInt32(flags);
+            stream.writeInt32(type_id);
+            if ((flags & 2) != 0) {
+                stream.writeInt32(gender);
+            }
+            if ((flags & 4) != 0) {
+                stream.writeInt32(age);
+            }
+            if ((flags & 8) != 0) {
+                stream.writeString(name);
+            }
+            if ((flags & 16) != 0) {
+                stream.writeString(agency_name);
+            }
+        }
+    }
+
+    public static class TL_auth_signUp extends TLObject {
+        public static int constructor = 0x46ca89f4;
+
+        public int flags;
+        public boolean no_joined_notifications;
+        public String phone_number;
+        public String phone_code_hash;
+        public String first_name;
+        public String last_name;
+        public TL_modelInfo model_info;
+
+        public static TL_auth_signUp TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_auth_signUp.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_auth_signUp", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_auth_signUp result = new TL_auth_signUp();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            no_joined_notifications = (flags & 1) != 0;
+
+            phone_number = stream.readString(exception);
+            phone_code_hash = stream.readString(exception);
+            first_name = stream.readString(exception);
+            last_name = stream.readString(exception);
+            if ((flags & 2) != 0) {
+                model_info = TL_modelInfo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            }
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = no_joined_notifications ? (flags | 1) : (flags & ~1);
+            stream.writeInt32(flags);
             stream.writeString(phone_number);
             stream.writeString(phone_code_hash);
             stream.writeString(first_name);
             stream.writeString(last_name);
+            if ((flags & 2) != 0) {
+                model_info.serializeToStream(stream);
+            }
         }
     }
 
@@ -59695,7 +59806,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_muted ? (flags | 1) : (flags &~ 1);
+            flags = no_muted ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(token_type);
             stream.writeString(token);
@@ -59955,7 +60066,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = confirmed ? (flags | 8) : (flags &~ 8);
+            flags = confirmed ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt64(hash);
             if ((flags & 1) != 0) {
@@ -59981,10 +60092,10 @@ public class TLRPC {
             id.serializeToStream(stream);
         }
     }
-    
+
     public static class TL_users_getIsPremiumRequiredToContact extends TLObject {
         public static final int constructor = 0xa622aa10;
-        
+
         public ArrayList<InputUser> id = new ArrayList<>();
 
         public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
@@ -60121,7 +60232,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = my_stories_from ? (flags | 1) : (flags &~ 1);
+            flags = my_stories_from ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             id.serializeToStream(stream);
         }
@@ -60140,7 +60251,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = my_stories_from ? (flags | 1) : (flags &~ 1);
+            flags = my_stories_from ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             id.serializeToStream(stream);
         }
@@ -60160,7 +60271,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = my_stories_from ? (flags | 1) : (flags &~ 1);
+            flags = my_stories_from ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(offset);
             stream.writeInt32(limit);
@@ -60249,7 +60360,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = add_phone_privacy_exception ? (flags | 1) : (flags &~ 1);
+            flags = add_phone_privacy_exception ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             id.serializeToStream(stream);
             stream.writeString(first_name);
@@ -60288,9 +60399,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = delete_message ? (flags | 1) : (flags &~ 1);
-            flags = delete_history ? (flags | 2) : (flags &~ 2);
-            flags = report_spam ? (flags | 4) : (flags &~ 4);
+            flags = delete_message ? (flags | 1) : (flags & ~1);
+            flags = delete_history ? (flags | 2) : (flags & ~2);
+            flags = report_spam ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt32(msg_id);
         }
@@ -60349,7 +60460,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = exclude_pinned ? (flags | 1) : (flags &~ 1);
+            flags = exclude_pinned ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeInt32(folder_id);
@@ -60653,8 +60764,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = just_clear ? (flags | 1) : (flags &~ 1);
-            flags = revoke ? (flags | 2) : (flags &~ 2);
+            flags = just_clear ? (flags | 1) : (flags & ~1);
+            flags = revoke ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(max_id);
@@ -60834,7 +60945,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = broadcasts_only ? (flags | 2) : (flags &~ 2);
+            flags = broadcasts_only ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt32(folder_id);
@@ -60894,7 +61005,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = revoke ? (flags | 1) : (flags &~ 1);
+            flags = revoke ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = id.size();
@@ -60980,13 +61091,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_webpage ? (flags | 2) : (flags &~ 2);
-            flags = silent ? (flags | 32) : (flags &~ 32);
-            flags = background ? (flags | 64) : (flags &~ 64);
-            flags = clear_draft ? (flags | 128) : (flags &~ 128);
-            flags = noforwards ? (flags | 16384) : (flags &~ 16384);
-            flags = update_stickersets_order ? (flags | 32768) : (flags &~ 32768);
-            flags = invert_media ? (flags | 65536) : (flags &~ 65536);
+            flags = no_webpage ? (flags | 2) : (flags & ~2);
+            flags = silent ? (flags | 32) : (flags & ~32);
+            flags = background ? (flags | 64) : (flags & ~64);
+            flags = clear_draft ? (flags | 128) : (flags & ~128);
+            flags = noforwards ? (flags | 16384) : (flags & ~16384);
+            flags = update_stickersets_order ? (flags | 32768) : (flags & ~32768);
+            flags = invert_media ? (flags | 65536) : (flags & ~65536);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -61048,12 +61159,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = silent ? (flags | 32) : (flags &~ 32);
-            flags = background ? (flags | 64) : (flags &~ 64);
-            flags = clear_draft ? (flags | 128) : (flags &~ 128);
-            flags = noforwards ? (flags | 16384) : (flags &~ 16384);
-            flags = update_stickersets_order ? (flags | 32768) : (flags &~ 32768);
-            flags = invert_media ? (flags | 65536) : (flags &~ 65536);
+            flags = silent ? (flags | 32) : (flags & ~32);
+            flags = background ? (flags | 64) : (flags & ~64);
+            flags = clear_draft ? (flags | 128) : (flags & ~128);
+            flags = noforwards ? (flags | 16384) : (flags & ~16384);
+            flags = update_stickersets_order ? (flags | 32768) : (flags & ~32768);
+            flags = invert_media ? (flags | 65536) : (flags & ~65536);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -61113,12 +61224,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = silent ? (flags | 32) : (flags &~ 32);
-            flags = background ? (flags | 64) : (flags &~ 64);
-            flags = with_my_score ? (flags | 256) : (flags &~ 256);
-            flags = drop_author ? (flags | 2048) : (flags &~ 2048);
-            flags = drop_media_captions ? (flags | 4096) : (flags &~ 4096);
-            flags = noforwards ? (flags | 16384) : (flags &~ 16384);
+            flags = silent ? (flags | 32) : (flags & ~32);
+            flags = background ? (flags | 64) : (flags & ~64);
+            flags = with_my_score ? (flags | 256) : (flags & ~256);
+            flags = drop_author ? (flags | 2048) : (flags & ~2048);
+            flags = drop_media_captions ? (flags | 4096) : (flags & ~4096);
+            flags = noforwards ? (flags | 16384) : (flags & ~16384);
             stream.writeInt32(flags);
             from_peer.serializeToStream(stream);
             stream.writeInt32(0x1cb5c415);
@@ -61291,7 +61402,7 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = optional ? flags | 1 : flags &~ 1;
+            flags = optional ? flags | 1 : flags & ~1;
             stream.writeInt32(flags);
             stream.writeByteArray(option);
         }
@@ -61301,7 +61412,8 @@ public class TLRPC {
         public static final int constructor = 0x8db33c4b;
 
         @Override
-        public void readParams(AbstractSerializedData stream, boolean exception) {}
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+        }
 
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
@@ -61437,7 +61549,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = revoke_history ? (flags | 1) : (flags &~ 1);
+            flags = revoke_history ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(chat_id);
             user_id.serializeToStream(stream);
@@ -61553,7 +61665,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = force ? (flags | 1) : (flags &~ 1);
+            flags = force ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             channel.serializeToStream(stream);
             filter.serializeToStream(stream);
@@ -61576,7 +61688,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = fallback ? (flags | 1) : (flags &~ 1);
+            flags = fallback ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 bot.serializeToStream(stream);
@@ -61602,7 +61714,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = fallback ? (flags | 8) : (flags &~ 8);
+            flags = fallback ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 32) != 0) {
                 bot.serializeToStream(stream);
@@ -61663,8 +61775,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = precise ? (flags | 1) : (flags &~ 1);
-            flags = cdn_supported ? (flags | 2) : (flags &~ 2);
+            flags = precise ? (flags | 1) : (flags & ~1);
+            flags = cdn_supported ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             location.serializeToStream(stream);
             stream.writeInt64(offset);
@@ -61870,7 +61982,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = delete_history ? (flags | 1) : (flags &~ 1);
+            flags = delete_history ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(chat_id);
         }
@@ -62143,15 +62255,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = correspondents ? (flags | 1) : (flags &~ 1);
-            flags = bots_pm ? (flags | 2) : (flags &~ 2);
-            flags = bots_inline ? (flags | 4) : (flags &~ 4);
-            flags = phone_calls ? (flags | 8) : (flags &~ 8);
-            flags = forward_users ? (flags | 16) : (flags &~ 16);
-            flags = forward_chats ? (flags | 32) : (flags &~ 32);
-            flags = groups ? (flags | 1024) : (flags &~ 1024);
-            flags = channels ? (flags | 32768) : (flags &~ 32768);
-            flags = bots_app ? (flags | 65536) : (flags &~ 65536);
+            flags = correspondents ? (flags | 1) : (flags & ~1);
+            flags = bots_pm ? (flags | 2) : (flags & ~2);
+            flags = bots_inline ? (flags | 4) : (flags & ~4);
+            flags = phone_calls ? (flags | 8) : (flags & ~8);
+            flags = forward_users ? (flags | 16) : (flags & ~16);
+            flags = forward_chats ? (flags | 32) : (flags & ~32);
+            flags = groups ? (flags | 1024) : (flags & ~1024);
+            flags = channels ? (flags | 32768) : (flags & ~32768);
+            flags = bots_app ? (flags | 65536) : (flags & ~65536);
             stream.writeInt32(flags);
             stream.writeInt32(offset);
             stream.writeInt32(limit);
@@ -62618,7 +62730,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = compare_sound ? (flags | 2) : (flags &~ 2);
+            flags = compare_sound ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 peer.serializeToStream(stream);
@@ -62736,8 +62848,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = low ? (flags | 1) : (flags &~ 1);
-            flags = high ? (flags | 2) : (flags &~ 2);
+            flags = low ? (flags | 1) : (flags & ~1);
+            flags = high ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             settings.serializeToStream(stream);
         }
@@ -62861,7 +62973,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = dark ? (flags | 1) : (flags &~ 1);
+            flags = dark ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeString(format);
@@ -63268,8 +63380,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = legacy_revoke_permanent ? (flags | 4) : (flags &~ 4);
-            flags = request_needed ? (flags | 8) : (flags &~ 8);
+            flags = legacy_revoke_permanent ? (flags | 4) : (flags & ~4);
+            flags = request_needed ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -63493,10 +63605,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = silent ? (flags | 32) : (flags &~ 32);
-            flags = background ? (flags | 64) : (flags &~ 64);
-            flags = clear_draft ? (flags | 128) : (flags &~ 128);
-            flags = hide_via ? (flags | 2048) : (flags &~ 2048);
+            flags = silent ? (flags | 32) : (flags & ~32);
+            flags = background ? (flags | 64) : (flags & ~64);
+            flags = clear_draft ? (flags | 128) : (flags & ~128);
+            flags = hide_via ? (flags | 2048) : (flags & ~2048);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -63555,8 +63667,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_webpage ? (flags | 2) : (flags &~ 2);
-            flags = invert_media ? (flags | 65536) : (flags &~ 65536);
+            flags = no_webpage ? (flags | 2) : (flags & ~2);
+            flags = invert_media ? (flags | 65536) : (flags & ~65536);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(id);
@@ -63602,7 +63714,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = game ? (flags | 2) : (flags &~ 2);
+            flags = game ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(msg_id);
@@ -63631,7 +63743,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = alert ? (flags | 2) : (flags &~ 2);
+            flags = alert ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(query_id);
             if ((flags & 1) != 0) {
@@ -63683,8 +63795,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_webpage ? (flags | 2) : (flags &~ 2);
-            flags = invert_media ? (flags | 64) : (flags &~ 64);
+            flags = no_webpage ? (flags | 2) : (flags & ~2);
+            flags = invert_media ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 reply_to.serializeToStream(stream);
@@ -63769,7 +63881,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = attached ? (flags | 1) : (flags &~ 1);
+            flags = attached ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(hash);
         }
@@ -63789,7 +63901,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = attached ? (flags | 1) : (flags &~ 1);
+            flags = attached ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             id.serializeToStream(stream);
             stream.writeBool(unsave);
@@ -63808,7 +63920,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = attached ? (flags | 1) : (flags &~ 1);
+            flags = attached ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
         }
     }
@@ -63828,8 +63940,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = masks ? (flags | 1) : (flags &~ 1);
-            flags = emojis ? (flags | 2) : (flags &~ 2);
+            flags = masks ? (flags | 1) : (flags & ~1);
+            flags = emojis ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(offset_id);
             stream.writeInt32(limit);
@@ -63853,8 +63965,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = edit_message ? (flags | 1) : (flags &~ 1);
-            flags = force ? (flags | 2) : (flags &~ 2);
+            flags = edit_message ? (flags | 1) : (flags & ~1);
+            flags = force ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(id);
@@ -63879,8 +63991,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = edit_message ? (flags | 1) : (flags &~ 1);
-            flags = force ? (flags | 2) : (flags &~ 2);
+            flags = edit_message ? (flags | 1) : (flags & ~1);
+            flags = force ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             id.serializeToStream(stream);
             user_id.serializeToStream(stream);
@@ -64032,7 +64144,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 1) : (flags &~ 1);
+            flags = pinned ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
         }
@@ -64052,7 +64164,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = force ? (flags | 1) : (flags &~ 1);
+            flags = force ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(folder_id);
             stream.writeInt32(0x1cb5c415);
@@ -64242,12 +64354,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = silent ? (flags | 32) : (flags &~ 32);
-            flags = background ? (flags | 64) : (flags &~ 64);
-            flags = clear_draft ? (flags | 128) : (flags &~ 128);
-            flags = noforwards ? (flags | 16384) : (flags &~ 16384);
-            flags = update_stickersets_order ? (flags | 32768) : (flags &~ 32768);
-            flags = invert_media ? (flags | 65536) : (flags &~ 65536);
+            flags = silent ? (flags | 32) : (flags & ~32);
+            flags = background ? (flags | 64) : (flags & ~64);
+            flags = clear_draft ? (flags | 128) : (flags & ~128);
+            flags = noforwards ? (flags | 16384) : (flags & ~16384);
+            flags = update_stickersets_order ? (flags | 32768) : (flags & ~32768);
+            flags = invert_media ? (flags | 65536) : (flags & ~65536);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -64303,9 +64415,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = silent ? (flags | 1) : (flags &~ 1);
-            flags = unpin ? (flags | 2) : (flags &~ 2);
-            flags = pm_oneside ? (flags | 4) : (flags &~ 4);
+            flags = silent ? (flags | 1) : (flags & ~1);
+            flags = unpin ? (flags | 2) : (flags & ~2);
+            flags = pm_oneside ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(id);
@@ -64382,7 +64494,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = dark ? (flags | 1) : (flags &~ 1);
+            flags = dark ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeString(params);
@@ -64587,7 +64699,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = write_allowed ? (flags | 1) : (flags &~ 1);
+            flags = write_allowed ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 peer.serializeToStream(stream);
@@ -64746,8 +64858,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = big ? (flags | 2) : (flags &~ 2);
-            flags = add_to_recent ? (flags | 4) : (flags &~ 4);
+            flags = big ? (flags | 2) : (flags & ~2);
+            flags = add_to_recent ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(msg_id);
@@ -64778,7 +64890,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = isPrivate != null ? (flags | 1) : (flags &~ 1);
+            flags = isPrivate != null ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(msg_id);
@@ -65142,7 +65254,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = inexact ? (flags | 1) : (flags &~ 1);
+            flags = inexact ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(count);
             stream.writeInt32(min_date);
@@ -65464,7 +65576,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = revoked ? (flags | 8) : (flags &~ 8);
+            flags = revoked ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             admin_id.serializeToStream(stream);
@@ -65513,7 +65625,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = revoked ? (flags | 4) : (flags &~ 4);
+            flags = revoked ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeString(link);
@@ -65600,8 +65712,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = requested ? (flags | 1) : (flags &~ 1);
-            flags = subscription_expired ? (flags | 8) : (flags &~ 8);
+            flags = requested ? (flags | 1) : (flags & ~1);
+            flags = subscription_expired ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -65630,7 +65742,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = approved ? (flags | 1) : (flags &~ 1);
+            flags = approved ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             user_id.serializeToStream(stream);
@@ -65651,7 +65763,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = approved ? (flags | 1) : (flags &~ 1);
+            flags = approved ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -65738,7 +65850,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = revoke ? (flags | 1) : (flags &~ 1);
+            flags = revoke ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
         }
     }
@@ -65877,9 +65989,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = uninstall ? (flags | 1) : (flags &~ 1);
-            flags = archive ? (flags | 2) : (flags &~ 2);
-            flags = unarchive ? (flags | 4) : (flags &~ 4);
+            flags = uninstall ? (flags | 1) : (flags & ~1);
+            flags = archive ? (flags | 2) : (flags & ~2);
+            flags = unarchive ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = stickersets.size();
@@ -65921,7 +66033,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = exclude_featured ? (flags | 1) : (flags &~ 1);
+            flags = exclude_featured ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(q);
             stream.writeInt64(hash);
@@ -65942,7 +66054,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = exclude_featured ? (flags | 1) : (flags &~ 1);
+            flags = exclude_featured ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(q);
             stream.writeInt64(hash);
@@ -65962,7 +66074,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
+            flags = unread ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
         }
@@ -66021,8 +66133,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = masks ? (flags | 1) : (flags &~ 1);
-            flags = emojis ? (flags | 2) : (flags &~ 2);
+            flags = masks ? (flags | 1) : (flags & ~1);
+            flags = emojis ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = order.size();
@@ -66337,10 +66449,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = broadcast ? (flags | 1) : (flags &~ 1);
-            flags = megagroup ? (flags | 2) : (flags &~ 2);
-            flags = for_import ? (flags | 8) : (flags &~ 8);
-            flags = forum ? (flags | 32) : (flags &~ 32);
+            flags = broadcast ? (flags | 1) : (flags & ~1);
+            flags = megagroup ? (flags | 2) : (flags & ~2);
+            flags = for_import ? (flags | 8) : (flags & ~8);
+            flags = forum ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeString(title);
             stream.writeString(about);
@@ -66527,8 +66639,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = grouped ? (flags | 1) : (flags &~ 1);
-            flags = thread ? (flags | 2) : (flags &~ 2);
+            flags = grouped ? (flags | 1) : (flags & ~1);
+            flags = thread ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             channel.serializeToStream(stream);
             stream.writeInt32(id);
@@ -66549,8 +66661,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = signatures_enabled ? flags | 1 : flags &~ 1;
-            flags = profiles_enabled ? flags | 2 : flags &~ 2;
+            flags = signatures_enabled ? flags | 1 : flags & ~1;
+            flags = profiles_enabled ? flags | 2 : flags & ~2;
             stream.writeInt32(flags);
             channel.serializeToStream(stream);
         }
@@ -66570,9 +66682,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = by_location ? (flags | 1) : (flags &~ 1);
-            flags = check_limit ? (flags | 2) : (flags &~ 2);
-            flags = for_personal ? (flags | 4) : (flags &~ 4);
+            flags = by_location ? (flags | 1) : (flags & ~1);
+            flags = check_limit ? (flags | 2) : (flags & ~2);
+            flags = for_personal ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
         }
     }
@@ -66687,7 +66799,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = for_everyone ? (flags | 1) : (flags &~ 1);
+            flags = for_everyone ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             channel.serializeToStream(stream);
             stream.writeInt32(max_id);
@@ -66828,8 +66940,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = masks ? (flags | 1) : (flags &~ 1);
-            flags = emojis ? (flags | 32) : (flags &~ 32);
+            flags = masks ? (flags | 1) : (flags & ~1);
+            flags = emojis ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             user_id.serializeToStream(stream);
             stream.writeString(title);
@@ -67127,7 +67239,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = video ? (flags | 1) : (flags &~ 1);
+            flags = video ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             user_id.serializeToStream(stream);
             stream.writeInt32(random_id);
@@ -67207,7 +67319,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = video ? (flags | 1) : (flags &~ 1);
+            flags = video ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(duration);
@@ -67231,7 +67343,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = user_initiative ? (flags | 1) : (flags &~ 1);
+            flags = user_initiative ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(rating);
@@ -67317,8 +67429,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = muted ? (flags | 1) : (flags &~ 1);
-            flags = video_stopped ? (flags | 4) : (flags &~ 4);
+            flags = muted ? (flags | 1) : (flags & ~1);
+            flags = video_stopped ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             call.serializeToStream(stream);
             join_as.serializeToStream(stream);
@@ -67397,7 +67509,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = reset_invite_hash ? (flags | 2) : (flags &~ 2);
+            flags = reset_invite_hash ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             call.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -67499,8 +67611,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = start ? (flags | 1) : (flags &~ 1);
-            flags = video ? (flags | 4) : (flags &~ 4);
+            flags = start ? (flags | 1) : (flags & ~1);
+            flags = video ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             call.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -67600,7 +67712,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_self_unmute ? (flags | 1) : (flags &~ 1);
+            flags = can_self_unmute ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             call.serializeToStream(stream);
         }
@@ -67852,7 +67964,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = save ? (flags | 1) : (flags &~ 1);
+            flags = save ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             invoice.serializeToStream(stream);
             info.serializeToStream(stream);
@@ -67976,7 +68088,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = message_colors_animated ? (flags | 4) : (flags &~ 4);
+            flags = message_colors_animated ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             base_theme.serializeToStream(stream);
             stream.writeInt32(accent_color);
@@ -68069,8 +68181,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = restore ? (flags | 1) : (flags &~ 1);
-            flags = upgrade ? (flags | 2) : (flags &~ 2);
+            flags = restore ? (flags | 1) : (flags & ~1);
+            flags = upgrade ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
         }
     }
@@ -68122,8 +68234,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = credentials ? (flags | 1) : (flags &~ 1);
-            flags = info ? (flags | 2) : (flags &~ 2);
+            flags = credentials ? (flags | 1) : (flags & ~1);
+            flags = info ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
         }
     }
@@ -68531,7 +68643,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = premium_required ? (flags | 1) : (flags &~ 1);
+            flags = premium_required ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
         }
@@ -68894,8 +69006,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = full_width ? (flags | 1) : (flags &~ 1);
-            flags = allow_scrolling ? (flags | 8) : (flags &~ 8);
+            flags = full_width ? (flags | 1) : (flags & ~1);
+            flags = allow_scrolling ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeString(url);
@@ -68928,8 +69040,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = autoplay ? (flags | 1) : (flags &~ 1);
-            flags = loop ? (flags | 2) : (flags &~ 2);
+            flags = autoplay ? (flags | 1) : (flags & ~1);
+            flags = loop ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(video_id);
             caption.text.serializeToStream(stream);
@@ -69505,10 +69617,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32((int) from_id.user_id);
@@ -69589,11 +69701,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -69710,13 +69822,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = with_my_score ? (flags | 1073741824) : (flags &~ 1073741824);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = with_my_score ? (flags | 1073741824) : (flags & ~1073741824);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -69830,10 +69942,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -69944,10 +70056,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -70016,10 +70128,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32((int) fwd_from.from_id.user_id);
@@ -70158,19 +70270,19 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
-            flags = noforwards ? (flags | 67108864) : (flags &~ 67108864);
-            flags = invert_media ? (flags | 134217728) : (flags &~ 134217728);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
+            flags = noforwards ? (flags | 67108864) : (flags & ~67108864);
+            flags = invert_media ? (flags | 134217728) : (flags & ~134217728);
             stream.writeInt32(flags);
-            flags2 = offline ? (flags2 | 2) : (flags2 &~ 2);
+            flags2 = offline ? (flags2 | 2) : (flags2 & ~2);
             stream.writeInt32(flags2);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -70379,19 +70491,19 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
-            flags = noforwards ? (flags | 67108864) : (flags &~ 67108864);
-            flags = invert_media ? (flags | 134217728) : (flags &~ 134217728);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
+            flags = noforwards ? (flags | 67108864) : (flags & ~67108864);
+            flags = invert_media ? (flags | 134217728) : (flags & ~134217728);
             stream.writeInt32(flags);
-            flags2 = offline ? (flags2 | 2) : (flags2 &~ 2);
+            flags2 = offline ? (flags2 | 2) : (flags2 & ~2);
             stream.writeInt32(flags2);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -70594,19 +70706,19 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
-            flags = noforwards ? (flags | 67108864) : (flags &~ 67108864);
-            flags = invert_media ? (flags | 134217728) : (flags &~ 134217728);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
+            flags = noforwards ? (flags | 67108864) : (flags & ~67108864);
+            flags = invert_media ? (flags | 134217728) : (flags & ~134217728);
             stream.writeInt32(flags);
-            flags2 = offline ? (flags2 | 2) : (flags2 &~ 2);
+            flags2 = offline ? (flags2 | 2) : (flags2 & ~2);
             stream.writeInt32(flags2);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -70801,17 +70913,17 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
-            flags = noforwards ? (flags | 67108864) : (flags &~ 67108864);
-            flags = invert_media ? (flags | 134217728) : (flags &~ 134217728);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
+            flags = noforwards ? (flags | 67108864) : (flags & ~67108864);
+            flags = invert_media ? (flags | 134217728) : (flags & ~134217728);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -71000,17 +71112,17 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
-            flags = noforwards ? (flags | 67108864) : (flags &~ 67108864);
-            flags = invert_media ? (flags | 134217728) : (flags &~ 134217728);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
+            flags = noforwards ? (flags | 67108864) : (flags & ~67108864);
+            flags = invert_media ? (flags | 134217728) : (flags & ~134217728);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -71193,17 +71305,17 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
-            flags = noforwards ? (flags | 67108864) : (flags &~ 67108864);
-            flags = invert_media ? (flags | 134217728) : (flags &~ 134217728);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
+            flags = noforwards ? (flags | 67108864) : (flags & ~67108864);
+            flags = invert_media ? (flags | 134217728) : (flags & ~134217728);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -71380,17 +71492,17 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
-            flags = noforwards ? (flags | 67108864) : (flags &~ 67108864);
-            flags = invert_media ? (flags | 134217728) : (flags &~ 134217728);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
+            flags = noforwards ? (flags | 67108864) : (flags & ~67108864);
+            flags = invert_media ? (flags | 134217728) : (flags & ~134217728);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -71561,16 +71673,16 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
-            flags = noforwards ? (flags | 67108864) : (flags &~ 67108864);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
+            flags = noforwards ? (flags | 67108864) : (flags & ~67108864);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -71737,15 +71849,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -71909,15 +72021,15 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
-            flags = pinned ? (flags | 16777216) : (flags &~ 16777216);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
+            flags = pinned ? (flags | 16777216) : (flags & ~16777216);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -72077,14 +72189,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -72238,14 +72350,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -72399,14 +72511,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -72549,14 +72661,14 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
-            flags = edit_hide ? (flags | 2097152) : (flags &~ 2097152);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
+            flags = edit_hide ? (flags | 2097152) : (flags & ~2097152);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -72686,13 +72798,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = from_scheduled ? (flags | 262144) : (flags &~ 262144);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = from_scheduled ? (flags | 262144) : (flags & ~262144);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -72800,10 +72912,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32((int) from_id.user_id);
@@ -72891,10 +73003,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32((int) from_id.user_id);
@@ -72951,12 +73063,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -73007,10 +73119,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32((int) from_id.user_id);
@@ -73067,10 +73179,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32((int) from_id.user_id);
@@ -73113,10 +73225,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32((int) from_id.user_id);
@@ -73279,10 +73391,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32(ttl);
@@ -73356,10 +73468,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32(ttl);
@@ -73408,10 +73520,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32(ttl);
@@ -73450,12 +73562,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -73500,12 +73612,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -73552,13 +73664,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unread ? (flags | 1) : (flags &~ 1);
-            flags = out ? (flags | 2) : (flags &~ 2);
-            flags = mentioned ? (flags | 16) : (flags &~ 16);
-            flags = media_unread ? (flags | 32) : (flags &~ 32);
-            flags = silent ? (flags | 8192) : (flags &~ 8192);
-            flags = post ? (flags | 16384) : (flags &~ 16384);
-            flags = legacy ? (flags | 524288) : (flags &~ 524288);
+            flags = unread ? (flags | 1) : (flags & ~1);
+            flags = out ? (flags | 2) : (flags & ~2);
+            flags = mentioned ? (flags | 16) : (flags & ~16);
+            flags = media_unread ? (flags | 32) : (flags & ~32);
+            flags = silent ? (flags | 8192) : (flags & ~8192);
+            flags = post ? (flags | 16384) : (flags & ~16384);
+            flags = legacy ? (flags | 524288) : (flags & ~524288);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             if ((flags & 256) != 0) {
@@ -73655,9 +73767,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 4) : (flags &~ 4);
-            flags = unread_mark ? (flags | 8) : (flags &~ 8);
-            flags = view_forum_as_messages ? (flags | 64) : (flags &~ 64);
+            flags = pinned ? (flags | 4) : (flags & ~4);
+            flags = unread_mark ? (flags | 8) : (flags & ~8);
+            flags = view_forum_as_messages ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(top_message);
@@ -73713,8 +73825,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 4) : (flags &~ 4);
-            flags = unread_mark ? (flags | 8) : (flags &~ 8);
+            flags = pinned ? (flags | 4) : (flags & ~4);
+            flags = unread_mark ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(top_message);
@@ -73762,7 +73874,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 4) : (flags &~ 4);
+            flags = pinned ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             folder.serializeToStream(stream);
             peer.serializeToStream(stream);
@@ -74295,8 +74407,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = udp_p2p ? (flags | 1) : (flags &~ 1);
-            flags = udp_reflector ? (flags | 2) : (flags &~ 2);
+            flags = udp_p2p ? (flags | 1) : (flags & ~1);
+            flags = udp_reflector ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(min_layer);
             stream.writeInt32(max_layer);
@@ -74323,8 +74435,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = udp_p2p ? (flags | 1) : (flags &~ 1);
-            flags = udp_reflector ? (flags | 2) : (flags &~ 2);
+            flags = udp_p2p ? (flags | 1) : (flags & ~1);
+            flags = udp_reflector ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(min_layer);
             stream.writeInt32(max_layer);
@@ -74347,7 +74459,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = silent ? (flags | 1) : (flags &~ 1);
+            flags = silent ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt64(random_id);
@@ -74399,7 +74511,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = silent ? (flags | 1) : (flags &~ 1);
+            flags = silent ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt64(random_id);
@@ -74509,7 +74621,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = inactive ? (flags | 1) : (flags &~ 1);
+            flags = inactive ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(bot_id);
             stream.writeString(short_name);
@@ -74566,9 +74678,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = inactive ? (flags | 1) : (flags &~ 1);
-            flags = has_settings ? (flags | 2) : (flags &~ 2);
-            flags = request_write_access ? (flags | 4) : (flags &~ 4);
+            flags = inactive ? (flags | 1) : (flags & ~1);
+            flags = has_settings ? (flags | 2) : (flags & ~2);
+            flags = request_write_access ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt64(bot_id);
             stream.writeString(short_name);
@@ -74646,12 +74758,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = inactive ? (flags | 1) : (flags &~ 1);
-            flags = has_settings ? (flags | 2) : (flags &~ 2);
-            flags = request_write_access ? (flags | 4) : (flags &~ 4);
-            flags = show_in_attach_menu ? (flags | 8) : (flags &~ 8);
-            flags = show_in_side_menu ? (flags | 16) : (flags &~ 16);
-            flags = side_menu_disclaimer_needed ? (flags | 32) : (flags &~ 32);
+            flags = inactive ? (flags | 1) : (flags & ~1);
+            flags = has_settings ? (flags | 2) : (flags & ~2);
+            flags = request_write_access ? (flags | 4) : (flags & ~4);
+            flags = show_in_attach_menu ? (flags | 8) : (flags & ~8);
+            flags = show_in_side_menu ? (flags | 16) : (flags & ~16);
+            flags = side_menu_disclaimer_needed ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             stream.writeInt64(bot_id);
             stream.writeString(short_name);
@@ -74911,8 +75023,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = bot != null ? (flags | 1) : (flags &~ 1);
-            flags = premium != null ? (flags | 2) : (flags &~ 2);
+            flags = bot != null ? (flags | 1) : (flags & ~1);
+            flags = premium != null ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             if (bot != null) {
                 stream.writeBool(bot);
@@ -74946,12 +75058,12 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator != null && creator ? (flags | 1) : (flags &~ 1);
-            flags = user_admin_rights != null ? (flags | 2) : (flags &~ 2);
-            flags = bot_admin_rights != null ? (flags | 4) : (flags &~ 4);
-            flags = has_username != null ? (flags | 8) : (flags &~ 8);
-            flags = forum != null ? (flags | 16) : (flags &~ 16);
-            flags = bot_participant != null && bot_participant ? (flags | 32) : (flags &~ 32);
+            flags = creator != null && creator ? (flags | 1) : (flags & ~1);
+            flags = user_admin_rights != null ? (flags | 2) : (flags & ~2);
+            flags = bot_admin_rights != null ? (flags | 4) : (flags & ~4);
+            flags = has_username != null ? (flags | 8) : (flags & ~8);
+            flags = forum != null ? (flags | 16) : (flags & ~16);
+            flags = bot_participant != null && bot_participant ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             if (has_username != null) {
                 stream.writeBool(has_username);
@@ -74987,10 +75099,10 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = creator != null && creator ? (flags | 1) : (flags &~ 1);
-            flags = user_admin_rights != null ? (flags | 2) : (flags &~ 2);
-            flags = bot_admin_rights != null ? (flags | 4) : (flags &~ 4);
-            flags = has_username != null ? (flags | 8) : (flags &~ 8);
+            flags = creator != null && creator ? (flags | 1) : (flags & ~1);
+            flags = user_admin_rights != null ? (flags | 2) : (flags & ~2);
+            flags = bot_admin_rights != null ? (flags | 4) : (flags & ~4);
+            flags = has_username != null ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             if (has_username != null) {
                 stream.writeBool(has_username);
@@ -75089,7 +75201,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = write_allowed ? (flags | 1) : (flags &~ 1);
+            flags = write_allowed ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             bot.serializeToStream(stream);
             stream.writeBool(enabled);
@@ -75128,7 +75240,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = fullsize ? flags | 2 : flags &~ 2;
+            flags = fullsize ? flags | 2 : flags & ~2;
             stream.writeInt32(flags);
             if ((flags & 1) != 0) {
                 stream.writeInt64(query_id);
@@ -75159,9 +75271,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = from_bot_menu ? (flags | 16) : (flags &~ 16);
-            flags = silent ? (flags | 32) : (flags &~ 32);
-            flags = compact ? (flags | 128) : (flags &~ 128);
+            flags = from_bot_menu ? (flags | 16) : (flags & ~16);
+            flags = silent ? (flags | 32) : (flags & ~32);
+            flags = compact ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             bot.serializeToStream(stream);
@@ -75201,7 +75313,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = compact ? (flags | 128) : (flags &~ 128);
+            flags = compact ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             bot.serializeToStream(stream);
@@ -75232,7 +75344,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = silent ? (flags | 32) : (flags &~ 32);
+            flags = silent ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             bot.serializeToStream(stream);
@@ -75281,8 +75393,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = write_allowed ? (flags | 1) : (flags &~ 1);
-            flags = compact ? (flags | 128) : (flags &~ 128);
+            flags = write_allowed ? (flags | 1) : (flags & ~1);
+            flags = compact ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             app.serializeToStream(stream);
@@ -75315,9 +75427,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = from_switch_webview ? (flags | 2) : (flags &~ 2);
-            flags = from_side_menu ? (flags | 4) : (flags &~ 4);
-            flags = compact ? (flags | 128) : (flags &~ 128);
+            flags = from_switch_webview ? (flags | 2) : (flags & ~2);
+            flags = from_side_menu ? (flags | 4) : (flags & ~4);
+            flags = compact ? (flags | 128) : (flags & ~128);
             stream.writeInt32(flags);
             bot.serializeToStream(stream);
             if ((flags & 8) != 0) {
@@ -75915,8 +76027,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = inactive ? (flags | 1) : (flags &~ 1);
-            flags = request_write_access ? (flags | 2) : (flags &~ 2);
+            flags = inactive ? (flags | 1) : (flags & ~1);
+            flags = request_write_access ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             app.serializeToStream(stream);
         }
@@ -76351,7 +76463,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pending ? (flags | 1) : (flags &~ 1);
+            flags = pending ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(transcription_id);
             stream.writeString(text);
@@ -76526,7 +76638,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = allow_custom ? (flags | 1) : (flags &~ 1);
+            flags = allow_custom ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
         }
     }
@@ -76747,9 +76859,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = my ? (flags | 2) : (flags &~ 2);
-            flags = closed ? (flags | 4) : (flags &~ 4);
-            flags = pinned ? (flags | 8) : (flags &~ 8);
+            flags = my ? (flags | 2) : (flags & ~2);
+            flags = closed ? (flags | 4) : (flags & ~4);
+            flags = pinned ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32(date);
@@ -76850,11 +76962,11 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = my ? (flags | 2) : (flags &~ 2);
-            flags = closed ? (flags | 4) : (flags &~ 4);
-            flags = pinned ? (flags | 8) : (flags &~ 8);
-            flags = isShort ? (flags | 32) : (flags &~ 32);
-            flags = hidden ? (flags | 64) : (flags &~ 64);
+            flags = my ? (flags | 2) : (flags & ~2);
+            flags = closed ? (flags | 4) : (flags & ~4);
+            flags = pinned ? (flags | 8) : (flags & ~8);
+            flags = isShort ? (flags | 32) : (flags & ~32);
+            flags = hidden ? (flags | 64) : (flags & ~64);
             stream.writeInt32(flags);
             stream.writeInt32(id);
             stream.writeInt32(date);
@@ -76971,7 +77083,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = order_by_create_date ? (flags | 1) : (flags &~ 1);
+            flags = order_by_create_date ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(count);
             stream.writeInt32(0x1cb5c415);
@@ -77187,12 +77299,13 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = editable ? (flags | 1) : (flags &~ 1);
-            flags = active ? (flags | 2) : (flags &~ 2);
+            flags = editable ? (flags | 1) : (flags & ~1);
+            flags = active ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeString(username);
         }
     }
+
     public static class TL_channels_deleteTopicHistory extends TLObject {
         public static final int constructor = 0x34435f2d;
 
@@ -77351,7 +77464,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = force ? (flags | 1) : (flags &~ 1);
+            flags = force ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             channel.serializeToStream(stream);
             stream.writeInt32(0x1cb5c415);
@@ -77429,8 +77542,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = media ? flags | 1 : flags &~ 1;
-            flags = fullscreen ? flags | 2 : flags &~ 2;
+            flags = media ? flags | 1 : flags & ~1;
+            flags = fullscreen ? flags | 2 : flags & ~2;
             stream.writeInt32(flags);
             channel.serializeToStream(stream);
             stream.writeByteArray(random_id);
@@ -77648,8 +77761,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = suggest ? (flags | 8) : (flags &~ 8);
-            flags = save ? (flags | 16) : (flags &~ 16);
+            flags = suggest ? (flags | 8) : (flags & ~8);
+            flags = save ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
             user_id.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -77791,7 +77904,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = for_profile ? (flags | 2) : (flags &~ 2);
+            flags = for_profile ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             channel.serializeToStream(stream);
             if ((flags & 4) != 0) {
@@ -77817,7 +77930,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = for_profile ? (flags | 2) : (flags &~ 2);
+            flags = for_profile ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             if ((flags & 4) != 0) {
                 stream.writeInt32(color);
@@ -77882,7 +77995,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_updateQuickReplies extends Update {
         public static final int constructor = 0xf9470ab2;
 
@@ -77912,7 +78025,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_updateNewQuickReply extends Update {
         public static final int constructor = 0xf53da717;
 
@@ -77927,7 +78040,7 @@ public class TLRPC {
             quick_reply.serializeToStream(stream);
         }
     }
-    
+
     public static class TL_updateDeleteQuickReply extends Update {
         public static final int constructor = 0x53e6f1ec;
 
@@ -77942,7 +78055,7 @@ public class TLRPC {
             stream.writeInt32(shortcut_id);
         }
     }
-    
+
     public static class TL_updateQuickReplyMessage extends Update {
         public static final int constructor = 0x3e050d0f;
 
@@ -77957,7 +78070,7 @@ public class TLRPC {
             message.serializeToStream(stream);
         }
     }
-    
+
     public static class TL_updateDeleteQuickReplyMessages extends Update {
         public static final int constructor = 0x566fe7cd;
 
@@ -77990,7 +78103,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_updateNewStoryReaction extends Update {
         public static final int constructor = 0x1824e40b;
 
@@ -78011,7 +78124,7 @@ public class TLRPC {
             reaction.serializeToStream(stream);
         }
     }
-    
+
     public static class TL_updateBroadcastRevenueTransactions extends Update {
         public static final int constructor = 0xdfd961f5;
 
@@ -78029,7 +78142,7 @@ public class TLRPC {
             balances.serializeToStream(stream);
         }
     }
-    
+
     public static class TL_updateStarsBalance extends Update {
         public static final int constructor = 0xfb85198;
 
@@ -78044,7 +78157,7 @@ public class TLRPC {
             stream.writeInt64(balance);
         }
     }
-    
+
     public static class TL_updateStarsRevenueStatus extends Update {
         public static final int constructor = 0xa584b019;
 
@@ -78086,7 +78199,7 @@ public class TLRPC {
 
     public static class TL_updatePaidReactionPrivacy extends Update {
         public static final int constructor = 0x51ca7aec;
-        
+
         public boolean isPrivate;
 
         public void readParams(AbstractSerializedData stream, boolean exception) {
@@ -78114,7 +78227,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 1) : (flags &~ 1);
+            flags = pinned ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
         }
@@ -78139,7 +78252,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = wallpaper_overridden ? (flags | 2) : (flags &~ 2);
+            flags = wallpaper_overridden ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -78165,8 +78278,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = for_both ? (flags | 8) : (flags &~ 8);
-            flags = revert ? (flags | 16) : (flags &~ 16);
+            flags = for_both ? (flags | 8) : (flags & ~8);
+            flags = revert ? (flags | 16) : (flags & ~16);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             if ((flags & 1) != 0) {
@@ -78195,7 +78308,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = my_stories_from ? (flags | 1) : (flags &~ 1);
+            flags = my_stories_from ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             stream.writeInt32(id.size());
@@ -78432,7 +78545,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = via_mention ? (flags | 2) : (flags &~ 2);
+            flags = via_mention ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(id);
@@ -78464,7 +78577,7 @@ public class TLRPC {
                 flags &= ~1;
             }
             stream.writeInt32(constructor);
-            flags = via_mention ? (flags | 2) : (flags &~ 2);
+            flags = via_mention ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(peer.user_id);
             stream.writeInt32(id);
@@ -78581,8 +78694,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = via_giveaway ? (flags | 1) : (flags &~ 1);
-            flags = unclaimed ? (flags | 4) : (flags &~ 4);
+            flags = via_giveaway ? (flags | 1) : (flags & ~1);
+            flags = unclaimed ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 boost_peer.serializeToStream(stream);
@@ -78636,8 +78749,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = via_giveaway ? (flags | 1) : (flags &~ 1);
-            flags = unclaimed ? (flags | 4) : (flags &~ 4);
+            flags = via_giveaway ? (flags | 1) : (flags & ~1);
+            flags = unclaimed ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 boost_peer.serializeToStream(stream);
@@ -78675,8 +78788,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = via_giveaway ? (flags | 1) : (flags &~ 1);
-            flags = unclaimed ? (flags | 4) : (flags &~ 4);
+            flags = via_giveaway ? (flags | 1) : (flags & ~1);
+            flags = unclaimed ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 boost_peer.serializeToStream(stream);
@@ -78804,8 +78917,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = only_new_subscribers ? (flags | 1) : (flags &~ 1);
-            flags = winners_are_visible ? (flags | 8) : (flags &~ 8);
+            flags = only_new_subscribers ? (flags | 1) : (flags & ~1);
+            flags = winners_are_visible ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             boost_peer.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -78920,8 +79033,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = only_new_subscribers ? (flags | 1) : (flags &~ 1);
-            flags = winners_are_visible ? (flags | 8) : (flags &~ 8);
+            flags = only_new_subscribers ? (flags | 1) : (flags & ~1);
+            flags = winners_are_visible ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt64(stars);
             boost_peer.serializeToStream(stream);
@@ -79045,7 +79158,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = hide_name ? flags | 1 : flags &~ 1;
+            flags = hide_name ? flags | 1 : flags & ~1;
             stream.writeInt32(flags);
             user_id.serializeToStream(stream);
             stream.writeInt64(gift_id);
@@ -79107,8 +79220,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = only_new_subscribers ? (flags | 1) : (flags &~ 1);
-            flags = refunded ? (flags | 4) : (flags &~ 4);
+            flags = only_new_subscribers ? (flags | 1) : (flags & ~1);
+            flags = refunded ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt64(channel_id);
             if ((flags & 8) != 0) {
@@ -79170,8 +79283,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = only_new_subscribers ? (flags | 1) : (flags &~ 1);
-            flags = refunded ? (flags | 4) : (flags &~ 4);
+            flags = only_new_subscribers ? (flags | 1) : (flags & ~1);
+            flags = refunded ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt64(channel_id);
             if ((flags & 8) != 0) {
@@ -79250,8 +79363,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = only_new_subscribers ? (flags | 1) : (flags &~ 1);
-            flags = winners_are_visible ? (flags | 4) : (flags &~ 4);
+            flags = only_new_subscribers ? (flags | 1) : (flags & ~1);
+            flags = winners_are_visible ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = channels.size();
@@ -79322,8 +79435,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = only_new_subscribers ? (flags | 1) : (flags &~ 1);
-            flags = winners_are_visible ? (flags | 4) : (flags &~ 4);
+            flags = only_new_subscribers ? (flags | 1) : (flags & ~1);
+            flags = winners_are_visible ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = channels.size();
@@ -79385,7 +79498,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = only_new_subscribers ? (flags | 1) : (flags &~ 1);
+            flags = only_new_subscribers ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = channels.size();
@@ -79584,8 +79697,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = winner ? (flags | 1) : (flags &~ 1);
-            flags = refunded ? (flags | 2) : (flags &~ 2);
+            flags = winner ? (flags | 1) : (flags & ~1);
+            flags = refunded ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(start_date);
             if ((flags & 1) != 0) {
@@ -79620,8 +79733,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = winner ? (flags | 1) : (flags &~ 1);
-            flags = refunded ? (flags | 2) : (flags &~ 2);
+            flags = winner ? (flags | 1) : (flags & ~1);
+            flags = refunded ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt32(start_date);
             if ((flags & 1) != 0) {
@@ -79662,8 +79775,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = participating ? (flags | 1) : (flags &~ 1);
-            flags = preparing_results ? (flags | 8) : (flags &~ 8);
+            flags = participating ? (flags | 1) : (flags & ~1);
+            flags = preparing_results ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             stream.writeInt32(start_date);
             if ((flags & 2) != 0) {
@@ -79899,7 +80012,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = stars ? (flags | 1) : (flags &~ 1);
+            flags = stars ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(winners_count);
             stream.writeInt32(unclaimed_count);
@@ -79945,7 +80058,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = unclaimed ? (flags | 1) : (flags &~ 1);
+            flags = unclaimed ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(stars);
             stream.writeString(transaction_id);
@@ -79982,9 +80095,9 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = name_hidden ? (flags | 1) : (flags &~ 1);
-            flags = saved ? (flags | 4) : (flags &~ 4);
-            flags = converted ? (flags | 8) : (flags &~ 8);
+            flags = name_hidden ? (flags | 1) : (flags & ~1);
+            flags = saved ? (flags | 4) : (flags & ~4);
+            flags = converted ? (flags | 8) : (flags & ~8);
             stream.writeInt32(flags);
             gift.serializeToStream(stream);
             if ((flags & 2) != 0) {
@@ -80260,7 +80373,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = hidden ? (flags | 1) : (flags &~ 1);
+            flags = hidden ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(color_id);
             if ((flags & 2) != 0) {
@@ -80414,7 +80527,7 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 4) : (flags &~ 4);
+            flags = pinned ? (flags | 4) : (flags & ~4);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
             stream.writeInt32(top_message);
@@ -80670,7 +80783,7 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = exclude_pinned ? (flags | 1) : (flags &~ 1);
+            flags = exclude_pinned ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(offset_date);
             stream.writeInt32(offset_id);
@@ -80726,7 +80839,7 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = pinned ? (flags | 1) : (flags &~ 1);
+            flags = pinned ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
         }
@@ -80747,7 +80860,7 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = force ? (flags | 1) : (flags &~ 1);
+            flags = force ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(0x1cb5c415);
             int count = order.size();
@@ -80806,7 +80919,7 @@ public class TLRPC {
 
     public static class TL_messages_getOutboxReadDate extends TLObject {
         public static final int constructor = 0x8c4bfe5d;
-        
+
         public InputPeer peer;
         public int msg_id;
 
@@ -80826,7 +80939,7 @@ public class TLRPC {
 
     public static class TL_businessWeeklyOpen extends TLObject {
         public static final int constructor = 0x120b1ab9;
-        
+
         public int start_minute;
         public int end_minute;
 
@@ -80855,10 +80968,10 @@ public class TLRPC {
             stream.writeInt32(end_minute);
         }
     }
-    
+
     public static class TL_businessWorkHours extends TLObject {
         public static final int constructor = 0x8c92b098;
-        
+
         public int flags;
         public boolean open_now;
         public String timezone_id;
@@ -80897,7 +81010,7 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = open_now ? (flags | 1) : (flags &~ 1);
+            flags = open_now ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeString(timezone_id);
             stream.writeInt32(0x1cb5c415);
@@ -80908,7 +81021,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_businessLocation extends TLObject {
         public static final int constructor = 0xac5c1af7;
 
@@ -80950,7 +81063,7 @@ public class TLRPC {
 
     public static class TL_timezone extends TLObject {
         public static final int constructor = 0xff9289f5;
-        
+
         public String id;
         public String name;
         public int utc_offset;
@@ -81064,7 +81177,7 @@ public class TLRPC {
             stream.writeInt32(hash);
         }
     }
-    
+
     public static class TL_account_updateBusinessWorkHours extends TLObject {
         public static final int constructor = 0x4b00e066;
 
@@ -81085,10 +81198,10 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_account_updateBusinessLocation extends TLObject {
         public static final int constructor = 0x9e6b131a;
-        
+
         public int flags;
         public InputGeoPoint geo_point;
         public String address;
@@ -81165,7 +81278,7 @@ public class TLRPC {
             stream.writeInt32(shortcut_id);
         }
     }
-    
+
     public static class TL_quickReply extends TLObject {
         public static final int constructor = 0x697102b;
 
@@ -81336,7 +81449,7 @@ public class TLRPC {
             stream.writeInt64(hash);
         }
     }
-    
+
     public static class TL_messages_reorderQuickReplies extends TLObject {
         public static final int constructor = 0x60331907;
 
@@ -81358,7 +81471,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_messages_checkQuickReplyShortcut extends TLObject {
         public static final int constructor = 0xf1d0fbd3;
 
@@ -81375,7 +81488,7 @@ public class TLRPC {
             stream.writeString(shortcut);
         }
     }
-    
+
     public static class TL_messages_editQuickReplyShortcut extends TLObject {
         public static final int constructor = 0x5c003cef;
 
@@ -81394,7 +81507,7 @@ public class TLRPC {
             stream.writeString(shortcut);
         }
     }
-    
+
     public static class TL_messages_getQuickReplyMessages extends TLObject {
         public static final int constructor = 0x94a495c3;
 
@@ -81424,7 +81537,7 @@ public class TLRPC {
             stream.writeInt64(hash);
         }
     }
-    
+
     public static class TL_messages_sendQuickReplyMessages extends TLObject {
         public static final int constructor = 0x6c750de1;
 
@@ -81457,7 +81570,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_messages_deleteQuickReplyMessages extends TLObject {
         public static final int constructor = 0xe105e910;
 
@@ -81481,7 +81594,7 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_messages_deleteQuickReplyShortcut extends TLObject {
         public static final int constructor = 0x3cc04740;
 
@@ -81522,7 +81635,7 @@ public class TLRPC {
             return result;
         }
     }
-    
+
     public static class TL_businessAwayMessageScheduleAlways extends BusinessAwayMessageSchedule {
         public static final int constructor = 0xc9b9e2b9;
 
@@ -81543,7 +81656,7 @@ public class TLRPC {
 
     public static class TL_businessAwayMessageScheduleCustom extends BusinessAwayMessageSchedule {
         public static final int constructor = 0xcc4d9ecc;
-        
+
         public int start_date;
         public int end_date;
 
@@ -81628,7 +81741,7 @@ public class TLRPC {
         public int shortcut_id;
         public BusinessAwayMessageSchedule schedule;
         public TL_inputBusinessRecipients recipients;
-        
+
         @Override
         public void readParams(AbstractSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
@@ -81669,7 +81782,7 @@ public class TLRPC {
             result.readParams(stream, exception);
             return result;
         }
-        
+
         @Override
         public void readParams(AbstractSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
@@ -81682,7 +81795,7 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = offline_only ? (flags | 1) : (flags &~ 1);
+            flags = offline_only ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt32(shortcut_id);
             schedule.serializeToStream(stream);
@@ -81795,11 +81908,11 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = existing_chats ? (flags | 1) : (flags &~ 1);
-            flags = new_chats ? (flags | 2) : (flags &~ 2);
-            flags = contacts ? (flags | 4) : (flags &~ 4);
-            flags = non_contacts ? (flags | 8) : (flags &~ 8);
-            flags = exclude_selected ? (flags | 32) : (flags &~ 32);
+            flags = existing_chats ? (flags | 1) : (flags & ~1);
+            flags = new_chats ? (flags | 2) : (flags & ~2);
+            flags = contacts ? (flags | 4) : (flags & ~4);
+            flags = non_contacts ? (flags | 8) : (flags & ~8);
+            flags = exclude_selected ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -81883,11 +81996,11 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = existing_chats ? (flags | 1) : (flags &~ 1);
-            flags = new_chats ? (flags | 2) : (flags &~ 2);
-            flags = contacts ? (flags | 4) : (flags &~ 4);
-            flags = non_contacts ? (flags | 8) : (flags &~ 8);
-            flags = exclude_selected ? (flags | 32) : (flags &~ 32);
+            flags = existing_chats ? (flags | 1) : (flags & ~1);
+            flags = new_chats ? (flags | 2) : (flags & ~2);
+            flags = contacts ? (flags | 4) : (flags & ~4);
+            flags = non_contacts ? (flags | 8) : (flags & ~8);
+            flags = exclude_selected ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -81957,11 +82070,11 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = existing_chats ? (flags | 1) : (flags &~ 1);
-            flags = new_chats ? (flags | 2) : (flags &~ 2);
-            flags = contacts ? (flags | 4) : (flags &~ 4);
-            flags = non_contacts ? (flags | 8) : (flags &~ 8);
-            flags = exclude_selected ? (flags | 32) : (flags &~ 32);
+            flags = existing_chats ? (flags | 1) : (flags & ~1);
+            flags = new_chats ? (flags | 2) : (flags & ~2);
+            flags = contacts ? (flags | 4) : (flags & ~4);
+            flags = non_contacts ? (flags | 8) : (flags & ~8);
+            flags = exclude_selected ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -82023,11 +82136,11 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = existing_chats ? (flags | 1) : (flags &~ 1);
-            flags = new_chats ? (flags | 2) : (flags &~ 2);
-            flags = contacts ? (flags | 4) : (flags &~ 4);
-            flags = non_contacts ? (flags | 8) : (flags &~ 8);
-            flags = exclude_selected ? (flags | 32) : (flags &~ 32);
+            flags = existing_chats ? (flags | 1) : (flags & ~1);
+            flags = new_chats ? (flags | 2) : (flags & ~2);
+            flags = contacts ? (flags | 4) : (flags & ~4);
+            flags = non_contacts ? (flags | 8) : (flags & ~8);
+            flags = exclude_selected ? (flags | 32) : (flags & ~32);
             stream.writeInt32(flags);
             if ((flags & 16) != 0) {
                 stream.writeInt32(0x1cb5c415);
@@ -82071,7 +82184,7 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_reply ? (flags | 1) : (flags &~ 1);
+            flags = can_reply ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(bot_id);
             recipients.serializeToStream(stream);
@@ -82095,7 +82208,7 @@ public class TLRPC {
             result.readParams(stream, exception);
             return result;
         }
-        
+
         @Override
         public void readParams(AbstractSerializedData stream, boolean exception) {
             int magic = stream.readInt32(exception);
@@ -82121,7 +82234,7 @@ public class TLRPC {
                 users.add(User.TLdeserialize(stream, stream.readInt32(exception), exception));
             }
         }
-        
+
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
@@ -82148,17 +82261,17 @@ public class TLRPC {
         public boolean deleted;
         public InputUser bot;
         public TL_inputBusinessBotRecipients recipients;
-        
+
         @Override
         public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return Updates.TLdeserialize(stream, constructor, exception);
         }
-        
+
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = can_reply ? (flags | 1) : (flags &~ 1);
-            flags = deleted ? (flags | 2) : (flags &~ 2);
+            flags = can_reply ? (flags | 1) : (flags & ~1);
+            flags = deleted ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             bot.serializeToStream(stream);
             recipients.serializeToStream(stream);
@@ -82172,7 +82285,7 @@ public class TLRPC {
         public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
             return TL_account_connectedBots.TLdeserialize(stream, constructor, exception);
         }
-        
+
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
@@ -82181,7 +82294,7 @@ public class TLRPC {
 
     public static class TL_messages_toggleDialogFilterTags extends TLObject {
         public static final int constructor = 0xfd2dda49;
-        
+
         public boolean enabled;
 
         @Override
@@ -82203,7 +82316,7 @@ public class TLRPC {
 
     public static class TL_account_toggleConnectedBotPaused extends TLObject {
         public static final int constructor = 0x646E1097;
-        
+
         public InputPeer peer;
         public boolean paused;
 
@@ -82341,10 +82454,10 @@ public class TLRPC {
             }
         }
     }
-    
+
     public static class TL_birthday extends TLObject {
         public static final int constructor = 0x6c8e1e06;
-        
+
         public int flags;
         public int day;
         public int month;
@@ -82418,7 +82531,7 @@ public class TLRPC {
 
     public static class TL_contacts_contactBirthdays extends TLObject {
         public static final int constructor = 0x114ff30d;
-        
+
         public ArrayList<TL_contactBirthday> contacts = new ArrayList<>();
         public ArrayList<TLRPC.User> users = new ArrayList<>();
 
@@ -82515,7 +82628,7 @@ public class TLRPC {
             stream.writeInt32(constructor);
         }
     }
-    
+
     public static class TL_missingInvitee extends TLObject {
         public static final int constructor = 0x628c9224;
 
@@ -82548,8 +82661,8 @@ public class TLRPC {
         @Override
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = premium_would_allow_invite ? (flags | 1) : (flags &~ 1);
-            flags = premium_required_for_pm ? (flags | 2) : (flags &~ 2);
+            flags = premium_would_allow_invite ? (flags | 1) : (flags & ~1);
+            flags = premium_required_for_pm ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeInt64(user_id);
         }
@@ -82605,7 +82718,7 @@ public class TLRPC {
 
     public static class TL_account_updatePersonalChannel extends TLObject {
         public static final int constructor = 0xd94305e0;
-        
+
         public InputChannel channel;
 
         @Override
@@ -83109,7 +83222,8 @@ public class TLRPC {
     public static class TL_reactionNotificationsFromContacts extends ReactionNotificationsFrom {
         public static final int constructor = 0xbac3a61a;
 
-        public void readParams(AbstractSerializedData stream, boolean exception) {}
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+        }
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
@@ -83119,7 +83233,8 @@ public class TLRPC {
     public static class TL_reactionNotificationsFromAll extends ReactionNotificationsFrom {
         public static final int constructor = 0x4b9e22a0;
 
-        public void readParams(AbstractSerializedData stream, boolean exception) {}
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+        }
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
@@ -83263,7 +83378,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = withdrawal_enabled ? (flags | 1) : (flags &~ 1);
+            flags = withdrawal_enabled ? (flags | 1) : (flags & ~1);
             stream.writeInt32(flags);
             stream.writeInt64(current_balance);
             stream.writeInt64(available_balance);
@@ -83291,7 +83406,7 @@ public class TLRPC {
 
     public static class TL_availableEffect extends TLObject {
         public static final int constructor = 0x93c3e27e;
-        
+
         public int flags;
         public boolean premium_required;
         public long id;
@@ -83329,7 +83444,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = premium_required ? flags | 4 : flags &~ 4;
+            flags = premium_required ? flags | 4 : flags & ~4;
             stream.writeInt32(flags);
             stream.writeInt64(id);
             stream.writeString(emoticon);
@@ -83380,7 +83495,7 @@ public class TLRPC {
             stream.writeInt32(constructor);
         }
     }
-    
+
     public static class TL_messages_availableEffects extends messages_AvailableEffects {
         public static final int constructor = 0xbddb616e;
 
@@ -83455,7 +83570,7 @@ public class TLRPC {
             result.readParams(stream, exception);
             return result;
         }
-        
+
         public void readParams(AbstractSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
             need_check = (flags & 1) != 0;
@@ -83468,7 +83583,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = need_check ? flags | 1 : flags &~ 1;
+            flags = need_check ? flags | 1 : flags & ~1;
             stream.writeInt32(flags);
             if ((flags & 2) != 0) {
                 stream.writeString(country);
@@ -83550,7 +83665,7 @@ public class TLRPC {
 
         public int flags;
         public boolean withdrawal_enabled;
-        public long current_balance; 
+        public long current_balance;
         public long available_balance;
         public long overall_revenue;
         public int next_withdrawal_at;
@@ -83582,7 +83697,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = withdrawal_enabled ? flags | 1 : flags &~ 1;
+            flags = withdrawal_enabled ? flags | 1 : flags & ~1;
             stream.writeInt32(flags);
             stream.writeInt64(current_balance);
             stream.writeInt64(available_balance);
@@ -83696,7 +83811,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = dark ? flags | 1 : flags &~ 1;
+            flags = dark ? flags | 1 : flags & ~1;
             stream.writeInt32(flags);
             peer.serializeToStream(stream);
         }
@@ -83735,10 +83850,10 @@ public class TLRPC {
             peer.serializeToStream(stream);
         }
     }
-    
+
     public static class TL_paymentCharge extends TLObject {
         public static final int constructor = 0xea02c27e;
-        
+
         public String id;
         public String provider_charge_id;
 

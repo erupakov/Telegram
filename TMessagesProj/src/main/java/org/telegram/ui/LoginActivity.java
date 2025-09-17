@@ -228,7 +228,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             VIEW_CODE_EMAIL = 14,
             VIEW_CODE_FRAGMENT_SMS = 15,
             VIEW_CODE_WORD = 16,
-            VIEW_CODE_PHRASE = 17;
+            VIEW_CODE_PHRASE = 17,
+            VIEW_REGISTER_SELECT_ROLE = 18,
+            VIEW_REGISTER_MODEL = 19,
+            VIEW_REGISTER_AGENCY = 20,
+            VIEW_REGISTER_NEW_TALENT = 21;
+
 
     public final static int COUNTRY_STATE_NOT_SET_OR_VALID = 0,
             COUNTRY_STATE_EMPTY = 1,
@@ -1985,16 +1990,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             setGravity(Gravity.CENTER);
 
             titleView = new TextView(context);
-            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-            titleView.setTypeface(AndroidUtilities.bold());
+            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
+            titleView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
             titleView.setText(getString(activityMode == MODE_CHANGE_PHONE_NUMBER ? R.string.ChangePhoneNewNumber : R.string.YourNumber));
             titleView.setGravity(Gravity.CENTER);
             titleView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
             addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 32, 0, 32, 0));
 
             subtitleView = new TextView(context);
+
             subtitleView.setText(getString(activityMode == MODE_CHANGE_PHONE_NUMBER ? R.string.ChangePhoneHelp : R.string.StartText));
-            subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            subtitleView.setTypeface(AndroidUtilities.helveticaNeueMedium());
             subtitleView.setGravity(Gravity.CENTER);
             subtitleView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
             addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 32, 8, 32, 0));

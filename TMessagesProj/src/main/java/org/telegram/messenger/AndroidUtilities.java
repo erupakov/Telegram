@@ -225,6 +225,9 @@ public class AndroidUtilities {
     public final static int REPLACING_TAG_TYPE_LINK_NBSP = 3;
     public final static int REPLACING_TAG_TYPE_UNDERLINE = 4;
 
+    public final static String TYPEFACE_HELVETICA_NEUE_MEDIUM = "fonts/helvetica_neue_medium.otf";
+    public final static String TYPEFACE_HELVETICA_NEUE_LT_COM_77_BOLD_CONDENSED = "fonts/helvetica_neue_lt_com_77_bold_condensed.ttf";
+
     public final static String TYPEFACE_ROBOTO_MEDIUM = "fonts/rmedium.ttf";
     public final static String TYPEFACE_ROBOTO_MEDIUM_ITALIC = "fonts/rmediumitalic.ttf";
     public final static String TYPEFACE_ROBOTO_MONO = "fonts/rmono.ttf";
@@ -235,11 +238,29 @@ public class AndroidUtilities {
     public static ThreadLocal<byte[]> readBufferLocal = new ThreadLocal<>();
     public static ThreadLocal<byte[]> bufferLocal = new ThreadLocal<>();
 
+    private static Typeface _helveticaNeueLtCom77BoldCondensed;
+    private static Typeface _helveticaNeueMedium;
+
+    public static Typeface helveticaNeueMedium() {
+        if (_helveticaNeueMedium == null) {
+            _helveticaNeueMedium = getTypeface(TYPEFACE_HELVETICA_NEUE_MEDIUM);
+        }
+        return _helveticaNeueMedium;
+    }
+
+    public static Typeface helveticaNeueLtCom77BoldCondensed() {
+        if (_helveticaNeueLtCom77BoldCondensed == null) {
+            _helveticaNeueLtCom77BoldCondensed = getTypeface(TYPEFACE_HELVETICA_NEUE_LT_COM_77_BOLD_CONDENSED);
+        }
+
+        return _helveticaNeueLtCom77BoldCondensed;
+    }
+
+
     public static Typeface bold() {
-        if (mediumTypeface == null) {
-            // so system Roboto with 500 weight doesn't support Hebrew (but 700 Roboto does)
-            // there must be a way to take system font 500 and fallback it with system font 700
-            // I haven't found the way, even through private API :(
+        // so system Roboto with 500 weight doesn't support Hebrew (but 700 Roboto does)
+        // there must be a way to take system font 500 and fallback it with system font 700
+        // I haven't found the way, even through private API :(
 //            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
 //                mediumTypeface = Typeface.create(null, 500, false);
 //
@@ -251,10 +272,10 @@ public class AndroidUtilities {
 //                    mediumTypeface = Typeface.create(null, 700, false);
 //                }
 //            }
-            if (mediumTypeface == null) {
-                mediumTypeface = getTypeface(TYPEFACE_ROBOTO_MEDIUM);
-            }
+        if (mediumTypeface == null) {
+            mediumTypeface = getTypeface(TYPEFACE_HELVETICA_NEUE_LT_COM_77_BOLD_CONDENSED);
         }
+
         return mediumTypeface;
     }
 
@@ -507,7 +528,8 @@ public class AndroidUtilities {
     public static Activity getActivity(Context context) {
         Activity activity = findActivity(context);
         if (activity == null || activity.isFinishing()) activity = LaunchActivity.instance;
-        if (activity == null || activity.isFinishing()) activity = findActivity(ApplicationLoader.applicationContext);
+        if (activity == null || activity.isFinishing())
+            activity = findActivity(ApplicationLoader.applicationContext);
         return activity;
     }
 
@@ -597,6 +619,7 @@ public class AndroidUtilities {
                         ds.setTypeface(AndroidUtilities.bold());
                     }
                 }
+
                 @Override
                 public void onClick(@NonNull View view) {
                     if (runnable != null) {
@@ -623,7 +646,7 @@ public class AndroidUtilities {
     }
 
 
-    public static SpannableStringBuilder replaceMultipleTags(String str, Runnable ...runnables) {
+    public static SpannableStringBuilder replaceMultipleTags(String str, Runnable... runnables) {
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
         for (int i = 0; i < runnables.length; ++i) {
             Runnable runnable = runnables[i];
@@ -641,6 +664,7 @@ public class AndroidUtilities {
                     super.updateDrawState(ds);
                     ds.setUnderlineText(false);
                 }
+
                 @Override
                 public void onClick(@NonNull View widget) {
                     if (runnable != null) runnable.run();
@@ -874,7 +898,7 @@ public class AndroidUtilities {
             stringBuilder.append(":");
             normalizeTimePart(stringBuilder, minutes % 60);
             stringBuilder.append(":");
-            normalizeTimePart(stringBuilder,seconds);
+            normalizeTimePart(stringBuilder, seconds);
         } else {
             normalizeTimePart(stringBuilder, minutes);
             stringBuilder.append(":");
@@ -891,7 +915,7 @@ public class AndroidUtilities {
             normalizeTimePart(stringBuilder, minutes % 60);
             stringBuilder.append(":");
             normalizeTimePart(stringBuilder, seconds % 60);
-            stringBuilder.append("," ).append(ms / 10);
+            stringBuilder.append(",").append(ms / 10);
         } else {
             stringBuilder.append(minutes).append(":");
             normalizeTimePart(stringBuilder, seconds % 60);
@@ -1004,7 +1028,7 @@ public class AndroidUtilities {
                 }
             }
         }
-        return new float[] {xOffset, yOffset};
+        return new float[]{xOffset, yOffset};
     }
 
     public static void doOnLayout(View view, Runnable runnable) {
@@ -3203,6 +3227,7 @@ public class AndroidUtilities {
     }
 
     private static Pattern linksPattern;
+
     public static SpannableStringBuilder replaceLinks(String str, Theme.ResourcesProvider resourcesProvider) {
         if (linksPattern == null) {
             linksPattern = Pattern.compile("\\[(.+?)\\]\\((.+?)\\)");
@@ -3222,6 +3247,7 @@ public class AndroidUtilities {
                 public void onClick(@NonNull View widget) {
                     Browser.openUrl(ApplicationLoader.applicationContext, url);
                 }
+
                 @Override
                 public void updateDrawState(@NonNull TextPaint ds) {
                     ds.setColor(Theme.getColor(Theme.key_chat_messageLinkIn, resourcesProvider));
@@ -3436,15 +3462,15 @@ public class AndroidUtilities {
 
     private static File getAlbumDir(boolean secretChat) {
         if (
-            secretChat ||
-            !BuildVars.NO_SCOPED_STORAGE ||
-            (
-                Build.VERSION.SDK_INT >= 33 &&
-                ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED
-            ) || (
-                Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 33 &&
-                ApplicationLoader.applicationContext.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-            )
+                secretChat ||
+                        !BuildVars.NO_SCOPED_STORAGE ||
+                        (
+                                Build.VERSION.SDK_INT >= 33 &&
+                                        ApplicationLoader.applicationContext.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED
+                        ) || (
+                        Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT <= 33 &&
+                                ApplicationLoader.applicationContext.checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                )
         ) {
             return FileLoader.getDirectory(FileLoader.MEDIA_DIR_IMAGE);
         }
@@ -4864,10 +4890,10 @@ public class AndroidUtilities {
     public static void lerp(RectF a, RectF b, float f, RectF to) {
         if (to != null) {
             to.set(
-                lerp(a.left, b.left, f),
-                lerp(a.top, b.top, f),
-                lerp(a.right, b.right, f),
-                lerp(a.bottom, b.bottom, f)
+                    lerp(a.left, b.left, f),
+                    lerp(a.top, b.top, f),
+                    lerp(a.right, b.right, f),
+                    lerp(a.bottom, b.bottom, f)
             );
         }
     }
@@ -4875,10 +4901,10 @@ public class AndroidUtilities {
     public static void lerp(Rect a, Rect b, float f, Rect to) {
         if (to != null) {
             to.set(
-                lerp(a.left, b.left, f),
-                lerp(a.top, b.top, f),
-                lerp(a.right, b.right, f),
-                lerp(a.bottom, b.bottom, f)
+                    lerp(a.left, b.left, f),
+                    lerp(a.top, b.top, f),
+                    lerp(a.right, b.right, f),
+                    lerp(a.bottom, b.bottom, f)
             );
         }
     }
@@ -4909,10 +4935,10 @@ public class AndroidUtilities {
         final float wl = px - rect.left, wr = rect.right - px;
         final float ht = py - rect.top, hb = rect.bottom - py;
         rect.set(
-            px - wl * scale,
-            py - ht * scale,
-            px + wr * scale,
-            py + hb * scale
+                px - wl * scale,
+                py - ht * scale,
+                px + wr * scale,
+                py + hb * scale
         );
     }
 
@@ -5607,7 +5633,7 @@ public class AndroidUtilities {
     public static boolean hasDialogOnTop(BaseFragment fragment) {
         if (fragment == null) return false;
         if (fragment.visibleDialog != null && !(fragment.visibleDialog instanceof AlertDialog) && !(
-            fragment.visibleDialog instanceof BottomSheet && ((BottomSheet) fragment.visibleDialog).attachedFragment != null
+                fragment.visibleDialog instanceof BottomSheet && ((BottomSheet) fragment.visibleDialog).attachedFragment != null
         )) return true;
         if (fragment.getParentLayout() == null) return false;
         List<View> globalViews = allGlobalViews();
@@ -5621,8 +5647,8 @@ public class AndroidUtilities {
                 }
             }
             if (!(
-                lastGlobalView instanceof AlertDialog.AlertDialogView ||
-                lastGlobalView instanceof PipRoundVideoView.PipFrameLayout
+                    lastGlobalView instanceof AlertDialog.AlertDialogView ||
+                            lastGlobalView instanceof PipRoundVideoView.PipFrameLayout
             )) break;
         }
         return lastGlobalView != getRootView(fragment.getParentLayout().getView());
@@ -5637,6 +5663,7 @@ public class AndroidUtilities {
     }
 
     public static boolean makingGlobalBlurBitmap;
+
     public static void makeGlobalBlurBitmap(Utilities.Callback<Bitmap> onBitmapDone, float amount) {
         makeGlobalBlurBitmap(onBitmapDone, amount, (int) amount, null, null);
     }
@@ -5701,12 +5728,12 @@ public class AndroidUtilities {
             }
             Utilities.stackBlurBitmap(bitmap, Math.max(amount, Math.max(w, h) / 180));
 //            AndroidUtilities.runOnUIThread(() -> {
-                onBitmapDone.run(bitmap);
+            onBitmapDone.run(bitmap);
 //            });
         } catch (Exception e) {
             FileLog.e(e);
 //            AndroidUtilities.runOnUIThread(() -> {
-                onBitmapDone.run(null);
+            onBitmapDone.run(null);
 //            });
         } finally {
             makingGlobalBlurBitmap = false;
@@ -5882,6 +5909,7 @@ public class AndroidUtilities {
         }
         return new Pair<>(0, 0);
     }
+
     public static Pair<Integer, Integer> getImageOrientation(File file) {
         try {
             return getImageOrientation(new ExifInterface(file));
@@ -5890,10 +5918,12 @@ public class AndroidUtilities {
         }
         return new Pair<>(0, 0);
     }
+
     public static Pair<Integer, Integer> getImageOrientation(String path) {
         try {
             return getImageOrientation(new ExifInterface(path));
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         return new Pair<>(0, 0);
     }
 
@@ -6003,11 +6033,12 @@ public class AndroidUtilities {
                 return "";
             }
             return s;
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
         return "";
     }
 
-	public static void quietSleep(long millis) {
+    public static void quietSleep(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException ignored) {
@@ -6041,6 +6072,7 @@ public class AndroidUtilities {
     }
 
     private static Boolean isHonor;
+
     public static boolean isHonor() {
         if (isHonor == null) {
             try {
@@ -6091,8 +6123,8 @@ public class AndroidUtilities {
                     return foundChild;
                 }
             } else if (
-                x >= child.getX() && x <= child.getX() + child.getWidth() &&
-                y >= child.getY() && x <= child.getY() + child.getHeight()
+                    x >= child.getX() && x <= child.getX() + child.getWidth() &&
+                            y >= child.getY() && x <= child.getY() + child.getHeight()
             ) {
                 return child;
             }
@@ -6104,18 +6136,22 @@ public class AndroidUtilities {
         try {
             if (view == null || view.getContext() == null) return;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-            if (!((Vibrator) view.getContext().getSystemService(Context.VIBRATOR_SERVICE)).hasAmplitudeControl()) return;
+            if (!((Vibrator) view.getContext().getSystemService(Context.VIBRATOR_SERVICE)).hasAmplitudeControl())
+                return;
             view.performHapticFeedback(HapticFeedbackConstants.TEXT_HANDLE_MOVE, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
     }
 
     public static void vibrate(View view) {
         try {
             if (view == null || view.getContext() == null) return;
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-            if (!((Vibrator) view.getContext().getSystemService(Context.VIBRATOR_SERVICE)).hasAmplitudeControl()) return;
+            if (!((Vibrator) view.getContext().getSystemService(Context.VIBRATOR_SERVICE)).hasAmplitudeControl())
+                return;
             view.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
-        } catch (Exception ignore) {}
+        } catch (Exception ignore) {
+        }
     }
 
     public static void applySpring(Animator anim, double stiffness, double damping) {
