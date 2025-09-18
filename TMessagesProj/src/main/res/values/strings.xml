@@ -71,13 +71,13 @@
     <string name="SignInWithGoogle">Sign in with Google</string>
     <!--signup view-->
     <string name="YourName">Your name</string>
-    <string name="RegisterText2">Enter your name and add a profile picture.</string>
+    <string name="RegisterText2">Fill out your profile details to apply as a professional model. You can update this information anytime.</string>
     <string name="FirstName">First name (required)</string>
     <string name="FirstNameSmall">First name</string>
     <string name="LastName">Last name (optional)</string>
     <string name="LastNameSmall">Last name</string>
     <string name="CancelRegistration">Cancel registration</string>
-    <string name="RegistrationProfileInfo">Profile info</string>
+    <string name="RegistrationProfileInfo">Apply as a Professional Model</string>
     <!--payments view-->
     <string name="PaymentSuccessfullyPaid">You have just successfully transferred %1$s to %2$s for %3$s</string>
     <string name="PaymentSuccessfullyPaidNoItem">You have just successfully transferred %1$s to %2$s</string>

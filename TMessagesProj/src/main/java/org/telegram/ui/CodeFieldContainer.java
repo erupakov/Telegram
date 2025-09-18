@@ -13,10 +13,12 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.LinearLayout;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.LayoutHelper;
 
@@ -29,10 +31,21 @@ public class CodeFieldContainer extends LinearLayout {
     public boolean ignoreOnTextChange;
     public boolean isFocusSuppressed;
 
+    private int normalColor;
+    private int selectedColor;
+    private int errorColor;
+    private int backgroundColor;
+
     public CodeNumberField[] codeField;
 
     public CodeFieldContainer(Context context) {
         super(context);
+
+        normalColor   = ContextCompat.getColor(getContext(), R.color.outline_normal);
+        selectedColor = ContextCompat.getColor(getContext(), R.color.outline_selected);
+        errorColor    = ContextCompat.getColor(getContext(), R.color.outline_error);
+        backgroundColor = ContextCompat.getColor(getContext(), R.color.outline_background);
+
         paint.setStyle(Paint.Style.STROKE);
         setOrientation(HORIZONTAL);
     }
@@ -57,8 +70,11 @@ public class CodeFieldContainer extends LinearLayout {
                     }
                 }
                 float successProgress = codeField.getSuccessProgress();
-                int focusClr = ColorUtils.blendARGB(Theme.getColor(Theme.key_windowBackgroundWhiteInputField), Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated), codeField.getFocusedProgress());
-                int errorClr = ColorUtils.blendARGB(focusClr, Theme.getColor(Theme.key_text_RedBold), codeField.getErrorProgress());
+                int focusClr = ColorUtils.blendARGB(normalColor, selectedColor, codeField.getFocusedProgress());
+                int errorClr = ColorUtils.blendARGB(focusClr, errorColor, codeField.getErrorProgress());
+                int finalColor = ColorUtils.blendARGB(errorClr, selectedColor, successProgress);
+
+
                 paint.setColor(ColorUtils.blendARGB(errorClr, Theme.getColor(Theme.key_checkbox), successProgress));
                 AndroidUtilities.rectTmp.set(child.getLeft(), child.getTop(), child.getRight(), child.getBottom());
                 AndroidUtilities.rectTmp.inset(strokeWidth, strokeWidth);
@@ -66,7 +82,11 @@ public class CodeFieldContainer extends LinearLayout {
                     float offset = -Math.max(0, strokeWidth * (codeField.getSuccessScaleProgress() - 1f));
                     AndroidUtilities.rectTmp.inset(offset, offset);
                 }
-
+                canvas.drawRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.dp(4), AndroidUtilities.dp(4),
+                        new Paint(Paint.ANTI_ALIAS_FLAG) {{
+                            setStyle(Style.FILL);
+                            setColor(backgroundColor);
+                        }});
                 canvas.drawRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.dp(4), AndroidUtilities.dp(4), paint);
             }
         }

@@ -12,8 +12,13 @@ data class AppColors(
     val textColor: Color = Color(0xFFFFFFFF),
     val textSubtitleColor: Color = Color(0x99FFFFFF),
     val textHintColor: Color = Color(0xFF8D8D8D),
-    val containerDuration: Color = Color(0x4DFFFFFF)
-)
+    val containerDuration: Color = Color(0x4DFFFFFF),
+    val switchTumb: Color = Color(0xff222222),
+    val switchBackgroundChecked: Color = Color(0xFFBF7A54),
+    val switchBackgroundUnChecked: Color = Color(0xffAFAFAF),
+
+
+    )
 
 val MyLocalCustomColors = staticCompositionLocalOf {
     AppColors(

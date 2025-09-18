@@ -172,6 +172,8 @@ fun RoleSelectionScreen(
                     onContinue(it)
                 }
             }
+
+            Spacer(modifier.height(72.dp))
         }
     }
 }

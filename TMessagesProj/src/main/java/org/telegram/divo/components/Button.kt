@@ -71,7 +71,7 @@ fun UIButton(
 ) {
     Button(
         enabled = enabled,
-        modifier = modifier .height(52.dp),
+        modifier = modifier.height(52.dp),
         onClick = onClick,
         shape = RoundedCornerShape(4.dp),
         colors = ButtonDefaults.buttonColors(

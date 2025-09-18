@@ -28,6 +28,7 @@ import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.SimpleFloatPropertyCompat;
@@ -81,7 +82,7 @@ public class CodeNumberField extends EditTextBoldCursor {
     public CodeNumberField(Context context) {
         super(context);
         setBackground(null);
-        setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
         setMovementMethod(null);
         addTextChangedListener(new TextWatcher() {
             @Override
