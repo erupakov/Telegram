@@ -49,7 +49,7 @@ val LocalCustomTypography = staticCompositionLocalOf {
             ),
         textButton = TextStyle(
             fontSize = 20.sp,
-
+            lineHeight = 20.sp
             ),
         textEventTitle = TextStyle(
             fontSize = 16.sp,

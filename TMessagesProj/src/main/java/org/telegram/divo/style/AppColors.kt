@@ -8,6 +8,8 @@ import androidx.compose.ui.graphics.Color
 data class AppColors(
     val splashBgColor: Color = Color(0xFFDBFE01),
     val buttonColor: Color = Color(0xFFBF7A54),
+    val backButton: Color = Color(0xFF343434),
+
     val buttonTextColor: Color = Color(0xFFFEFEFE),
     val textColor: Color = Color(0xFFFFFFFF),
     val textSubtitleColor: Color = Color(0x99FFFFFF),

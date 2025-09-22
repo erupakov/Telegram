@@ -110,6 +110,7 @@ import org.json.JSONObject;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.components.ButtonView;
 import org.telegram.divo.components.SliderView;
+import org.telegram.divo.items.ButtonContainer;
 import org.telegram.divo.items.RegButtonView;
 import org.telegram.divo.screen.reg_select_role.RoleSelectionView;
 import org.telegram.messenger.AndroidUtilities;
@@ -517,6 +518,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     private View cachedFragmentView;
+    private Bundle pendingRegisterParams;
 
     @Override
     public View createView(Context context) {
@@ -651,11 +653,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         });
 
         roleSelectionView.setOnContinue(role -> {
-//             setPage(VIEW_REGISTER_MODEL);
-
-            setPage(VIEW_REGISTER_MODEL, false, null, true);
-
-            return Unit.INSTANCE; // тоже обязательно
+            setPage(VIEW_REGISTER_MODEL, true, pendingRegisterParams, false);
+            return Unit.INSTANCE;
         });
 
 
@@ -1361,9 +1360,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     private void onDoneButtonPressed() {
+        if(currentViewNum == VIEW_REGISTER_MODEL){
+            views[currentViewNum].onNextPressed(null);
+            return;
+        }
+
         if (!doneButtonVisible[currentDoneType]) {
             return;
         }
+
         if (radialProgressView.getTag() != null) {
             if (getParentActivity() == null) {
                 return;
@@ -4709,6 +4714,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 params.putString("phoneFormated", requestPhone);
                                 params.putString("phoneHash", phoneHash);
                                 params.putString("code", req.phone_code);
+
+                                pendingRegisterParams = params;
+
+
                                 animateSuccess(() -> setPage(VIEW_REGISTER_SELECT_ROLE, true, params, false));
 
 
@@ -8195,8 +8204,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     public class LoginActivityRegisterModelView extends SlideView implements ImageUpdater.ImageUpdaterDelegate {
-        private OutlineTextContainerView firstNameOutlineView, lastNameOutlineView;
 
+        private OutlineTextContainerDivoView firstNameOutlineView, lastNameOutlineView;
+        private OutlineTextContainerDivoView genderOutline;
+        private OutlineTextContainerDivoView countryOutlineView;
         private EditTextBoldCursor firstNameField;
         private EditTextBoldCursor lastNameField;
         private BackupImageView avatarImage;
@@ -8207,26 +8218,19 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private AnimatorSet avatarAnimation;
         private TextView descriptionTextView;
         private TextView wrongNumber;
-        private TextView privacyView;
         private TextView titleTextView;
         private SliderView sliderView;
+        private ButtonContainer buttonContainer;
         private FrameLayout editTextContainer;
         private String requestPhone;
         private String phoneHash;
         private Bundle currentParams;
         private boolean nextPressed = false;
-
-        //        country
         private TextViewSwitcher countryButton;
         private ImageView chevronRight;
-
-        //gender
-        private OutlineTextContainerView genderOutline;
         private android.widget.AutoCompleteTextView genderDropdown;
         private String selectedGender;
-
-        // country
-        private OutlineTextContainerView countryOutlineView;
+        private CountrySelectActivity.Country currentCountry;
 
         private int minAge = 14;
         private int maxAge = 45;
@@ -8235,86 +8239,32 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private RLottieDrawable cameraDrawable;
         private RLottieDrawable cameraWaitDrawable;
         private boolean isCameraWaitAnimationAllowed = true;
-
         private ImageUpdater imageUpdater;
-
         private TLRPC.FileLocation avatar;
         private TLRPC.FileLocation avatarBig;
-
         private ArrayList<CountrySelectActivity.Country> countriesArray = new ArrayList<>();
-
 
         private boolean createAfterUpload;
 
-        public class LinkSpan extends ClickableSpan {
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setUnderlineText(false);
-            }
-
-            @Override
-            public void onClick(View widget) {
-                showTermsOfService(false);
-            }
-        }
-
-        private void showTermsOfService(boolean needAccept) {
-            if (currentTermsOfService == null) {
-                return;
-            }
-            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-            builder.setTitle(getString("TermsOfService", R.string.TermsOfService));
-
-            if (needAccept) {
-                builder.setPositiveButton(getString("Accept", R.string.Accept), (dialog, which) -> {
-                    currentTermsOfService.popup = false;
-                    onNextPressed(null);
-                });
-                builder.setNegativeButton(getString("Decline", R.string.Decline), (dialog, which) -> {
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getParentActivity());
-                    builder1.setTitle(getString("TermsOfService", R.string.TermsOfService));
-                    builder1.setMessage(getString("TosDecline", R.string.TosDecline));
-                    builder1.setPositiveButton(getString("SignUp", R.string.SignUp), (dialog1, which1) -> {
-                        currentTermsOfService.popup = false;
-                        onNextPressed(null);
-                    });
-                    builder1.setNegativeButton(getString("Decline", R.string.Decline), (dialog12, which12) -> {
-                        onBackPressed(true);
-                        setPage(VIEW_PHONE_INPUT, true, null, true);
-                    });
-                    showDialog(builder1.create());
-                });
-            } else {
-                builder.setPositiveButton(getString("OK", R.string.OK), null);
-            }
-
-            SpannableStringBuilder text = new SpannableStringBuilder(currentTermsOfService.text);
-            MessageObject.addEntitiesToText(text, currentTermsOfService.entities, false, false, false, false);
-            builder.setMessage(text);
-
-            showDialog(builder.create());
-        }
-
         public LoginActivityRegisterModelView(Context context) {
             super(context);
-
             setOrientation(VERTICAL);
 
             titleTextView = new TextView(context);
-            titleTextView.setText(getString(R.string.RegistrationProfileInfo));
-            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-            titleTextView.setTypeface(AndroidUtilities.bold());
+            titleTextView.setText("Apply as a Professional Model");
+            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
+            titleTextView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
             titleTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
             titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-            addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 12, 8, 0));
+            addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 24, 8, 0));
 
             descriptionTextView = new TextView(context);
-            descriptionTextView.setText(getString("RegisterText2", R.string.RegisterText2));
+            descriptionTextView.setText("Fill out your profile details to apply as a professional model. You can update this information anytime.");
             descriptionTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+            descriptionTextView.setTypeface(AndroidUtilities.helveticaNeueMedium());
             descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             descriptionTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            addView(descriptionTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 6, 8, 0));
+            addView(descriptionTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 9, 8, 0));
 
             imageUpdater = new ImageUpdater(false, ImageUpdater.FOR_TYPE_USER, false);
             imageUpdater.setOpenWithFrontfaceCamera(true);
@@ -8324,7 +8274,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             imageUpdater.setDelegate(this);
 
             FrameLayout avatarContainer = new FrameLayout(context);
-            addView(avatarContainer, LayoutHelper.createLinear(78, 78, Gravity.CENTER_HORIZONTAL));
+            addView(avatarContainer, LayoutHelper.createLinear(78, 78, Gravity.CENTER_HORIZONTAL,0, 24, 0, 0));
 
             avatarDrawable = new AvatarDrawable();
 
@@ -8349,10 +8299,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_REGISTER);
             avatarDrawable.setInfo(5, null, null);
             avatarImage.setImageDrawable(avatarDrawable);
+            avatarDrawable.setColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
             avatarContainer.addView(avatarImage, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            paint.setColor(0x55000000);
+            paint.setColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
 
             avatarOverlay = new View(context) {
                 @Override
@@ -8464,7 +8415,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             editTextContainer = new FrameLayout(context);
             addView(editTextContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 21, 8, 0));
 
-            firstNameOutlineView = new OutlineTextContainerView(context);
+            firstNameOutlineView = new OutlineTextContainerDivoView(context);
             firstNameOutlineView.setText(getString(R.string.FirstName));
 
             firstNameField = new EditTextBoldCursor(context);
@@ -8489,7 +8440,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 return false;
             });
 
-            lastNameOutlineView = new OutlineTextContainerView(context);
+            lastNameOutlineView = new OutlineTextContainerDivoView(context);
             lastNameOutlineView.setText(getString(R.string.LastName));
 
             lastNameField = new EditTextBoldCursor(context);
@@ -8516,7 +8467,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
 
             // 1) Label on the outline (hint/float label), not the current value
-            genderOutline = new OutlineTextContainerView(context);
+            genderOutline = new OutlineTextContainerDivoView(context);
             genderOutline.setText("Gender"); // ← keep this as the field label
 
 // 2) The actual dropdown input
@@ -8545,9 +8496,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             genderDropdown.setDropDownWidth(LayoutHelper.MATCH_PARENT);
 
 // 3) Adapter
-            String[] genders = new String[]{
-                    "Male", "Female", "Non-binary", "Prefer not to say"
-            };
+            String[] genders = new String[]{"Male", "Female"};
             android.widget.ArrayAdapter<String> genderAdapter =
                     new android.widget.ArrayAdapter<>(context,
                             android.R.layout.simple_list_item_1, genders);
@@ -8570,14 +8519,16 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             genderDropdown.setText(genders[0], /*filter*/ false); // e.g. "Male"
             sliderView = new SliderView(context);
+            buttonContainer = new ButtonContainer(context);
+
 
             countryButton = new TextViewSwitcher(context);
             countryButton.setFactory(() -> {
                 TextView tv = new TextView(context);
                 tv.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(12), AndroidUtilities.dp(16), AndroidUtilities.dp(12));
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                tv.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                tv.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
+                tv.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+                tv.setHintTextColor(ContextCompat.getColor(getContext(),R.color.divo_hint_color));
                 tv.setMaxLines(1);
                 tv.setSingleLine(true);
                 tv.setEllipsize(TextUtils.TruncateAt.END);
@@ -8592,14 +8543,13 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             chevronRight = new ImageView(context);
             chevronRight.setImageResource(R.drawable.msg_inputarrow);
 
-
             LinearLayout countryButtonLinearLayout = new LinearLayout(context);
             countryButtonLinearLayout.setOrientation(HORIZONTAL);
             countryButtonLinearLayout.setGravity(Gravity.CENTER_VERTICAL);
             countryButtonLinearLayout.addView(countryButton, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 0, 0, 0, 0));
             countryButtonLinearLayout.addView(chevronRight, LayoutHelper.createLinearRelatively(24, 24, 0, 0, 0, 14, 0));
 
-            countryOutlineView = new OutlineTextContainerView(context);
+            countryOutlineView = new OutlineTextContainerDivoView(context);
             countryOutlineView.setText(getString(R.string.Country));
             countryOutlineView.addView(countryButtonLinearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, 0, 0, 0));
             countryOutlineView.setForceUseCenter(true);
@@ -8609,7 +8559,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             countryOutlineView.setOnClickListener(view -> {
                 CountrySelectActivity fragment = new CountrySelectActivity(true, countriesArray);
                 fragment.setCountrySelectActivityDelegate((country) -> {
-                    // selectCountry(country);
+                    selectCountry(country);
 //                    AndroidUtilities.runOnUIThread(() -> showKeyboard(phoneField), 300);
 //                    phoneField.requestFocus();
 //                    phoneField.setSelection(phoneField.length());
@@ -8635,47 +8585,132 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 onBackPressed(false);
             });
 
-            FrameLayout privacyLayout = new FrameLayout(context);
-            addView(privacyLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.BOTTOM));
 
-            privacyView = new TextView(context);
-            privacyView.setMovementMethod(new AndroidUtilities.LinkMovementMethodMy());
-            privacyView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, AndroidUtilities.isSmallScreen() ? 13 : 14);
-            privacyView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            privacyView.setGravity(Gravity.CENTER_VERTICAL);
-            privacyLayout.addView(privacyView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? 56 : 60, Gravity.LEFT | Gravity.BOTTOM, 14, 0, 70, 32));
-            VerticalPositionAutoAnimator.attach(privacyView);
+            buttonContainer.setOnNext(() -> {
+                onDoneButtonPressed();   // behave exactly like the FAB
+                return kotlin.Unit.INSTANCE;
+            });
 
-            String str = getString("TermsOfServiceLogin", R.string.TermsOfServiceLogin);
-            SpannableStringBuilder text = new SpannableStringBuilder(str);
-            int index1 = str.indexOf('*');
-            int index2 = str.lastIndexOf('*');
-            if (index1 != -1 && index2 != -1 && index1 != index2) {
-                text.replace(index2, index2 + 1, "");
-                text.replace(index1, index1 + 1, "");
-                text.setSpan(new LinkSpan(), index1, index2 - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            privacyView.setText(text);
+            buttonContainer.setOnBack(() -> {
+                onBackPressed(false);
+                return kotlin.Unit.INSTANCE;
+            });
+
+            addView(buttonContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.BOTTOM));
 
             loadCountries();
         }
 
+
+
         @Override
         public void updateColors() {
             avatarDrawable.invalidateSelf();
-            titleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            descriptionTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
-            firstNameField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            firstNameField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated));
-            lastNameField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            lastNameField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated));
+            titleTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+            descriptionTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_subtitle_color));
+            firstNameField.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+            firstNameField.setCursorColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
+            lastNameField.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+            lastNameField.setCursorColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
+            genderDropdown.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
             wrongNumber.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
-            privacyView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
-            privacyView.setLinkTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteLinkText));
 
             firstNameOutlineView.updateColor();
             lastNameOutlineView.updateColor();
         }
+
+        public void selectCountry(CountrySelectActivity.Country country) {
+            String code = country.code;
+            setCountryHint(code, country);
+            currentCountry = country;
+           // countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
+
+            MessagesController.getGlobalMainSettings().edit().putString("phone_code_last_matched_" + country.code, country.shortname).apply();
+        }
+
+        private String countryCodeForHint;
+
+        private void setCountryHint(String code, CountrySelectActivity.Country country) {
+            SpannableStringBuilder sb = new SpannableStringBuilder();
+            String flag = LocaleController.getLanguageFlag(country.shortname);
+            if (flag != null) {
+                sb.append(flag).append(" ");
+                sb.setSpan(new ReplacementSpan() {
+                    @Override
+                    public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
+                        return AndroidUtilities.dp(16);
+                    }
+
+                    @Override
+                    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
+                    }
+                }, flag.length(), flag.length() + 1, 0);
+            }
+            sb.append(country.name);
+            setCountryButtonText(Emoji.replaceEmoji(sb, countryButton.getCurrentView().getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false));
+            countryCodeForHint = code;
+            wasCountryHintIndex = -1;
+           // invalidateCountryHint();
+        }
+
+        private void setCountryButtonText(CharSequence cs) {
+            Animation anim = AnimationUtils.loadAnimation(ApplicationLoader.applicationContext, countryButton.getCurrentView().getText() != null && cs == null ? R.anim.text_out_down : R.anim.text_out);
+            anim.setInterpolator(Easings.easeInOutQuad);
+            countryButton.setOutAnimation(anim);
+
+            CharSequence prevText = countryButton.getCurrentView().getText();
+            countryButton.setText(cs, !(TextUtils.isEmpty(cs) && TextUtils.isEmpty(prevText)) && !Objects.equals(prevText, cs));
+            countryOutlineView.animateSelection(cs != null ? 1f : 0f);
+        }
+
+        private int wasCountryHintIndex = -1;
+//
+//        private void invalidateCountryHint() {
+//            String code = countryCodeForHint;
+//            String str = phoneField.getText() != null ? phoneField.getText().toString().replace(" ", "") : "";
+//
+//            if (phoneFormatMap.get(code) != null && !phoneFormatMap.get(code).isEmpty()) {
+//                int index = -1;
+//                List<String> patterns = phoneFormatMap.get(code);
+//                if (!str.isEmpty()) {
+//                    for (int i = 0; i < patterns.size(); i++) {
+//                        String pattern = patterns.get(i);
+//                        if (str.startsWith(pattern.replace(" ", "").replace("X", "").replace("0", ""))) {
+//                            index = i;
+//                            break;
+//                        }
+//                    }
+//                }
+//                if (index == -1) {
+//                    for (int i = 0; i < patterns.size(); i++) {
+//                        String pattern = patterns.get(i);
+//                        if (pattern.startsWith("X") || pattern.startsWith("0")) {
+//                            index = i;
+//                            break;
+//                        }
+//                    }
+//                    if (index == -1) {
+//                        index = 0;
+//                    }
+//                }
+//
+//                if (wasCountryHintIndex != index) {
+//                    String hint = phoneFormatMap.get(code).get(index);
+//                    int ss = phoneField.getSelectionStart(), se = phoneField.getSelectionEnd();
+//                    phoneField.setHintText(hint != null ? hint.replace('X', '0') : null);
+//                    phoneField.setSelection(
+//                            Math.max(0, Math.min(phoneField.length(), ss)),
+//                            Math.max(0, Math.min(phoneField.length(), se))
+//                    );
+//                    wasCountryHintIndex = index;
+//                }
+//            } else if (wasCountryHintIndex != -1) {
+//                int ss = phoneField.getSelectionStart(), se = phoneField.getSelectionEnd();
+//                phoneField.setHintText(null);
+//                phoneField.setSelection(ss, se);
+//                wasCountryHintIndex = -1;
+//            }
+//        }
 
         private void loadCountries() {
             TLRPC.TL_help_getCountriesList req = new TLRPC.TL_help_getCountriesList();
@@ -8791,15 +8826,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
                 firstNameOutlineView.setText(getString(R.string.FirstName));
                 lastNameOutlineView.setText(getString(R.string.LastName));
-
-
                 editTextContainer.addView(firstNameOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 0, 8, 0));
                 editTextContainer.addView(lastNameOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 82, 8, 0));
                 editTextContainer.addView(genderOutline, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 164, 8, 0));
-                editTextContainer.addView(countryOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 246, 8, 0));
-
-
-                // editTextContainer.addView(sliderView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 246, 8, 0));
+                editTextContainer.addView(countryOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 58, Gravity.TOP, 8, 246, 8, 0));
+                editTextContainer.addView(sliderView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 328, 8, 0));
             }
 
         }
@@ -8909,14 +8940,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         @Override
         public void onShow() {
             super.onShow();
-            if (privacyView != null) {
-                if (restoringState) {
-                    privacyView.setAlpha(1f);
-                } else {
-                    privacyView.setAlpha(0f);
-                    privacyView.animate().alpha(1f).setDuration(200).setStartDelay(300).setInterpolator(AndroidUtilities.decelerateInterpolator).start();
-                }
-            }
             if (firstNameField != null) {
                 firstNameField.requestFocus();
                 firstNameField.setSelection(firstNameField.length());
@@ -8948,20 +8971,28 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (nextPressed) {
                 return;
             }
-            if (currentTermsOfService != null && currentTermsOfService.popup) {
-                showTermsOfService(true);
-                return;
-            }
             if (firstNameField.length() == 0) {
                 onFieldError(firstNameOutlineView, true);
                 return;
             }
             nextPressed = true;
+
             TLRPC.TL_auth_signUp req = new TLRPC.TL_auth_signUp();
             req.phone_code_hash = phoneHash;
             req.phone_number = requestPhone;
             req.first_name = firstNameField.getText().toString();
             req.last_name = lastNameField.getText().toString();
+            req.no_joined_notifications = true;
+
+            TLRPC.TL_modelInfo modelInfo = new TLRPC.TL_modelInfo();
+            modelInfo.age = 12;
+            modelInfo.name = "test model";
+            modelInfo.flags = 0;
+            modelInfo.agency_name = "test";
+            modelInfo.type_id  = 0;
+            req.model_info =   modelInfo;
+
+
             needShowProgress(0);
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 nextPressed = false;
@@ -9052,7 +9083,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
         private void hidePrivacyView() {
-            privacyView.animate().alpha(0f).setDuration(150).setStartDelay(0).setInterpolator(AndroidUtilities.accelerateInterpolator).start();
         }
     }
 

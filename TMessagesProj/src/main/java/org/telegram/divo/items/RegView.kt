@@ -3,6 +3,7 @@ package org.telegram.divo.items
 import android.content.Context
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.telegram.divo.components.TextItemDescription
 import org.telegram.divo.components.UIButton
+import org.telegram.divo.components.UIButtonBack
 import org.telegram.divo.style.AppColors
 import org.telegram.divo.style.AppTheme
 
@@ -56,13 +58,40 @@ class RegButtonView(context: Context, text: String) : FrameLayout(context) {
     }
 }
 
+class ButtonContainer(context: Context) : FrameLayout(context) {
+
+    var onNext: (() -> Unit)? = null
+    var onBack: (() -> Unit)? = null
+
+    init {
+        val compose = ComposeView(context).apply {
+            layoutParams = LayoutParams(
+                LayoutParams.MATCH_PARENT,
+                LayoutParams.MATCH_PARENT
+            )
+            setViewCompositionStrategy(
+                ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+            )
+            setContent {
+                NextBackButtonView(
+                    onNext = { onNext?.invoke() },
+                    onBack = { onBack?.invoke() },
+                )
+            }
+        }
+        addView(compose)
+    }
+}
+
 @Preview
 @Composable
 fun RegButtonView(
-    text:String = "Continue",
-    onClick:()-> Unit = {}
+    text: String = "Continue",
+    onClick: () -> Unit = {}
 ) {
-    Column(Modifier.fillMaxWidth().padding(16.dp)) {
+    Column(Modifier
+        .fillMaxWidth()
+        .padding(16.dp)) {
         var checked by remember { mutableStateOf(true) }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -85,10 +114,37 @@ fun RegButtonView(
         }
         Spacer(Modifier.size(16.dp))
         UIButton(
-            text =text,
+            text = text,
             modifier = Modifier.fillMaxWidth(),
             enabled = checked,
             onClick = onClick
+        )
+    }
+}
+
+@Preview
+@Composable
+fun NextBackButtonView(
+    onNext: () -> Unit = {},
+    onBack: () -> Unit = {}
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        UIButtonBack(
+
+            onClick = onBack,
+            modifier = Modifier.weight(1f),
+            text = "Back"
+        )
+        UIButton(
+            modifier = Modifier.weight(1f),
+            text = "Save",
+            onClick = onNext,
         )
     }
 }
