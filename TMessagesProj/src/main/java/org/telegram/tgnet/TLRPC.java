@@ -59458,7 +59458,7 @@ public class TLRPC {
 //    }
 
     public static class TL_modelInfo extends TLObject {
-        public static int constructor = 0x75b4fe1f;
+        public static int constructor = 0xbe21f08;
 
         public int flags;
         public int type_id;
@@ -59466,6 +59466,8 @@ public class TLRPC {
         public int age;
         public String name;
         public String agency_name;
+        public String country_code;
+        public String url;
 
         public static TL_modelInfo TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
             if (TL_modelInfo.constructor != constructor) {
@@ -59496,6 +59498,12 @@ public class TLRPC {
             if ((flags & 16) != 0) {
                 agency_name = stream.readString(exception);
             }
+            if ((flags & 32) != 0) {
+                country_code = stream.readString(exception);
+            }
+            if ((flags & 64) != 0) {
+                url = stream.readString(exception);
+            }
         }
 
         public void serializeToStream(AbstractSerializedData stream) {
@@ -59514,9 +59522,17 @@ public class TLRPC {
             if ((flags & 16) != 0) {
                 stream.writeString(agency_name);
             }
+            if ((flags & 32) != 0) {
+                stream.writeString(country_code);
+            }
+            if ((flags & 64) != 0) {
+                stream.writeString(url);
+            }
         }
     }
+    //ModelInfo end
 
+    //auth_Authorization start
     public static class TL_auth_signUp extends TLObject {
         public static int constructor = 0x46ca89f4;
 
@@ -59556,7 +59572,7 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_joined_notifications ? (flags | 1) : (flags & ~1);
+            flags = no_joined_notifications ? (flags | 1) : (flags &~ 1);
             stream.writeInt32(flags);
             stream.writeString(phone_number);
             stream.writeString(phone_code_hash);

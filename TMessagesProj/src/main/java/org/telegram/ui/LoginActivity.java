@@ -8985,11 +8985,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             req.no_joined_notifications = true;
 
             TLRPC.TL_modelInfo modelInfo = new TLRPC.TL_modelInfo();
-            modelInfo.age = 12;
-            modelInfo.name = "test model";
-            modelInfo.flags = 0;
+            modelInfo.age = 20;
+            modelInfo.name = "Mock model";
             modelInfo.agency_name = "test";
-            modelInfo.type_id  = 0;
+            modelInfo.type_id  = 1; // 1 2
             req.model_info =   modelInfo;
 
 
