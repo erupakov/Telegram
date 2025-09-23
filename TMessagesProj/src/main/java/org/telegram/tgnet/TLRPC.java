@@ -59507,6 +59507,14 @@ public class TLRPC {
         }
 
         public void serializeToStream(AbstractSerializedData stream) {
+
+            flags = (gender != -1) ? (flags | 2) : (flags & ~2);
+            flags = (age != -1) ? (flags | 4) : (flags & ~4);
+            flags = (name != null) ? (flags | 8) : (flags & ~8);
+            flags = (agency_name != null) ? (flags | 16) : (flags & ~16);
+            flags = (country_code != null) ? (flags | 32) : (flags & ~32);
+            flags = (url != null) ? (flags | 64) : (flags & ~64);
+
             stream.writeInt32(constructor);
             stream.writeInt32(flags);
             stream.writeInt32(type_id);
@@ -59572,7 +59580,8 @@ public class TLRPC {
 
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_joined_notifications ? (flags | 1) : (flags &~ 1);
+            flags = no_joined_notifications ? (flags | 1) : (flags & ~1);
+            flags = model_info !=null ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeString(phone_number);
             stream.writeString(phone_code_hash);
