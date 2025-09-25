@@ -2059,7 +2059,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 tv.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(12), AndroidUtilities.dp(16), AndroidUtilities.dp(12));
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
                 tv.setTextColor(ContextCompat.getColor(context, R.color.divo_text_color));
-                tv.setHintTextColor(ContextCompat.getColor(context, R.color.divo_hint_color));
+                tv.setHintTextColor(ContextCompat.getColor(context, R.color.divo_text_color));
                 tv.setMaxLines(1);
                 tv.setSingleLine(true);
                 tv.setEllipsize(TextUtils.TruncateAt.END);
@@ -2684,10 +2684,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             for (int i = 0; i < countryButton.getChildCount(); i++) {
                 TextView textView = (TextView) countryButton.getChildAt(i);
-                textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                textView.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
+                textView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+                textView.setHintTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
             }
-
 
             chevronRight.setColorFilter(ContextCompat.getColor(getContext(), R.color.divo_text_color));
             chevronRight.setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector), 1));
@@ -8986,6 +8985,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             TLRPC.TL_modelInfo modelInfo = new TLRPC.TL_modelInfo();
             modelInfo.age = 20;
+            modelInfo.gender  = 1;
+            modelInfo.country_code = "am";
+            modelInfo.url = "https://www.google.com/";
             modelInfo.name = "Mock model";
             modelInfo.agency_name = "test";
             modelInfo.type_id  = 1; // 1 2
@@ -9334,7 +9336,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             popupFabContainer = new FrameLayout(context);
             popupFabContainer.addView(fabTransform, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
             popupFabContainer.setOnClickListener(v -> callback.onFabPressed(this, fabTransform));
-
+            popupFabContainer.setVisibility(INVISIBLE);
             floatingProgressView = new RadialProgressView(context);
             floatingProgressView.setSize(AndroidUtilities.dp(22));
             floatingProgressView.setAlpha(0.0f);
@@ -9406,8 +9408,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             popupLayout.setBackground(Theme.createRoundRectDrawable(AndroidUtilities.dp(12), Theme.getColor(Theme.key_dialogBackground)));
             confirmMessageView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2));
             numberView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-            editTextView.setTextColor(Theme.getColor(Theme.key_changephoneinfo_image2));
-            confirmTextView.setTextColor(Theme.getColor(Theme.key_changephoneinfo_image2));
+            editTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
+            confirmTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
             popupFabContainer.setBackground(Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(56), Theme.getColor(Theme.key_chats_actionBackground), Theme.getColor(Theme.key_chats_actionPressedBackground)));
             floatingProgressView.setProgressColor(Theme.getColor(Theme.key_chats_actionIcon));
         }
