@@ -85,6 +85,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Space;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.annotation.IntDef;
@@ -112,6 +113,7 @@ import org.telegram.divo.components.ButtonView;
 import org.telegram.divo.components.SliderView;
 import org.telegram.divo.items.ButtonContainer;
 import org.telegram.divo.items.RegButtonView;
+import org.telegram.divo.screen.reg_select_role.Role;
 import org.telegram.divo.screen.reg_select_role.RoleSelectionView;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -237,7 +239,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             VIEW_CODE_FRAGMENT_SMS = 15,
             VIEW_CODE_WORD = 16,
             VIEW_CODE_PHRASE = 17,
-            VIEW_REGISTER_MODEL = 18;
+            VIEW_REGISTER_MODEL = 18,
+            VIEW_REGISTER_AGENCY = 19,
+            VIEW_REGISTER_TALENT = 20;
 
 
     public final static int COUNTRY_STATE_NOT_SET_OR_VALID = 0,
@@ -289,7 +293,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             VIEW_CODE_FRAGMENT_SMS,
             VIEW_CODE_WORD,
             VIEW_CODE_PHRASE,
-            VIEW_REGISTER_MODEL
+            VIEW_REGISTER_MODEL,
+            VIEW_REGISTER_AGENCY,
+            VIEW_REGISTER_TALENT
+
 
     })
     private @interface ViewNumber {
@@ -305,7 +312,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     @ViewNumber
     private int currentViewNum;
-    private SlideView[] views = new SlideView[19];
+    private SlideView[] views = new SlideView[21];
     private CustomPhoneKeyboardView keyboardView;
     private ValueAnimator keyboardAnimator;
 
@@ -653,7 +660,20 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         });
 
         roleSelectionView.setOnContinue(role -> {
-            setPage(VIEW_REGISTER_MODEL, true, pendingRegisterParams, false);
+
+            if (role == Role.NEW_TALENT) {
+                setPage(VIEW_REGISTER_TALENT, true, pendingRegisterParams, false);
+
+            }
+            if (role == Role.AGENCY_SCOUTS) {
+                setPage(VIEW_REGISTER_AGENCY, true, pendingRegisterParams, false);
+
+            }
+            if (role == Role.MODEL) {
+                setPage(VIEW_REGISTER_MODEL, true, pendingRegisterParams, false);
+
+            }
+
             return Unit.INSTANCE;
         });
 
@@ -678,6 +698,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         views[VIEW_CODE_PHRASE] = new LoginActivityPhraseView(context, AUTH_TYPE_PHRASE);
         views[VIEW_REGISTER_SELECT_ROLE] = roleSelectionView;
         views[VIEW_REGISTER_MODEL] = new LoginActivityRegisterModelView(context);
+        views[VIEW_REGISTER_AGENCY] = new LoginActivityRegisterAgencyView(context);
+        views[VIEW_REGISTER_TALENT] = new LoginActivityRegisterTalentView(context);
+
         for (int a = 0; a < views.length; a++) {
             views[a].setVisibility(a == 0 ? View.VISIBLE : View.GONE);
             slideViewsContainer.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER, 0, 0, 0, 0));
@@ -1253,7 +1276,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private void showDoneButton(boolean show, boolean animated) {
         boolean floating = currentDoneType == 0;
 
-        if (currentViewNum == VIEW_PHONE_INPUT || currentViewNum == VIEW_CODE_SMS ) {
+        if (currentViewNum == VIEW_PHONE_INPUT || currentViewNum == VIEW_CODE_SMS) {
             floatingButtonContainer.setVisibility(View.INVISIBLE);
             return;
         }
@@ -1360,7 +1383,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     private void onDoneButtonPressed() {
-        if(currentViewNum == VIEW_REGISTER_MODEL){
+        if (currentViewNum == VIEW_REGISTER_MODEL ||
+                currentViewNum == VIEW_REGISTER_TALENT ||
+                currentViewNum == VIEW_REGISTER_AGENCY ||
+                currentViewNum == 0) {
             views[currentViewNum].onNextPressed(null);
             return;
         }
@@ -2684,8 +2710,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             for (int i = 0; i < countryButton.getChildCount(); i++) {
                 TextView textView = (TextView) countryButton.getChildAt(i);
-                textView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
-                textView.setHintTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+                textView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+                textView.setHintTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
             }
 
             chevronRight.setColorFilter(ContextCompat.getColor(getContext(), R.color.divo_text_color));
@@ -3722,7 +3748,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }
                 isResendingCode = true;
                 timeText.invalidate();
-                timeText.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+                timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
 
                 if (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_SMS || nextType == AUTH_TYPE_PHRASE || nextType == AUTH_TYPE_WORD || nextType == AUTH_TYPE_MISSED_CALL || nextType == AUTH_TYPE_FRAGMENT_SMS) {
 //                    timeText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
@@ -4430,7 +4456,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (timeTimer != null) {
                 return;
             }
-            timeText.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
             timeText.setTag(R.id.color_key_tag, Theme.key_windowBackgroundWhiteGrayText6);
             if (progressView != null) {
                 progressView.resetProgressAnimation();
@@ -4470,7 +4496,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 } else {
                                     timeText.setText(getString("RequestSmsButton", R.string.RequestSmsButton));
                                 }
-                                timeText.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+                                timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
                                 timeText.setTag(R.id.color_key_tag, Theme.key_chats_actionBackground);
                             }
                         }
@@ -4480,7 +4506,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
         private void destroyTimer() {
-            timeText.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
             timeText.setTag(R.id.color_key_tag, Theme.key_windowBackgroundWhiteGrayText6);
             try {
                 synchronized (timerSync) {
@@ -4713,13 +4739,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 params.putString("phoneFormated", requestPhone);
                                 params.putString("phoneHash", phoneHash);
                                 params.putString("code", req.phone_code);
-
                                 pendingRegisterParams = params;
-
-
                                 animateSuccess(() -> setPage(VIEW_REGISTER_SELECT_ROLE, true, params, false));
-
-
                             } else {
                                 animateSuccess(() -> onAuthSuccess((TLRPC.TL_auth_authorization) response));
                             }
@@ -8218,6 +8239,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private TextView descriptionTextView;
         private TextView wrongNumber;
         private TextView titleTextView;
+        private TextView subTitleTextView;
+
         private SliderView sliderView;
         private ButtonContainer buttonContainer;
         private FrameLayout editTextContainer;
@@ -8231,9 +8254,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private String selectedGender;
         private CountrySelectActivity.Country currentCountry;
 
-        private int minAge = 14;
-        private int maxAge = 45;
-        private int age = 17;
+
+        private int userAge = 17;
         // image
         private RLottieDrawable cameraDrawable;
         private RLottieDrawable cameraWaitDrawable;
@@ -8250,7 +8272,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             setOrientation(VERTICAL);
 
             titleTextView = new TextView(context);
-            titleTextView.setText("Apply as a Professional Model");
+            titleTextView.setText("Apply as a\nProfessional Model".toUpperCase());
             titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
             titleTextView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
             titleTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
@@ -8273,7 +8295,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             imageUpdater.setDelegate(this);
 
             FrameLayout avatarContainer = new FrameLayout(context);
-            addView(avatarContainer, LayoutHelper.createLinear(78, 78, Gravity.CENTER_HORIZONTAL,0, 24, 0, 0));
+            addView(avatarContainer, LayoutHelper.createLinear(78, 78, Gravity.CENTER_HORIZONTAL, 0, 24, 0, 0));
 
             avatarDrawable = new AvatarDrawable();
 
@@ -8298,7 +8320,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_REGISTER);
             avatarDrawable.setInfo(5, null, null);
             avatarImage.setImageDrawable(avatarDrawable);
-            avatarDrawable.setColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
+            avatarDrawable.setColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
             avatarContainer.addView(avatarImage, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
             Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -8410,9 +8432,16 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             showAvatarProgress(false, false);
 
+            subTitleTextView = new TextView(context);
+            subTitleTextView.setText("Your personal data".toUpperCase());
+            subTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+            subTitleTextView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
+            subTitleTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            subTitleTextView.setGravity(Gravity.START);
+            addView(subTitleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.START, 16, 16, 8, 0));
 
             editTextContainer = new FrameLayout(context);
-            addView(editTextContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 21, 8, 0));
+            addView(editTextContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 16, 8, 0));
 
             firstNameOutlineView = new OutlineTextContainerDivoView(context);
             firstNameOutlineView.setText(getString(R.string.FirstName));
@@ -8518,6 +8547,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             genderDropdown.setText(genders[0], /*filter*/ false); // e.g. "Male"
             sliderView = new SliderView(context);
+            sliderView.setOnAgeSelected(age -> {
+                userAge = age;
+                return kotlin.Unit.INSTANCE;
+            });
             buttonContainer = new ButtonContainer(context);
 
 
@@ -8526,8 +8559,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 TextView tv = new TextView(context);
                 tv.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(12), AndroidUtilities.dp(16), AndroidUtilities.dp(12));
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                tv.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
-                tv.setHintTextColor(ContextCompat.getColor(getContext(),R.color.divo_hint_color));
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+                tv.setHintTextColor(ContextCompat.getColor(getContext(), R.color.divo_hint_color));
                 tv.setMaxLines(1);
                 tv.setSingleLine(true);
                 tv.setEllipsize(TextUtils.TruncateAt.END);
@@ -8601,17 +8634,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
 
-
         @Override
         public void updateColors() {
             avatarDrawable.invalidateSelf();
-            titleTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
-            descriptionTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_subtitle_color));
-            firstNameField.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
-            firstNameField.setCursorColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
-            lastNameField.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
-            lastNameField.setCursorColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
-            genderDropdown.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_text_color));
+            titleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            subTitleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            descriptionTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_subtitle_color));
+            firstNameField.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            firstNameField.setCursorColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            lastNameField.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            lastNameField.setCursorColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            genderDropdown.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
             wrongNumber.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
 
             firstNameOutlineView.updateColor();
@@ -8622,7 +8655,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             String code = country.code;
             setCountryHint(code, country);
             currentCountry = country;
-           // countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
+            // countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
 
             MessagesController.getGlobalMainSettings().edit().putString("phone_code_last_matched_" + country.code, country.shortname).apply();
         }
@@ -8648,8 +8681,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             sb.append(country.name);
             setCountryButtonText(Emoji.replaceEmoji(sb, countryButton.getCurrentView().getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false));
             countryCodeForHint = code;
-            wasCountryHintIndex = -1;
-           // invalidateCountryHint();
+            // invalidateCountryHint();
         }
 
         private void setCountryButtonText(CharSequence cs) {
@@ -8662,55 +8694,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             countryOutlineView.animateSelection(cs != null ? 1f : 0f);
         }
 
-        private int wasCountryHintIndex = -1;
-//
-//        private void invalidateCountryHint() {
-//            String code = countryCodeForHint;
-//            String str = phoneField.getText() != null ? phoneField.getText().toString().replace(" ", "") : "";
-//
-//            if (phoneFormatMap.get(code) != null && !phoneFormatMap.get(code).isEmpty()) {
-//                int index = -1;
-//                List<String> patterns = phoneFormatMap.get(code);
-//                if (!str.isEmpty()) {
-//                    for (int i = 0; i < patterns.size(); i++) {
-//                        String pattern = patterns.get(i);
-//                        if (str.startsWith(pattern.replace(" ", "").replace("X", "").replace("0", ""))) {
-//                            index = i;
-//                            break;
-//                        }
-//                    }
-//                }
-//                if (index == -1) {
-//                    for (int i = 0; i < patterns.size(); i++) {
-//                        String pattern = patterns.get(i);
-//                        if (pattern.startsWith("X") || pattern.startsWith("0")) {
-//                            index = i;
-//                            break;
-//                        }
-//                    }
-//                    if (index == -1) {
-//                        index = 0;
-//                    }
-//                }
-//
-//                if (wasCountryHintIndex != index) {
-//                    String hint = phoneFormatMap.get(code).get(index);
-//                    int ss = phoneField.getSelectionStart(), se = phoneField.getSelectionEnd();
-//                    phoneField.setHintText(hint != null ? hint.replace('X', '0') : null);
-//                    phoneField.setSelection(
-//                            Math.max(0, Math.min(phoneField.length(), ss)),
-//                            Math.max(0, Math.min(phoneField.length(), se))
-//                    );
-//                    wasCountryHintIndex = index;
-//                }
-//            } else if (wasCountryHintIndex != -1) {
-//                int ss = phoneField.getSelectionStart(), se = phoneField.getSelectionEnd();
-//                phoneField.setHintText(null);
-//                phoneField.setSelection(ss, se);
-//                wasCountryHintIndex = -1;
-//            }
-//        }
-
         private void loadCountries() {
             TLRPC.TL_help_getCountriesList req = new TLRPC.TL_help_getCountriesList();
             req.lang_code = LocaleController.getInstance().getCurrentLocaleInfo() != null ? LocaleController.getInstance().getCurrentLocaleInfo().getLangCode() : Locale.getDefault().getCountry();
@@ -8718,8 +8701,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 AndroidUtilities.runOnUIThread(() -> {
                     if (error == null) {
                         countriesArray.clear();
-//                        codesMap.clear();
-//                        phoneFormatMap.clear();
 
                         TLRPC.TL_help_countriesList help_countriesList = (TLRPC.TL_help_countriesList) response;
                         for (int i = 0; i < help_countriesList.countries.size(); i++) {
@@ -8735,16 +8716,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                     }
                                     countryWithCode.code = countryCode.country_code;
                                     countryWithCode.shortname = c.iso2;
-
                                     countriesArray.add(countryWithCode);
-//                                    List<CountrySelectActivity.Country> countryList = codesMap.get(countryCode.country_code);
-//                                    if (countryList == null) {
-//                                      //  codesMap.put(countryCode.country_code, countryList = new ArrayList<>());
-//                                    }
-//                                    countryList.add(countryWithCode);
-//                                    if (countryCode.patterns.size() > 0) {
-//                                        //phoneFormatMap.put(countryCode.country_code, countryCode.patterns);
-//                                    }
                                 }
                             }
                         }
@@ -8756,38 +8728,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 if (number.length() > 4) {
                                     for (int a = 4; a >= 1; a--) {
                                         String sub = number.substring(0, a);
-
                                         CountrySelectActivity.Country country2;
-                                        //  List<CountrySelectActivity.Country> list = codesMap.get(sub);
-//                                        if (list == null) {
-//                                            country2 = null;
-//                                        } else if (list.size() > 1) {
-//                                            SharedPreferences preferences = MessagesController.getGlobalMainSettings();
-//                                            String lastMatched = preferences.getString("phone_code_last_matched_" + sub, null);
-//
-//                                            if (lastMatched != null) {
-//                                                country2 = list.get(list.size() - 1);
-//                                                for (CountrySelectActivity.Country c : countriesArray) {
-//                                                    if (Objects.equals(c.shortname, lastMatched)) {
-//                                                        country2 = c;
-//                                                        break;
-//                                                    }
-//                                                }
-//                                            } else {
-//                                                country2 = list.get(list.size() - 1);
-//                                            }
-//                                        } else {
-//                                            country2 = list.get(0);
-//                                        }
-
-//                                        if (country2 != null) {
-//                                            ok = true;
-//                                            //codeField.setText(sub);
-//                                            break;
-//                                        }
-                                    }
-                                    if (!ok) {
-                                        // codeField.setText(number.substring(0, 1));
                                     }
                                 }
                             }
@@ -8986,15 +8927,1517 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             req.no_joined_notifications = true;
 
             TLRPC.TL_modelInfo modelInfo = new TLRPC.TL_modelInfo();
-            modelInfo.age = 20;
-            modelInfo.gender  = 1;
-            modelInfo.country_code = "am";
+            modelInfo.age = userAge;
+            modelInfo.gender = 1;
+            modelInfo.country_code = currentCountry.shortname;
             modelInfo.url = "https://www.google.com/";
-            modelInfo.name = "Mock model";
-            modelInfo.agency_name = "test";
-            modelInfo.type_id  = 1; // 1 2
-            req.model_info =   modelInfo;
-            if(flag){
+            modelInfo.name = firstNameField.getText().toString() + " " + lastNameField.getText().toString();
+            ;
+            modelInfo.agency_name = "empty name";
+            modelInfo.type_id = 1; // 1 2
+            req.model_info = modelInfo;
+            if (flag) {
+                return;
+            }
+            flag = true;
+
+            needShowProgress(0);
+            ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                nextPressed = false;
+                if (response instanceof TLRPC.TL_auth_authorization) {
+                    hidePrivacyView();
+                    showDoneButton(false, true);
+                    postDelayed(() -> {
+                        needHideProgress(false, false);
+                        AndroidUtilities.hideKeyboard(fragmentView.findFocus());
+                        onAuthSuccess((TLRPC.TL_auth_authorization) response, true);
+                        if (avatarBig != null) {
+                            TLRPC.FileLocation avatar = avatarBig;
+                            Utilities.cacheClearQueue.postRunnable(() -> MessagesController.getInstance(currentAccount).uploadAndApplyUserAvatar(avatar));
+                        }
+                    }, 150);
+                } else {
+                    needHideProgress(false);
+                    if (error.text.contains("PHONE_NUMBER_INVALID")) {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
+                    } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidCode", R.string.InvalidCode));
+                    } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
+                        onBackPressed(true);
+                        setPage(VIEW_PHONE_INPUT, true, null, true);
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("CodeExpired", R.string.CodeExpired));
+                    } else if (error.text.contains("FIRSTNAME_INVALID")) {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidFirstName", R.string.InvalidFirstName));
+                    } else if (error.text.contains("LASTNAME_INVALID")) {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidLastName", R.string.InvalidLastName));
+                    } else {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), error.text);
+                    }
+                }
+            }), ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagFailOnServerErrors);
+        }
+
+        @Override
+        public void saveStateParams(Bundle bundle) {
+            String first = firstNameField.getText().toString();
+            if (first.length() != 0) {
+                bundle.putString("registerview_first", first);
+            }
+            String last = lastNameField.getText().toString();
+            if (last.length() != 0) {
+                bundle.putString("registerview_last", last);
+            }
+            if (currentTermsOfService != null) {
+                SerializedData data = new SerializedData(currentTermsOfService.getObjectSize());
+                currentTermsOfService.serializeToStream(data);
+                String str = Base64.encodeToString(data.toByteArray(), Base64.DEFAULT);
+                bundle.putString("terms", str);
+                data.cleanup();
+            }
+            if (currentParams != null) {
+                bundle.putBundle("registerview_params", currentParams);
+            }
+        }
+
+        @Override
+        public void restoreStateParams(Bundle bundle) {
+            currentParams = bundle.getBundle("registerview_params");
+            if (currentParams != null) {
+                setParams(currentParams, true);
+            }
+
+            try {
+                String terms = bundle.getString("terms");
+                if (terms != null) {
+                    byte[] arr = Base64.decode(terms, Base64.DEFAULT);
+                    if (arr != null) {
+                        SerializedData data = new SerializedData(arr);
+                        currentTermsOfService = TLRPC.TL_help_termsOfService.TLdeserialize(data, data.readInt32(false), false);
+                        data.cleanup();
+                    }
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+
+            String first = bundle.getString("registerview_first");
+            if (first != null) {
+                firstNameField.setText(first);
+            }
+            String last = bundle.getString("registerview_last");
+            if (last != null) {
+                lastNameField.setText(last);
+            }
+        }
+
+        private void hidePrivacyView() {
+        }
+    }
+
+
+    public class LoginActivityRegisterTalentView extends SlideView implements ImageUpdater.ImageUpdaterDelegate {
+
+        private OutlineTextContainerDivoView firstNameOutlineView;
+        private OutlineTextContainerDivoView genderOutline;
+        private OutlineTextContainerDivoView countryOutlineView;
+        private EditTextBoldCursor firstNameField;
+        private BackupImageView avatarImage;
+        private AvatarDrawable avatarDrawable;
+        private View avatarOverlay;
+        private RLottieImageView avatarEditor;
+        private RadialProgressView avatarProgressView;
+        private AnimatorSet avatarAnimation;
+        private TextView descriptionTextView;
+        private TextView wrongNumber;
+        private TextView titleTextView;
+        private TextView subTitleTextView;
+
+        private SliderView sliderView;
+        private ButtonContainer buttonContainer;
+        private FrameLayout editTextContainer;
+        private String requestPhone;
+        private String phoneHash;
+        private Bundle currentParams;
+        private boolean nextPressed = false;
+        private TextViewSwitcher countryButton;
+        private ImageView chevronRight;
+        private android.widget.AutoCompleteTextView genderDropdown;
+        private String selectedGender;
+        private CountrySelectActivity.Country currentCountry;
+
+
+        private int userAge = 17;
+        // image
+        private RLottieDrawable cameraDrawable;
+        private RLottieDrawable cameraWaitDrawable;
+        private boolean isCameraWaitAnimationAllowed = true;
+        private ImageUpdater imageUpdater;
+        private TLRPC.FileLocation avatar;
+        private TLRPC.FileLocation avatarBig;
+        private ArrayList<CountrySelectActivity.Country> countriesArray = new ArrayList<>();
+
+        private boolean createAfterUpload;
+
+        public LoginActivityRegisterTalentView(Context context) {
+            super(context);
+            setOrientation(VERTICAL);
+
+            titleTextView = new TextView(context);
+            titleTextView.setText("Apply as\na new talent".toUpperCase());
+            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
+            titleTextView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
+            titleTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+            addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 24, 8, 0));
+
+            descriptionTextView = new TextView(context);
+            descriptionTextView.setText("Fill out your profile details to apply as a professional model. You can update this information anytime.");
+            descriptionTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+            descriptionTextView.setTypeface(AndroidUtilities.helveticaNeueMedium());
+            descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            descriptionTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            addView(descriptionTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 9, 8, 0));
+
+            imageUpdater = new ImageUpdater(false, ImageUpdater.FOR_TYPE_USER, false);
+            imageUpdater.setOpenWithFrontfaceCamera(true);
+            imageUpdater.setSearchAvailable(false);
+            imageUpdater.setUploadAfterSelect(false);
+            imageUpdater.parentFragment = LoginActivity.this;
+            imageUpdater.setDelegate(this);
+
+            FrameLayout avatarContainer = new FrameLayout(context);
+            addView(avatarContainer, LayoutHelper.createLinear(78, 78, Gravity.CENTER_HORIZONTAL, 0, 24, 0, 0));
+
+            avatarDrawable = new AvatarDrawable();
+
+            avatarImage = new BackupImageView(context) {
+                @Override
+                public void invalidate() {
+                    if (avatarOverlay != null) {
+                        avatarOverlay.invalidate();
+                    }
+                    super.invalidate();
+                }
+
+                @Override
+                public void invalidate(int l, int t, int r, int b) {
+                    if (avatarOverlay != null) {
+                        avatarOverlay.invalidate();
+                    }
+                    super.invalidate(l, t, r, b);
+                }
+            };
+            avatarImage.setRoundRadius(AndroidUtilities.dp(64));
+            avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_REGISTER);
+            avatarDrawable.setInfo(5, null, null);
+            avatarImage.setImageDrawable(avatarDrawable);
+            avatarDrawable.setColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            avatarContainer.addView(avatarImage, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+
+            avatarOverlay = new View(context) {
+                @Override
+                protected void onDraw(Canvas canvas) {
+                    if (avatarImage != null && avatarProgressView.getVisibility() == VISIBLE) {
+                        paint.setAlpha((int) (0x55 * avatarImage.getImageReceiver().getCurrentAlpha() * avatarProgressView.getAlpha()));
+                        canvas.drawCircle(getMeasuredWidth() / 2.0f, getMeasuredHeight() / 2.0f, getMeasuredWidth() / 2.0f, paint);
+                    }
+                }
+            };
+            avatarContainer.addView(avatarOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+            avatarOverlay.setOnClickListener(view -> {
+                imageUpdater.openMenu(avatar != null, () -> {
+                    avatar = null;
+                    avatarBig = null;
+                    showAvatarProgress(false, true);
+                    avatarImage.setImage(null, null, avatarDrawable, null);
+                    avatarEditor.setAnimation(cameraDrawable);
+                    cameraDrawable.setCurrentFrame(0);
+                    isCameraWaitAnimationAllowed = true;
+                }, dialog -> {
+                    if (!imageUpdater.isUploadingImage()) {
+                        avatarEditor.setAnimation(cameraDrawable);
+                        cameraDrawable.setCustomEndFrame(86);
+                        avatarEditor.setOnAnimationEndListener(() -> isCameraWaitAnimationAllowed = true);
+                        avatarEditor.playAnimation();
+                    } else {
+                        avatarEditor.setAnimation(cameraDrawable);
+                        cameraDrawable.setCurrentFrame(0, false);
+                        isCameraWaitAnimationAllowed = true;
+                    }
+                }, 0);
+                isCameraWaitAnimationAllowed = false;
+                avatarEditor.setAnimation(cameraDrawable);
+                cameraDrawable.setCurrentFrame(0);
+                cameraDrawable.setCustomEndFrame(43);
+                avatarEditor.playAnimation();
+            });
+
+            cameraDrawable = new RLottieDrawable(R.raw.camera, String.valueOf(R.raw.camera), AndroidUtilities.dp(70), AndroidUtilities.dp(70), false, null);
+            cameraWaitDrawable = new RLottieDrawable(R.raw.camera_wait, String.valueOf(R.raw.camera_wait), AndroidUtilities.dp(70), AndroidUtilities.dp(70), false, null);
+
+            avatarEditor = new RLottieImageView(context) {
+                @Override
+                public void invalidate(int l, int t, int r, int b) {
+                    super.invalidate(l, t, r, b);
+                    avatarOverlay.invalidate();
+                }
+
+                @Override
+                public void invalidate() {
+                    super.invalidate();
+                    avatarOverlay.invalidate();
+                }
+            };
+            avatarEditor.setScaleType(ImageView.ScaleType.CENTER);
+            avatarEditor.setAnimation(cameraDrawable);
+            avatarEditor.setEnabled(false);
+            avatarEditor.setClickable(false);
+            avatarContainer.addView(avatarEditor, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            avatarEditor.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+                private long lastRun = System.currentTimeMillis();
+                private boolean isAttached;
+                private Runnable cameraWaitCallback = () -> {
+                    if (isAttached) {
+                        if (isCameraWaitAnimationAllowed && System.currentTimeMillis() - lastRun >= 10000) {
+                            avatarEditor.setAnimation(cameraWaitDrawable);
+                            cameraWaitDrawable.setCurrentFrame(0, false);
+                            cameraWaitDrawable.setOnAnimationEndListener(() -> AndroidUtilities.runOnUIThread(() -> {
+                                cameraDrawable.setCurrentFrame(0, false);
+                                avatarEditor.setAnimation(cameraDrawable);
+                            }));
+                            avatarEditor.playAnimation();
+                            lastRun = System.currentTimeMillis();
+                        }
+
+                        avatarEditor.postDelayed(this.cameraWaitCallback, 1000);
+                    }
+                };
+
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    isAttached = true;
+                    v.post(cameraWaitCallback);
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    isAttached = false;
+                    v.removeCallbacks(cameraWaitCallback);
+                }
+            });
+
+            avatarProgressView = new RadialProgressView(context) {
+                @Override
+                public void setAlpha(float alpha) {
+                    super.setAlpha(alpha);
+                    avatarOverlay.invalidate();
+                }
+            };
+            avatarProgressView.setSize(AndroidUtilities.dp(30));
+            avatarProgressView.setProgressColor(0xffffffff);
+            avatarContainer.addView(avatarProgressView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            showAvatarProgress(false, false);
+
+            subTitleTextView = new TextView(context);
+            subTitleTextView.setText("Your personal data".toUpperCase());
+            subTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+            subTitleTextView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
+            subTitleTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            subTitleTextView.setGravity(Gravity.START);
+            addView(subTitleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.START, 16, 16, 8, 0));
+
+            editTextContainer = new FrameLayout(context);
+            addView(editTextContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 16, 8, 0));
+
+            firstNameOutlineView = new OutlineTextContainerDivoView(context);
+            firstNameOutlineView.setText(getString(R.string.FirstName));
+
+            firstNameField = new EditTextBoldCursor(context);
+            firstNameField.setCursorSize(AndroidUtilities.dp(20));
+            firstNameField.setCursorWidth(1.5f);
+            firstNameField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+            firstNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
+            firstNameField.setMaxLines(1);
+            firstNameField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+            firstNameField.setOnFocusChangeListener((v, hasFocus) -> firstNameOutlineView.animateSelection(hasFocus ? 1f : 0f));
+            firstNameField.setBackground(null);
+            firstNameField.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16));
+
+            firstNameOutlineView.attachEditText(firstNameField);
+            firstNameOutlineView.addView(firstNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
+
+            // 1) Label on the outline (hint/float label), not the current value
+            genderOutline = new OutlineTextContainerDivoView(context);
+            genderOutline.setText("Gender"); // ← keep this as the field label
+
+// 2) The actual dropdown input
+            genderDropdown = new android.widget.AutoCompleteTextView(context);
+            genderDropdown.setHint("SelectGender");
+            genderDropdown.setInputType(android.text.InputType.TYPE_NULL);
+            genderDropdown.setKeyListener(null);
+            genderDropdown.setFocusable(false);           // no keyboard
+            genderDropdown.setCursorVisible(false);
+            genderDropdown.setBackground(null);
+
+// Give it a real height like the name fields
+            genderDropdown.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
+            genderDropdown.setPadding(
+                    AndroidUtilities.dp(16),
+                    AndroidUtilities.dp(16),
+                    AndroidUtilities.dp(16),
+                    AndroidUtilities.dp(16)
+            );
+
+// Optional: nicer dropdown behavior
+            genderDropdown.setThreshold(0);
+            genderDropdown.setOnClickListener(v -> genderDropdown.showDropDown());
+// (Optional) slight offset so the popup doesn't overlap the outline
+            genderDropdown.setDropDownVerticalOffset(AndroidUtilities.dp(4));
+            genderDropdown.setDropDownWidth(LayoutHelper.MATCH_PARENT);
+
+// 3) Adapter
+            String[] genders = new String[]{"Male", "Female"};
+            android.widget.ArrayAdapter<String> genderAdapter =
+                    new android.widget.ArrayAdapter<>(context,
+                            android.R.layout.simple_list_item_1, genders);
+            genderDropdown.setAdapter(genderAdapter);
+
+            genderDropdown.setOnItemClickListener((parent, view, position, id) -> {
+                selectedGender = genders[position];
+            });
+
+// 4) Wire up to OutlineTextContainerView *and actually add the view inside*
+            genderOutline.attachEditText(genderDropdown);
+            genderOutline.addView(
+                    genderDropdown,
+                    LayoutHelper.createFrame(
+                            LayoutHelper.MATCH_PARENT,
+                            LayoutHelper.WRAP_CONTENT,
+                            Gravity.TOP
+                    )
+            );
+
+            genderDropdown.setText(genders[0], /*filter*/ false); // e.g. "Male"
+            sliderView = new SliderView(context);
+            sliderView.setOnAgeSelected(age -> {
+                userAge = age;
+                return kotlin.Unit.INSTANCE;
+            });
+            buttonContainer = new ButtonContainer(context);
+
+
+            countryButton = new TextViewSwitcher(context);
+            countryButton.setFactory(() -> {
+                TextView tv = new TextView(context);
+                tv.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(12), AndroidUtilities.dp(16), AndroidUtilities.dp(12));
+                tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+                tv.setHintTextColor(ContextCompat.getColor(getContext(), R.color.divo_hint_color));
+                tv.setMaxLines(1);
+                tv.setSingleLine(true);
+                tv.setEllipsize(TextUtils.TruncateAt.END);
+                tv.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_HORIZONTAL);
+                return tv;
+            });
+
+            Animation anim = AnimationUtils.loadAnimation(context, R.anim.text_in);
+            anim.setInterpolator(Easings.easeInOutQuad);
+            countryButton.setInAnimation(anim);
+
+            chevronRight = new ImageView(context);
+            chevronRight.setImageResource(R.drawable.msg_inputarrow);
+
+            LinearLayout countryButtonLinearLayout = new LinearLayout(context);
+            countryButtonLinearLayout.setOrientation(HORIZONTAL);
+            countryButtonLinearLayout.setGravity(Gravity.CENTER_VERTICAL);
+            countryButtonLinearLayout.addView(countryButton, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 0, 0, 0, 0));
+            countryButtonLinearLayout.addView(chevronRight, LayoutHelper.createLinearRelatively(24, 24, 0, 0, 0, 14, 0));
+
+            countryOutlineView = new OutlineTextContainerDivoView(context);
+            countryOutlineView.setText(getString(R.string.Country));
+            countryOutlineView.addView(countryButtonLinearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, 0, 0, 0));
+            countryOutlineView.setForceUseCenter(true);
+            countryOutlineView.setFocusable(true);
+            countryOutlineView.setContentDescription(getString(R.string.Country));
+            countryOutlineView.setOnFocusChangeListener((v, hasFocus) -> countryOutlineView.animateSelection(hasFocus ? 1 : 0));
+            countryOutlineView.setOnClickListener(view -> {
+                CountrySelectActivity fragment = new CountrySelectActivity(true, countriesArray);
+                fragment.setCountrySelectActivityDelegate((country) -> {
+                    selectCountry(country);
+//                    AndroidUtilities.runOnUIThread(() -> showKeyboard(phoneField), 300);
+//                    phoneField.requestFocus();
+//                    phoneField.setSelection(phoneField.length());
+                });
+                presentFragment(fragment);
+            });
+
+            buildEditTextLayout(AndroidUtilities.isSmallScreen());
+
+
+            wrongNumber = new TextView(context);
+            wrongNumber.setText(getString("CancelRegistration", R.string.CancelRegistration));
+            wrongNumber.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_HORIZONTAL);
+            wrongNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            wrongNumber.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            wrongNumber.setPadding(0, AndroidUtilities.dp(24), 0, 0);
+            wrongNumber.setVisibility(GONE);
+            addView(wrongNumber, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT), 0, 20, 0, 0));
+            wrongNumber.setOnClickListener(view -> {
+                if (radialProgressView.getTag() != null) {
+                    return;
+                }
+                onBackPressed(false);
+            });
+
+
+            buttonContainer.setOnNext(() -> {
+                onDoneButtonPressed();   // behave exactly like the FAB
+                return kotlin.Unit.INSTANCE;
+            });
+
+            buttonContainer.setOnBack(() -> {
+                onBackPressed(false);
+                return kotlin.Unit.INSTANCE;
+            });
+
+            addView(buttonContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.BOTTOM));
+
+            loadCountries();
+        }
+
+
+        @Override
+        public void updateColors() {
+            avatarDrawable.invalidateSelf();
+            titleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            subTitleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            descriptionTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_subtitle_color));
+            firstNameField.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            firstNameField.setCursorColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            genderDropdown.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            wrongNumber.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
+
+            firstNameOutlineView.updateColor();
+        }
+
+        public void selectCountry(CountrySelectActivity.Country country) {
+            String code = country.code;
+            setCountryHint(code, country);
+            currentCountry = country;
+            // countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
+
+            MessagesController.getGlobalMainSettings().edit().putString("phone_code_last_matched_" + country.code, country.shortname).apply();
+        }
+
+        private String countryCodeForHint;
+
+        private void setCountryHint(String code, CountrySelectActivity.Country country) {
+            SpannableStringBuilder sb = new SpannableStringBuilder();
+            String flag = LocaleController.getLanguageFlag(country.shortname);
+            if (flag != null) {
+                sb.append(flag).append(" ");
+                sb.setSpan(new ReplacementSpan() {
+                    @Override
+                    public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
+                        return AndroidUtilities.dp(16);
+                    }
+
+                    @Override
+                    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
+                    }
+                }, flag.length(), flag.length() + 1, 0);
+            }
+            sb.append(country.name);
+            setCountryButtonText(Emoji.replaceEmoji(sb, countryButton.getCurrentView().getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false));
+            countryCodeForHint = code;
+            // invalidateCountryHint();
+        }
+
+        private void setCountryButtonText(CharSequence cs) {
+            Animation anim = AnimationUtils.loadAnimation(ApplicationLoader.applicationContext, countryButton.getCurrentView().getText() != null && cs == null ? R.anim.text_out_down : R.anim.text_out);
+            anim.setInterpolator(Easings.easeInOutQuad);
+            countryButton.setOutAnimation(anim);
+
+            CharSequence prevText = countryButton.getCurrentView().getText();
+            countryButton.setText(cs, !(TextUtils.isEmpty(cs) && TextUtils.isEmpty(prevText)) && !Objects.equals(prevText, cs));
+            countryOutlineView.animateSelection(cs != null ? 1f : 0f);
+        }
+
+        private void loadCountries() {
+            TLRPC.TL_help_getCountriesList req = new TLRPC.TL_help_getCountriesList();
+            req.lang_code = LocaleController.getInstance().getCurrentLocaleInfo() != null ? LocaleController.getInstance().getCurrentLocaleInfo().getLangCode() : Locale.getDefault().getCountry();
+            getConnectionsManager().sendRequest(req, (response, error) -> {
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (error == null) {
+                        countriesArray.clear();
+
+                        TLRPC.TL_help_countriesList help_countriesList = (TLRPC.TL_help_countriesList) response;
+                        for (int i = 0; i < help_countriesList.countries.size(); i++) {
+                            TLRPC.TL_help_country c = help_countriesList.countries.get(i);
+                            for (int k = 0; k < c.country_codes.size(); k++) {
+                                TLRPC.TL_help_countryCode countryCode = c.country_codes.get(k);
+                                if (countryCode != null) {
+                                    CountrySelectActivity.Country countryWithCode = new CountrySelectActivity.Country();
+                                    countryWithCode.name = c.name;
+                                    countryWithCode.defaultName = c.default_name;
+                                    if (countryWithCode.name == null && countryWithCode.defaultName != null) {
+                                        countryWithCode.name = countryWithCode.defaultName;
+                                    }
+                                    countryWithCode.code = countryCode.country_code;
+                                    countryWithCode.shortname = c.iso2;
+                                    countriesArray.add(countryWithCode);
+                                }
+                            }
+                        }
+                        if (activityMode == MODE_CHANGE_PHONE_NUMBER) {
+                            String number = PhoneFormat.stripExceptNumbers(UserConfig.getInstance(currentAccount).getClientPhone());
+                            boolean ok = false;
+                            if (!TextUtils.isEmpty(number)) {
+                                if (number.length() > 4) {
+                                    for (int a = 4; a >= 1; a--) {
+                                        String sub = number.substring(0, a);
+                                        CountrySelectActivity.Country country2;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }, ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagFailOnServerErrors);
+        }
+
+        private void buildEditTextLayout(boolean small) {
+            boolean firstHasFocus = firstNameField.hasFocus();
+            editTextContainer.removeAllViews();
+
+            if (small) {
+                LinearLayout linearLayout = new LinearLayout(getParentActivity());
+                linearLayout.setOrientation(HORIZONTAL);
+
+                firstNameOutlineView.setText(getString(R.string.FirstNameSmall));
+
+                linearLayout.addView(firstNameOutlineView, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 0, 0, 8, 0));
+                linearLayout.addView(genderOutline, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 0, 0, 8, 0));
+
+                editTextContainer.addView(linearLayout);
+
+                if (firstHasFocus) {
+                    firstNameField.requestFocus();
+                    AndroidUtilities.showKeyboard(firstNameField);
+                }
+            } else {
+                firstNameOutlineView.setText("Full Name");
+                editTextContainer.addView(firstNameOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 0, 8, 0));
+                editTextContainer.addView(genderOutline, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 82, 8, 0));
+                editTextContainer.addView(countryOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 58, Gravity.TOP, 8, 164, 8, 0));
+                editTextContainer.addView(sliderView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 246, 8, 0));
+            }
+
+        }
+
+        @Override
+        public void didUploadPhoto(final TLRPC.InputFile photo, final TLRPC.InputFile video, double videoStartTimestamp, String videoPath, final TLRPC.PhotoSize bigSize, final TLRPC.PhotoSize smallSize, boolean isVideo, TLRPC.VideoSize emojiMarkup) {
+            AndroidUtilities.runOnUIThread(() -> {
+                avatar = smallSize.location;
+                avatarBig = bigSize.location;
+                avatarImage.setImage(ImageLocation.getForLocal(avatar), "50_50", avatarDrawable, null);
+            });
+        }
+
+        private void showAvatarProgress(boolean show, boolean animated) {
+            if (avatarEditor == null) {
+                return;
+            }
+            if (avatarAnimation != null) {
+                avatarAnimation.cancel();
+                avatarAnimation = null;
+            }
+            if (animated) {
+                avatarAnimation = new AnimatorSet();
+                if (show) {
+                    avatarProgressView.setVisibility(View.VISIBLE);
+
+                    avatarAnimation.playTogether(ObjectAnimator.ofFloat(avatarEditor, View.ALPHA, 0.0f),
+                            ObjectAnimator.ofFloat(avatarProgressView, View.ALPHA, 1.0f));
+                } else {
+                    avatarEditor.setVisibility(View.VISIBLE);
+
+                    avatarAnimation.playTogether(ObjectAnimator.ofFloat(avatarEditor, View.ALPHA, 1.0f),
+                            ObjectAnimator.ofFloat(avatarProgressView, View.ALPHA, 0.0f));
+                }
+                avatarAnimation.setDuration(180);
+                avatarAnimation.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (avatarAnimation == null || avatarEditor == null) {
+                            return;
+                        }
+                        if (show) {
+                            avatarEditor.setVisibility(View.INVISIBLE);
+                        } else {
+                            avatarProgressView.setVisibility(View.INVISIBLE);
+                        }
+                        avatarAnimation = null;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        avatarAnimation = null;
+                    }
+                });
+                avatarAnimation.start();
+            } else {
+                if (show) {
+                    avatarEditor.setAlpha(1.0f);
+                    avatarEditor.setVisibility(View.INVISIBLE);
+                    avatarProgressView.setAlpha(1.0f);
+                    avatarProgressView.setVisibility(View.VISIBLE);
+                } else {
+                    avatarEditor.setAlpha(1.0f);
+                    avatarEditor.setVisibility(View.VISIBLE);
+                    avatarProgressView.setAlpha(0.0f);
+                    avatarProgressView.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
+
+        @Override
+        public boolean onBackPressed(boolean force) {
+            if (!force) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                builder.setTitle(getString(R.string.Warning));
+                builder.setMessage(getString("AreYouSureRegistration", R.string.AreYouSureRegistration));
+                builder.setNegativeButton(getString("Stop", R.string.Stop), (dialogInterface, i) -> {
+                    onBackPressed(true);
+                    setPage(VIEW_PHONE_INPUT, true, null, true);
+                    hidePrivacyView();
+                });
+                builder.setPositiveButton(getString("Continue", R.string.Continue), null);
+                showDialog(builder.create());
+                return false;
+            }
+            needHideProgress(true);
+            nextPressed = false;
+            currentParams = null;
+            return true;
+        }
+
+        @Override
+        public String getHeaderName() {
+            return getString("YourName", R.string.YourName);
+        }
+
+        @Override
+        public void onCancelPressed() {
+            nextPressed = false;
+        }
+
+        @Override
+        public boolean needBackButton() {
+            return true;
+        }
+
+        @Override
+        public void onShow() {
+            super.onShow();
+            if (firstNameField != null) {
+                firstNameField.requestFocus();
+                firstNameField.setSelection(firstNameField.length());
+                AndroidUtilities.showKeyboard(firstNameField);
+            }
+            AndroidUtilities.runOnUIThread(() -> {
+                if (firstNameField != null) {
+                    firstNameField.requestFocus();
+                    firstNameField.setSelection(firstNameField.length());
+                    AndroidUtilities.showKeyboard(firstNameField);
+                }
+            }, SHOW_DELAY);
+        }
+
+        @Override
+        public void setParams(Bundle params, boolean restore) {
+            if (params == null) {
+                return;
+            }
+            firstNameField.setText("");
+            requestPhone = params.getString("phoneFormated");
+            phoneHash = params.getString("phoneHash");
+            currentParams = params;
+        }
+
+        boolean flag = false;
+
+        @Override
+        public void onNextPressed(String code) {
+            if (nextPressed) {
+                return;
+            }
+            if (firstNameField.length() == 0) {
+                onFieldError(firstNameOutlineView, true);
+                return;
+            }
+            nextPressed = true;
+
+            TLRPC.TL_auth_signUp req = new TLRPC.TL_auth_signUp();
+            req.phone_code_hash = phoneHash;
+            req.phone_number = requestPhone;
+            req.first_name = firstNameField.getText().toString();
+            req.last_name = "";
+            req.no_joined_notifications = true;
+
+            TLRPC.TL_modelInfo modelInfo = new TLRPC.TL_modelInfo();
+            modelInfo.age = userAge;
+            modelInfo.gender = 1;
+            modelInfo.country_code = currentCountry.shortname;
+            modelInfo.url = "https://www.google.com/";
+            modelInfo.name = firstNameField.getText().toString();
+            ;
+            modelInfo.agency_name = "empty name";
+            modelInfo.type_id = 1; // 1 2
+            req.model_info = modelInfo;
+            if (flag) {
+                return;
+            }
+            flag = true;
+
+            needShowProgress(0);
+            ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                nextPressed = false;
+                if (response instanceof TLRPC.TL_auth_authorization) {
+                    hidePrivacyView();
+                    showDoneButton(false, true);
+                    postDelayed(() -> {
+                        needHideProgress(false, false);
+                        AndroidUtilities.hideKeyboard(fragmentView.findFocus());
+                        onAuthSuccess((TLRPC.TL_auth_authorization) response, true);
+                        if (avatarBig != null) {
+                            TLRPC.FileLocation avatar = avatarBig;
+                            Utilities.cacheClearQueue.postRunnable(() -> MessagesController.getInstance(currentAccount).uploadAndApplyUserAvatar(avatar));
+                        }
+                    }, 150);
+                } else {
+                    needHideProgress(false);
+                    if (error.text.contains("PHONE_NUMBER_INVALID")) {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
+                    } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidCode", R.string.InvalidCode));
+                    } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
+                        onBackPressed(true);
+                        setPage(VIEW_PHONE_INPUT, true, null, true);
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("CodeExpired", R.string.CodeExpired));
+                    } else if (error.text.contains("FIRSTNAME_INVALID")) {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidFirstName", R.string.InvalidFirstName));
+                    } else if (error.text.contains("LASTNAME_INVALID")) {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidLastName", R.string.InvalidLastName));
+                    } else {
+                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), error.text);
+                    }
+                }
+            }), ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagFailOnServerErrors);
+        }
+
+        @Override
+        public void saveStateParams(Bundle bundle) {
+            String first = firstNameField.getText().toString();
+            if (first.length() != 0) {
+                bundle.putString("registerview_first", first);
+            }
+            if (currentTermsOfService != null) {
+                SerializedData data = new SerializedData(currentTermsOfService.getObjectSize());
+                currentTermsOfService.serializeToStream(data);
+                String str = Base64.encodeToString(data.toByteArray(), Base64.DEFAULT);
+                bundle.putString("terms", str);
+                data.cleanup();
+            }
+            if (currentParams != null) {
+                bundle.putBundle("registerview_params", currentParams);
+            }
+        }
+
+        @Override
+        public void restoreStateParams(Bundle bundle) {
+            currentParams = bundle.getBundle("registerview_params");
+            if (currentParams != null) {
+                setParams(currentParams, true);
+            }
+
+            try {
+                String terms = bundle.getString("terms");
+                if (terms != null) {
+                    byte[] arr = Base64.decode(terms, Base64.DEFAULT);
+                    if (arr != null) {
+                        SerializedData data = new SerializedData(arr);
+                        currentTermsOfService = TLRPC.TL_help_termsOfService.TLdeserialize(data, data.readInt32(false), false);
+                        data.cleanup();
+                    }
+                }
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
+
+            String first = bundle.getString("registerview_first");
+            if (first != null) {
+                firstNameField.setText(first);
+            }
+        }
+
+        private void hidePrivacyView() {
+        }
+    }
+
+    public class LoginActivityRegisterAgencyView extends SlideView implements ImageUpdater.ImageUpdaterDelegate {
+
+        private OutlineTextContainerDivoView firstNameOutlineView, lastNameOutlineView;
+        private OutlineTextContainerDivoView countryOutlineView;
+        private EditTextBoldCursor firstNameField;
+        private EditTextBoldCursor lastNameField;
+        private BackupImageView avatarImage;
+        private AvatarDrawable avatarDrawable;
+        private View avatarOverlay;
+        private RLottieImageView avatarEditor;
+        private RadialProgressView avatarProgressView;
+        private AnimatorSet avatarAnimation;
+        private TextView descriptionTextView;
+        private TextView wrongNumber;
+        private TextView titleTextView;
+        private TextView subTitleTextView;
+
+        private ButtonContainer buttonContainer;
+        private FrameLayout editTextContainer;
+        private String requestPhone;
+        private String phoneHash;
+        private Bundle currentParams;
+        private boolean nextPressed = false;
+        private TextViewSwitcher countryButton;
+        private ImageView chevronRight;
+        private CountrySelectActivity.Country currentCountry;
+
+
+        private int userAge = 17;
+        // image
+        private RLottieDrawable cameraDrawable;
+        private RLottieDrawable cameraWaitDrawable;
+        private boolean isCameraWaitAnimationAllowed = true;
+        private ImageUpdater imageUpdater;
+        private TLRPC.FileLocation avatar;
+        private TLRPC.FileLocation avatarBig;
+        private ArrayList<CountrySelectActivity.Country> countriesArray = new ArrayList<>();
+
+        private boolean createAfterUpload;
+
+        public LoginActivityRegisterAgencyView(Context context) {
+            super(context);
+            setOrientation(VERTICAL);
+
+            titleTextView = new TextView(context);
+            titleTextView.setText("Apply as\na agencies & brands".toUpperCase());
+            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
+            titleTextView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
+            titleTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+            addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 24, 8, 0));
+
+            descriptionTextView = new TextView(context);
+            descriptionTextView.setText("Fill out your profile details to apply as a professional model. You can update this information anytime.");
+            descriptionTextView.setGravity(Gravity.CENTER_HORIZONTAL);
+            descriptionTextView.setTypeface(AndroidUtilities.helveticaNeueMedium());
+            descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            descriptionTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            addView(descriptionTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 9, 8, 0));
+
+            imageUpdater = new ImageUpdater(false, ImageUpdater.FOR_TYPE_USER, false);
+            imageUpdater.setOpenWithFrontfaceCamera(true);
+            imageUpdater.setSearchAvailable(false);
+            imageUpdater.setUploadAfterSelect(false);
+            imageUpdater.parentFragment = LoginActivity.this;
+            imageUpdater.setDelegate(this);
+
+            FrameLayout avatarContainer = new FrameLayout(context);
+            addView(avatarContainer, LayoutHelper.createLinear(78, 78, Gravity.CENTER_HORIZONTAL, 0, 24, 0, 0));
+
+            avatarDrawable = new AvatarDrawable();
+
+            avatarImage = new BackupImageView(context) {
+                @Override
+                public void invalidate() {
+                    if (avatarOverlay != null) {
+                        avatarOverlay.invalidate();
+                    }
+                    super.invalidate();
+                }
+
+                @Override
+                public void invalidate(int l, int t, int r, int b) {
+                    if (avatarOverlay != null) {
+                        avatarOverlay.invalidate();
+                    }
+                    super.invalidate(l, t, r, b);
+                }
+            };
+            avatarImage.setRoundRadius(AndroidUtilities.dp(64));
+            avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_REGISTER);
+            avatarDrawable.setInfo(5, null, null);
+            avatarImage.setImageDrawable(avatarDrawable);
+            avatarDrawable.setColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            avatarContainer.addView(avatarImage, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            paint.setColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+
+            avatarOverlay = new View(context) {
+                @Override
+                protected void onDraw(Canvas canvas) {
+                    if (avatarImage != null && avatarProgressView.getVisibility() == VISIBLE) {
+                        paint.setAlpha((int) (0x55 * avatarImage.getImageReceiver().getCurrentAlpha() * avatarProgressView.getAlpha()));
+                        canvas.drawCircle(getMeasuredWidth() / 2.0f, getMeasuredHeight() / 2.0f, getMeasuredWidth() / 2.0f, paint);
+                    }
+                }
+            };
+            avatarContainer.addView(avatarOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+            avatarOverlay.setOnClickListener(view -> {
+                imageUpdater.openMenu(avatar != null, () -> {
+                    avatar = null;
+                    avatarBig = null;
+                    showAvatarProgress(false, true);
+                    avatarImage.setImage(null, null, avatarDrawable, null);
+                    avatarEditor.setAnimation(cameraDrawable);
+                    cameraDrawable.setCurrentFrame(0);
+                    isCameraWaitAnimationAllowed = true;
+                }, dialog -> {
+                    if (!imageUpdater.isUploadingImage()) {
+                        avatarEditor.setAnimation(cameraDrawable);
+                        cameraDrawable.setCustomEndFrame(86);
+                        avatarEditor.setOnAnimationEndListener(() -> isCameraWaitAnimationAllowed = true);
+                        avatarEditor.playAnimation();
+                    } else {
+                        avatarEditor.setAnimation(cameraDrawable);
+                        cameraDrawable.setCurrentFrame(0, false);
+                        isCameraWaitAnimationAllowed = true;
+                    }
+                }, 0);
+                isCameraWaitAnimationAllowed = false;
+                avatarEditor.setAnimation(cameraDrawable);
+                cameraDrawable.setCurrentFrame(0);
+                cameraDrawable.setCustomEndFrame(43);
+                avatarEditor.playAnimation();
+            });
+
+            cameraDrawable = new RLottieDrawable(R.raw.camera, String.valueOf(R.raw.camera), AndroidUtilities.dp(70), AndroidUtilities.dp(70), false, null);
+            cameraWaitDrawable = new RLottieDrawable(R.raw.camera_wait, String.valueOf(R.raw.camera_wait), AndroidUtilities.dp(70), AndroidUtilities.dp(70), false, null);
+
+            avatarEditor = new RLottieImageView(context) {
+                @Override
+                public void invalidate(int l, int t, int r, int b) {
+                    super.invalidate(l, t, r, b);
+                    avatarOverlay.invalidate();
+                }
+
+                @Override
+                public void invalidate() {
+                    super.invalidate();
+                    avatarOverlay.invalidate();
+                }
+            };
+            avatarEditor.setScaleType(ImageView.ScaleType.CENTER);
+            avatarEditor.setAnimation(cameraDrawable);
+            avatarEditor.setEnabled(false);
+            avatarEditor.setClickable(false);
+            avatarContainer.addView(avatarEditor, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            avatarEditor.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+                private long lastRun = System.currentTimeMillis();
+                private boolean isAttached;
+                private Runnable cameraWaitCallback = () -> {
+                    if (isAttached) {
+                        if (isCameraWaitAnimationAllowed && System.currentTimeMillis() - lastRun >= 10000) {
+                            avatarEditor.setAnimation(cameraWaitDrawable);
+                            cameraWaitDrawable.setCurrentFrame(0, false);
+                            cameraWaitDrawable.setOnAnimationEndListener(() -> AndroidUtilities.runOnUIThread(() -> {
+                                cameraDrawable.setCurrentFrame(0, false);
+                                avatarEditor.setAnimation(cameraDrawable);
+                            }));
+                            avatarEditor.playAnimation();
+                            lastRun = System.currentTimeMillis();
+                        }
+
+                        avatarEditor.postDelayed(this.cameraWaitCallback, 1000);
+                    }
+                };
+
+                @Override
+                public void onViewAttachedToWindow(View v) {
+                    isAttached = true;
+                    v.post(cameraWaitCallback);
+                }
+
+                @Override
+                public void onViewDetachedFromWindow(View v) {
+                    isAttached = false;
+                    v.removeCallbacks(cameraWaitCallback);
+                }
+            });
+
+            avatarProgressView = new RadialProgressView(context) {
+                @Override
+                public void setAlpha(float alpha) {
+                    super.setAlpha(alpha);
+                    avatarOverlay.invalidate();
+                }
+            };
+            avatarProgressView.setSize(AndroidUtilities.dp(30));
+            avatarProgressView.setProgressColor(0xffffffff);
+            avatarContainer.addView(avatarProgressView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+
+            showAvatarProgress(false, false);
+
+            subTitleTextView = new TextView(context);
+            subTitleTextView.setText("Your personal data".toUpperCase());
+            subTitleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
+            subTitleTextView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
+            subTitleTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            subTitleTextView.setGravity(Gravity.START);
+            addView(subTitleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.START, 16, 16, 8, 0));
+
+            editTextContainer = new FrameLayout(context);
+            addView(editTextContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 16, 8, 0));
+
+            firstNameOutlineView = new OutlineTextContainerDivoView(context);
+            firstNameOutlineView.setText(getString(R.string.FirstName));
+
+            firstNameField = new EditTextBoldCursor(context);
+            firstNameField.setCursorSize(AndroidUtilities.dp(20));
+            firstNameField.setCursorWidth(1.5f);
+            firstNameField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+            firstNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
+            firstNameField.setMaxLines(1);
+            firstNameField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+            firstNameField.setOnFocusChangeListener((v, hasFocus) -> firstNameOutlineView.animateSelection(hasFocus ? 1f : 0f));
+            firstNameField.setBackground(null);
+            firstNameField.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16));
+
+            firstNameOutlineView.attachEditText(firstNameField);
+            firstNameOutlineView.addView(firstNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
+
+            firstNameField.setOnEditorActionListener((textView, i, keyEvent) -> {
+                if (i == EditorInfo.IME_ACTION_NEXT) {
+                    lastNameField.requestFocus();
+                    return true;
+                }
+                return false;
+            });
+
+            lastNameOutlineView = new OutlineTextContainerDivoView(context);
+            lastNameOutlineView.setText(getString(R.string.LastName));
+
+            lastNameField = new EditTextBoldCursor(context);
+            lastNameField.setCursorSize(AndroidUtilities.dp(20));
+            lastNameField.setCursorWidth(1.5f);
+            lastNameField.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
+            lastNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
+            lastNameField.setMaxLines(1);
+            lastNameField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
+            lastNameField.setOnFocusChangeListener((v, hasFocus) -> lastNameOutlineView.animateSelection(hasFocus ? 1f : 0f));
+            lastNameField.setBackground(null);
+            lastNameField.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16));
+
+            lastNameOutlineView.attachEditText(lastNameField);
+            lastNameOutlineView.addView(lastNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
+
+            lastNameField.setOnEditorActionListener((textView, i, keyEvent) -> {
+                if (i == EditorInfo.IME_ACTION_DONE || i == EditorInfo.IME_ACTION_NEXT) {
+                    onNextPressed(null);
+                    return true;
+                }
+                return false;
+            });
+
+
+            // 1) Label on the outline (hint/float label), not the current value
+
+            buttonContainer = new ButtonContainer(context);
+            countryButton = new TextViewSwitcher(context);
+            countryButton.setFactory(() -> {
+                TextView tv = new TextView(context);
+                tv.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(12), AndroidUtilities.dp(16), AndroidUtilities.dp(12));
+                tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+                tv.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+                tv.setHintTextColor(ContextCompat.getColor(getContext(), R.color.divo_hint_color));
+                tv.setMaxLines(1);
+                tv.setSingleLine(true);
+                tv.setEllipsize(TextUtils.TruncateAt.END);
+                tv.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_HORIZONTAL);
+                return tv;
+            });
+
+            Animation anim = AnimationUtils.loadAnimation(context, R.anim.text_in);
+            anim.setInterpolator(Easings.easeInOutQuad);
+            countryButton.setInAnimation(anim);
+
+            chevronRight = new ImageView(context);
+            chevronRight.setImageResource(R.drawable.msg_inputarrow);
+
+            LinearLayout countryButtonLinearLayout = new LinearLayout(context);
+            countryButtonLinearLayout.setOrientation(HORIZONTAL);
+            countryButtonLinearLayout.setGravity(Gravity.CENTER_VERTICAL);
+            countryButtonLinearLayout.addView(countryButton, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 0, 0, 0, 0));
+            countryButtonLinearLayout.addView(chevronRight, LayoutHelper.createLinearRelatively(24, 24, 0, 0, 0, 14, 0));
+
+            countryOutlineView = new OutlineTextContainerDivoView(context);
+            countryOutlineView.setText(getString(R.string.Country));
+            countryOutlineView.addView(countryButtonLinearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, 0, 0, 0));
+            countryOutlineView.setForceUseCenter(true);
+            countryOutlineView.setFocusable(true);
+            countryOutlineView.setContentDescription(getString(R.string.Country));
+            countryOutlineView.setOnFocusChangeListener((v, hasFocus) -> countryOutlineView.animateSelection(hasFocus ? 1 : 0));
+            countryOutlineView.setOnClickListener(view -> {
+                CountrySelectActivity fragment = new CountrySelectActivity(true, countriesArray);
+                fragment.setCountrySelectActivityDelegate((country) -> {
+                    selectCountry(country);
+//                    AndroidUtilities.runOnUIThread(() -> showKeyboard(phoneField), 300);
+//                    phoneField.requestFocus();
+//                    phoneField.setSelection(phoneField.length());
+                });
+                presentFragment(fragment);
+            });
+
+            buildEditTextLayout(AndroidUtilities.isSmallScreen());
+
+
+            wrongNumber = new TextView(context);
+            wrongNumber.setText(getString("CancelRegistration", R.string.CancelRegistration));
+            wrongNumber.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_HORIZONTAL);
+            wrongNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            wrongNumber.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            wrongNumber.setPadding(0, AndroidUtilities.dp(24), 0, 0);
+            wrongNumber.setVisibility(GONE);
+            addView(wrongNumber, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT), 0, 20, 0, 0));
+            wrongNumber.setOnClickListener(view -> {
+                if (radialProgressView.getTag() != null) {
+                    return;
+                }
+                onBackPressed(false);
+            });
+
+
+            buttonContainer.setOnNext(() -> {
+                onDoneButtonPressed();   // behave exactly like the FAB
+                return kotlin.Unit.INSTANCE;
+            });
+
+            buttonContainer.setOnBack(() -> {
+                onBackPressed(false);
+                return kotlin.Unit.INSTANCE;
+            });
+
+            addView(buttonContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.BOTTOM));
+
+            loadCountries();
+        }
+
+
+        @Override
+        public void updateColors() {
+            avatarDrawable.invalidateSelf();
+            titleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            subTitleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            descriptionTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_subtitle_color));
+            firstNameField.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            firstNameField.setCursorColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            lastNameField.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            lastNameField.setCursorColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            wrongNumber.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
+
+            firstNameOutlineView.updateColor();
+            lastNameOutlineView.updateColor();
+        }
+
+        public void selectCountry(CountrySelectActivity.Country country) {
+            String code = country.code;
+            setCountryHint(code, country);
+            currentCountry = country;
+            // countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
+
+            MessagesController.getGlobalMainSettings().edit().putString("phone_code_last_matched_" + country.code, country.shortname).apply();
+        }
+
+        private String countryCodeForHint;
+
+        private void setCountryHint(String code, CountrySelectActivity.Country country) {
+            SpannableStringBuilder sb = new SpannableStringBuilder();
+            String flag = LocaleController.getLanguageFlag(country.shortname);
+            if (flag != null) {
+                sb.append(flag).append(" ");
+                sb.setSpan(new ReplacementSpan() {
+                    @Override
+                    public int getSize(@NonNull Paint paint, CharSequence text, int start, int end, @Nullable Paint.FontMetricsInt fm) {
+                        return AndroidUtilities.dp(16);
+                    }
+
+                    @Override
+                    public void draw(@NonNull Canvas canvas, CharSequence text, int start, int end, float x, int top, int y, int bottom, @NonNull Paint paint) {
+                    }
+                }, flag.length(), flag.length() + 1, 0);
+            }
+            sb.append(country.name);
+            setCountryButtonText(Emoji.replaceEmoji(sb, countryButton.getCurrentView().getPaint().getFontMetricsInt(), AndroidUtilities.dp(20), false));
+            countryCodeForHint = code;
+            // invalidateCountryHint();
+        }
+
+        private void setCountryButtonText(CharSequence cs) {
+            Animation anim = AnimationUtils.loadAnimation(ApplicationLoader.applicationContext, countryButton.getCurrentView().getText() != null && cs == null ? R.anim.text_out_down : R.anim.text_out);
+            anim.setInterpolator(Easings.easeInOutQuad);
+            countryButton.setOutAnimation(anim);
+
+            CharSequence prevText = countryButton.getCurrentView().getText();
+            countryButton.setText(cs, !(TextUtils.isEmpty(cs) && TextUtils.isEmpty(prevText)) && !Objects.equals(prevText, cs));
+            countryOutlineView.animateSelection(cs != null ? 1f : 0f);
+        }
+
+        private void loadCountries() {
+            TLRPC.TL_help_getCountriesList req = new TLRPC.TL_help_getCountriesList();
+            req.lang_code = LocaleController.getInstance().getCurrentLocaleInfo() != null ? LocaleController.getInstance().getCurrentLocaleInfo().getLangCode() : Locale.getDefault().getCountry();
+            getConnectionsManager().sendRequest(req, (response, error) -> {
+                AndroidUtilities.runOnUIThread(() -> {
+                    if (error == null) {
+                        countriesArray.clear();
+
+                        TLRPC.TL_help_countriesList help_countriesList = (TLRPC.TL_help_countriesList) response;
+                        for (int i = 0; i < help_countriesList.countries.size(); i++) {
+                            TLRPC.TL_help_country c = help_countriesList.countries.get(i);
+                            for (int k = 0; k < c.country_codes.size(); k++) {
+                                TLRPC.TL_help_countryCode countryCode = c.country_codes.get(k);
+                                if (countryCode != null) {
+                                    CountrySelectActivity.Country countryWithCode = new CountrySelectActivity.Country();
+                                    countryWithCode.name = c.name;
+                                    countryWithCode.defaultName = c.default_name;
+                                    if (countryWithCode.name == null && countryWithCode.defaultName != null) {
+                                        countryWithCode.name = countryWithCode.defaultName;
+                                    }
+                                    countryWithCode.code = countryCode.country_code;
+                                    countryWithCode.shortname = c.iso2;
+                                    countriesArray.add(countryWithCode);
+                                }
+                            }
+                        }
+
+                        if (activityMode == MODE_CHANGE_PHONE_NUMBER) {
+                            String number = PhoneFormat.stripExceptNumbers(UserConfig.getInstance(currentAccount).getClientPhone());
+                            boolean ok = false;
+                            if (!TextUtils.isEmpty(number)) {
+                                if (number.length() > 4) {
+                                    for (int a = 4; a >= 1; a--) {
+                                        String sub = number.substring(0, a);
+                                        CountrySelectActivity.Country country2;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }, ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagFailOnServerErrors);
+        }
+
+        private void buildEditTextLayout(boolean small) {
+            boolean firstHasFocus = firstNameField.hasFocus(), lastHasFocus = lastNameField.hasFocus();
+            editTextContainer.removeAllViews();
+
+            if (small) {
+                LinearLayout linearLayout = new LinearLayout(getParentActivity());
+                linearLayout.setOrientation(HORIZONTAL);
+
+                firstNameOutlineView.setText(getString(R.string.FirstNameSmall));
+                lastNameOutlineView.setText(getString(R.string.LastNameSmall));
+
+                linearLayout.addView(firstNameOutlineView, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 0, 0, 8, 0));
+                linearLayout.addView(lastNameOutlineView, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 8, 0, 0, 0));
+
+                editTextContainer.addView(linearLayout);
+
+                if (firstHasFocus) {
+                    firstNameField.requestFocus();
+                    AndroidUtilities.showKeyboard(firstNameField);
+                } else if (lastHasFocus) {
+                    lastNameField.requestFocus();
+                    AndroidUtilities.showKeyboard(lastNameField);
+                }
+            } else {
+                firstNameOutlineView.setText("Name Agency");
+                lastNameOutlineView.setText("Enter name your website");
+                editTextContainer.addView(firstNameOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 0, 8, 0));
+                editTextContainer.addView(countryOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 58, Gravity.TOP, 8, 82, 8, 0));
+                editTextContainer.addView(lastNameOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 164, 8, 0));
+            }
+
+        }
+
+        @Override
+        public void didUploadPhoto(final TLRPC.InputFile photo, final TLRPC.InputFile video, double videoStartTimestamp, String videoPath, final TLRPC.PhotoSize bigSize, final TLRPC.PhotoSize smallSize, boolean isVideo, TLRPC.VideoSize emojiMarkup) {
+            AndroidUtilities.runOnUIThread(() -> {
+                avatar = smallSize.location;
+                avatarBig = bigSize.location;
+                avatarImage.setImage(ImageLocation.getForLocal(avatar), "50_50", avatarDrawable, null);
+            });
+        }
+
+        private void showAvatarProgress(boolean show, boolean animated) {
+            if (avatarEditor == null) {
+                return;
+            }
+            if (avatarAnimation != null) {
+                avatarAnimation.cancel();
+                avatarAnimation = null;
+            }
+            if (animated) {
+                avatarAnimation = new AnimatorSet();
+                if (show) {
+                    avatarProgressView.setVisibility(View.VISIBLE);
+
+                    avatarAnimation.playTogether(ObjectAnimator.ofFloat(avatarEditor, View.ALPHA, 0.0f),
+                            ObjectAnimator.ofFloat(avatarProgressView, View.ALPHA, 1.0f));
+                } else {
+                    avatarEditor.setVisibility(View.VISIBLE);
+
+                    avatarAnimation.playTogether(ObjectAnimator.ofFloat(avatarEditor, View.ALPHA, 1.0f),
+                            ObjectAnimator.ofFloat(avatarProgressView, View.ALPHA, 0.0f));
+                }
+                avatarAnimation.setDuration(180);
+                avatarAnimation.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        if (avatarAnimation == null || avatarEditor == null) {
+                            return;
+                        }
+                        if (show) {
+                            avatarEditor.setVisibility(View.INVISIBLE);
+                        } else {
+                            avatarProgressView.setVisibility(View.INVISIBLE);
+                        }
+                        avatarAnimation = null;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        avatarAnimation = null;
+                    }
+                });
+                avatarAnimation.start();
+            } else {
+                if (show) {
+                    avatarEditor.setAlpha(1.0f);
+                    avatarEditor.setVisibility(View.INVISIBLE);
+                    avatarProgressView.setAlpha(1.0f);
+                    avatarProgressView.setVisibility(View.VISIBLE);
+                } else {
+                    avatarEditor.setAlpha(1.0f);
+                    avatarEditor.setVisibility(View.VISIBLE);
+                    avatarProgressView.setAlpha(0.0f);
+                    avatarProgressView.setVisibility(View.INVISIBLE);
+                }
+            }
+        }
+
+        @Override
+        public boolean onBackPressed(boolean force) {
+            if (!force) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
+                builder.setTitle(getString(R.string.Warning));
+                builder.setMessage(getString("AreYouSureRegistration", R.string.AreYouSureRegistration));
+                builder.setNegativeButton(getString("Stop", R.string.Stop), (dialogInterface, i) -> {
+                    onBackPressed(true);
+                    setPage(VIEW_PHONE_INPUT, true, null, true);
+                    hidePrivacyView();
+                });
+                builder.setPositiveButton(getString("Continue", R.string.Continue), null);
+                showDialog(builder.create());
+                return false;
+            }
+            needHideProgress(true);
+            nextPressed = false;
+            currentParams = null;
+            return true;
+        }
+
+        @Override
+        public String getHeaderName() {
+            return getString("YourName", R.string.YourName);
+        }
+
+        @Override
+        public void onCancelPressed() {
+            nextPressed = false;
+        }
+
+        @Override
+        public boolean needBackButton() {
+            return true;
+        }
+
+        @Override
+        public void onShow() {
+            super.onShow();
+            if (firstNameField != null) {
+                firstNameField.requestFocus();
+                firstNameField.setSelection(firstNameField.length());
+                AndroidUtilities.showKeyboard(firstNameField);
+            }
+            AndroidUtilities.runOnUIThread(() -> {
+                if (firstNameField != null) {
+                    firstNameField.requestFocus();
+                    firstNameField.setSelection(firstNameField.length());
+                    AndroidUtilities.showKeyboard(firstNameField);
+                }
+            }, SHOW_DELAY);
+        }
+
+        @Override
+        public void setParams(Bundle params, boolean restore) {
+            if (params == null) {
+                return;
+            }
+            firstNameField.setText("");
+            lastNameField.setText("");
+            requestPhone = params.getString("phoneFormated");
+            phoneHash = params.getString("phoneHash");
+            currentParams = params;
+        }
+
+        boolean flag = false;
+
+        @Override
+        public void onNextPressed(String code) {
+            if (nextPressed) {
+                return;
+            }
+            if (firstNameField.length() == 0) {
+                onFieldError(firstNameOutlineView, true);
+                return;
+            }
+            nextPressed = true;
+
+            TLRPC.TL_auth_signUp req = new TLRPC.TL_auth_signUp();
+            req.phone_code_hash = phoneHash;
+            req.phone_number = requestPhone;
+            req.first_name = firstNameField.getText().toString();
+            req.last_name = lastNameField.getText().toString();
+            req.no_joined_notifications = true;
+
+            TLRPC.TL_modelInfo modelInfo = new TLRPC.TL_modelInfo();
+            modelInfo.age = userAge;
+            modelInfo.gender = 1;
+            modelInfo.country_code = currentCountry.shortname;
+            modelInfo.url = "https://www.google.com/";
+            modelInfo.name = firstNameField.getText().toString() + " " + lastNameField.getText().toString();
+            ;
+            modelInfo.agency_name = "empty name";
+            modelInfo.type_id = 1; // 1 2
+            req.model_info = modelInfo;
+            if (flag) {
                 return;
             }
             flag = true;
@@ -9413,8 +10856,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             popupLayout.setBackground(Theme.createRoundRectDrawable(AndroidUtilities.dp(12), Theme.getColor(Theme.key_dialogBackground)));
             confirmMessageView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2));
             numberView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-            editTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
-            confirmTextView.setTextColor(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color));
+            editTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            confirmTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
             popupFabContainer.setBackground(Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(56), Theme.getColor(Theme.key_chats_actionBackground), Theme.getColor(Theme.key_chats_actionPressedBackground)));
             floatingProgressView.setProgressColor(Theme.getColor(Theme.key_chats_actionIcon));
         }
