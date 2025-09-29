@@ -8965,6 +8965,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             currentParams = params;
         }
 
+        boolean flag = false;
+
         @Override
         public void onNextPressed(String code) {
             if (nextPressed) {
@@ -8992,7 +8994,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             modelInfo.agency_name = "test";
             modelInfo.type_id  = 1; // 1 2
             req.model_info =   modelInfo;
-
+            if(flag){
+                return;
+            }
+            flag = true;
 
             needShowProgress(0);
             ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {

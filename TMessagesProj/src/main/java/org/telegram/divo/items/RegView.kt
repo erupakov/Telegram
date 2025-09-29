@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -128,23 +129,25 @@ fun NextBackButtonView(
     onNext: () -> Unit = {},
     onBack: () -> Unit = {}
 ) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        UIButtonBack(
-
-            onClick = onBack,
-            modifier = Modifier.weight(1f),
-            text = "Back"
-        )
-        UIButton(
-            modifier = Modifier.weight(1f),
-            text = "Save",
-            onClick = onNext,
-        )
+    Box(Modifier){
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp, top = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            UIButtonBack(
+                onClick = onBack,
+                modifier = Modifier.weight(1f),
+                text = "Back"
+            )
+            UIButton(
+                modifier = Modifier.weight(1f),
+                text = "Save",
+                onClick = onNext,
+            )
+        }
     }
+
 }

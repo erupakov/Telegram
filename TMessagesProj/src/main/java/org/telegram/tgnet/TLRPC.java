@@ -59552,6 +59552,11 @@ public class TLRPC {
         public String last_name;
         public TL_modelInfo model_info;
 
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return auth_Authorization.TLdeserialize(stream, constructor, exception);
+        }
+
         public static TL_auth_signUp TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
             if (TL_auth_signUp.constructor != constructor) {
                 if (exception) {
