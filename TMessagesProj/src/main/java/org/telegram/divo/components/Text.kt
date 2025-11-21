@@ -16,11 +16,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont
+import org.telegram.divo.style.DivoFont.HelveticaNeueLtCom77
 
 @Preview
 @Composable
@@ -41,26 +44,26 @@ private fun TextPreview(){
 
 @Composable
 fun TextAppBar(
-    text: String,
-    modifier: Modifier = Modifier,
-    color: Color = Color.Unspecified,
-    fontSize: TextUnit = TextUnit.Unspecified,
-    fontStyle: FontStyle? = null,
-    fontWeight: FontWeight? = null,
-    fontFamily: FontFamily? = null,
-    letterSpacing: TextUnit = TextUnit.Unspecified,
-    textDecoration: TextDecoration? = null,
-    textAlign: TextAlign? = null,
-    lineHeight: TextUnit = TextUnit.Unspecified,
-    overflow: TextOverflow = TextOverflow.Clip,
-    softWrap: Boolean = true,
-    maxLines: Int = Int.MAX_VALUE,
-    minLines: Int = 1,
-    onTextLayout: ((TextLayoutResult) -> Unit)? = null,
-    style: TextStyle = LocalTextStyle.current
+        text: String,
+        modifier: Modifier = Modifier,
+        color: Color = Color.Unspecified,
+        fontSize: TextUnit = TextUnit.Unspecified,
+        fontStyle: FontStyle? = null,
+        fontWeight: FontWeight? = null,
+        fontFamily: FontFamily? = HelveticaNeueLtCom77,
+        letterSpacing: TextUnit = TextUnit.Unspecified,
+        textDecoration: TextDecoration? = null,
+        textAlign: TextAlign? = null,
+        lineHeight: TextUnit = TextUnit.Unspecified,
+        overflow: TextOverflow = TextOverflow.Clip,
+        softWrap: Boolean = true,
+        maxLines: Int = Int.MAX_VALUE,
+        minLines: Int = 1,
+        onTextLayout: ((TextLayoutResult) -> Unit)? = null,
+        style: TextStyle = AppTheme.typography.appBar
 ){
     Text(
-        text = text,
+        text = text.toUpperCase(),
         modifier = modifier,
         color = color,
         fontSize = fontSize,

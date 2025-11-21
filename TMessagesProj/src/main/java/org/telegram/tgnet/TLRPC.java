@@ -83,6 +83,1425 @@ public class TLRPC {
 
     public static final int LAYER = 191;
 
+    // DIVO START  --------------------------
+
+//    public static abstract class Update extends TLObject {
+//        public TL_event_short event;
+//        public long event_id;
+//        public TL_event_user applicant;
+//        public String event_title;
+//        public TL_event_user user;
+//
+//        public static Update TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+//            Update result = null;
+//            switch (constructor) {
+//                case 0x235fef94:
+//                    result = new TL_event_update();
+//                    break;
+//                case 0x20fa7e8f:
+//                    result = new TL_event_updateApplicationApproved();
+//                    break;
+//                case 0x2a1eac9b:
+//                    result = new TL_event_updateApplicationRejected();
+//                    break;
+//                case 0x3853b4e9:
+//                    result = new TL_event_updateEventLiked();
+//                    break;
+//                case 0x6ed5515d:
+//                    result = new TL_event_updateNewApplicant();
+//                    break;
+//            }
+//            if (result == null && exception) {
+//                throw new RuntimeException(String.format("can't parse magic %x in Update", constructor));
+//            }
+//            if (result != null) {
+//                result.readParams(stream, exception);
+//            }
+//            return result;
+//        }
+//    }
+
+//    public static class TL_event_update extends Update {
+//        public static int constructor = 0x235fef94;
+//
+//
+//        public void readParams(AbstractSerializedData stream, boolean exception) {
+//            event = TL_event_short.TLdeserialize(stream, stream.readInt32(exception), exception);
+//        }
+//
+//        public void serializeToStream(AbstractSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            event.serializeToStream(stream);
+//        }
+//    }
+//
+//    public static class TL_event_updateApplicationApproved extends Update {
+//        public static int constructor = 0x20fa7e8f;
+//
+//
+//        public void readParams(AbstractSerializedData stream, boolean exception) {
+//            event_id = stream.readInt64(exception);
+//            event_title = stream.readString(exception);
+//        }
+//
+//        public void serializeToStream(AbstractSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            stream.writeInt64(event_id);
+//            stream.writeString(event_title);
+//        }
+//    }
+
+//    public static class TL_event_updateApplicationRejected extends Update {
+//        public static int constructor = 0x2a1eac9b;
+//
+//
+//        public void readParams(AbstractSerializedData stream, boolean exception) {
+//            event_id = stream.readInt64(exception);
+//            event_title = stream.readString(exception);
+//        }
+//
+//        public void serializeToStream(AbstractSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            stream.writeInt64(event_id);
+//            stream.writeString(event_title);
+//        }
+//    }
+
+//    public static class TL_event_updateEventLiked extends Update {
+//        public static int constructor = 0x3853b4e9;
+//
+//
+//        public void readParams(AbstractSerializedData stream, boolean exception) {
+//            event_id = stream.readInt64(exception);
+//            user = TL_event_user.TLdeserialize(stream, stream.readInt32(exception), exception);
+//        }
+//
+//        public void serializeToStream(AbstractSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            stream.writeInt64(event_id);
+//            user.serializeToStream(stream);
+//        }
+//    }
+
+//    public static class TL_event_updateNewApplicant extends Update {
+//        public static int constructor = 0x6ed5515d;
+//
+//
+//        public void readParams(AbstractSerializedData stream, boolean exception) {
+//            event_id = stream.readInt64(exception);
+//            applicant = TL_event_user.TLdeserialize(stream, stream.readInt32(exception), exception);
+//        }
+//
+//        public void serializeToStream(AbstractSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            stream.writeInt64(event_id);
+//            applicant.serializeToStream(stream);
+//        }
+//    }
+    //Update end
+
+    //event_AvailableParameter start
+    public static class TL_event_availableParameter extends TLObject {
+        public static int constructor = 0xb7694480;
+
+        public long id;
+        public String key;
+        public String label;
+        public int display_order;
+
+        public static TL_event_availableParameter TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_availableParameter.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_availableParameter", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_availableParameter result = new TL_event_availableParameter();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            id = stream.readInt64(exception);
+            key = stream.readString(exception);
+            label = stream.readString(exception);
+            display_order = stream.readInt32(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(id);
+            stream.writeString(key);
+            stream.writeString(label);
+            stream.writeInt32(display_order);
+        }
+    }
+    //event_AvailableParameter end
+
+    //event_City start
+    public static class TL_event_city extends TLObject {
+        public static int constructor = 0x2e2de826;
+
+        public int city_id;
+        public String city;
+
+        public static TL_event_city TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_city.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_city", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_city result = new TL_event_city();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            city_id = stream.readInt32(exception);
+            city = stream.readString(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(city_id);
+            stream.writeString(city);
+        }
+    }
+    //event_City end
+
+    //event_Country start
+    public static class TL_event_country extends TLObject {
+        public static int constructor = 0x6073bcbd;
+
+        public int country_id;
+        public String country;
+
+        public static TL_event_country TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_country.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_country", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_country result = new TL_event_country();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            country_id = stream.readInt32(exception);
+            country = stream.readString(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(country_id);
+            stream.writeString(country);
+        }
+    }
+    //event_Country end
+
+    //event_Error start
+    public static class TL_event_error extends TLObject {
+        public static int constructor = 0x83f09204;
+
+        public int code;
+        public String message;
+
+        public static TL_event_error TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_error.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_error", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_error result = new TL_event_error();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            code = stream.readInt32(exception);
+            message = stream.readString(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(code);
+            stream.writeString(message);
+        }
+    }
+    //event_Error end
+
+    //event_Event start
+    public static class TL_event_event extends TLObject {
+        public static int constructor = 0x2d9e0558;
+
+        public long id;
+        public TL_event_user creator;
+        public String title;
+        public String description;
+        public TL_event_photo cover_photo;
+        public String event_date;
+        public String event_time;
+        public TL_event_location location;
+        public TL_event_eventType event_type;
+        public TL_event_stats stats;
+        public ArrayList<TL_event_eventParameter> parameters = new ArrayList<>();
+        public ArrayList<TL_event_eventParameter> apply_parameters = new ArrayList<>();
+        public ArrayList<TL_event_photo> gallery = new ArrayList<>();
+        public ArrayList<TL_event_short> previous_events = new ArrayList<>();
+        public Bool is_creator;
+        public int created_at;
+        public int updated_at;
+
+        public static TL_event_event TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_event.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_event", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_event result = new TL_event_event();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            id = stream.readInt64(exception);
+            creator = TL_event_user.TLdeserialize(stream, stream.readInt32(exception), exception);
+            title = stream.readString(exception);
+            description = stream.readString(exception);
+            cover_photo = TL_event_photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            event_date = stream.readString(exception);
+            event_time = stream.readString(exception);
+            location = TL_event_location.TLdeserialize(stream, stream.readInt32(exception), exception);
+            event_type = TL_event_eventType.TLdeserialize(stream, stream.readInt32(exception), exception);
+            stats = TL_event_stats.TLdeserialize(stream, stream.readInt32(exception), exception);
+            int magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            int count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TL_event_eventParameter object = TL_event_eventParameter.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                parameters.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TL_event_eventParameter object = TL_event_eventParameter.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                apply_parameters.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TL_event_photo object = TL_event_photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                gallery.add(object);
+            }
+            magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TL_event_short object = TL_event_short.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                previous_events.add(object);
+            }
+            is_creator = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+            created_at = stream.readInt32(exception);
+            updated_at = stream.readInt32(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(id);
+            creator.serializeToStream(stream);
+            stream.writeString(title);
+            stream.writeString(description);
+            cover_photo.serializeToStream(stream);
+            stream.writeString(event_date);
+            stream.writeString(event_time);
+            location.serializeToStream(stream);
+            event_type.serializeToStream(stream);
+            stats.serializeToStream(stream);
+            stream.writeInt32(0x1cb5c415);
+            int count = parameters.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                parameters.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(0x1cb5c415);
+            count = apply_parameters.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                apply_parameters.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(0x1cb5c415);
+            count = gallery.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                gallery.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(0x1cb5c415);
+            count = previous_events.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                previous_events.get(a).serializeToStream(stream);
+            }
+            is_creator.serializeToStream(stream);
+            stream.writeInt32(created_at);
+            stream.writeInt32(updated_at);
+        }
+    }
+    //event_Event end
+
+    //event_EventParameter start
+    public static class TL_event_eventParameter extends TLObject {
+        public static int constructor = 0x6fa163f7;
+
+        public long id;
+        public String key;
+        public String label;
+        public String value;
+
+        public static TL_event_eventParameter TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_eventParameter.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_eventParameter", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_eventParameter result = new TL_event_eventParameter();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            id = stream.readInt64(exception);
+            key = stream.readString(exception);
+            label = stream.readString(exception);
+            value = stream.readString(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(id);
+            stream.writeString(key);
+            stream.writeString(label);
+            stream.writeString(value);
+        }
+    }
+    //event_EventParameter end
+
+    //event_EventType start
+    public static class TL_event_eventType extends TLObject {
+        public static int constructor = 0x18324ee3;
+
+        public int type_id;
+        public String title;
+
+        public static TL_event_eventType TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_eventType.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_eventType", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_eventType result = new TL_event_eventType();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            type_id = stream.readInt32(exception);
+            title = stream.readString(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(type_id);
+            stream.writeString(title);
+        }
+    }
+    //event_EventType end
+
+    //event_Events start
+    public static class TL_event_events extends TLObject {
+        public static int constructor = 0xf7b42232;
+
+        public ArrayList<TL_event_short> events = new ArrayList<>();
+        public int total_count;
+        public Bool has_more;
+
+        public static TL_event_events TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_events.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_events", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_events result = new TL_event_events();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            int magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            int count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TL_event_short object = TL_event_short.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                events.add(object);
+            }
+            total_count = stream.readInt32(exception);
+            has_more = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(0x1cb5c415);
+            int count = events.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                events.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(total_count);
+            has_more.serializeToStream(stream);
+        }
+    }
+    //event_Events end
+
+    //event_Filter start
+    public static class TL_event_filter extends TLObject {
+        public static int constructor = 0xa5095ace;
+
+        public String search_query;
+        public TL_event_location location;
+        public TL_event_eventType event_type;
+        public String date_from;
+        public String date_to;
+        public TL_event_memberTypeFilter member_type;
+
+        public static TL_event_filter TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_filter.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_filter", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_filter result = new TL_event_filter();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            search_query = stream.readString(exception);
+            location = TL_event_location.TLdeserialize(stream, stream.readInt32(exception), exception);
+            event_type = TL_event_eventType.TLdeserialize(stream, stream.readInt32(exception), exception);
+            date_from = stream.readString(exception);
+            date_to = stream.readString(exception);
+            member_type = TL_event_memberTypeFilter.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeString(search_query);
+            location.serializeToStream(stream);
+            event_type.serializeToStream(stream);
+            stream.writeString(date_from);
+            stream.writeString(date_to);
+            member_type.serializeToStream(stream);
+        }
+    }
+    //event_Filter end
+
+    //event_Location start
+    public static class TL_event_location extends TLObject {
+        public static int constructor = 0x4b2a6109;
+
+        public TL_event_country country;
+        public TL_event_city city;
+
+        public static TL_event_location TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_location.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_location", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_location result = new TL_event_location();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            country = TL_event_country.TLdeserialize(stream, stream.readInt32(exception), exception);
+            city = TL_event_city.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            country.serializeToStream(stream);
+            city.serializeToStream(stream);
+        }
+    }
+    //event_Location end
+
+    //event_MemberTypeFilter start
+    public static class TL_event_memberTypeFilter extends TLObject {
+        public static int constructor = 0x34e0b211;
+
+        public Bool all_members;
+        public Bool model;
+        public Bool new_talents;
+        public Bool booker;
+        public Bool scout;
+
+        public static TL_event_memberTypeFilter TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_memberTypeFilter.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_memberTypeFilter", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_memberTypeFilter result = new TL_event_memberTypeFilter();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            all_members = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+            model = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+            new_talents = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+            booker = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+            scout = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            all_members.serializeToStream(stream);
+            model.serializeToStream(stream);
+            new_talents.serializeToStream(stream);
+            booker.serializeToStream(stream);
+            scout.serializeToStream(stream);
+        }
+    }
+    //event_MemberTypeFilter end
+
+    //event_Members start
+    public static class TL_event_members extends TLObject {
+        public static int constructor = 0x3d4e065c;
+
+        public ArrayList<TL_event_user> members = new ArrayList<>();
+        public int total_count;
+        public Bool has_more;
+
+        public static TL_event_members TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_members.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_members", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_members result = new TL_event_members();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            int magic = stream.readInt32(exception);
+            if (magic != 0x1cb5c415) {
+                if (exception) {
+                    throw new RuntimeException(String.format("wrong Vector magic, got %x", magic));
+                }
+                return;
+            }
+            int count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                TL_event_user object = TL_event_user.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return;
+                }
+                members.add(object);
+            }
+            total_count = stream.readInt32(exception);
+            has_more = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(0x1cb5c415);
+            int count = members.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                members.get(a).serializeToStream(stream);
+            }
+            stream.writeInt32(total_count);
+            has_more.serializeToStream(stream);
+        }
+    }
+    //event_Members end
+
+    //event_Photo start
+    public static class TL_event_photo extends TLObject {
+        public static int constructor = 0xb86f0e06;
+
+        public Photo photo;
+        public int display_order;
+
+        public static TL_event_photo TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_photo.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_photo", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_photo result = new TL_event_photo();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            photo = Photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            display_order = stream.readInt32(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            photo.serializeToStream(stream);
+            stream.writeInt32(display_order);
+        }
+    }
+    //event_Photo end
+
+    //event_Short start
+    public static class TL_event_short extends TLObject {
+        public static int constructor = 0xa0ae3434;
+
+        public long id;
+        public TL_event_user creator;
+        public String title;
+        public TL_event_photo cover_photo;
+        public String event_date;
+        public String event_time;
+        public TL_event_location location;
+        public TL_event_eventType event_type;
+        public TL_event_stats stats;
+        public Bool is_creator;
+        public int created_at;
+
+        public static TL_event_short TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_short.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_short", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_short result = new TL_event_short();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            id = stream.readInt64(exception);
+            creator = TL_event_user.TLdeserialize(stream, stream.readInt32(exception), exception);
+            title = stream.readString(exception);
+            cover_photo = TL_event_photo.TLdeserialize(stream, stream.readInt32(exception), exception);
+            event_date = stream.readString(exception);
+            event_time = stream.readString(exception);
+            location = TL_event_location.TLdeserialize(stream, stream.readInt32(exception), exception);
+            event_type = TL_event_eventType.TLdeserialize(stream, stream.readInt32(exception), exception);
+            stats = TL_event_stats.TLdeserialize(stream, stream.readInt32(exception), exception);
+            is_creator = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+            created_at = stream.readInt32(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(id);
+            creator.serializeToStream(stream);
+            stream.writeString(title);
+            cover_photo.serializeToStream(stream);
+            stream.writeString(event_date);
+            stream.writeString(event_time);
+            location.serializeToStream(stream);
+            event_type.serializeToStream(stream);
+            stats.serializeToStream(stream);
+            is_creator.serializeToStream(stream);
+            stream.writeInt32(created_at);
+        }
+    }
+    //event_Short end
+
+    //event_Stats start
+    public static class TL_event_stats extends TLObject {
+        public static int constructor = 0x59e488b6;
+
+        public int participants_count;
+        public int views_count;
+        public int likes_count;
+        public Bool is_liked;
+
+        public static TL_event_stats TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_stats.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_stats", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_stats result = new TL_event_stats();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            participants_count = stream.readInt32(exception);
+            views_count = stream.readInt32(exception);
+            likes_count = stream.readInt32(exception);
+            is_liked = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(participants_count);
+            stream.writeInt32(views_count);
+            stream.writeInt32(likes_count);
+            is_liked.serializeToStream(stream);
+        }
+    }
+    //event_Stats end
+
+    //event_Success start
+    public static class TL_event_success extends TLObject {
+        public static int constructor = 0x981dd22c;
+
+        public Bool success;
+        public String message;
+
+        public static TL_event_success TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_success.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_success", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_success result = new TL_event_success();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            success = Bool.TLdeserialize(stream, stream.readInt32(exception), exception);
+            message = stream.readString(exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            success.serializeToStream(stream);
+            stream.writeString(message);
+        }
+    }
+    //event_Success end
+
+    //event_User start
+    public static class TL_event_user extends TLObject {
+        public static int constructor = 0x78349582;
+
+        public User user;
+
+        public static TL_event_user TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
+            if (TL_event_user.constructor != constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in TL_event_user", constructor));
+                } else {
+                    return null;
+                }
+            }
+            TL_event_user result = new TL_event_user();
+            result.readParams(stream, exception);
+            return result;
+        }
+
+        public void readParams(AbstractSerializedData stream, boolean exception) {
+            user = User.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            user.serializeToStream(stream);
+        }
+    }
+    //event_User end
+
+    public static class TL_event_addEventPhoto extends TLObject {
+        public static int constructor = 0xe5c3ca41;
+
+        public long user_id;
+        public long event_id;
+        public long photo_id;
+        public int display_order;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_event_photo.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+            stream.writeInt64(photo_id);
+            stream.writeInt32(display_order);
+        }
+    }
+
+    public static class TL_event_applyToEvent extends TLObject {
+        public static int constructor = 0xd4ad106b;
+
+        public long user_id;
+        public long event_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+        }
+    }
+
+    public static class TL_event_approveApplicant extends TLObject {
+        public static int constructor = 0x5bc78467;
+
+        public long event_id;
+        public long user_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(event_id);
+            stream.writeInt64(user_id);
+        }
+    }
+
+    public static class TL_event_createEvent extends TLObject {
+        public static int constructor = 0xf224aa3d;
+
+        public long user_id;
+        public String title;
+        public String description;
+        public TL_event_eventType event_type;
+        public String event_date;
+        public String event_time;
+        public TL_event_location location;
+        public long cover_photo_id;
+        public ArrayList<String> enabled_parameter_keys = new ArrayList<>();
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_event_event.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeString(title);
+            stream.writeString(description);
+            event_type.serializeToStream(stream);
+            stream.writeString(event_date);
+            stream.writeString(event_time);
+            location.serializeToStream(stream);
+            stream.writeInt64(cover_photo_id);
+            stream.writeInt32(0x1cb5c415);
+            int count = enabled_parameter_keys.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                stream.writeString(enabled_parameter_keys.get(a));
+            }
+        }
+    }
+
+    public static class TL_event_deleteEvent extends TLObject {
+        public static int constructor = 0x9ad076f8;
+
+        public long user_id;
+        public long event_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+        }
+    }
+
+    public static class TL_event_deleteEventPhoto extends TLObject {
+        public static int constructor = 0xdd801bb;
+
+        public long user_id;
+        public long event_id;
+        public long photo_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+            stream.writeInt64(photo_id);
+        }
+    }
+
+    public static class TL_event_getAvailableParameters extends TLObject {
+        public static int constructor = 0x79aac9ef;
+
+        public long user_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            Vector vector = new Vector();
+            int size = stream.readInt32(exception);
+            for (int a = 0; a < size; a++) {
+                TL_event_availableParameter object = TL_event_availableParameter.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return vector;
+                }
+                vector.objects.add(object);
+            }
+            return vector;
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+        }
+    }
+
+    public static class TL_event_getCities extends TLObject {
+        public static int constructor = 0x532e0cce;
+
+        public int country_id;
+        public int offset;
+        public int limit;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            Vector vector = new Vector();
+            int size = stream.readInt32(exception);
+            for (int a = 0; a < size; a++) {
+                TL_event_city object = TL_event_city.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return vector;
+                }
+                vector.objects.add(object);
+            }
+            return vector;
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(country_id);
+            stream.writeInt32(offset);
+            stream.writeInt32(limit);
+        }
+    }
+
+    public static class TL_event_getCountries extends TLObject {
+        public static int constructor = 0xf471c2cc;
+
+        public int offset;
+        public int limit;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            Vector vector = new Vector();
+            int size = stream.readInt32(exception);
+            for (int a = 0; a < size; a++) {
+                TL_event_country object = TL_event_country.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return vector;
+                }
+                vector.objects.add(object);
+            }
+            return vector;
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(offset);
+            stream.writeInt32(limit);
+        }
+    }
+
+    public static class TL_event_getEvent extends TLObject {
+        public static int constructor = 0x6a620654;
+
+        public long user_id;
+        public long event_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_event_event.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+        }
+    }
+
+    public static class TL_event_getEventApplicants extends TLObject {
+        public static int constructor = 0xc57f395c;
+
+        public long user_id;
+        public long event_id;
+        public int offset;
+        public int limit;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_event_members.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+            stream.writeInt32(offset);
+            stream.writeInt32(limit);
+        }
+    }
+
+    public static class TL_event_getEventMembers extends TLObject {
+        public static int constructor = 0x78e9dc23;
+
+        public long user_id;
+        public long event_id;
+        public TL_event_memberTypeFilter filter;
+        public String search_query;
+        public int offset;
+        public int limit;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_event_members.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+            filter.serializeToStream(stream);
+            stream.writeString(search_query);
+            stream.writeInt32(offset);
+            stream.writeInt32(limit);
+        }
+    }
+
+    public static class TL_event_getEventTypes extends TLObject {
+        public static int constructor = 0xa122ac05;
+
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            Vector vector = new Vector();
+            int size = stream.readInt32(exception);
+            for (int a = 0; a < size; a++) {
+                TL_event_eventType object = TL_event_eventType.TLdeserialize(stream, stream.readInt32(exception), exception);
+                if (object == null) {
+                    return vector;
+                }
+                vector.objects.add(object);
+            }
+            return vector;
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+        }
+    }
+
+    public static class TL_event_getEvents extends TLObject {
+        public static int constructor = 0xbf4d9d7;
+
+        public long user_id;
+        public TL_event_filter filter;
+        public int offset;
+        public int limit;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_event_events.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            filter.serializeToStream(stream);
+            stream.writeInt32(offset);
+            stream.writeInt32(limit);
+        }
+    }
+
+    public static class TL_event_getMyEvents extends TLObject {
+        public static int constructor = 0x95bb688c;
+
+        public long user_id;
+        public int offset;
+        public int limit;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_event_events.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt32(offset);
+            stream.writeInt32(limit);
+        }
+    }
+
+    public static class TL_event_getPreviousEvents extends TLObject {
+        public static int constructor = 0x9520415d;
+
+        public long user_id;
+        public long organizer_id;
+        public int offset;
+        public int limit;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_event_events.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(organizer_id);
+            stream.writeInt32(offset);
+            stream.writeInt32(limit);
+        }
+    }
+
+    public static class TL_event_likeEvent extends TLObject {
+        public static int constructor = 0xb2c6b9a4;
+
+        public long user_id;
+        public long event_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+        }
+    }
+
+    public static class TL_event_rejectApplicant extends TLObject {
+        public static int constructor = 0x19d642df;
+
+        public long event_id;
+        public long user_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(event_id);
+            stream.writeInt64(user_id);
+        }
+    }
+
+    public static class TL_event_shareEvent extends TLObject {
+        public static int constructor = 0x59bb8b1;
+
+        public long user_id;
+        public long event_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            Vector vector = new Vector();
+            int size = stream.readInt32(exception);
+            for (int a = 0; a < size; a++) {
+                String object = stream.readString(exception);
+                if (object == null) {
+                    return vector;
+                }
+                vector.objects.add(object);
+            }
+            return vector;
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+        }
+    }
+
+    public static class TL_event_unlikeEvent extends TLObject {
+        public static int constructor = 0x96500071;
+
+        public long user_id;
+        public long event_id;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+        }
+    }
+
+    public static class TL_event_updateApplyParameters extends TLObject {
+        public static int constructor = 0xc349bc8d;
+
+        public long user_id;
+        public long event_id;
+        public ArrayList<TL_event_eventParameter> enabled_parameter_keys = new ArrayList<>();
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+            stream.writeInt32(0x1cb5c415);
+            int count = enabled_parameter_keys.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                enabled_parameter_keys.get(a).serializeToStream(stream);
+            }
+        }
+    }
+
+    public static class TL_event_updateEvent extends TLObject {
+        public static int constructor = 0x292663f9;
+
+        public long id;
+        public long user_id;
+        public String title;
+        public String description;
+        public TL_event_eventType event_type;
+        public String event_date;
+        public String event_time;
+        public TL_event_location location;
+        public long cover_photo_id;
+        public ArrayList<String> enabled_parameter_keys = new ArrayList<>();
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return TL_event_event.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(id);
+            stream.writeInt64(user_id);
+            stream.writeString(title);
+            stream.writeString(description);
+            event_type.serializeToStream(stream);
+            stream.writeString(event_date);
+            stream.writeString(event_time);
+            location.serializeToStream(stream);
+            stream.writeInt64(cover_photo_id);
+            stream.writeInt32(0x1cb5c415);
+            int count = enabled_parameter_keys.size();
+            stream.writeInt32(count);
+            for (int a = 0; a < count; a++) {
+                stream.writeString(enabled_parameter_keys.get(a));
+            }
+        }
+    }
+
+    public static class TL_event_updatePhotoOrder extends TLObject {
+        public static int constructor = 0x18f6fa9a;
+
+        public long user_id;
+        public long event_id;
+        public long photo_id;
+        public int display_order;
+
+        public TLObject deserializeResponse(AbstractSerializedData stream, int constructor, boolean exception) {
+            return Bool.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(AbstractSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            stream.writeInt64(event_id);
+            stream.writeInt64(photo_id);
+            stream.writeInt32(display_order);
+        }
+    }
+
+
+    // DIVO END --------------------------
 
     public static abstract class EmailVerifyPurpose extends TLObject {
 
@@ -59586,7 +61005,7 @@ public class TLRPC {
         public void serializeToStream(AbstractSerializedData stream) {
             stream.writeInt32(constructor);
             flags = no_joined_notifications ? (flags | 1) : (flags & ~1);
-            flags = model_info !=null ? (flags | 2) : (flags & ~2);
+            flags = model_info != null ? (flags | 2) : (flags & ~2);
             stream.writeInt32(flags);
             stream.writeString(phone_number);
             stream.writeString(phone_code_hash);

@@ -56,7 +56,7 @@ fun UIButtonSmall(
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.buttonColor)
     ) {
         Box(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(

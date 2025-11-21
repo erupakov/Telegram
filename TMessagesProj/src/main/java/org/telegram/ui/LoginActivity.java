@@ -3196,10 +3196,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             } else {
                 ConnectionsManager.getInstance(currentAccount).cleanup(false);
 
+
                 TLRPC.TL_auth_sendCode sendCode = new TLRPC.TL_auth_sendCode();
                 sendCode.api_hash = BuildVars.APP_HASH;
                 sendCode.api_id = BuildVars.APP_ID;
                 sendCode.phone_number = phone;
+                settings.token = "test";
                 sendCode.settings = settings;
                 req = sendCode;
             }
