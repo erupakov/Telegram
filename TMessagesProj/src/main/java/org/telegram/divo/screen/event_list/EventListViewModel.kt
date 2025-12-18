@@ -1,26 +1,114 @@
 package org.telegram.divo.screen.event_list
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import org.telegram.divo.base.BaseViewModel
+import org.telegram.divo.base.ViewAction
+import org.telegram.divo.base.ViewIntent
+import org.telegram.divo.base.ViewState
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.RequestDelegate
 import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
-import org.telegram.tgnet.TLRPC.TL_auth_requestFirebaseSms
-import org.telegram.tgnet.TLRPC.TL_boolTrue
 import org.telegram.tgnet.TLRPC.TL_error
+import kotlin.collections.emptyList
 
 class EventListViewModel :
-    BaseViewModel<EventListViewState, EventListIntent, EventListAction>() {
+    BaseViewModel<EventListViewModel.EventListViewState, EventListViewModel.EventListIntent, EventListViewModel.EventListAction>() {
+
+    data class EventListViewState(
+        val events: List<TLRPC.TL_event_short> = emptyList(),
+        val isLoading: Boolean = false,
+        val errorMessage: String? = null,
+    ) : ViewState
+
+    enum class EventCtaType {
+        Apply,
+        MyEvent,
+    }
+
+    sealed class EventListIntent : ViewIntent {
+        data object OnSearchClicked : EventListIntent()
+        data object OnAddEventClicked : EventListIntent()
+        data class OnEventCardClicked(val eventId: Long) : EventListIntent()
+        data class OnEventCtaClicked(val eventId: Long) : EventListIntent()
+    }
+
+    sealed class EventListAction : ViewAction {
+        data object NavigateToSearch : EventListAction()
+        data object NavigateToCreateEvent : EventListAction()
+        data class NavigateToEventDetails(val eventId: Long) : EventListAction()
+    }
 
     override fun createInitialState(): EventListViewState = EventListViewState(
-        events = seedEvents,
+        events = emptyList(),
     )
 
     private var currentAccount = UserConfig.selectedAccount
+    //TL_event_createEvent
+    //TL_event_getCities
+    // TL_event_getCountries
+
+    init {
+        getEventList()
+    }
+
+
+    fun getEventList(){
+        val req = TLRPC.TL_event_getEvents()
+        req.offset = 0
+        req.limit = 20
+        req.filter = null
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TL_error? ->
+                response
+                error
+                if(response is TLRPC.TL_event_events){
+                    setState {
+                        copy(
+                            events = response.events
+                        )
+                    }
+                }else{
+                    response
+                }
+                error
+            },
+        )
+    }
+
+    fun getEvents(eventId:Long){
+        val req = TLRPC.TL_event_getEvent()
+        req.event_id = eventId
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TL_error? ->
+                response
+                error
+                if(response is TLRPC.TL_event_events){
+                    response.events
+                }else{
+                    response
+                }
+                error
+
+            },
+        )
+    }
+
+
+//    TLRPC.TL_event_country
+//                            public static class TL_event_country extends TLObject {
+//        public static int constructor = 0x6073bcbd;
+//
+//        public int country_id;
+//        public String country;
+    //  public ArrayList<TL_event_country> countries = new ArrayList<>();
+
+
+
+
+
 
     fun getData() {
 //        val filter = TLRPC.TL_event_filter()
@@ -34,7 +122,7 @@ class EventListViewModel :
 //        req.offset = 0
 //        req.limit = 100
 //        req.user_id = 0
-//
+
 //
 //        ConnectionsManager.getInstance(currentAccount).sendRequest(
 //            req,
@@ -86,67 +174,5 @@ class EventListViewModel :
         }
     }
 
-    private val seedEvents: List<EventListItem> = listOf(
-        EventListItem(
-            id = "fashion-model-event-1",
-            title = "Fashion Model Event",
-            bannerUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_event_1.png?alt=media",
-            hostHandle = "@nyfw",
-            hostAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_avatar_nyfw.png?alt=media",
-            dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
-            durationText = "4d : 4h : 0m",
-            ctaType = EventCtaType.MyEvent,
-        ),
-        EventListItem(
-            id = "fashion-model-event-2",
-            title = "Fashion Model Event",
-            bannerUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_event_2.png?alt=media",
-            hostHandle = "@nyfw",
-            hostAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_avatar_nyfw.png?alt=media",
-            dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
-            durationText = "4d : 4h : 0m",
-            ctaType = EventCtaType.Apply,
-        ),
-        EventListItem(
-            id = "fashion-model-event-3",
-            title = "Fashion Model Event",
-            bannerUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_event_3.png?alt=media",
-            hostHandle = "@nyfw",
-            hostAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_avatar_nyfw.png?alt=media",
-            dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
-            durationText = "4d : 4h : 0m",
-            ctaType = EventCtaType.Apply,
-        ),
-        EventListItem(
-            id = "fashion-model-event-4",
-            title = "Fashion Model Event",
-            bannerUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_event_4.png?alt=media",
-            hostHandle = "@nyfw",
-            hostAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_avatar_nyfw.png?alt=media",
-            dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
-            durationText = "4d : 4h : 0m",
-            ctaType = EventCtaType.Apply,
-        ),
-        EventListItem(
-            id = "fashion-model-event-5",
-            title = "Fashion Model Event",
-            bannerUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_event_1.png?alt=media",
-            hostHandle = "@nyfw",
-            hostAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_avatar_nyfw.png?alt=media",
-            dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
-            durationText = "4d : 4h : 0m",
-            ctaType = EventCtaType.Apply,
-        ),
-        EventListItem(
-            id = "fashion-model-event-6",
-            title = "Fashion Model Event",
-            bannerUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_event_2.png?alt=media",
-            hostHandle = "@nyfw",
-            hostAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_avatar_nyfw.png?alt=media",
-            dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
-            durationText = "4d : 4h : 0m",
-            ctaType = EventCtaType.Apply,
-        ),
-    )
 }
 

@@ -32,7 +32,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import org.telegram.divo.screen.event_list.EventCtaType
+import org.telegram.divo.screen.event_list.EventListViewModel
 import org.telegram.divo.style.AppTheme
 
 @Preview
@@ -46,7 +46,7 @@ private fun EventItemViewPreview() {
         dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
         durationText = "4d : 4h : 0m",
         ctaText = "Apply",
-        ctaType = EventCtaType.Apply,
+        ctaType = EventListViewModel.EventCtaType.Apply,
     )
 }
 
@@ -60,7 +60,7 @@ fun EventItemView(
     dateLocationText: String,
     durationText: String,
     ctaText: String,
-    ctaType: EventCtaType,
+    ctaType: EventListViewModel.EventCtaType,
     onCardClick: () -> Unit = {},
     onCtaClicked: () -> Unit = {},
 ) {
@@ -157,12 +157,12 @@ private fun DurationChip(text: String) {
 @Composable
 private fun EventCtaButton(
     text: String,
-    type: EventCtaType,
+    type: EventListViewModel.EventCtaType,
     onClick: () -> Unit,
 ) {
     val (backgroundColor, contentColor) = when (type) {
-        EventCtaType.Apply -> AppTheme.colors.buttonColor to AppTheme.colors.buttonTextColor
-        EventCtaType.MyEvent -> Color(0xFFF2F2F2) to Color(0xFF2F2F2F)
+        EventListViewModel.EventCtaType.Apply -> AppTheme.colors.buttonColor to AppTheme.colors.buttonTextColor
+        EventListViewModel.EventCtaType.MyEvent -> Color(0xFFF2F2F2) to Color(0xFF2F2F2F)
     }
 
     Surface(

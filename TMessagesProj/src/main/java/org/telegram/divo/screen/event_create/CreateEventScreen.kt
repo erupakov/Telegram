@@ -27,11 +27,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 
 @Preview
 @Composable
 fun CreateEventScreen(
+        viewModel:CreateEventViewModel = viewModel(),
         onBack: () -> Unit = {},
         onCreate: (CreateEventUiState) -> Unit = {},
         onPickCover: () -> Unit = {},
@@ -359,10 +361,6 @@ private fun DropDownField(
     }
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-// PARAMETERS SHEET
-// ────────────────────────────────────────────────────────────────────────────────
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ParametersSheet(
@@ -437,10 +435,6 @@ private fun ParametersSheet(
     }
 }
 
-// ────────────────────────────────────────────────────────────────────────────────
-/* DATA */
-// ────────────────────────────────────────────────────────────────────────────────
-
 data class CreateEventUiState(
         val hasCover: Boolean = false,
         val name: String = "",
@@ -461,18 +455,8 @@ private val sampleCountries = listOf(
         "Spain", "United Arab Emirates", "Armenia", "Ukraine", "Japan"
 )
 
-// ────────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ────────────────────────────────────────────────────────────────────────────────
-
 @Stable
 fun SolidDashed(color: Color, intervals: FloatArray): androidx.compose.ui.graphics.SolidColor {
-    // Просто обёртка для удобства, PathEffect используется BorderStroke'ом автоматически
     return androidx.compose.ui.graphics.SolidColor(color).also { _ ->
-        // Ничего не делать — PathEffect мы задаём в BorderStroke ниже
     }
 }
-
-// Расширение BorderStroke с dash (используем напрямую в вызове BorderStroke)
-//private fun BorderStroke(width: Dp, brush: androidx.compose.ui.graphics.Brush) =
-//    BorderStroke(width, brush, PathEffect.dashPathEffect(floatArrayOf(12f, 12f), 0f))

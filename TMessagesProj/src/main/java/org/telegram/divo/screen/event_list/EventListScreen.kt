@@ -19,7 +19,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,19 +33,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.graphics.RectangleShape
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.items.EventItemView
 import org.telegram.messenger.R
 
+object EventIntentData{
+    var eventId: Long = 0
+}
+
+
 @Composable
 fun EventListScreen(
     viewModel: EventListViewModel = viewModel(),
-    onNavigateToEventDetails: (String) -> Unit = {},
+    onNavigateToEventDetails: (Long) -> Unit = {},
     onNavigateToCreateEvent: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
 ) {
@@ -57,32 +59,39 @@ fun EventListScreen(
     }
 
     LaunchedEffect(viewModel.action) {
-
-
         viewModel.action.collect { action ->
             when (action) {
-                EventListAction.NavigateToCreateEvent -> onNavigateToCreateEvent()
-                EventListAction.NavigateToSearch -> onNavigateToSearch()
-                is EventListAction.NavigateToEventDetails -> onNavigateToEventDetails(action.eventId)
+                EventListViewModel.EventListAction.NavigateToCreateEvent -> onNavigateToCreateEvent()
+                EventListViewModel.EventListAction.NavigateToSearch -> onNavigateToSearch()
+                is EventListViewModel.EventListAction.NavigateToEventDetails -> onNavigateToEventDetails(
+                    action.eventId
+                )
             }
         }
     }
-
     EventListContent(
         state = state,
-        onEventClick = { viewModel.setIntent(EventListIntent.OnEventCardClicked(it)) },
-        onCtaClick = { viewModel.setIntent(EventListIntent.OnEventCtaClicked(it)) },
-        onSearchClick = { viewModel.setIntent(EventListIntent.OnSearchClicked) },
-        onAddEventClick = { viewModel.setIntent(EventListIntent.OnAddEventClicked) },
+        onEventClick = {
+            EventIntentData.eventId = it
+            onNavigateToEventDetails(
+                it
+            )
+        },
+        onCtaClick = {  },
+        onSearchClick = {
+            onNavigateToSearch()
+        },
+        onAddEventClick = {
+            onNavigateToCreateEvent()
+        },
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EventListContent(
-    state: EventListViewState,
-    onEventClick: (String) -> Unit,
-    onCtaClick: (String) -> Unit,
+    state: EventListViewModel.EventListViewState,
+    onEventClick: (Long) -> Unit,
+    onCtaClick: (Long) -> Unit,
     onSearchClick: () -> Unit,
     onAddEventClick: () -> Unit,
 ) {
@@ -145,13 +154,13 @@ private fun EventListContent(
                                 .aspectRatio(0.8f)
                                 .fillMaxWidth(),
                             eventName = event.title,
-                            eventImageUrl = event.bannerUrl,
-                            eventOwnerName = event.hostHandle,
-                            eventOwnerImage = event.hostAvatarUrl,
-                            dateLocationText = event.dateLocationText,
-                            durationText = event.durationText,
-                            ctaText = event.ctaLabel,
-                            ctaType = event.ctaType,
+                            eventImageUrl = event?.cover_photo?.photo?.caption?:"",
+                            eventOwnerName = "",
+                            eventOwnerImage = "",
+                            dateLocationText = event.event_date + " " + event.location?.country + " " + event.location?.city,
+                            durationText = event.event_time,
+                            ctaText = "",
+                            ctaType = EventListViewModel.EventCtaType.Apply,
                             onCardClick = { onEventClick(event.id) },
                             onCtaClicked = { onCtaClick(event.id) },
                         )
@@ -227,39 +236,4 @@ private fun TopBarIconButton(
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun EventListScreenPreview() {
-    val previewEvents = listOf(
-        EventListItem(
-            id = "preview-1",
-            title = "Fashion Model Event",
-            bannerUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_event_1.png?alt=media",
-            hostHandle = "@nyfw",
-            hostAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_avatar_nyfw.png?alt=media",
-            dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
-            durationText = "4d : 4h : 0m",
-            ctaType = EventCtaType.MyEvent,
-        ),
-        EventListItem(
-            id = "preview-2",
-            title = "Fashion Model Event",
-            bannerUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_event_2.png?alt=media",
-            hostHandle = "@nyfw",
-            hostAvatarUrl = "https://firebasestorage.googleapis.com/v0/b/kitcolorspro.appspot.com/o/test_davit%2Fdivo_avatar_nyfw.png?alt=media",
-            dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
-            durationText = "4d : 4h : 0m",
-            ctaType = EventCtaType.Apply,
-        ),
-    )
-
-    EventListContent(
-        state = EventListViewState(events = previewEvents),
-        onEventClick = {},
-        onCtaClick = {},
-        onSearchClick = {},
-        onAddEventClick = {},
-    )
 }
