@@ -13,7 +13,6 @@ import org.telegram.tgnet.TLRPC
 import org.telegram.tgnet.TLRPC.TL_error
 
 class CreateEventViewModel(
-    private val countryId: Int
 ) : BaseViewModel<CreateEventViewModel.State,
         CreateEventViewModel.Intent,
         CreateEventViewModel.Action>() {
@@ -24,7 +23,17 @@ class CreateEventViewModel(
         val query: String = "",
         val cities: List<TLRPC.TL_event_city> = emptyList(),
         val selectedCityId: Int? = null,
-    ) : ViewState {
+
+        val eventTypes:List<TLRPC.TL_event_eventType> = emptyList(),
+        val selectedEventType: TLRPC.TL_event_eventType? = null,
+
+        val availableParameters:List<TLRPC.TL_event_availableParameter> = emptyList(),
+        val selectedAvailableParameters: HashSet<TLRPC.TL_event_availableParameter> = HashSet(),
+
+        val startDate:String? = null,
+        val endDate:String? = null,
+
+        ) : ViewState {
 
         val filtered: List<TLRPC.TL_event_city>
             get() {
@@ -54,6 +63,49 @@ class CreateEventViewModel(
 
     override fun createInitialState(): State = State()
 
+
+    init {
+        getEventTypes()
+    }
+
+
+    fun getEventTypes(){
+        val req = TLRPC.TL_event_getEventTypes()
+        req.offset = 0
+        req.limit = 100
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TL_error? ->
+                if (response is TLRPC.TL_event_eventTypes) {
+                    response.data
+                } else {
+                    response
+                }
+                error
+            },
+        )
+
+    }
+
+    fun getAvailableParameters(){
+        val req = TLRPC.TL_event_getAvailableParameters()
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TL_error? ->
+                response
+                error
+                if (response is TLRPC.TL_event_availableParameters) {
+                    response.data
+
+                } else {
+                    response
+                }
+                error
+            },
+        )
+
+    }
+
     private val currentAccount = UserConfig.selectedAccount
 
     override fun handleIntent(intent: Intent) {
@@ -65,13 +117,56 @@ class CreateEventViewModel(
 
             Intent.OnBackClicked -> sendAction(Action.Back)
             Intent.OnDoneClicked -> {
-                val city = state.value.selectedCity ?: return
-                sendAction(Action.Done(city))
+                createEvent()
             }
         }
     }
 
+    // event.getEventTypes //
+    //event.getAvailableParameters#79aac9ef user_id:long = Vector<event.AvailableParameter>;
+
     private fun createEvent() {
+        val req = TLRPC.TL_event_createEvent()
+
+        req.title = "Android event 1"
+        req.description = "Android event 1 description"
+        req.event_date = "2026-03-16T00:00:00Z"
+        req.event_time = "17:11:00"
+
+
+//          public String title;
+//        public String description;
+//        public TL_event_eventType event_type;
+//        public String event_date;
+//        public String event_time;
+//        public TL_event_location location;
+//        public long cover_photo_id;
+//        public ArrayList<String> enabled_parameter_keys = new ArrayList<>();
+
+
+//        public String title;
+//        public String description;
+//        public TL_event_eventType event_type;
+//        public String event_date;
+//        public String event_time;
+//        public TL_event_location location;
+//        public long cover_photo_id;
+//        public ArrayList<String> enabled_parameter_keys = new ArrayList<>();
+//
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TL_error? ->
+                response
+                error
+                if (response is TLRPC.TL_event_event) {
+                    response
+                } else {
+                    response
+                }
+                error
+            },
+        )
+
 
     }
 }

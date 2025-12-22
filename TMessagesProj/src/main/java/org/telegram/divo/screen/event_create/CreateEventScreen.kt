@@ -35,7 +35,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 fun CreateEventScreen(
         viewModel:CreateEventViewModel = viewModel(),
         onBack: () -> Unit = {},
-        onCreate: (CreateEventUiState) -> Unit = {},
         onPickCover: () -> Unit = {},
         onPickGallery: () -> Unit = {},
         onPickDate: () -> Unit = {},
@@ -49,8 +48,10 @@ fun CreateEventScreen(
             topBar = {
                 TopBar(
                         onBack = onBack,
-                        onCreate = { onCreate(ui) },
-                        enabled = ui.isValid()
+                        onCreate = {
+                            viewModel.setIntent(CreateEventViewModel.Intent.OnDoneClicked)
+                        },
+                        enabled = true//.isValid()
                 )
             }
     ) { padding ->
@@ -162,7 +163,9 @@ fun CreateEventScreen(
 
             // Create Button
             Button(
-                    onClick = { onCreate(ui) },
+                    onClick = {
+
+                    },
                     enabled = ui.isValid(),
                     modifier = Modifier
                             .fillMaxWidth()
@@ -270,27 +273,12 @@ private fun CoverPicker(
                         .clickable { if (!hasImage) onPick() },
                 contentAlignment = Alignment.Center
         ) {
-            if (hasImage) {
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    OutlinedButton(onClick = onPick, shape = RoundedCornerShape(10.dp)) {
-                        Text("Change photo")
-                    }
-                    OutlinedButton(onClick = onClear, shape = RoundedCornerShape(10.dp)) {
-                        Text("Remove")
-                    }
-                }
-            } else {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(
-                            Modifier
-                                    .size(48.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFFEDEDED))
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text("+  Upload cover", color = Color(0xFF999999))
-                }
-            }
+
+            Card
+
+
+
+
         }
     }
 }
