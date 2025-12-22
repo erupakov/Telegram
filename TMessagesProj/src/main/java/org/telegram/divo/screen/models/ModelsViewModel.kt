@@ -1,13 +1,13 @@
 package org.telegram.divo.screen.models
 
 import org.telegram.divo.base.BaseViewModel
-import org.telegram.divo.base.ViewAction
+import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
-import org.telegram.divo.screen.models.ModelsViewAction.NavigateToAddStory
-import org.telegram.divo.screen.models.ModelsViewAction.NavigateToDirectMessage
-import org.telegram.divo.screen.models.ModelsViewAction.NavigateToSearch
-import org.telegram.divo.screen.models.ModelsViewAction.NavigateToStory
+import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToAddStory
+import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToDirectMessage
+import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToSearch
+import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToStory
 import org.telegram.divo.screen.models.ModelsViewIntent.LoadInitialData
 import org.telegram.divo.screen.models.ModelsViewIntent.OnTabSelected
 import org.telegram.divo.screen.models.ModelsViewIntent.OnStoryClick
@@ -127,16 +127,16 @@ sealed class ModelsViewIntent : ViewIntent {
 }
 
 // Action
-sealed class ModelsViewAction : ViewAction {
-    data class NavigateToStory(val storyId: String) : ModelsViewAction()
-    data class NavigateToDirectMessage(val modelId: String) : ModelsViewAction()
-    data object NavigateToSearch : ModelsViewAction()
-    data object NavigateToAddStory : ModelsViewAction()
-    data class ShowError(val message: String) : ModelsViewAction()
+sealed class ModelsViewEffect : ViewEffect {
+    data class NavigateToStory(val storyId: String) : ModelsViewEffect()
+    data class NavigateToDirectMessage(val modelId: String) : ModelsViewEffect()
+    data object NavigateToSearch : ModelsViewEffect()
+    data object NavigateToAddStory : ModelsViewEffect()
+    data class ShowError(val message: String) : ModelsViewEffect()
 }
 
 
-class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewAction>() {
+class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
 
     override fun createInitialState(): ModelsViewState = ModelsViewState()
 
@@ -148,11 +148,11 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         when (intent) {
             is LoadInitialData -> loadInitialData()
             is OnTabSelected -> selectTab(intent.tab)
-            is OnStoryClick -> sendAction(NavigateToStory(intent.storyId))
+            is OnStoryClick -> sendEffect(NavigateToStory(intent.storyId))
             is OnEmotionClick -> reactToModel(intent.modelId, intent.emotion)
-            is OnSendDmClick -> sendAction(NavigateToDirectMessage(intent.modelId))
-            is OnSearchClick -> sendAction(NavigateToSearch)
-            is OnAddStoryClick -> sendAction(NavigateToAddStory)
+            is OnSendDmClick -> sendEffect(NavigateToDirectMessage(intent.modelId))
+            is OnSearchClick -> sendEffect(NavigateToSearch)
+            is OnAddStoryClick -> sendEffect(NavigateToAddStory)
             is OnBookmarkClick -> bookmarkModel(intent.modelId)
             is OnPhotoClick -> zoomPhoto(intent.modelId, intent.photoUrl)
         }

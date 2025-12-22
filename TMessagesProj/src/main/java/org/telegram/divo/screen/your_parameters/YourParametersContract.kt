@@ -1,6 +1,6 @@
 package org.telegram.divo.screen.your_parameters
 
-import org.telegram.divo.base.ViewAction
+import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
 
@@ -34,6 +34,6 @@ sealed class YourParametersIntent : ViewIntent {
     data object OnSaveClicked : YourParametersIntent()
 }
 
-sealed class YourParametersAction : ViewAction {
-    data object NavigateBack : YourParametersAction()
+sealed class YourParametersEffect : ViewEffect {
+    data object NavigateBack : YourParametersEffect()
 }

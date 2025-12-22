@@ -10,7 +10,13 @@ class FragmentEventCreate : BaseFragment() {
     override fun createView(context: Context): View {
         actionBar.setAddToContainer(false)
         val composeView = ComposeView(context)
-        composeView.setContent { CreateEventScreen() }
+        composeView.setContent {
+            CreateEventScreen(
+                onBack = {
+                    finishFragment()
+                }
+            )
+        }
         return composeView
     }
 }

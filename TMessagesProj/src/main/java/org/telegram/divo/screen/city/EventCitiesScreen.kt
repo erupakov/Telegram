@@ -27,10 +27,10 @@ fun EventCitiesScreen(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.action.collect { action ->
+        viewModel.effect.collect { action ->
             when (action) {
-                EventCitiesViewModel.Action.Back -> onBack()
-                is EventCitiesViewModel.Action.Done -> onDone(action.city)
+                EventCitiesViewModel.Effect.Back -> onBack()
+                is EventCitiesViewModel.Effect.Done -> onDone(action.city)
             }
         }
     }

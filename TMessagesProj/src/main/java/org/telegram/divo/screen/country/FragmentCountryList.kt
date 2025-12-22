@@ -11,10 +11,10 @@ class FragmentCountryList : BaseFragment() {
 
         val composeView = ComposeView(context)
         composeView.setContent {
-            EventCountriesScreen(
-                onBack = {},
-                onDone = {}
-            )
+//            EventCountriesScreen(
+//                onBack = {},
+//                onDone = {}
+//            )
         }
         return composeView
     }

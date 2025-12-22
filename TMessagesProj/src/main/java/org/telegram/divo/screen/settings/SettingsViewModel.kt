@@ -3,24 +3,24 @@ package org.telegram.divo.screen.settings
 import org.telegram.divo.base.BaseViewModel
 
 class SettingsViewModel :
-    BaseViewModel<SettingsViewState, SettingsViewIntent, SettingsViewAction>() {
+    BaseViewModel<SettingsViewState, SettingsViewIntent, SettingsViewEffect>() {
 
     override fun createInitialState(): SettingsViewState = SettingsViewState()
 
     override fun handleIntent(intent: SettingsViewIntent) {
         when (intent) {
-            SettingsViewIntent.OnEditProfileClicked -> sendAction(SettingsViewAction.NavigateToEditProfile)
-            SettingsViewIntent.OnOpenProfileClicked -> sendAction(SettingsViewAction.NavigateToProfile)
-            SettingsViewIntent.OnSetUsernameClicked -> sendAction(SettingsViewAction.NavigateToSetUsername)
-            SettingsViewIntent.OnFillParametersClicked -> sendAction(SettingsViewAction.NavigateToFillParameters)
-            SettingsViewIntent.OnPromoClicked -> sendAction(SettingsViewAction.NavigateToPromo)
-            SettingsViewIntent.OnSavedMessagesClicked -> sendAction(SettingsViewAction.NavigateToSavedMessages)
-            SettingsViewIntent.OnStickersClicked -> sendAction(SettingsViewAction.NavigateToStickers)
-            SettingsViewIntent.OnNotificationsClicked -> sendAction(SettingsViewAction.NavigateToNotifications)
-            SettingsViewIntent.OnPrivacyClicked -> sendAction(SettingsViewAction.NavigateToPrivacy)
-            SettingsViewIntent.OnDataStorageClicked -> sendAction(SettingsViewAction.NavigateToDataStorage)
-            SettingsViewIntent.OnAppearanceClicked -> sendAction(SettingsViewAction.NavigateToAppearance)
-            SettingsViewIntent.OnQrCodeClicked -> sendAction(SettingsViewAction.ShowQrCode)
+            SettingsViewIntent.OnEditProfileClicked -> sendEffect(SettingsViewEffect.NavigateToEditProfile)
+            SettingsViewIntent.OnOpenProfileClicked -> sendEffect(SettingsViewEffect.NavigateToProfile)
+            SettingsViewIntent.OnSetUsernameClicked -> sendEffect(SettingsViewEffect.NavigateToSetUsername)
+            SettingsViewIntent.OnFillParametersClicked -> sendEffect(SettingsViewEffect.NavigateToFillParameters)
+            SettingsViewIntent.OnPromoClicked -> sendEffect(SettingsViewEffect.NavigateToPromo)
+            SettingsViewIntent.OnSavedMessagesClicked -> sendEffect(SettingsViewEffect.NavigateToSavedMessages)
+            SettingsViewIntent.OnStickersClicked -> sendEffect(SettingsViewEffect.NavigateToStickers)
+            SettingsViewIntent.OnNotificationsClicked -> sendEffect(SettingsViewEffect.NavigateToNotifications)
+            SettingsViewIntent.OnPrivacyClicked -> sendEffect(SettingsViewEffect.NavigateToPrivacy)
+            SettingsViewIntent.OnDataStorageClicked -> sendEffect(SettingsViewEffect.NavigateToDataStorage)
+            SettingsViewIntent.OnAppearanceClicked -> sendEffect(SettingsViewEffect.NavigateToAppearance)
+            SettingsViewIntent.OnQrCodeClicked -> sendEffect(SettingsViewEffect.ShowQrCode)
         }
     }
 }

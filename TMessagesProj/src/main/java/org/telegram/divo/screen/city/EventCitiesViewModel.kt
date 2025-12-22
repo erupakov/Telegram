@@ -1,7 +1,7 @@
 package org.telegram.divo.screen.city
 
 import org.telegram.divo.base.BaseViewModel
-import org.telegram.divo.base.ViewAction
+import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
 import org.telegram.messenger.AndroidUtilities
@@ -16,7 +16,7 @@ class EventCitiesViewModel(
     private val countryId: Int
 ) : BaseViewModel<EventCitiesViewModel.State,
         EventCitiesViewModel.Intent,
-        EventCitiesViewModel.Action>() {
+        EventCitiesViewModel.Effect>() {
 
     data class State(
         val isLoading: Boolean = false,
@@ -47,9 +47,9 @@ class EventCitiesViewModel(
         data object OnDoneClicked : Intent
     }
 
-    sealed interface Action : ViewAction {
-        data object Back : Action
-        data class Done(val city: TLRPC.TL_event_city) : Action
+    sealed interface Effect : ViewEffect {
+        data object Back : Effect
+        data class Done(val city: TLRPC.TL_event_city) : Effect
     }
 
     override fun createInitialState(): State = State()
@@ -63,10 +63,10 @@ class EventCitiesViewModel(
             is Intent.OnCityClicked ->
                 setState { copy(selectedCityId = intent.city.city_id) }
 
-            Intent.OnBackClicked -> sendAction(Action.Back)
+            Intent.OnBackClicked -> sendEffect(Effect.Back)
             Intent.OnDoneClicked -> {
                 val city = state.value.selectedCity ?: return
-                sendAction(Action.Done(city))
+                sendEffect(Effect.Done(city))
             }
         }
     }

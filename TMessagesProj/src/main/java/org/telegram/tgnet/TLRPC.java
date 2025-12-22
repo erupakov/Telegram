@@ -208,8 +208,8 @@ public class TLRPC {
             }
         }
     }
-
     //event_EventType start
+
     public static class TL_event_eventType extends TLObject {
         public static int constructor = 0x18324ee3;
 
@@ -240,14 +240,13 @@ public class TLRPC {
             stream.writeString(title);
         }
     }
-    //event_EventType end
 
     //event_EventTypes start
     public static class TL_event_eventTypes extends TLObject {
         public static int constructor = 0xbf6e3bca;
 
         public ArrayList<TL_event_eventType> data = new ArrayList<>();
-        public int count;
+        public int count = 0;
 
         public static TL_event_eventTypes TLdeserialize(AbstractSerializedData stream, int constructor, boolean exception) {
             if (TL_event_eventTypes.constructor != constructor) {
@@ -295,7 +294,7 @@ public class TLRPC {
     //event_EventTypes end
 
     public static class TL_event_getEventTypes extends TLObject {
-        public static int constructor = 0xa122ac05;
+        public static int constructor = 0x77192b08;
         public int offset;
         public int limit;
 

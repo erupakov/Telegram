@@ -1,10 +1,9 @@
 package org.telegram.divo.screen.event_create
 
 import org.telegram.divo.base.BaseViewModel
-import org.telegram.divo.base.ViewAction
+import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
-import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.RequestDelegate
@@ -15,23 +14,27 @@ import org.telegram.tgnet.TLRPC.TL_error
 class CreateEventViewModel(
 ) : BaseViewModel<CreateEventViewModel.State,
         CreateEventViewModel.Intent,
-        CreateEventViewModel.Action>() {
+        CreateEventViewModel.Effect>() {
 
     data class State(
         val isLoading: Boolean = false,
+
+        val title: String = "",
+        val description: String = "",
+
         val errorMessage: String? = null,
         val query: String = "",
         val cities: List<TLRPC.TL_event_city> = emptyList(),
         val selectedCityId: Int? = null,
 
-        val eventTypes:List<TLRPC.TL_event_eventType> = emptyList(),
+        val eventTypes: List<TLRPC.TL_event_eventType> = emptyList(),
         val selectedEventType: TLRPC.TL_event_eventType? = null,
 
-        val availableParameters:List<TLRPC.TL_event_availableParameter> = emptyList(),
+        val availableParameters: List<TLRPC.TL_event_availableParameter> = emptyList(),
         val selectedAvailableParameters: HashSet<TLRPC.TL_event_availableParameter> = HashSet(),
 
-        val startDate:String? = null,
-        val endDate:String? = null,
+        val startDate: String? = null,
+        val endDate: String? = null,
 
         ) : ViewState {
 
@@ -53,26 +56,26 @@ class CreateEventViewModel(
         data class OnQueryChanged(val value: String) : Intent
         data class OnCityClicked(val city: TLRPC.TL_event_city) : Intent
         data object OnBackClicked : Intent
-        data object OnDoneClicked : Intent
+        data class OnCreateClicked(
+            val title: String,
+            val description: String,
+            val date: String,
+            val time: String,
+        ) : Intent
     }
 
-    sealed interface Action : ViewAction {
-        data object Back : Action
-        data class Done(val city: TLRPC.TL_event_city) : Action
+    sealed interface Effect : ViewEffect {
+        data object NavigateBack : Effect
     }
 
     override fun createInitialState(): State = State()
 
 
-    init {
-        getEventTypes()
-    }
 
-
-    fun getEventTypes(){
+    fun getEventTypes() {
         val req = TLRPC.TL_event_getEventTypes()
         req.offset = 0
-        req.limit = 100
+        req.limit = 3
         ConnectionsManager.getInstance(currentAccount).sendRequest(
             req,
             RequestDelegate { response: TLObject?, error: TL_error? ->
@@ -84,10 +87,9 @@ class CreateEventViewModel(
                 error
             },
         )
-
     }
 
-    fun getAvailableParameters(){
+    fun getAvailableParameters() {
         val req = TLRPC.TL_event_getAvailableParameters()
         ConnectionsManager.getInstance(currentAccount).sendRequest(
             req,
@@ -115,9 +117,14 @@ class CreateEventViewModel(
             is Intent.OnCityClicked ->
                 setState { copy(selectedCityId = intent.city.city_id) }
 
-            Intent.OnBackClicked -> sendAction(Action.Back)
-            Intent.OnDoneClicked -> {
-                createEvent()
+            Intent.OnBackClicked -> sendEffect(Effect.NavigateBack)
+            is Intent.OnCreateClicked -> {
+                createEvent(
+                    title = intent.title,
+                    description = intent.description,
+                    date = intent.date,
+                    time = intent.time
+                )
             }
         }
     }
@@ -125,24 +132,21 @@ class CreateEventViewModel(
     // event.getEventTypes //
     //event.getAvailableParameters#79aac9ef user_id:long = Vector<event.AvailableParameter>;
 
-    private fun createEvent() {
+    private fun createEvent(
+        title: String,
+        description: String,
+        date: String,
+        time: String
+    ) {
         val req = TLRPC.TL_event_createEvent()
 
-        req.title = "Android event 1"
-        req.description = "Android event 1 description"
-        req.event_date = "2026-03-16T00:00:00Z"
-        req.event_time = "17:11:00"
-
-
-//          public String title;
-//        public String description;
-//        public TL_event_eventType event_type;
-//        public String event_date;
-//        public String event_time;
-//        public TL_event_location location;
-//        public long cover_photo_id;
-//        public ArrayList<String> enabled_parameter_keys = new ArrayList<>();
-
+        req.title = title
+        req.description = description
+        req.event_date = date
+        req.event_time = time
+//        val location = TLRPC.TL_event_location()
+//        location.city
+//        location.country
 
 //        public String title;
 //        public String description;
@@ -159,7 +163,7 @@ class CreateEventViewModel(
                 response
                 error
                 if (response is TLRPC.TL_event_event) {
-                    response
+                    sendEffect(Effect.NavigateBack)
                 } else {
                     response
                 }

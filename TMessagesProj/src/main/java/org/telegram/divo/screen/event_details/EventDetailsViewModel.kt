@@ -1,7 +1,7 @@
 package org.telegram.divo.screen.event_details
 
 import org.telegram.divo.base.BaseViewModel
-import org.telegram.divo.base.ViewAction
+import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
 import org.telegram.divo.screen.event_list.EventIntentData
@@ -11,10 +11,9 @@ import org.telegram.tgnet.RequestDelegate
 import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
 import org.telegram.tgnet.TLRPC.TL_error
-import kotlin.collections.emptyList
 
 class EventDetailsViewModel :
-    BaseViewModel<EventDetailsViewModel.EventListViewState, EventDetailsViewModel.EventListIntent, EventDetailsViewModel.EventListAction>() {
+    BaseViewModel<EventDetailsViewModel.EventListViewState, EventDetailsViewModel.EventListIntent, EventDetailsViewModel.EventListEffect>() {
 
     data class EventListViewState(
         val event: TLRPC.TL_event_event? = null,
@@ -34,10 +33,10 @@ class EventDetailsViewModel :
         data class OnEventCtaClicked(val eventId: Long) : EventListIntent()
     }
 
-    sealed class EventListAction : ViewAction {
-        data object NavigateToSearch : EventListAction()
-        data object NavigateToCreateEvent : EventListAction()
-        data class NavigateToEventDetails(val eventId: Long) : EventListAction()
+    sealed class EventListEffect : ViewEffect {
+        data object NavigateToSearch : EventListEffect()
+        data object NavigateToCreateEvent : EventListEffect()
+        data class NavigateToEventDetails(val eventId: Long) : EventListEffect()
     }
 
     override fun createInitialState(): EventListViewState = EventListViewState(
@@ -70,14 +69,14 @@ class EventDetailsViewModel :
 
     override fun handleIntent(intent: EventListIntent) {
         when (intent) {
-            EventListIntent.OnAddEventClicked -> sendAction(EventListAction.NavigateToCreateEvent)
-            is EventListIntent.OnEventCardClicked -> sendAction(
-                EventListAction.NavigateToEventDetails(intent.eventId)
+            EventListIntent.OnAddEventClicked -> sendEffect(EventListEffect.NavigateToCreateEvent)
+            is EventListIntent.OnEventCardClicked -> sendEffect(
+                EventListEffect.NavigateToEventDetails(intent.eventId)
             )
-            is EventListIntent.OnEventCtaClicked -> sendAction(
-                EventListAction.NavigateToEventDetails(intent.eventId)
+            is EventListIntent.OnEventCtaClicked -> sendEffect(
+                EventListEffect.NavigateToEventDetails(intent.eventId)
             )
-            EventListIntent.OnSearchClicked -> sendAction(EventListAction.NavigateToSearch)
+            EventListIntent.OnSearchClicked -> sendEffect(EventListEffect.NavigateToSearch)
         }
     }
 }

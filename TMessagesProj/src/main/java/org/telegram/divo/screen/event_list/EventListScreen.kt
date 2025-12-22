@@ -55,15 +55,17 @@ fun EventListScreen(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(true) {
-        viewModel.getData()
+        viewModel.getEventList()
     }
 
-    LaunchedEffect(viewModel.action) {
-        viewModel.action.collect { action ->
+
+
+    LaunchedEffect(viewModel.effect) {
+        viewModel.effect.collect { action ->
             when (action) {
-                EventListViewModel.EventListAction.NavigateToCreateEvent -> onNavigateToCreateEvent()
-                EventListViewModel.EventListAction.NavigateToSearch -> onNavigateToSearch()
-                is EventListViewModel.EventListAction.NavigateToEventDetails -> onNavigateToEventDetails(
+                EventListViewModel.EventListEffect.NavigateToCreateEvent -> onNavigateToCreateEvent()
+                EventListViewModel.EventListEffect.NavigateToSearch -> onNavigateToSearch()
+                is EventListViewModel.EventListEffect.NavigateToEventDetails -> onNavigateToEventDetails(
                     action.eventId
                 )
             }

@@ -64,54 +64,54 @@ fun SettingsScreen(
     val dividerColor = Color(0x1A000000)
     val scrollState = rememberScrollState()
 
-    LaunchedEffect(viewModel.action) {
-        viewModel.action.collect {
+    LaunchedEffect(viewModel.effect) {
+        viewModel.effect.collect {
             when (it) {
-                SettingsViewAction.NavigateToAppearance -> {
+                SettingsViewEffect.NavigateToAppearance -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.NavigateToDataStorage -> {
+                SettingsViewEffect.NavigateToDataStorage -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.NavigateToEditProfile -> {
+                SettingsViewEffect.NavigateToEditProfile -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.NavigateToFillParameters -> {
+                SettingsViewEffect.NavigateToFillParameters -> {
                     navigateToFillParameters()
                 }
 
-                SettingsViewAction.NavigateToNotifications -> {
+                SettingsViewEffect.NavigateToNotifications -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.NavigateToPrivacy -> {
+                SettingsViewEffect.NavigateToPrivacy -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.NavigateToProfile -> {
+                SettingsViewEffect.NavigateToProfile -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.NavigateToPromo -> {
+                SettingsViewEffect.NavigateToPromo -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.NavigateToSavedMessages -> {
+                SettingsViewEffect.NavigateToSavedMessages -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.NavigateToSetUsername -> {
+                SettingsViewEffect.NavigateToSetUsername -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.NavigateToStickers -> {
+                SettingsViewEffect.NavigateToStickers -> {
 //                    TODO()
                 }
 
-                SettingsViewAction.ShowQrCode -> {
+                SettingsViewEffect.ShowQrCode -> {
 //                    TODO()
                 }
             }

@@ -13,9 +13,9 @@ interface ViewState
 
 interface ViewIntent
 
-interface ViewAction
+interface ViewEffect
 
-abstract class BaseViewModel<S : ViewState, I : ViewIntent, A : ViewAction> : ViewModel() {
+abstract class BaseViewModel<S : ViewState, I : ViewIntent, A : ViewEffect> : ViewModel() {
 
     private val initialState: S by lazy { createInitialState() }
     abstract fun createInitialState(): S
@@ -25,8 +25,8 @@ abstract class BaseViewModel<S : ViewState, I : ViewIntent, A : ViewAction> : Vi
 
     private val _intent: Channel<I> = Channel(Channel.UNLIMITED)
 
-    private val _action: Channel<A> = Channel(Channel.UNLIMITED)
-    val action = _action.receiveAsFlow()
+    private val _effect: Channel<A> = Channel(Channel.UNLIMITED)
+    val effect = _effect.receiveAsFlow()
 
     init {
         subscribeToIntents()
@@ -38,9 +38,9 @@ abstract class BaseViewModel<S : ViewState, I : ViewIntent, A : ViewAction> : Vi
         }
     }
 
-    protected fun sendAction(action: A) {
+    protected fun sendEffect(effect: A) {
         viewModelScope.launch {
-            _action.send(action)
+            _effect.send(effect)
         }
     }
 

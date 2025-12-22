@@ -1,7 +1,7 @@
 package org.telegram.divo.screen.country
 
 import org.telegram.divo.base.BaseViewModel
-import org.telegram.divo.base.ViewAction
+import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
 import org.telegram.messenger.AndroidUtilities
@@ -13,7 +13,7 @@ import org.telegram.tgnet.TLRPC
 import org.telegram.tgnet.TLRPC.TL_error
 
 class EventCountriesViewModel :
-    BaseViewModel<EventCountriesViewModel.State, EventCountriesViewModel.Intent, EventCountriesViewModel.Action>() {
+    BaseViewModel<EventCountriesViewModel.State, EventCountriesViewModel.Intent, EventCountriesViewModel.Effect>() {
 
     data class State(
         val isLoading: Boolean = false,
@@ -42,9 +42,9 @@ class EventCountriesViewModel :
         data object OnDoneClicked : Intent
     }
 
-    sealed interface Action : ViewAction {
-        data object Back : Action
-        data class Done(val country: TLRPC.TL_event_country) : Action
+    sealed interface Effect : ViewEffect {
+        data object Back : Effect
+        data class Done(val country: TLRPC.TL_event_country) : Effect
     }
 
     override fun createInitialState(): State = State()
@@ -56,10 +56,10 @@ class EventCountriesViewModel :
             Intent.Load -> loadCountries()
             is Intent.OnQueryChanged -> setState { copy(query = intent.value) }
             is Intent.OnCountryClicked -> setState { copy(selectedCountryId = intent.country.country_id) }
-            Intent.OnBackClicked -> sendAction(Action.Back)
+            Intent.OnBackClicked -> sendEffect(Effect.Back)
             Intent.OnDoneClicked -> {
                 val selected = state.value.selectedCountry ?: return
-                sendAction(Action.Done(selected))
+                sendEffect(Effect.Done(selected))
             }
         }
     }

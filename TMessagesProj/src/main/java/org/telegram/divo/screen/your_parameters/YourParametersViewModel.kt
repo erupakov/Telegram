@@ -3,7 +3,7 @@ package org.telegram.divo.screen.your_parameters
 import org.telegram.divo.base.BaseViewModel
 
 class YourParametersViewModel :
-    BaseViewModel<YourParametersViewState, YourParametersIntent, YourParametersAction>() {
+    BaseViewModel<YourParametersViewState, YourParametersIntent, YourParametersEffect>() {
 
     override fun createInitialState(): YourParametersViewState = YourParametersViewState()
 
@@ -20,7 +20,7 @@ class YourParametersViewModel :
             is YourParametersIntent.OnEyeColorChanged -> setState { copy(eyeColor = intent.color) }
             is YourParametersIntent.OnSkinColorChanged -> setState { copy(skinColor = intent.color) }
             is YourParametersIntent.OnBreastSizeChanged -> setState { copy(breastSize = intent.size) }
-            is YourParametersIntent.OnBackClicked -> sendAction(YourParametersAction.NavigateBack)
+            is YourParametersIntent.OnBackClicked -> sendEffect(YourParametersEffect.NavigateBack)
             is YourParametersIntent.OnSaveClicked -> {
                 // TODO: Save parameters
             }

@@ -1,7 +1,7 @@
 package org.telegram.divo.screen.settings
 
 import androidx.annotation.DrawableRes
-import org.telegram.divo.base.ViewAction
+import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
 import org.telegram.messenger.R
@@ -64,17 +64,17 @@ sealed class SettingsViewIntent : ViewIntent {
     data object OnQrCodeClicked : SettingsViewIntent()
 }
 
-sealed class SettingsViewAction : ViewAction {
-    data object NavigateToEditProfile : SettingsViewAction()
-    data object NavigateToProfile : SettingsViewAction()
-    data object NavigateToSetUsername : SettingsViewAction()
-    data object NavigateToFillParameters : SettingsViewAction()
-    data object NavigateToPromo : SettingsViewAction()
-    data object NavigateToSavedMessages : SettingsViewAction()
-    data object NavigateToStickers : SettingsViewAction()
-    data object NavigateToNotifications : SettingsViewAction()
-    data object NavigateToPrivacy : SettingsViewAction()
-    data object NavigateToDataStorage : SettingsViewAction()
-    data object NavigateToAppearance : SettingsViewAction()
-    data object ShowQrCode : SettingsViewAction()
+sealed class SettingsViewEffect : ViewEffect {
+    data object NavigateToEditProfile : SettingsViewEffect()
+    data object NavigateToProfile : SettingsViewEffect()
+    data object NavigateToSetUsername : SettingsViewEffect()
+    data object NavigateToFillParameters : SettingsViewEffect()
+    data object NavigateToPromo : SettingsViewEffect()
+    data object NavigateToSavedMessages : SettingsViewEffect()
+    data object NavigateToStickers : SettingsViewEffect()
+    data object NavigateToNotifications : SettingsViewEffect()
+    data object NavigateToPrivacy : SettingsViewEffect()
+    data object NavigateToDataStorage : SettingsViewEffect()
+    data object NavigateToAppearance : SettingsViewEffect()
+    data object ShowQrCode : SettingsViewEffect()
 }

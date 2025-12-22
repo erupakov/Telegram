@@ -17,45 +17,22 @@ import org.telegram.tgnet.TLRPC
 @Composable
 fun EventCountriesScreen(
     viewModel: EventCountriesViewModel = viewModel(),
-    onBack: () -> Unit,
+    sheetState: SheetState,
+    onDismiss: () -> Unit,
     onDone: (TLRPC.TL_event_country) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.setIntent(EventCountriesViewModel.Intent.Load)
-    }
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        containerColor = Color.White,
+        tonalElevation = 0.dp
 
-    LaunchedEffect(Unit) {
-        viewModel.action.collect { action ->
-            when (action) {
-                EventCountriesViewModel.Action.Back -> onBack()
-                is EventCountriesViewModel.Action.Done -> onDone(action.country)
-            }
-        }
-    }
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Select country") },
-                navigationIcon = {
-                    IconButton(onClick = { viewModel.setIntent(EventCountriesViewModel.Intent.OnBackClicked) }) {
-                        Text("←")
-                    }
-                },
-                actions = {
-                    TextButton(
-                        enabled = state.selectedCountryId != null,
-                        onClick = { viewModel.setIntent(EventCountriesViewModel.Intent.OnDoneClicked) }
-                    ) { Text("Done") }
-                }
-            )
-        }
-    ) { inner ->
+        ) {
         Column(
             modifier = Modifier
-                .padding(inner)
                 .fillMaxSize()
         ) {
             OutlinedTextField(
@@ -86,7 +63,7 @@ fun EventCountriesScreen(
                             name = c.country ?: "",
                             selected = state.selectedCountryId == c.country_id,
                             onClick = {
-                                viewModel.setIntent(EventCountriesViewModel.Intent.OnCountryClicked(c))
+                                onDone(c)
                             }
                         )
                         HorizontalDivider()
