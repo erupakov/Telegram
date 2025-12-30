@@ -64,6 +64,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import org.telegram.divo.components.TextTitle
+import org.telegram.divo.items.DMButton
+import org.telegram.divo.items.RoleChip
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont.HelveticaNeue
 import org.telegram.messenger.R
@@ -487,48 +489,9 @@ private fun ReactionPill(
     }
 }
 
-@Composable
-private fun RoleChip(text: String) {
-    Row(
-        Modifier
-            .clip(RoundedCornerShape(24.dp))
-            .background(Color(0xFFBB7148))
-            .border(1.dp, Color.White.copy(alpha = .65f), RoundedCornerShape(24.dp))
-            .padding(horizontal = 10.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
 
-        Icon(
-            painter = painterResource(R.drawable.ic_divo_model_icon),
-            modifier = Modifier.size(12.dp),
-            tint = Color.White,
-            contentDescription = null
-        )
-        Spacer(Modifier.width(6.dp))
-        Text(text, color = Color.White)
-    }
-}
 
-@Composable
-private fun DMButton(onClick: () -> Unit) {
-    Row(
-        Modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color.White.copy(alpha = .15f))
-            .clickable { onClick() }
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_divo_model_send_message),
-            null,
-            tint = Color.White,
-            modifier = Modifier.size(24.dp)
-        )
-        Spacer(Modifier.width(6.dp))
-        Text("Send DM", color = Color.White, fontWeight = FontWeight.SemiBold)
-    }
-}
+
 
 @Composable
 private fun ThumbsRow(

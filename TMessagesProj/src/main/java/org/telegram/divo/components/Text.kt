@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont
+import org.telegram.divo.style.DivoFont.HelveticaNeue
 import org.telegram.divo.style.DivoFont.HelveticaNeueLtCom77
 
 @Preview
@@ -35,6 +36,7 @@ private fun TextPreview(){
             TextDescription(text = "TextTitle")
             TextItemTitle(text = "TextTitle")
             TextItemDescription(text = "TextTitle")
+            UITextHint("UITextHint")
         }
     }
 
@@ -335,3 +337,45 @@ fun UITextButton(
         style = style
     )
 }
+
+@Composable
+fun UITextHint(
+    text: String,
+    modifier: Modifier = Modifier,
+    color: Color = Color.Unspecified,
+    fontSize: TextUnit = 14.sp,
+    fontStyle: FontStyle? = null,
+    fontWeight: FontWeight? = null,
+    fontFamily: FontFamily = HelveticaNeue,
+    letterSpacing: TextUnit = TextUnit.Unspecified,
+    textDecoration: TextDecoration? = null,
+    textAlign: TextAlign? = null,
+    lineHeight: TextUnit = TextUnit.Unspecified,
+    overflow: TextOverflow = TextOverflow.Clip,
+    softWrap: Boolean = true,
+    maxLines: Int = Int.MAX_VALUE,
+    minLines: Int = 1,
+    onTextLayout: ((TextLayoutResult) -> Unit)? = null,
+    style: TextStyle = LocalTextStyle.current
+){
+    Text(
+        text = text,
+        modifier = modifier,
+        color = color,
+        fontSize = fontSize,
+        fontStyle = fontStyle,
+        fontWeight = fontWeight,
+        fontFamily = fontFamily,
+        letterSpacing = letterSpacing,
+        textDecoration = textDecoration,
+        textAlign = textAlign,
+        lineHeight = lineHeight,
+        overflow = overflow,
+        softWrap = softWrap,
+        maxLines = maxLines,
+        minLines = minLines,
+        onTextLayout = onTextLayout ?: {},
+        style = style
+    )
+}
+

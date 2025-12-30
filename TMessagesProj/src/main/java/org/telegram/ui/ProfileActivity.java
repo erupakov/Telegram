@@ -3132,7 +3132,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         if (myProfile) {
             bottomButtonsContainer = new FrameLayout(context);
-
             bottomButtonContainer = new FrameLayout[2];
             bottomButton = new ButtonWithCounterView[2];
             for (int a = 0; a < 2; ++a) {

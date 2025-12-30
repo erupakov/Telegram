@@ -4,6 +4,7 @@ import org.telegram.divo.base.BaseViewModel
 import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.RequestDelegate
@@ -24,17 +25,19 @@ class CreateEventViewModel(
 
         val errorMessage: String? = null,
         val query: String = "",
-        val cities: List<TLRPC.TL_event_city> = emptyList(),
-        val selectedCityId: Int? = null,
 
         val eventTypes: List<TLRPC.TL_event_eventType> = emptyList(),
         val selectedEventType: TLRPC.TL_event_eventType? = null,
 
         val availableParameters: List<TLRPC.TL_event_availableParameter> = emptyList(),
         val selectedAvailableParameters: HashSet<TLRPC.TL_event_availableParameter> = HashSet(),
-
         val startDate: String? = null,
         val endDate: String? = null,
+
+        val countries: List<TLRPC.TL_event_country> = emptyList(),
+        val selectedCountry:TLRPC.TL_event_country? = null,
+        val cities: List<TLRPC.TL_event_city> = emptyList(),
+        val selectedCity: TLRPC.TL_event_city? = null
 
         ) : ViewState {
 
@@ -44,17 +47,15 @@ class CreateEventViewModel(
                 if (q.isEmpty()) return cities
                 return cities.filter { it.city?.contains(q, ignoreCase = true) == true }
             }
-
-        val selectedCity: TLRPC.TL_event_city?
-            get() = selectedCityId?.let { id ->
-                cities.firstOrNull { it.city_id == id }
-            }
     }
 
     sealed interface Intent : ViewIntent {
         data object Load : Intent
         data class OnQueryChanged(val value: String) : Intent
-        data class OnCityClicked(val city: TLRPC.TL_event_city) : Intent
+
+        data class OnCountrySelected(val item: TLRPC.TL_event_country) : Intent
+        data class OnCitySelected(val item: TLRPC.TL_event_city) : Intent
+
         data object OnBackClicked : Intent
         data class OnCreateClicked(
             val title: String,
@@ -68,9 +69,76 @@ class CreateEventViewModel(
         data object NavigateBack : Effect
     }
 
+    init {
+        loadCountries()
+    }
+
     override fun createInitialState(): State = State()
 
+    private fun loadCountries() {
+        val req = TLRPC.TL_event_getCountries().apply {
+            offset = 0
+            limit = 300
+        }
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TL_error? ->
+                AndroidUtilities.runOnUIThread {
+                    if (error != null) {
+                        setState { copy(isLoading = false, errorMessage = error.text ?: "Error") }
+                        return@runOnUIThread
+                    }
+                    val list = (response as? TLRPC.TL_event_countries)
+                        ?.countries
+                        .orEmpty()
+                        .sortedBy { (it.country ?: "").lowercase() }
 
+                    setState {
+                        copy(
+                            isLoading = false,
+                            countries = list,
+                            errorMessage = if (list.isEmpty()) "Empty list" else null
+                        )
+                    }
+                }
+            }
+        )
+    }
+
+    private fun loadCities(countryId:Int) {
+        val req = TLRPC.TL_event_getCities().apply {
+            country_id = countryId
+            offset = 0
+            limit = 300
+        }
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TL_error? ->
+                AndroidUtilities.runOnUIThread {
+                    if (error != null) {
+                        setState {
+                            copy(
+                                isLoading = false,
+                                errorMessage = error.text ?: "Error"
+                            )
+                        }
+                        return@runOnUIThread
+                    }
+                    val list = (response as? TLRPC.TL_event_cities)
+                        ?.cities
+                        .orEmpty()
+                        .sortedBy { (it.city ?: "").lowercase() }
+
+                    setState {
+                        copy(
+                            isLoading = false,
+                            cities = list,
+                        )
+                    }
+                }
+            }
+        )
+    }
 
     fun getEventTypes() {
         val req = TLRPC.TL_event_getEventTypes()
@@ -114,8 +182,22 @@ class CreateEventViewModel(
         when (intent) {
             Intent.Load -> {}
             is Intent.OnQueryChanged -> setState { copy(query = intent.value) }
-            is Intent.OnCityClicked ->
-                setState { copy(selectedCityId = intent.city.city_id) }
+
+            is Intent.OnCountrySelected -> {
+                loadCities(intent.item.country_id)
+                setState {
+                    copy(
+                        selectedCountry = intent.item
+                    )
+                }
+            }
+            is Intent.OnCitySelected -> {
+                setState {
+                    copy(
+                        selectedCity = intent.item
+                    )
+                }
+            }
 
             Intent.OnBackClicked -> sendEffect(Effect.NavigateBack)
             is Intent.OnCreateClicked -> {

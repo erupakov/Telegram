@@ -6,6 +6,8 @@ import androidx.compose.ui.graphics.Color
 
 @Immutable
 data class AppColors(
+    val accentColor: Color = Color(0xFFBF7A54),
+
     val splashBgColor: Color = Color(0xFFDBFE01),
     val buttonColor: Color = Color(0xFFBF7A54),
     val backButton: Color = Color(0xFF343434),
@@ -18,6 +20,14 @@ data class AppColors(
     val switchTumb: Color = Color(0xff222222),
     val switchBackgroundChecked: Color = Color(0xFFBF7A54),
     val switchBackgroundUnChecked: Color = Color(0xffAFAFAF),
+
+    val blackAlpha12: Color = Color(0x1F000000),
+    val textLabelDark: Color = Color(0x80FFFFFF),
+
+
+    val backgroundDark: Color = Color(0xFF222222),
+    val backgroundLight: Color = Color(0xFF343434),
+
 
 
     )

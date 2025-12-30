@@ -1,0 +1,152 @@
+package org.telegram.divo.screen.profile_social_links
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import org.telegram.divo.base.BaseViewModel
+import org.telegram.divo.base.ViewEffect
+import org.telegram.divo.base.ViewIntent
+import org.telegram.divo.base.ViewState
+import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.FileLog
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.MessagesStorage
+import org.telegram.messenger.NotificationCenter
+import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.ConnectionsManager
+import org.telegram.tgnet.RequestDelegate
+import org.telegram.tgnet.TLObject
+import org.telegram.tgnet.TLRPC
+
+class ProfileSocialLinksViewModel :
+    BaseViewModel<ProfileSocialLinksViewModel.UiViewState,
+            ProfileSocialLinksViewModel.Intent,
+            ProfileSocialLinksViewModel.Effect>() {
+
+
+    data class UiViewState(
+        val instagramUser: String = "",
+        val tiktokUser: String = "",
+        val youtubePath: String = "",
+        val website: String = "",
+        val isLoading: Boolean = false,
+        val errorMessage: String? = null,
+    ) : ViewState
+
+    sealed class Intent : ViewIntent {
+        data class OnSaveClicked(val fName: String, val lName: String, val bio: String) : Intent()
+        data object OnLoad : Intent()
+    }
+
+    sealed class Effect : ViewEffect {
+        data object NavigateBack : Effect()
+    }
+
+    override fun createInitialState(): UiViewState = UiViewState()
+
+    private val currentAccount: Int = UserConfig.selectedAccount
+
+    init {
+        setState {
+            copy(
+                errorMessage = null
+            )
+        }
+    }
+
+    override fun handleIntent(intent: Intent) {
+        when (intent) {
+            Intent.OnLoad -> Unit
+            is Intent.OnSaveClicked -> {
+                //updateProfile(intent.fName, intent.lName, intent.bio)
+            }
+        }
+    }
+
+
+    private var messageStorage: MessagesStorage? = null
+
+    fun setMessageStorage(_messageStorage: MessagesStorage) {
+        messageStorage = _messageStorage
+    }
+
+
+    private fun applyProfileLocally(fName: String, lName: String, about: String) {
+        val uc = UserConfig.getInstance(currentAccount)
+        val mc = MessagesController.getInstance(currentAccount)
+
+        // 1) Update current user (имя/фамилия) + save config
+        uc.currentUser?.let { me ->
+            me.first_name = fName
+            me.last_name = lName
+            uc.setCurrentUser(me)
+            uc.saveConfig(true)
+        }
+
+        // 2) Update UserFull.about + persist to storage (если UserFull уже загружен)
+        val userFull = mc.getUserFull(uc.clientUserId)
+        if (userFull != null) {
+            userFull.about = about
+            messageStorage?.updateUserInfo(userFull, false)
+        }
+
+        // 3) Notify UI (как делает UserInfoActivity)
+        val nc = NotificationCenter.getInstance(currentAccount)
+        nc.postNotificationName(NotificationCenter.mainUserInfoChanged)
+        nc.postNotificationName(
+            NotificationCenter.updateInterfaces,
+            MessagesController.UPDATE_MASK_NAME
+        )
+
+        sendEffect(Effect.NavigateBack)
+
+    }
+
+
+
+    fun updateLinks(instagram: String, tiktok: String, youtube: String, web:String) {
+//        val lName = lNameRaw.trim()
+//        val about = aboutRaw.trim()
+//        setState { copy(isLoading = true, errorMessage = null) }
+//
+//        val req = TLRPC.TL_account_updateProfile().apply {
+//            var flags = 0
+//            flags = flags or 1
+//            first_name = fName
+//            flags = flags or 2
+//            last_name = lName
+//            flags = flags or 4
+//            this.about = about
+//            this.flags = flags
+//        }
+//
+//        ConnectionsManager.getInstance(currentAccount).sendRequest(
+//            req,
+//            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
+//                AndroidUtilities.runOnUIThread {
+//                    if (error != null) {
+//                        setState {
+//                            copy(
+//                                isLoading = false,
+//                                errorMessage = "${error.text ?: "Unknown error"} (code=${error.code})"
+//                            )
+//                        }
+//                        FileLog.e("updateProfile error: ${error.text} code=${error.code}")
+//                        return@runOnUIThread
+//                    }
+//
+//                    applyProfileLocally(fName = fName, lName = lName, about = about)
+//                    setState {
+//                        copy(
+//
+//                            isLoading = false,
+//                            errorMessage = null
+//                        )
+//                    }
+//                }
+//            },
+//        )
+    }
+
+}

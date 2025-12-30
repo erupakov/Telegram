@@ -49,14 +49,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import org.telegram.divo.components.TelegramUserAvatar
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.style.DivoFont.HelveticaNeue
 import org.telegram.messenger.R
+import org.telegram.tgnet.TLRPC
 
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = viewModel(),
     navigateToFillParameters: () -> Unit = {},
+    navigateToProfile:() -> Unit  = {}
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -67,51 +70,51 @@ fun SettingsScreen(
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                SettingsViewEffect.NavigateToAppearance -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToAppearance -> {
 //                    TODO()
                 }
 
-                SettingsViewEffect.NavigateToDataStorage -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToDataStorage -> {
 //                    TODO()
                 }
 
-                SettingsViewEffect.NavigateToEditProfile -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToEditProfile -> {
 //                    TODO()
                 }
 
-                SettingsViewEffect.NavigateToFillParameters -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToFillParameters -> {
                     navigateToFillParameters()
                 }
 
-                SettingsViewEffect.NavigateToNotifications -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToNotifications -> {
 //                    TODO()
                 }
 
-                SettingsViewEffect.NavigateToPrivacy -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToPrivacy -> {
 //                    TODO()
                 }
 
-                SettingsViewEffect.NavigateToProfile -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToProfile -> {
+                    navigateToProfile()
+                }
+
+                SettingsViewModel.SettingsViewEffect.NavigateToPromo -> {
 //                    TODO()
                 }
 
-                SettingsViewEffect.NavigateToPromo -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToSavedMessages -> {
 //                    TODO()
                 }
 
-                SettingsViewEffect.NavigateToSavedMessages -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToSetUsername -> {
 //                    TODO()
                 }
 
-                SettingsViewEffect.NavigateToSetUsername -> {
+                SettingsViewModel.SettingsViewEffect.NavigateToStickers -> {
 //                    TODO()
                 }
 
-                SettingsViewEffect.NavigateToStickers -> {
-//                    TODO()
-                }
-
-                SettingsViewEffect.ShowQrCode -> {
+                SettingsViewModel.SettingsViewEffect.ShowQrCode -> {
 //                    TODO()
                 }
             }
@@ -124,8 +127,8 @@ fun SettingsScreen(
             SettingsTopBar(
                 title = "SETTINGS",
                 actionText = "Edit",
-                onAction = { viewModel.setIntent(SettingsViewIntent.OnEditProfileClicked) },
-                onQrCode = { viewModel.setIntent(SettingsViewIntent.OnQrCodeClicked) }
+                onAction = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnEditProfileClicked) },
+                onQrCode = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnQrCodeClicked) }
             )
         }
     ) { padding ->
@@ -136,18 +139,17 @@ fun SettingsScreen(
                 .verticalScroll(scrollState)
         ) {
             ProfileRow(
-                name = state.userName,
-                phone = state.phoneNumber,
-                onClick = { viewModel.setIntent(SettingsViewIntent.OnOpenProfileClicked) }
+                userFull = state.userFull,
+                onClick = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnOpenProfileClicked) }
             )
 
             HorizontalDivider(color = dividerColor)
 
             SettingsItemRow(
-                item = SettingsItem(
+                item = SettingsViewModel.SettingsItem(
                     title = "Set Username",
                     iconResId = R.drawable.ic_divo_settings_username,
-                    intent = SettingsViewIntent.OnSetUsernameClicked
+                    intent = SettingsViewModel.SettingsViewIntent.OnSetUsernameClicked
                 ),
                 viewModel = viewModel
             )
@@ -159,7 +161,7 @@ fun SettingsScreen(
             PrimaryWideButton(
                 text = "Fill your parameters",
                 background = ctaColor,
-                onClick = { viewModel.setIntent(SettingsViewIntent.OnFillParametersClicked) }
+                onClick = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnFillParametersClicked) }
             )
 
             Spacer(Modifier.height(12.dp))
@@ -168,7 +170,7 @@ fun SettingsScreen(
                 headline = "GET DISCOVERED IN THE FASHION WORLD",
                 body = "Publish your profile as a model, join castings or add events as agency — be part of the global fashion network.",
                 buttonText = "LEARN MORE",
-                onClick = { viewModel.setIntent(SettingsViewIntent.OnPromoClicked) }
+                onClick = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnPromoClicked) }
             )
 
             Spacer(Modifier.height(16.dp))
@@ -232,9 +234,7 @@ private fun SettingsTopBar(
 
 @Composable
 private fun ProfileRow(
-    name: String,
-    phone: String,
-    imageUrl: String? = null,
+    userFull: TLRPC.UserFull,
     onClick: () -> Unit
 ) {
     Row(
@@ -251,28 +251,20 @@ private fun ProfileRow(
                 .background(Color(0xFFE6E6E6)),
             contentAlignment = Alignment.Center
         ) {
-            if (imageUrl == null) {
-                Text(
-                    text = name.firstOrNull()?.uppercase() ?: "",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-            } else {
-                Image(
-                    modifier = Modifier
-                        .size(54.dp)
-                        .background(Color(0xFFE7E7E8)),
-                    painter = rememberAsyncImagePainter(imageUrl),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                )
-            }
+            TelegramUserAvatar(
+                user = userFull.user,
+                modifier  = Modifier
+                    .size(54.dp)
+                    .clip(CircleShape),
+                68
+            )
         }
 
         Spacer(Modifier.width(12.dp))
 
         Column(Modifier.weight(1f)) {
             Text(
-                text = name,
+                text = (userFull.user.first_name + " " + (userFull.user.last_name?: "")) ,
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 19.sp
@@ -282,7 +274,7 @@ private fun ProfileRow(
 
                 )
             Text(
-                text = phone,
+                text = "+" + userFull.user.phone,
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = Color(0xFF7A7A7A),
                     fontSize = 15.sp
@@ -407,7 +399,7 @@ private fun PromoCard(
 
 @Composable
 private fun SettingsGroup(
-    items: List<SettingsItem>,
+    items: List<SettingsViewModel.SettingsItem>,
     dividerColor: Color,
     rowPaddingH: Dp = 16.dp,
     viewModel: SettingsViewModel
@@ -426,7 +418,7 @@ private fun SettingsGroup(
 
 @Composable
 private fun SettingsItemRow(
-    item: SettingsItem,
+    item: SettingsViewModel.SettingsItem,
     viewModel: SettingsViewModel,
     rowPaddingH: Dp = 16.dp
 ) {

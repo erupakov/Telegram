@@ -1,15 +1,14 @@
 package org.telegram.divo.screen.event_create
 
-import android.R
+import org.telegram.messenger.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -20,18 +19,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.ui.CountrySelectActivity
+import kotlinx.coroutines.launch
+import org.telegram.tgnet.TLRPC
 import java.time.Instant
 import java.time.ZoneId
 
@@ -53,9 +50,10 @@ fun CreateEventScreen(
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                CreateEventViewModel.Effect.NavigateBack ->{
-                   // onBack()
+                CreateEventViewModel.Effect.NavigateBack -> {
+                    // onBack()
                 }
+
                 else -> {}
             }
 
@@ -97,13 +95,13 @@ fun CreateEventScreenView(
         initialHour = 0, initialMinute = 0, is24Hour = true
     )
 
-
     Scaffold(
-        modifier = Modifier.padding(top = 32.dp), topBar = {
+        modifier = Modifier.padding(top = 32.dp),
+        topBar = {
             TopBar(
                 onBack = {
                     onIntent(CreateEventViewModel.Intent.OnBackClicked)
-            }, onCreate = {
+                }, onCreate = {
                     onIntent(
                         CreateEventViewModel.Intent.OnCreateClicked(
                             title = title,
@@ -112,9 +110,13 @@ fun CreateEventScreenView(
                             time = timeForView
                         )
                     )
-            }, enabled = true//.isValid()
+                },
+                createEnabled = true//.isValid()
             )
-        }) { padding ->
+        },
+
+
+        ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -155,13 +157,13 @@ fun CreateEventScreenView(
             )
 
             // Event type (dropdown)
-            DropDownField(
-                label = "Event type",
-                value = "Choose event type",
-                options = listOf("Casting", "Conference", "Show", "Private"),
-                onSelected = {
-
-                })
+//            DropDownField(
+//                label = "Event type",
+//                value = "Choose event type",
+//                options = listOf("Casting", "Conference", "Show", "Private"),
+//                onSelected = {
+//
+//                })
 
             // Date & Time
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -177,7 +179,6 @@ fun CreateEventScreenView(
                     },
                     modifier = Modifier.weight(1f)
                 )
-
                 OutlinedTextField(
                     value = timeForView,
                     onValueChange = {},
@@ -192,14 +193,21 @@ fun CreateEventScreenView(
                 )
             }
 
-            DropDownField(
-                label = "",
-                value = "",
-                options = listOf("option1","option1"),
-                onSelected = {
-
+            CountryField(
+                value = state.selectedCountry?.country ?: "",
+                onClick = {
+                    showCountrySheet = true
                 }
             )
+
+            AnimatedVisibility(state.selectedCountry != null) {
+                CityField(
+                    value = state.selectedCity?.city ?: "",
+                    onClick = {
+                        showCitySheet = true
+                    }
+                )
+            }
 
             // Venue / Country
 //            DropDownField(
@@ -307,6 +315,34 @@ fun CreateEventScreenView(
         })
     }
 
+    if (showCountrySheet) {
+        CountryModalSheet(
+            countryList = state.countries,
+            selectedCountry = state.selectedCountry,
+            onDismiss = {
+                showCountrySheet = false
+            },
+            onDone = {
+                onIntent(CreateEventViewModel.Intent.OnCountrySelected(it))
+                showCountrySheet = false
+            }
+        )
+    }
+    if (showCitySheet) {
+        CityModalSheet(
+            countryList = state.cities,
+            selectedCountry = state.selectedCity,
+            onDismiss = {
+                showCountrySheet = false
+            },
+            onDone = {
+                onIntent(CreateEventViewModel.Intent.OnCitySelected(it))
+                showCountrySheet = false
+            }
+        )
+    }
+
+
     if (showParamSheet) {
 //        ParametersSheet(
 //            initiallyChecked = ui.parameters.toSet(),
@@ -323,21 +359,23 @@ fun CreateEventScreenView(
 // UI PARTS
 // ────────────────────────────────────────────────────────────────────────────────
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
     onBack: () -> Unit,
     onCreate: () -> Unit,
-    enabled: Boolean
+    createEnabled: Boolean
 ) {
-    Surface(tonalElevation = 0.dp, shadowElevation = 0.dp) {
-        Row(
-            Modifier
-                .fillMaxWidth()
-                .heightIn(min = 52.dp)
-                .padding(horizontal = 12.dp)
-                .padding(top = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    TopAppBar(
+        title = {
+            Text(
+                text = "CREATE EVENT",
+                modifier = Modifier.fillMaxWidth(),
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
+            )
+        },
+        navigationIcon = {
             Text(
                 "Back",
                 color = Color(0xFFBF825E),
@@ -346,24 +384,18 @@ private fun TopBar(
                     .clickable { onBack() }
                     .padding(8.dp),
                 fontSize = 16.sp)
-            Spacer(Modifier.weight(1f))
-            Text(
-                "CREATE EVENT",
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.weight(3f),
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.weight(1f))
+        },
+        actions = {
             Text(
                 "Create",
-                color = if (enabled) Color(0xFFBF825E) else Color(0xFFB9B9B9),
+                color = if (createEnabled) Color(0xFFBF825E) else Color(0xFFB9B9B9),
                 modifier = Modifier
                     .clip(RoundedCornerShape(8.dp))
-                    .clickable(enabled) { onCreate() }
+                    .clickable(createEnabled) { onCreate() }
                     .padding(8.dp),
                 fontSize = 16.sp)
         }
-    }
+    )
 }
 
 
@@ -433,11 +465,13 @@ private fun GalleryPickerBox(
     }
 }
 
+@Preview
 @Composable
 private fun CountryField(
-    label: String,
-    value: String,
-    placeholder: String = "Choose Country"
+    label: String = "Country",
+    value: String = "",
+    placeholder: String = "Choose Country",
+    onClick: () -> Unit = {}
 ) {
     Box {
         OutlinedTextField(
@@ -447,18 +481,72 @@ private fun CountryField(
             label = { Text(label) },
             trailingIcon = {
                 Icon(
-                    painterResource(R.drawable.arrow_down_float),
+                    painterResource(R.drawable.ic_arrow_drop_down),
                     contentDescription = null
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
                 disabledTextColor = Color.Black,
                 disabledBorderColor = Color(0xFFE4E4E4),
                 focusedBorderColor = Color(0xFFBF825E),
                 unfocusedBorderColor = Color(0xFFE4E4E4),
             )
+        )
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .clickable(
+                    onClick = {
+                        onClick()
+                    },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun CityField(
+    label: String = "City",
+    value: String = "",
+    placeholder: String = "Choose City",
+    onClick: () -> Unit = {}
+) {
+    Box {
+        OutlinedTextField(
+            value = value.ifBlank { placeholder },
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            trailingIcon = {
+                Icon(
+                    painterResource(R.drawable.ic_arrow_drop_down),
+                    contentDescription = null
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                disabledTextColor = Color.Black,
+                disabledBorderColor = Color(0xFFE4E4E4),
+                focusedBorderColor = Color(0xFFBF825E),
+                unfocusedBorderColor = Color(0xFFE4E4E4),
+            )
+        )
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .clickable(
+                    onClick = {
+                        onClick()
+                    },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() },
+                )
         )
     }
 }
@@ -482,7 +570,7 @@ private fun DropDownField(
             label = { Text(label) },
             trailingIcon = {
                 Icon(
-                    painterResource(R.drawable.arrow_down_float),
+                    painterResource(R.drawable.ic_arrow_drop_down),
                     contentDescription = null
                 )
             },
@@ -624,32 +712,117 @@ private fun ParametersSheet(
     }
 }
 
-data class CreateEventUiState(
-    val hasCover: Boolean = false,
-    val name: String = "",
-    val about: String = "",
-    val eventType: String = "",
-    val date: String = "",
-    val time: String = "",
-    val country: String = "",
-    val parameters: List<String> = emptyList(),
-    val galleryCount: Int = 0,
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CountryModalSheet(
+    countryList: List<TLRPC.TL_event_country>,
+    selectedCountry: TLRPC.TL_event_country? = null,
+    onDismiss: () -> Unit,
+    onDone: (TLRPC.TL_event_country) -> Unit,
 ) {
-    fun isValid(): Boolean = name.isNotBlank() && eventType.isNotBlank() && country.isNotBlank()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
+    ModalBottomSheet(
+        modifier = Modifier.padding(top = 32.dp),
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        containerColor = Color.White,
+        tonalElevation = 16.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                items(countryList) { item ->
+                    CountryItem(
+                        name = item.country ?: "",
+                        selected = item.country_id == selectedCountry?.country_id,
+                        onClick = {
+                            scope.launch {
+                                sheetState.hide()
+                                onDone(item)
+                            }
+                        }
+                    )
+                    HorizontalDivider()
+                }
+            }
+        }
+    }
 }
 
-private val sampleCountries = listOf(
-    "United States",
-    "United Kingdom",
-    "Italy",
-    "France",
-    "Germany",
-    "Spain",
-    "United Arab Emirates",
-    "Armenia",
-    "Ukraine",
-    "Japan"
-)
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CityModalSheet(
+    countryList: List<TLRPC.TL_event_city>,
+    selectedCountry: TLRPC.TL_event_city? = null,
+    onDismiss: () -> Unit,
+    onDone: (TLRPC.TL_event_city) -> Unit,
+) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
+    ModalBottomSheet(
+        modifier = Modifier.padding(top = 32.dp),
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        dragHandle = { BottomSheetDefaults.DragHandle() },
+        containerColor = Color.White,
+        tonalElevation = 16.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(bottom = 16.dp)
+            ) {
+                items(countryList) { item ->
+                    CountryItem(
+                        name = item.city ?: "",
+                        selected = item.city_id == selectedCountry?.city_id,
+                        onClick = {
+                            scope.launch {
+                                sheetState.hide()
+                                onDone(item)
+                            }
+                        }
+                    )
+                    HorizontalDivider()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CountryItem(
+    name: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        RadioButton(selected = selected, onClick = onClick)
+        Spacer(Modifier.width(12.dp))
+        Text(text = name)
+    }
+}
+
 
 @Stable
 fun SolidDashed(color: Color, intervals: FloatArray): androidx.compose.ui.graphics.SolidColor {
