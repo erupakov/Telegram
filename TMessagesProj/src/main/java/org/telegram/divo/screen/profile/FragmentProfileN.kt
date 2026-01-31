@@ -7,6 +7,8 @@ import org.telegram.divo.screen.edit_my_profile.FragmentEditMyProfile
 import org.telegram.divo.screen.event_create.FragmentEventCreate
 import org.telegram.divo.screen.event_details.FragmentEventDetails
 import org.telegram.divo.screen.event_list.EventListScreen
+import org.telegram.divo.screen.profile_social_links.FragmentProfileSocialLinks
+import org.telegram.divo.screen.work_history.FragmentWorkHistory
 import org.telegram.ui.ActionBar.BaseFragment
 
 class FragmentProfileN : BaseFragment() {
@@ -23,7 +25,11 @@ class FragmentProfileN : BaseFragment() {
                     finishFragment()
                 },
                 onEditLinksClicked = {
-                    presentFragment(FragmentEditMyProfile())
+                    presentFragment(FragmentProfileSocialLinks())
+                },
+                showWorkHistory = {
+                    presentFragment(FragmentWorkHistory())
+
                 }
             )
         }

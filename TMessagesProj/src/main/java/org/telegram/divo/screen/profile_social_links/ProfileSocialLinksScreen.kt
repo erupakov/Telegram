@@ -12,6 +12,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
@@ -130,20 +132,19 @@ fun ProfileSocialLinksScreenView(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Save",
                 onClick = {
-                    // Build full URLs here (prefix is NOT editable).
-                    val instagramUrl = buildUrl("https://instagram.com/@", instagramUser)
-                    val tiktokUrl = buildUrl("https://tiktok.com/@", tiktokUser)
+                    val instagramUrl = buildUrl("https://instagram.com/", instagramUser)
+                    val tiktokUrl = buildUrl("https://tiktok.com/", tiktokUser)
                     val youtubeUrl = buildUrl("https://youtube.com/", youtubePath)
                     val websiteUrl = normalizeWebsite(website)
 
-//                    onIntent(
-////                        ProfileSocialLinksViewModel.Intent.OnSaveClicked(
-////                            instagramUrl = instagramUrl,
-////                            tiktokUrl = tiktokUrl,
-////                            youtubeUrl = youtubeUrl,
-////                            website = websiteUrl
-////                        )
-//                    )
+                    onIntent(
+                        ProfileSocialLinksViewModel.Intent.OnSaveClicked(
+                            instagramUrl = instagramUrl,
+                            tiktokUrl = tiktokUrl,
+                            youtubeUrl = youtubeUrl,
+                            website = websiteUrl
+                        )
+                    )
                 }
             )
         }
@@ -159,6 +160,12 @@ private fun SocialLinkField(
     onValueChange: (String) -> Unit,
     placeholder: String? = null
 ) {
+//    colors = androidx.compose.material.TextFieldDefaults.outlinedTextFieldColors(
+//        textColor = AppTheme.colors.textColor,
+//        focusedBorderColor = AppTheme.colors.textColor,
+//        unfocusedBorderColor = AppTheme.colors.textLabelDark,
+//    )
+
     OutlinedTextField(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,13 +176,19 @@ private fun SocialLinkField(
             val cleaned = raw.trim().replace(" ", "").removePrefix("@")
             onValueChange(cleaned)
         },
-        label = { Text(label) },
+        label = { Text(label, color= Color.White) },
         placeholder = if (placeholder != null) ({ Text(placeholder) }) else null,
         prefix = if (prefix != null) ({ Text(prefix) }) else null,
         singleLine = true,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
             autoCorrect = false
+        ),
+        colors = TextFieldDefaults.colors(
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent,
+            focusedTextColor = Color.White,
+            unfocusedTextColor = Color.White,
         )
     )
 }
@@ -191,90 +204,4 @@ private fun normalizeWebsite(input: String): String {
     // If user typed domain without scheme, add https://
     return if (v.startsWith("http://") || v.startsWith("https://")) v else "https://$v"
 }
-
-
-//
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Preview
-//@Composable
-//fun ProfileSocialLinksScreenView(
-//    uiState: ProfileSocialLinksViewModel.UiViewState = ProfileSocialLinksViewModel.UiViewState(),
-//    onIntent: (ProfileSocialLinksViewModel.Intent) -> Unit = {},
-//    onCloseScreen: ()-> Unit = {}
-//
-//) {
-//    var instagram by remember { mutableStateOf(uiState.fName) }
-//    var lName by remember { mutableStateOf(uiState.lName) }
-//    var bio by remember { mutableStateOf(uiState.bio) }
-//
-//    Scaffold(
-//        modifier = Modifier.padding(top = 36.dp),
-//        containerColor = AppTheme.colors.backgroundDark,
-//        topBar = {
-//            TopAppBar(
-//                title = {
-//                    Text("Profile", color = AppTheme.colors.textColor)
-//                },
-//                navigationIcon = {
-//                    IconButton(onClick = {
-//                        onCloseScreen()
-//                    }) {
-//                        Icon(
-//                            painter = painterResource(R.drawable.ic_divo_back),
-//                            contentDescription = null,
-//                            modifier = Modifier.size(24.dp),
-//                            tint = AppTheme.colors.textColor
-//                        )
-//                    }
-//                },
-//                actions = {
-//                },
-//                colors = TopAppBarDefaults.topAppBarColors(
-//                    containerColor = AppTheme.colors.backgroundDark
-//                )
-//
-//            )
-//        }
-//    ) { paddingValues ->
-//
-//        Column(
-//            modifier = Modifier
-//                .padding(paddingValues)
-//                .padding(horizontal = 16.dp)
-//        ) {
-//
-//            UiDarkTextField(
-//                value = fName,
-//                onValueChange = {
-//                    fName = it
-//                },
-//                label = "First Name",
-//                modifier = Modifier.padding(top = 8.dp)
-//            )
-//            UiDarkTextField(
-//                label = "Last Name",
-//                value = lName,
-//                onValueChange = {
-//                    lName = it
-//                },
-//                modifier = Modifier.padding(top = 8.dp)
-//
-//            )
-//
-//
-//            UIButton(
-//                modifier = Modifier.fillMaxWidth(),
-//                text = "Save",
-//                onClick = {
-//                    onIntent(
-//                        ProfileSocialLinksViewModel.Intent.OnSaveClicked(
-//                            fName = fName,
-//                            lName = lName,
-//                            bio = bio
-//                        )
-//                    )
-//                })
-//        }
-//    }
-//}
 

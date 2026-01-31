@@ -1,5 +1,8 @@
 package org.telegram.divo.screen.profile
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.telegram.divo.base.BaseViewModel
 import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
@@ -15,6 +18,7 @@ class ProfileViewModel :
         val userFull: TLRPC.UserFull,
         val isLoading: Boolean = false,
         val errorMessage: String? = null,
+        val userPhotos: List<TLRPC.Photo> = emptyList()
     ) : ViewState
 
     sealed class EventListIntent : ViewIntent {
@@ -23,7 +27,6 @@ class ProfileViewModel :
         data class OnEventCardClicked(val eventId: Long) : EventListIntent()
         data class OnEventCtaClicked(val eventId: Long) : EventListIntent()
         data object OnLoad : EventListIntent()
-
     }
 
     sealed class EventListEffect : ViewEffect {
@@ -41,13 +44,43 @@ class ProfileViewModel :
         )
     }
 
+    fun getData() {
+        viewModelScope.launch {
+            val userFull = MessagesController.getInstance(currentAccount)
+                .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
+
+            val userPhotos = MessagesController
+                .getInstance(currentAccount)
+                .getDialogPhotos(userFull.id)
+
+            userPhotos.loadCache()
+
+            if (userPhotos.loaded) {
+                setState {
+                    copy(
+                        userFull = userFull,
+                        userPhotos = ArrayList(userPhotos.photos)
+                    )
+                }
+            }else{
+                delay(3000)
+                setState {
+                    copy(
+                        userFull = userFull,
+                        userPhotos = ArrayList(userPhotos.photos)
+                    )
+                }
+            }
+        }
+    }
+
     private var currentAccount = UserConfig.selectedAccount
 
     override fun handleIntent(intent: EventListIntent) {
         when (intent) {
             EventListIntent.OnLoad -> {
-            }
 
+            }
             EventListIntent.OnAddEventClicked -> sendEffect(EventListEffect.NavigateToCreateEvent)
             is EventListIntent.OnEventCardClicked -> sendEffect(
                 EventListEffect.NavigateToEventDetails(intent.eventId)

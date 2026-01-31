@@ -5,6 +5,7 @@ import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
 import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.FileLog
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.RequestDelegate
@@ -35,11 +36,16 @@ class CreateEventViewModel(
         val endDate: String? = null,
 
         val countries: List<TLRPC.TL_event_country> = emptyList(),
-        val selectedCountry:TLRPC.TL_event_country? = null,
+        val selectedCountry: TLRPC.TL_event_country? = null,
         val cities: List<TLRPC.TL_event_city> = emptyList(),
-        val selectedCity: TLRPC.TL_event_city? = null
+        val selectedCity: TLRPC.TL_event_city? = null,
 
-        ) : ViewState {
+        // Cover Photo
+        val coverPhotoId: Long? = null,
+        val coverPhotoPath: String? = null,
+        val coverPhotoUploading: Boolean = false
+
+    ) : ViewState {
 
         val filtered: List<TLRPC.TL_event_city>
             get() {
@@ -63,14 +69,24 @@ class CreateEventViewModel(
             val date: String,
             val time: String,
         ) : Intent
+
+        // Cover Photo
+        data class OnCoverPhotoSelected(
+            val photo: TLRPC.InputFile,
+            val localPath: String?
+        ) : Intent
+
+        data object OnClearCoverPhoto : Intent
     }
 
     sealed interface Effect : ViewEffect {
         data object NavigateBack : Effect
+        data class ShowError(val message: String) : Effect
     }
 
     init {
         loadCountries()
+        getEventTypes()
     }
 
     override fun createInitialState(): State = State()
@@ -105,7 +121,7 @@ class CreateEventViewModel(
         )
     }
 
-    private fun loadCities(countryId:Int) {
+    private fun loadCities(countryId: Int) {
         val req = TLRPC.TL_event_getCities().apply {
             country_id = countryId
             offset = 0
@@ -140,20 +156,68 @@ class CreateEventViewModel(
         )
     }
 
-    fun getEventTypes() {
-        val req = TLRPC.TL_event_getEventTypes()
-        req.offset = 0
-        req.limit = 3
+    private fun uploadPhotoToServer(
+        inputFile: TLRPC.InputFile,
+        onSuccess: (photoId: Long) -> Unit,
+        onError: (String) -> Unit
+    ) {
+        val req = TLRPC.TL_messages_uploadMedia().apply {
+            peer = TLRPC.TL_inputPeerSelf()
+            media = TLRPC.TL_inputMediaUploadedPhoto().apply {
+                file = inputFile
+            }
+        }
+
         ConnectionsManager.getInstance(currentAccount).sendRequest(
             req,
             RequestDelegate { response: TLObject?, error: TL_error? ->
-                if (response is TLRPC.TL_event_eventTypes) {
-                    response.data
-                } else {
-                    response
+                AndroidUtilities.runOnUIThread {
+                    if (error != null) {
+                        onError(error.text ?: "Upload failed")
+                        return@runOnUIThread
+                    }
+
+                    if (response is TLRPC.TL_messageMediaPhoto) {
+                        val photoId = response.photo?.id ?: 0L
+                        if (photoId != 0L) {
+                            onSuccess(photoId)
+                        } else {
+                            onError("Failed to get photo ID")
+                        }
+                    } else {
+                        onError("Unexpected response type")
+                    }
                 }
-                error
-            },
+            }
+        )
+    }
+
+     fun getEventTypes() {
+        val req = TLRPC.TL_event_getEventTypes().apply {
+            offset = 0
+            limit = 100
+        }
+
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
+                AndroidUtilities.runOnUIThread {
+                    if (error != null) {
+                        FileLog.e("getEventTypes error: ${error.text} code=${error.code}")
+                        setState { copy(errorMessage = error.text ?: "Error") }
+                        return@runOnUIThread
+                    }
+
+                    val list = (response as? TLRPC.TL_event_eventTypes)?.data.orEmpty()
+                    setState {
+                        copy(
+                            eventTypes = list,
+                            selectedEventType = list.getOrNull(0),
+                            errorMessage = null
+                        )
+                    }
+                }
+            }
         )
     }
 
@@ -191,6 +255,7 @@ class CreateEventViewModel(
                     )
                 }
             }
+
             is Intent.OnCitySelected -> {
                 setState {
                     copy(
@@ -208,6 +273,44 @@ class CreateEventViewModel(
                     time = intent.time
                 )
             }
+
+            is Intent.OnCoverPhotoSelected -> {
+                setState {
+                    copy(
+                        coverPhotoUploading = true,
+                        coverPhotoPath = intent.localPath
+                    )
+                }
+                uploadPhotoToServer(
+                    inputFile = intent.photo,
+                    onSuccess = { photoId ->
+                        setState {
+                            copy(
+                                coverPhotoId = photoId,
+                                coverPhotoUploading = false
+                            )
+                        }
+                    },
+                    onError = { errorMsg ->
+                        setState {
+                            copy(
+                                coverPhotoUploading = false,
+                                coverPhotoPath = null
+                            )
+                        }
+                        sendEffect(Effect.ShowError(errorMsg))
+                    }
+                )
+            }
+
+            Intent.OnClearCoverPhoto -> {
+                setState {
+                    copy(
+                        coverPhotoId = null,
+                        coverPhotoPath = null
+                    )
+                }
+            }
         }
     }
 
@@ -220,25 +323,36 @@ class CreateEventViewModel(
         date: String,
         time: String
     ) {
+        val currentState = state.value
         val req = TLRPC.TL_event_createEvent()
 
         req.title = title
         req.description = description
-        req.event_date = date
-        req.event_time = time
-//        val location = TLRPC.TL_event_location()
-//        location.city
-//        location.country
 
-//        public String title;
-//        public String description;
-//        public TL_event_eventType event_type;
-//        public String event_date;
-//        public String event_time;
-//        public TL_event_location location;
-//        public long cover_photo_id;
-//        public ArrayList<String> enabled_parameter_keys = new ArrayList<>();
-//
+        req.event_date = "2026-03-03"
+        req.event_time = "10:00:00+03:00[Europe/Kyiv]"
+
+        req.event_type = state.value.selectedEventType
+
+        currentState.coverPhotoId?.let { photoId ->
+            req.cover_photo_id = photoId
+        }
+
+        // Set location if selected
+        currentState.selectedCity?.let { city ->
+            val location = TLRPC.TL_event_location()
+            location.city = TLRPC.TL_event_city().apply {
+                city_id = city.city_id
+                this.city = city.city
+            }
+            currentState.selectedCountry?.let { country ->
+                location.country = TLRPC.TL_event_country().apply {
+                    country_id = country.country_id
+                    this.country = country.country
+                }
+            }
+            req.location = location
+        }
         ConnectionsManager.getInstance(currentAccount).sendRequest(
             req,
             RequestDelegate { response: TLObject?, error: TL_error? ->
@@ -252,7 +366,5 @@ class CreateEventViewModel(
                 error
             },
         )
-
-
     }
 }

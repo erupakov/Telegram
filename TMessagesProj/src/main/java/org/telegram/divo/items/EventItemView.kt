@@ -126,7 +126,8 @@ fun EventItemView(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    DurationChip(text = durationText)
+
+                    DurationChip(text = durationText, modifier = Modifier)
                     EventCtaButton(
                         text = ctaText,
                         type = ctaType,
@@ -139,8 +140,11 @@ fun EventItemView(
 }
 
 @Composable
-private fun DurationChip(text: String) {
+private fun DurationChip(
+    modifier:Modifier,
+    text: String) {
     Surface(
+        modifier = modifier,
         shape = RoundedCornerShape(12.dp),
         color = AppTheme.colors.containerDuration,
     ) {

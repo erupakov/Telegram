@@ -35,7 +35,13 @@ class ProfileSocialLinksViewModel :
     ) : ViewState
 
     sealed class Intent : ViewIntent {
-        data class OnSaveClicked(val fName: String, val lName: String, val bio: String) : Intent()
+        data class OnSaveClicked(
+            val instagramUrl: String,
+            val tiktokUrl: String,
+            val youtubeUrl: String,
+            val website: String
+        ) : Intent()
+
         data object OnLoad : Intent()
     }
 
@@ -59,7 +65,12 @@ class ProfileSocialLinksViewModel :
         when (intent) {
             Intent.OnLoad -> Unit
             is Intent.OnSaveClicked -> {
-                //updateProfile(intent.fName, intent.lName, intent.bio)
+                updateLinks(
+                    intent.instagramUrl,
+                    intent.tiktokUrl,
+                    intent.youtubeUrl,
+                    intent.website
+                )
             }
         }
     }
@@ -100,53 +111,72 @@ class ProfileSocialLinksViewModel :
         )
 
         sendEffect(Effect.NavigateBack)
+    }
+
+    fun getProfile() {
 
     }
 
+    fun updateLinks(instagram: String, tiktok: String, youtube: String, web: String) {
+        setState { copy(isLoading = true, errorMessage = null) }
+
+        val req = TLRPC.TL_profile_updateSocialLinks()
+
+        var flags = 0
+
+        if (instagram.isNotBlank()) {
+            flags = flags or 1
+            req.instagram = instagram
+        }
+
+        if (tiktok.isNotBlank()) {
+            flags = flags or 2
+            req.tiktok = tiktok
+        }
+
+        if (youtube.isNotBlank()) {
+            flags = flags or 4
+            req.youtube = youtube
+        }
+
+        if (web.isNotBlank()) {
+            flags = flags or 8
+            req.website = web
+        }
+
+        req.flags = flags
 
 
-    fun updateLinks(instagram: String, tiktok: String, youtube: String, web:String) {
-//        val lName = lNameRaw.trim()
-//        val about = aboutRaw.trim()
-//        setState { copy(isLoading = true, errorMessage = null) }
-//
-//        val req = TLRPC.TL_account_updateProfile().apply {
-//            var flags = 0
-//            flags = flags or 1
-//            first_name = fName
-//            flags = flags or 2
-//            last_name = lName
-//            flags = flags or 4
-//            this.about = about
-//            this.flags = flags
-//        }
-//
-//        ConnectionsManager.getInstance(currentAccount).sendRequest(
-//            req,
-//            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
-//                AndroidUtilities.runOnUIThread {
-//                    if (error != null) {
-//                        setState {
-//                            copy(
-//                                isLoading = false,
-//                                errorMessage = "${error.text ?: "Unknown error"} (code=${error.code})"
-//                            )
-//                        }
-//                        FileLog.e("updateProfile error: ${error.text} code=${error.code}")
-//                        return@runOnUIThread
-//                    }
-//
-//                    applyProfileLocally(fName = fName, lName = lName, about = about)
-//                    setState {
-//                        copy(
-//
-//                            isLoading = false,
-//                            errorMessage = null
-//                        )
-//                    }
-//                }
-//            },
-//        )
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
+                AndroidUtilities.runOnUIThread {
+                    if (response is TLRPC.TL_user) {
+                        response.social_links
+                    }
+
+                    if (error != null) {
+                        setState {
+                            copy(
+                                isLoading = false,
+                                errorMessage = "${error.text ?: "Unknown error"} (code=${error.code})"
+                            )
+                        }
+                        FileLog.e("updateProfile error: ${error.text} code=${error.code}")
+                        return@runOnUIThread
+                    }
+
+                    ///applyProfileLocally(fName = fName, lName = lName, about = about)
+                    setState {
+                        copy(
+
+                            isLoading = false,
+                            errorMessage = null
+                        )
+                    }
+                }
+            },
+        )
     }
 
 }

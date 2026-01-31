@@ -51,6 +51,46 @@ import org.telegram.messenger.R
 
 @Preview
 @Composable
+fun ButtonAddWorkHistory(
+    modifier: Modifier = Modifier,
+    value: String = "Add work history",
+    onClick: () -> Unit = {}
+) {
+    Box(
+        modifier = modifier.height(36.dp).background(
+            color = AppTheme.colors.blackAlpha12,
+            shape = RoundedCornerShape(6.dp)
+        ).clickable(
+            indication = null,
+            interactionSource = remember { MutableInteractionSource() },
+            onClick = onClick
+        ),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painterResource(R.drawable.ic_divo_add),
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+                tint = Color.White
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = value,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
 fun ProfileSocialItem(
     modifier: Modifier = Modifier,
     @DrawableRes
@@ -237,7 +277,6 @@ fun DMButton(onClick: () -> Unit) {
 @Composable
 fun PofileNameItem(
     modifier: Modifier = Modifier,
-    avatarUrl: String = "",
     firstName: String = "Fname",
     lastName: String = "LName",
     roleLabel: String = "Model",

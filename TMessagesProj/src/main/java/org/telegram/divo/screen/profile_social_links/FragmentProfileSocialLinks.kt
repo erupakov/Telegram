@@ -10,6 +10,10 @@ class FragmentProfileSocialLinks : BaseFragment() {
 
     override fun createView(context: Context): View {
         actionBar.setAddToContainer(false)
+
+        val user = messagesController.getUserFull(0);
+        user
+
         val composeView = ComposeView(context)
         composeView.setContent {
             ProfileSocialLinksScreen(

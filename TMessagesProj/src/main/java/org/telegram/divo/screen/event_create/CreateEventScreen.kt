@@ -3,6 +3,7 @@ package org.telegram.divo.screen.event_create
 import org.telegram.messenger.R
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -42,21 +43,16 @@ fun CreateEventScreen(
     onPickDate: () -> Unit = {},
     onPickTime: () -> Unit = {},
 ) {
-
-    LaunchedEffect(true) {
-        viewModel.getEventTypes()
-    }
-
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
                 CreateEventViewModel.Effect.NavigateBack -> {
-                    // onBack()
+                    onBack()
                 }
-
-                else -> {}
+                is CreateEventViewModel.Effect.ShowError -> {
+                    // Could show toast here
+                }
             }
-
         }
     }
     val state = viewModel.state.collectAsState().value
@@ -64,7 +60,8 @@ fun CreateEventScreen(
         state = state,
         onIntent = {
             viewModel.setIntent(it)
-        }
+        },
+        onPickCover = onPickCover
     )
 }
 
@@ -75,6 +72,7 @@ fun CreateEventScreen(
 fun CreateEventScreenView(
     state: CreateEventViewModel.State = CreateEventViewModel.State(),
     onIntent: (CreateEventViewModel.Intent) -> Unit = {},
+    onPickCover: () -> Unit = {},
 ) {
     var showParamSheet by remember { mutableStateOf(false) }
     var showCountrySheet by remember { mutableStateOf(false) }
@@ -125,12 +123,13 @@ fun CreateEventScreenView(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            // Cover
-//            CoverPicker(
-//                hasImage = ui.hasCover,
-//                onPick = onPickCover,
-//                onClear = { ui = ui.copy(hasCover = false) }
-//            )
+            // Cover Photo Picker
+            CoverPicker(
+                photoPath = state.coverPhotoPath,
+                isUploading = state.coverPhotoUploading,
+                onPick = onPickCover,
+                onClear = { onIntent(CreateEventViewModel.Intent.OnClearCoverPhoto) }
+            )
 
             // --- Event info ---
             SectionHeader("Event info")
@@ -411,7 +410,10 @@ private fun SectionHeader(text: String) {
 
 @Composable
 private fun CoverPicker(
-    hasImage: Boolean, onPick: () -> Unit, onClear: () -> Unit
+    photoPath: String?,
+    isUploading: Boolean,
+    onPick: () -> Unit,
+    onClear: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -426,10 +428,71 @@ private fun CoverPicker(
         Box(
             Modifier
                 .fillMaxSize()
-                .clickable { if (!hasImage) onPick() },
+                .clickable { if (photoPath == null && !isUploading) onPick() },
             contentAlignment = Alignment.Center
         ) {
+            when {
+                photoPath != null -> {
+                    // Show selected image preview using Telegram's native BackupImageView
+                    org.telegram.divo.components.LocalImageView(
+                        filePath = photoPath,
+                        modifier = Modifier.fillMaxSize(),
+                        cornerRadius = 16
+                    )
 
+                    // Clear button
+                    IconButton(
+                        onClick = onClear,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.msg_close),
+                            contentDescription = "Remove",
+                            tint = Color.White
+                        )
+                    }
+
+                    // Upload progress overlay
+                    if (isUploading) {
+                        Box(
+                            Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.5f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = Color(0xFFBF825E)
+                            )
+                        }
+                    }
+                }
+
+                isUploading -> {
+                    CircularProgressIndicator(color = Color(0xFFBF825E))
+                }
+
+                else -> {
+                    // Empty state - prompt to add photo
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.divo_add_photo_ic),
+                            contentDescription = null,
+                            tint = Color(0xFF999999),
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            "Add Cover Photo",
+                            color = Color(0xFF999999),
+                            fontSize = 14.sp
+                        )
+                    }
+                }
+            }
         }
     }
 }

@@ -147,6 +147,10 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         processBitmap(bitmap, avatarObject);
     }
 
+    public void setUseAttachMenu(boolean value) {
+        useAttachMenu = value;
+    }
+
     public void cancel() {
         canceled = true;
         if (uploadingImage != null) {

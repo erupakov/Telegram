@@ -1,9 +1,13 @@
 package org.telegram.divo.screen.event_list
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.telegram.divo.base.BaseViewModel
 import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
+import org.telegram.divo.screen.event_filter.EventFilterStore
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.RequestDelegate
@@ -19,6 +23,7 @@ class EventListViewModel :
         val events: List<TLRPC.TL_event_short> = emptyList(),
         val isLoading: Boolean = false,
         val errorMessage: String? = null,
+        val filterCount: Int? = null
     ) : ViewState
 
     enum class EventCtaType {
@@ -46,34 +51,33 @@ class EventListViewModel :
     )
 
     private var currentAccount = UserConfig.selectedAccount
-    //TL_event_createEvent
-    //TL_event_getCities
-    // TL_event_getCountries
 
     init {
-        getEventList()
+        viewModelScope.launch {
+            EventFilterStore.filter
+                .collectLatest { filter ->
+                    getEventList(filter)
+                }
+        }
     }
 
-
-
-
-    fun getEventList(){
+    fun getEventList(filter: TLRPC.TL_event_filter?) {
         val req = TLRPC.TL_event_getEvents()
         req.offset = 0
         req.limit = 20
-        req.filter = null
+        req.filter = filter
         ConnectionsManager.getInstance(currentAccount).sendRequest(
             req,
             RequestDelegate { response: TLObject?, error: TL_error? ->
                 response
                 error
-                if(response is TLRPC.TL_event_events){
+                if (response is TLRPC.TL_event_events) {
                     setState {
                         copy(
                             events = response.events
                         )
                     }
-                }else{
+                } else {
                     response
                 }
                 error
@@ -81,7 +85,7 @@ class EventListViewModel :
         )
     }
 
-    fun getEvents(eventId:Long){
+    fun getEvents(eventId: Long) {
         val req = TLRPC.TL_event_getEvent()
         req.event_id = eventId
         ConnectionsManager.getInstance(currentAccount).sendRequest(
@@ -89,9 +93,9 @@ class EventListViewModel :
             RequestDelegate { response: TLObject?, error: TL_error? ->
                 response
                 error
-                if(response is TLRPC.TL_event_events){
+                if (response is TLRPC.TL_event_events) {
                     response.events
-                }else{
+                } else {
                     response
                 }
                 error
@@ -108,10 +112,6 @@ class EventListViewModel :
 //        public int country_id;
 //        public String country;
     //  public ArrayList<TL_event_country> countries = new ArrayList<>();
-
-
-
-
 
 
     fun getData() {
@@ -144,7 +144,7 @@ class EventListViewModel :
 //        )
     }
 
-    fun getCountry(){
+    fun getCountry() {
 
 //        val filter = TLRPC.TL_event_filter()
 //
@@ -167,16 +167,19 @@ class EventListViewModel :
 
     override fun handleIntent(intent: EventListIntent) {
         when (intent) {
-            EventListIntent.OnLoad ->{
-                getEventList()
+            EventListIntent.OnLoad -> {
+                getEventList(null)
             }
+
             EventListIntent.OnAddEventClicked -> sendEffect(EventListEffect.NavigateToCreateEvent)
             is EventListIntent.OnEventCardClicked -> sendEffect(
                 EventListEffect.NavigateToEventDetails(intent.eventId)
             )
+
             is EventListIntent.OnEventCtaClicked -> sendEffect(
                 EventListEffect.NavigateToEventDetails(intent.eventId)
             )
+
             EventListIntent.OnSearchClicked -> sendEffect(EventListEffect.NavigateToSearch)
         }
     }

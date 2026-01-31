@@ -234,9 +234,11 @@ private fun SettingsTopBar(
 
 @Composable
 private fun ProfileRow(
-    userFull: TLRPC.UserFull,
+    userFull: TLRPC.UserFull?,
     onClick: () -> Unit
 ) {
+    val user = userFull?.user
+
     Row(
         Modifier
             .fillMaxWidth()
@@ -252,7 +254,7 @@ private fun ProfileRow(
             contentAlignment = Alignment.Center
         ) {
             TelegramUserAvatar(
-                user = userFull.user,
+                user = user,
                 modifier  = Modifier
                     .size(54.dp)
                     .clip(CircleShape),
@@ -264,7 +266,7 @@ private fun ProfileRow(
 
         Column(Modifier.weight(1f)) {
             Text(
-                text = (userFull.user.first_name + " " + (userFull.user.last_name?: "")) ,
+                text = ((user?.first_name ?: "") + " " + (user?.last_name ?: "")).trim(),
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 19.sp
@@ -274,7 +276,7 @@ private fun ProfileRow(
 
                 )
             Text(
-                text = "+" + userFull.user.phone,
+                text = if (user?.phone != null) "+${user.phone}" else "",
                 style = MaterialTheme.typography.bodyMedium.copy(
                     color = Color(0xFF7A7A7A),
                     fontSize = 15.sp

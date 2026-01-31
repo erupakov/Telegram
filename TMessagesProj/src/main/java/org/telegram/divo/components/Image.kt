@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.FileLoader
 import org.telegram.messenger.ImageLocation
 import org.telegram.messenger.R
 import org.telegram.tgnet.TLRPC
@@ -42,9 +43,88 @@ fun TelegramUserAvatar(
         update = { view ->
             val location = ImageLocation.getForUser(user, ImageLocation.TYPE_BIG)
             val placeholder = AvatarDrawable(user)
-
-            // ВАЖНО: вызываем overload с parentObject (user), иначе Kotlin выбирает String-версию
             view.setImage(location, "50_50", placeholder, user)
+        }
+    )
+}
+
+@Composable
+fun TelegramPhoto(
+    photo: TLRPC.Photo?,
+    dialogId: Long,
+    modifier: Modifier = Modifier,
+    sizeDp: Int = 56
+) {
+    if (photo == null || photo is TLRPC.TL_photoEmpty || photo.sizes == null) return
+
+    AndroidView(
+        modifier = modifier.size(sizeDp.dp),
+        factory = { context ->
+            BackupImageView(context)
+        },
+        update = { view ->
+            // thumb ~50px, full ~640px (как в ProfileGalleryView)
+            var thumbSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 50)
+            for (i in 0 until photo.sizes.size) {
+                val ps = photo.sizes[i]
+                if (ps is TLRPC.TL_photoStrippedSize) {
+                    thumbSize = ps
+                    break
+                }
+            }
+            val fullSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640) ?: return@AndroidView
+
+            // важно: прокинуть dc_id и file_reference (как в ProfileGalleryView)
+            if (photo.dc_id != 0) {
+                fullSize.location.dc_id = photo.dc_id
+                fullSize.location.file_reference = photo.file_reference
+            }
+
+            val fullLoc = ImageLocation.getForPhoto(fullSize, photo) ?: return@AndroidView
+            val thumbLoc = thumbSize?.let { ImageLocation.getForPhoto(it, photo) }
+
+            val parentKey = "avatar_$dialogId"
+            val thumbFilter = if (thumbSize is TLRPC.TL_photoStrippedSize) "b" else null
+
+            // setImageMedia = более “родной” путь (см. ProfileGalleryView) :contentReference[oaicite:1]{index=1}
+            view.setImageMedia(
+                null,           // vector avatar
+                null,           // video location
+                null,           // filter
+                fullLoc,        // full
+                null,           // ext
+                thumbLoc,       // thumb
+                thumbFilter,    // thumb filter
+                null,           // cache
+                fullSize.size,  // size
+                1,              // priority
+                parentKey
+            )
+        }
+    )
+}
+
+
+@Composable
+fun LocalImageView(
+    filePath: String?,
+    modifier: Modifier = Modifier,
+    cornerRadius: Int = 0
+) {
+    if (filePath == null) return
+
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            BackupImageView(context).apply {
+                if (cornerRadius > 0) {
+                    setRoundRadius(AndroidUtilities.dp(cornerRadius.toFloat()))
+                }
+            }
+        },
+        update = { view ->
+            val location = ImageLocation.getForPath(filePath)
+            view.setImage(location, "800_800", null as android.graphics.drawable.Drawable?, null)
         }
     )
 }

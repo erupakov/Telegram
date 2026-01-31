@@ -18,6 +18,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -54,11 +57,9 @@ fun EventListScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
-    LaunchedEffect(true) {
-        viewModel.getEventList()
+    LaunchedEffect(true){
+       // viewModel.getEventList(null)
     }
-
-
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect { action ->
@@ -161,7 +162,7 @@ private fun EventListContent(
                             eventOwnerImage = "",
                             dateLocationText = event.event_date + " " + event.location?.country + " " + event.location?.city,
                             durationText = event.event_time,
-                            ctaText = "",
+                            ctaText = "Apply",
                             ctaType = EventListViewModel.EventCtaType.Apply,
                             onCardClick = { onEventClick(event.id) },
                             onCtaClicked = { onCtaClick(event.id) },
@@ -196,9 +197,8 @@ private fun EventListTopBar(
                 color = Color(0xFF000000),
                 fontSize = 28.sp,
             )
-
-            TopBarIconButton(
-                iconRes = R.drawable.ic_ab_search,
+            TopBarIconFilterButton(
+                iconRes = R.drawable.outline_filter_alt_24,
                 contentDescription = "Search events",
                 onClick = onSearchClick,
             )
@@ -236,6 +236,36 @@ private fun TopBarIconButton(
                 contentDescription = contentDescription,
                 tint = Color(0xFFBF7A54),
             )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun TopBarIconFilterButton(
+    @DrawableRes iconRes: Int = R.drawable.outline_filter_alt_24,
+    contentDescription: String? = null,
+    filterCount:Int? = null,
+    onClick: () -> Unit = {},
+) {
+    Box(
+        modifier = Modifier.size(40.dp),
+        contentAlignment = Alignment.TopEnd
+    ) {
+        IconButton(
+            onClick = onClick,
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            Icon(
+                painter = painterResource(iconRes),
+                contentDescription = contentDescription,
+                tint = Color(0xFFBF7A54),
+            )
+        }
+        if(filterCount!= null && filterCount > 1){
+            Card(modifier = Modifier.size(12.dp), shape = CircleShape){
+                Text("9+")
+            }
         }
     }
 }

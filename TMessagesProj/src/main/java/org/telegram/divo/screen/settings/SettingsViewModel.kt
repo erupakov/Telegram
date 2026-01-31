@@ -91,6 +91,7 @@ class SettingsViewModel :
     private var currentAccount = UserConfig.selectedAccount
 
     override fun createInitialState(): SettingsViewState {
+
         val userFull = MessagesController.getInstance(currentAccount)
             .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
         return SettingsViewState(

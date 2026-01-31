@@ -5,6 +5,7 @@ import android.view.View
 import androidx.compose.ui.platform.ComposeView
 import org.telegram.divo.screen.event_create.FragmentEventCreate
 import org.telegram.divo.screen.event_details.FragmentEventDetails
+import org.telegram.divo.screen.event_filter.FragmentEventFilter
 import org.telegram.ui.ActionBar.BaseFragment
 
 class FragmentEventList : BaseFragment() {
@@ -21,7 +22,8 @@ class FragmentEventList : BaseFragment() {
                     presentFragment(FragmentEventCreate())
                 },
                 onNavigateToSearch = {
-                    // TODO: hook up search once destination is ready
+                    presentFragment(FragmentEventFilter())
+
                 }
             )
         }
