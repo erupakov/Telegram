@@ -157,7 +157,7 @@ private fun EventListContent(
                                 .aspectRatio(0.8f)
                                 .fillMaxWidth(),
                             eventName = event.title,
-                            eventImageUrl = event?.cover_photo?.photo?.caption?:"",
+                            eventPhoto = event.cover_photo?.photo,
                             eventOwnerName = "",
                             eventOwnerImage = "",
                             dateLocationText = event.event_date + " " + event.location?.country + " " + event.location?.city,

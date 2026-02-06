@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,7 +49,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberAsyncImagePainter
 import org.telegram.divo.components.TelegramUserAvatar
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.style.DivoFont.HelveticaNeue
@@ -59,7 +59,13 @@ import org.telegram.tgnet.TLRPC
 fun SettingsScreen(
     viewModel: SettingsViewModel = viewModel(),
     navigateToFillParameters: () -> Unit = {},
-    navigateToProfile:() -> Unit  = {}
+    navigateToProfile: () -> Unit = {},
+    navigateToSavedMessages: () -> Unit = {},
+    navigateToStickers: () -> Unit = {},
+    navigateToNotifications: () -> Unit = {},
+    navigateToPrivacy: () -> Unit = {},
+    navigateToDataStorage: () -> Unit = {},
+    navigateToAppearance: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -67,19 +73,25 @@ fun SettingsScreen(
     val dividerColor = Color(0x1A000000)
     val scrollState = rememberScrollState()
 
+    // Refresh user data when screen becomes visible
+    LifecycleResumeEffect(Unit) {
+        viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnRefresh)
+        onPauseOrDispose { }
+    }
+
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
                 SettingsViewModel.SettingsViewEffect.NavigateToAppearance -> {
-//                    TODO()
+                    navigateToAppearance()
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToDataStorage -> {
-//                    TODO()
+                    navigateToDataStorage()
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToEditProfile -> {
-//                    TODO()
+                    navigateToProfile()
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToFillParameters -> {
@@ -87,11 +99,11 @@ fun SettingsScreen(
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToNotifications -> {
-//                    TODO()
+                    navigateToNotifications()
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToPrivacy -> {
-//                    TODO()
+                    navigateToPrivacy()
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToProfile -> {
@@ -99,23 +111,23 @@ fun SettingsScreen(
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToPromo -> {
-//                    TODO()
+                    // TODO: Implement promo screen
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToSavedMessages -> {
-//                    TODO()
+                    navigateToSavedMessages()
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToSetUsername -> {
-//                    TODO()
+                    // TODO: Implement set username screen
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToStickers -> {
-//                    TODO()
+                    navigateToStickers()
                 }
 
                 SettingsViewModel.SettingsViewEffect.ShowQrCode -> {
-//                    TODO()
+                    // TODO: Implement QR code screen
                 }
             }
         }

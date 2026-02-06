@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -192,9 +193,16 @@ fun EditMyProfileScreenView(
     onCloseScreen: () -> Unit = {},
     onEditImageClicked: () -> Unit = {}
 ) {
-    var fName by remember { mutableStateOf(uiState.fName) }
-    var lName by remember { mutableStateOf(uiState.lName) }
-    var bio by remember { mutableStateOf(uiState.bio) }
+    var fName by rememberSaveable { mutableStateOf(uiState.fName) }
+    var lName by rememberSaveable { mutableStateOf(uiState.lName) }
+    var bio by rememberSaveable { mutableStateOf(uiState.bio) }
+
+    // Sync local state when uiState changes (e.g., after loading or update)
+    LaunchedEffect(uiState.fName, uiState.lName, uiState.bio) {
+        fName = uiState.fName
+        lName = uiState.lName
+        bio = uiState.bio
+    }
 
     Column(
         modifier = Modifier
@@ -203,11 +211,14 @@ fun EditMyProfileScreenView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        TelegramUserAvatarEditable(
-            user = uiState.userFull.user,
-            modifier = Modifier,
-            onEditClick = { onEditImageClicked() }
-        )
+        // Use key to force recomposition when avatar changes
+        key(uiState.avatarUpdateTimestamp) {
+            TelegramUserAvatarEditable(
+                user = uiState.userFull.user,
+                modifier = Modifier,
+                onEditClick = { onEditImageClicked() }
+            )
+        }
 
         UiDarkTextField(
             value = fName,

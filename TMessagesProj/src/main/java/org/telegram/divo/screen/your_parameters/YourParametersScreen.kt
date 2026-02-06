@@ -10,13 +10,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
@@ -26,7 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import java.util.Locale
 
 @Composable
 fun YourParametersScreen(
@@ -37,6 +33,7 @@ fun YourParametersScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -55,185 +52,250 @@ fun YourParametersScreen(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFF222222)).padding(top = 32.dp)
-    ) {
-        val headerHeight = 44.dp
-        val bottomBarHeight = 74.dp
+    Column {
 
-        if (state.isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.align(Alignment.Center),
-                color = Color(0xFFBF7A54)
-            )
-        }
+        Spacer(modifier = Modifier.size(200.dp))
+        Button(
+            onClick = {
+                viewModel.loadUserProfile()
 
-        if(showTitle){
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(headerHeight)
-                    .align(Alignment.TopCenter)
-            ) {
-                Text(
-                    text = "Your parameters".uppercase(),
-                    style = TextStyle(
-                        color = Color.White,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                        letterSpacing = 0.5.sp
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp)
-                )
             }
+        ) {
+            Text("test")
         }
+
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(175.dp)
-                .align(Alignment.TopCenter)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0x00222222),
-                            Color(0xFF222222)
-                        ),
-                        startY = 0f,
-                        endY = Float.POSITIVE_INFINITY
-                    )
-                )
-        )
-        Column(
-            modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .padding(top = headerHeight + 8.dp, bottom = bottomBarHeight + 16.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .background(Color(0xFF222222)).padding(top = 32.dp)
         ) {
-            ParameterSelector(
-                label = "Select a Gender",
-                items = listOf("Male", "Female"),
-                selectedValue = state.gender,
-                onItemSelected = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnGenderChanged(it)) }
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            ParameterSlider(
-                label = "Age (y.o)",
-                range = 14f..45f,
-                value = state.age,
-                onValueChange = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnAgeChanged(it)) },
-                minLabel = "14",
-                maxLabel = "45",
-                valueFormatter = { v -> "${v.toInt()} y.o" }
-            )
-            ParameterSlider(
-                label = "Height (cm)",
-                range = 1.68f..2.50f,
-                value = state.height,
-                onValueChange = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnHeightChanged(it)) },
-                minLabel = "1,68",
-                maxLabel = "2,50",
-                valueFormatter = { v -> "${formatWithComma(v)} cm" }
-            )
-            ParameterSlider(
-                label = "Waist (cm)",
-                range = 48f..90f,
-                value = state.waist,
-                onValueChange = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnWaistChanged(it)) },
-                minLabel = "48",
-                maxLabel = "90",
-                valueFormatter = { v -> "${v.toInt()} cm" }
-            )
-            ParameterSlider(
-                label = "Hips (cm)",
-                range = 80f..110f,
-                value = state.hips,
-                onValueChange = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnHipsChanged(it)) },
-                minLabel = "80",
-                maxLabel = "110",
-                valueFormatter = { v -> "${v.toInt()} cm" }
-            )
-            ParameterSlider(
-                label = "Shoe size (EU)",
-                range = 36f..42f,
-                value = state.shoeSize,
-                onValueChange = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnShoeSizeChanged(it)) },
-                minLabel = "36",
-                maxLabel = "42",
-                valueFormatter = { v -> v.toInt().toString() }
-            )
-            ParameterSlider(
-                label = "Hair length (cm)",
-                range = 0f..200f,
-                value = state.hairLength,
-                onValueChange = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnHairLengthChanged(it)) },
-                minLabel = "0",
-                maxLabel = "200",
-                valueFormatter = { v -> v.toInt().toString() }
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            ParameterSelector(
-                label = "Choose your hair color",
-                items = listOf("Black", "Brown", "Blonde", "Red"),
-                selectedValue = state.hairColor,
-                onItemSelected = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnHairColorChanged(it)) }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            ParameterSelector(
-                label = "Choose your eye color",
-                items = listOf("Brown", "Blue", "Green", "Hazel"),
-                selectedValue = state.eyeColor,
-                onItemSelected = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnEyeColorChanged(it)) }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            ParameterSelector(
-                label = "Choose your skin color",
-                items = listOf("Light", "Fair", "Medium", "Dark"),
-                selectedValue = state.skinColor,
-                onItemSelected = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnSkinColorChanged(it)) }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            ParameterSelector(
-                label = "Choose your breast size",
-                items = listOf("A", "B", "C", "D", "DD", "E", "F"),
-                selectedValue = state.breastSize,
-                onItemSelected = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnBreastSizeChanged(it)) }
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-        }
+            val headerHeight = 44.dp
+            val bottomBarHeight = 74.dp
 
-        // Fixed bottom buttons (not scrollable)
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(bottomBarHeight)
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            Button(
-                onClick = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnSaveClicked) },
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                shape = RoundedCornerShape(6.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBF7A54)),
-                enabled = !state.isLoading
-            ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.White,
-                        strokeWidth = 2.dp
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color(0xFFBF7A54)
+                )
+            }
+
+            if (showTitle) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(headerHeight)
+                        .align(Alignment.TopCenter)
+                ) {
+                    Text(
+                        text = "Your parameters".uppercase(),
+                        style = TextStyle(
+                            color = Color.White,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center,
+                            letterSpacing = 0.5.sp
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp)
                     )
-                } else {
-                    Text(text = "Save", color = Color.White, fontSize = 20.sp)
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+                    .padding(top = headerHeight + 8.dp, bottom = bottomBarHeight + 16.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ParameterSelector(
+                    label = "Select a Gender",
+                    items = listOf("Male", "Female"),
+                    selectedValue = state.gender,
+                    onItemSelected = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnGenderChanged(
+                                it
+                            )
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                ParameterSlider(
+                    label = "Age (y.o)",
+                    range = 14f..45f,
+                    value = state.age,
+                    onValueChange = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnAgeChanged(
+                                it
+                            )
+                        )
+                    },
+                    minLabel = "14",
+                    maxLabel = "45",
+                    valueFormatter = { v -> "${v.toInt()} y.o" }
+                )
+                ParameterSlider(
+                    label = "Height (cm)",
+                    range = 140f..220f,
+                    value = state.height,
+                    onValueChange = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnHeightChanged(
+                                it
+                            )
+                        )
+                    },
+                    minLabel = "140",
+                    maxLabel = "220",
+                    valueFormatter = { v -> "${v.toInt()} cm" }
+                )
+                ParameterSlider(
+                    label = "Waist (cm)",
+                    range = 48f..90f,
+                    value = state.waist,
+                    onValueChange = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnWaistChanged(
+                                it
+                            )
+                        )
+                    },
+                    minLabel = "48",
+                    maxLabel = "90",
+                    valueFormatter = { v -> "${v.toInt()} cm" }
+                )
+                ParameterSlider(
+                    label = "Hips (cm)",
+                    range = 80f..110f,
+                    value = state.hips,
+                    onValueChange = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnHipsChanged(
+                                it
+                            )
+                        )
+                    },
+                    minLabel = "80",
+                    maxLabel = "110",
+                    valueFormatter = { v -> "${v.toInt()} cm" }
+                )
+                ParameterSlider(
+                    label = "Shoe size (EU)",
+                    range = 36f..42f,
+                    value = state.shoeSize,
+                    onValueChange = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnShoeSizeChanged(
+                                it
+                            )
+                        )
+                    },
+                    minLabel = "36",
+                    maxLabel = "42",
+                    valueFormatter = { v -> v.toInt().toString() }
+                )
+                ParameterSlider(
+                    label = "Hair length (cm)",
+                    range = 0f..200f,
+                    value = state.hairLength,
+                    onValueChange = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnHairLengthChanged(
+                                it
+                            )
+                        )
+                    },
+                    minLabel = "0",
+                    maxLabel = "200",
+                    valueFormatter = { v -> v.toInt().toString() }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                ParameterSelector(
+                    label = "Choose your hair color",
+                    items = listOf("Black", "Brown", "Blonde", "Red"),
+                    selectedValue = state.hairColor,
+                    onItemSelected = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnHairColorChanged(
+                                it
+                            )
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                ParameterSelector(
+                    label = "Choose your eye color",
+                    items = listOf("Brown", "Blue", "Green", "Hazel"),
+                    selectedValue = state.eyeColor,
+                    onItemSelected = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnEyeColorChanged(
+                                it
+                            )
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                ParameterSelector(
+                    label = "Choose your skin color",
+                    items = listOf("Light", "Fair", "Medium", "Dark"),
+                    selectedValue = state.skinColor,
+                    onItemSelected = {
+                        viewModel.setIntent(
+                            YourParametersViewModel.YourParametersIntent.OnSkinColorChanged(
+                                it
+                            )
+                        )
+                    }
+                )
+                if (state.gender == "Female") {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ParameterSelector(
+                        label = "Choose your breast size",
+                        items = listOf("A", "B", "C", "D", "DD", "E", "F"),
+                        selectedValue = state.breastSize,
+                        onItemSelected = {
+                            viewModel.setIntent(
+                                YourParametersViewModel.YourParametersIntent.OnBreastSizeChanged(
+                                    it
+                                )
+                            )
+                        }
+                    )
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+
+            // Fixed bottom buttons (not scrollable)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(bottomBarHeight)
+                    .align(Alignment.BottomCenter)
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                Button(
+                    onClick = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnSaveClicked) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    shape = RoundedCornerShape(6.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFBF7A54)),
+                    enabled = !state.isLoading
+                ) {
+                    if (state.isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(text = "Save", color = Color.White, fontSize = 20.sp)
+                    }
                 }
             }
         }
@@ -388,9 +450,4 @@ fun ParameterSlider(
 @Composable
 fun YourParametersScreenPreview() {
     YourParametersScreen()
-}
-
-private fun formatWithComma(value: Float): String {
-    val rounded = String.format(Locale.US, "%.2f", value).trimEnd('0').trimEnd('.')
-    return rounded.replace('.', ',')
 }

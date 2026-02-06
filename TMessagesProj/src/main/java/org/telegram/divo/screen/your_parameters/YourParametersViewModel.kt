@@ -9,7 +9,11 @@ import org.telegram.messenger.FileLog
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
+import org.telegram.tgnet.RequestDelegate
+import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
+import org.telegram.tgnet.TLRPC.TL_inputUser
+import org.telegram.tgnet.TLRPC.TL_inputUserSelf
 
 class YourParametersViewModel :
     BaseViewModel<
@@ -22,7 +26,7 @@ class YourParametersViewModel :
         val isLoading: Boolean = false,
         val gender: String = "",
         val age: Float = 24f,
-        val height: Float = 1.68f,
+        val height: Float = 168f,
         val waist: Float = 48f,
         val hips: Float = 80f,
         val shoeSize: Float = 36f,
@@ -58,19 +62,57 @@ class YourParametersViewModel :
 
     private var currentAccount = UserConfig.selectedAccount
 
-    init {
-        loadUserProfile()
-    }
+
 
     override fun createInitialState(): YourParametersViewState = YourParametersViewState(isLoading = true)
 
-    private fun loadUserProfile() {
-        setState { copy(isLoading = true) }
 
+    fun getUserParam() {
+        val req = TLRPC.TL_profile_getUserProfile()
+        val user = TLRPC. TL_inputUser();
+
+        val userFull = MessagesController.getInstance(currentAccount)
+            .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
+
+        user. user_id = userFull.user.id
+        user.access_hash = userFull.user.access_hash
+        req.user_id = user
+
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
+                response
+                error
+                if (response is TLRPC.TL_userProfile) {
+                    println("TL_profile_getUserProfile response -> " + response)
+                } else {
+                    response
+                }
+                error
+            },
+        )
+    }
+
+    fun loadUserProfile() {
+
+        getUserParam()
+//        setState { copy(isLoading = true) }
+//
 //        val req = TLRPC.TL_profile_getUserProfile()
-//        req.user_id = MessagesController.getInstance(currentAccount).getInputUser(
-//            UserConfig.getInstance(currentAccount).getClientUserId()
-//        )
+//        println("UserConfig.getInstance(currentAccount).getClientUserId() ---- " + UserConfig.getInstance(currentAccount).getClientUserId())
+//
+//        val userFull = MessagesController.getInstance(currentAccount)
+//            .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
+//
+//        val user =  TLRPC.TL_inputUser();
+//        user.user_id =  userFull.user.id
+//        user.access_hash =   userFull.user.access_hash
+//        req.user_id = user
+//
+//
+//
+//        println("getInputUser  ---- " +  user.user_id +" "+  user.access_hash)
+//
 //
 //        ConnectionsManager.getInstance(currentAccount).sendRequest(req) { response, error ->
 //            AndroidUtilities.runOnUIThread {
@@ -83,7 +125,7 @@ class YourParametersViewModel :
 //                if (response is TLRPC.TL_userProfile) {
 //                    applyProfileToState(response)
 //                } else {
-//                    FileLog.e("loadUserProfile: unexpected response type")
+//                    FileLog.e("loadUserProfile: unexpected response type: ${response?.javaClass?.simpleName}")
 //                    setState { copy(isLoading = false) }
 //                }
 //            }
@@ -98,42 +140,22 @@ class YourParametersViewModel :
             else -> ""
         }
 
-        // Convert birth_date (stored as age or timestamp) to age
-        val age = if (profile.birth_date > 0) {
-            // If birth_date is stored as age directly
-            if (profile.birth_date < 150) {
-                profile.birth_date.toFloat()
-            } else {
-                // If it's a timestamp, calculate age
-                val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
-                val birthYear = java.util.Calendar.getInstance().apply {
-                    timeInMillis = profile.birth_date * 1000
-                }.get(java.util.Calendar.YEAR)
-                (currentYear - birthYear).toFloat().coerceIn(14f, 45f)
-            }
-        } else {
-            24f
+        setState {
+            copy(
+                isLoading = false,
+                gender = gender,
+                age = params?.age?.value?.takeIf { it > 0 }?.toFloat() ?: age,
+                height = params?.height?.value?.takeIf { it > 0 }?.toFloat() ?: height,
+                waist = params?.waist?.value?.takeIf { it > 0 }?.toFloat() ?: waist,
+                hips = params?.hips?.value?.takeIf { it > 0 }?.toFloat() ?: hips,
+                shoeSize = params?.shoe_size?.value?.takeIf { it > 0 }?.toFloat() ?: shoeSize,
+                hairLength = params?.hair_length?.value?.takeIf { it >= 0 }?.toFloat() ?: hairLength,
+                hairColor = params?.hair_color?.capitalize() ?: hairColor,
+                eyeColor = params?.eye_color?.capitalize() ?: eyeColor,
+                skinColor = params?.skin_color?.capitalize() ?: skinColor,
+                breastSize = params?.breast_size?.uppercase() ?: breastSize,
+            )
         }
-
-//        setState {
-//            copy(
-//                isLoading = false,
-//                gender = gender,
-//                age = age,
-//                height = if (params != null && params.height > 0) {
-//                    // Height stored in cm, convert to meters for UI if needed
-//                    if (params.height > 100) params.height / 100f else params.height.toFloat()
-//                } else height,
-//                waist = if (params != null && params.waist > 0) params.waist.toFloat() else waist,
-//                hips = if (params != null && params.hips > 0) params.hips.toFloat() else hips,
-//                shoeSize = if (params != null && params.shoe_size > 0) params.shoe_size.toFloat() else shoeSize,
-//                hairLength = if (params != null && params.hair_length >= 0) params.hair_length.toFloat() else hairLength,
-//                hairColor = params?.hair_color?.capitalize() ?: hairColor,
-//                eyeColor = params?.eye_color?.capitalize() ?: eyeColor,
-//                skinColor = params?.skin_color?.capitalize() ?: skinColor,
-//                breastSize = params?.breast_size?.uppercase() ?: breastSize,
-//            )
-//        }
     }
 
     private fun String.capitalize(): String {
@@ -142,7 +164,10 @@ class YourParametersViewModel :
 
     override fun handleIntent(intent: YourParametersIntent) {
         when (intent) {
-            is YourParametersIntent.OnGenderChanged -> setState { copy(gender = intent.gender) }
+            is YourParametersIntent.OnGenderChanged -> setState {
+                val newBreastSize = if (intent.gender == "Male") "" else breastSize
+                copy(gender = intent.gender, breastSize = newBreastSize)
+            }
             is YourParametersIntent.OnAgeChanged -> setState { copy(age = intent.age) }
             is YourParametersIntent.OnHeightChanged -> setState { copy(height = intent.height) }
             is YourParametersIntent.OnWaistChanged -> setState { copy(waist = intent.waist) }
@@ -173,7 +198,6 @@ class YourParametersViewModel :
     ) {
         val s = state.value
 
-        // Exact flags from your TL serializeToStream()
         val F_FIRST_NAME = 1
         val F_LAST_NAME = 2
         val F_COUNTRY = 4
@@ -194,7 +218,6 @@ class YourParametersViewModel :
         val req = TLRPC.TL_profile_updateProfile()
         req.flags = 0
 
-        // ----------- Optional text fields (if you pass them) -----------
         val fName = firstName?.trim().orEmpty()
         if (fName.isNotEmpty()) {
             req.first_name = fName
@@ -224,7 +247,6 @@ class YourParametersViewModel :
             req.flags = req.flags or F_PHOTO_ID
         }
 
-        // ----------- Gender -----------
         val genderObj: TLRPC.Gender? = when (s.gender.trim().lowercase()) {
             "male", "m" -> TLRPC.TL_genderMale()
             "female", "f" -> TLRPC.TL_genderFemale()
@@ -235,23 +257,18 @@ class YourParametersViewModel :
             req.flags = req.flags or F_GENDER
         }
 
-        // ----------- Birth date (you store AGE; TL field is birth_date:Int32) -----------
-        // If backend expects a real date/timestamp, change conversion here.
         val age = s.age.toInt()
         if (age > 0) {
             req.birth_date = age
             req.flags = req.flags or F_BIRTH_DATE
         }
 
-        // ----------- Height -----------
-        // UI range is 1.68..2.50 but label says cm, so treat <10 as meters -> cm.
-        val heightCm = if (s.height < 10f) (s.height * 100f).toInt() else s.height.toInt()
+        val heightCm = s.height.toInt()
         if (heightCm > 0) {
             req.height = heightCm
             req.flags = req.flags or F_HEIGHT
         }
 
-        // ----------- Waist / Hips / Shoe -----------
         val waist = s.waist.toInt()
         if (waist > 0) {
             req.waist = waist
@@ -270,14 +287,12 @@ class YourParametersViewModel :
             req.flags = req.flags or F_SHOE_SIZE
         }
 
-        // ----------- Hair length -----------
         val hairLen = s.hairLength.toInt()
         if (hairLen >= 0) {
             req.hair_length = hairLen
             req.flags = req.flags or F_HAIR_LENGTH
         }
 
-        // ----------- Colors / Breast size -----------
         val hairColor = s.hairColor.trim()
         if (hairColor.isNotEmpty()) {
             req.hair_color = hairColor
@@ -302,7 +317,6 @@ class YourParametersViewModel :
             req.flags = req.flags or F_BREAST_SIZE
         }
 
-        // If you send nothing, server may accept but do nothing. Log it to catch mistakes.
         FileLog.d("updateProfile flags=${req.flags}")
 
         ConnectionsManager.getInstance(currentAccount).sendRequest(req) { response, error ->

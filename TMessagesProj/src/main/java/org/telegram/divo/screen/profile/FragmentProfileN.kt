@@ -1,23 +1,37 @@
 package org.telegram.divo.screen.profile
 
 import android.content.Context
+import android.content.Intent
+import android.os.Bundle
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
 import org.telegram.divo.screen.edit_my_profile.FragmentEditMyProfile
-import org.telegram.divo.screen.event_create.FragmentEventCreate
-import org.telegram.divo.screen.event_details.FragmentEventDetails
-import org.telegram.divo.screen.event_list.EventListScreen
 import org.telegram.divo.screen.profile_social_links.FragmentProfileSocialLinks
 import org.telegram.divo.screen.work_history.FragmentWorkHistory
+import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.Components.ImageUpdater
 
-class FragmentProfileN : BaseFragment() {
+class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
+
+    private var imageUpdater: ImageUpdater? = null
+    private val viewModel by lazy { ProfileViewModel() }
+
     override fun createView(context: Context): View {
         actionBar.setAddToContainer(false)
+
+        if (imageUpdater == null) {
+            imageUpdater = ImageUpdater(true, ImageUpdater.FOR_TYPE_CHANNEL, false).apply {
+                setUseAttachMenu(false)
+                parentFragment = this@FragmentProfileN
+                setDelegate(this@FragmentProfileN)
+            }
+        }
 
         val composeView = ComposeView(context)
         composeView.setContent {
             ProfileScreen(
+                viewModel = viewModel,
                 onEditClicked = {
                     presentFragment(FragmentEditMyProfile())
                 },
@@ -29,11 +43,57 @@ class FragmentProfileN : BaseFragment() {
                 },
                 showWorkHistory = {
                     presentFragment(FragmentWorkHistory())
-
+                },
+                onAddPortfolioClicked = {
+                    imageUpdater?.openMenu(
+                        false,
+                        Runnable {
+                            viewModel.setIntent(ProfileViewModel.ProfileIntent.OnClearPortfolioUpload)
+                        },
+                        null,
+                        ImageUpdater.TYPE_DEFAULT
+                    )
                 }
             )
         }
         return composeView
     }
 
+    override fun didUploadPhoto(
+        photo: TLRPC.InputFile?,
+        video: TLRPC.InputFile?,
+        videoStartTimestamp: Double,
+        videoPath: String?,
+        bigSize: TLRPC.PhotoSize?,
+        smallSize: TLRPC.PhotoSize?,
+        isVideo: Boolean,
+        emojiMarkup: TLRPC.VideoSize?
+    ) {
+        if (photo == null) return
+
+        viewModel.setIntent(
+            ProfileViewModel.ProfileIntent.OnPortfolioPhotoSelected(
+                photo = photo,
+                localPath = imageUpdater?.currentPicturePath
+            )
+        )
+    }
+
+    override fun onActivityResultFragment(requestCode: Int, resultCode: Int, data: Intent?) {
+        imageUpdater?.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun saveSelfArgs(args: Bundle) {
+        imageUpdater?.currentPicturePath?.let { args.putString("path", it) }
+    }
+
+    override fun restoreSelfArgs(args: Bundle) {
+        imageUpdater?.currentPicturePath = args.getString("path")
+    }
+
+    override fun onFragmentDestroy() {
+        super.onFragmentDestroy()
+        imageUpdater?.clear()
+        imageUpdater = null
+    }
 }

@@ -5,7 +5,6 @@ import org.telegram.divo.base.BaseViewModel
 import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
-import org.telegram.divo.screen.profile.ProfileViewModel.ProfileViewState
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
@@ -71,6 +70,7 @@ class SettingsViewModel :
         data object OnDataStorageClicked : SettingsViewIntent()
         data object OnAppearanceClicked : SettingsViewIntent()
         data object OnQrCodeClicked : SettingsViewIntent()
+        data object OnRefresh : SettingsViewIntent()
     }
 
     sealed class SettingsViewEffect : ViewEffect {
@@ -113,6 +113,13 @@ class SettingsViewModel :
             SettingsViewIntent.OnDataStorageClicked -> sendEffect(SettingsViewEffect.NavigateToDataStorage)
             SettingsViewIntent.OnAppearanceClicked -> sendEffect(SettingsViewEffect.NavigateToAppearance)
             SettingsViewIntent.OnQrCodeClicked -> sendEffect(SettingsViewEffect.ShowQrCode)
+            SettingsViewIntent.OnRefresh -> refreshUserData()
         }
+    }
+
+    private fun refreshUserData() {
+        val userFull = MessagesController.getInstance(currentAccount)
+            .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
+        setState { copy(userFull = userFull) }
     }
 }

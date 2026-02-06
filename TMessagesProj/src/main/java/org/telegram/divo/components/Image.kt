@@ -31,34 +31,39 @@ fun TelegramUserAvatar(
     sizeDp: Int = 56
 ) {
     if (user == null) {
+        return
     }
 
-    AndroidView(
-        modifier = modifier.size(sizeDp.dp),
-        factory = { context ->
-            BackupImageView(context).apply {
-                setRoundRadius(AndroidUtilities.dp(sizeDp / 2f)) // круг
+    // Use photo_id as key to force view recreation when photo changes
+    val photoId = user.photo?.photo_id ?: 0L
+
+    androidx.compose.runtime.key(photoId) {
+        AndroidView(
+            modifier = modifier.size(sizeDp.dp),
+            factory = { context ->
+                BackupImageView(context).apply {
+                    setRoundRadius(AndroidUtilities.dp(sizeDp / 2f)) // круг
+                }
+            },
+            update = { view ->
+                val location = ImageLocation.getForUser(user, ImageLocation.TYPE_BIG)
+                val placeholder = AvatarDrawable(user)
+                view.setImage(location, "50_50", placeholder, user)
             }
-        },
-        update = { view ->
-            val location = ImageLocation.getForUser(user, ImageLocation.TYPE_BIG)
-            val placeholder = AvatarDrawable(user)
-            view.setImage(location, "50_50", placeholder, user)
-        }
-    )
+        )
+    }
 }
 
 @Composable
 fun TelegramPhoto(
     photo: TLRPC.Photo?,
-    dialogId: Long,
+    dialogId: Long = 0L,
     modifier: Modifier = Modifier,
-    sizeDp: Int = 56
 ) {
     if (photo == null || photo is TLRPC.TL_photoEmpty || photo.sizes == null) return
 
     AndroidView(
-        modifier = modifier.size(sizeDp.dp),
+        modifier = modifier,
         factory = { context ->
             BackupImageView(context)
         },
@@ -126,6 +131,17 @@ fun LocalImageView(
             val location = ImageLocation.getForPath(filePath)
             view.setImage(location, "800_800", null as android.graphics.drawable.Drawable?, null)
         }
+    )
+}
+
+@Composable
+fun EventTelegramPhoto(
+    photo: TLRPC.Photo?,
+    modifier: Modifier = Modifier,
+) {
+    TelegramPhoto(
+        photo = photo,
+        modifier = modifier,
     )
 }
 

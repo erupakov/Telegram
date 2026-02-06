@@ -19,9 +19,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -74,6 +77,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.components.LocalImageView
 import org.telegram.divo.components.TelegramPhoto
 import org.telegram.divo.components.TelegramUserAvatar
 import org.telegram.divo.items.ButtonAddWorkHistory
@@ -94,26 +98,14 @@ fun ProfileScreen(
     onEditClicked: () -> Unit = {},
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
-    showWorkHistory: () -> Unit = {}
+    showWorkHistory: () -> Unit = {},
+    onAddPortfolioClicked: () -> Unit = {}
 ) {
     LaunchedEffect(true) {
         viewModel.getData()
     }
 
     val uiState = viewModel.state.collectAsState().value
-
-//    LazyWithPagerInside()
-
-//    ProfileCollapsingScreen(
-//        uiState = uiState,
-//        onEditClicked = {
-//            onEditClicked()
-//        },
-//        onEditLinksClicked = {
-//            onEditLinksClicked()
-//        },
-//        onNavigateBack = onNavigateBack
-//    )
 
     ProfileScreenParts(
         uiState = uiState,
@@ -124,7 +116,8 @@ fun ProfileScreen(
             onEditLinksClicked()
         },
         onNavigateBack = onNavigateBack,
-        showWorkHistory = showWorkHistory
+        showWorkHistory = showWorkHistory,
+        onAddPortfolioClicked = onAddPortfolioClicked
     )
 }
 
@@ -304,7 +297,8 @@ fun ProfileScreenParts(
     onEditClicked: () -> Unit = {},
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
-    showWorkHistory:() -> Unit = {},
+    showWorkHistory: () -> Unit = {},
+    onAddPortfolioClicked: () -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     val pagerState = rememberPagerState(pageCount = { 3 })
@@ -360,36 +354,32 @@ fun ProfileScreenParts(
             item {
                 HorizontalPager(
                     state = pagerState,
-                    modifier = Modifier.fillParentMaxHeight().fillMaxWidth().background(color = Color.White) // 🔑 ключ
+                    modifier = Modifier.fillParentMaxHeight().fillMaxWidth().background(color = Color.White)
                 ) { page ->
-                    LazyVerticalGrid(
-                        columns = GridCells.Fixed(3), // 🔑 3 в ряд
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(8.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        items(uiState.userPhotos) { photo ->
-                            TelegramPhoto(
-                                photo = photo,
-                                dialogId = uiState.userFull.id,
-                                modifier = Modifier,
-                                sizeDp = 120
-                            )
+                    when (page) {
+                        0 -> PortfolioGrid(
+                            portfolioItems = uiState.portfolioItems,
+                            isUploading = uiState.portfolioUploading,
+                            uploadLocalPath = uiState.portfolioUploadLocalPath,
+                            onAddClicked = onAddPortfolioClicked,
+                            dialogId = uiState.userFull.id
+                        )
+                        else -> LazyVerticalGrid(
+                            columns = GridCells.Fixed(3),
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = PaddingValues(8.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            items(uiState.userPhotos) { photo ->
+                                TelegramPhoto(
+                                    photo = photo,
+                                    dialogId = uiState.userFull.id,
+                                    modifier = Modifier,
+                                )
+                            }
                         }
                     }
-//                    LazyColumn(
-//                        modifier = Modifier.fillMaxSize()
-//                    ) {
-//                        items(uiState.userPhotos) { item ->
-//                            TelegramPhoto(
-//                                photo = item,
-//                                dialogId = uiState.userFull.id,
-//                                modifier = Modifier.fillMaxSize(),
-//                                sizeDp = 300
-//                            )
-//                        }
-//                    }
                 }
             }
         }
@@ -632,22 +622,96 @@ fun TabContainer() {
 }
 
 @Composable
+fun PortfolioGrid(
+    portfolioItems: List<TLRPC.TL_profile_portfolioItem>,
+    isUploading: Boolean,
+    uploadLocalPath: String?,
+    onAddClicked: () -> Unit,
+    dialogId: Long,
+    modifier: Modifier = Modifier
+) {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(3),
+        modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item {
+            PortfolioAddButton(
+                isUploading = isUploading,
+                uploadLocalPath = uploadLocalPath,
+                onClick = onAddClicked
+            )
+        }
+
+        items(portfolioItems) { item ->
+            TelegramPhoto(
+                photo = item.file,
+                dialogId = dialogId,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+        }
+    }
+}
+
+@Composable
+private fun PortfolioAddButton(
+    isUploading: Boolean,
+    uploadLocalPath: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .clip(RoundedCornerShape(8.dp))
+            .background(AppTheme.colors.blackAlpha12)
+            .clickable(enabled = !isUploading) { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            isUploading && uploadLocalPath != null -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    LocalImageView(
+                        filePath = uploadLocalPath,
+                        modifier = Modifier.fillMaxSize(),
+                        cornerRadius = 8
+                    )
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .align(Alignment.Center),
+                        color = AppTheme.colors.accentColor,
+                        strokeWidth = 3.dp
+                    )
+                }
+            }
+            isUploading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(32.dp),
+                    color = AppTheme.colors.accentColor,
+                    strokeWidth = 3.dp
+                )
+            }
+            else -> {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add photo",
+                    modifier = Modifier.size(48.dp),
+                    tint = Color.White
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun ProfilePhotoPage(
     modifier: Modifier = Modifier,
-
 ) {
-//    LazyColumn(
-//        state = listState,
-//        modifier = modifier,
-//    ) {
-//        items(40) {
-//            TelegramUserAvatar(
-//                user =uiState.userFull.user,
-//                modifier  = Modifier
-//                    .size(68.dp)
-//                    .clip(CircleShape),
-//                68
-//            )
-//        }
-//    }
 }

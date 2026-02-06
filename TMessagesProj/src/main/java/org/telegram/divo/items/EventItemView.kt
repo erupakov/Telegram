@@ -32,8 +32,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import org.telegram.divo.components.TelegramPhoto
 import org.telegram.divo.screen.event_list.EventListViewModel
 import org.telegram.divo.style.AppTheme
+import org.telegram.tgnet.TLRPC
 
 @Preview
 @Composable
@@ -54,7 +56,8 @@ private fun EventItemViewPreview() {
 fun EventItemView(
     modifier: Modifier = Modifier,
     eventName: String,
-    eventImageUrl: String,
+    eventImageUrl: String = "",
+    eventPhoto: TLRPC.Photo? = null,
     eventOwnerName: String,
     eventOwnerImage: String,
     dateLocationText: String,
@@ -64,7 +67,6 @@ fun EventItemView(
     onCardClick: () -> Unit = {},
     onCtaClicked: () -> Unit = {},
 ) {
-    val painter = rememberAsyncImagePainter(eventImageUrl)
     val gradientOverlay = remember {
         Brush.verticalGradient(
             colors = listOf(
@@ -82,12 +84,20 @@ fun EventItemView(
         shape = RectangleShape
     ) {
         Box {
-            Image(
-                modifier = Modifier.fillMaxSize(),
-                painter = painter,
-                contentDescription = eventName,
-                contentScale = ContentScale.Crop,
-            )
+            if (eventPhoto != null) {
+                TelegramPhoto(
+                    photo = eventPhoto,
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else if (eventImageUrl.isNotEmpty()) {
+                val painter = rememberAsyncImagePainter(eventImageUrl)
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = painter,
+                    contentDescription = eventName,
+                    contentScale = ContentScale.Crop,
+                )
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()

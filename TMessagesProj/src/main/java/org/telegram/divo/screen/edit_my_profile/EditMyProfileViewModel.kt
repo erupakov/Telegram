@@ -5,6 +5,7 @@ import org.telegram.divo.base.ViewEffect
 import org.telegram.divo.base.ViewIntent
 import org.telegram.divo.base.ViewState
 import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.FileLoader
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.MessagesController.DialogPhotos
@@ -27,7 +28,8 @@ class EditMyProfileViewModel :
         val fName: String = "",
         val lName: String = "",
         val bio: String = "",
-        val userFull: TLRPC.UserFull ,
+        val userFull: TLRPC.UserFull,
+        val avatarUpdateTimestamp: Long = 0L, // Force recomposition when avatar changes
         val isLoading: Boolean = false,
         val errorMessage: String? = null,
     ) : ViewState
@@ -69,6 +71,26 @@ class EditMyProfileViewModel :
         setState {
             EventListViewState(
                 userFull = userFull
+            )
+        }
+    }
+
+    private fun refreshUserData() {
+        val uc = UserConfig.getInstance(currentAccount)
+        val mc = MessagesController.getInstance(currentAccount)
+        val userFull = mc.getUserFull(uc.clientUserId)
+
+        // Also get the updated user from MessagesController cache
+        val updatedUser = mc.getUser(uc.clientUserId)
+        if (userFull != null && updatedUser != null) {
+            userFull.user = updatedUser
+        }
+
+        setState {
+            copy(
+                userFull = userFull ?: state.value.userFull,
+                avatarUpdateTimestamp = System.currentTimeMillis(),
+                isLoading = false
             )
         }
     }
@@ -174,14 +196,37 @@ class EditMyProfileViewModel :
                         MessagesController
                             .getInstance(currentAccount)
                             .putUsers(response.users, false)
+
+                        // Update current user photo in UserConfig (like ProfileActivity does)
+                        val uc = UserConfig.getInstance(currentAccount)
+                        val currentUser = uc.currentUser
+                        if (currentUser != null && response.photo != null) {
+                            val bigSize = FileLoader.getClosestPhotoSizeWithSize(
+                                response.photo.sizes, 800
+                            )
+                            val smallSize = FileLoader.getClosestPhotoSizeWithSize(
+                                response.photo.sizes, 150
+                            )
+                            if (smallSize != null && bigSize != null) {
+                                if (currentUser.photo == null) {
+                                    currentUser.photo = TLRPC.TL_userProfilePhoto()
+                                }
+                                currentUser.photo.photo_id = response.photo.id
+                                currentUser.photo.photo_small = smallSize.location
+                                currentUser.photo.photo_big = bigSize.location
+                                currentUser.photo.dc_id = response.photo.dc_id
+                                uc.setCurrentUser(currentUser)
+                                uc.saveConfig(true)
+                            }
+                        }
                     }
 
                     val nc = NotificationCenter.getInstance(currentAccount)
                     nc.postNotificationName(NotificationCenter.mainUserInfoChanged)
-                    nc.postNotificationName(NotificationCenter.updateInterfaces, 0)
+                    nc.postNotificationName(NotificationCenter.updateInterfaces, MessagesController.UPDATE_MASK_ALL)
 
-                    setState { copy(isLoading = false) }
-                    getData()
+                    // Force UI refresh with new timestamp
+                    refreshUserData()
                 }
             }
     }
@@ -231,35 +276,24 @@ class EditMyProfileViewModel :
 
         setState { copy(isLoading = true, errorMessage = null) }
 
-        val req = TLRPC.TL_profile_updateProfile()
+        // Use standard Telegram API (same as ProfileActivity.java)
+        val req = TLRPC.TL_account_updateProfile()
 
-        val F_FIRST_NAME = 1
-        val F_LAST_NAME = 2
-        val F_ABOUT = 8
-
+        // Flags for TL_account_updateProfile: 1=first_name, 2=last_name, 4=about
         req.first_name = fName
-        req.flags = req.flags or F_FIRST_NAME
+        req.flags = req.flags or 1
 
-        // last_name (can be empty string, but must set flag to actually send)
         req.last_name = lName
-        req.flags = req.flags or F_LAST_NAME
+        req.flags = req.flags or 2
 
-        // about (bio)
         req.about = about
-        req.flags = req.flags or F_ABOUT
+        req.flags = req.flags or 4
 
         ConnectionsManager.getInstance(currentAccount).sendRequest(
             req,
             RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
-
-                if(response is TLRPC.TL_user){
-                    response
-                }
-
-
                 AndroidUtilities.runOnUIThread {
                     if (error != null) {
-                        // Покажи причину в UI
                         setState {
                             copy(
                                 isLoading = false,
@@ -270,15 +304,14 @@ class EditMyProfileViewModel :
                         return@runOnUIThread
                     }
 
-                    // Сервер может вернуть User, но даже если нет — нам важнее локально синхронизировать модели
+                    // Apply changes locally (like ProfileActivity.java does)
                     applyProfileLocally(fName = fName, lName = lName, about = about)
 
-                    // Обновим экран сразу
                     setState {
                         copy(
-                            fName = fNameRaw,
-                            lName = lNameRaw,
-                            bio = aboutRaw,
+                            fName = fName,
+                            lName = lName,
+                            bio = about,
                             isLoading = false,
                             errorMessage = null
                         )
