@@ -5623,12 +5623,10 @@ public class Theme {
 
                 @Override
                 public void setAlpha(int alpha) {
-
                 }
 
                 @Override
                 public void setColorFilter(ColorFilter colorFilter) {
-
                 }
 
                 @Override
@@ -6986,7 +6984,6 @@ public class Theme {
             if (ApplicationLoader.mainInterfacePaused || !ApplicationLoader.isScreenOn) {
                 return;
             }
-
             if (lux > MAXIMUM_LUX_BREAKPOINT) {
                 lastBrightnessValue = 1.0f;
             } else {

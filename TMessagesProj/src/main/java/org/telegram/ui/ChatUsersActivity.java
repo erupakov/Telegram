@@ -307,7 +307,6 @@ public class ChatUsersActivity extends BaseFragment implements NotificationCente
             initialSignatures = signatures = currentChat.signatures;
             initialProfiles = profiles = currentChat.signature_profiles;
         }
-
     }
 
     private void updateRows() {

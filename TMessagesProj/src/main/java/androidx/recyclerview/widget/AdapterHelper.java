@@ -95,15 +95,11 @@ class AdapterHelper implements OpReorderer.Callback {
         StringBuilder sb = new StringBuilder();
         for (int i = lastNotifies.size() - 1; i >= 0; i--) {
             if (i < lastNotifies.size() - 1) {
-                sb.append("\n\n");
             }
             sb.append(lastNotifies.get(i));
         }
         return sb.toString();
     }
-
-    AdapterHelper(Callback callback) {
-        this(callback, false);
     }
 
     AdapterHelper(Callback callback, boolean disableRecycler) {

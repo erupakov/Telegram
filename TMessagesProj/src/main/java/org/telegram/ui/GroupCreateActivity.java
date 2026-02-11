@@ -1760,7 +1760,6 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
                             spansContainer.removeAllSpans(true);
                             checkVisibleRows();
                             updateEditTextHint();
-
                         });
                     }
                     break;

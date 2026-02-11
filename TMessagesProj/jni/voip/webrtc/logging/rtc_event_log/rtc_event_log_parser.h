@@ -79,7 +79,6 @@ struct LoggedPacketInfo {
                    Timestamp capture_time);
   LoggedPacketInfo(const LoggedPacketInfo&);
   ~LoggedPacketInfo();
-
   int64_t log_time_ms() const { return log_packet_time.ms(); }
   int64_t log_time_us() const { return log_packet_time.us(); }
   uint32_t ssrc;

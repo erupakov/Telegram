@@ -37,7 +37,6 @@
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-
 #undef SetPort
 #endif
 
@@ -67,7 +66,6 @@
 
 #if defined(WEBRTC_POSIX)
 #include <netinet/tcp.h>  // for TCP_NODELAY
-
 #define IP_MTU 14  // Until this is integrated from linux/in.h to netinet/in.h
 typedef void* SockOptArg;
 
@@ -414,7 +412,6 @@ int PhysicalSocket::Recv(void* buffer, size_t length, int64_t* timestamp) {
     SetError(EWOULDBLOCK);
     return SOCKET_ERROR;
   }
-
   UpdateLastError();
   int error = GetError();
   bool success = (received >= 0) || IsBlockingError(error);

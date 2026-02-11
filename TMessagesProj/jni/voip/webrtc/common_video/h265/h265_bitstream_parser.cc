@@ -51,7 +51,6 @@ H265BitstreamParser::Result H265BitstreamParser::ParseNonParameterSetNalu(
       H265::ParseRbsp(source, source_length);
   if (slice_rbsp.size() < H265::kNaluTypeSize)
     return kInvalidStream;
-
   rtc::BitBuffer slice_reader(slice_rbsp.data() + H265::kNaluTypeSize,
                               slice_rbsp.size() - H265::kNaluTypeSize);
   // Check to see if this is an IDR slice, which has an extra field to parse

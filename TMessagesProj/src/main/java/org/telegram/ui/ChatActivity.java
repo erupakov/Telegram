@@ -5315,7 +5315,6 @@ public class ChatActivity extends BaseFragment implements
                 }
             }
 
-
             @Override
             protected void dispatchDraw(Canvas canvas) {
                 drawLaterRoundProgressCell = null;
@@ -8799,7 +8798,6 @@ public class ChatActivity extends BaseFragment implements
             botMessageHint.show();
         });
     }
-
     private void hideHints() {
         if (savedMessagesTagHint != null && savedMessagesTagHint.shown()) {
             savedMessagesTagHint.hide();
@@ -9235,7 +9233,6 @@ public class ChatActivity extends BaseFragment implements
     }
 
     private void createBottomMessagesActionButtons() {
-
     }
 
     private void checkInstantSearch() {
@@ -25514,7 +25511,6 @@ public class ChatActivity extends BaseFragment implements
         LongSparseArray<MessageObject.GroupedMessages> newGroups = null;
         for (int a = 0; a < messageObjects.size(); a++) {
             MessageObject messageObject = messageObjects.get(a);
-
             MessageObject pinnedOld = pinnedMessageObjects.get(messageObject.getId());
             if (pinnedOld != null) {
                 pinnedMessageObjects.put(messageObject.getId(), messageObject);
@@ -42313,7 +42309,6 @@ public class ChatActivity extends BaseFragment implements
             clip[1] = chatListView.getMeasuredHeight() - (chatListView.getPaddingBottom() - AndroidUtilities.dp(3));
         }
     }
-
     private void updateVisibleWallpaperActions() {
         if (chatListView != null && chatAdapter != null) {
             for (int i = 0; i < chatListView.getChildCount(); ++i) {

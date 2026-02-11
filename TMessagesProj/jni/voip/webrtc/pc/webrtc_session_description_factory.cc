@@ -450,5 +450,4 @@ void WebRtcSessionDescriptionFactory::SetCertificate(
     create_session_description_requests_.pop();
   }
 }
-
 }  // namespace webrtc

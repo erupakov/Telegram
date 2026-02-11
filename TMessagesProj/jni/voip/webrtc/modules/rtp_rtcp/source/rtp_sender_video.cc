@@ -474,7 +474,6 @@ bool RTPSenderVideo::SendVideo(int payload_type,
 
   if (payload.empty())
     return false;
-
   if (!rtp_sender_->SendingMedia()) {
     return false;
   }

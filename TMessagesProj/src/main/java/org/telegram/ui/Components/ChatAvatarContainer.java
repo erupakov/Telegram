@@ -1304,7 +1304,6 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
         if (parentFragment == null) {
             return;
         }
-
         TLRPC.User user = parentFragment.getCurrentUser();
         TLRPC.Chat chat = parentFragment.getCurrentChat();
         if (parentFragment.getChatMode() == ChatActivity.MODE_SAVED) {

@@ -381,7 +381,6 @@ public class LimitPreviewView extends LinearLayout {
         limitIcon.requestLayout();
     }
 
-
     private float getGlobalXOffset() {
         return -LimitPreviewView.this.getMeasuredWidth() * 0.1f * progress - LimitPreviewView.this.getMeasuredWidth() * 0.2f;
     }
@@ -1062,7 +1061,6 @@ public class LimitPreviewView extends LinearLayout {
 
         @Override
         protected void onDraw(Canvas canvas) {
-
             int h = getMeasuredHeight() - dp(8);
             if (premiumLocked) {
                 h = getMeasuredHeight();

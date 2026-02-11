@@ -2639,7 +2639,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         public int viewY2;
         public View parentView;
         public ImageReceiver.BitmapHolder thumb;
-
         public long dialogId;
         public int index;
         public long size;
@@ -10437,7 +10436,6 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
                             return true;
                         }
                     }
-
                     return false;
                 }
 

@@ -171,7 +171,6 @@ func runTestOnce(test test, mallocNumToFail int64) (passed bool, err error) {
 		// detected.
 		args = append(args, "--no_unwind_tests")
 	}
-
 	var cmd *exec.Cmd
 	if *useValgrind {
 		cmd = valgrindOf(false, prog, args...)

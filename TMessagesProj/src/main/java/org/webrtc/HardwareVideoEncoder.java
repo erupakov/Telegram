@@ -211,7 +211,6 @@ class HardwareVideoEncoder implements VideoEncoder {
 
     this.callback = callback;
     automaticResizeOn = settings.automaticResizeOn;
-
     this.width = settings.width;
     this.height = settings.height;
     useSurfaceMode = canUseSurface();

@@ -406,7 +406,6 @@ struct MediaSenderInfo {
 struct MediaReceiverInfo {
   MediaReceiverInfo();
   ~MediaReceiverInfo();
-
   void add_ssrc(const SsrcReceiverInfo& stat) { local_stats.push_back(stat); }
   // Temporary utility function for call sites that only provide SSRC.
   // As more info is added into SsrcSenderInfo, this function should go away.

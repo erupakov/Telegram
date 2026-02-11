@@ -207,7 +207,6 @@ standaloneReflectorRoleId_(standaloneReflectorRoleId) {
 
 ReflectorPort::~ReflectorPort() {
     // TODO(juberti): Should this even be necessary?
-
     // release the allocation by sending a refresh with
     // lifetime 0.
     if (ready()) {
@@ -246,12 +245,10 @@ void ReflectorPort::PrepareAddress() {
                         "Missing REFLECTOR server id.");
         return;
     }
-
     if (!server_address_.address.port()) {
         // We will set default REFLECTOR port, if no port is set in the address.
         server_address_.address.SetPort(599);
     }
-
     if (!AllowedReflectorPort(server_address_.address.port())) {
         // This can only happen after a 300 ALTERNATE SERVER, since the port can't
         // be created with a disallowed port number.
@@ -340,7 +337,6 @@ void ReflectorPort::SendReflectorHello() {
         if (state_ == STATE_CONNECTED) {
             timeoutMs = 500;
         }
-
         thread()->PostDelayedTask(SafeTask(task_safety_.flag(), [this] {
             is_running_ping_task_ = false;
             SendReflectorHello();
@@ -374,7 +370,6 @@ bool ReflectorPort::CreateReflectorClientSocket() {
         error_ = SOCKET_ERROR;
         return false;
     }
-
     // Apply options if any.
     for (SocketOptionsMap::iterator iter = socket_options_.begin();
          iter != socket_options_.end(); ++iter) {
@@ -409,7 +404,6 @@ void ReflectorPort::OnSocketConnect(rtc::AsyncPacketSocket* socket) {
     // protocol.
     RTC_DCHECK(server_address_.proto == cricket::PROTO_TCP ||
                server_address_.proto == cricket::PROTO_TLS);
-
     // Do not use this port if the socket bound to an address not associated with
     // the desired network interface. This is seen in Chrome, where TCP sockets
     // cannot be given a binding address, and the platform is expected to pick
@@ -454,7 +448,6 @@ void ReflectorPort::OnSocketConnect(rtc::AsyncPacketSocket* socket) {
             return;
         }
     }
-
     state_ = STATE_CONNECTED;  // It is ready to send stun requests.
     if (server_address_.address.IsUnresolvedIP()) {
         server_address_.address = socket_->GetRemoteAddress();
@@ -506,7 +499,6 @@ cricket::Connection* ReflectorPort::CreateConnection(const cricket::Candidate& r
     if (!SupportsProtocol(remote_candidate.protocol())) {
         return nullptr;
     }
-
     auto remoteHostname = remote_candidate.address().hostname();
     if (remoteHostname.empty()) {
         return nullptr;
@@ -518,7 +510,6 @@ cricket::Connection* ReflectorPort::CreateConnection(const cricket::Candidate& r
     if (remote_candidate.address().port() != server_address_.address.port()) {
         return nullptr;
     }
-
     if (state_ == STATE_DISCONNECTED || state_ == STATE_RECEIVEONLY) {
         return nullptr;
     }
@@ -549,7 +540,6 @@ int ReflectorPort::SetOption(rtc::Socket::Option opt, int value) {
     // Remember the last requested DSCP value, for STUN traffic.
     if (opt == rtc::Socket::OPT_DSCP)
         stun_dscp_value_ = static_cast<rtc::DiffServCodePoint>(value);
-
     if (!socket_) {
         // If socket is not created yet, these options will be applied during socket
         // creation.
@@ -568,7 +558,6 @@ int ReflectorPort::GetOption(rtc::Socket::Option opt, int* value) {
         *value = it->second;
         return 0;
     }
-
     return socket_->GetOption(opt, value);
 }
 
@@ -670,14 +659,12 @@ bool ReflectorPort::HandleIncomingPacket(rtc::AsyncPacketSocket* socket, rtc::Re
         << server_address_.address.ToSensitiveString();
         return false;
     }
-
     // The message must be at least 16 bytes (peer tag).
     if (size < 16) {
         RTC_LOG(LS_WARNING) << ToString()
         << ": Received REFLECTOR message that was too short (" << size << ")";
         return false;
     }
-
     if (state_ == STATE_DISCONNECTED) {
         RTC_LOG(LS_WARNING)
         << ToString()
@@ -719,7 +706,6 @@ bool ReflectorPort::HandleIncomingPacket(rtc::AsyncPacketSocket* socket, rtc::Re
                    server_priority_, ReconstructedServerUrl(false /* use_hostname */),
                    true);
     }
-
     if (size > 16 + 4 + 4) {
         bool isSpecialPacket = false;
         if (size >= 16 + 12) {
@@ -785,7 +771,6 @@ bool ReflectorPort::SupportsProtocol(absl::string_view protocol) const {
 void ReflectorPort::ResolveTurnAddress(const rtc::SocketAddress& address) {
     if (resolver_)
         return;
-
     RTC_LOG(LS_INFO) << ToString() << ": Starting TURN host lookup for "
     << address.ToSensitiveString();
     resolver_ = socket_factory()->CreateAsyncDnsResolver();
@@ -804,7 +789,6 @@ void ReflectorPort::ResolveTurnAddress(const rtc::SocketAddress& address) {
             }
             return;
         }
-
         // Copy the original server address in `resolved_address`. For TLS based
         // sockets we need hostname along with resolved address.
         rtc::SocketAddress resolved_address = server_address_.address;
@@ -870,7 +854,6 @@ void ReflectorPort::Close() {
     for (auto kv : connections()) {
         kv.second->Destroy();
     }
-
     SignalReflectorPortClosed(this);
 }
 

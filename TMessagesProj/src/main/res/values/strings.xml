@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="AppName">Telegram</string>
-    <string name="AppNameBeta">Telegram Beta</string>
+    <string name="AppName">Divo</string>
+    <string name="AppNameBeta">Divo Beta</string>
     <string name="LanguageName">English</string>
     <string name="English">English</string>
     <string name="LanguageNameInEnglish">English</string>
@@ -12,7 +12,7 @@
     <string name="StartText">Please confirm your country code and enter your phone number.</string>
     <string name="StartTextPasskey">Please enter your phone number\nor **log in using passkey >**</string>
     <string name="Country">Country</string>
-    <string name="YourNumber">Your phone number</string>
+    <string name="YourNumber">Your phone</string>
     <string name="PhoneNumber">Phone number</string>
     <string name="ChooseCountry">Choose a country</string>
     <string name="WrongCountry">Invalid country code</string>
@@ -72,22 +72,18 @@
     <string name="SignInWithGoogle">Sign in with Google</string>
     <!--signup view-->
     <string name="YourName">Your name</string>
-    <string name="RegisterText2">Enter your name and add a profile picture.</string>
+    <string name="RegisterText2">Fill out your profile details to apply as a professional model. You can update this information anytime.</string>
     <string name="FirstName">First name (required)</string>
     <string name="FirstNameSmall">First name</string>
     <string name="LastName">Last name (optional)</string>
     <string name="LastNameSmall">Last name</string>
     <string name="CancelRegistration">Cancel registration</string>
-    <string name="RegistrationProfileInfo">Profile info</string>
+    <string name="RegistrationProfileInfo">Apply as a Professional Model</string>
     <!--payments view-->
     <string name="PaymentSuccessfullyPaid">You have just successfully transferred %1$s to %2$s for %3$s</string>
-    <string name="PaymentSuccessfullyPaidSubscription">You have just successfully transferred %1$s to %2$s for %3$s until %4$s</string>
     <string name="PaymentSuccessfullyPaidNoItem">You have just successfully transferred %1$s to %2$s</string>
-    <string name="PaymentSuccessfullyPaidSubscriptionNoItem">You have just successfully transferred %1$s to %2$s until %3$s</string>
     <string name="PaymentSuccessfullyPaidRecurrent">You successfully transferred %1$s to %2$s for %3$s and allowed future recurrent payments</string>
     <string name="PaymentSuccessfullyPaidNoItemRecurrent">You successfully transferred %1$s to %2$s and allowed future recurrent payments</string>
-    <string name="PaymentSuccessfullyPaidMeSubscription">%1$s have transferred %2$s for %3$s subscription until %4$s</string>
-    <string name="PaymentSuccessfullyPaidMeNoItemSubscription">%1$s have transferred %2$s for subscription until %3$s</string>
     <string name="PaymentCheckout">Checkout</string>
     <string name="PaymentShippingMethod">Shipping methods</string>
     <string name="PaymentNoShippingMethod">Sorry, it is not possible to deliver to your address.</string>
@@ -5995,6 +5991,7 @@
     <string name="PauseMusicOnRecord">Pause music while recording</string>
     <string name="PauseMusicOnRecordInfo">Pause music when you start recording a video message</string>
     <string name="SetMyProfilePhotoAvatarConstructor">Set My Photo</string>
+    <string name="SetProfilePhotoAvatarConstructor">Set Profile Photo</string>
     <string name="ProxyStatus">Status</string>
     <string name="ClearStorageHintTitle">Free up to **%s**</string>
     <string name="ClearStorageHintMessage">Clear storage space on your phone</string>
@@ -6030,6 +6027,7 @@
     <string name="LiteOptionsSpoiler">Animated spoiler effect</string>
     <string name="LiteOptionsBlur2">Blur</string>
     <string name="LiteOptionsLiquidGlass">Liquid Glass</string>
+    <string name="LiteOptionsBlur">Night theme blur</string>
     <string name="LiteOptionsScale">Zoom animations</string>
     <string name="LiteOptionsThanos">Dust-effect deletion</string>
     <string name="LiteOptionsCalls">Animations in Calls</string>
@@ -6196,6 +6194,7 @@
     <string name="FolderUpdatesSubtitle_one">Tap here to view it</string>
     <string name="FolderUpdatesSubtitle_other">Tap here to view them</string>
     <string name="FolderLinkShareTitle2">Share Folder %1$s</string>
+    <string name="FolderLinkShareTitle">Share Folder %s</string>
     <string name="FolderLinkShareSubtitleEmpty">Share access to some of this folder’s groups and channels with others.</string>
     <string name="FolderLinkShareSubtitle">You can create more links to set up different access levels for different people.</string>
     <string name="FolderLinkShareButton">Create Invite Link</string>
@@ -6646,8 +6645,8 @@
     <string name="SortByReactions">Reactions First</string>
     <string name="SortByReposts">Reposts First</string>
     <string name="SortByTime">Newest First</string>
-    <string name="StoryViewsSortDescription">Choose the order for the  list of viewers.</string>
-    <string name="StoryReactionsSortDescription">Choose the order for the  list of reactions.</string>
+    <string name="StoryViewsSortDescription">Choose the order for the list of viewers.</string>
+    <string name="StoryReactionsSortDescription">Choose the order for the list of reactions.</string>
     <string name="NoContactsViewed">None of your contacts viewed this story.</string>
     <string name="Viewers">Viewers</string>
     <string name="StealthModeConfirmTitle">You are in Stealth Mode now</string>
@@ -6672,6 +6671,8 @@
     <string name="LimitReachedStoriesCount2Second_other">Subscribe to **Telegram Premium** to increase this limit to **%d**.</string>
     <string name="LimitReachedStoriesCount2Premium_one">Sorry, you can’t post more than **%d** story in **24** hours.</string>
     <string name="LimitReachedStoriesCount2Premium_other">Sorry, you can’t post more than **%d** stories in **24** hours.</string>
+    <string name="LimitReachedStoriesCount">You can post **%1$d** stories in **24** hours.\nSubscribe to **Telegram Premium** to increase this limit to **%2$d**.</string>
+    <string name="LimitReachedStoriesCountPremium">Sorry, you can’t post more than **%1$d** stories in **24** hours.</string>
     <string name="LimitReachedStoriesWeekly">You can post **%1$d** stories in a week.\nSubscribe to **Telegram Premium** to increase this limit to **%2$d**.</string>
     <string name="LimitReachedStoriesWeeklyPremium">Sorry, you can’t post more than **%1$d** stories in a week.</string>
     <string name="LimitReachedStoriesMonthly">You can post **%1$d** stories in a month.\nSubscribe to **Telegram Premium** to increase this limit to **%2$d**.</string>

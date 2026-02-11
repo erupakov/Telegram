@@ -1340,7 +1340,6 @@ public class SimpleTextView extends View implements Drawable.Callback {
 
     public static interface PressableDrawable {
         public void setPressed(boolean value);
-
         public boolean isPressed();
     }
 }

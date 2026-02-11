@@ -71631,7 +71631,6 @@ public class TLRPC {
         }
     }
 
-
     public static class TL_premiumGiftCodeOption extends TLObject {
         public static final int constructor = 0x257e962b;
 

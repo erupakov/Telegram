@@ -432,7 +432,6 @@ void DataChannelController::NotifyDataChannelsOfTransportCreated() {
 rtc::Thread* DataChannelController::network_thread() const {
   return pc_->network_thread();
 }
-
 rtc::Thread* DataChannelController::signaling_thread() const {
   return pc_->signaling_thread();
 }

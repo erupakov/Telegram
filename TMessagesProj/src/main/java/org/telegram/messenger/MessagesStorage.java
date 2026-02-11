@@ -12473,7 +12473,6 @@ public class MessagesStorage extends BaseController {
                     }
                     cursor.dispose();
                     cursor = null;
-
                     if (!exist) {
                         if (topicUpdatesInUi == null) {
                             topicUpdatesInUi = new ArrayList<>();

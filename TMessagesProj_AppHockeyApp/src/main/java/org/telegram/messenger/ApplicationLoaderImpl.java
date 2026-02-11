@@ -151,17 +151,17 @@ public class ApplicationLoaderImpl extends ApplicationLoader {
     }
 
     protected void logDualCameraInternal(boolean success, boolean vendor) {
-//        try {
-//            Analytics.trackEvent("dual-camera[" + (Build.MANUFACTURER + " " + Build.DEVICE).toUpperCase() + "]",
-//                new EventProperties()
-//                    .set("success", success)
-//                    .set("vendor", vendor)
-//                    .set("product", Build.PRODUCT + "")
-//                    .set("model", Build.MODEL)
-//            );
-//        } catch (Throwable ignore) {
-//
-//        }
+        try {
+            Analytics.trackEvent("dual-camera[" + (Build.MANUFACTURER + " " + Build.DEVICE).toUpperCase() + "]",
+                new EventProperties()
+                    .set("success", success)
+                    .set("vendor", vendor)
+                    .set("product", Build.PRODUCT + "")
+                    .set("model", Build.MODEL)
+            );
+        } catch (Throwable ignore) {
+
+        }
     }
 
     @Override

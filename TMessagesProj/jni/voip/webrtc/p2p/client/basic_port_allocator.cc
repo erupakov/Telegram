@@ -147,7 +147,6 @@ bool IsAllowedByCandidateFilter(const Candidate& c, uint32_t filter) {
 
     return ((filter & CF_HOST) != 0);
   }
-
   return false;
 }
 

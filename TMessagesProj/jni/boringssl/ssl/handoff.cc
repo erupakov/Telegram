@@ -87,7 +87,6 @@ bool SSL_serialize_handoff(const SSL *ssl, CBB *out,
   CBB seq;
   SSLMessage msg;
   Span<const uint8_t> transcript = s3->hs->transcript.buffer();
-
   if (!CBB_add_asn1(out, &seq, CBS_ASN1_SEQUENCE) ||
       !CBB_add_asn1_uint64(&seq, kHandoffVersion) ||
       !CBB_add_asn1_octet_string(&seq, transcript.data(), transcript.size()) ||

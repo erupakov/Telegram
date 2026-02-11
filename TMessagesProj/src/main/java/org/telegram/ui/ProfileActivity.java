@@ -1274,7 +1274,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
 
         private boolean emojiLoaded;
-
         private boolean isEmojiLoaded() {
             if (emojiLoaded) {
                 return true;
@@ -1375,7 +1374,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 parentLayout.drawHeaderShadow(canvas, (int) (headerShadowAlpha * 255), (int) v);
             }
         }
-
         private Rect blurBounds = new Rect();
     }
 
@@ -3573,12 +3571,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             protected void onSelectedTabChanged() {
                 updateSelectedMediaTabText();
             }
-
             @Override
             protected boolean includeSavedDialogs() {
                 return dialogId == getUserConfig().getClientUserId() && !saved;
             }
-
             @Override
             protected boolean isSelf() {
                 return myProfile;
@@ -5042,7 +5038,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             }
                         }
                     }
-
                     @Override
                     public void didChangeOwner(TLRPC.User user) {
                         undoView.showWithAction(-chatId, currentChat.megagroup ? UndoView.ACTION_OWNER_TRANSFERED_GROUP : UndoView.ACTION_OWNER_TRANSFERED_CHANNEL, user);
@@ -6690,7 +6685,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     private SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow selectAnimatedEmojiDialog;
-
     public void showStatusSelect() {
         if (selectAnimatedEmojiDialog != null) {
             return;
@@ -9276,7 +9270,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (currentChat.megagroup && (loadChannelParticipants || !byChannelUsers)) {
                     getChannelParticipants(true);
                 }
-
                 updateAutoDeleteItem();
                 updateTtlIcon();
                 if (storyView != null && chatInfo != null) {
@@ -9969,7 +9962,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     animatingItem = menu.addItem(10, R.drawable.ic_ab_other);
                 }
             }
-
             if (isOpen) {
                 for (int i = 0; i < 2; i++) {
                     FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) onlineTextView[i + 1].getLayoutParams();
@@ -12717,7 +12709,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     int avatarUploadingRequest;
-
     @Override
     public void didUploadPhoto(final TLRPC.InputFile photo, final TLRPC.InputFile video, double videoStartTimestamp, String videoPath, TLRPC.PhotoSize bigSize, final TLRPC.PhotoSize smallSize, boolean isVideo, TLRPC.VideoSize emojiMarkup) {
         AndroidUtilities.runOnUIThread(() -> {
@@ -14077,7 +14068,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
 
         private final HashMap<TLRPC.TL_username, ClickableSpan> usernameSpans = new HashMap<TLRPC.TL_username, ClickableSpan>();
-
         public ClickableSpan makeUsernameLinkSpan(TLRPC.TL_username usernameObj) {
             ClickableSpan span = usernameSpans.get(usernameObj);
             if (span != null) return span;
@@ -15608,7 +15598,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     }
 
     float photoDescriptionProgress = -1;
-
     private void checkPhotoDescriptionAlpha() {
         float p = photoDescriptionProgress;
         if (playProfileAnimation == 1 && (!fragmentOpened || openAnimationInProgress)) {
@@ -15855,7 +15844,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
         public final AnimatedTextView.AnimatedTextDrawable textDrawable;
         public final Paint backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-
         public ShowDrawable(String string) {
             textDrawable = new AnimatedTextView.AnimatedTextDrawable();
             textDrawable.setCallback(new Callback() {
@@ -15881,14 +15869,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
 
         private int textColor;
-
         public void setBackgroundColor(int backgroundColor) {
             if (backgroundPaint.getColor() != backgroundColor) {
                 backgroundPaint.setColor(backgroundColor);
                 invalidateSelf();
             }
         }
-
         public void setTextColor(int textColor) {
             if (this.textColor != textColor) {
                 this.textColor = textColor;
@@ -15973,7 +15959,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
 
         private View view;
-
         public void setView(View view) {
             this.view = view;
         }

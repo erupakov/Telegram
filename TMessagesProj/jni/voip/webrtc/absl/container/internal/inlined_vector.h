@@ -610,7 +610,6 @@ void Storage<T, N, A>::InitFrom(const Storage& other) {
     auto values = IteratorValueAdapter<A, ConstPointer<A>>(src);
     ConstructElements<A>(GetAllocator(), dst, values, n);
   }
-
   GetSizeAndIsAllocated() = other.GetSizeAndIsAllocated();
 }
 

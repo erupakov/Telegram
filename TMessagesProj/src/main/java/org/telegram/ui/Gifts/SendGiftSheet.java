@@ -365,7 +365,6 @@ public class SendGiftSheet extends BottomSheetWithRecyclerListView implements No
         messageEdit.setShowLimitWhenNear(50);
         setEditTextEmoji(messageEdit.editTextEmoji);
         messageEdit.setShowLimitOnFocus(true);
-
         messageEdit.setDivider(false);
         messageEdit.hideKeyboardOnEnter();
         messageEdit.setPadding(backgroundPaddingLeft, 0, backgroundPaddingLeft, 0);

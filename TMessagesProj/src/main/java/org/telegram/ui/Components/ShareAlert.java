@@ -593,7 +593,6 @@ public class ShareAlert extends BottomSheet implements NotificationCenter.Notifi
             private int fromOffsetTop;
             private int toOffsetTop;
 
-
             {
                 adjustPanLayoutHelper = new AdjustPanLayoutHelper(this) {
 

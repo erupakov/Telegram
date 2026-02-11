@@ -259,7 +259,6 @@ class MediaContentDescription {
   bool remote_estimate_ = false;
   int bandwidth_ = kAutoBandwidth;
   std::string bandwidth_type_ = kApplicationSpecificBandwidth;
-
   std::vector<webrtc::RtpExtension> rtp_header_extensions_;
   bool rtp_header_extensions_set_ = false;
   StreamParamsVec send_streams_;

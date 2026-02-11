@@ -5542,7 +5542,6 @@ public class MediaDataController extends BaseController {
 
     public static int SHORTCUT_TYPE_USER_OR_CHAT = 0;
     public static int SHORTCUT_TYPE_ATTACHED_BOT = 1;
-
     private Intent createIntrnalShortcutIntent(long dialogId) {
         Intent shortcutIntent = new Intent(ApplicationLoader.applicationContext, OpenChatReceiver.class);
 

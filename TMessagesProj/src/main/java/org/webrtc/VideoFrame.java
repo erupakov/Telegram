@@ -41,7 +41,6 @@ public class VideoFrame implements RefCounted {
     default int getBufferType() {
       return 0;
     }
-
     /**
      * Resolution of the buffer in pixels.
      */
@@ -78,7 +77,6 @@ public class VideoFrame implements RefCounted {
     default int getBufferType() {
       return 1;
     }
-
     /**
      * Returns a direct ByteBuffer containing Y-plane data. The buffer capacity is at least
      * getStrideY() * getHeight() bytes. The position of the returned buffer is ignored and must

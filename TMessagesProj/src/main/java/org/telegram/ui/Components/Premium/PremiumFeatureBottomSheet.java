@@ -703,7 +703,6 @@ public class PremiumFeatureBottomSheet extends BottomSheet implements Notificati
                 description.setLines(2);
             }
             addView(description, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 21, 10, 21, 16));
-
             setClipChildren(false);
         }
 

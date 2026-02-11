@@ -4755,7 +4755,6 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
                             reqSend.reply_to = createReplyInput((TLRPC.TL_messageReplyHeader) newMsg.reply_to);
                             reqSend.flags |= 1;
                         }
-
                         if (newMsg.quick_reply_shortcut != null) {
                             reqSend.flags |= 131072;
                             reqSend.quick_reply_shortcut = newMsg.quick_reply_shortcut;

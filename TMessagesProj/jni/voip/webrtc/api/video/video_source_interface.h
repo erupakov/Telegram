@@ -35,7 +35,6 @@ struct RTC_EXPORT VideoSinkWants {
   VideoSinkWants();
   VideoSinkWants(const VideoSinkWants&);
   ~VideoSinkWants();
-
   // Tells the source whether the sink wants frames with rotation applied.
   // By default, any rotation must be applied by the sink.
   bool rotation_applied = false;

@@ -988,7 +988,6 @@ static void InfoCallback(const SSL *ssl, int type, int val) {
       // test fails.
       abort();
     }
-
     // This callback is called when the handshake completes. |SSL_get_session|
     // must continue to work and |SSL_in_init| must return false.
     if (SSL_in_init(ssl) || SSL_get_session(ssl) == nullptr) {

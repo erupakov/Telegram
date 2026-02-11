@@ -414,7 +414,6 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
 
     private Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG);
     private Paint paintTmp = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.DITHER_FLAG | Paint.FILTER_BITMAP_FLAG);
-
     private WeavingState[] states = new WeavingState[8];
     private float switchProgress = 1.0f;
     private WeavingState prevState;
@@ -4443,7 +4442,6 @@ public class GroupCallActivity extends BottomSheet implements NotificationCenter
                 if (isRtmpStream()) {
                     return super.onTouchEvent(event);
                 }
-
                 if (event.getAction() == MotionEvent.ACTION_DOWN && muteButtonState == MUTE_BUTTON_STATE_UNMUTE && call != null) {
                     AndroidUtilities.runOnUIThread(pressRunnable, 300);
                     scheduled = true;

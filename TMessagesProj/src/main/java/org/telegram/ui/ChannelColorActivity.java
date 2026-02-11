@@ -274,7 +274,6 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
     public ChannelColorActivity(long dialogId) {
         super();
         this.dialogId = dialogId;
-
         TLRPC.Chat chat = getMessagesController().getChat(-dialogId);
         if (chat != null) {
             currentLevel = chat.level;

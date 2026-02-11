@@ -426,7 +426,6 @@ public class ProfileChannelCell extends FrameLayout {
         }
 
         private ArrayList<Runnable> callbacks = new ArrayList<>();
-
         public void subscribe(Runnable callback) {
             if (loaded) {
                 callback.run();
@@ -434,7 +433,6 @@ public class ProfileChannelCell extends FrameLayout {
                 callbacks.add(callback);
             }
         }
-
         private void done(boolean error) {
             loading = false;
             loaded = true;

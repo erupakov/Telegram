@@ -427,7 +427,6 @@ bool ProbeController::TimeForNetworkStateProbe(Timestamp at_time) const {
                                 config_.network_state_estimate_probing_interval;
     return at_time >= next_probe_time;
   }
-
   return false;
 }
 

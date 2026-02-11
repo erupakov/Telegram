@@ -609,7 +609,6 @@ public class SavedMessagesController {
                 i--;
             }
         }
-
         return Math.max(acount, lcount);
     }
 

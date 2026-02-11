@@ -982,7 +982,6 @@ void NegotiateRtpHeaderExtensions(const RtpHeaderExtensions& local_extensions,
       dependency_descriptor_in_local = true;
     else if (ours.uri == webrtc::RtpExtension::kAbsoluteCaptureTimeUri)
       abs_capture_time_in_local = true;
-
     const webrtc::RtpExtension* theirs =
         FindHeaderExtensionByUriDiscardUnsupported(offered_extensions, ours.uri,
                                                    filter);

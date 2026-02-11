@@ -146,7 +146,6 @@ class TaskQueuePacedSender : public RtpPacketPacer, public RtpPacketSender {
   Stats GetStats() const;
 
   Clock* const clock_;
-
   // The holdback window prevents too frequent delayed MaybeProcessPackets()
   // calls. These are only applicable if `allow_low_precision` is false.
   const TimeDelta max_hold_back_window_;

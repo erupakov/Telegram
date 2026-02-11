@@ -80,7 +80,6 @@ public class BottomSheet extends Dialog implements BaseFragment.AttachedSheet {
 
     protected int currentAccount = UserConfig.selectedAccount;
     protected ViewGroup containerView;
-
     public ContainerView container;
     protected boolean keyboardVisible;
     private int lastKeyboardHeight;

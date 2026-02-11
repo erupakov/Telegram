@@ -12,7 +12,6 @@
 #include "rtc_base/net_helper.h"
 
 namespace webrtc {
-
 EmulatedIpPacket::EmulatedIpPacket(const rtc::SocketAddress& from,
                                    const rtc::SocketAddress& to,
                                    rtc::CopyOnWriteBuffer data,

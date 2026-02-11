@@ -577,7 +577,6 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                 if (!isActive) {
                     headerView.backupImageView.getImageReceiver().setVisible(true, true);
                 }
-
                 if (!unsupported) {
                     if (playerSharedScope.renderView != null || storyAreasView != null && (storyAreasView.hasSelectedForScale() || storyAreasView.parentHighlightScaleAlpha.isInProgress())) {
                         invalidate();

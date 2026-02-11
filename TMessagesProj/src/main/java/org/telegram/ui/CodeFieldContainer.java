@@ -66,7 +66,6 @@ public class CodeFieldContainer extends LinearLayout {
                     float offset = -Math.max(0, strokeWidth * (codeField.getSuccessScaleProgress() - 1f));
                     AndroidUtilities.rectTmp.inset(offset, offset);
                 }
-
                 canvas.drawRoundRect(AndroidUtilities.rectTmp, AndroidUtilities.dp(4), AndroidUtilities.dp(4), paint);
             }
         }

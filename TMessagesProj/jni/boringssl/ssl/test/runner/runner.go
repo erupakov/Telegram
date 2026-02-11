@@ -676,7 +676,6 @@ func doExchange(test *testCase, config *Config, conn net.Conn, isResume bool, tr
 			config.ServerName = "test"
 		}
 	}
-
 	if *fuzzer {
 		config.Bugs.NullAllCiphers = true
 	}

@@ -208,6 +208,7 @@ public class UpdateLayout extends IUpdateLayout {
             } else {
                 updateLayout.setTranslationY(0);
             }
+            sideMenu.setPadding(0, 0, 0, AndroidUtilities.dp(44));
         } else {
             if (updateLayout == null || updateLayout.getTag() == null) {
                 return;
@@ -226,6 +227,7 @@ public class UpdateLayout extends IUpdateLayout {
                 updateLayout.setTranslationY(AndroidUtilities.dp(44));
                 updateLayout.setVisibility(View.INVISIBLE);
             }
+            sideMenu.setPadding(0, 0, 0, 0);
         }
     }
 

@@ -9,7 +9,6 @@
  */
 
 #include "common_video/h265/h265_common.h"
-
 #include "common_video/h264/h264_common.h"
 
 namespace webrtc {

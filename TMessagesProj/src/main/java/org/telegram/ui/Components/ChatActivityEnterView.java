@@ -2644,7 +2644,6 @@ public class ChatActivityEnterView extends FrameLayout implements
                     int x = getWidth() / 2 + dp(4 + 5);
                     int y = getHeight() / 2 - dp(13 - 5);
                     canvas.drawCircle(x, y, dp(5), dotPaint);
-
                 }
             }
         };

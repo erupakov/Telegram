@@ -360,7 +360,6 @@ class RTC_EXPORT BasicNetworkManager : public NetworkManagerBase,
   Thread* thread_ = nullptr;
   bool sent_first_update_ = true;
   int start_count_ = 0;
-
   webrtc::AlwaysValidPointer<const webrtc::FieldTrialsView,
                              webrtc::FieldTrialBasedConfig>
       field_trials_;

@@ -15,7 +15,6 @@
 #define SDK_ANDROID_SRC_JNI_JNI_GENERATOR_HELPER_H_
 
 #include <jni.h>
-
 #include <atomic>
 
 #include "rtc_base/checks.h"

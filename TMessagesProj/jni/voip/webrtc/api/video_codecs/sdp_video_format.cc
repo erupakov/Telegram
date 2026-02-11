@@ -102,7 +102,6 @@ bool IsSameCodecSpecific(const SdpVideoFormat& format1,
       return true;
   }
 }
-
 }  // namespace
 
 SdpVideoFormat::SdpVideoFormat(const std::string& name) : name(name) {}

@@ -1547,7 +1547,6 @@ public class StoriesUtilities {
                 resetColors(animated);
             }
         }
-
         private void resetColors(boolean animated) {
             if (isDialogCell) {
                 setColors(Theme.getColor(Theme.key_stories_circle_dialog1), Theme.getColor(Theme.key_stories_circle_dialog2), animated);

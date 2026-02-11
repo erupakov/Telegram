@@ -33,7 +33,6 @@
 #else
 #include "modules/audio_coding/audio_network_adaptor/config.pb.h"
 #endif
-
 #endif
 
 namespace webrtc {

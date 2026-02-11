@@ -1264,7 +1264,6 @@ ecp_nistz256_mul_mont_nohw:
 	mov	8*3($a_ptr), $acc4
 
 	call	__ecp_nistz256_mul_montq
-
 	mov	0(%rsp),%r15
 .cfi_restore	%r15
 	mov	8(%rsp),%r14
@@ -1534,7 +1533,6 @@ ecp_nistz256_sqr_mont_nohw:
 	mov	8*3($a_ptr), $acc0
 
 	call	__ecp_nistz256_sqr_montq
-
 	mov	0(%rsp),%r15
 .cfi_restore	%r15
 	mov	8(%rsp),%r14

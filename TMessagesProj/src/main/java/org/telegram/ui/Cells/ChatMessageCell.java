@@ -20758,7 +20758,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
             nameLayout.draw(canvas);
             Theme.chat_namePaint.setAlpha(oldAlpha);
             canvas.restore();
-
             float end;
             if (currentMessagesGroup != null && !currentMessagesGroup.isDocuments) {
                 int dWidth = getGroupPhotosWidth();
@@ -20796,7 +20795,6 @@ public class ChatMessageCell extends BaseCell implements SeekBar.SeekBarDelegate
                 }
             }
             end += transitionParams.deltaRight;
-
             if (adminLayout != null) {
                 int color;
                 if (currentMessageObject.shouldDrawWithoutBackground()) {

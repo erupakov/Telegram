@@ -226,7 +226,6 @@ void LossBasedBweV2::UpdateBandwidthEstimate(
         << "The estimator must be enabled before it can be used.";
     return;
   }
-
   if (packet_results.empty()) {
     RTC_LOG(LS_VERBOSE)
         << "The estimate cannot be updated without any loss statistics.";
