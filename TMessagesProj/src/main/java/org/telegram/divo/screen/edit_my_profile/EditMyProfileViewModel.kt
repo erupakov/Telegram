@@ -66,11 +66,18 @@ class EditMyProfileViewModel :
     }
 
     fun getData() {
-        val userFull = MessagesController.getInstance(currentAccount)
-            .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
+        val uc = UserConfig.getInstance(currentAccount)
+        val mc = MessagesController.getInstance(currentAccount)
+        val userFull = mc.getUserFull(uc.clientUserId)
+        val me = uc.currentUser
+
         setState {
-            EventListViewState(
-                userFull = userFull
+            copy(
+                fName = me?.first_name ?: userFull?.user?.first_name ?: "",
+                lName = me?.last_name ?: userFull?.user?.last_name ?: "",
+                bio = userFull?.about ?: "",
+                userFull = userFull ?: state.value.userFull,
+                avatarUpdateTimestamp = System.currentTimeMillis()
             )
         }
     }
@@ -249,23 +256,35 @@ class EditMyProfileViewModel :
             uc.saveConfig(true)
         }
 
-        // 2) Update UserFull.about + persist to storage (если UserFull уже загружен)
+        // 2) Update UserFull and its user object + persist to storage
         val userFull = mc.getUserFull(uc.clientUserId)
         if (userFull != null) {
             userFull.about = about
+            // Also update userFull.user with new name
+            userFull.user?.let { user ->
+                user.first_name = fName
+                user.last_name = lName
+            }
             messageStorage?.updateUserInfo(userFull, false)
         }
 
-        // 3) Notify UI (как делает UserInfoActivity)
+        // 3) Update user in MessagesController cache
+        val cachedUser = mc.getUser(uc.clientUserId)
+        if (cachedUser != null) {
+            cachedUser.first_name = fName
+            cachedUser.last_name = lName
+            mc.putUser(cachedUser, false)
+        }
+
+        // 4) Notify UI (как делает UserInfoActivity)
         val nc = NotificationCenter.getInstance(currentAccount)
         nc.postNotificationName(NotificationCenter.mainUserInfoChanged)
         nc.postNotificationName(
             NotificationCenter.updateInterfaces,
-            MessagesController.UPDATE_MASK_NAME
+            MessagesController.UPDATE_MASK_NAME or MessagesController.UPDATE_MASK_ALL
         )
 
         sendEffect(Effect.NavigateBack)
-
     }
 
     fun updateProfile(fNameRaw: String, lNameRaw: String, aboutRaw: String) {
@@ -276,18 +295,28 @@ class EditMyProfileViewModel :
 
         setState { copy(isLoading = true, errorMessage = null) }
 
-        // Use standard Telegram API (same as ProfileActivity.java)
-        val req = TLRPC.TL_account_updateProfile()
+        // Use TL_profile_updateProfile API
+        val req = TLRPC.TL_profile_updateProfile()
 
-        // Flags for TL_account_updateProfile: 1=first_name, 2=last_name, 4=about
-        req.first_name = fName
-        req.flags = req.flags or 1
+        // Flags for TL_profile_updateProfile: 1=first_name, 2=last_name, 8=about
+        var flags = 0
 
-        req.last_name = lName
-        req.flags = req.flags or 2
+        if (fName.isNotEmpty()) {
+            flags = flags or 1
+            req.first_name = fName
+        }
 
-        req.about = about
-        req.flags = req.flags or 4
+        if (lName.isNotEmpty()) {
+            flags = flags or 2
+            req.last_name = lName
+        }
+
+        if (about.isNotEmpty()) {
+            flags = flags or 8
+            req.about = about
+        }
+
+        req.flags = flags
 
         ConnectionsManager.getInstance(currentAccount).sendRequest(
             req,
@@ -304,7 +333,9 @@ class EditMyProfileViewModel :
                         return@runOnUIThread
                     }
 
-                    // Apply changes locally (like ProfileActivity.java does)
+                    FileLog.d("TL_profile_updateProfile success")
+
+                    // Apply changes locally
                     applyProfileLocally(fName = fName, lName = lName, about = about)
 
                     setState {

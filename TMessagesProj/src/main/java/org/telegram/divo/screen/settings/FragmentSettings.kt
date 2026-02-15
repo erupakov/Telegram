@@ -15,6 +15,7 @@ import org.telegram.ui.NotificationsSettingsActivity
 import org.telegram.ui.PrivacySettingsActivity
 import org.telegram.ui.StickersActivity
 import org.telegram.ui.ThemeActivity
+import org.telegram.ui.ChangeUsernameActivity
 
 class FragmentSettings : BaseFragment() {
     override fun createView(context: Context): View {
@@ -29,7 +30,8 @@ class FragmentSettings : BaseFragment() {
                 navigateToNotifications = { presentFragment(NotificationsSettingsActivity()) },
                 navigateToPrivacy = { presentFragment(PrivacySettingsActivity()) },
                 navigateToDataStorage = { presentFragment(DataSettingsActivity()) },
-                navigateToAppearance = { presentFragment(ThemeActivity(ThemeActivity.THEME_TYPE_BASIC)) }
+                navigateToAppearance = { presentFragment(ThemeActivity(ThemeActivity.THEME_TYPE_BASIC)) },
+                navigateToSetUsername = { presentFragment(ChangeUsernameActivity()) }
             )
         }
         return composeView

@@ -1,5 +1,7 @@
 package org.telegram.divo.screen.profile
 
+import android.content.Intent
+import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -20,9 +22,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.foundation.lazy.items
@@ -36,6 +40,8 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,8 +55,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -69,16 +77,22 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.components.LocalImageView
+import org.telegram.divo.components.PortfolioItemImage
+import org.telegram.divo.components.PortfolioUploadPreview
 import org.telegram.divo.components.TelegramPhoto
+import org.telegram.divo.components.TelegramPhotoBackground
 import org.telegram.divo.components.TelegramUserAvatar
 import org.telegram.divo.items.ButtonAddWorkHistory
 import org.telegram.divo.items.PofileNameItem
@@ -99,10 +113,31 @@ fun ProfileScreen(
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: () -> Unit = {},
-    onAddPortfolioClicked: () -> Unit = {}
+    onAddPortfolioClicked: () -> Unit = {},
+    onEditBackgroundClicked: () -> Unit = {}
 ) {
-    LaunchedEffect(true) {
+    val context = LocalContext.current
+
+    // Refresh data when screen becomes visible
+    LifecycleResumeEffect(Unit) {
         viewModel.getData()
+        onPauseOrDispose { }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is ProfileViewModel.ProfileEffect.OpenUrl -> {
+                    try {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(effect.url))
+                        context.startActivity(intent)
+                    } catch (e: Exception) {
+                        // Handle error
+                    }
+                }
+                else -> {}
+            }
+        }
     }
 
     val uiState = viewModel.state.collectAsState().value
@@ -117,7 +152,9 @@ fun ProfileScreen(
         },
         onNavigateBack = onNavigateBack,
         showWorkHistory = showWorkHistory,
-        onAddPortfolioClicked = onAddPortfolioClicked
+        onAddPortfolioClicked = onAddPortfolioClicked,
+        onEditBackgroundClicked = onEditBackgroundClicked,
+        onSocialLinkClicked = { url -> viewModel.openSocialLink(url) }
     )
 }
 
@@ -299,6 +336,8 @@ fun ProfileScreenParts(
     onNavigateBack: () -> Unit = {},
     showWorkHistory: () -> Unit = {},
     onAddPortfolioClicked: () -> Unit = {},
+    onEditBackgroundClicked: () -> Unit = {},
+    onSocialLinkClicked: (String) -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     val pagerState = rememberPagerState(pageCount = { 3 })
@@ -309,10 +348,19 @@ fun ProfileScreenParts(
         }
     }
 
-    OnePhotoTopSharpBottomBlur(
-        modifier = Modifier.padding(bottom = 200.dp),
-        painter = painterResource(R.drawable.divo_profile_background_test)
-    )
+    // Show background from profile if available, otherwise fallback to default
+    if (uiState.backgroundPhoto != null) {
+        TelegramPhotoBackground(
+            photo = uiState.backgroundPhoto,
+            dialogId = uiState.userFull.id,
+            modifier = Modifier.fillMaxSize()
+        )
+    } else {
+        OnePhotoTopSharpBottomBlur(
+            modifier = Modifier.fillMaxSize(),
+            painter = painterResource(R.drawable.divo_profile_background_test)
+        )
+    }
 
     Column(
         modifier = modifier
@@ -333,7 +381,8 @@ fun ProfileScreenParts(
             },
             onNavigateBack = {
                 onNavigateBack()
-            }
+            },
+            onEditBackgroundClicked = onEditBackgroundClicked
         )
         LazyColumn(
             state = listState,
@@ -342,9 +391,10 @@ fun ProfileScreenParts(
         ) {
             item {
                 ProfileHeaderContent(
-                    uiState,
-                    onEditLinksClicked,
-                    showWorkHistory
+                    uiState = uiState,
+                    onEditLinksClicked = onEditLinksClicked,
+                    showWorkHistory = showWorkHistory,
+                    onSocialLinkClicked = onSocialLinkClicked
                 )
             }
             stickyHeader {
@@ -432,8 +482,11 @@ private fun ToolBar(
     title: String,
     titleVisible: Boolean = false,
     onEditClicked: () -> Unit = {},
-    onNavigateBack: () -> Unit = {}
+    onNavigateBack: () -> Unit = {},
+    onEditBackgroundClicked: () -> Unit = {}
 ) {
+    var showDropdownMenu by remember { mutableStateOf(false) }
+
     Box(
         modifier = modifier
             .height(56.dp)
@@ -461,8 +514,22 @@ private fun ToolBar(
             IconButton(onClick = { onEditClicked() }) {
                 Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.White)
             }
-            IconButton(onClick = { /* settings/edit */ }) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Settings", tint = Color.White)
+            Box {
+                IconButton(onClick = { showDropdownMenu = true }) {
+                    Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = Color.White)
+                }
+                DropdownMenu(
+                    expanded = showDropdownMenu,
+                    onDismissRequest = { showDropdownMenu = false }
+                ) {
+                    DropdownMenuItem(
+                        text = { Text("Edit Background Image") },
+                        onClick = {
+                            showDropdownMenu = false
+                            onEditBackgroundClicked()
+                        }
+                    )
+                }
             }
         }
     }
@@ -473,8 +540,11 @@ private fun ToolBar(
 private fun ProfileHeaderContent(
     uiState: ProfileViewModel.ProfileViewState,
     onEditLinksClicked: () -> Unit,
-    showWorkHistory: ()-> Unit
+    showWorkHistory: () -> Unit,
+    onSocialLinkClicked: (String) -> Unit = {}
 ) {
+    var selectedBioTab by rememberSaveable { mutableIntStateOf(0) }
+
     Column {
         PofileNameItem(
             modifier = Modifier.padding(top = 150.dp),
@@ -483,13 +553,6 @@ private fun ProfileHeaderContent(
             roleLabel = "Model",
             uiState
         )
-//        Row(modifier = Modifier.padding(top = 16.dp)) {
-//            DMButton(
-//                onClick = {
-//
-//                }
-//            )
-//        }
 
         ButtonAddWorkHistory(
             modifier = Modifier.padding(horizontal = 16.dp).padding(top = 8.dp),
@@ -498,60 +561,354 @@ private fun ProfileHeaderContent(
             }
         )
 
-        ProfileBioItem(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .padding(top = 8.dp),
-            bio = uiState.userFull.about?:""
+        // Biography / Appearance Tabs
+        BiographyAppearanceTabs(
+            selectedTab = selectedBioTab,
+            onTabSelected = { selectedBioTab = it },
+            uiState = uiState
         )
 
-        Column {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("My Links", color = Color.White)
-                Spacer(Modifier.weight(1f))
-                TextButton(onClick = {
-                    onEditLinksClicked()
-                }) {
-                    Text("Edit Links".uppercase(), color = Color.White)
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-
-                ProfileSocialItem(
-                    modifier = Modifier.weight(1f),
-                    iconResId = R.drawable.icon_divo_instagram
-                )
-
-                ProfileSocialItem(
-                    modifier = Modifier.weight(1f),
-                    iconResId = R.drawable.icon_divo_tiktok
-
-                )
-
-                ProfileSocialItem(
-                    modifier = Modifier.weight(1f),
-                    iconResId = R.drawable.icon_divo_youtube
-
-                )
-
-                ProfileSocialItem(
-                    modifier = Modifier.weight(1f),
-                    iconResId = R.drawable.icon_divo_web
-                )
-
-            }
-        }
-
-
+        // Social Links Section
+        SocialLinksSection(
+            socialLinks = uiState.socialLinks,
+            onEditLinksClicked = onEditLinksClicked,
+            onSocialLinkClicked = onSocialLinkClicked
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
     }
+}
+
+@Composable
+private fun BiographyAppearanceTabs(
+    selectedTab: Int,
+    onTabSelected: (Int) -> Unit,
+    uiState: ProfileViewModel.ProfileViewState
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(AppTheme.colors.blackAlpha12)
+    ) {
+        // Tab buttons
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            TabButton(
+                text = "BIOGRAPHY",
+                isSelected = selectedTab == 0,
+                onClick = { onTabSelected(0) },
+                modifier = Modifier.weight(1f)
+            )
+            TabButton(
+                text = "APPEARANCE",
+                isSelected = selectedTab == 1,
+                onClick = { onTabSelected(1) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        // Tab content
+        when (selectedTab) {
+            0 -> BiographyContent(bio = uiState.userFull.about ?: "")
+            1 -> AppearanceContent(params = uiState.physicalParams)
+        }
+    }
+}
+
+@Composable
+private fun TabButton(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(if (isSelected) AppTheme.colors.accentColor else Color.Transparent)
+            .clickable { onClick() }
+            .padding(vertical = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            color = Color.White,
+            fontSize = 12.sp,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
+    }
+}
+
+@Composable
+private fun BiographyContent(bio: String) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .padding(bottom = 12.dp)
+    ) {
+        Text(
+            text = bio.ifEmpty { "No biography available" },
+            color = Color.White,
+            fontSize = 14.sp,
+            maxLines = if (expanded) Int.MAX_VALUE else 3,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        if (bio.length > 100) {
+            Text(
+                text = if (expanded) "SEE LESS" else "SEE MORE",
+                color = Color.White,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .align(Alignment.End)
+                    .clickable { expanded = !expanded }
+                    .padding(top = 4.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun AppearanceContent(params: ProfileViewModel.PhysicalParams) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .padding(bottom = 12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Left column
+            Column(modifier = Modifier.weight(1f)) {
+                if (params.gender.isNotEmpty()) {
+                    AppearanceRow("Gender", params.gender)
+                }
+                if (params.height > 0) {
+                    AppearanceRow("Height (cm)", params.height.toString())
+                }
+                if (params.hips > 0) {
+                    AppearanceRow("Hips (cm)", params.hips.toString())
+                }
+                if (params.hairLength > 0 || expanded) {
+                    AppearanceRow("Hair length (cm)", params.hairLength.toString())
+                }
+                if (params.eyeColor.isNotEmpty()) {
+                    AppearanceRow("Eye color", params.eyeColor)
+                }
+                if (params.breastSize.isNotEmpty() && params.gender == "Female") {
+                    AppearanceRow("Breast size", params.breastSize)
+                }
+            }
+
+            // Right column
+            Column(modifier = Modifier.weight(1f)) {
+                if (params.age > 0) {
+                    AppearanceRow("Age (y.o)", params.age.toString())
+                }
+                if (params.waist > 0) {
+                    AppearanceRow("Waist (cm)", params.waist.toString())
+                }
+                if (params.shoeSize > 0) {
+                    AppearanceRow("Shoe size (EU)", params.shoeSize.toString())
+                }
+                if (params.hairColor.isNotEmpty()) {
+                    AppearanceRow("Hair color", params.hairColor)
+                }
+                if (params.skinColor.isNotEmpty()) {
+                    AppearanceRow("Skin color", params.skinColor)
+                }
+            }
+        }
+
+        Text(
+            text = "SEE MORE",
+            color = Color.White,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .align(Alignment.End)
+                .clickable { expanded = !expanded }
+                .padding(top = 4.dp)
+        )
+    }
+}
+
+@Composable
+private fun AppearanceRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            color = Color.White.copy(alpha = 0.7f),
+            fontSize = 12.sp
+        )
+        Text(
+            text = value,
+            color = Color.White,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun SocialLinksSection(
+    socialLinks: ProfileViewModel.SocialLinks,
+    onEditLinksClicked: () -> Unit,
+    onSocialLinkClicked: (String) -> Unit
+) {
+    // Check if any social links exist
+    val hasAnyLinks = socialLinks.instagram.isNotBlank() ||
+            socialLinks.tiktok.isNotBlank() ||
+            socialLinks.youtube.isNotBlank() ||
+            socialLinks.website.isNotBlank()
+
+    Column(
+        modifier = Modifier.padding(horizontal = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("My Links", color = Color.White, fontSize = 14.sp)
+            Spacer(Modifier.weight(1f))
+            TextButton(onClick = onEditLinksClicked) {
+                Text("Edit Links".uppercase(), color = Color.White, fontSize = 12.sp)
+            }
+        }
+
+        if (hasAnyLinks) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if (socialLinks.instagram.isNotBlank()) {
+                    SocialLinkItem(
+                        iconResId = R.drawable.icon_divo_instagram,
+                        username = extractUsername(socialLinks.instagram),
+                        onClick = { onSocialLinkClicked(socialLinks.instagram) }
+                    )
+                }
+                if (socialLinks.tiktok.isNotBlank()) {
+                    SocialLinkItem(
+                        iconResId = R.drawable.icon_divo_tiktok,
+                        username = extractUsername(socialLinks.tiktok),
+                        onClick = { onSocialLinkClicked(socialLinks.tiktok) }
+                    )
+                }
+                if (socialLinks.youtube.isNotBlank()) {
+                    SocialLinkItem(
+                        iconResId = R.drawable.icon_divo_youtube,
+                        username = extractPath(socialLinks.youtube),
+                        onClick = { onSocialLinkClicked(socialLinks.youtube) }
+                    )
+                }
+                if (socialLinks.website.isNotBlank()) {
+                    SocialLinkItem(
+                        iconResId = R.drawable.icon_divo_web,
+                        username = extractDomain(socialLinks.website),
+                        onClick = { onSocialLinkClicked(socialLinks.website) }
+                    )
+                }
+            }
+        } else {
+            Text(
+                text = "No social links added yet",
+                color = Color.White.copy(alpha = 0.5f),
+                fontSize = 12.sp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun SocialLinkItem(
+    @DrawableRes iconResId: Int,
+    username: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(12.dp))
+            .background(AppTheme.colors.blackAlpha12)
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                painter = painterResource(iconResId),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "@$username",
+                color = Color.White,
+                fontSize = 11.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+private fun extractUsername(url: String): String {
+    if (url.isBlank()) return ""
+    return url
+        .replace("https://", "")
+        .replace("http://", "")
+        .replace("www.", "")
+        .substringAfter("/")
+        .removePrefix("@")
+        .trim('/')
+        .ifEmpty { url }
+}
+
+private fun extractPath(url: String): String {
+    if (url.isBlank()) return ""
+    return url
+        .replace("https://", "")
+        .replace("http://", "")
+        .replace("www.", "")
+        .substringAfter("/")
+        .trim('/')
+        .ifEmpty { url }
+}
+
+private fun extractDomain(url: String): String {
+    if (url.isBlank()) return ""
+    return url
+        .replace("https://", "")
+        .replace("http://", "")
+        .replace("www.", "")
+        .substringBefore("/")
+        .ifEmpty { url }
 }
 
 enum class Destination(
@@ -646,13 +1003,12 @@ fun PortfolioGrid(
         }
 
         items(portfolioItems) { item ->
-            TelegramPhoto(
-                photo = item.file,
-                dialogId = dialogId,
+            PortfolioItemImage(
+                portfolioItem = item,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .height(120.dp),
+                cornerRadiusDp = 8
             )
         }
     }
@@ -677,10 +1033,10 @@ private fun PortfolioAddButton(
         when {
             isUploading && uploadLocalPath != null -> {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    LocalImageView(
+                    PortfolioUploadPreview(
                         filePath = uploadLocalPath,
                         modifier = Modifier.fillMaxSize(),
-                        cornerRadius = 8
+                        cornerRadiusDp = 8
                     )
                     CircularProgressIndicator(
                         modifier = Modifier

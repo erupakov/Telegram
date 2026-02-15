@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -83,6 +84,12 @@ fun EditMyProfileScreen(
 ) {
     LaunchedEffect(messageStorage) {
         viewModel.setMessageStorage(messageStorage)
+    }
+
+    // Refresh data when screen becomes visible
+    LifecycleResumeEffect(Unit) {
+        viewModel.getData()
+        onPauseOrDispose { }
     }
 
     LaunchedEffect(Unit) {

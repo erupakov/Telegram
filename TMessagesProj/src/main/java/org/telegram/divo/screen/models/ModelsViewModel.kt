@@ -17,6 +17,16 @@ import org.telegram.divo.screen.models.ModelsViewIntent.OnSearchClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnAddStoryClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnBookmarkClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnPhotoClick
+import org.telegram.divo.screen.models.ModelsViewIntent.LoadMoreAllUsers
+import org.telegram.divo.screen.models.ModelsViewIntent.OnShowMockDataClicked
+import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.FileLog
+import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.ConnectionsManager
+import org.telegram.tgnet.RequestDelegate
+import org.telegram.tgnet.TLObject
+import org.telegram.tgnet.TLRPC
+import org.telegram.tgnet.TLRPC.TL_error
 
 
 data class Story(
@@ -29,11 +39,12 @@ data class Story(
 data class Model(
     val id: String,
     val name: String,
-    val imageUrl: String,
-    val avatarUrl: String,
+    val imageUrl: String = "",
+    val avatarUrl: String = "",
     val emotions: List<Emotions> = emptyList(),
-    val photos: List<String>,
-    val roleLabel: String
+    val photos: List<String> = emptyList(),
+    val roleLabel: String = "",
+    val userProfile: TLRPC.TL_userProfile? = null
 )
 
 enum class Tab(val displayName: String) {
@@ -72,7 +83,11 @@ data class ModelsViewState(
     val models: List<Model> = emptyList(),
     val selectedTab: Tab = Tab.SUBSCRIBED,
     val isLoading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val allUserModels: List<Model> = emptyList(),
+    val isLoadingAllUsers: Boolean = false,
+    val allUsersHasMore: Boolean = true,
+    val showMockData: Boolean = false,
 ) : ViewState {
     companion object {
         val preview = ModelsViewState(
@@ -124,6 +139,8 @@ sealed class ModelsViewIntent : ViewIntent {
     data object OnSearchClick : ModelsViewIntent()
     data object OnAddStoryClick : ModelsViewIntent()
     data class OnPhotoClick(val modelId: String, val photoUrl: String) : ModelsViewIntent()
+    data object LoadMoreAllUsers : ModelsViewIntent()
+    data object OnShowMockDataClicked : ModelsViewIntent()
 }
 
 // Action
@@ -137,6 +154,12 @@ sealed class ModelsViewEffect : ViewEffect {
 
 
 class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
+
+    companion object {
+        const val PAGE_SIZE = 100
+    }
+
+    private val currentAccount = UserConfig.selectedAccount
 
     override fun createInitialState(): ModelsViewState = ModelsViewState()
 
@@ -155,6 +178,8 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             is OnAddStoryClick -> sendEffect(NavigateToAddStory)
             is OnBookmarkClick -> bookmarkModel(intent.modelId)
             is OnPhotoClick -> zoomPhoto(intent.modelId, intent.photoUrl)
+            is LoadMoreAllUsers -> loadAllUsers(loadMore = true)
+            is OnShowMockDataClicked -> setState { copy(showMockData = true) }
         }
     }
 
@@ -172,9 +197,79 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     private fun selectTab(tab: Tab) {
-        setState { copy(selectedTab = tab, isLoading = true) }
-        // TODO: Load models for the selected tab from repository
-        setState { copy(isLoading = false, models = ModelsViewState.preview.models) }
+        setState { copy(selectedTab = tab, showMockData = false) }
+        when (tab) {
+            Tab.ALL_USERS -> {
+                if (state.value.allUserModels.isEmpty() && !state.value.isLoadingAllUsers) {
+                    loadAllUsers(loadMore = false)
+                }
+            }
+            else -> {
+                setState { copy(isLoading = true) }
+                // TODO: Load models for the selected tab from repository
+                setState { copy(isLoading = false, models = ModelsViewState.preview.models) }
+            }
+        }
+    }
+
+    private fun loadAllUsers(loadMore: Boolean) {
+        if (state.value.isLoadingAllUsers) return
+        if (loadMore && !state.value.allUsersHasMore) return
+
+        setState { copy(isLoadingAllUsers = true) }
+
+        val offset = if (loadMore) state.value.allUserModels.size else 0
+
+        val req = TLRPC.TL_profile_searchUsers().apply {
+            flags = 0
+            this.offset = offset
+            this.limit = PAGE_SIZE
+        }
+
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TL_error? ->
+                AndroidUtilities.runOnUIThread {
+                    if (error != null) {
+                        FileLog.e("loadAllUsers error: ${error.text}")
+                        setState { copy(isLoadingAllUsers = false, error = error.text) }
+                        return@runOnUIThread
+                    }
+                    if (response is TLRPC.TL_profile_foundUsers) {
+                        val newModels = response.users.map { mapUserProfileToModel(it) }
+                        setState {
+                            copy(
+                                allUserModels = if (loadMore) allUserModels + newModels else newModels,
+                                isLoadingAllUsers = false,
+                                allUsersHasMore = newModels.size >= PAGE_SIZE,
+                            )
+                        }
+                    } else {
+                        setState { copy(isLoadingAllUsers = false) }
+                    }
+                }
+            }
+        )
+    }
+
+    private fun mapUserProfileToModel(profile: TLRPC.TL_userProfile): Model {
+        val user = profile.user
+        val firstName = user?.first_name.orEmpty()
+        val lastName = user?.last_name.orEmpty()
+        val roleLabel = when (profile.role) {
+            is TLRPC.TL_agencyRoleAgent -> "Agent"
+            is TLRPC.TL_agencyRoleBooker -> "Booker"
+            is TLRPC.TL_agencyRoleScout -> "Scout"
+            is TLRPC.TL_agencyRoleOwner -> "Owner"
+            is TLRPC.TL_agencyRoleAll -> "All"
+            else -> ""
+        }
+        return Model(
+            id = profile.user_id.toString(),
+            name = "$firstName $lastName".trim(),
+            roleLabel = roleLabel,
+            userProfile = profile
+        )
     }
 
     private fun reactToModel(modelId: String, emotion: Emotions) {

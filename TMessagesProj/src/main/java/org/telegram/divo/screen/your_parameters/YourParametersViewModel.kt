@@ -68,68 +68,46 @@ class YourParametersViewModel :
 
 
     fun getUserParam() {
+        setState { copy(isLoading = true) }
+
         val req = TLRPC.TL_profile_getUserProfile()
-        val user = TLRPC. TL_inputUser();
+        val user = TLRPC.TL_inputUser()
 
         val userFull = MessagesController.getInstance(currentAccount)
             .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
 
-        user. user_id = userFull.user.id
+        if (userFull?.user == null) {
+            AndroidUtilities.runOnUIThread {
+                setState { copy(isLoading = false) }
+            }
+            return
+        }
+
+        user.user_id = userFull.user.id
         user.access_hash = userFull.user.access_hash
         req.user_id = user
 
         ConnectionsManager.getInstance(currentAccount).sendRequest(
             req,
             RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
-                response
-                error
-                if (response is TLRPC.TL_userProfile) {
-                    println("TL_profile_getUserProfile response -> " + response)
-                } else {
-                    response
+                AndroidUtilities.runOnUIThread {
+                    if (response is TLRPC.TL_userProfile) {
+                        FileLog.d("TL_profile_getUserProfile response -> $response")
+                        applyProfileToState(response)
+                    } else {
+                        FileLog.e("TL_profile_getUserProfile failed: ${error?.text}")
+                        setState { copy(isLoading = false) }
+                        if (error != null) {
+                            sendEffect(YourParametersEffect.Error(error.text ?: "Failed to load profile"))
+                        }
+                    }
                 }
-                error
             },
         )
     }
 
     fun loadUserProfile() {
-
         getUserParam()
-//        setState { copy(isLoading = true) }
-//
-//        val req = TLRPC.TL_profile_getUserProfile()
-//        println("UserConfig.getInstance(currentAccount).getClientUserId() ---- " + UserConfig.getInstance(currentAccount).getClientUserId())
-//
-//        val userFull = MessagesController.getInstance(currentAccount)
-//            .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
-//
-//        val user =  TLRPC.TL_inputUser();
-//        user.user_id =  userFull.user.id
-//        user.access_hash =   userFull.user.access_hash
-//        req.user_id = user
-//
-//
-//
-//        println("getInputUser  ---- " +  user.user_id +" "+  user.access_hash)
-//
-//
-//        ConnectionsManager.getInstance(currentAccount).sendRequest(req) { response, error ->
-//            AndroidUtilities.runOnUIThread {
-//                if (error != null) {
-//                    FileLog.e("loadUserProfile error: ${error.text} (code=${error.code})")
-//                    setState { copy(isLoading = false) }
-//                    return@runOnUIThread
-//                }
-//
-//                if (response is TLRPC.TL_userProfile) {
-//                    applyProfileToState(response)
-//                } else {
-//                    FileLog.e("loadUserProfile: unexpected response type: ${response?.javaClass?.simpleName}")
-//                    setState { copy(isLoading = false) }
-//                }
-//            }
-//        }
     }
 
     private fun applyProfileToState(profile: TLRPC.TL_userProfile) {
@@ -144,12 +122,12 @@ class YourParametersViewModel :
             copy(
                 isLoading = false,
                 gender = gender,
-                age = params?.age?.value?.takeIf { it > 0 }?.toFloat() ?: age,
-                height = params?.height?.value?.takeIf { it > 0 }?.toFloat() ?: height,
-                waist = params?.waist?.value?.takeIf { it > 0 }?.toFloat() ?: waist,
-                hips = params?.hips?.value?.takeIf { it > 0 }?.toFloat() ?: hips,
-                shoeSize = params?.shoe_size?.value?.takeIf { it > 0 }?.toFloat() ?: shoeSize,
-                hairLength = params?.hair_length?.value?.takeIf { it >= 0 }?.toFloat() ?: hairLength,
+                age = params?.age?.takeIf { it > 0 }?.toFloat() ?: age,
+                height = params?.height?.takeIf { it > 0 }?.toFloat() ?: height,
+                waist = params?.waist?.takeIf { it > 0 }?.toFloat() ?: waist,
+                hips = params?.hips?.takeIf { it > 0 }?.toFloat() ?: hips,
+                shoeSize = params?.shoe_size?.takeIf { it > 0 }?.toFloat() ?: shoeSize,
+                hairLength = params?.hair_length?.takeIf { it >= 0 }?.toFloat() ?: hairLength,
                 hairColor = params?.hair_color?.capitalize() ?: hairColor,
                 eyeColor = params?.eye_color?.capitalize() ?: eyeColor,
                 skinColor = params?.skin_color?.capitalize() ?: skinColor,

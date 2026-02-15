@@ -63,7 +63,7 @@ class ProfileSocialLinksViewModel :
 
     override fun handleIntent(intent: Intent) {
         when (intent) {
-            Intent.OnLoad -> Unit
+            Intent.OnLoad -> getProfile()
             is Intent.OnSaveClicked -> {
                 updateLinks(
                     intent.instagramUrl,
@@ -114,7 +114,87 @@ class ProfileSocialLinksViewModel :
     }
 
     fun getProfile() {
+        setState { copy(isLoading = true) }
 
+        val req = TLRPC.TL_profile_getUserProfile()
+        val user = TLRPC.TL_inputUser()
+
+        val userFull = MessagesController.getInstance(currentAccount)
+            .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
+
+        if (userFull?.user == null) {
+            AndroidUtilities.runOnUIThread {
+                setState { copy(isLoading = false) }
+            }
+            return
+        }
+
+        user.user_id = userFull.user.id
+        user.access_hash = userFull.user.access_hash
+        req.user_id = user
+
+        ConnectionsManager.getInstance(currentAccount).sendRequest(
+            req,
+            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
+                AndroidUtilities.runOnUIThread {
+                    if (response is TLRPC.TL_userProfile) {
+                        FileLog.d("TL_profile_getUserProfile social links response -> $response")
+                        applySocialLinksToState(response.social_links)
+                    } else {
+                        FileLog.e("TL_profile_getUserProfile failed: ${error?.text}")
+                        setState { copy(isLoading = false) }
+                    }
+                }
+            },
+        )
+    }
+
+    private fun applySocialLinksToState(socialLinks: TLRPC.TL_profile_socialLinks?) {
+        var instagram = ""
+        var tiktok = ""
+        var youtube = ""
+        var website = ""
+
+        socialLinks?.links?.forEach { keyVal ->
+            when (keyVal.key.lowercase()) {
+                "instagram" -> instagram = extractUsername(keyVal.`val`, "instagram.com")
+                "tiktok" -> tiktok = extractUsername(keyVal.`val`, "tiktok.com")
+                "youtube" -> youtube = extractPath(keyVal.`val`, "youtube.com")
+                "website" -> website = keyVal.`val`
+            }
+        }
+
+        setState {
+            copy(
+                isLoading = false,
+                instagramUser = instagram,
+                tiktokUser = tiktok,
+                youtubePath = youtube,
+                website = website
+            )
+        }
+    }
+
+    private fun extractUsername(url: String, domain: String): String {
+        if (url.isBlank()) return ""
+        return url
+            .replace("https://", "")
+            .replace("http://", "")
+            .replace("www.", "")
+            .replace("$domain/", "")
+            .replace("$domain/@", "")
+            .removePrefix("@")
+            .trim('/')
+    }
+
+    private fun extractPath(url: String, domain: String): String {
+        if (url.isBlank()) return ""
+        return url
+            .replace("https://", "")
+            .replace("http://", "")
+            .replace("www.", "")
+            .replace("$domain/", "")
+            .trim('/')
     }
 
     fun updateLinks(instagram: String, tiktok: String, youtube: String, web: String) {
@@ -166,14 +246,14 @@ class ProfileSocialLinksViewModel :
                         return@runOnUIThread
                     }
 
-                    ///applyProfileLocally(fName = fName, lName = lName, about = about)
                     setState {
                         copy(
-
                             isLoading = false,
                             errorMessage = null
                         )
                     }
+                    FileLog.d("updateSocialLinks success")
+                    sendEffect(Effect.NavigateBack)
                 }
             },
         )

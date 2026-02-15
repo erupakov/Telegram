@@ -62,7 +62,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberAsyncImagePainter
+import org.telegram.messenger.ImageLocation
+import org.telegram.tgnet.TLRPC
+import org.telegram.ui.Components.BackupImageView
+import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.FileLoader
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.items.DMButton
 import org.telegram.divo.items.RoleChip
@@ -77,10 +84,24 @@ fun ModelsHomeScreen(
     onSearch: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
-    val pagerState = rememberPagerState(pageCount = { state.models.size })
+    val currentModels = if (state.selectedTab == Tab.ALL_USERS) state.allUserModels else state.models
+    val pagerState = rememberPagerState(pageCount = { currentModels.size })
 
     LaunchedEffect(Unit) {
         viewModel.setIntent(ModelsViewIntent.LoadInitialData)
+    }
+
+    // Load more when approaching last page (ALL_USERS tab)
+    if (state.selectedTab == Tab.ALL_USERS) {
+        LaunchedEffect(pagerState.currentPage, currentModels.size) {
+            if (currentModels.isNotEmpty()
+                && pagerState.currentPage >= currentModels.size - 1
+                && state.allUsersHasMore
+                && !state.isLoadingAllUsers
+            ) {
+                viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
+            }
+        }
     }
 
     Scaffold(
@@ -131,19 +152,43 @@ fun ModelsHomeScreen(
                     },
                 )
 
-                VerticalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    reverseLayout = false,
-                    userScrollEnabled = true,
-                    flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
-                ) { page ->
-                    ModelPage(
-                        model = state.models[page],
-                        viewModel = viewModel
-                    )
+                when {
+                    state.selectedTab != Tab.ALL_USERS && !state.showMockData -> {
+                        NotImplementedPlaceholder(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            onShowMockData = {
+                                viewModel.setIntent(ModelsViewIntent.OnShowMockDataClicked)
+                            }
+                        )
+                    }
+                    currentModels.isEmpty() && state.isLoadingAllUsers -> {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = AppTheme.colors.accentColor)
+                        }
+                    }
+                    else -> {
+                        VerticalPager(
+                            state = pagerState,
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            reverseLayout = false,
+                            userScrollEnabled = true,
+                            flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
+                        ) { page ->
+                            ModelPage(
+                                model = currentModels[page],
+                                viewModel = viewModel
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -326,17 +371,30 @@ private fun ModelPage(
     model: Model,
     viewModel: ModelsViewModel,
 ) {
+    val backgroundPhoto = model.userProfile?.background
     Box(
         Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopEnd
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(model.imageUrl),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxSize()
-        )
+        if (backgroundPhoto != null && backgroundPhoto !is TLRPC.TL_photoEmpty) {
+            TelegramPhotoCover(
+                photo = backgroundPhoto,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else if (model.imageUrl.isNotEmpty()) {
+            Image(
+                painter = rememberAsyncImagePainter(model.imageUrl),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(AppTheme.colors.backgroundDark)
+            )
+        }
 
         Column(
             Modifier
@@ -383,14 +441,35 @@ private fun ModelPage(
                         .border(2.dp, Color.White.copy(alpha = .9f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(model.avatarUrl),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(68.dp)
-                            .clip(CircleShape)
-                    )
+                    if (model.avatarUrl.isNotEmpty()) {
+                        Image(
+                            painter = rememberAsyncImagePainter(model.avatarUrl),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(68.dp)
+                                .clip(CircleShape)
+                        )
+                    } else {
+                        val initials = model.name.split(" ")
+                            .mapNotNull { it.firstOrNull()?.uppercase() }
+                            .take(2)
+                            .joinToString("")
+                        Box(
+                            modifier = Modifier
+                                .size(68.dp)
+                                .clip(CircleShape)
+                                .background(AppTheme.colors.accentColor),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = initials,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 22.sp
+                            )
+                        }
+                    }
                 }
 
                 Spacer(Modifier.width(10.dp))
@@ -517,6 +596,77 @@ private fun ThumbsRow(
     }
 }
 
+
+@Composable
+private fun NotImplementedPlaceholder(
+    modifier: Modifier = Modifier,
+    onShowMockData: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .background(Color.White)
+            .padding(horizontal = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "NOT IMPLEMENTED YET",
+            fontFamily = HelveticaNeue,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp,
+            color = Color(0xFF222222)
+        )
+        Spacer(Modifier.height(24.dp))
+        Card(
+            onClick = onShowMockData,
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = AppTheme.colors.accentColor)
+        ) {
+            Text(
+                text = "SEE TEST UI WITH MOCK DATA",
+                fontFamily = HelveticaNeue,
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+                color = Color.White,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 14.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun TelegramPhotoCover(
+    photo: TLRPC.Photo,
+    modifier: Modifier = Modifier
+) {
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            BackupImageView(context).apply {
+            }
+        },
+        update = { view ->
+            val fullSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640)
+                ?: return@AndroidView
+            if (photo.dc_id != 0) {
+                fullSize.location.dc_id = photo.dc_id
+                fullSize.location.file_reference = photo.file_reference
+            }
+            val fullLoc = ImageLocation.getForPhoto(fullSize, photo) ?: return@AndroidView
+            var thumbSize: TLRPC.PhotoSize? = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 50)
+            for (i in 0 until photo.sizes.size) {
+                val ps = photo.sizes[i]
+                if (ps is TLRPC.TL_photoStrippedSize) {
+                    thumbSize = ps
+                    break
+                }
+            }
+            val thumbLoc = thumbSize?.let { ImageLocation.getForPhoto(it, photo) }
+            val thumbFilter = if (thumbSize is TLRPC.TL_photoStrippedSize) "b" else null
+            view.setImage(fullLoc, "640_640", thumbLoc, thumbFilter, null, 0, 1, photo)
+        }
+    )
+}
 
 @Preview(showBackground = true, backgroundColor = 0xFF121922)
 @Composable

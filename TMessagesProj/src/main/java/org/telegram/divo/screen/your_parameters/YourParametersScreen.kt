@@ -34,6 +34,9 @@ fun YourParametersScreen(
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
 
+    LaunchedEffect(Unit) {
+        viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnLoad)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -53,17 +56,6 @@ fun YourParametersScreen(
     }
 
     Column {
-
-        Spacer(modifier = Modifier.size(200.dp))
-        Button(
-            onClick = {
-                viewModel.loadUserProfile()
-
-            }
-        ) {
-            Text("test")
-        }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -78,13 +70,13 @@ fun YourParametersScreen(
                     color = Color(0xFFBF7A54)
                 )
             }
-
             if (showTitle) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(headerHeight)
                         .align(Alignment.TopCenter)
+                        .padding(horizontal = 16.dp)
                 ) {
                     Text(
                         text = "Your parameters".uppercase(),
@@ -92,7 +84,6 @@ fun YourParametersScreen(
                             color = Color.White,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center,
                             letterSpacing = 0.5.sp
                         ),
                         modifier = Modifier
@@ -276,8 +267,19 @@ fun YourParametersScreen(
                     .height(bottomBarHeight)
                     .align(Alignment.BottomCenter)
                     .padding(horizontal = 16.dp, vertical = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(24.dp)
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
+                Button(
+                    onClick = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnBackClicked) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
+                    shape = RoundedCornerShape(6.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3A3A3A)),
+                    enabled = !state.isLoading
+                ) {
+                    Text(text = "← Back", color = Color.White, fontSize = 18.sp)
+                }
                 Button(
                     onClick = { viewModel.setIntent(YourParametersViewModel.YourParametersIntent.OnSaveClicked) },
                     modifier = Modifier
@@ -294,7 +296,7 @@ fun YourParametersScreen(
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Text(text = "Save", color = Color.White, fontSize = 20.sp)
+                        Text(text = "Save", color = Color.White, fontSize = 18.sp)
                     }
                 }
             }

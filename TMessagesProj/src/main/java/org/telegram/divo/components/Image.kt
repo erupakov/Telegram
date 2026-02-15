@@ -3,6 +3,7 @@ package org.telegram.divo.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -77,7 +78,8 @@ fun TelegramPhoto(
                     break
                 }
             }
-            val fullSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640) ?: return@AndroidView
+            val fullSize =
+                FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640) ?: return@AndroidView
 
             // важно: прокинуть dc_id и file_reference (как в ProfileGalleryView)
             if (photo.dc_id != 0) {
@@ -145,23 +147,83 @@ fun EventTelegramPhoto(
     )
 }
 
+
+@Composable
+fun TelegramPhotoBackground(
+    photo: TLRPC.Photo?,
+    dialogId: Long = 0L,
+    modifier: Modifier = Modifier,
+) {
+    if (photo == null || photo is TLRPC.TL_photoEmpty || photo.sizes == null) return
+
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            BackupImageView(context)
+        },
+        update = { view ->
+            // thumb ~50px, full ~640px (как в ProfileGalleryView)
+            var thumbSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 50)
+            for (i in 0 until photo.sizes.size) {
+                val ps = photo.sizes[i]
+                if (ps is TLRPC.TL_photoStrippedSize) {
+                    thumbSize = ps
+                    break
+                }
+            }
+            val fullSize =
+                FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640) ?: return@AndroidView
+
+            // важно: прокинуть dc_id и file_reference (как в ProfileGalleryView)
+            if (photo.dc_id != 0) {
+                fullSize.location.dc_id = photo.dc_id
+                fullSize.location.file_reference = photo.file_reference
+            }
+
+            val fullLoc = ImageLocation.getForPhoto(fullSize, photo) ?: return@AndroidView
+            val thumbLoc = thumbSize?.let { ImageLocation.getForPhoto(it, photo) }
+
+            val parentKey = "avatar_$dialogId"
+            val thumbFilter = if (thumbSize is TLRPC.TL_photoStrippedSize) "b" else null
+
+            // setImageMedia = более “родной” путь (см. ProfileGalleryView) :contentReference[oaicite:1]{index=1}
+            view.setImageMedia(
+                null,           // vector avatar
+                null,           // video location
+                null,           // filter
+                fullLoc,        // full
+                null,           // ext
+                thumbLoc,       // thumb
+                thumbFilter,    // thumb filter
+                null,           // cache
+                fullSize.size,  // size
+                1,              // priority
+                parentKey
+            )
+        }
+    )
+}
+
+
 @Composable
 fun TelegramUserAvatarEditable(
     user: TLRPC.User?,
     modifier: Modifier = Modifier,
     sizeDp: Int = 56,
-    onEditClick: ()-> Unit
+    onEditClick: () -> Unit
 ) {
     Box(modifier = modifier.padding(), contentAlignment = Alignment.BottomEnd) {
         TelegramUserAvatar(
             user = user,
-            modifier = Modifier.padding(8.dp).clickable(onClick = {onEditClick()}),
+            modifier = Modifier
+                .padding(8.dp)
+                .clickable(onClick = { onEditClick() }),
             sizeDp = sizeDp
         )
         Card(
             border = BorderStroke(width = 2.dp, color = AppTheme.colors.accentColor),
             shape = CircleShape,
-            modifier = Modifier.clickable(onClick = {onEditClick()})
+            modifier = Modifier.clickable(onClick = { onEditClick() })
         ) {
             Icon(
                 painter = painterResource(R.drawable.msg_edit),
@@ -171,4 +233,94 @@ fun TelegramUserAvatarEditable(
             )
         }
     }
+}
+
+/**
+ * Portfolio item image component - displays a photo from portfolio
+ */
+@Composable
+fun PortfolioItemImage(
+    portfolioItem: TLRPC.TL_profile_portfolioItem?,
+    modifier: Modifier = Modifier,
+    cornerRadiusDp: Int = 8
+) {
+    if (portfolioItem?.file == null) return
+
+    val photo = portfolioItem.file
+    if (photo is TLRPC.TL_photoEmpty || photo.sizes == null) return
+
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            BackupImageView(context).apply {
+                if (cornerRadiusDp > 0) {
+                    setRoundRadius(AndroidUtilities.dp(cornerRadiusDp.toFloat()))
+                }
+            }
+        },
+        update = { view ->
+            var thumbSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 50)
+            for (i in 0 until photo.sizes.size) {
+                val ps = photo.sizes[i]
+                if (ps is TLRPC.TL_photoStrippedSize) {
+                    thumbSize = ps
+                    break
+                }
+            }
+            val fullSize =
+                FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640) ?: return@AndroidView
+
+            if (photo.dc_id != 0) {
+                fullSize.location.dc_id = photo.dc_id
+                fullSize.location.file_reference = photo.file_reference
+            }
+
+            val fullLoc = ImageLocation.getForPhoto(fullSize, photo) ?: return@AndroidView
+            val thumbLoc = thumbSize?.let { ImageLocation.getForPhoto(it, photo) }
+
+            val parentKey = "portfolio_${portfolioItem.id}"
+            val thumbFilter = if (thumbSize is TLRPC.TL_photoStrippedSize) "b" else null
+
+            view.setImageMedia(
+                null,
+                null,
+                null,
+                fullLoc,
+                null,
+                thumbLoc,
+                thumbFilter,
+                null,
+                fullSize.size,
+                1,
+                parentKey
+            )
+        }
+    )
+}
+
+/**
+ * Local image preview for uploading - shows local file path while uploading
+ */
+@Composable
+fun PortfolioUploadPreview(
+    filePath: String?,
+    modifier: Modifier = Modifier,
+    cornerRadiusDp: Int = 8
+) {
+    if (filePath == null) return
+
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            BackupImageView(context).apply {
+                if (cornerRadiusDp > 0) {
+                    setRoundRadius(AndroidUtilities.dp(cornerRadiusDp.toFloat()))
+                }
+            }
+        },
+        update = { view ->
+            val location = ImageLocation.getForPath(filePath)
+            view.setImage(location, "400_400", null as android.graphics.drawable.Drawable?, null)
+        }
+    )
 }

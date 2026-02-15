@@ -65,7 +65,8 @@ fun SettingsScreen(
     navigateToNotifications: () -> Unit = {},
     navigateToPrivacy: () -> Unit = {},
     navigateToDataStorage: () -> Unit = {},
-    navigateToAppearance: () -> Unit = {}
+    navigateToAppearance: () -> Unit = {},
+    navigateToSetUsername: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
 
@@ -119,7 +120,7 @@ fun SettingsScreen(
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToSetUsername -> {
-                    // TODO: Implement set username screen
+                    navigateToSetUsername()
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToStickers -> {
