@@ -54,6 +54,7 @@ import android.widget.TextView;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 
 import org.telegram.messenger.AndroidUtilities;
@@ -240,8 +241,8 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
             super(context);
             this.resourcesProvider = resourcesProvider;
 
-            setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_dialogButtonSelector), 2));
-            setPadding(dp(23), 0, dp(23), 0);
+            setBackground(Theme.createSelectorDrawable(ContextCompat.getColor(getContext(),R.color.divo_positive_button_color), 2));
+            setPadding(AndroidUtilities.dp(23), 0, AndroidUtilities.dp(23), 0);
 
             imageView = new ImageView(context);
             imageView.setScaleType(ImageView.ScaleType.CENTER);

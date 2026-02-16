@@ -8,6 +8,7 @@
 
 package org.telegram.ui;
 
+import static android.view.View.GONE;
 import static org.telegram.messenger.LocaleController.formatPluralString;
 import static org.telegram.messenger.LocaleController.getString;
 import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS;
@@ -27,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -88,13 +90,20 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+
 import com.google.android.gms.common.api.Status;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.common.primitives.Longs;
 import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.builders.AssistActionBuilder;
 
 import org.telegram.PhoneFormat.PhoneFormat;
+import org.telegram.divo.screen.models.FragmentModels;
+import org.telegram.divo.screen.settings.FragmentSettings;
+import org.telegram.divo.screen.event_list.FragmentEventList;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -318,6 +327,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     public final ArrayList<Dialog> visibleDialogs = new ArrayList<>();
     private Dialog proxyErrorDialog;
     private RecyclerListView sideMenu;
+    private BottomNavigationView bottomNav;
     private SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow selectAnimatedEmojiDialog;
     private SideMenultItemAnimator itemAnimator;
     private FrameLayout sideMenuContainer;
@@ -477,6 +487,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
         themeSwitchImageView = new ImageView(this);
         themeSwitchImageView.setVisibility(View.GONE);
+        setContentView(frameLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        if (Build.VERSION.SDK_INT >= 21) {
+            themeSwitchImageView = new ImageView(this);
+            themeSwitchImageView.setVisibility(GONE);
+        }
 
         drawerLayoutContainer = new DrawerLayoutContainer(this) {
             private boolean wasPortrait;
@@ -536,10 +551,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     themeSwitchSunDrawable.draw(canvas);
                     invalidate();
                 }
-            }
-        };
-        frameLayout.addView(themeSwitchSunView, LayoutHelper.createFrame(48, 48));
-        themeSwitchSunView.setVisibility(View.GONE);
+            };
+            frameLayout.addView(themeSwitchSunView, LayoutHelper.createFrame(48, 48));
+            themeSwitchSunView.setVisibility(GONE);
+        }
         frameLayout.addView(bottomSheetTabsOverlay = new BottomSheetTabsOverlay(this));
         frameLayout.addView(fireworksOverlay = new FireworksOverlay(this) {
             {
@@ -558,6 +573,90 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 setVisibility(GONE);
             }
         });
+
+         bottomNav = new BottomNavigationView(this);
+        bottomNav.setLabelVisibilityMode(NavigationBarView.LABEL_VISIBILITY_LABELED);
+        bottomNav.setLayoutParams(new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                Gravity.BOTTOM
+        ));
+
+        String bottomBarColor = "#F5F5F5";
+        bottomNav.setBackgroundColor(Color.parseColor(bottomBarColor));
+
+        // Добавляем пункты меню (можно вынести в res/menu)
+        Menu menu = bottomNav.getMenu();
+        menu.add(Menu.NONE, 1, Menu.NONE, "Models").setIcon(R.drawable.baseline_account_circle_24);
+        menu.add(Menu.NONE, 2, Menu.NONE, "Events").setIcon(R.drawable.baseline_calendar_item);
+        menu.add(Menu.NONE, 3, Menu.NONE, "Chats").setIcon(R.drawable.baseline_icon_chat_divo);
+        menu.add(Menu.NONE, 4, Menu.NONE, "Settings").setIcon(R.drawable.baseline_settings_24);
+
+        String unselectedColor = "#9A9B9D";
+        String selectedIconColor = "#BE7852";
+        String selectedTextColor = "#000000";
+
+        ColorStateList iconColors = new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_checked},
+                        new int[]{-android.R.attr.state_checked}
+                },
+                new int[]{
+                        Color.parseColor(selectedIconColor), // выбранный
+                        Color.parseColor(unselectedColor)   // не выбранный
+                }
+        );
+
+        ColorStateList textColors = new ColorStateList(
+                new int[][]{
+                        new int[]{android.R.attr.state_checked},
+                        new int[]{-android.R.attr.state_checked}
+                },
+                new int[]{
+                        Color.parseColor(selectedTextColor), // выбранный
+                        Color.parseColor(unselectedColor)
+                }
+        );
+
+        bottomNav.setItemIconTintList(iconColors);
+        bottomNav.setItemTextColor(textColors);
+        bottomNav.setSelectedItemId(3);
+        bottomNav.setVisibility(GONE);
+
+        frameLayout.addView(bottomNav);
+
+// Обработчик переключений
+        bottomNav.setOnItemSelectedListener(item -> {
+            BaseFragment fragment;
+            switch (item.getItemId()) {
+                case 1:
+                    fragment = new FragmentModels();
+                    break;
+                case 2:
+                    fragment = new FragmentEventList();
+                    break;
+                case 3:
+                    fragment = new DialogsActivity(null);
+
+                    break;
+                case 4:
+                    fragment = new FragmentSettings();
+                    break;
+                default:
+                    return false;
+            }
+            actionBarLayout.removeAllFragments();
+            actionBarLayout.addFragmentToStack(fragment);
+            return true;
+        });
+
+        int bottomBarHeight = AndroidUtilities.dp(56); // стандартная высота навигации
+        actionBarLayout.getView().setPadding(0, 0, 0, bottomBarHeight);
+        actionBarLayout.getView().setClipToPadding(false);
+
+
+
+
         setupActionBarLayout();
         sideMenuContainer = new DrawerContainer(this);
         sideMenu = new RecyclerListView(this) {
@@ -842,6 +941,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         actionBarLayout.setDrawerLayoutContainer(drawerLayoutContainer);
         actionBarLayout.setFragmentStack(mainFragmentsStack);
         actionBarLayout.setFragmentStackChangedListener(() -> {
+            updateBottomBarVisibility();
             checkSystemBarColors(true, false);
             if (getLastFragment() != null && getLastFragment().getLastStoryViewer() != null) {
                 getLastFragment().getLastStoryViewer().updatePlayingMode();
@@ -1182,6 +1282,24 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 //        }
     }
 
+
+    private boolean shouldShowBottomBar(BaseFragment f) {
+        return f instanceof org.telegram.divo.screen.models.FragmentModels   // Models
+                || f instanceof org.telegram.divo.screen.event_list.FragmentEventList // Events
+                || f instanceof org.telegram.ui.DialogsActivity               // Chats
+                || f instanceof org.telegram.divo.screen.settings.FragmentSettings; // Settings
+    }
+
+    private void updateBottomBarVisibility() {
+        BaseFragment last = actionBarLayout != null ? actionBarLayout.getLastFragment() : null;
+        boolean show = last != null && shouldShowBottomBar(last);
+        if (bottomNav != null) {
+            bottomNav.setVisibility(show ? View.VISIBLE : GONE);
+        }
+        int bottomBarHeight = AndroidUtilities.dp(56); // same height you use
+        actionBarLayout.getView().setPadding(0, 0, 0, show ? bottomBarHeight : 0);
+    }
+
     @Override
     public void onThemeProgress(float progress) {
         if (ArticleViewer.hasInstance() && ArticleViewer.getInstance().isVisible()) {
@@ -1311,7 +1429,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             launchLayout.addView(shadowTabletSide);
 
             shadowTablet = new FrameLayout(this);
-            shadowTablet.setVisibility(layerFragmentsStack.isEmpty() ? View.GONE : View.VISIBLE);
+            shadowTablet.setVisibility(layerFragmentsStack.isEmpty() ? GONE : View.VISIBLE);
             shadowTablet.setBackgroundColor(0x7f000000);
             launchLayout.addView(shadowTablet);
             shadowTablet.setOnTouchListener((v, event) -> {
@@ -1354,7 +1472,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
             View layersView = layersActionBarLayout.getView();
             layersView.setBackgroundResource(R.drawable.popup_fixed_alert3);
-            layersView.setVisibility(layerFragmentsStack.isEmpty() ? View.GONE : View.VISIBLE);
+            layersView.setVisibility(layerFragmentsStack.isEmpty() ? GONE : View.VISIBLE);
             launchLayout.addView(layersView);
         } else {
             ViewGroup parent = (ViewGroup) actionBarLayout.getView().getParent();
@@ -1648,9 +1766,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 if (rightActionBarLayout.getFragmentStack().isEmpty()) {
                     backgroundTablet.setVisibility(View.VISIBLE);
                 }
-                rightActionBarLayout.getView().setVisibility(View.GONE);
+                rightActionBarLayout.getView().setVisibility(GONE);
             }
-            layersActionBarLayout.getView().setVisibility(View.GONE);
+            layersActionBarLayout.getView().setVisibility(GONE);
         }
         if (removeAll) {
             actionBarLayout.removeAllFragments();
@@ -1686,7 +1804,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             }
         }
         if (termsOfServiceView != null) {
-            termsOfServiceView.setVisibility(View.GONE);
+            termsOfServiceView.setVisibility(GONE);
         }
         if (account != -1) {
             switchToAccount(account, true);
@@ -1799,9 +1917,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     rightActionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST);
                 }
             }
-            rightActionBarLayout.getView().setVisibility(rightActionBarLayout.getFragmentStack().isEmpty() ? View.GONE : View.VISIBLE);
-            backgroundTablet.setVisibility(rightActionBarLayout.getFragmentStack().isEmpty() ? View.VISIBLE : View.GONE);
-            shadowTabletSide.setVisibility(!actionBarLayout.getFragmentStack().isEmpty() ? View.VISIBLE : View.GONE);
+            rightActionBarLayout.getView().setVisibility(rightActionBarLayout.getFragmentStack().isEmpty() ? GONE : View.VISIBLE);
+            backgroundTablet.setVisibility(rightActionBarLayout.getFragmentStack().isEmpty() ? View.VISIBLE : GONE);
+            shadowTabletSide.setVisibility(!actionBarLayout.getFragmentStack().isEmpty() ? View.VISIBLE : GONE);
         } else {
             tabletFullSize = true;
             List<BaseFragment> fragmentStack = rightActionBarLayout.getFragmentStack();
@@ -1822,9 +1940,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     actionBarLayout.rebuildFragments(INavigationLayout.REBUILD_FLAG_REBUILD_LAST);
                 }
             }
-            shadowTabletSide.setVisibility(View.GONE);
-            rightActionBarLayout.getView().setVisibility(View.GONE);
-            backgroundTablet.setVisibility(!actionBarLayout.getFragmentStack().isEmpty() ? View.GONE : View.VISIBLE);
+            shadowTabletSide.setVisibility(GONE);
+            rightActionBarLayout.getView().setVisibility(GONE);
+            backgroundTablet.setVisibility(!actionBarLayout.getFragmentStack().isEmpty() ? GONE : View.VISIBLE);
         }
     }
 
@@ -1834,7 +1952,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 @Override
                 public void setVisibility(int visibility) {
                     super.setVisibility(visibility);
-                    if (visibility == View.GONE) {
+                    if (visibility == GONE) {
                         drawerLayoutContainer.setAllowOpenDrawer(true, false);
                     }
                 }
@@ -1863,14 +1981,14 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                             .alpha(0f)
                             .setDuration(150)
                             .setInterpolator(AndroidUtilities.accelerateInterpolator)
-                            .withEndAction(() -> termsOfServiceView.setVisibility(View.GONE))
+                            .withEndAction(() -> termsOfServiceView.setVisibility(GONE))
                             .start();
                 }
 
                 @Override
                 public void onDeclineTerms(int account) {
                     drawerLayoutContainer.setAllowOpenDrawer(true, false);
-                    termsOfServiceView.setVisibility(View.GONE);
+                    termsOfServiceView.setVisibility(GONE);
                 }
             });
         }
@@ -7669,7 +7787,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     themeSwitchImageView = new ImageView(this);
                     if (toDark) {
                         frameLayout.addView(themeSwitchImageView, 0, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-                        themeSwitchSunView.setVisibility(View.GONE);
+                        themeSwitchSunView.setVisibility(GONE);
                     } else {
                         frameLayout.addView(themeSwitchImageView, 1, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
                         themeSwitchSunView.setTranslationX(pos[0] - AndroidUtilities.dp(14));
@@ -7699,8 +7817,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                             drawerLayoutContainer.invalidate();
                             themeSwitchImageView.invalidate();
                             themeSwitchImageView.setImageDrawable(null);
-                            themeSwitchImageView.setVisibility(View.GONE);
-                            themeSwitchSunView.setVisibility(View.GONE);
+                            themeSwitchImageView.setVisibility(GONE);
+                            themeSwitchSunView.setVisibility(GONE);
                             NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.themeAccentListUpdated);
                             if (!toDark) {
                                 darkThemeView.setVisibility(View.VISIBLE);
@@ -8795,7 +8913,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     actionBarLayout.removeAllFragments();
                     getActionBarLayout().presentFragment(params.setRemoveLast(removeLast).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(false));
                     layersActionBarLayout.removeAllFragments();
-                    layersActionBarLayout.getView().setVisibility(View.GONE);
+                    layersActionBarLayout.getView().setVisibility(GONE);
                     drawerLayoutContainer.setAllowOpenDrawer(true, false);
                     if (!tabletFullSize) {
                         shadowTabletSide.setVisibility(View.VISIBLE);
@@ -8827,7 +8945,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     if (rightActionBarLayout.getView() != null) {
                         rightActionBarLayout.getView().setVisibility(View.VISIBLE);
                     }
-                    backgroundTablet.setVisibility(View.GONE);
+                    backgroundTablet.setVisibility(GONE);
                     rightActionBarLayout.removeAllFragments();
                     rightActionBarLayout.presentFragment(params.setNoAnimation(true).setRemoveLast(removeLast).setCheckPresentFromDelegate(false));
                     if (!layersActionBarLayout.getFragmentStack().isEmpty()) {
@@ -8873,7 +8991,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
                 if (fragment instanceof LoginActivity && account == -1) {
                     backgroundTablet.setVisibility(View.VISIBLE);
-                    shadowTabletSide.setVisibility(View.GONE);
+                    shadowTabletSide.setVisibility(GONE);
                     shadowTablet.setBackgroundColor(0x00000000);
                 } else {
                     shadowTablet.setBackgroundColor(0x7f000000);
@@ -8907,7 +9025,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     actionBarLayout.removeAllFragments();
                     actionBarLayout.addFragmentToStack(fragment);
                     layersActionBarLayout.removeAllFragments();
-                    layersActionBarLayout.getView().setVisibility(View.GONE);
+                    layersActionBarLayout.getView().setVisibility(GONE);
                     drawerLayoutContainer.setAllowOpenDrawer(true, false);
                     if (!tabletFullSize) {
                         shadowTabletSide.setVisibility(View.VISIBLE);
@@ -8920,7 +9038,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             } else if (fragment instanceof ChatActivity && !((ChatActivity) fragment).isInScheduleMode()) {
                 if (!tabletFullSize && layout != rightActionBarLayout) {
                     rightActionBarLayout.getView().setVisibility(View.VISIBLE);
-                    backgroundTablet.setVisibility(View.GONE);
+                    backgroundTablet.setVisibility(GONE);
                     rightActionBarLayout.removeAllFragments();
                     rightActionBarLayout.addFragmentToStack(fragment);
                     if (!layersActionBarLayout.getFragmentStack().isEmpty()) {
@@ -8956,7 +9074,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
                 if (fragment instanceof LoginActivity && account == -1) {
                     backgroundTablet.setVisibility(View.VISIBLE);
-                    shadowTabletSide.setVisibility(View.GONE);
+                    shadowTabletSide.setVisibility(GONE);
                     shadowTablet.setBackgroundColor(0x00000000);
                 } else {
                     shadowTablet.setBackgroundColor(0x7f000000);

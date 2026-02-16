@@ -56,7 +56,7 @@ fun UIButtonSmall(
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.buttonColor)
     ) {
         Box(
-            modifier = Modifier.padding(horizontal = 8.dp),
+            modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -111,10 +111,10 @@ fun UIButtonBack(
         shape = RoundedCornerShape(6.dp),
         colors = CardDefaults.cardColors(containerColor = AppTheme.colors.backButton)
     ) {
-        Box(Modifier.fillMaxHeight().weight(1f), contentAlignment = Alignment.Center){
-            Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center){
+            Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    modifier = Modifier.size(24.dp),
+                    modifier = Modifier.size(28.dp),
                     tint = AppTheme.colors.textColor,
                     painter = painterResource(R.drawable.preview_back),
                     contentDescription = null)

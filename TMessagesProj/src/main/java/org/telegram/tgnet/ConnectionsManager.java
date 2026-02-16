@@ -383,6 +383,8 @@ public class ConnectionsManager extends BaseController {
             }
             long finalStartRequestTime = startRequestTime;
             listen(requestToken, (response, errorCode, errorText, networkType, timestamp, requestMsgId, dcId) -> {
+
+
                 try {
                     TLObject resp = null;
                     TLRPC.TL_error error = null;
@@ -452,6 +454,7 @@ public class ConnectionsManager extends BaseController {
             }, onQuickAck, onWriteToSocket);
             native_sendRequest(currentAccount, buffer.address, flags, datacenterId, connectionType, immediate, requestToken);
         } catch (Exception e) {
+
             FileLog.e(e);
         }
     }

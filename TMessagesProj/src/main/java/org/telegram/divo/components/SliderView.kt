@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.FrameLayout
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.google.android.gms.vision.Frame
 
 class SliderView(context: Context) : FrameLayout(context) {
 
@@ -20,7 +19,12 @@ class SliderView(context: Context) : FrameLayout(context) {
                 ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
             )
             setContent {
-                AgeSlider()
+                AgeSlider(
+                    initialAge = 17f,
+                    onAgeSelected = { selectedAge ->
+                        OnAgeSelected?.invoke(selectedAge)
+                    }
+                )
             }
         }
         addView(compose)

@@ -26,8 +26,11 @@ import org.telegram.divo.style.DivoFont
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun AgeSlider(){
-    var age by remember { mutableStateOf(17f) }
+fun AgeSlider(
+    initialAge: Float = 17f,
+    onAgeSelected: (Int) -> Unit = {}
+){
+    var age by remember { mutableStateOf(initialAge) }
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -36,7 +39,11 @@ fun AgeSlider(){
         }
         Slider(
             value = age,
-            onValueChange = { age = it.coerceIn(14f, 45f) },
+            onValueChange = {
+                val clamped = it.coerceIn(14f, 45f)
+                age = clamped
+                onAgeSelected(clamped.toInt())
+            },
             valueRange = 14f..45f,
             colors = SliderDefaults.colors(
                 thumbColor = AppTheme.colors.buttonColor,
