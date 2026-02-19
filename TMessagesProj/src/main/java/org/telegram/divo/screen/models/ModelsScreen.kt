@@ -68,11 +68,10 @@ import coil.compose.rememberAsyncImagePainter
 import org.telegram.messenger.ImageLocation
 import org.telegram.tgnet.TLRPC
 import org.telegram.ui.Components.BackupImageView
-import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLoader
 import org.telegram.divo.components.TextTitle
-import org.telegram.divo.items.DMButton
-import org.telegram.divo.items.RoleChip
+import org.telegram.divo.components.items.DMButton
+import org.telegram.divo.components.items.RoleChip
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont.HelveticaNeue
 import org.telegram.messenger.R
@@ -82,6 +81,7 @@ import org.telegram.messenger.R
 fun ModelsHomeScreen(
     viewModel: ModelsViewModel = androidx.lifecycle.viewmodel.compose.viewModel<ModelsViewModel>(),
     onSearch: () -> Unit = {},
+    onClick: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
     val currentModels = if (state.selectedTab == Tab.ALL_USERS) state.allUserModels else state.models
@@ -185,7 +185,8 @@ fun ModelsHomeScreen(
                         ) { page ->
                             ModelPage(
                                 model = currentModels[page],
-                                viewModel = viewModel
+                                viewModel = viewModel,
+                                onClick = { onClick() }
                             )
                         }
                     }
@@ -370,10 +371,11 @@ fun TabsRow(
 private fun ModelPage(
     model: Model,
     viewModel: ModelsViewModel,
+    onClick: () -> Unit,
 ) {
     val backgroundPhoto = model.userProfile?.background
     Box(
-        Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().clickable { onClick() },
         contentAlignment = Alignment.TopEnd
     ) {
         if (backgroundPhoto != null && backgroundPhoto !is TLRPC.TL_photoEmpty) {

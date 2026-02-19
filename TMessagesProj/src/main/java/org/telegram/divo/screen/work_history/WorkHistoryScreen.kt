@@ -44,8 +44,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.components.UIButton
-import org.telegram.divo.components.UITextHint
-import org.telegram.divo.screen.edit_my_profile.EditMyProfileViewModel
 import org.telegram.tgnet.TLRPC
 import org.telegram.messenger.R
 

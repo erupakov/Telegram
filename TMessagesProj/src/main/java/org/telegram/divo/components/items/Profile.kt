@@ -1,4 +1,4 @@
-package org.telegram.divo.items
+package org.telegram.divo.components.items
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image

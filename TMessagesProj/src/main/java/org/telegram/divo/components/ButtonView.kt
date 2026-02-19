@@ -2,14 +2,12 @@ package org.telegram.divo.components
 
 import android.content.Context
 import android.widget.FrameLayout
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.google.android.gms.vision.Frame
 
 class ButtonView(context: Context) : FrameLayout(context) {
 

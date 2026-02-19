@@ -3,6 +3,7 @@ package org.telegram.divo.screen.models
 import android.content.Context
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
+import org.telegram.divo.screen.profile.FragmentProfileN
 import org.telegram.ui.ActionBar.BaseFragment
 
 class FragmentModels : BaseFragment() {
@@ -13,9 +14,16 @@ class FragmentModels : BaseFragment() {
         val composeView = ComposeView(context)
         composeView.setContent {
             ModelsHomeScreen(
-                onSearch = {}
+                onSearch = {},
+                onClick = {
+                    presentFragment(FragmentProfileN())
+                },
             )
         }
         return composeView
+    }
+
+    override fun isLightStatusBar(): Boolean {
+        return true
     }
 }

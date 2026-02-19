@@ -5,10 +5,11 @@ import android.os.Looper
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.telegram.divo.base.BaseViewModel
-import org.telegram.divo.base.ViewEffect
-import org.telegram.divo.base.ViewIntent
-import org.telegram.divo.base.ViewState
+import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.ViewEffect
+import org.telegram.divo.common.ViewIntent
+import org.telegram.divo.common.ViewState
+import org.telegram.divo.dal.network.DivoApi
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.MessagesController
@@ -30,7 +31,7 @@ class ProfileViewModel :
 
     data class PhysicalParams(
         val gender: String = "",
-       val age: Long = 0,
+        val age: Long = 0,
         val height: Long = 0,
         val waist: Long = 0,
         val hips: Long = 0,

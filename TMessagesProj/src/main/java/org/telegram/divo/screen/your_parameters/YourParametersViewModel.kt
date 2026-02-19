@@ -1,9 +1,9 @@
 package org.telegram.divo.screen.your_parameters
 
-import org.telegram.divo.base.BaseViewModel
-import org.telegram.divo.base.ViewEffect
-import org.telegram.divo.base.ViewIntent
-import org.telegram.divo.base.ViewState
+import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.ViewEffect
+import org.telegram.divo.common.ViewIntent
+import org.telegram.divo.common.ViewState
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.MessagesController
@@ -12,8 +12,6 @@ import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.RequestDelegate
 import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
-import org.telegram.tgnet.TLRPC.TL_inputUser
-import org.telegram.tgnet.TLRPC.TL_inputUserSelf
 
 class YourParametersViewModel :
     BaseViewModel<

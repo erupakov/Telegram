@@ -1,10 +1,10 @@
 package org.telegram.divo.screen.settings
 
 import androidx.annotation.DrawableRes
-import org.telegram.divo.base.BaseViewModel
-import org.telegram.divo.base.ViewEffect
-import org.telegram.divo.base.ViewIntent
-import org.telegram.divo.base.ViewState
+import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.ViewEffect
+import org.telegram.divo.common.ViewIntent
+import org.telegram.divo.common.ViewState
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig

@@ -1,8 +1,7 @@
-package org.telegram.divo.items
+package org.telegram.divo.components.items
 
 import android.content.Context
 import android.widget.FrameLayout
-import android.widget.FrameLayout.LayoutParams
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import org.telegram.divo.components.TextItemDescription
 import org.telegram.divo.components.UIButton
 import org.telegram.divo.components.UIButtonBack
-import org.telegram.divo.style.AppColors
 import org.telegram.divo.style.AppTheme
 
 class RegView {

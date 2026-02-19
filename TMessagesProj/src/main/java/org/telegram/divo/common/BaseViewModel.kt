@@ -1,4 +1,4 @@
-package org.telegram.divo.base
+package org.telegram.divo.common
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

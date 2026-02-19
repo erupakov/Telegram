@@ -40,7 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.components.TextTitle
-import org.telegram.divo.items.EventItemView
+import org.telegram.divo.components.items.EventItemView
 import org.telegram.messenger.R
 
 object EventIntentData{
