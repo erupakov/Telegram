@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import org.telegram.divo.components.TelegramPhoto
 import org.telegram.divo.screen.event_list.EventListViewModel
@@ -162,7 +163,8 @@ private fun DurationChip(
             modifier = Modifier
                 .padding(horizontal = 12.dp, vertical = 6.dp),
             text = text,
-            style = AppTheme.typography.helvetica_neue_regular_10,
+            style = AppTheme.typography.helveticaNeueRegular,
+            fontSize = 10.sp,
             color = AppTheme.colors.textColor,
         )
     }

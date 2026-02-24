@@ -33,13 +33,16 @@ import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -62,31 +65,32 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberAsyncImagePainter
-import org.telegram.messenger.ImageLocation
-import org.telegram.tgnet.TLRPC
-import org.telegram.ui.Components.BackupImageView
-import org.telegram.messenger.FileLoader
+import org.telegram.divo.common.LockScreenOrientation
+import org.telegram.divo.components.RoleChip
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.components.items.DMButton
-import org.telegram.divo.components.items.RoleChip
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont.HelveticaNeue
+import org.telegram.messenger.FileLoader
+import org.telegram.messenger.ImageLocation
 import org.telegram.messenger.R
+import org.telegram.tgnet.TLRPC
+import org.telegram.ui.Components.BackupImageView
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModelsHomeScreen(
     viewModel: ModelsViewModel = androidx.lifecycle.viewmodel.compose.viewModel<ModelsViewModel>(),
     onSearch: () -> Unit = {},
-    onClick: () -> Unit = {},
+    onClick: (Int) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
     val currentModels = if (state.selectedTab == Tab.ALL_USERS) state.allUserModels else state.models
     val pagerState = rememberPagerState(pageCount = { currentModels.size })
 
+    LockScreenOrientation()
     LaunchedEffect(Unit) {
         viewModel.setIntent(ModelsViewIntent.LoadInitialData)
     }
@@ -106,12 +110,15 @@ fun ModelsHomeScreen(
 
     Scaffold(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(top = 32.dp),
+            .fillMaxSize(),
+        containerColor = Color.White,
         topBar = {
             TopAppBar(
-                modifier = Modifier.statusBarsPadding(),
-                backgroundColor = Color.White,
+                modifier = Modifier
+                    .padding(top = 32.dp),
+                colors = TopAppBarDefaults.topAppBarColors(
+                    Color.White
+                ),
                 title = {
                     TextTitle("Models".uppercase())
                 },
@@ -125,7 +132,6 @@ fun ModelsHomeScreen(
                         )
                     }
                 },
-                elevation = 0.dp
             )
         }
     ) { paddingValues ->
@@ -186,7 +192,7 @@ fun ModelsHomeScreen(
                             ModelPage(
                                 model = currentModels[page],
                                 viewModel = viewModel,
-                                onClick = { onClick() }
+                                onClick = { onClick(-111) }
                             )
                         }
                     }

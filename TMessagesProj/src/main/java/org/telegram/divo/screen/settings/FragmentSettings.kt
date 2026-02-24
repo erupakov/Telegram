@@ -24,7 +24,7 @@ class FragmentSettings : BaseFragment() {
         composeView.setContent {
             SettingsScreen(
                 navigateToFillParameters = { presentFragment(FragmentYourParameters()) },
-                navigateToProfile = { presentFragment(FragmentProfileN()) },
+                navigateToProfile = { presentFragment(FragmentProfileN.newInstance(it, true)) },
                 navigateToSavedMessages = { openSavedMessages() },
                 navigateToStickers = { presentFragment(StickersActivity(MediaDataController.TYPE_IMAGE, null)) },
                 navigateToNotifications = { presentFragment(NotificationsSettingsActivity()) },

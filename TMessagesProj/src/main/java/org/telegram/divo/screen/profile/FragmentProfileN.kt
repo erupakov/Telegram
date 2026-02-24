@@ -20,6 +20,13 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
     private val viewModel by lazy { ProfileViewModel() }
     private var isUploadingBackground = false
 
+    private val targetUserId: Int by lazy {
+        arguments?.getInt(ARG_USER_ID, -1) ?: -1
+    }
+    private val isOwnProfile: Boolean by lazy {
+        arguments?.getBoolean(ARG_OWN_PROFILE, false) ?: false
+    }
+
     override fun createView(context: Context): View {
         actionBar.setAddToContainer(false)
 
@@ -41,6 +48,8 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
         val composeView = ComposeView(context)
         composeView.setContent {
             ProfileScreen(
+                userId = targetUserId,
+                isOwnProfile = isOwnProfile,
                 viewModel = viewModel,
                 onEditClicked = {
                     presentFragment(FragmentEditMyProfile())
@@ -59,7 +68,7 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
                     imageUpdater?.openMenu(
                         false,
                         Runnable {
-                            viewModel.setIntent(ProfileViewModel.ProfileIntent.OnClearPortfolioUpload)
+                            viewModel.setIntent(ProfileIntent.OnClearPortfolioUpload)
                         },
                         null,
                         ImageUpdater.TYPE_DEFAULT
@@ -70,7 +79,7 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
                     imageUpdater?.openMenu(
                         false,
                         Runnable {
-                            viewModel.setIntent(ProfileViewModel.ProfileIntent.OnClearPortfolioUpload)
+                            viewModel.setIntent(ProfileIntent.OnClearPortfolioUpload)
                         },
                         null,
                         ImageUpdater.TYPE_DEFAULT
@@ -95,14 +104,14 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
 
         if (isUploadingBackground) {
             viewModel.setIntent(
-                ProfileViewModel.ProfileIntent.OnBackgroundPhotoSelected(
+                ProfileIntent.OnBackgroundPhotoSelected(
                     photo = photo,
                     localPath = imageUpdater?.currentPicturePath
                 )
             )
         } else {
             viewModel.setIntent(
-                ProfileViewModel.ProfileIntent.OnPortfolioPhotoSelected(
+                ProfileIntent.OnPortfolioPhotoSelected(
                     photo = photo,
                     localPath = imageUpdater?.currentPicturePath
                 )
@@ -126,5 +135,19 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
         super.onFragmentDestroy()
         imageUpdater?.clear()
         imageUpdater = null
+    }
+
+    companion object {
+        private const val ARG_USER_ID = "user_id"
+        private const val ARG_OWN_PROFILE = "own_profile"
+
+        fun newInstance(userId: Int, isOwnProfile: Boolean = false): FragmentProfileN {
+            return FragmentProfileN().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_USER_ID, userId)
+                    putBoolean(ARG_OWN_PROFILE, isOwnProfile)
+                }
+            }
+        }
     }
 }

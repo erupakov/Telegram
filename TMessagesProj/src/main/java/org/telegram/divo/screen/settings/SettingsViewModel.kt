@@ -1,10 +1,20 @@
 package org.telegram.divo.screen.settings
 
 import androidx.annotation.DrawableRes
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.screen.profile.PhysicalParams
+import org.telegram.divo.screen.profile.ProfileEffect
+import org.telegram.divo.screen.profile.SocialLinks
+import org.telegram.divo.screen.profile.UserStatistic
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
@@ -20,6 +30,7 @@ class SettingsViewModel :
     )
 
     data class SettingsViewState(
+        val userId: Int = -1,
         val userName: String = "",
         val phoneNumber: String = "",
         val userFull: TLRPC.UserFull,
@@ -86,6 +97,19 @@ class SettingsViewModel :
         data object NavigateToDataStorage : SettingsViewEffect()
         data object NavigateToAppearance : SettingsViewEffect()
         data object ShowQrCode : SettingsViewEffect()
+    }
+
+    init {
+        //TODO временно
+        viewModelScope.launch {
+            val result = DivoApi.userRepository.getCurrentUserInfo()
+
+            if (result is DivoResult.Success) {
+                setState { copy(userId = result.value.id) }
+            } else {
+                val errorMsg = result.getErrorMessage()
+            }
+        }
     }
 
     private var currentAccount = UserConfig.selectedAccount

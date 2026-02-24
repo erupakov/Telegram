@@ -32,14 +32,14 @@ import org.telegram.divo.style.AppTheme
 
 @Composable
 fun DivoAsyncImage(
-    url: String?,
-    contentDescription: String?,
     modifier: Modifier = Modifier,
+    url: String?,
+    contentDescription: String? = null,
     contentScale: ContentScale = ContentScale.Crop,
     alpha: Float = DefaultAlpha,
     colorFilter: ColorFilter? = null,
     crossfadeDurationMs: Int = 300,
-    placeholderColor: Color = AppTheme.colors.accentColor,
+    placeholderColor: Color = Color.White,
     errorIconSize: Dp = 32.dp,
     loadingContent: (@Composable () -> Unit)? = null,
     errorContent: (@Composable () -> Unit)? = null,

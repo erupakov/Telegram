@@ -59,7 +59,7 @@ import org.telegram.tgnet.TLRPC
 fun SettingsScreen(
     viewModel: SettingsViewModel = viewModel(),
     navigateToFillParameters: () -> Unit = {},
-    navigateToProfile: () -> Unit = {},
+    navigateToProfile: (Int) -> Unit = {},
     navigateToSavedMessages: () -> Unit = {},
     navigateToStickers: () -> Unit = {},
     navigateToNotifications: () -> Unit = {},
@@ -92,7 +92,7 @@ fun SettingsScreen(
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToEditProfile -> {
-                    navigateToProfile()
+                    navigateToProfile(state.userId)
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToFillParameters -> {
@@ -108,7 +108,7 @@ fun SettingsScreen(
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToProfile -> {
-                    navigateToProfile()
+                    navigateToProfile(state.userId)
                 }
 
                 SettingsViewModel.SettingsViewEffect.NavigateToPromo -> {
@@ -267,11 +267,11 @@ private fun ProfileRow(
             contentAlignment = Alignment.Center
         ) {
             TelegramUserAvatar(
-                user = user,
                 modifier  = Modifier
                     .size(54.dp)
                     .clip(CircleShape),
-                68
+                photoUrl = "uiState.userInfo?.avatarUrl",
+                sizeDp = 68
             )
         }
 

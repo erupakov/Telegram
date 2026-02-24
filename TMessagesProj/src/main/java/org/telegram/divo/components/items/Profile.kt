@@ -3,13 +3,13 @@ package org.telegram.divo.components.items
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,10 +19,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -38,13 +39,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.telegram.divo.components.RoleChip
 import org.telegram.divo.components.TelegramUserAvatar
-import org.telegram.divo.screen.profile.ProfileViewModel
+import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -57,14 +63,17 @@ fun ButtonAddWorkHistory(
     onClick: () -> Unit = {}
 ) {
     Box(
-        modifier = modifier.height(36.dp).background(
-            color = AppTheme.colors.blackAlpha12,
-            shape = RoundedCornerShape(6.dp)
-        ).clickable(
-            indication = null,
-            interactionSource = remember { MutableInteractionSource() },
-            onClick = onClick
-        ),
+        modifier = modifier
+            .height(36.dp)
+            .background(
+                color = AppTheme.colors.blackAlpha12,
+                shape = RoundedCornerShape(6.dp)
+            )
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                onClick = onClick
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Row(
@@ -98,10 +107,12 @@ fun ProfileSocialItem(
     value: String = "mock link",
 ) {
     Box(
-        modifier = modifier.height(68.dp).background(
-            color = AppTheme.colors.blackAlpha12,
-            shape = RoundedCornerShape(6.dp)
-        ),
+        modifier = modifier
+            .height(68.dp)
+            .background(
+                color = AppTheme.colors.blackAlpha12,
+                shape = RoundedCornerShape(6.dp)
+            ),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -275,16 +286,13 @@ fun DMButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun PofileNameItem(
+fun ProfileNameItem(
     modifier: Modifier = Modifier,
-    firstName: String = "Fname",
-    lastName: String = "LName",
-    roleLabel: String = "Model",
-    uiState: ProfileViewModel.ProfileViewState
+    uiState: ProfileViewState
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier.padding(horizontal = 12.dp)
+        modifier = modifier.padding(horizontal = 16.dp)
     ) {
 
         Box(
@@ -293,10 +301,10 @@ fun PofileNameItem(
             contentAlignment = Alignment.Center
         ) {
             TelegramUserAvatar(
-                user =uiState.userFull.user,
                 modifier  = Modifier
                     .size(68.dp)
                     .clip(CircleShape),
+                photoUrl = uiState.userInfo?.avatarUrl,
                 68
             )
 
@@ -313,51 +321,73 @@ fun PofileNameItem(
 
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
+            Row(
+                modifier = Modifier.padding(end = 16.dp),
+            ) {
+                val iconId = "pro_badge"
+                val text = buildAnnotatedString {
+                    append(uiState.userInfo?.fullName?.uppercase().orEmpty())
+                    append(" ")
+                    appendInlineContent(iconId, "[icon]")
+                }
 
-            Text(
-                firstName,
-                color = Color.White,
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
-                maxLines = 2
-            )
-
-            Row {
-                Text(
-                    lastName,
-                    color = Color.White,
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.ExtraBold),
-                    maxLines = 2
+                val inlineContent = mapOf(
+                    iconId to InlineTextContent(
+                        placeholder = Placeholder(
+                            width = 24.sp,
+                            height = 24.sp,
+                            placeholderVerticalAlign = PlaceholderVerticalAlign.Top
+                        )
+                    ) {
+                        Image(
+                            modifier = Modifier.fillMaxSize().padding(top = 1.dp),
+                            painter = painterResource(R.drawable.divo_pro_badge),
+                            contentDescription = null,
+                        )
+                    }
                 )
-                Image(
-                    modifier = Modifier.size(24.dp),
-                    painter = painterResource(R.drawable.divo_pro_badge),
-                    contentDescription = null
+
+                Text(
+                    text = text,
+                    inlineContent = inlineContent,
+                    style = AppTheme.typography.helveticaNeueLtCom,
+                    color = AppTheme.colors.textColor,
+                    fontSize = 34.sp,
+                    lineHeight = 36.sp,
+                    softWrap = true,
+                    modifier = Modifier.padding(end = 16.dp)
                 )
             }
 
-            RoleChip(roleLabel)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val age = uiState.userInfo?.birthday
+                val city = uiState.userInfo?.city
+                RoleChip(uiState.userInfo?.roleLabel?.lowercase().orEmpty())
+                Spacer(modifier = Modifier.width(10.dp))
+                if (age != null) {
+                    Text(
+                        text = "${uiState.formattedAge(age)} • ",
+                        style = AppTheme.typography.helveticaNeueRegular,
+                        fontSize = 14.sp,
+                        color = AppTheme.colors.textColor,
+                    )
+                }
+                if (city != null) {
+                    Text(
+                        text = uiState.countryFlagEmoji
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = city.name,
+                        style = AppTheme.typography.helveticaNeueRegular,
+                        fontSize = 14.sp,
+                        color = AppTheme.colors.textColor,
+                    )
+                }
+            }
         }
         Spacer(Modifier.width(10.dp))
-    }
-}
-
-@Composable
-fun RoleChip(text: String) {
-    Row(
-        Modifier
-            .clip(RoundedCornerShape(24.dp))
-            .background(Color(0xFFBB7148))
-            .border(1.dp, Color.White.copy(alpha = .65f), RoundedCornerShape(24.dp))
-            .padding(horizontal = 10.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            painter = painterResource(R.drawable.ic_divo_model_icon),
-            modifier = Modifier.size(12.dp),
-            tint = Color.White,
-            contentDescription = null
-        )
-        Spacer(Modifier.width(6.dp))
-        androidx.compose.material.Text(text, color = Color.White)
     }
 }

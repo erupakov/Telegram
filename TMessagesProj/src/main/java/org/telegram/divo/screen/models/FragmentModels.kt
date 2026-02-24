@@ -1,6 +1,7 @@
 package org.telegram.divo.screen.models
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
 import org.telegram.divo.screen.profile.FragmentProfileN
@@ -15,8 +16,8 @@ class FragmentModels : BaseFragment() {
         composeView.setContent {
             ModelsHomeScreen(
                 onSearch = {},
-                onClick = {
-                    presentFragment(FragmentProfileN())
+                onClick = { userId ->
+                    presentFragment(FragmentProfileN.newInstance(19507))
                 },
             )
         }
