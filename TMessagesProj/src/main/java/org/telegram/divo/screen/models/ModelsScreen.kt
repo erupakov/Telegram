@@ -68,9 +68,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberAsyncImagePainter
 import org.telegram.divo.common.LockScreenOrientation
+import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.RoleChip
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.components.items.DMButton
+import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont.HelveticaNeue
 import org.telegram.messenger.FileLoader
@@ -88,7 +90,8 @@ fun ModelsHomeScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val currentModels = if (state.selectedTab == Tab.ALL_USERS) state.allUserModels else state.models
-    val pagerState = rememberPagerState(pageCount = { currentModels.size })
+    val currentRestModels = if (state.selectedTab == Tab.ALL_USERS) state.feed.items else listOf()
+    val pagerState = rememberPagerState(pageCount = { currentRestModels.size })
 
     LockScreenOrientation()
     LaunchedEffect(Unit) {
@@ -97,14 +100,14 @@ fun ModelsHomeScreen(
 
     // Load more when approaching last page (ALL_USERS tab)
     if (state.selectedTab == Tab.ALL_USERS) {
-        LaunchedEffect(pagerState.currentPage, currentModels.size) {
-            if (currentModels.isNotEmpty()
-                && pagerState.currentPage >= currentModels.size - 1
-                && state.allUsersHasMore
-                && !state.isLoadingAllUsers
-            ) {
-                viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
-            }
+        LaunchedEffect(pagerState.currentPage, currentRestModels.size) {
+//            if (currentModels.isNotEmpty()
+//                && pagerState.currentPage >= currentModels.size - 1
+//                && state.allUsersHasMore
+//                && !state.isLoadingAllUsers
+//            ) {
+//                viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
+//            }
         }
     }
 
@@ -169,7 +172,7 @@ fun ModelsHomeScreen(
                             }
                         )
                     }
-                    currentModels.isEmpty() && state.isLoadingAllUsers -> {
+                    currentRestModels == null && state.isLoadingAllUsers -> {
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -187,12 +190,13 @@ fun ModelsHomeScreen(
                                 .fillMaxWidth(),
                             reverseLayout = false,
                             userScrollEnabled = true,
+                            beyondViewportPageCount = 1,
                             flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
                         ) { page ->
                             ModelPage(
-                                model = currentModels[page],
+                                feed = currentRestModels[page],
                                 viewModel = viewModel,
-                                onClick = { onClick(-111) }
+                                onClick = { onClick(it) }
                             )
                         }
                     }
@@ -375,23 +379,18 @@ fun TabsRow(
 
 @Composable
 private fun ModelPage(
-    model: Model,
+    feed: FeedItem,
     viewModel: ModelsViewModel,
-    onClick: () -> Unit,
+    onClick: (Int) -> Unit,
 ) {
-    val backgroundPhoto = model.userProfile?.background
+    val backgroundPhoto = feed.files.first().url
     Box(
-        modifier = Modifier.fillMaxSize().clickable { onClick() },
+        modifier = Modifier.fillMaxSize().clickableWithoutRipple { onClick(feed.id) },
         contentAlignment = Alignment.TopEnd
     ) {
-        if (backgroundPhoto != null && backgroundPhoto !is TLRPC.TL_photoEmpty) {
-            TelegramPhotoCover(
-                photo = backgroundPhoto,
-                modifier = Modifier.fillMaxSize()
-            )
-        } else if (model.imageUrl.isNotEmpty()) {
+        if (backgroundPhoto.isNotEmpty()) {
             Image(
-                painter = rememberAsyncImagePainter(model.imageUrl),
+                painter = rememberAsyncImagePainter(backgroundPhoto),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
@@ -411,14 +410,14 @@ private fun ModelPage(
             horizontalAlignment = Alignment.End,
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
-            model.emotions.forEach { emotion ->
-                ReactionPill(
-                    emotion = emotion,
-                    onClick = {
-                        viewModel.setIntent(ModelsViewIntent.OnEmotionClick(model.id, emotion))
-                    }
-                )
-            }
+//            model.emotions.forEach { emotion ->
+//                ReactionPill(
+//                    emotion = emotion,
+//                    onClick = {
+//                        viewModel.setIntent(ModelsViewIntent.OnEmotionClick(model.id, emotion))
+//                    }
+//                )
+//            }
         }
 
         Column(
@@ -449,9 +448,10 @@ private fun ModelPage(
                         .border(2.dp, Color.White.copy(alpha = .9f), CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (model.avatarUrl.isNotEmpty()) {
+                    val avatarUrl = feed.previewImage.url
+                    if (avatarUrl.isNotEmpty()) {
                         Image(
-                            painter = rememberAsyncImagePainter(model.avatarUrl),
+                            painter = rememberAsyncImagePainter(avatarUrl),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -459,7 +459,7 @@ private fun ModelPage(
                                 .clip(CircleShape)
                         )
                     } else {
-                        val initials = model.name.split(" ")
+                        val initials = feed.user.fullName.split(" ")
                             .mapNotNull { it.firstOrNull()?.uppercase() }
                             .take(2)
                             .joinToString("")
@@ -483,13 +483,13 @@ private fun ModelPage(
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
                     Text(
-                        model.name.uppercase(),
+                        text = feed.user.fullName.uppercase(),
                         color = Color.White,
                         style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.ExtraBold),
                         maxLines = 2
                     )
                     Spacer(Modifier.height(6.dp))
-                    RoleChip(model.roleLabel)
+                    RoleChip(feed.user.roleLabel)
                 }
                 Spacer(Modifier.width(10.dp))
             }
@@ -501,7 +501,7 @@ private fun ModelPage(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 DMButton(onClick = {
-                    viewModel.setIntent(ModelsViewIntent.OnSendDmClick(model.id))
+                    //viewModel.setIntent(ModelsViewIntent.OnSendDmClick(feed.id))
                 })
 
                 Spacer(Modifier.weight(1f))
@@ -526,13 +526,13 @@ private fun ModelPage(
                         modifier = Modifier
                             .size(24.dp)
                             .clickable {
-                                viewModel.setIntent(ModelsViewIntent.OnBookmarkClick(model.id))
+                                //viewModel.setIntent(ModelsViewIntent.OnBookmarkClick(model.id))
                             }
                     )
                 }
             }
             Spacer(Modifier.height(16.dp))
-            ThumbsRow(model, viewModel)
+            ThumbsRow(feed, viewModel)
         }
     }
 }
@@ -576,28 +576,29 @@ private fun ReactionPill(
     }
 }
 
-
-
-
-
 @Composable
 private fun ThumbsRow(
-    model: Model,
+    feed: FeedItem,
     viewModel: ModelsViewModel,
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
-        items(model.photos) { thumb ->
+        val images = feed.files.drop(1)
+
+        items(
+            items = images,
+            key = { it.uuid }
+        ) { thumb ->
             Image(
-                painter = rememberAsyncImagePainter(thumb),
+                painter = rememberAsyncImagePainter(thumb.url),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(width = 126.dp, height = 136.dp)
                     .clickable {
-                        viewModel.setIntent(ModelsViewIntent.OnPhotoClick(model.id, thumb))
+                        //viewModel.setIntent(ModelsViewIntent.OnPhotoClick(model.id, thumb))
                     }
             )
         }

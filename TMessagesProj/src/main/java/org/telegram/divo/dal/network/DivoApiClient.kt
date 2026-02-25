@@ -23,9 +23,7 @@ import org.telegram.divo.dal.dto.auth.LoginRequest
  */
 object DivoApiClient {
 
-    private val gson: Gson by lazy {
-        Gson()
-    }
+    private val gson: Gson by lazy { Gson() }
 
     fun createOkHttpClient(accessTokenProvider: AccessTokenProvider): OkHttpClient {
         val builder = OkHttpClient.Builder()
@@ -121,7 +119,7 @@ object DivoApiClient {
 
     /**
      * Authenticator для обработки 401: делает релогин и ретраит запрос.
-     * Временное: использует hardcoded creds. Позже замени на реальные.
+     * Временное: использует hardcoded creds.
      */
     private class TokenAuthenticator(
         private val accessTokenProvider: AccessTokenProvider

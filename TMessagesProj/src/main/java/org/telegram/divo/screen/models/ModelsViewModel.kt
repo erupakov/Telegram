@@ -1,9 +1,16 @@
 package org.telegram.divo.screen.models
 
+import android.util.Log
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.Feed
 import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToAddStory
 import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToDirectMessage
 import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToSearch
@@ -79,6 +86,7 @@ sealed class Emotions(
 
 // State
 data class ModelsViewState(
+    val feed: Feed = Feed(),
     val stories: List<Story> = emptyList(),
     val models: List<Model> = emptyList(),
     val selectedTab: Tab = Tab.SUBSCRIBED,
@@ -213,43 +221,58 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     private fun loadAllUsers(loadMore: Boolean) {
-        if (state.value.isLoadingAllUsers) return
-        if (loadMore && !state.value.allUsersHasMore) return
-
-        setState { copy(isLoadingAllUsers = true) }
-
-        val offset = if (loadMore) state.value.allUserModels.size else 0
-
-        val req = TLRPC.TL_profile_searchUsers().apply {
-            flags = 0
-            this.offset = offset
-            this.limit = PAGE_SIZE
+        viewModelScope.launch {
+            setState { copy(isLoadingAllUsers = true) }
+            val result = DivoApi.publicationRepository.getFeed()
+            if (result is DivoResult.Success) {
+                setState {
+                    copy(
+                        feed = result.value,
+                        isLoadingAllUsers = false
+                    )
+                }
+            } else {
+                Log.d("MyTag", result.getErrorMessage())
+            }
         }
 
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TL_error? ->
-                AndroidUtilities.runOnUIThread {
-                    if (error != null) {
-                        FileLog.e("loadAllUsers error: ${error.text}")
-                        setState { copy(isLoadingAllUsers = false, error = error.text) }
-                        return@runOnUIThread
-                    }
-                    if (response is TLRPC.TL_profile_foundUsers) {
-                        val newModels = response.users.map { mapUserProfileToModel(it) }
-                        setState {
-                            copy(
-                                allUserModels = if (loadMore) allUserModels + newModels else newModels,
-                                isLoadingAllUsers = false,
-                                allUsersHasMore = newModels.size >= PAGE_SIZE,
-                            )
-                        }
-                    } else {
-                        setState { copy(isLoadingAllUsers = false) }
-                    }
-                }
-            }
-        )
+//        if (state.value.isLoadingAllUsers) return
+//        if (loadMore && !state.value.allUsersHasMore) return
+//
+//        setState { copy(isLoadingAllUsers = true) }
+//
+//        val offset = if (loadMore) state.value.allUserModels.size else 0
+//
+//        val req = TLRPC.TL_profile_searchUsers().apply {
+//            flags = 0
+//            this.offset = offset
+//            this.limit = PAGE_SIZE
+//        }
+//
+//        ConnectionsManager.getInstance(currentAccount).sendRequest(
+//            req,
+//            RequestDelegate { response: TLObject?, error: TL_error? ->
+//                AndroidUtilities.runOnUIThread {
+//                    if (error != null) {
+//                        FileLog.e("loadAllUsers error: ${error.text}")
+//                        setState { copy(isLoadingAllUsers = false, error = error.text) }
+//                        return@runOnUIThread
+//                    }
+//                    if (response is TLRPC.TL_profile_foundUsers) {
+//                        val newModels = response.users.map { mapUserProfileToModel(it) }
+//                        setState {
+//                            copy(
+//                                allUserModels = if (loadMore) allUserModels + newModels else newModels,
+//                                isLoadingAllUsers = false,
+//                                allUsersHasMore = newModels.size >= PAGE_SIZE,
+//                            )
+//                        }
+//                    } else {
+//                        setState { copy(isLoadingAllUsers = false) }
+//                    }
+//                }
+//            }
+//        )
     }
 
     private fun mapUserProfileToModel(profile: TLRPC.TL_userProfile): Model {

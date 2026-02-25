@@ -1,7 +1,8 @@
 package org.telegram.divo.dal.api
 
 import okhttp3.ResponseBody
-import retrofit2.Response
+import org.telegram.divo.dal.dto.publication.FeedRequestDto
+import org.telegram.divo.dal.dto.publication.FeedResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -10,8 +11,10 @@ import retrofit2.http.POST
  */
 interface PublicationService {
 
-    @POST("publication/feed")
-    suspend fun getFeed(@Body body: Map<String, Any?>): ResponseBody
+    @POST("feedline/list")
+    suspend fun getFeed(
+        @Body request: FeedRequestDto
+    ): FeedResponse
 
     @POST("publication/like")
     suspend fun like(@Body body: Map<String, Any?>): ResponseBody

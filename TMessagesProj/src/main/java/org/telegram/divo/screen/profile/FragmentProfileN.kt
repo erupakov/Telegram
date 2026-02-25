@@ -1,10 +1,12 @@
 package org.telegram.divo.screen.profile
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
+import androidx.core.view.WindowCompat
 import org.telegram.divo.screen.edit_my_profile.FragmentEditMyProfile
 import org.telegram.divo.screen.profile_social_links.FragmentProfileSocialLinks
 import org.telegram.divo.screen.work_history.FragmentWorkHistory

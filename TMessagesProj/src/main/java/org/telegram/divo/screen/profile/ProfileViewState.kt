@@ -66,10 +66,10 @@ data class SocialLinks(
 data class PhysicalParams(
     val gender: String = "",
     val age: String = "",
-    val height: Int = 0,
+    val height: Float = 0f,
     val waist: Int = 0,
     val hips: Int = 0,
-    val shoeSize: Int = 0,
+    val shoeSize: Float = 0f,
     val hairLength: String = "",
     val hairColor: String = "",
     val eyeColor: String = "",

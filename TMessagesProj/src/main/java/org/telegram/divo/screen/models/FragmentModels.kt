@@ -17,7 +17,7 @@ class FragmentModels : BaseFragment() {
             ModelsHomeScreen(
                 onSearch = {},
                 onClick = { userId ->
-                    presentFragment(FragmentProfileN.newInstance(19507))
+                    presentFragment(FragmentProfileN.newInstance(userId))
                 },
             )
         }

@@ -1,18 +1,19 @@
 package org.telegram.divo.dal.dto.user
 
 import com.google.gson.annotations.SerializedName
+import org.telegram.divo.dal.dto.PaginationDto
 import org.telegram.divo.entity.UserGalleryItem
 
 class UserGalleryListResponse(
     @SerializedName("data") val data: UserGalleryListData? = null,
 )
 
-data class UserGalleryListData(
+class UserGalleryListData(
     @SerializedName("items") val items: List<GalleryItem> = emptyList(),
     @SerializedName("pagination") val pagination: PaginationDto
 )
 
-data class GalleryItem(
+class GalleryItem(
     @SerializedName("id") val id: Int,
     @SerializedName("photo") val photo: MediaFileDto,
     @SerializedName("likesCount") val likesCount: Int,
@@ -20,21 +21,11 @@ data class GalleryItem(
     @SerializedName("preview") val preview: MediaFileDto
 )
 
-data class MediaFileDto(
+class MediaFileDto(
     @SerializedName("fileName") val fileName: String,
     @SerializedName("fullUrl") val fullUrl: String,
     @SerializedName("extension") val extension: String,
     @SerializedName("fileUuid") val fileUuid: String
-)
-
-data class PaginationDto(
-    @SerializedName("meta") val meta: PaginationMetaDto
-)
-
-data class PaginationMetaDto(
-    @SerializedName("limit") val limit: Int,
-    @SerializedName("currentOffset") val currentOffset: Int,
-    @SerializedName("totalCount") val totalCount: Int
 )
 
 fun GalleryItem.toEntity(): UserGalleryItem =

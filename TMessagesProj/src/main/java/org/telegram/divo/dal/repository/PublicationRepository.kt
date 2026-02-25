@@ -4,13 +4,21 @@ import okhttp3.ResponseBody
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.dal.api.PublicationService
+import org.telegram.divo.dal.dto.publication.FeedRequestDto
+import org.telegram.divo.dal.dto.publication.toEntity
+import org.telegram.divo.entity.Feed
 
 class PublicationRepository(
     private val service: PublicationService
 ) {
 
-    suspend fun getFeed(filters: Map<String, Any?> = emptyMap()): DivoResult<ResponseBody> {
-        return resultOf { service.getFeed(filters) }
+    suspend fun getFeed(
+        offset: Int = 0,
+        limit: Int = 3,
+    ): DivoResult<Feed> = resultOf {
+        service.getFeed(
+            FeedRequestDto(offset, limit)
+        ).toEntity()
     }
 
     suspend fun like(payload: Map<String, Any?>): DivoResult<ResponseBody> {

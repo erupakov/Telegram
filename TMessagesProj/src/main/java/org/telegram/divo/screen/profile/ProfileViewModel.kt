@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.profile
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
@@ -49,8 +50,8 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
                 followers = userData.statistic.followersCount,
                 following = userData.statistic.followingCount,
                 views = userData.statistic.viewsCount,
-                likes = 0, //TODO понять откуда подтягивать данные
-                saves = 0, //TODO понять откуда подтягивать данные
+                likes = userData.statistic.followersCount, //TODO понять откуда подтягивать данные
+                saves = userData.statistic.followingCount, //TODO понять откуда подтягивать данные
             )
             setState {
                 copy(
@@ -63,6 +64,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             }
         } else {
             val errorMsg = result.getErrorMessage()
+            Log.d("MyTag", "${state.value.userId} $errorMsg")
             setState { copy(isLoading = false, errorMessage = errorMsg) }
             sendEffect(ProfileEffect.ShowError(errorMsg))
         }

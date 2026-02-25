@@ -17,9 +17,9 @@ data class UserInfo(
     val pushNotifications: Boolean,
     val isRegistrationFinished: Boolean,
     val model: Model,
-    val customer: Any?,
-    val agency: Any?,
-    val agencyEmployee: Any?,
+//    val customer: Any?,
+//    val agency: Any?,
+//    val agencyEmployee: Any?,
     val statistic: Statistic,
     val isFavorite: Boolean,
     val isFollowed: Boolean,
@@ -38,7 +38,7 @@ data class City(
     val name: String
 )
 data class Model(
-    val agency: String?,
+    val agency: Agency?,
     val education: String,
     val workExperience: String,
     val languages: String,
@@ -50,14 +50,41 @@ data class Model(
     val hasActingEducation: Boolean,
     val appearance: Appearance
 )
+data class Agency(
+    val id: Int,
+    val title: String,
+    val site: String?,
+    val email: String?,
+    val description: String?,
+    val employeeTitle: String?,
+    val address: AgencyAddress?,
+    val photo: AgencyPhoto?
+)
+
+data class AgencyAddress(
+    val street: String?,
+    val house: String?,
+    val apartment: String?,
+    val formatted: String?,
+    val latitude: Double?,
+    val longitude: Double?,
+    val city: City?
+)
+
+data class AgencyPhoto(
+    val fileName: String,
+    val fullUrl: String,
+    val extension: String,
+    val fileUuid: String
+)
 data class Appearance(
     val measuringSystem: String,
-    val height: Int,
-    val weight: Int,
+    val height: Float,
+    val weight: Float,
     val breastSize: String,
     val waist: Int,
     val hips: Int,
-    val shoesSize: Int,
+    val shoesSize: Float,
     val hairColor: HairColor,
     val hairLength: HairLength,
     val eyeColor: EyeColor,

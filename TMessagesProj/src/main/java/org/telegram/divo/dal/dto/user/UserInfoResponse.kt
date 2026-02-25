@@ -1,6 +1,9 @@
 package org.telegram.divo.dal.dto.user
 
 import com.google.gson.annotations.SerializedName
+import org.telegram.divo.entity.Agency
+import org.telegram.divo.entity.AgencyAddress
+import org.telegram.divo.entity.AgencyPhoto
 import org.telegram.divo.entity.Appearance
 import org.telegram.divo.entity.City
 import org.telegram.divo.entity.EyeColor
@@ -34,9 +37,9 @@ class UserDataDto(
     @SerializedName("pushNotifications") val pushNotifications: Boolean,
     @SerializedName("isRegistrationFinished") val isRegistrationFinished: Boolean,
     @SerializedName("model") val model: ModelDto,
-    @SerializedName("customer") val customer: Any?,
-    @SerializedName("agency") val agency: Any?,
-    @SerializedName("agencyEmployee") val agencyEmployee: Any?,
+//    @SerializedName("customer") val customer: Any?,
+//    @SerializedName("agency") val agency: Any?,
+//    @SerializedName("agencyEmployee") val agencyEmployee: Any?,
     @SerializedName("statistic") val statistic: StatisticDto,
     @SerializedName("isFavorite") val isFavorite: Boolean,
     @SerializedName("isFollowed") val isFollowed: Boolean,
@@ -72,9 +75,9 @@ class AvatarDto(
 )
 
 class ModelDto(
-    @SerializedName("agency") val agency: String?,
-    @SerializedName("education") val education: String,
-    @SerializedName("workExperience") val workExperience: String,
+    @SerializedName("agency") val agency: AgencyDto?,
+    @SerializedName("education") val education: String?,
+    @SerializedName("workExperience") val workExperience: String?,
     @SerializedName("languages") val languages: String,
     @SerializedName("profileUrl") val profileUrl: String?,
     @SerializedName("additionalInformation") val additionalInformation: String,
@@ -85,14 +88,42 @@ class ModelDto(
     @SerializedName("appearance") val appearance: AppearanceDto
 )
 
+class AgencyDto(
+    @SerializedName("id") val id: Int,
+    @SerializedName("title") val title: String,
+    @SerializedName("site") val site: String?,
+    @SerializedName("email") val email: String?,
+    @SerializedName("description") val description: String?,
+    @SerializedName("employeeTitle") val employeeTitle: String?,
+    @SerializedName("address") val address: AgencyAddressDto?,
+    @SerializedName("photo") val photo: AgencyPhotoDto?
+)
+
+class AgencyAddressDto(
+    @SerializedName("street") val street: String?,
+    @SerializedName("house") val house: String?,
+    @SerializedName("apartment") val apartment: String?,
+    @SerializedName("formatted") val formatted: String?,
+    @SerializedName("latitude") val latitude: Double?,
+    @SerializedName("longitude") val longitude: Double?,
+    @SerializedName("city") val city: CityDto?
+)
+
+class AgencyPhotoDto(
+    @SerializedName("fileName") val fileName: String,
+    @SerializedName("fullUrl") val fullUrl: String,
+    @SerializedName("extension") val extension: String,
+    @SerializedName("fileUuid") val fileUuid: String
+)
+
 class AppearanceDto(
     @SerializedName("measuringSystem") val measuringSystem: String,
-    @SerializedName("height") val height: Int,
-    @SerializedName("weight") val weight: Int,
+    @SerializedName("height") val height: Float,
+    @SerializedName("weight") val weight: Float,
     @SerializedName("breastSize") val breastSize: String,
     @SerializedName("waist") val waist: Int,
     @SerializedName("hips") val hips: Int,
-    @SerializedName("shoesSize") val shoesSize: Int,
+    @SerializedName("shoesSize") val shoesSize: Float,
     @SerializedName("hairColor") val hairColor: HairColorDto,
     @SerializedName("hairLength") val hairLength: HairLengthDto,
     @SerializedName("eyeColor") val eyeColor: EyeColorDto,
@@ -147,9 +178,9 @@ fun UserDataDto.toEntity(): UserInfo =
         pushNotifications = pushNotifications,
         isRegistrationFinished = isRegistrationFinished,
         model = model.toEntity(),
-        customer = customer,
-        agency = agency,
-        agencyEmployee = agencyEmployee,
+//        customer = customer,
+//        agency = agency,
+//        agencyEmployee = agencyEmployee,
         statistic = statistic.toEntity(),
         isFavorite = isFavorite,
         isFollowed = isFollowed,
@@ -183,9 +214,9 @@ private fun StatisticDto.toEntity(): Statistic =
 
 private fun ModelDto.toEntity(): Model =
     Model(
-        agency = agency,
-        education = education,
-        workExperience = workExperience,
+        agency = agency?.toEntity(),
+        education = education.orEmpty(),
+        workExperience = workExperience.orEmpty(),
         languages = languages,
         profileUrl = profileUrl,
         additionalInformation = additionalInformation,
@@ -194,6 +225,37 @@ private fun ModelDto.toEntity(): Model =
         hasPiercing = hasPiercing,
         hasActingEducation = hasActingEducation,
         appearance = appearance.toEntity()
+    )
+
+private fun AgencyDto.toEntity(): Agency =
+    Agency(
+        id = id,
+        title = title,
+        site = site,
+        email = email,
+        description = description,
+        employeeTitle = employeeTitle,
+        address = address?.toEntity(),
+        photo = photo?.toEntity()
+    )
+
+private fun AgencyAddressDto.toEntity(): AgencyAddress =
+    AgencyAddress(
+        street = street,
+        house = house,
+        apartment = apartment,
+        formatted = formatted,
+        latitude = latitude,
+        longitude = longitude,
+        city = city?.toEntity()
+    )
+
+private fun AgencyPhotoDto.toEntity(): AgencyPhoto =
+    AgencyPhoto(
+        fileName = fileName,
+        fullUrl = fullUrl,
+        extension = extension,
+        fileUuid = fileUuid
     )
 
 private fun AppearanceDto.toEntity(): Appearance =
