@@ -69,7 +69,7 @@ fun BiographyAppearanceSection(
 
         // Tab content
         when (selectedTab) {
-            0 -> BiographyContent(bio = uiState.userInfo?.model?.additionalInformation.orEmpty())
+            0 -> BiographyContent(bio = uiState.userInfo?.model?.agency?.description.orEmpty())
             1 -> AppearanceContent(params = uiState.physicalParams)
         }
     }
@@ -129,6 +129,7 @@ private fun BiographyContent(bio: String) {
             style = AppTheme.typography.helveticaNeueRegular,
             color = Color.White,
             fontSize = 12.sp,
+            lineHeight = 14.sp,
             maxLines = if (expanded) Int.MAX_VALUE else 3,
             overflow = TextOverflow.Ellipsis
         )

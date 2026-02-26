@@ -30,13 +30,6 @@ data class Gender(
     val id: String,
     val title: String
 )
-data class City(
-    val id: Int,
-    val countryCode: String,
-    val countryName: String,
-    val areaName: String,
-    val name: String
-)
 data class Model(
     val agency: Agency?,
     val education: String,
@@ -58,7 +51,7 @@ data class Agency(
     val description: String?,
     val employeeTitle: String?,
     val address: AgencyAddress?,
-    val photo: AgencyPhoto?
+    val photo: Photo?
 )
 
 data class AgencyAddress(
@@ -71,12 +64,6 @@ data class AgencyAddress(
     val city: City?
 )
 
-data class AgencyPhoto(
-    val fileName: String,
-    val fullUrl: String,
-    val extension: String,
-    val fileUuid: String
-)
 data class Appearance(
     val measuringSystem: String,
     val height: Float,

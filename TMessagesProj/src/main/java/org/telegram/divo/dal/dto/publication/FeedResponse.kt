@@ -2,8 +2,7 @@ package org.telegram.divo.dal.dto.publication
 
 import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
-import org.telegram.divo.dal.dto.PaginationDto
-import org.telegram.divo.dal.dto.toEntity
+import org.telegram.divo.dal.dto.common.PaginationDto
 import org.telegram.divo.entity.Feed
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FileModel

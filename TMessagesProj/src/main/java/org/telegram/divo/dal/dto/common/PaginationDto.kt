@@ -1,4 +1,4 @@
-package org.telegram.divo.dal.dto
+package org.telegram.divo.dal.dto.common
 
 import com.google.gson.annotations.SerializedName
 import org.telegram.divo.entity.Pagination
@@ -12,10 +12,3 @@ class PaginationMetaDto(
     @SerializedName("currentOffset") val currentOffset: Int,
     @SerializedName("totalCount") val totalCount: Int
 )
-
-fun PaginationMetaDto.toEntity(): Pagination =
-    Pagination(
-        limit = limit,
-        currentOffset = currentOffset,
-        totalCount = totalCount
-    )

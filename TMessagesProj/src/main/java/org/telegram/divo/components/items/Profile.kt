@@ -48,6 +48,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.common.formattedAge
+import org.telegram.divo.common.toCountryFlagEmoji
 import org.telegram.divo.components.RoleChip
 import org.telegram.divo.components.TelegramUserAvatar
 import org.telegram.divo.screen.profile.ProfileViewState
@@ -368,7 +370,7 @@ fun ProfileNameItem(
                 Spacer(modifier = Modifier.width(10.dp))
                 if (age != null) {
                     Text(
-                        text = "${uiState.formattedAge(age)} • ",
+                        text = "${age.formattedAge()} · ",
                         style = AppTheme.typography.helveticaNeueRegular,
                         fontSize = 14.sp,
                         color = AppTheme.colors.textColor,
@@ -376,7 +378,7 @@ fun ProfileNameItem(
                 }
                 if (city != null) {
                     Text(
-                        text = uiState.countryFlagEmoji
+                        text = uiState.userInfo.city.countryCode.toCountryFlagEmoji()
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(

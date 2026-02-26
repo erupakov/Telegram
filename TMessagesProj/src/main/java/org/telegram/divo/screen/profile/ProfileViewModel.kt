@@ -4,13 +4,12 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.formattedAge
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.UserInfo
-import java.time.LocalDate
-import java.time.Period
-import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
 
@@ -34,6 +33,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
 
             launch { loadUserProfile() }
             launch { loadPortfolio() }
+            launch { loadSimilarProfiles() }
         }
     }
 
@@ -85,12 +85,28 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
+    //TODO временно
+    private suspend fun loadSimilarProfiles() {
+        val limit = Random.nextInt(4, 7)
+
+        val result = DivoApi.userRepository.getAgencyModels(limit = limit)
+        if (result is DivoResult.Success) {
+            setState {
+                copy(
+                    similarModels = result.value.items,
+                )
+            }
+        } else {
+            Log.d("MyTag", result.getErrorMessage())
+        }
+    }
+
     private fun mapPhysicalParams(user: UserInfo): PhysicalParams {
         val appearance = user.model.appearance
 
         return PhysicalParams(
             gender = user.gender.title,
-            age = state.value.formattedAge(user.birthday),
+            age = user.birthday.formattedAge(),
             height = appearance.height,
             waist = appearance.waist,
             hips = appearance.hips,

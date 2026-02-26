@@ -36,6 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.formattedAge
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 
@@ -61,7 +63,7 @@ fun ToolBar(
             modifier = Modifier
                 .padding(start = 16.dp)
                 .align(Alignment.CenterStart)
-                .clickable { onNavigateBack() },
+                .clickableWithoutRipple { onNavigateBack() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(painter = painterResource(R.drawable.ic_arrow_back_21), contentDescription = "Back", tint = Color.White)
@@ -106,7 +108,7 @@ fun ToolBar(
                                 fontSize = 10.sp,
                             )
                             Text(
-                                text = " • ${uiState.formattedAge(userInfo.birthday)} • ",
+                                text = " · ${userInfo.birthday.formattedAge()} · ",
                                 style = AppTheme.typography.helveticaNeueRegular,
                                 color = AppTheme.colors.textColor,
                                 fontSize = 10.sp,

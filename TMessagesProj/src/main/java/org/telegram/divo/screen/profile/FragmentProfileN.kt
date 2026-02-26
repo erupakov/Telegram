@@ -1,12 +1,16 @@
 package org.telegram.divo.screen.profile
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
-import androidx.core.view.WindowCompat
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.navigation.NavController
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import org.telegram.divo.screen.edit_my_profile.FragmentEditMyProfile
 import org.telegram.divo.screen.profile_social_links.FragmentProfileSocialLinks
 import org.telegram.divo.screen.work_history.FragmentWorkHistory
@@ -28,6 +32,7 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
     private val isOwnProfile: Boolean by lazy {
         arguments?.getBoolean(ARG_OWN_PROFILE, false) ?: false
     }
+    private var navController: NavController? = null
 
     override fun createView(context: Context): View {
         actionBar.setAddToContainer(false)
@@ -47,49 +52,55 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
             imageUpdater?.setUser(user)
         }
 
-        val composeView = ComposeView(context)
-        composeView.setContent {
-            ProfileScreen(
-                userId = targetUserId,
-                isOwnProfile = isOwnProfile,
-                viewModel = viewModel,
-                onEditClicked = {
-                    presentFragment(FragmentEditMyProfile())
-                },
-                onNavigateBack = {
-                    finishFragment()
-                },
-                onEditLinksClicked = {
-                    presentFragment(FragmentProfileSocialLinks())
-                },
-                showWorkHistory = {
-                    presentFragment(FragmentWorkHistory())
-                },
-                onAddPortfolioClicked = {
-                    isUploadingBackground = false
-                    imageUpdater?.openMenu(
-                        false,
-                        Runnable {
-                            viewModel.setIntent(ProfileIntent.OnClearPortfolioUpload)
-                        },
-                        null,
-                        ImageUpdater.TYPE_DEFAULT
-                    )
-                },
-                onEditBackgroundClicked = {
-                    isUploadingBackground = true
-                    imageUpdater?.openMenu(
-                        false,
-                        Runnable {
-                            viewModel.setIntent(ProfileIntent.OnClearPortfolioUpload)
-                        },
-                        null,
-                        ImageUpdater.TYPE_DEFAULT
-                    )
-                }
-            )
+        val composeView = ComposeView(context).apply {
+            (getParentActivity() as? androidx.activity.ComponentActivity)?.let { activity ->
+                setViewTreeLifecycleOwner(activity)
+                setViewTreeViewModelStoreOwner(activity)
+                setViewTreeSavedStateRegistryOwner(activity)
+            }
+
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                Log.d("MyTag", targetUserId.toString())
+                ProfileNavGraph(
+                    initialUserId = targetUserId,
+                    initialIsOwnProfile = isOwnProfile,
+                    onEditClicked = {
+                        presentFragment(FragmentEditMyProfile())
+                    },
+                    onEditLinksClicked = {
+                        presentFragment(FragmentProfileSocialLinks())
+                    },
+                    showWorkHistory = {
+                        presentFragment(FragmentWorkHistory())
+                    },
+                    onEditBackgroundClicked = {
+                        isUploadingBackground = true
+                        imageUpdater?.openMenu(
+                            false,
+                            Runnable {
+                                viewModel.setIntent(ProfileIntent.OnClearPortfolioUpload)
+                            },
+                            null,
+                            ImageUpdater.TYPE_DEFAULT
+                        )
+                    },
+                    onNavigateBack = { finishFragment() },
+                    onNavControllerReady = { navController = it },
+                )
+            }
         }
+
         return composeView
+    }
+
+    override fun onBackPressed(): Boolean {
+        val nav = navController
+        if (nav != null && nav.previousBackStackEntry != null) {
+            nav.popBackStack()
+            return false
+        }
+        return super.onBackPressed()
     }
 
     override fun didUploadPhoto(

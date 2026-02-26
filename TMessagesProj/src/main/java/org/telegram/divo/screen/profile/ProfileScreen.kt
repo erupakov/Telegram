@@ -16,13 +16,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -60,15 +60,18 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.LaunchedEffectOnce
+import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.PortfolioUploadPreview
 import org.telegram.divo.components.TelegramPhotoBackground
 import org.telegram.divo.components.items.ProfileNameItem
+import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.screen.profile.components.BiographyAppearanceSection
 import org.telegram.divo.screen.profile.components.EngagementStatsRow
+import org.telegram.divo.screen.profile.components.SimilarProfilesRow
 import org.telegram.divo.screen.profile.components.SocialLinksSection
 import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBar
@@ -83,13 +86,17 @@ fun ProfileScreen(
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: () -> Unit = {},
-    onAddPortfolioClicked: () -> Unit = {},
+    onPhotoClicked: (String) -> Unit = {},
+    onSimilarClickedClicked: (Int) -> Unit = {},
     onEditBackgroundClicked: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
-    LaunchedEffect(Unit) {
+    LaunchedEffectOnce {
         viewModel.setIntent(ProfileIntent.OnLoad(userId, isOwnProfile))
+    }
+
+    LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is ProfileEffect.OpenUrl -> {
@@ -128,8 +135,9 @@ fun ProfileScreen(
             },
             onNavigateBack = onNavigateBack,
             showWorkHistory = showWorkHistory,
-            onAddPortfolioClicked = onAddPortfolioClicked,
+            onSimilarClickedClicked = onSimilarClickedClicked,
             onEditBackgroundClicked = onEditBackgroundClicked,
+            onPhotoClicked = onPhotoClicked,
             onSocialLinkClicked = { url ->  } //viewModel.openSocialLink(url)
         )
     }
@@ -144,25 +152,43 @@ private fun ProfileScreenContent(
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: () -> Unit = {},
-    onAddPortfolioClicked: () -> Unit = {},
+    onPhotoClicked: (String) -> Unit = {},
+    onSimilarClickedClicked: (Int) -> Unit = {},
     onEditBackgroundClicked: () -> Unit = {},
     onSocialLinkClicked: (String) -> Unit = {},
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
     val tabHeightDp = 48.dp
-    val density = LocalDensity.current
 
-    var headerHeightPx by remember { mutableStateOf(0f) }
+    var headerHeightPx by remember { mutableFloatStateOf(0f) }
     var headerOffsetPx by remember { mutableFloatStateOf(0f) }
 
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 val delta = available.y
-                val previous = headerOffsetPx
-                headerOffsetPx = (headerOffsetPx + delta).coerceIn(-headerHeightPx, 0f)
-                val consumed = headerOffsetPx - previous
-                return Offset(0f, consumed)
+                if (delta < 0) { // только вверх
+                    val previous = headerOffsetPx
+                    headerOffsetPx = (headerOffsetPx + delta).coerceIn(-headerHeightPx, 0f)
+                    val consumed = headerOffsetPx - previous
+                    return Offset(0f, consumed)
+                }
+                return Offset.Zero
+            }
+
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset {
+                val delta = available.y
+                if (delta > 0) {
+                    val previous = headerOffsetPx
+                    headerOffsetPx = (headerOffsetPx + delta).coerceIn(-headerHeightPx, 0f)
+                    val consumed2 = headerOffsetPx - previous
+                    return Offset(0f, consumed2)
+                }
+                return Offset.Zero
             }
         }
     }
@@ -186,7 +212,9 @@ private fun ProfileScreenContent(
         ToolBar(
             uiState = uiState,
             titleVisible = titleVisible,
-            modifier = Modifier.background(Color.Transparent).zIndex(2f),
+            modifier = Modifier
+                .background(Color.Transparent)
+                .zIndex(2f),
             onEditClicked = onEditClicked,
             onNavigateBack = onNavigateBack,
             onEditBackgroundClicked = onEditBackgroundClicked
@@ -212,39 +240,6 @@ private fun ProfileScreenContent(
                 onSocialLinkClicked = onSocialLinkClicked
             )
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = tabHeightDp)
-                    .offset {
-                        IntOffset(0, tabOffsetY.toInt())
-                    }
-            ) {
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.White)
-                ) { page ->
-                    when (page) {
-                        0 -> PortfolioGrid(
-                            portfolioItems = uiState.userGalleryItems,
-                            isUploading = uiState.portfolioUploading,
-                            uploadLocalPath = "uiState.portfolioUploadLocalPath",
-                            onAddClicked = onAddPortfolioClicked,
-                            dialogId = 0
-                        )
-                        else -> LazyVerticalGrid(
-                            columns = GridCells.Fixed(3),
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(8.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {}
-                    }
-                }
-            }
-
             TabContainer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -252,6 +247,42 @@ private fun ProfileScreenContent(
                     .offset { IntOffset(0, tabOffsetY.toInt()) }
                     .zIndex(1f)
             )
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = tabHeightDp)
+                    .offset { IntOffset(0, tabOffsetY.toInt()) }
+            ) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    HorizontalPager(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(Color(0xFFF6F6F6)),
+                        state = pagerState,
+                        userScrollEnabled = false,
+                    ) { page ->
+                        when (page) {
+                            0 -> PortfolioGrid(
+                                portfolioItems = uiState.userGalleryItems,
+                                similarItems = uiState.similarModels,
+                                isUploading = uiState.portfolioUploading,
+                                uploadLocalPath = "uiState.portfolioUploadLocalPath",
+                                dialogId = 0,
+                                onPhotoClicked = onPhotoClicked,
+                                onSimilarClicked = onSimilarClickedClicked
+                            )
+                            else -> LazyVerticalGrid(
+                                columns = GridCells.Fixed(3),
+                                modifier = Modifier.fillMaxSize(),
+                                contentPadding = PaddingValues(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {}
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -308,12 +339,14 @@ private fun ProfileHeaderContent(
 
 @Composable
 fun PortfolioGrid(
+    modifier: Modifier = Modifier,
     portfolioItems: List<UserGalleryItem>,
+    similarItems: List<AgencyModel>,
     isUploading: Boolean,
     uploadLocalPath: String?,
-    onAddClicked: () -> Unit,
     dialogId: Long,
-    modifier: Modifier = Modifier
+    onPhotoClicked: (String) -> Unit,
+    onSimilarClicked: (Int) -> Unit,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
@@ -331,8 +364,16 @@ fun PortfolioGrid(
             DivoAsyncImage(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickableWithoutRipple { (onPhotoClicked(item.photoUrl)) }
                     .aspectRatio(1f),
                 url = item.previewUrl
+            )
+        }
+
+        item(span = { GridItemSpan(maxLineSpan) }) {
+            SimilarProfilesRow(
+                similarItems = similarItems,
+                onClicked = onSimilarClicked
             )
         }
     }

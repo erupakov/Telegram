@@ -1,7 +1,7 @@
 package org.telegram.divo.dal.dto.user
 
 import com.google.gson.annotations.SerializedName
-import org.telegram.divo.dal.dto.PaginationDto
+import org.telegram.divo.dal.dto.common.PaginationDto
 import org.telegram.divo.entity.UserGalleryItem
 
 class UserGalleryListResponse(

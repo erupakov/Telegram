@@ -1,5 +1,7 @@
 package org.telegram.divo.dal.api
 
+import org.telegram.divo.dal.dto.user.AgencyModelsRequest
+import org.telegram.divo.dal.dto.user.AgencyModelsResponse
 import org.telegram.divo.dal.dto.user.UserGalleryListRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListResponse
 import org.telegram.divo.dal.dto.user.UserInfoResponse
@@ -26,6 +28,12 @@ interface UserService {
     suspend fun getUserGalleryList(
         @Body request: UserGalleryListRequest
     ): UserGalleryListResponse
+
+    @POST("agency/{agencyId}/models/list")
+    suspend fun getAgencyModels(
+        @Path("agencyId") agencyId: Int,
+        @Body request: AgencyModelsRequest
+    ): AgencyModelsResponse
 }
 
 

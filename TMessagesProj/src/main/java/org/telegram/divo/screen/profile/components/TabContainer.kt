@@ -64,7 +64,8 @@ fun TabContainer(
                             )
                     )
                 }
-            }
+            },
+            divider = {},
         ) {
             Destination.entries.forEachIndexed { index, destination ->
                 Tab(

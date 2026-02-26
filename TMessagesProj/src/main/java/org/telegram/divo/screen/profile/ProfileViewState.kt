@@ -4,6 +4,9 @@ import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.dal.dto.user.GalleryItem
+import org.telegram.divo.entity.AgencyModel
+import org.telegram.divo.entity.AgencyModels
+import org.telegram.divo.entity.Feed
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
 import org.telegram.tgnet.TLRPC
@@ -22,39 +25,13 @@ data class ProfileViewState(
 
     val portfolioLoading: Boolean = false,
     val portfolioUploading: Boolean = false,
+    val isLoadingAllUsers: Boolean = false,
 
+    val similarModels: List<AgencyModel> = emptyList(),
     val socialLinks: SocialLinks = SocialLinks(),
     val physicalParams: PhysicalParams = PhysicalParams(),
     val statistic: UserStatistic = UserStatistic()
-) : ViewState {
-
-    val countryFlagEmoji: String
-        get() = userInfo?.let { user ->
-            user.city.countryCode
-                .uppercase()
-                .map { char -> Character.toCodePoint('\uD83C', '\uDDE6' + (char - 'A')) }
-                .joinToString("") { String(Character.toChars(it)) }
-        }.orEmpty()
-
-    fun formattedAge(age: String, locale: Locale = Locale.getDefault()): String {
-        try {
-            val birthDate = LocalDate.parse(age)
-            val age = Period.between(birthDate, LocalDate.now()).years
-            val format = mapOf(
-                "ar" to "$age سنة",
-                "de" to "$age J.",
-                "es" to "$age años",
-                "it" to "$age anni",
-                "ko" to "${age}세",
-            )
-            return format[locale.language] ?: "$age y.o."
-        } catch (_: Exception) {
-            return ""
-        }
-    }
-}
-
-// --- Вспомогательные классы для UI ---
+) : ViewState
 
 data class SocialLinks(
     val instagram: String = "",
@@ -85,13 +62,10 @@ data class UserStatistic(
     val saves: Int = 0
 )
 
-// --- Intents (Действия UI) ---
-
 sealed class ProfileIntent : ViewIntent {
     data class OnLoad(val userId: Int, val isOwnProfile: Boolean) : ProfileIntent()
     object OnClearPortfolioUpload : ProfileIntent()
 
-    // Для загрузки фото теперь передаем путь к файлу или Uri
     class OnPortfolioPhotoSelected(
         val photo: TLRPC.InputFile,
         val localPath: String?
@@ -103,11 +77,8 @@ sealed class ProfileIntent : ViewIntent {
     class OpenSocialLink(val url: String) : ProfileIntent()
 }
 
-// --- Effects (Навигация и Toast) ---
-
 sealed class ProfileEffect : ViewEffect {
     class OpenUrl(val url: String) : ProfileEffect()
     class ShowError(val message: String) : ProfileEffect()
-    // Остальные эффекты навигации...
     object NavigateToSearch : ProfileEffect()
 }

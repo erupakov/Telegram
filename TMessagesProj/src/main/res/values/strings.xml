@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--divo view start-->
     <string name="AppName">Divo</string>
     <string name="AppNameBeta">Divo Beta</string>
+    <string name="SimilarProfiles">You may be interested in similar profiles</string>
+    <!--divo view end-->
+
+
+
     <string name="LanguageName">English</string>
     <string name="English">English</string>
     <string name="LanguageNameInEnglish">English</string>

@@ -1,9 +1,11 @@
 package org.telegram.divo.dal.dto.user
 
 import com.google.gson.annotations.SerializedName
+import org.telegram.divo.dal.dto.common.CityDto
+import org.telegram.divo.dal.dto.common.PhotoDto
+import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyAddress
-import org.telegram.divo.entity.AgencyPhoto
 import org.telegram.divo.entity.Appearance
 import org.telegram.divo.entity.City
 import org.telegram.divo.entity.EyeColor
@@ -29,7 +31,7 @@ class UserDataDto(
     @SerializedName("email") val email: String,
     @SerializedName("phone") val phone: String,
     @SerializedName("photo") val photo: PhotoDto,
-    @SerializedName("avatar") val avatar: AvatarDto,
+    @SerializedName("avatar") val avatar: PhotoDto,
     @SerializedName("role") val role: String,
     @SerializedName("subrole") val subrole: String?,
     @SerializedName("roleLabel") val roleLabel: String,
@@ -50,28 +52,6 @@ class UserDataDto(
 class GenderDto(
     @SerializedName("id") val id: String,
     @SerializedName("title") val title: String
-)
-
-class CityDto(
-    @SerializedName("id") val id: Int,
-    @SerializedName("countryCode") val countryCode: String,
-    @SerializedName("countryName") val countryName: String,
-    @SerializedName("areaName") val areaName: String,
-    @SerializedName("name") val name: String
-)
-
-class PhotoDto(
-    @SerializedName("fileName") val fileName: String,
-    @SerializedName("fullUrl") val fullUrl: String,
-    @SerializedName("extension") val extension: String,
-    @SerializedName("fileUuid") val fileUuid: String
-)
-
-class AvatarDto(
-    @SerializedName("fileName") val fileName: String,
-    @SerializedName("fullUrl") val fullUrl: String,
-    @SerializedName("extension") val extension: String,
-    @SerializedName("fileUuid") val fileUuid: String
 )
 
 class ModelDto(
@@ -96,7 +76,7 @@ class AgencyDto(
     @SerializedName("description") val description: String?,
     @SerializedName("employeeTitle") val employeeTitle: String?,
     @SerializedName("address") val address: AgencyAddressDto?,
-    @SerializedName("photo") val photo: AgencyPhotoDto?
+    @SerializedName("photo") val photo: PhotoDto?
 )
 
 class AgencyAddressDto(
@@ -107,13 +87,6 @@ class AgencyAddressDto(
     @SerializedName("latitude") val latitude: Double?,
     @SerializedName("longitude") val longitude: Double?,
     @SerializedName("city") val city: CityDto?
-)
-
-class AgencyPhotoDto(
-    @SerializedName("fileName") val fileName: String,
-    @SerializedName("fullUrl") val fullUrl: String,
-    @SerializedName("extension") val extension: String,
-    @SerializedName("fileUuid") val fileUuid: String
 )
 
 class AppearanceDto(
@@ -194,15 +167,6 @@ private fun GenderDto.toEntity(): Gender =
         title = title
     )
 
-private fun CityDto.toEntity(): City =
-    City(
-        id = id,
-        countryCode = countryCode,
-        countryName = countryName,
-        areaName = areaName,
-        name = name
-    )
-
 private fun StatisticDto.toEntity(): Statistic =
     Statistic(
         followersCount = followersCount,
@@ -248,14 +212,6 @@ private fun AgencyAddressDto.toEntity(): AgencyAddress =
         latitude = latitude,
         longitude = longitude,
         city = city?.toEntity()
-    )
-
-private fun AgencyPhotoDto.toEntity(): AgencyPhoto =
-    AgencyPhoto(
-        fileName = fileName,
-        fullUrl = fullUrl,
-        extension = extension,
-        fileUuid = fileUuid
     )
 
 private fun AppearanceDto.toEntity(): Appearance =
