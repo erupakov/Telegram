@@ -70,9 +70,11 @@ import org.telegram.divo.components.items.ProfileNameItem
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.screen.profile.components.BiographyAppearanceSection
+import org.telegram.divo.screen.profile.components.EngagementStatsBottomSheet
 import org.telegram.divo.screen.profile.components.EngagementStatsRow
 import org.telegram.divo.screen.profile.components.SimilarProfilesRow
 import org.telegram.divo.screen.profile.components.SocialLinksSection
+import org.telegram.divo.screen.profile.components.StatsType
 import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBar
 import org.telegram.divo.style.AppTheme
@@ -87,7 +89,7 @@ fun ProfileScreen(
     onNavigateBack: () -> Unit = {},
     showWorkHistory: () -> Unit = {},
     onPhotoClicked: (String) -> Unit = {},
-    onSimilarClickedClicked: (Int) -> Unit = {},
+    onProfileClicked: (Int) -> Unit = {},
     onEditBackgroundClicked: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -135,15 +137,19 @@ fun ProfileScreen(
             },
             onNavigateBack = onNavigateBack,
             showWorkHistory = showWorkHistory,
-            onSimilarClickedClicked = onSimilarClickedClicked,
+            onProfileClicked = onProfileClicked,
             onEditBackgroundClicked = onEditBackgroundClicked,
             onPhotoClicked = onPhotoClicked,
-            onSocialLinkClicked = { url ->  } //viewModel.openSocialLink(url)
+            onSocialLinkClicked = { url ->  }, //viewModel.openSocialLink(url)
+            onStatsClicked = { viewModel.setIntent(ProfileIntent.OnLoadEngagementStats(it)) },
+            onLoadMore = { viewModel.setIntent(ProfileIntent.OnLoadMoreEngagementStats(it)) },
+            onQueryChanged = { viewModel.setIntent(ProfileIntent.OnSearchQueryChanged(it)) },
+            onLoadMoreSearch = { viewModel.setIntent(ProfileIntent.OnLoadMoreSearchResults) },
         )
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileScreenContent(
     modifier: Modifier = Modifier,
@@ -153,9 +159,13 @@ private fun ProfileScreenContent(
     onNavigateBack: () -> Unit = {},
     showWorkHistory: () -> Unit = {},
     onPhotoClicked: (String) -> Unit = {},
-    onSimilarClickedClicked: (Int) -> Unit = {},
+    onProfileClicked: (Int) -> Unit = {},
     onEditBackgroundClicked: () -> Unit = {},
     onSocialLinkClicked: (String) -> Unit = {},
+    onStatsClicked: (StatsType) -> Unit = {},
+    onLoadMore: (StatsType) -> Unit = {},
+    onQueryChanged: (String) -> Unit,
+    onLoadMoreSearch: () -> Unit,
 ) {
     val pagerState = rememberPagerState(pageCount = { 3 })
     val tabHeightDp = 48.dp
@@ -167,7 +177,7 @@ private fun ProfileScreenContent(
         object : NestedScrollConnection {
             override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
                 val delta = available.y
-                if (delta < 0) { // только вверх
+                if (delta < 0) {
                     val previous = headerOffsetPx
                     headerOffsetPx = (headerOffsetPx + delta).coerceIn(-headerHeightPx, 0f)
                     val consumed = headerOffsetPx - previous
@@ -195,6 +205,27 @@ private fun ProfileScreenContent(
 
     val tabOffsetY = (headerHeightPx + headerOffsetPx).coerceAtLeast(0f)
     val titleVisible = headerOffsetPx < -40f
+
+    var showStatsSheet by remember { mutableStateOf(false) }
+    var selectedStat by remember { mutableStateOf<StatsType?>(null) }
+
+    if (showStatsSheet) {
+        EngagementStatsBottomSheet(
+            stats = selectedStat,
+            feeds = uiState.feedItems,
+            isLoadingMoreFeed = uiState.isLoadingMoreFeed,
+            searchQuery = uiState.searchQuery,
+            searchResults = uiState.searchResults,
+            isSearchMode = uiState.isSearchMode,
+            isSearching = uiState.isSearching,
+            isLoadingMoreSearch = uiState.isLoadingMoreSearch,
+            onQueryChanged = onQueryChanged,
+            onLoadMoreSearch = onLoadMoreSearch,
+            onProfileClicked = { onProfileClicked(it) },
+            onLoadMore = { onLoadMore(selectedStat ?: StatsType.LIKES) },
+            onDismiss = { showStatsSheet = false }
+        )
+    }
 
     uiState.userInfo?.photoUrl?.let { url ->
         TelegramPhotoBackground(
@@ -237,7 +268,12 @@ private fun ProfileScreenContent(
                 uiState = uiState,
                 onEditLinksClicked = onEditLinksClicked,
                 showWorkHistory = showWorkHistory,
-                onSocialLinkClicked = onSocialLinkClicked
+                onStatsClicked = { stat ->
+                    selectedStat = stat
+                    showStatsSheet = true
+                    onStatsClicked(stat)
+                },
+                onSocialLinkClicked = onSocialLinkClicked,
             )
 
             TabContainer(
@@ -270,7 +306,7 @@ private fun ProfileScreenContent(
                                 uploadLocalPath = "uiState.portfolioUploadLocalPath",
                                 dialogId = 0,
                                 onPhotoClicked = onPhotoClicked,
-                                onSimilarClicked = onSimilarClickedClicked
+                                onSimilarClicked = onProfileClicked
                             )
                             else -> LazyVerticalGrid(
                                 columns = GridCells.Fixed(3),
@@ -293,6 +329,7 @@ private fun ProfileHeaderContent(
     uiState: ProfileViewState,
     onEditLinksClicked: () -> Unit,
     showWorkHistory: () -> Unit,
+    onStatsClicked: (StatsType) -> Unit,
     onSocialLinkClicked: (String) -> Unit = {}
 ) {
     var selectedBioTab by rememberSaveable { mutableIntStateOf(0) }
@@ -316,7 +353,8 @@ private fun ProfileHeaderContent(
 
         EngagementStatsRow(
             stats = uiState.statistic,
-            onClicked = {}
+            onClicked = {},
+            onStatsClicked = onStatsClicked
         )
 
         // Biography / Appearance Tabs

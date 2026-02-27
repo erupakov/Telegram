@@ -7,8 +7,11 @@ import org.telegram.divo.dal.dto.user.GalleryItem
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.AgencyModels
 import org.telegram.divo.entity.Feed
+import org.telegram.divo.entity.FeedItem
+import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.screen.profile.components.StatsType
 import org.telegram.tgnet.TLRPC
 import java.time.LocalDate
 import java.time.Period
@@ -26,8 +29,19 @@ data class ProfileViewState(
     val portfolioLoading: Boolean = false,
     val portfolioUploading: Boolean = false,
     val isLoadingAllUsers: Boolean = false,
+    val isLoadingMoreFeed: Boolean = false,
+    val feedHasMore: Boolean = true,
+
+    // Search
+    val searchQuery: String = "",
+    val searchResults: List<FeedlineItem> = emptyList(),
+    val isSearching: Boolean = false,
+    val isSearchMode: Boolean = false,
+    val searchHasMore: Boolean = true,
+    val isLoadingMoreSearch: Boolean = false,
 
     val similarModels: List<AgencyModel> = emptyList(),
+    val feedItems: List<FeedItem> = emptyList(),
     val socialLinks: SocialLinks = SocialLinks(),
     val physicalParams: PhysicalParams = PhysicalParams(),
     val statistic: UserStatistic = UserStatistic()
@@ -65,6 +79,9 @@ data class UserStatistic(
 sealed class ProfileIntent : ViewIntent {
     data class OnLoad(val userId: Int, val isOwnProfile: Boolean) : ProfileIntent()
     object OnClearPortfolioUpload : ProfileIntent()
+    class OnLoadMoreEngagementStats(
+        val type: StatsType
+    ) : ProfileIntent()
 
     class OnPortfolioPhotoSelected(
         val photo: TLRPC.InputFile,
@@ -75,6 +92,9 @@ sealed class ProfileIntent : ViewIntent {
         val localPath: String?
     ) : ProfileIntent()
     class OpenSocialLink(val url: String) : ProfileIntent()
+    class OnLoadEngagementStats(val type: StatsType) : ProfileIntent()
+    class OnSearchQueryChanged(val query: String) : ProfileIntent()
+    object OnLoadMoreSearchResults : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {

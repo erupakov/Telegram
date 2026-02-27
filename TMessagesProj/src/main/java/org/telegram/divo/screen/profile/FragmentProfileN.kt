@@ -61,7 +61,6 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
 
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                Log.d("MyTag", targetUserId.toString())
                 ProfileNavGraph(
                     initialUserId = targetUserId,
                     initialIsOwnProfile = isOwnProfile,

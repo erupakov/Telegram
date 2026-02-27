@@ -5,6 +5,7 @@ import java.io.IOException
 import org.telegram.divo.dal.dto.common.ErrorResponse
 import retrofit2.HttpException
 import retrofit2.Response
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Unified result type for Divo network operations.
@@ -28,6 +29,8 @@ suspend fun <T> resultOf(
 ): DivoResult<T> {
     return try {
         DivoResult.Success(block())
+    } catch (e: CancellationException) {
+        throw e
     } catch (e: IOException) {
         DivoResult.NetworkError(e)
     } catch (e: HttpException) {

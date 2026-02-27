@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.ActivityInfo
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
+import org.telegram.divo.screen.photo.FragmentPhotoViewer
 import org.telegram.divo.screen.profile.FragmentProfileN
 import org.telegram.ui.ActionBar.BaseFragment
 
@@ -19,6 +20,9 @@ class FragmentModels : BaseFragment() {
                 onClick = { userId ->
                     presentFragment(FragmentProfileN.newInstance(userId))
                 },
+                onPhotoClicked = { url ->
+                    presentFragment(FragmentPhotoViewer.newInstance(url))
+                }
             )
         }
         return composeView

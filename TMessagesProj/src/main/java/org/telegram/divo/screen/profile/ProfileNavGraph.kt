@@ -59,7 +59,7 @@ fun ProfileNavGraph(
                 onPhotoClicked = { photoUrl ->
                     nav.navigate(ProfileRoute.PhotoViewer.createRoute(photoUrl))
                 },
-                onSimilarClickedClicked = { anotherUserId ->
+                onProfileClicked = { anotherUserId ->
                     nav.navigate(ProfileRoute.OtherProfile.createRoute(anotherUserId))
                 },
                 onEditBackgroundClicked = onEditBackgroundClicked,
@@ -87,8 +87,8 @@ fun ProfileNavGraph(
                 onPhotoClicked = { photoUrl ->
                     nav.navigate(ProfileRoute.PhotoViewer.createRoute(photoUrl))
                 },
-                onSimilarClickedClicked = { anotherUserId ->
-                    nav.navigate(ProfileRoute.OtherProfile.createRoute(anotherUserId))
+                onProfileClicked = { anotherUserId ->
+                    //nav.navigate(ProfileRoute.OtherProfile.createRoute(anotherUserId))
                 },
                 onEditBackgroundClicked = onEditBackgroundClicked,
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() }

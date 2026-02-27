@@ -1,12 +1,14 @@
 package org.telegram.divo.components
 
 import android.media.Image
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -170,12 +172,12 @@ fun TelegramPhotoBackground(
             modifier = Modifier
                 .fillMaxSize()
                 .hazeSource(state = hazeState)
-                .hazeSource(state = hazeState)
         )
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
+
                 .hazeEffect(
                     state = hazeState,
                     style = HazeStyle(
@@ -187,7 +189,7 @@ fun TelegramPhotoBackground(
                     progressive = HazeProgressive.verticalGradient(
                         startIntensity = 0f,
                         endIntensity = 1f,
-                        easing = FastOutSlowInEasing
+                        easing = CubicBezierEasing(0.4f, 0f, 0.2f, 0.85f)
                     )
                 }
         )

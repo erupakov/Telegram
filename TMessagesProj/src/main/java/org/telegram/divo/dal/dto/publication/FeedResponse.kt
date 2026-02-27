@@ -3,6 +3,7 @@ package org.telegram.divo.dal.dto.publication
 import com.google.gson.JsonElement
 import com.google.gson.annotations.SerializedName
 import org.telegram.divo.dal.dto.common.PaginationDto
+import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.entity.Feed
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FileModel
@@ -26,7 +27,7 @@ class FeedItemDto(
     @SerializedName("feedId")
     val feedId: Int,
     @SerializedName("title")
-    val title: String,
+    val title: String?,
     @SerializedName("description")
     val description: String?,
     @SerializedName("entity")
@@ -80,15 +81,15 @@ class FileDto(
 fun FeedResponse.toEntity(): Feed =
     Feed(
         items = data.items.map { it.toEntity() },
-        //pagination = data.pagination.meta.toEntity()
+        pagination = data.pagination.meta.toEntity()
     )
 
 private fun FeedItemDto.toEntity(): FeedItem =
     FeedItem(
         id = id,
         feedId = feedId,
-        title = title,
-        description = description.orEmpty(), // null → ""
+        title = title.orEmpty(),
+        description = description.orEmpty(),
         entity = entity,
         type = type,
         likesCount = likesCount,

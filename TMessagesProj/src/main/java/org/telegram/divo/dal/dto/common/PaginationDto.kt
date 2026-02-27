@@ -12,3 +12,10 @@ class PaginationMetaDto(
     @SerializedName("currentOffset") val currentOffset: Int,
     @SerializedName("totalCount") val totalCount: Int
 )
+
+fun PaginationMetaDto.toEntity(): Pagination =
+    Pagination(
+        limit = limit,
+        currentOffset = currentOffset,
+        totalCount = totalCount
+    )

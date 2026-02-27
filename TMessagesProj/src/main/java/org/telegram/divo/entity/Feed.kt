@@ -2,7 +2,7 @@ package org.telegram.divo.entity
 
 data class Feed(
     val items: List<FeedItem> = listOf(),
-    //val pagination: Pagination
+    val pagination: Pagination? = null
 )
 
 data class FeedItem(

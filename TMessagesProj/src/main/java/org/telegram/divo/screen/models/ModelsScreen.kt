@@ -87,10 +87,11 @@ fun ModelsHomeScreen(
     viewModel: ModelsViewModel = androidx.lifecycle.viewmodel.compose.viewModel<ModelsViewModel>(),
     onSearch: () -> Unit = {},
     onClick: (Int) -> Unit = {},
+    onPhotoClicked: (String) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
     val currentModels = if (state.selectedTab == Tab.ALL_USERS) state.allUserModels else state.models
-    val currentRestModels = if (state.selectedTab == Tab.ALL_USERS) state.feed.items else listOf()
+    val currentRestModels = if (state.selectedTab == Tab.ALL_USERS) state.feedItems else listOf()
     val pagerState = rememberPagerState(pageCount = { currentRestModels.size })
 
     LockScreenOrientation()
@@ -98,16 +99,16 @@ fun ModelsHomeScreen(
         viewModel.setIntent(ModelsViewIntent.LoadInitialData)
     }
 
-    // Load more when approaching last page (ALL_USERS tab)
     if (state.selectedTab == Tab.ALL_USERS) {
         LaunchedEffect(pagerState.currentPage, currentRestModels.size) {
-//            if (currentModels.isNotEmpty()
-//                && pagerState.currentPage >= currentModels.size - 1
-//                && state.allUsersHasMore
-//                && !state.isLoadingAllUsers
-//            ) {
-//                viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
-//            }
+            if (currentRestModels.isNotEmpty()
+                && pagerState.currentPage >= currentRestModels.size - 3
+                && state.feedHasMore
+                && !state.isLoadingAllUsers
+                && !state.isLoadingMoreFeed
+            ) {
+                viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
+            }
         }
     }
 
@@ -172,7 +173,7 @@ fun ModelsHomeScreen(
                             }
                         )
                     }
-                    currentRestModels == null && state.isLoadingAllUsers -> {
+                    currentRestModels.isEmpty() && state.isLoadingAllUsers -> {
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -195,8 +196,8 @@ fun ModelsHomeScreen(
                         ) { page ->
                             ModelPage(
                                 feed = currentRestModels[page],
-                                viewModel = viewModel,
-                                onClick = { onClick(it) }
+                                onClick = { onClick(it) },
+                                onPhotoClicked = onPhotoClicked
                             )
                         }
                     }
@@ -380,8 +381,8 @@ fun TabsRow(
 @Composable
 private fun ModelPage(
     feed: FeedItem,
-    viewModel: ModelsViewModel,
     onClick: (Int) -> Unit,
+    onPhotoClicked: (String) -> Unit,
 ) {
     val backgroundPhoto = feed.files.first().url
     Box(
@@ -532,7 +533,7 @@ private fun ModelPage(
                 }
             }
             Spacer(Modifier.height(16.dp))
-            ThumbsRow(feed, viewModel)
+            ThumbsRow(feed, onPhotoClicked)
         }
     }
 }
@@ -579,7 +580,7 @@ private fun ReactionPill(
 @Composable
 private fun ThumbsRow(
     feed: FeedItem,
-    viewModel: ModelsViewModel,
+    onPhotoClicked: (String) -> Unit,
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -592,14 +593,12 @@ private fun ThumbsRow(
             key = { it.uuid }
         ) { thumb ->
             Image(
+                modifier = Modifier
+                    .size(width = 126.dp, height = 136.dp)
+                    .clickableWithoutRipple { onPhotoClicked(thumb.url) },
                 painter = rememberAsyncImagePainter(thumb.url),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(width = 126.dp, height = 136.dp)
-                    .clickable {
-                        //viewModel.setIntent(ModelsViewIntent.OnPhotoClick(model.id, thumb))
-                    }
             )
         }
     }

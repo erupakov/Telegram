@@ -2,16 +2,60 @@ package org.telegram.divo.screen.profile
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.OffsetPaginator
+import org.telegram.divo.common.PaginatedResult
 import org.telegram.divo.common.formattedAge
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.screen.profile.components.StatsType
 import kotlin.random.Random
 
 class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
+
+    companion object {
+        private const val PAGE_SIZE = 15
+        private const val SEARCH_DEBOUNCE_MS = 400L
+    }
+
+    private var searchJob: Job? = null
+
+    private val feedPaginator = OffsetPaginator(
+        limit = PAGE_SIZE
+    ) { offset, limit ->
+        when (val result = DivoApi.publicationRepository.getFeed(offset, limit)) {
+            is DivoResult.Success -> {
+                val feed = result.value
+                PaginatedResult(
+                    items = feed.items,
+                    totalCount = feed.pagination?.totalCount ?: feed.items.size
+                )
+            }
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
+
+    private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        when (val result = DivoApi.publicationRepository.searchFeeds(
+            offset = offset,
+            limit = limit,
+            query = state.value.searchQuery
+        )) {
+            is DivoResult.Success -> {
+                val data = result.value
+                PaginatedResult(
+                    items = data.items,
+                    totalCount = data.pagination?.totalCount ?: data.items.size
+                )
+            }
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
 
     override fun createInitialState(): ProfileViewState {
         return ProfileViewState()
@@ -24,6 +68,10 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             is ProfileIntent.OnBackgroundPhotoSelected -> {} // uploadPhoto(intent.filePath, isBackground = true)
             is ProfileIntent.OnPortfolioPhotoSelected -> {} // uploadPhoto(intent.filePath, isBackground = false)
             is ProfileIntent.OnClearPortfolioUpload -> {}
+            is ProfileIntent.OnLoadEngagementStats -> loadEngagementStats(intent.type, false)
+            is ProfileIntent.OnLoadMoreEngagementStats -> loadEngagementStats(intent.type, true)
+            is ProfileIntent.OnSearchQueryChanged -> onSearchQueryChanged(intent.query)
+            is ProfileIntent.OnLoadMoreSearchResults -> loadMoreSearchResults()
         }
     }
 
@@ -34,6 +82,69 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             launch { loadUserProfile() }
             launch { loadPortfolio() }
             launch { loadSimilarProfiles() }
+            observePaginator()
+            observeSearchPaginator()
+        }
+    }
+
+    private fun observePaginator() {
+        viewModelScope.launch {
+            feedPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        feedItems = pState.items,
+                        isLoadingAllUsers = pState.isLoading,
+                        isLoadingMoreFeed = pState.isLoadingMore,
+                        feedHasMore = pState.hasMore,
+                        errorMessage = pState.error ?: state.value.errorMessage
+                    )
+                }
+            }
+        }
+    }
+
+    private fun observeSearchPaginator() {
+        viewModelScope.launch {
+            searchPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        searchResults = pState.items,
+                        isSearching = pState.isLoading,
+                        isLoadingMoreSearch = pState.isLoadingMore,
+                        searchHasMore = pState.hasMore,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun onSearchQueryChanged(query: String) {
+        searchJob?.cancel()
+        setState { copy(searchQuery = query) }
+
+        if (query.isBlank()) {
+            searchPaginator.reset()
+            setState { copy(isSearchMode = false) }
+          
+            viewModelScope.launch {
+                if (state.value.feedItems.isEmpty()) {
+                    feedPaginator.loadInitial()
+                }
+            }
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MS)
+            setState { copy(isSearchMode = true) }
+            searchPaginator.reset()
+            searchPaginator.loadInitial()
+        }
+    }
+
+    private fun loadMoreSearchResults() {
+        viewModelScope.launch {
+            searchPaginator.loadMore()
         }
     }
 
@@ -82,6 +193,14 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             val errorMsg = result.getErrorMessage()
             setState { copy(isLoading = false, errorMessage = errorMsg) }
             sendEffect(ProfileEffect.ShowError(errorMsg))
+        }
+    }
+
+    //TODO временно
+    private fun loadEngagementStats(type: StatsType, loadMore: Boolean) {
+        viewModelScope.launch {
+            if (loadMore) feedPaginator.loadMore()
+            else feedPaginator.loadInitial()
         }
     }
 

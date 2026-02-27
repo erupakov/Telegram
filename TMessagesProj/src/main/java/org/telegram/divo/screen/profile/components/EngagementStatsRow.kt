@@ -32,6 +32,7 @@ fun EngagementStatsRow(
     modifier: Modifier = Modifier,
     stats: UserStatistic,
     onClicked: () -> Unit,
+    onStatsClicked: (StatsType) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -69,17 +70,26 @@ fun EngagementStatsRow(
             count = stats.likes,
             text = "Like",
             iconResId = drawable.ic_divo_favorite,
+            onStatsClicked = {
+                onStatsClicked(StatsType.LIKES)
+            }
         )
         EngagementStatsItem(
             count = stats.views,
             text = "Viewed",
             iconResId = drawable.ic_divo_visibility,
+            onStatsClicked = {
+                onStatsClicked(StatsType.VIEWS)
+            }
         )
         EngagementStatsItem(
             count = stats.saves,
             text = "Save",
             iconResId = drawable.ic_divo_bookmark,
             innerPadding = 0.dp,
+            onStatsClicked = {
+                onStatsClicked(StatsType.SAVES)
+            }
         )
     }
 }
@@ -91,9 +101,10 @@ private fun EngagementStatsItem(
     text: String,
     @DrawableRes iconResId: Int,
     innerPadding: Dp = 2.dp,
+    onStatsClicked: () -> Unit
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.clickableWithoutRipple(onStatsClicked),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {
@@ -129,7 +140,8 @@ fun EngagementStatsRowPreview() {
             stats = UserStatistic(
                 11, 200, 150, 12, 2,
             ),
-            onClicked = {}
+            onClicked = {},
+            onStatsClicked = {},
         )
     }
 }

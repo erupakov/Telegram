@@ -1,16 +1,17 @@
 package org.telegram.divo.screen.models
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.OffsetPaginator
+import org.telegram.divo.common.PaginatedResult
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
-import org.telegram.divo.entity.Feed
+import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToAddStory
 import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToDirectMessage
 import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToSearch
@@ -26,12 +27,7 @@ import org.telegram.divo.screen.models.ModelsViewIntent.OnBookmarkClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnPhotoClick
 import org.telegram.divo.screen.models.ModelsViewIntent.LoadMoreAllUsers
 import org.telegram.divo.screen.models.ModelsViewIntent.OnShowMockDataClicked
-import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.UserConfig
-import org.telegram.tgnet.ConnectionsManager
-import org.telegram.tgnet.RequestDelegate
-import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
 import org.telegram.tgnet.TLRPC.TL_error
 
@@ -86,7 +82,7 @@ sealed class Emotions(
 
 // State
 data class ModelsViewState(
-    val feed: Feed = Feed(),
+    val feedItems: List<FeedItem> = emptyList(),
     val stories: List<Story> = emptyList(),
     val models: List<Model> = emptyList(),
     val selectedTab: Tab = Tab.SUBSCRIBED,
@@ -94,7 +90,8 @@ data class ModelsViewState(
     val error: String? = null,
     val allUserModels: List<Model> = emptyList(),
     val isLoadingAllUsers: Boolean = false,
-    val allUsersHasMore: Boolean = true,
+    val isLoadingMoreFeed: Boolean = false,
+    val feedHasMore: Boolean = true,
     val showMockData: Boolean = false,
 ) : ViewState {
     companion object {
@@ -164,15 +161,47 @@ sealed class ModelsViewEffect : ViewEffect {
 class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
 
     companion object {
-        const val PAGE_SIZE = 100
+        private const val PAGE_SIZE = 5
     }
 
     private val currentAccount = UserConfig.selectedAccount
+
+    private val feedPaginator = OffsetPaginator(
+        limit = PAGE_SIZE
+    ) { offset, limit ->
+        when (val result = DivoApi.publicationRepository.getFeed(offset, limit)) {
+            is DivoResult.Success -> {
+                val feed = result.value
+                PaginatedResult(
+                    items = feed.items,
+                    totalCount = feed.pagination?.totalCount ?: feed.items.size
+                )
+            }
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
 
     override fun createInitialState(): ModelsViewState = ModelsViewState()
 
     init {
         setIntent(LoadInitialData)
+        observePaginator()
+    }
+
+    private fun observePaginator() {
+        viewModelScope.launch {
+            feedPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        feedItems = pState.items,
+                        isLoadingAllUsers = pState.isLoading,
+                        isLoadingMoreFeed = pState.isLoadingMore,
+                        feedHasMore = pState.hasMore,
+                        error = pState.error ?: error
+                    )
+                }
+            }
+        }
     }
 
     override fun handleIntent(intent: ModelsViewIntent) {
@@ -208,7 +237,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         setState { copy(selectedTab = tab, showMockData = false) }
         when (tab) {
             Tab.ALL_USERS -> {
-                if (state.value.allUserModels.isEmpty() && !state.value.isLoadingAllUsers) {
+                if (state.value.feedItems.isEmpty() && !state.value.isLoadingAllUsers) {
                     loadAllUsers(loadMore = false)
                 }
             }
@@ -222,57 +251,12 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
 
     private fun loadAllUsers(loadMore: Boolean) {
         viewModelScope.launch {
-            setState { copy(isLoadingAllUsers = true) }
-            val result = DivoApi.publicationRepository.getFeed()
-            if (result is DivoResult.Success) {
-                setState {
-                    copy(
-                        feed = result.value,
-                        isLoadingAllUsers = false
-                    )
-                }
+            if (loadMore) {
+                feedPaginator.loadMore()
             } else {
-                Log.d("MyTag", result.getErrorMessage())
+                feedPaginator.loadInitial()
             }
         }
-
-//        if (state.value.isLoadingAllUsers) return
-//        if (loadMore && !state.value.allUsersHasMore) return
-//
-//        setState { copy(isLoadingAllUsers = true) }
-//
-//        val offset = if (loadMore) state.value.allUserModels.size else 0
-//
-//        val req = TLRPC.TL_profile_searchUsers().apply {
-//            flags = 0
-//            this.offset = offset
-//            this.limit = PAGE_SIZE
-//        }
-//
-//        ConnectionsManager.getInstance(currentAccount).sendRequest(
-//            req,
-//            RequestDelegate { response: TLObject?, error: TL_error? ->
-//                AndroidUtilities.runOnUIThread {
-//                    if (error != null) {
-//                        FileLog.e("loadAllUsers error: ${error.text}")
-//                        setState { copy(isLoadingAllUsers = false, error = error.text) }
-//                        return@runOnUIThread
-//                    }
-//                    if (response is TLRPC.TL_profile_foundUsers) {
-//                        val newModels = response.users.map { mapUserProfileToModel(it) }
-//                        setState {
-//                            copy(
-//                                allUserModels = if (loadMore) allUserModels + newModels else newModels,
-//                                isLoadingAllUsers = false,
-//                                allUsersHasMore = newModels.size >= PAGE_SIZE,
-//                            )
-//                        }
-//                    } else {
-//                        setState { copy(isLoadingAllUsers = false) }
-//                    }
-//                }
-//            }
-//        )
     }
 
     private fun mapUserProfileToModel(profile: TLRPC.TL_userProfile): Model {
