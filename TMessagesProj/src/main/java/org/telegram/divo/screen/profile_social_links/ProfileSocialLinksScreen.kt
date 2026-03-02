@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.components.UIButton
+import org.telegram.divo.entity.UserSocialNetwork
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -78,10 +79,24 @@ fun ProfileSocialLinksScreenView(
 ) {
     // Store ONLY editable parts (username/path), not the prefix.
     // Use key to reset state when uiState values change (after loading)
-    var instagramUser by remember(uiState.instagramUser) { mutableStateOf(uiState.instagramUser) }
-    var tiktokUser by remember(uiState.tiktokUser) { mutableStateOf(uiState.tiktokUser) }
-    var youtubePath by remember(uiState.youtubePath) { mutableStateOf(uiState.youtubePath) }
-    var website by remember(uiState.website) { mutableStateOf(uiState.website) }
+    var facebookUser by remember(uiState.tiktokUser) {
+        mutableStateOf(
+            uiState.socialLinks
+            .firstOrNull { it.id == 1 }
+            ?.name
+            .orEmpty()
+        )
+    }
+    var instagramUser by remember(uiState.instagramUser) {
+        mutableStateOf(
+            uiState.socialLinks
+                .firstOrNull { it.id == 2 }
+                ?.name
+                .orEmpty()
+        )
+    }
+//    var youtubePath by remember(uiState.youtubePath) { mutableStateOf(uiState.youtubePath) }
+//    var website by remember(uiState.website) { mutableStateOf(uiState.website) }
 
     Scaffold(
         modifier = Modifier.padding(top = 36.dp),
@@ -130,29 +145,33 @@ fun ProfileSocialLinksScreenView(
                     .padding(horizontal = 16.dp)
             ) {
                 SocialLinkField(
-                    prefix = "instagram.com/@",
+                    prefix = "facebook.com/@",
+                    value = facebookUser,
+                    onValueChange = {
+                        facebookUser = it
+                    }
+                )
+
+                SocialLinkField(
+                    prefix = "instagram.com/@", //"tiktok.com/@",
                     value = instagramUser,
-                    onValueChange = { instagramUser = it }
+                    onValueChange = {
+                        instagramUser = it
+                    }
                 )
 
-                SocialLinkField(
-                    prefix = "tiktok.com/@",
-                    value = tiktokUser,
-                    onValueChange = { tiktokUser = it }
-                )
-
-                SocialLinkField(
-                    prefix = "youtube.com/",
-                    value = youtubePath,
-                    onValueChange = { youtubePath = it }
-                )
-
-                SocialLinkField(
-                    prefix = null,
-                    placeholder = "Enter your website",
-                    value = website,
-                    onValueChange = { website = it }
-                )
+//                SocialLinkField(
+//                    prefix = "youtube.com/",
+//                    value = youtubePath,
+//                    onValueChange = { youtubePath = it }
+//                )
+//
+//                SocialLinkField(
+//                    prefix = null,
+//                    placeholder = "Enter your website",
+//                    value = website,
+//                    onValueChange = { website = it }
+//                )
 
                 Spacer(Modifier.height(16.dp))
 
@@ -161,18 +180,37 @@ fun ProfileSocialLinksScreenView(
                     text = if (uiState.isLoading) "Saving..." else "Save",
                     enabled = !uiState.isLoading,
                     onClick = {
-                        val instagramUrl = buildUrl("https://instagram.com/", instagramUser)
-                        val tiktokUrl = buildUrl("https://tiktok.com/", tiktokUser)
-                        val youtubeUrl = buildUrl("https://youtube.com/", youtubePath)
-                        val websiteUrl = normalizeWebsite(website)
+//                        val instagramUrl = buildUrl("https://instagram.com/", instagramUser)
+//                        val tiktokUrl = buildUrl("https://tiktok.com/", tiktokUser)
+//                        val youtubeUrl = buildUrl("https://youtube.com/", youtubePath)
+//                        val websiteUrl = normalizeWebsite(website)
+
+                        val socialLinks = buildList {
+                            if (facebookUser.isNotBlank()) {
+                                add(
+                                    UserSocialNetwork(
+                                        id = 1,
+                                        name = facebookUser,
+                                        link = "",
+                                        provider = ""
+                                    )
+                                )
+                            }
+
+                            if (instagramUser.isNotBlank()) {
+                                add(
+                                    UserSocialNetwork(
+                                        id = 2,
+                                        name = instagramUser,
+                                        link = "",
+                                        provider = ""
+                                    )
+                                )
+                            }
+                        }
 
                         onIntent(
-                            ProfileSocialLinksViewModel.Intent.OnSaveClicked(
-                                instagramUrl = instagramUrl,
-                                tiktokUrl = tiktokUrl,
-                                youtubeUrl = youtubeUrl,
-                                website = websiteUrl
-                            )
+                            ProfileSocialLinksViewModel.Intent.OnSaveClicked(socialLinks)
                         )
                     }
                 )

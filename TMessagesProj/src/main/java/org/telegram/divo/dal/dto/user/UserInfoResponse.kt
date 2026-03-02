@@ -3,6 +3,8 @@ package org.telegram.divo.dal.dto.user
 import com.google.gson.annotations.SerializedName
 import org.telegram.divo.dal.dto.common.CityDto
 import org.telegram.divo.dal.dto.common.PhotoDto
+import org.telegram.divo.dal.dto.common.UserSocialNetworkDto
+import org.telegram.divo.dal.dto.common.toEntities
 import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyAddress
@@ -39,14 +41,11 @@ class UserDataDto(
     @SerializedName("pushNotifications") val pushNotifications: Boolean,
     @SerializedName("isRegistrationFinished") val isRegistrationFinished: Boolean,
     @SerializedName("model") val model: ModelDto,
-//    @SerializedName("customer") val customer: Any?,
-//    @SerializedName("agency") val agency: Any?,
-//    @SerializedName("agencyEmployee") val agencyEmployee: Any?,
     @SerializedName("statistic") val statistic: StatisticDto,
     @SerializedName("isFavorite") val isFavorite: Boolean,
     @SerializedName("isFollowed") val isFollowed: Boolean,
     @SerializedName("userRatingStatus") val userRatingStatus: String,
-    @SerializedName("userSocialNetworks") val userSocialNetworks: List<String>
+    @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>
 )
 
 class GenderDto(
@@ -158,7 +157,7 @@ fun UserDataDto.toEntity(): UserInfo =
         isFavorite = isFavorite,
         isFollowed = isFollowed,
         userRatingStatus = userRatingStatus,
-        userSocialNetworks = userSocialNetworks
+        userSocialNetworks = userSocialNetworks.toEntities()
     )
 
 private fun GenderDto.toEntity(): Gender =

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
 import org.telegram.messenger.R
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
@@ -45,6 +46,7 @@ import org.telegram.divo.style.AppTheme
 fun ToolBar(
     modifier: Modifier = Modifier,
     uiState: ProfileViewState,
+    isOwnProfile: Boolean,
     titleVisible: Boolean = false,
     onEditClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
@@ -124,9 +126,14 @@ fun ToolBar(
                 }
             }
         }
-//            IconButton(onClick = { onEditClicked() }) {
-//                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.White)
-//            }
+        if (isOwnProfile) {
+            IconButton(
+                modifier = Modifier.align(Alignment.CenterEnd).padding(end = 54.dp),
+                onClick = { onEditClicked() }
+            ) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.White)
+            }
+        }
         Box(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {

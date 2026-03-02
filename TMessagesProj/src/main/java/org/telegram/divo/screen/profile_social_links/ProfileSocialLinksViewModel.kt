@@ -1,9 +1,17 @@
 package org.telegram.divo.screen.profile_social_links
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.entity.UserSocialNetwork
+import org.telegram.divo.screen.profile.SocialLinks
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.MessagesController
@@ -22,6 +30,7 @@ class ProfileSocialLinksViewModel :
 
 
     data class UiViewState(
+        val socialLinks: List<UserSocialNetwork> = listOf(),
         val instagramUser: String = "",
         val tiktokUser: String = "",
         val youtubePath: String = "",
@@ -32,10 +41,12 @@ class ProfileSocialLinksViewModel :
 
     sealed class Intent : ViewIntent {
         data class OnSaveClicked(
-            val instagramUrl: String,
-            val tiktokUrl: String,
-            val youtubeUrl: String,
-            val website: String
+            val socialLinks: List<UserSocialNetwork>
+        ) : Intent()
+
+        data class OnNicknameChanged(
+            val socialNetworkId: Int,
+            val nickname: String
         ) : Intent()
 
         data object OnLoad : Intent()
@@ -61,12 +72,10 @@ class ProfileSocialLinksViewModel :
         when (intent) {
             Intent.OnLoad -> getProfile()
             is Intent.OnSaveClicked -> {
-                updateLinks(
-                    intent.instagramUrl,
-                    intent.tiktokUrl,
-                    intent.youtubeUrl,
-                    intent.website
-                )
+                updateLinks(intent.socialLinks)
+            }
+            is Intent.OnNicknameChanged -> {
+                updateNickname(intent.socialNetworkId, intent.nickname)
             }
         }
     }
@@ -110,39 +119,34 @@ class ProfileSocialLinksViewModel :
     }
 
     fun getProfile() {
-        setState { copy(isLoading = true) }
-
-        val req = TLRPC.TL_profile_getUserProfile()
-        val user = TLRPC.TL_inputUser()
-
-        val userFull = MessagesController.getInstance(currentAccount)
-            .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
-
-        if (userFull?.user == null) {
-            AndroidUtilities.runOnUIThread {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            val result = DivoApi.userRepository.getUserSocialNetworks()
+            if (result is DivoResult.Success) {
+                setState {
+                    copy(isLoading = false, socialLinks = result.value)
+                }
+            } else {
                 setState { copy(isLoading = false) }
             }
-            return
         }
+    }
 
-        user.user_id = userFull.user.id
-        user.access_hash = userFull.user.access_hash
-        req.user_id = user
-
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
-                AndroidUtilities.runOnUIThread {
-                    if (response is TLRPC.TL_userProfile) {
-                        FileLog.d("TL_profile_getUserProfile social links response -> $response")
-                        applySocialLinksToState(response.social_links)
+    private fun updateNickname(
+        socialNetworkId: Int,
+        nickname: String
+    ) {
+        setState {
+            copy(
+                socialLinks = socialLinks.map { link ->
+                    if (link.id == socialNetworkId) {
+                        link.copy(name = nickname)
                     } else {
-                        FileLog.e("TL_profile_getUserProfile failed: ${error?.text}")
-                        setState { copy(isLoading = false) }
+                        link
                     }
                 }
-            },
-        )
+            )
+        }
     }
 
     private fun applySocialLinksToState(socialLinks: TLRPC.TL_profile_socialLinks?) {
@@ -193,66 +197,32 @@ class ProfileSocialLinksViewModel :
             .trim('/')
     }
 
-    fun updateLinks(instagram: String, tiktok: String, youtube: String, web: String) {
-        setState { copy(isLoading = true, errorMessage = null) }
+    //TODO временно
+    fun updateLinks(socialLinks: List<UserSocialNetwork>) {
+        viewModelScope.launch {
+            setState { copy(isLoading = true, errorMessage = null) }
 
-        val req = TLRPC.TL_profile_updateSocialLinks()
-
-        var flags = 0
-
-        if (instagram.isNotBlank()) {
-            flags = flags or 1
-            req.instagram = instagram
-        }
-
-        if (tiktok.isNotBlank()) {
-            flags = flags or 2
-            req.tiktok = tiktok
-        }
-
-        if (youtube.isNotBlank()) {
-            flags = flags or 4
-            req.youtube = youtube
-        }
-
-        if (web.isNotBlank()) {
-            flags = flags or 8
-            req.website = web
-        }
-
-        req.flags = flags
-
-
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
-                AndroidUtilities.runOnUIThread {
-                    if (response is TLRPC.TL_user) {
-                        response.social_links
-                    }
-
-                    if (error != null) {
-                        setState {
-                            copy(
-                                isLoading = false,
-                                errorMessage = "${error.text ?: "Unknown error"} (code=${error.code})"
-                            )
-                        }
-                        FileLog.e("updateProfile error: ${error.text} code=${error.code}")
-                        return@runOnUIThread
-                    }
-
-                    setState {
-                        copy(
-                            isLoading = false,
-                            errorMessage = null
-                        )
-                    }
-                    FileLog.d("updateSocialLinks success")
-                    sendEffect(Effect.NavigateBack)
+            val results = socialLinks.map { link ->
+                async {
+                    DivoApi.userRepository.upsertSocialNetwork(
+                        socialNetworkId = link.id,
+                        nickname = link.name
+                    )
                 }
-            },
-        )
-    }
+            }.awaitAll()
 
+            val hasError = results.any { it !is DivoResult.Success }
+
+            if (hasError) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        errorMessage = "Не удалось обновить некоторые соцсети"
+                    )
+                }
+            } else {
+                setState { copy(isLoading = false) }
+            }
+        }
+    }
 }

@@ -122,12 +122,12 @@ class FragmentProfileN : BaseFragment(), ImageUpdater.ImageUpdaterDelegate {
                 )
             )
         } else {
-            viewModel.setIntent(
-                ProfileIntent.OnPortfolioPhotoSelected(
-                    photo = photo,
-                    localPath = imageUpdater?.currentPicturePath
-                )
-            )
+//            viewModel.setIntent(
+//                ProfileIntent.OnPortfolioPhotoSelected(
+//                    photo = photo,
+//                    localPath = imageUpdater?.currentPicturePath
+//                )
+//            )
         }
     }
 

@@ -3,10 +3,18 @@
     <!--divo view start-->
     <string name="AppName">Divo</string>
     <string name="AppNameBeta">Divo Beta</string>
+
+    <!--profile screen-->
     <string name="SimilarProfiles">You may be interested in similar profiles</string>
+    <string name="UploadPhotos">Upload your photos</string>
+    <string name="MyLinks">My Links</string>
+    <string name="EditLinks">Edit Links</string>
+    <string name="NoSocialLinks">No social links added yet</string>
+    <string name="SendDM">Send DM</string>
+    <string name="Like">Like</string>
+    <string name="Viewed">Viewed</string>
+    <string name="Saved">Save</string>
     <!--divo view end-->
-
-
 
     <string name="LanguageName">English</string>
     <string name="English">English</string>

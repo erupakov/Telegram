@@ -72,3 +72,12 @@ fun DivoResult<*>.getErrorMessage(): String {
     }
 }
 
+suspend fun <T, R> DivoResult<T>.flatMap(
+    transform: suspend (T) -> DivoResult<R>
+): DivoResult<R> = when (this) {
+    is DivoResult.Success -> transform(value)
+    is DivoResult.NetworkError -> this
+    is DivoResult.HttpError -> this
+    is DivoResult.UnknownError -> this
+}
+

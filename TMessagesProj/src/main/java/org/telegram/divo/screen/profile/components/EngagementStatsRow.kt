@@ -18,19 +18,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.toShortString
 import org.telegram.divo.screen.profile.UserStatistic
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
 import org.telegram.messenger.R.*
 
 @Composable
 fun EngagementStatsRow(
     modifier: Modifier = Modifier,
     stats: UserStatistic,
+    isOwnProfile: Boolean,
     onClicked: () -> Unit,
     onStatsClicked: (StatsType) -> Unit,
 ) {
@@ -39,36 +43,38 @@ fun EngagementStatsRow(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(18.dp, Alignment.CenterHorizontally)
     ) {
-        Row(
-            modifier = Modifier
-                .height(36.dp)
-                .clickableWithoutRipple(onClicked)
-                .clip(RoundedCornerShape(6.dp))
-                .background(AppTheme.colors.blackAlpha12)
-                .padding(horizontal = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            Icon(
-                painter = painterResource(drawable.ic_divo_send),
-                tint = Color.White,
-                contentDescription = null
-            )
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(
-                modifier = Modifier.padding(top = 2.dp),
-                text = "Send DM",
-                style = AppTheme.typography.helveticaNeueLtCom,
-                fontSize = 13.sp,
-                color = Color.White
-            )
+        if (!isOwnProfile) {
+            Row(
+                modifier = Modifier
+                    .height(36.dp)
+                    .clickableWithoutRipple(onClicked)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(AppTheme.colors.blackAlpha12)
+                    .padding(horizontal = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    painter = painterResource(drawable.ic_divo_send),
+                    tint = Color.White,
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    modifier = Modifier.padding(top = 2.dp),
+                    text = stringResource(R.string.SendDM),
+                    style = AppTheme.typography.helveticaNeueLtCom,
+                    fontSize = 13.sp,
+                    color = Color.White
+                )
+            }
         }
 
         EngagementStatsItem(
             count = stats.likes,
-            text = "Like",
+            text = stringResource(R.string.Like),
             iconResId = drawable.ic_divo_favorite,
             onStatsClicked = {
                 onStatsClicked(StatsType.LIKES)
@@ -76,7 +82,7 @@ fun EngagementStatsRow(
         )
         EngagementStatsItem(
             count = stats.views,
-            text = "Viewed",
+            text = stringResource(R.string.Viewed),
             iconResId = drawable.ic_divo_visibility,
             onStatsClicked = {
                 onStatsClicked(StatsType.VIEWS)
@@ -84,7 +90,7 @@ fun EngagementStatsRow(
         )
         EngagementStatsItem(
             count = stats.saves,
-            text = "Save",
+            text = stringResource(R.string.Saved),
             iconResId = drawable.ic_divo_bookmark,
             innerPadding = 0.dp,
             onStatsClicked = {
@@ -116,7 +122,7 @@ private fun EngagementStatsItem(
         Spacer(modifier = Modifier.width(innerPadding))
         Text(
             modifier = Modifier.padding(top = 2.dp),
-            text = count.toString(),
+            text = count.toShortString(),
             style = AppTheme.typography.helveticaNeueLtCom,
             fontSize = 14.sp,
             color = Color.White
@@ -141,6 +147,7 @@ fun EngagementStatsRowPreview() {
                 11, 200, 150, 12, 2,
             ),
             onClicked = {},
+            isOwnProfile = false,
             onStatsClicked = {},
         )
     }

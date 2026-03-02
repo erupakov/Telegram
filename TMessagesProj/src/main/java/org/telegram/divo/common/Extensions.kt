@@ -1,5 +1,8 @@
 package org.telegram.divo.common
 
+import android.content.Context
+import android.net.Uri
+import java.io.File
 import java.time.LocalDate
 import java.time.Period
 import java.util.Locale
@@ -18,4 +21,39 @@ fun String.formattedAge(locale: Locale = Locale.getDefault()): String {
     } catch (_: Exception) {
         return ""
     }
+}
+
+fun Int.toShortString(): String = when {
+    this >= 1_000_000 -> {
+        val value = this / 100_000 / 10.0
+        if (value % 1 == 0.0) "${value.toInt()}M" else "${value}M"
+    }
+    this >= 1_000 -> {
+        val value = this / 100 / 10.0
+        if (value % 1 == 0.0) "${value.toInt()}K" else "${value}K"
+    }
+    else -> this.toString()
+}
+
+fun Context.uriToFile(uri: Uri): Result<File> {
+    return runCatching {
+        val inputStream = contentResolver.openInputStream(uri)
+            ?: throw IllegalStateException("Cannot open input stream")
+        val extension = getExtension(uri)
+        val file = File.createTempFile("upload_", ".$extension", cacheDir)
+
+        inputStream.use { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+
+        file
+    }
+}
+
+private fun Context.getExtension(uri: Uri): String {
+    return contentResolver.getType(uri)
+        ?.substringAfter("/")
+        ?: "jpg"
 }

@@ -1,14 +1,9 @@
 package org.telegram.divo.components
 
-import android.media.Image
 import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,15 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.drawWithContent
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -38,16 +25,12 @@ import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.dal.dto.user.GalleryItem
-import org.telegram.divo.dal.dto.user.UserGalleryListData
-
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLoader
 import org.telegram.messenger.ImageLocation
 import org.telegram.messenger.R
 import org.telegram.tgnet.TLRPC
-import org.telegram.ui.Components.AvatarDrawable
 import org.telegram.ui.Components.BackupImageView
 
 @Composable

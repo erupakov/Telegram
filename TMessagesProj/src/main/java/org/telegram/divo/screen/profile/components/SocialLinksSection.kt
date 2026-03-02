@@ -18,12 +18,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,6 +36,7 @@ import org.telegram.messenger.R
 @Composable
 fun SocialLinksSection(
     socialLinks: SocialLinks,
+    isOwnProfile: Boolean,
     onEditLinksClicked: () -> Unit,
     onSocialLinkClicked: (String) -> Unit
 ) {
@@ -46,16 +49,18 @@ fun SocialLinksSection(
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Text("My Links", color = Color.White, fontSize = 14.sp)
-//            Spacer(Modifier.weight(1f))
-//            TextButton(onClick = onEditLinksClicked) {
-//                Text("Edit Links".uppercase(), color = Color.White, fontSize = 12.sp)
-//            }
-//        }
+        if (isOwnProfile) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.MyLinks), color = Color.White, fontSize = 14.sp)
+                Spacer(Modifier.weight(1f))
+                TextButton(onClick = onEditLinksClicked) {
+                    Text(stringResource(R.string.EditLinks).uppercase(), color = Color.White, fontSize = 12.sp)
+                }
+            }
+        }
 
         if (hasAnyLinks) {
             Row(
@@ -94,12 +99,12 @@ fun SocialLinksSection(
                 }
             }
         } else {
-//            Text(
-//                text = "No social links added yet",
-//                color = Color.White.copy(alpha = 0.5f),
-//                fontSize = 12.sp,
-//                modifier = Modifier.padding(vertical = 8.dp)
-//            )
+            Text(
+                text = stringResource(R.string.NoSocialLinks),
+                color = Color.White.copy(alpha = 0.5f),
+                fontSize = 12.sp,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
         }
     }
 }

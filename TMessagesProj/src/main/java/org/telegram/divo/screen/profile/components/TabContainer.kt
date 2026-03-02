@@ -30,7 +30,8 @@ import org.telegram.messenger.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabContainer(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isOwnProfile: Boolean,
 ) {
     Box(
         modifier = modifier
@@ -68,21 +69,25 @@ fun TabContainer(
             divider = {},
         ) {
             Destination.entries.forEachIndexed { index, destination ->
-                Tab(
-                    modifier = Modifier.width(100.dp),
-                    selected = selectedDestination == index,
-                    icon = {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(destination.iconResId),
-                            modifier = Modifier.size(24.dp),
-                            contentDescription = destination.contentDescription
-                        )
-                    },
-                    onClick = {
-                        selectedDestination = index
-                    },
-                    selectedContentColor = Color.White
-                )
+                if (isOwnProfile && destination == Destination.PLAYLISTS) {
+                    return@forEachIndexed
+                } else {
+                    Tab(
+                        modifier = Modifier.width(100.dp),
+                        selected = selectedDestination == index,
+                        icon = {
+                            Icon(
+                                imageVector = ImageVector.vectorResource(destination.iconResId),
+                                modifier = Modifier.size(24.dp),
+                                contentDescription = destination.contentDescription
+                            )
+                        },
+                        onClick = {
+                            selectedDestination = index
+                        },
+                        selectedContentColor = Color.White
+                    )
+                }
             }
         }
     }
@@ -92,7 +97,7 @@ enum class Destination(
     val route: String,
     @DrawableRes
     val iconResId: Int,
-    val contentDescription: String
+    val contentDescription: String,
 ) {
     SONGS("songs", R.drawable.divo_profile_tab_1, "Songs"),
     ALBUM("album", R.drawable.divo_profile_tab_2, "Album"),
@@ -103,6 +108,8 @@ enum class Destination(
 @Composable
 private fun TabContainerPreview() {
     AppTheme {
-        TabContainer()
+        TabContainer(
+            isOwnProfile = false,
+        )
     }
 }

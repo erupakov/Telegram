@@ -132,7 +132,7 @@ object DivoApiClient {
 
             val newToken = runBlocking {
                 val request = LoginRequest(
-                    email = "ardilasharit09@gmail.com",
+                    email = "elenared720@gmail.com",
                     password = "Qwerty#123",
                     deviceType = "android",
                     deviceId = "samsung-S25",

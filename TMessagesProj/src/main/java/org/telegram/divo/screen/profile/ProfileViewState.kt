@@ -3,19 +3,14 @@ package org.telegram.divo.screen.profile
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
-import org.telegram.divo.dal.dto.user.GalleryItem
 import org.telegram.divo.entity.AgencyModel
-import org.telegram.divo.entity.AgencyModels
-import org.telegram.divo.entity.Feed
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.profile.components.StatsType
 import org.telegram.tgnet.TLRPC
-import java.time.LocalDate
-import java.time.Period
-import java.util.Locale
+import java.io.File
 
 data class ProfileViewState(
     val userId: Int = -1,
@@ -84,13 +79,14 @@ sealed class ProfileIntent : ViewIntent {
     ) : ProfileIntent()
 
     class OnPortfolioPhotoSelected(
-        val photo: TLRPC.InputFile,
-        val localPath: String?
+        val file: Result<File>
     ) : ProfileIntent()
+
     class OnBackgroundPhotoSelected(
         val photo: TLRPC.InputFile,
         val localPath: String?
     ) : ProfileIntent()
+
     class OpenSocialLink(val url: String) : ProfileIntent()
     class OnLoadEngagementStats(val type: StatsType) : ProfileIntent()
     class OnSearchQueryChanged(val query: String) : ProfileIntent()

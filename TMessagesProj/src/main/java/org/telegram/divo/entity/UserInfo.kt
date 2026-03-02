@@ -24,7 +24,7 @@ data class UserInfo(
     val isFavorite: Boolean,
     val isFollowed: Boolean,
     val userRatingStatus: String,
-    val userSocialNetworks: List<String>
+    val userSocialNetworks: List<UserSocialNetwork>
 )
 data class Gender(
     val id: String,

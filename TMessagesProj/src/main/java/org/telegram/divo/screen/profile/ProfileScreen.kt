@@ -5,36 +5,24 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,28 +44,22 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.LaunchedEffectOnce
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.PortfolioUploadPreview
+import org.telegram.divo.common.uriToFile
 import org.telegram.divo.components.TelegramPhotoBackground
 import org.telegram.divo.components.items.ProfileNameItem
-import org.telegram.divo.entity.AgencyModel
-import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.screen.profile.components.BiographyAppearanceSection
 import org.telegram.divo.screen.profile.components.EngagementStatsBottomSheet
 import org.telegram.divo.screen.profile.components.EngagementStatsRow
-import org.telegram.divo.screen.profile.components.SimilarProfilesRow
+import org.telegram.divo.screen.profile.components.PortfolioGrid
 import org.telegram.divo.screen.profile.components.SocialLinksSection
 import org.telegram.divo.screen.profile.components.StatsType
 import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBar
-import org.telegram.divo.style.AppTheme
 
 @Composable
 fun ProfileScreen(
@@ -145,6 +127,9 @@ fun ProfileScreen(
             onLoadMore = { viewModel.setIntent(ProfileIntent.OnLoadMoreEngagementStats(it)) },
             onQueryChanged = { viewModel.setIntent(ProfileIntent.OnSearchQueryChanged(it)) },
             onLoadMoreSearch = { viewModel.setIntent(ProfileIntent.OnLoadMoreSearchResults) },
+            onImageSelected = {
+                viewModel.setIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(it)))
+            }
         )
     }
 }
@@ -166,8 +151,10 @@ private fun ProfileScreenContent(
     onLoadMore: (StatsType) -> Unit = {},
     onQueryChanged: (String) -> Unit,
     onLoadMoreSearch: () -> Unit,
+    onImageSelected: (Uri) -> Unit,
 ) {
-    val pagerState = rememberPagerState(pageCount = { 3 })
+    val pageCount = if (uiState.isOwnProfile) 2 else 3
+    val pagerState = rememberPagerState(pageCount = { pageCount })
     val tabHeightDp = 48.dp
 
     var headerHeightPx by remember { mutableFloatStateOf(0f) }
@@ -243,6 +230,7 @@ private fun ProfileScreenContent(
         ToolBar(
             uiState = uiState,
             titleVisible = titleVisible,
+            isOwnProfile = uiState.isOwnProfile,
             modifier = Modifier
                 .background(Color.Transparent)
                 .zIndex(2f),
@@ -281,7 +269,8 @@ private fun ProfileScreenContent(
                     .fillMaxWidth()
                     .align(Alignment.TopCenter)
                     .offset { IntOffset(0, tabOffsetY.toInt()) }
-                    .zIndex(1f)
+                    .zIndex(1f),
+                isOwnProfile = uiState.isOwnProfile
             )
 
             Box(
@@ -294,7 +283,7 @@ private fun ProfileScreenContent(
                     HorizontalPager(
                         modifier = Modifier
                             .weight(1f)
-                            .background(Color(0xFFF6F6F6)),
+                            .background(if (uiState.isOwnProfile) Color.Transparent else Color(0xFFF6F6F6)),
                         state = pagerState,
                         userScrollEnabled = false,
                     ) { page ->
@@ -303,13 +292,13 @@ private fun ProfileScreenContent(
                                 portfolioItems = uiState.userGalleryItems,
                                 similarItems = uiState.similarModels,
                                 isUploading = uiState.portfolioUploading,
-                                uploadLocalPath = "uiState.portfolioUploadLocalPath",
-                                dialogId = 0,
+                                isOwnProfile = uiState.isOwnProfile,
                                 onPhotoClicked = onPhotoClicked,
-                                onSimilarClicked = onProfileClicked
+                                onSimilarClicked = onProfileClicked,
+                                onImageSelected = onImageSelected
                             )
                             else -> LazyVerticalGrid(
-                                columns = GridCells.Fixed(3),
+                                columns = GridCells.Fixed(2),
                                 modifier = Modifier.fillMaxSize(),
                                 contentPadding = PaddingValues(8.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -353,6 +342,7 @@ private fun ProfileHeaderContent(
 
         EngagementStatsRow(
             stats = uiState.statistic,
+            isOwnProfile = uiState.isOwnProfile,
             onClicked = {},
             onStatsClicked = onStatsClicked
         )
@@ -367,6 +357,7 @@ private fun ProfileHeaderContent(
         // Social Links Section
         SocialLinksSection(
             socialLinks = uiState.socialLinks,
+            isOwnProfile = uiState.isOwnProfile,
             onEditLinksClicked = onEditLinksClicked,
             onSocialLinkClicked = onSocialLinkClicked
         )
@@ -375,263 +366,173 @@ private fun ProfileHeaderContent(
     }
 }
 
-@Composable
-fun PortfolioGrid(
-    modifier: Modifier = Modifier,
-    portfolioItems: List<UserGalleryItem>,
-    similarItems: List<AgencyModel>,
-    isUploading: Boolean,
-    uploadLocalPath: String?,
-    dialogId: Long,
-    onPhotoClicked: (String) -> Unit,
-    onSimilarClicked: (Int) -> Unit,
-) {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(3),
-        modifier = modifier.fillMaxSize(),
-    ) {
-//        item {
-//            PortfolioAddButton(
-//                isUploading = isUploading,
-//                uploadLocalPath = uploadLocalPath,
-//                onClick = onAddClicked
-//            )
-//        }
+//TODO возможно следует удалить
+//@Composable
+//private fun ProfilePhotoPage(
+//    modifier: Modifier = Modifier,
+//) {
+//}
 
-        items(portfolioItems) { item ->
-            DivoAsyncImage(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickableWithoutRipple { (onPhotoClicked(item.photoUrl)) }
-                    .aspectRatio(1f),
-                url = item.previewUrl
-            )
-        }
-
-        item(span = { GridItemSpan(maxLineSpan) }) {
-            SimilarProfilesRow(
-                similarItems = similarItems,
-                onClicked = onSimilarClicked
-            )
-        }
-    }
-}
-
-@Composable
-private fun PortfolioAddButton(
-    isUploading: Boolean,
-    uploadLocalPath: String?,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(120.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .background(AppTheme.colors.blackAlpha12)
-            .clickable(enabled = !isUploading) { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        when {
-            isUploading && uploadLocalPath != null -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    PortfolioUploadPreview(
-                        filePath = uploadLocalPath,
-                        modifier = Modifier.fillMaxSize(),
-                        cornerRadiusDp = 8
-                    )
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .align(Alignment.Center),
-                        color = AppTheme.colors.accentColor,
-                        strokeWidth = 3.dp
-                    )
-                }
-            }
-            isUploading -> {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(32.dp),
-                    color = AppTheme.colors.accentColor,
-                    strokeWidth = 3.dp
-                )
-            }
-            else -> {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add photo",
-                    modifier = Modifier.size(48.dp),
-                    tint = Color.White
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ProfilePhotoPage(
-    modifier: Modifier = Modifier,
-) {
-}
-
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
-@Composable
-fun ProfileCollapsingScreen(
-    modifier: Modifier = Modifier,
-    uiState: ProfileViewState,
-    onEditClicked: () -> Unit = {},
-    onEditLinksClicked: () -> Unit = {},
-    onNavigateBack: () -> Unit = {},
-) {
-    val tabsHeight = 52.dp
-    val headerMax = 260.dp
-    val headerMin = 96.dp
-
-    val density = LocalDensity.current
-    val headerMaxPx = with(density) { headerMax.toPx() }
-    val headerMinPx = with(density) { headerMin.toPx() }
-    val collapseRange = headerMaxPx - headerMinPx
-    var collapseOffsetPx by remember { mutableFloatStateOf(0f) } // 0..collapseRange
-
-    // Nested scroll: сначала схлопываем header, потом отдаём скролл списку
-    val nestedScroll = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                val dy = available.y
-                if (dy == 0f) return Offset.Zero
-
-                // dy < 0 = скролл вверх (схлопнуть), dy > 0 = вниз (раскрыть)
-                val newOffset = (collapseOffsetPx - dy).coerceIn(0f, collapseRange)
-                val consumed = newOffset - collapseOffsetPx
-                collapseOffsetPx = newOffset
-
-                // мы "потребили" часть скролла на схлопывание/раскрытие header
-                return Offset(0f, -consumed)
-            }
-        }
-    }
-
-    val headerHeightPx = headerMaxPx - collapseOffsetPx
-    val headerHeightDp = with(density) { headerHeightPx.toDp() }
-
-    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 3 })
-
-    //val name = (uiState.userFull.user.first_name ?: "") + " " + (uiState.userFull.user.last_name ?: "")
-
-    // синхронизация tab -> pager
-    LaunchedEffect(selectedTab) { pagerState.animateScrollToPage(selectedTab) }
-    // синхронизация pager -> tab
-    LaunchedEffect(pagerState.currentPage) { selectedTab = pagerState.currentPage }
-
-
-//    Column {
-//        ToolBar(
-//            title = name,
-//            titleVisible = true, //titleVisible,
-//            modifier = Modifier
-//                .background(Color.Transparent),
-//            onEditClicked = {
-//                onEditClicked()
-//            },
-//            onNavigateBack = {
-//                onNavigateBack()
+//TODO возможно следует удалить
+//@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+//@Composable
+//fun ProfileCollapsingScreen(
+//    modifier: Modifier = Modifier,
+//    uiState: ProfileViewState,
+//    onEditClicked: () -> Unit = {},
+//    onEditLinksClicked: () -> Unit = {},
+//    onNavigateBack: () -> Unit = {},
+//) {
+//    val tabsHeight = 52.dp
+//    val headerMax = 260.dp
+//    val headerMin = 96.dp
+//
+//    val density = LocalDensity.current
+//    val headerMaxPx = with(density) { headerMax.toPx() }
+//    val headerMinPx = with(density) { headerMin.toPx() }
+//    val collapseRange = headerMaxPx - headerMinPx
+//    var collapseOffsetPx by remember { mutableFloatStateOf(0f) } // 0..collapseRange
+//
+//    // Nested scroll: сначала схлопываем header, потом отдаём скролл списку
+//    val nestedScroll = remember {
+//        object : NestedScrollConnection {
+//            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+//                val dy = available.y
+//                if (dy == 0f) return Offset.Zero
+//
+//                // dy < 0 = скролл вверх (схлопнуть), dy > 0 = вниз (раскрыть)
+//                val newOffset = (collapseOffsetPx - dy).coerceIn(0f, collapseRange)
+//                val consumed = newOffset - collapseOffsetPx
+//                collapseOffsetPx = newOffset
+//
+//                // мы "потребили" часть скролла на схлопывание/раскрытие header
+//                return Offset(0f, -consumed)
 //            }
-//        )
-    Box(
-        Modifier
-            .fillMaxSize()
-            .nestedScroll(nestedScroll)
-    ) {
-
-        Column(Modifier.fillMaxSize()) {
-
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(headerHeightDp)
-            ) {
-//                    ProfileHeaderContent(
-//                        uiState,
-//                        onEditLinksClicked,
-//                        showWorkHistory
-//                    )
-
-            }
-
-            TabContainer(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(tabsHeight)
-            )
-
-            // PAGER (занимает оставшееся место)
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                // ВАЖНО: каждая страница обычно со своим LazyColumn
-                val listState = rememberLazyListState()
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 24.dp)
-                ) {
-                    items(50) { idx ->
-                        Text("Tab $page item $idx", modifier = Modifier.padding(16.dp))
-                    }
-                }
-            }
-        }
-    }
+//        }
 //    }
-}
+//
+//    val headerHeightPx = headerMaxPx - collapseOffsetPx
+//    val headerHeightDp = with(density) { headerHeightPx.toDp() }
+//
+//    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
+//    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 3 })
+//
+//    //val name = (uiState.userFull.user.first_name ?: "") + " " + (uiState.userFull.user.last_name ?: "")
+//
+//    // синхронизация tab -> pager
+//    LaunchedEffect(selectedTab) { pagerState.animateScrollToPage(selectedTab) }
+//    // синхронизация pager -> tab
+//    LaunchedEffect(pagerState.currentPage) { selectedTab = pagerState.currentPage }
+//
+//
+////    Column {
+////        ToolBar(
+////            title = name,
+////            titleVisible = true, //titleVisible,
+////            modifier = Modifier
+////                .background(Color.Transparent),
+////            onEditClicked = {
+////                onEditClicked()
+////            },
+////            onNavigateBack = {
+////                onNavigateBack()
+////            }
+////        )
+//    Box(
+//        Modifier
+//            .fillMaxSize()
+//            .nestedScroll(nestedScroll)
+//    ) {
+//
+//        Column(Modifier.fillMaxSize()) {
+//
+//            Box(
+//                Modifier
+//                    .fillMaxWidth()
+//                    .height(headerHeightDp)
+//            ) {
+////                    ProfileHeaderContent(
+////                        uiState,
+////                        onEditLinksClicked,
+////                        showWorkHistory
+////                    )
+//
+//            }
+//
+////            TabContainer(
+//////                modifier = Modifier
+//////                    .fillMaxWidth()
+//////                    .height(tabsHeight)
+////            )
+//
+//            // PAGER (занимает оставшееся место)
+//            HorizontalPager(
+//                state = pagerState,
+//                modifier = Modifier.fillMaxSize()
+//            ) { page ->
+//                // ВАЖНО: каждая страница обычно со своим LazyColumn
+//                val listState = rememberLazyListState()
+//                LazyColumn(
+//                    state = listState,
+//                    modifier = Modifier.fillMaxSize(),
+//                    contentPadding = PaddingValues(bottom = 24.dp)
+//                ) {
+//                    items(50) { idx ->
+//                        Text("Tab $page item $idx", modifier = Modifier.padding(16.dp))
+//                    }
+//                }
+//            }
+//        }
+//    }
+////    }
+//}
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun LazyWithPagerInside() {
-    val pagerState = rememberPagerState(pageCount = { 3 })
 
-    LazyColumn(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        item {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(260.dp)
-            ) {
-                Text("HEADER", Modifier.align(Alignment.Center))
-            }
-        }
-
-        stickyHeader {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(52.dp)
-            ) {
-                Text("TABS", Modifier.align(Alignment.Center))
-            }
-        }
-
-        item {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillParentMaxHeight() // 🔑 ключ
-            ) { page ->
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(50) {
-                        Text(
-                            "Page $page item $it",
-                            Modifier.padding(16.dp)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
+//TODO возможно следует удалить
+//@OptIn(ExperimentalFoundationApi::class)
+//@Composable
+//fun LazyWithPagerInside() {
+//    val pagerState = rememberPagerState(pageCount = { 3 })
+//
+//    LazyColumn(
+//        modifier = Modifier.fillMaxSize()
+//    ) {
+//        item {
+//            Box(
+//                Modifier
+//                    .fillMaxWidth()
+//                    .height(260.dp)
+//            ) {
+//                Text("HEADER", Modifier.align(Alignment.Center))
+//            }
+//        }
+//
+//        stickyHeader {
+//            Box(
+//                Modifier
+//                    .fillMaxWidth()
+//                    .height(52.dp)
+//            ) {
+//                Text("TABS", Modifier.align(Alignment.Center))
+//            }
+//        }
+//
+//        item {
+//            HorizontalPager(
+//                state = pagerState,
+//                modifier = Modifier.fillParentMaxHeight() // 🔑 ключ
+//            ) { page ->
+//                LazyColumn(
+//                    modifier = Modifier.fillMaxSize()
+//                ) {
+//                    items(50) {
+//                        Text(
+//                            "Page $page item $it",
+//                            Modifier.padding(16.dp)
+//                        )
+//                    }
+//                }
+//            }
+//        }
+//    }
+//}

@@ -11,9 +11,12 @@ import org.telegram.divo.common.PaginatedResult
 import org.telegram.divo.common.formattedAge
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.entity.UserSocialNetwork
 import org.telegram.divo.screen.profile.components.StatsType
+import java.io.File
 import kotlin.random.Random
 
 class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
@@ -66,7 +69,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             is ProfileIntent.OnLoad -> loadData(userId = intent.userId, isOwnProfile = intent.isOwnProfile)
             is ProfileIntent.OpenSocialLink -> { } // openLink(intent.url)
             is ProfileIntent.OnBackgroundPhotoSelected -> {} // uploadPhoto(intent.filePath, isBackground = true)
-            is ProfileIntent.OnPortfolioPhotoSelected -> {} // uploadPhoto(intent.filePath, isBackground = false)
+            is ProfileIntent.OnPortfolioPhotoSelected -> { uploadPhoto(intent.file) }
             is ProfileIntent.OnClearPortfolioUpload -> {}
             is ProfileIntent.OnLoadEngagementStats -> loadEngagementStats(intent.type, false)
             is ProfileIntent.OnLoadMoreEngagementStats -> loadEngagementStats(intent.type, true)
@@ -217,6 +220,35 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             }
         } else {
             Log.d("MyTag", result.getErrorMessage())
+            sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
+        }
+    }
+
+    private fun uploadPhoto(file: Result<File>) {
+        viewModelScope.launch {
+            setState { copy(portfolioUploading = true) }
+
+            val result = file
+                .fold(
+                    onSuccess = { DivoApi.userRepository.uploadPhoto(it) },
+                    onFailure = { DivoResult.UnknownError(it) }
+                )
+                .flatMap { DivoApi.userRepository.addToGallery(it.uuid) }
+
+            when (result) {
+                is DivoResult.Success -> setState {
+                    copy(
+                        portfolioUploading = false,
+                        userGalleryItems = listOf(result.value) + userGalleryItems
+                    )
+                }
+                else -> {
+                    setState {
+                        copy(portfolioUploading = false, errorMessage = result.getErrorMessage())
+                    }
+                    sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
+                }
+            }
         }
     }
 
@@ -238,8 +270,28 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         )
     }
 
-    private fun mapSocialLinks(socials: List<Any>): SocialLinks {
-        return SocialLinks()
+    private fun mapSocialLinks(socials: List<UserSocialNetwork>): SocialLinks {
+        return SocialLinks(
+            instagram = socials
+                .firstOrNull { it.provider == "instagram" }
+                ?.name
+                .orEmpty(),
+
+            tiktok = socials
+                .firstOrNull { it.provider == "facebook" }
+                ?.name
+                .orEmpty(),
+
+            youtube = socials
+                .firstOrNull { it.provider == "youtube" }
+                ?.name
+                .orEmpty(),
+
+            website = socials
+                .firstOrNull { it.provider == "website" }
+                ?.name
+                .orEmpty()
+        )
     }
 
 //    private fun openLink(url: String) {
