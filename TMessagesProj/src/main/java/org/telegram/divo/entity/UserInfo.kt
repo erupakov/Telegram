@@ -9,7 +9,9 @@ data class UserInfo(
     val email: String,
     val phone: String,
     val photoUrl: String,
+    val photoUuid: String,
     val avatarUrl: String,
+    val avatarUuid: String,
     val role: String,
     val subrole: String?,
     val roleLabel: String,
@@ -17,7 +19,7 @@ data class UserInfo(
     val pushNotifications: Boolean,
     val isRegistrationFinished: Boolean,
     val model: Model,
-//    val customer: Any?,
+    val customer: Customer?,
 //    val agency: Any?,
 //    val agencyEmployee: Any?,
     val statistic: Statistic,
@@ -99,4 +101,10 @@ data class Statistic(
     val viewsCount: Int,
     val sentToAgenciesCount: Int,
     val modelsCount: Int
+)
+
+data class Customer(
+    val site: String?,
+    val description: String?,
+    val backgroundUuid: String?,
 )

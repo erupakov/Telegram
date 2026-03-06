@@ -1,5 +1,6 @@
 package org.telegram.divo.common
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
@@ -34,6 +35,7 @@ import org.telegram.divo.style.AppTheme
 fun DivoAsyncImage(
     modifier: Modifier = Modifier,
     url: String?,
+    localUri: Uri? = null,
     contentDescription: String? = null,
     contentScale: ContentScale = ContentScale.Crop,
     alpha: Float = DefaultAlpha,
@@ -45,7 +47,7 @@ fun DivoAsyncImage(
     errorContent: (@Composable () -> Unit)? = null,
 ) {
     ImageCore(
-        model = url,
+        model = localUri ?: url,
         contentDescription = contentDescription,
         modifier = modifier,
         contentScale = contentScale,

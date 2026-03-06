@@ -4,30 +4,33 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,21 +38,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.common.LaunchedEffectOnce
+import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.uriToFile
+import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.TelegramPhotoBackground
 import org.telegram.divo.components.items.ProfileNameItem
 import org.telegram.divo.screen.profile.components.BiographyAppearanceSection
@@ -72,7 +76,6 @@ fun ProfileScreen(
     showWorkHistory: () -> Unit = {},
     onPhotoClicked: (String) -> Unit = {},
     onProfileClicked: (Int) -> Unit = {},
-    onEditBackgroundClicked: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -106,7 +109,9 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            CircularProgressIndicator()
+            LottieProgressIndicator(
+                modifier = Modifier.size(32.dp).align(Alignment.Center),
+            )
         }
     } else {
         ProfileScreenContent(
@@ -120,7 +125,10 @@ fun ProfileScreen(
             onNavigateBack = onNavigateBack,
             showWorkHistory = showWorkHistory,
             onProfileClicked = onProfileClicked,
-            onEditBackgroundClicked = onEditBackgroundClicked,
+            onEditBackgroundClicked = {
+                Log.d("MyTag", "$it")
+                viewModel.setIntent(ProfileIntent.OnBackgroundPhotoSelected(context.uriToFile(it)))
+            },
             onPhotoClicked = onPhotoClicked,
             onSocialLinkClicked = { url ->  }, //viewModel.openSocialLink(url)
             onStatsClicked = { viewModel.setIntent(ProfileIntent.OnLoadEngagementStats(it)) },
@@ -145,7 +153,7 @@ private fun ProfileScreenContent(
     showWorkHistory: () -> Unit = {},
     onPhotoClicked: (String) -> Unit = {},
     onProfileClicked: (Int) -> Unit = {},
-    onEditBackgroundClicked: () -> Unit = {},
+    onEditBackgroundClicked: (Uri) -> Unit = {},
     onSocialLinkClicked: (String) -> Unit = {},
     onStatsClicked: (StatsType) -> Unit = {},
     onLoadMore: (StatsType) -> Unit = {},
@@ -155,46 +163,34 @@ private fun ProfileScreenContent(
 ) {
     val pageCount = if (uiState.isOwnProfile) 2 else 3
     val pagerState = rememberPagerState(pageCount = { pageCount })
-    val tabHeightDp = 48.dp
+    val lazyListState = rememberLazyListState()
 
-    var headerHeightPx by remember { mutableFloatStateOf(0f) }
-    var headerOffsetPx by remember { mutableFloatStateOf(0f) }
+    val tabBarHeightDp = 48.dp
 
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-                val delta = available.y
-                if (delta < 0) {
-                    val previous = headerOffsetPx
-                    headerOffsetPx = (headerOffsetPx + delta).coerceIn(-headerHeightPx, 0f)
-                    val consumed = headerOffsetPx - previous
-                    return Offset(0f, consumed)
-                }
-                return Offset.Zero
-            }
-
-            override fun onPostScroll(
-                consumed: Offset,
-                available: Offset,
-                source: NestedScrollSource
-            ): Offset {
-                val delta = available.y
-                if (delta > 0) {
-                    val previous = headerOffsetPx
-                    headerOffsetPx = (headerOffsetPx + delta).coerceIn(-headerHeightPx, 0f)
-                    val consumed2 = headerOffsetPx - previous
-                    return Offset(0f, consumed2)
-                }
-                return Offset.Zero
-            }
+    val isHeaderCollapsed by remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex >= 1
         }
     }
 
-    val tabOffsetY = (headerHeightPx + headerOffsetPx).coerceAtLeast(0f)
-    val titleVisible = headerOffsetPx < -40f
+    val tabBarOffsetY by remember {
+        derivedStateOf {
+            val layoutInfo = lazyListState.layoutInfo
+            val pagerItem = layoutInfo.visibleItemsInfo.find { it.key == "pager" }
+            pagerItem?.offset?.toFloat()?.coerceAtLeast(0f) ?: 0f
+        }
+    }
+
+    val pagerNestedScrollConnection = remember {
+        PagerNestedScrollConnection(lazyListState, isHeaderCollapsed)
+    }
 
     var showStatsSheet by remember { mutableStateOf(false) }
     var selectedStat by remember { mutableStateOf<StatsType?>(null) }
+
+    val openGallery = rememberGalleryLauncher { uri ->
+        onEditBackgroundClicked(uri)
+    }
 
     if (showStatsSheet) {
         EngagementStatsBottomSheet(
@@ -214,102 +210,121 @@ private fun ProfileScreenContent(
         )
     }
 
-    uiState.userInfo?.photoUrl?.let { url ->
-        TelegramPhotoBackground(
-            photo = url,
-            modifier = Modifier.fillMaxSize()
-        )
-    }
-
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets(0, 0, 0, 0))
-            .padding(top = 36.dp)
-    ) {
-        ToolBar(
-            uiState = uiState,
-            titleVisible = titleVisible,
-            isOwnProfile = uiState.isOwnProfile,
-            modifier = Modifier
-                .background(Color.Transparent)
-                .zIndex(2f),
-            onEditClicked = onEditClicked,
-            onNavigateBack = onNavigateBack,
-            onEditBackgroundClicked = onEditBackgroundClicked
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RectangleShape)
-                .nestedScroll(nestedScrollConnection)
-        ) {
-            ProfileHeaderContent(
-                modifier = Modifier
-                    .onGloballyPositioned {
-                        headerHeightPx = it.size.height.toFloat()
-                    }
-                    .offset { IntOffset(0, headerOffsetPx.toInt()) }
-                    .padding(bottom = 16.dp)
-                    .zIndex(0f),
-                uiState = uiState,
-                onEditLinksClicked = onEditLinksClicked,
-                showWorkHistory = showWorkHistory,
-                onStatsClicked = { stat ->
-                    selectedStat = stat
-                    showStatsSheet = true
-                    onStatsClicked(stat)
-                },
-                onSocialLinkClicked = onSocialLinkClicked,
+    Box(modifier = modifier.fillMaxSize()) {
+        uiState.userInfo?.photoUrl?.let { url ->
+            TelegramPhotoBackground(
+                photo = url,
+                modifier = Modifier.fillMaxSize()
             )
+        }
 
-            TabContainer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.TopCenter)
-                    .offset { IntOffset(0, tabOffsetY.toInt()) }
-                    .zIndex(1f),
-                isOwnProfile = uiState.isOwnProfile
+        if (uiState.backgroundChanging) {
+            Box(modifier = Modifier.fillMaxWidth().padding(top = 134.dp)) {
+                LottieProgressIndicator(
+                    modifier = Modifier.size(32.dp).align(Alignment.Center),
+                    color = Color.White
+                )
+            }
+        }
+
+        Column(modifier = Modifier.fillMaxSize()) {
+            ToolBar(
+                uiState = uiState,
+                lazyListState = lazyListState,
+                isOwnProfile = uiState.isOwnProfile,
+                modifier = Modifier.padding(top = 36.dp),
+                onEditSocialLinksClicked = onEditLinksClicked,
+                onEditProfileClicked = onEditClicked,
+                onEditBackgroundClicked = {
+                    openGallery()
+                },
+                onManageWorkExperienceClicked = {},
+                onNavigateBack = onNavigateBack,
             )
 
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = tabHeightDp)
-                    .offset { IntOffset(0, tabOffsetY.toInt()) }
+                    .clipToBounds()
             ) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    HorizontalPager(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(if (uiState.isOwnProfile) Color.Transparent else Color(0xFFF6F6F6)),
-                        state = pagerState,
-                        userScrollEnabled = false,
-                    ) { page ->
-                        when (page) {
-                            0 -> PortfolioGrid(
-                                portfolioItems = uiState.userGalleryItems,
-                                similarItems = uiState.similarModels,
-                                isUploading = uiState.portfolioUploading,
-                                isOwnProfile = uiState.isOwnProfile,
-                                onPhotoClicked = onPhotoClicked,
-                                onSimilarClicked = onProfileClicked,
-                                onImageSelected = onImageSelected
+                CompositionLocalProvider(
+                    LocalOverscrollConfiguration provides null
+                ) {
+                    LazyColumn(
+                        state = lazyListState,
+                        modifier = Modifier.fillMaxSize(),
+                    ) {
+                        item(key = "header") {
+                            ProfileHeaderContent(
+                                modifier = Modifier.padding(bottom = 16.dp),
+                                uiState = uiState,
+                                onEditLinksClicked = onEditLinksClicked,
+                                showWorkHistory = showWorkHistory,
+                                onStatsClicked = { stat ->
+                                    selectedStat = stat
+                                    showStatsSheet = true
+                                    onStatsClicked(stat)
+                                },
+                                onSocialLinkClicked = onSocialLinkClicked,
                             )
-                            else -> LazyVerticalGrid(
-                                columns = GridCells.Fixed(2),
-                                modifier = Modifier.fillMaxSize(),
-                                contentPadding = PaddingValues(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {}
+                        }
+
+                        item(key = "pager") {
+                            HorizontalPager(
+                                state = pagerState,
+                                modifier = Modifier
+                                    .fillParentMaxHeight()
+                                    .padding(top = tabBarHeightDp)
+                                    .nestedScroll(pagerNestedScrollConnection)
+                                    .background(
+                                        if (uiState.isOwnProfile) Color.Transparent
+                                        else Color(0xFFF6F6F6)
+                                    ),
+                            ) { page ->
+                                when (page) {
+                                    0 -> PortfolioGrid(
+                                        portfolioItems = uiState.userGalleryItems,
+                                        similarItems = uiState.similarModels,
+                                        isUploading = uiState.portfolioUploading,
+                                        isOwnProfile = uiState.isOwnProfile,
+                                        onPhotoClicked = onPhotoClicked,
+                                        onSimilarClicked = onProfileClicked,
+                                        onImageSelected = onImageSelected
+                                    )
+
+                                    else -> EmptyGridPlaceholder()
+                                }
+                            }
                         }
                     }
                 }
+
+                TabContainer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(tabBarHeightDp)
+                        .graphicsLayer {
+                            translationY = tabBarOffsetY
+                        }
+                        .zIndex(1f),
+                    lazyListState = lazyListState,
+                    pagerState = pagerState,
+                    isOwnProfile = uiState.isOwnProfile
+                )
             }
         }
     }
+}
+
+@Composable
+private fun EmptyGridPlaceholder() {
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) { }
 }
 
 @Composable
@@ -347,14 +362,12 @@ private fun ProfileHeaderContent(
             onStatsClicked = onStatsClicked
         )
 
-        // Biography / Appearance Tabs
         BiographyAppearanceSection(
             selectedTab = selectedBioTab,
             onTabSelected = { selectedBioTab = it },
             uiState = uiState
         )
 
-        // Social Links Section
         SocialLinksSection(
             socialLinks = uiState.socialLinks,
             isOwnProfile = uiState.isOwnProfile,
@@ -363,6 +376,31 @@ private fun ProfileHeaderContent(
         )
 
         Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+private class PagerNestedScrollConnection(
+    val lazyListState: LazyListState,
+    val isHeaderCollapsed: Boolean
+) : NestedScrollConnection {
+    override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+        if (available.y < 0 && !isHeaderCollapsed) {
+            val consumed = lazyListState.dispatchRawDelta(-available.y)
+            return Offset(0f, -consumed)
+        }
+        return Offset.Zero
+    }
+
+    override fun onPostScroll(
+        consumed: Offset,
+        available: Offset,
+        source: NestedScrollSource
+    ): Offset {
+        if (available.y > 0 && isHeaderCollapsed) {
+            val consumed = lazyListState.dispatchRawDelta(-available.y)
+            return Offset(0f, -consumed)
+        }
+        return Offset.Zero
     }
 }
 

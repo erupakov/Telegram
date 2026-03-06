@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,6 +30,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
@@ -46,6 +49,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.formattedAge
@@ -323,41 +327,37 @@ fun ProfileNameItem(
 
         Spacer(Modifier.width(10.dp))
         Column(Modifier.weight(1f)) {
-            Row(
-                modifier = Modifier.padding(end = 16.dp),
-            ) {
-                val iconId = "pro_badge"
-                val text = buildAnnotatedString {
-                    append(uiState.userInfo?.fullName?.uppercase().orEmpty())
-                    append(" ")
-                    appendInlineContent(iconId, "[icon]")
-                }
+            var lastLineWidth by remember { mutableFloatStateOf(0f) }
+            var lastLineTop by remember { mutableFloatStateOf(0f) }
+            val density = LocalDensity.current
 
-                val inlineContent = mapOf(
-                    iconId to InlineTextContent(
-                        placeholder = Placeholder(
-                            width = 24.sp,
-                            height = 24.sp,
-                            placeholderVerticalAlign = PlaceholderVerticalAlign.Top
-                        )
-                    ) {
-                        Image(
-                            modifier = Modifier.fillMaxSize().padding(top = 1.dp),
-                            painter = painterResource(R.drawable.divo_pro_badge),
-                            contentDescription = null,
-                        )
-                    }
-                )
-
+            Box(modifier = Modifier.padding(end = 16.dp)) {
                 Text(
-                    text = text,
-                    inlineContent = inlineContent,
+                    text = uiState.userInfo?.fullName?.uppercase().orEmpty(),
                     style = AppTheme.typography.helveticaNeueLtCom,
                     color = AppTheme.colors.textColor,
                     fontSize = 34.sp,
                     lineHeight = 36.sp,
-                    softWrap = true,
-                    modifier = Modifier.padding(end = 16.dp)
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    onTextLayout = { result ->
+                        val lastLine = result.lineCount - 1
+                        lastLineWidth = result.getLineRight(lastLine)
+                        lastLineTop = result.getLineTop(lastLine)
+                    }
+                )
+
+                Image(
+                    modifier = Modifier
+                        .offset {
+                            IntOffset(
+                                x = lastLineWidth.toInt() + with(density) { 10.dp.toPx() }.toInt(),
+                                y = lastLineTop.toInt() + with(density) { 1.dp.toPx() }.toInt()
+                            )
+                        }
+                        .size(24.dp),
+                    painter = painterResource(R.drawable.divo_pro_badge),
+                    contentDescription = null,
                 )
             }
 
@@ -386,6 +386,8 @@ fun ProfileNameItem(
                         style = AppTheme.typography.helveticaNeueRegular,
                         fontSize = 14.sp,
                         color = AppTheme.colors.textColor,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }

@@ -9,11 +9,16 @@
     <string name="UploadPhotos">Upload your photos</string>
     <string name="MyLinks">My Links</string>
     <string name="EditLinks">Edit Links</string>
-    <string name="NoSocialLinks">No social links added yet</string>
     <string name="SendDM">Send DM</string>
     <string name="Like">Like</string>
     <string name="Viewed">Viewed</string>
     <string name="Saved">Save</string>
+    <string name="LoadingModelsList">Loading Models list…</string>
+    <string name="EditProfile">Edit Profile</string>
+    <string name="ChangeProfileBackground">Change Profile Background</string>
+    <string name="EditSocialLinks">Edit Social Links</string>
+    <string name="ManageWorkExperience">Manage Work Experience</string>
+    <string name="Profile">My Profile</string>
     <!--divo view end-->
 
     <string name="LanguageName">English</string>

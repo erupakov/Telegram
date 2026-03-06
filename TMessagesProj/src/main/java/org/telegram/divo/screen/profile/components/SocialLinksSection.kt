@@ -49,7 +49,7 @@ fun SocialLinksSection(
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        if (isOwnProfile) {
+        if (isOwnProfile && hasAnyLinks) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -98,13 +98,6 @@ fun SocialLinksSection(
                     )
                 }
             }
-        } else {
-            Text(
-                text = stringResource(R.string.NoSocialLinks),
-                color = Color.White.copy(alpha = 0.5f),
-                fontSize = 12.sp,
-                modifier = Modifier.padding(vertical = 8.dp)
-            )
         }
     }
 }
@@ -126,7 +119,6 @@ private fun RowScope.SocialLinkItem(
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier.padding(vertical = 14.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(

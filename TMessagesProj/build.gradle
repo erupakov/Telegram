@@ -69,6 +69,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
     implementation 'dev.chrisbanes.haze:haze:1.2.2'
+    implementation "com.airbnb.android:lottie-compose:6.7.1"
     // Divo -- End
 
     implementation 'com.google.android.gms:play-services-mlkit-subject-segmentation:16.0.0-beta1'

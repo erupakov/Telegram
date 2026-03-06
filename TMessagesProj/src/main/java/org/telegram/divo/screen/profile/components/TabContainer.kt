@@ -2,28 +2,34 @@ package org.telegram.divo.screen.profile.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.util.VelocityTracker
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -31,19 +37,47 @@ import org.telegram.messenger.R
 @Composable
 fun TabContainer(
     modifier: Modifier = Modifier,
+    lazyListState: LazyListState,
+    pagerState: PagerState,
     isOwnProfile: Boolean,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+
+    val destinations = Destination.entries.filter {
+        !(isOwnProfile && it == Destination.PLAYLISTS)
+    }
+
+    val selectedDestination = pagerState.currentPage
+    val flingBehavior = ScrollableDefaults.flingBehavior()
+
     Box(
         modifier = modifier
+            .pointerInput(Unit) {
+                val velocityTracker = VelocityTracker()
+                detectVerticalDragGestures(
+                    onDragEnd = {
+                        val velocity = velocityTracker.calculateVelocity()
+                        coroutineScope.launch {
+                            lazyListState.scroll {
+                                with(flingBehavior) {
+                                    performFling(-velocity.y)
+                                }
+                            }
+                        }
+                        velocityTracker.resetTracking()
+                    }
+                ) { change, dragAmount ->
+                    change.consume()
+                    velocityTracker.addPosition(change.uptimeMillis, change.position)
+                    coroutineScope.launch {
+                        lazyListState.dispatchRawDelta(-dragAmount)
+                    }
+                }
+            }
             .background(AppTheme.colors.blackAlpha12)
     ) {
-
-        val startDestination = Destination.SONGS
-        var selectedDestination by rememberSaveable { mutableIntStateOf(startDestination.ordinal) }
-
         PrimaryTabRow(
             selectedTabIndex = selectedDestination,
-            modifier = Modifier,
             containerColor = Color.Transparent,
             indicator = {
                 Box(
@@ -68,26 +102,24 @@ fun TabContainer(
             },
             divider = {},
         ) {
-            Destination.entries.forEachIndexed { index, destination ->
-                if (isOwnProfile && destination == Destination.PLAYLISTS) {
-                    return@forEachIndexed
-                } else {
-                    Tab(
-                        modifier = Modifier.width(100.dp),
-                        selected = selectedDestination == index,
-                        icon = {
-                            Icon(
-                                imageVector = ImageVector.vectorResource(destination.iconResId),
-                                modifier = Modifier.size(24.dp),
-                                contentDescription = destination.contentDescription
-                            )
-                        },
-                        onClick = {
-                            selectedDestination = index
-                        },
-                        selectedContentColor = Color.White
-                    )
-                }
+            destinations.forEachIndexed { index, destination ->
+                Tab(
+                    modifier = Modifier.width(100.dp),
+                    selected = selectedDestination == index,
+                    icon = {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(destination.iconResId),
+                            modifier = Modifier.size(24.dp),
+                            contentDescription = destination.contentDescription
+                        )
+                    },
+                    onClick = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    },
+                    selectedContentColor = Color.White
+                )
             }
         }
     }
@@ -110,6 +142,8 @@ private fun TabContainerPreview() {
     AppTheme {
         TabContainer(
             isOwnProfile = false,
+            lazyListState = rememberLazyListState(),
+            pagerState = rememberPagerState(0) { 3 }
         )
     }
 }

@@ -31,9 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,7 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.SearchField
+import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.style.AppTheme
@@ -129,9 +127,10 @@ fun EngagementStatsBottomSheet(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            SearchField(
+            DivoTextField(
                 value = searchQuery,
                 onValueChange = onQueryChanged,
+                leadingIcon = R.drawable.ic_divo_search,
                 trailingIcon = if (searchQuery.isNotBlank()) Icons.Default.Close else null,
                 onTrailingIconClick = { onQueryChanged("") }
             )

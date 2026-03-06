@@ -1,19 +1,23 @@
 package org.telegram.divo.dal.repository
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.telegram.divo.dal.api.UserService
-import org.telegram.divo.dal.dto.common.UserSocialNetworkDto
+import org.telegram.divo.dal.dto.common.UuidContainerDto
 import org.telegram.divo.dal.dto.common.toEntities
 import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.dal.dto.user.AddGalleryRequest
 import org.telegram.divo.dal.dto.user.AgencyModelsRequest
+import org.telegram.divo.dal.dto.user.UpdateProfileRequest
 import org.telegram.divo.dal.dto.user.UpsertSocialNetworkRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListRequest
 import org.telegram.divo.dal.dto.user.toEntities
 import org.telegram.divo.dal.dto.user.toEntity
+import org.telegram.divo.dal.dto.user.toDto
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.AgencyModels
@@ -22,17 +26,49 @@ import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.entity.UserSocialNetwork
 import java.io.File
+import java.util.TimeZone
 
 class UserRepository(
     private val service: UserService
 ) {
 
-    suspend fun getCurrentUserInfo(): DivoResult<UserInfo> = resultOf {
-        service.getCurrentUserInfo().toEntity()
+    private val _currentUserCache = MutableStateFlow<UserInfo?>(null)
+    val currentUserFlow: StateFlow<UserInfo?> = _currentUserCache.asStateFlow()
+
+    suspend fun getCurrentUserInfo(forceRefresh: Boolean = false): DivoResult<UserInfo> = resultOf {
+        if (!forceRefresh) {
+            _currentUserCache.value?.let { return@resultOf it }
+        }
+        service.getCurrentUserInfo().toEntity().also { _currentUserCache.value = it }
     }
 
     suspend fun getUserById(userId: Int): DivoResult<UserInfo> = resultOf {
         service.getUserById(userId).toEntity()
+    }
+
+    suspend fun updateProfile(
+        userInfo: UserInfo
+    ): DivoResult<UserInfo> = resultOf {
+        service.updateProfile(
+            UpdateProfileRequest(
+                fullName = userInfo.fullName,
+                phone = userInfo.phone,
+                timezone = TimeZone.getDefault().id,
+                gender = userInfo.gender.id,
+                birthday = userInfo.birthday,
+                geoCityId = userInfo.city.id,
+                measuringSystem = userInfo.measuringSystem,
+                subrole = userInfo.subrole,
+                pushNotifications = userInfo.pushNotifications,
+                isRegistrationFinished = userInfo.isRegistrationFinished,
+                photo = UuidContainerDto(userInfo.photoUuid),
+                avatar = UuidContainerDto(userInfo.avatarUuid),
+                model = userInfo.model.toDto(),
+                customer = userInfo.customer?.toDto()
+            )
+        )
+            .toEntity()
+            .also { _currentUserCache.value = it }
     }
 
     suspend fun getUserGalleryList(
@@ -72,6 +108,7 @@ class UserRepository(
         service.upsertSocialNetwork(
             UpsertSocialNetworkRequest(socialNetworkId, nickname)
         )
+        _currentUserCache.value = service.getCurrentUserInfo().toEntity()
     }
 
     suspend fun getUserSocialNetworks(): DivoResult<List<UserSocialNetwork>> = resultOf {

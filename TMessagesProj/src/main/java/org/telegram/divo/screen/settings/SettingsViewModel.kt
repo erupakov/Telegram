@@ -10,11 +10,6 @@ import org.telegram.divo.common.ViewState
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
-import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.screen.profile.PhysicalParams
-import org.telegram.divo.screen.profile.ProfileEffect
-import org.telegram.divo.screen.profile.SocialLinks
-import org.telegram.divo.screen.profile.UserStatistic
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig

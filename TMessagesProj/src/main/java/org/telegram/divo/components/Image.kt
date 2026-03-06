@@ -1,7 +1,11 @@
 package org.telegram.divo.components
 
+import android.net.Uri
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +18,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.exoplayer2.util.Log
 import dev.chrisbanes.haze.HazeProgressive
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -25,6 +31,7 @@ import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLoader
@@ -42,7 +49,6 @@ fun TelegramUserAvatar(
     DivoAsyncImage(
         modifier = modifier.size(sizeDp.dp),
         url = photoUrl,
-
     )
 }
 
@@ -128,18 +134,6 @@ fun LocalImageView(
 }
 
 @Composable
-fun EventTelegramPhoto(
-    photo: TLRPC.Photo?,
-    modifier: Modifier = Modifier,
-) {
-    TelegramPhoto(
-        photo = photo,
-        modifier = modifier,
-    )
-}
-
-
-@Composable
 fun TelegramPhotoBackground(
     photo: String?,
     modifier: Modifier = Modifier,
@@ -181,57 +175,65 @@ fun TelegramPhotoBackground(
 
 @Composable
 fun TelegramUserAvatarEditable(
-    user: TLRPC.User?,
+    avatarUrl: String,
     modifier: Modifier = Modifier,
-    sizeDp: Int = 56,
+    localUri: Uri? = null,
     onEditClick: () -> Unit
 ) {
-    Box(modifier = modifier.padding(), contentAlignment = Alignment.BottomEnd) {
-        TelegramUserAvatar(
-            photoUrl = "uiState.userInfo?.avatarUrl",
+    Box(
+        modifier = modifier.size(100.dp),
+        contentAlignment = Alignment.Center
+    ) {
+
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .clickable(onClick = { onEditClick() }),
-            sizeDp = sizeDp
-        )
-        Card(
-            border = BorderStroke(width = 2.dp, color = AppTheme.colors.accentColor),
-            shape = CircleShape,
-            modifier = Modifier.clickable(onClick = { onEditClick() })
+                .size(100.dp)
+                .clip(CircleShape)
+                .background(AppTheme.colors.backgroundDark)
+                .border(
+                    width = 1.dp,
+                    color = Color.White.copy(alpha = 0.4f),
+                    shape = CircleShape
+                )
+                .clickableWithoutRipple(onEditClick)
         ) {
-            Icon(
-                painter = painterResource(R.drawable.msg_edit),
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = AppTheme.colors.accentColor
-            )
-        }
-    }
-}
-
-/**
- * Local image preview for uploading - shows local file path while uploading
- */
-@Composable
-fun PortfolioUploadPreview(
-    filePath: String?,
-    modifier: Modifier = Modifier,
-    cornerRadiusDp: Int = 8
-) {
-    if (filePath == null) return
-
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            BackupImageView(context).apply {
-                if (cornerRadiusDp > 0) {
-                    setRoundRadius(AndroidUtilities.dp(cornerRadiusDp.toFloat()))
+            if (avatarUrl.isNotEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(3.dp)
+                        .clip(CircleShape)
+                ) {
+                    Log.d("MyTag", localUri.toString())
+                    DivoAsyncImage(
+                        modifier = Modifier
+                            .size(100.dp),
+                        url = avatarUrl,
+                        localUri = localUri
+                    )
                 }
             }
-        },
-        update = { view ->
-            val location = ImageLocation.getForPath(filePath)
-            view.setImage(location, "400_400", null as android.graphics.drawable.Drawable?, null)
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(1.dp)
+                    .clip(CircleShape)
+                    .border(
+                        width = 2.dp,
+                        color = Color.White.copy(alpha = 0.05f),
+                        shape = CircleShape
+                    )
+            )
         }
-    )
+
+        Image(
+            modifier = Modifier
+                .size(32.dp)
+                .align(Alignment.BottomEnd)
+                .clip(CircleShape),
+            painter = painterResource(R.drawable.ic_camera_add),
+            contentDescription = null,
+        )
+    }
 }

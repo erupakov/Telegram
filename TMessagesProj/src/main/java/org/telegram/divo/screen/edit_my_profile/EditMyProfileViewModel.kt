@@ -1,9 +1,19 @@
 package org.telegram.divo.screen.edit_my_profile
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.flatMap
+import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.User
+import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.screen.profile.ProfileEffect
+import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLoader
 import org.telegram.messenger.FileLog
@@ -12,9 +22,8 @@ import org.telegram.messenger.MessagesStorage
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
-import org.telegram.tgnet.RequestDelegate
-import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
+import java.io.File
 
 class EditMyProfileViewModel :
     BaseViewModel<
@@ -27,14 +36,14 @@ class EditMyProfileViewModel :
         val fName: String = "",
         val lName: String = "",
         val bio: String = "",
-        val userFull: TLRPC.UserFull,
-        val avatarUpdateTimestamp: Long = 0L, // Force recomposition when avatar changes
+        val avatarUrl: String = "",
+        val userFull: UserInfo? = null,
         val isLoading: Boolean = false,
         val errorMessage: String? = null,
     ) : ViewState
 
     sealed class EditMyProfileIntent : ViewIntent {
-        data class OnSaveClicked(val fName: String, val lName: String, val bio: String) :
+        data class OnSaveClicked(val fName: String, val lName: String, val bio: String, val file: Result<File>?) :
             EditMyProfileIntent()
 
         data object OnLoad : EditMyProfileIntent()
@@ -55,29 +64,72 @@ class EditMyProfileViewModel :
     }
 
     override fun createInitialState(): EventListViewState {
-        val userFull = MessagesController.getInstance(currentAccount)
-            .getUserFull(UserConfig.getInstance(currentAccount).getClientUserId())
-
-
-        return EventListViewState(
-            userFull = userFull
-        )
+        return EventListViewState()
     }
 
     fun getData() {
-        val uc = UserConfig.getInstance(currentAccount)
-        val mc = MessagesController.getInstance(currentAccount)
-        val userFull = mc.getUserFull(uc.clientUserId)
-        val me = uc.currentUser
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            val result = DivoApi.userRepository.getCurrentUserInfo()
 
-        setState {
-            copy(
-                fName = me?.first_name ?: userFull?.user?.first_name ?: "",
-                lName = me?.last_name ?: userFull?.user?.last_name ?: "",
-                bio = userFull?.about ?: "",
-                userFull = userFull ?: state.value.userFull,
-                avatarUpdateTimestamp = System.currentTimeMillis()
-            )
+            if (result is DivoResult.Success) {
+                val user = result.value
+                val parts = user.fullName.split(" ") //TODO временно
+                setState {
+                    copy(
+                        fName = parts.getOrNull(0).orEmpty(),
+                        lName = parts.getOrNull(1).orEmpty(),
+                        bio = user.customer?.description.orEmpty(),
+                        userFull = user,
+                        avatarUrl = user.avatarUrl,
+                        isLoading = false
+                    )
+                }
+            } else {
+                val errorMsg = result.getErrorMessage()
+                setState { copy(isLoading = false, errorMessage = errorMsg) }
+            }
+        }
+    }
+
+    private fun updateProfile(fNameRaw: String, lNameRaw: String, aboutRaw: String, file: Result<File>?) {
+        viewModelScope.launch {
+            val userInfo = state.value.userFull
+            if (userInfo != null) {
+                setState { copy(isLoading = true) }
+
+                val uploadedUuid = if (file != null) {
+                    val uploadResult = file.fold(
+                        onSuccess = { DivoApi.userRepository.uploadPhoto(it) },
+                        onFailure = { DivoResult.UnknownError(it) }
+                    )
+                    if (uploadResult !is DivoResult.Success) {
+                        setState { copy(isLoading = false, errorMessage = uploadResult.getErrorMessage()) }
+                        return@launch
+                    }
+                    uploadResult.value.uuid
+                } else {
+                    userInfo.avatarUuid
+                }
+
+                val result = DivoApi.userRepository.updateProfile(
+                    userInfo = userInfo.copy(
+                        fullName = "$fNameRaw $lNameRaw",
+                        customer = userInfo.customer?.copy(description = aboutRaw),
+                        avatarUuid = uploadedUuid
+                    )
+                )
+
+                when (result) {
+                    is DivoResult.Success -> {
+                        setState { copy(isLoading = false) }
+                        sendEffect(Effect.NavigateBack)
+                    }
+                    else -> {
+                        setState { copy(isLoading = false, errorMessage = result.getErrorMessage()) }
+                    }
+                }
+            }
         }
     }
 
@@ -92,13 +144,13 @@ class EditMyProfileViewModel :
             userFull.user = updatedUser
         }
 
-        setState {
-            copy(
-                userFull = userFull ?: state.value.userFull,
-                avatarUpdateTimestamp = System.currentTimeMillis(),
-                isLoading = false
-            )
-        }
+//        setState {
+//            copy(
+//                userFull = userFull ?: state.value.userFull,
+//                avatarUpdateTimestamp = System.currentTimeMillis(),
+//                isLoading = false
+//            )
+//        }
     }
 
 
@@ -111,21 +163,21 @@ class EditMyProfileViewModel :
         val me = uc.currentUser
         val userFull = mc.getUserFull(uc.clientUserId)
 
-        setState {
-            copy(
-                fName = me?.first_name ?: userFull?.user?.first_name ?: "",
-                lName = me?.last_name ?: userFull?.user?.last_name ?: "",
-                bio = userFull?.about ?: "",
-                errorMessage = null
-            )
-        }
+//        setState {
+//            copy(
+//                fName = me?.first_name ?: userFull?.user?.first_name ?: "",
+//                lName = me?.last_name ?: userFull?.user?.last_name ?: "",
+//                bio = userFull?.about ?: "",
+//                errorMessage = null
+//            )
+//        }
     }
 
     override fun handleIntent(intent: EditMyProfileIntent) {
         when (intent) {
             EditMyProfileIntent.OnLoad -> Unit
             is EditMyProfileIntent.OnSaveClicked -> {
-                updateProfile(intent.fName, intent.lName, intent.bio)
+                updateProfile(intent.fName, intent.lName, intent.bio, intent.file)
             }
 
             is EditMyProfileIntent.OnAvatarUploaded -> {
@@ -286,68 +338,68 @@ class EditMyProfileViewModel :
         sendEffect(Effect.NavigateBack)
     }
 
-    fun updateProfile(fNameRaw: String, lNameRaw: String, aboutRaw: String) {
-        // first name в Telegram лучше не отправлять пустым
-        val fName = fNameRaw.trim().ifEmpty { " " }
-        val lName = lNameRaw.trim()          // можно пустую строку
-        val about = aboutRaw.trim()          // можно пустую строку
-
-        setState { copy(isLoading = true, errorMessage = null) }
-
-        // Use TL_profile_updateProfile API
-        val req = TLRPC.TL_profile_updateProfile()
-
-        // Flags for TL_profile_updateProfile: 1=first_name, 2=last_name, 8=about
-        var flags = 0
-
-        if (fName.isNotEmpty()) {
-            flags = flags or 1
-            req.first_name = fName
-        }
-
-        if (lName.isNotEmpty()) {
-            flags = flags or 2
-            req.last_name = lName
-        }
-
-        if (about.isNotEmpty()) {
-            flags = flags or 8
-            req.about = about
-        }
-
-        req.flags = flags
-
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
-                AndroidUtilities.runOnUIThread {
-                    if (error != null) {
-                        setState {
-                            copy(
-                                isLoading = false,
-                                errorMessage = "${error.text ?: "Unknown error"} (code=${error.code})"
-                            )
-                        }
-                        FileLog.e("updateProfile error: ${error.text} code=${error.code}")
-                        return@runOnUIThread
-                    }
-
-                    FileLog.d("TL_profile_updateProfile success")
-
-                    // Apply changes locally
-                    applyProfileLocally(fName = fName, lName = lName, about = about)
-
-                    setState {
-                        copy(
-                            fName = fName,
-                            lName = lName,
-                            bio = about,
-                            isLoading = false,
-                            errorMessage = null
-                        )
-                    }
-                }
-            },
-        )
-    }
+//    fun updateProfile(fNameRaw: String, lNameRaw: String, aboutRaw: String) {
+//        // first name в Telegram лучше не отправлять пустым
+//        val fName = fNameRaw.trim().ifEmpty { " " }
+//        val lName = lNameRaw.trim()          // можно пустую строку
+//        val about = aboutRaw.trim()          // можно пустую строку
+//
+//        setState { copy(isLoading = true, errorMessage = null) }
+//
+//        // Use TL_profile_updateProfile API
+//        val req = TLRPC.TL_profile_updateProfile()
+//
+//        // Flags for TL_profile_updateProfile: 1=first_name, 2=last_name, 8=about
+//        var flags = 0
+//
+//        if (fName.isNotEmpty()) {
+//            flags = flags or 1
+//            req.first_name = fName
+//        }
+//
+//        if (lName.isNotEmpty()) {
+//            flags = flags or 2
+//            req.last_name = lName
+//        }
+//
+//        if (about.isNotEmpty()) {
+//            flags = flags or 8
+//            req.about = about
+//        }
+//
+//        req.flags = flags
+//
+//        ConnectionsManager.getInstance(currentAccount).sendRequest(
+//            req,
+//            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
+//                AndroidUtilities.runOnUIThread {
+//                    if (error != null) {
+//                        setState {
+//                            copy(
+//                                isLoading = false,
+//                                errorMessage = "${error.text ?: "Unknown error"} (code=${error.code})"
+//                            )
+//                        }
+//                        FileLog.e("updateProfile error: ${error.text} code=${error.code}")
+//                        return@runOnUIThread
+//                    }
+//
+//                    FileLog.d("TL_profile_updateProfile success")
+//
+//                    // Apply changes locally
+//                    applyProfileLocally(fName = fName, lName = lName, about = about)
+//
+//                    setState {
+//                        copy(
+//                            fName = fName,
+//                            lName = lName,
+//                            bio = about,
+//                            isLoading = false,
+//                            errorMessage = null
+//                        )
+//                    }
+//                }
+//            },
+//        )
+//    }
 }

@@ -2,12 +2,14 @@ package org.telegram.divo.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -17,8 +19,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -39,20 +40,28 @@ import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.messenger.R
 
 @Composable
-fun SearchField(
+fun DivoTextField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String = "Search",
-    @DrawableRes leadingIcon: Int? = R.drawable.ic_divo_search,
+    @DrawableRes leadingIcon: Int? = null,
     trailingIcon: ImageVector? = null,
     onTrailingIconClick: () -> Unit = {},
     label: String? = null,
     backgroundColor: Color = Color.Black.copy(alpha = 0.06f),
     cornerRadius: Dp = 10.dp,
+    borderColor: Color = Color.Transparent,
+    placeholderColor: Color = Color.Black.copy(alpha = 0.6f),
+    cursorColor: Color = Color.Black,
+    minLines: Int = 1,
+    maxLines: Int = 1,
+    textStyle: TextStyle = TextStyle(fontSize = 17.sp),
+    contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 10.dp),
+    innerLabel: String? = null,
+    innerLabelColor: Color = Color.Black.copy(alpha = 0.5f),
 ) {
     Column(modifier = modifier) {
-        // Лейбл снаружи
         if (label != null) {
             Text(
                 text = label,
@@ -65,54 +74,67 @@ fun SearchField(
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
-            singleLine = true,
-            textStyle = TextStyle(
-                fontSize = 17.sp,
-                color = Color.Black
-            ),
+            minLines = minLines,
+            maxLines = maxLines,
+            textStyle = textStyle,
+            cursorBrush = SolidColor(cursorColor),
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(cornerRadius))
                 .background(backgroundColor)
-                .padding(horizontal = 8.dp, vertical = 10.dp),
+                .then(
+                    if (borderColor != Color.Transparent) {
+                        Modifier.border(1.dp, borderColor, RoundedCornerShape(cornerRadius))
+                    } else Modifier
+                )
+                .padding(contentPadding),
             decorationBox = { innerTextField ->
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Leading icon
-                    if (leadingIcon != null) {
-                        Icon(
-                            painter = painterResource(leadingIcon),
-                            contentDescription = null,
-                            tint = Color.Black.copy(alpha = 0.6f),
-                            modifier = Modifier.size(18.dp)
+                Column {
+                    if (innerLabel != null) {
+                        Text(
+                            text = innerLabel,
+                            color = innerLabelColor,
+                            style = textStyle.copy(fontSize = 13.sp),
+                            modifier = Modifier.padding(bottom = 4.dp)
                         )
-                        Spacer(modifier = Modifier.width(4.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
 
-                    // Input + Placeholder
-                    Box(modifier = Modifier.weight(1f)) {
-                        if (value.isEmpty()) {
-                            Text(
-                                text = placeholder,
-                                color = Color.Black.copy(alpha = 0.6f),
-                                fontSize = 17.sp
+                    Row(verticalAlignment = if (maxLines == 1) Alignment.CenterVertically else Alignment.Top) {
+                        if (leadingIcon != null) {
+                            Icon(
+                                painter = painterResource(leadingIcon),
+                                contentDescription = null,
+                                tint = placeholderColor,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .then(if (maxLines > 1) Modifier.padding(top = 2.dp) else Modifier)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                        }
+
+                        Box(modifier = Modifier.weight(1f)) {
+                            if (value.isEmpty()) {
+                                Text(
+                                    text = placeholder,
+                                    color = placeholderColor,
+                                    style = textStyle,
+                                )
+                            }
+                            innerTextField()
+                        }
+
+                        if (trailingIcon != null) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Icon(
+                                imageVector = trailingIcon,
+                                contentDescription = null,
+                                tint = placeholderColor,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickableWithoutRipple { onTrailingIconClick() }
                             )
                         }
-                        innerTextField()
-                    }
-
-                    // Trailing icon
-                    if (trailingIcon != null) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            imageVector = trailingIcon,
-                            contentDescription = null,
-                            tint = Color.Black.copy(alpha = 0.6f),
-                            modifier = Modifier
-                                .size(18.dp)
-                                .clickableWithoutRipple { onTrailingIconClick() }
-                        )
                     }
                 }
             }
@@ -122,10 +144,10 @@ fun SearchField(
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, name = "Default")
 @Composable
-private fun SearchFieldDefaultPreview() {
+private fun DivoTextFieldDefaultPreview() {
     var query by remember { mutableStateOf("") }
     Box(modifier = Modifier.padding(16.dp)) {
-        SearchField(
+        DivoTextField(
             value = query,
             onValueChange = { query = it },
             placeholder = "Search"
@@ -135,10 +157,10 @@ private fun SearchFieldDefaultPreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, name = "With Label")
 @Composable
-private fun SearchFieldWithLabelPreview() {
+private fun DivoTextFieldWithLabelPreview() {
     var query by remember { mutableStateOf("") }
     Box(modifier = Modifier.padding(16.dp)) {
-        SearchField(
+        DivoTextField(
             value = query,
             onValueChange = { query = it },
             label = "Filter by name",
@@ -149,9 +171,9 @@ private fun SearchFieldWithLabelPreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, name = "With Text & Clear")
 @Composable
-private fun SearchFieldWithTextPreview() {
+private fun DivoTextFieldWithTextPreview() {
     Box(modifier = Modifier.padding(16.dp)) {
-        SearchField(
+        DivoTextField(
             value = "John Doe",
             onValueChange = {},
             placeholder = "Search",
@@ -163,10 +185,10 @@ private fun SearchFieldWithTextPreview() {
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, name = "No Leading Icon")
 @Composable
-private fun SearchFieldNoLeadingIconPreview() {
+private fun DivoTextFieldNoLeadingIconPreview() {
     var query by remember { mutableStateOf("") }
     Box(modifier = Modifier.padding(16.dp)) {
-        SearchField(
+        DivoTextField(
             value = query,
             onValueChange = { query = it },
             leadingIcon = null,

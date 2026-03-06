@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.TelegramUserAvatar
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.style.DivoFont.HelveticaNeue
@@ -240,7 +241,7 @@ private fun SettingsTopBar(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .weight(0.2f)
-                .clickable(onClick = onAction)
+                .clickableWithoutRipple(onClick = onAction)
         )
     }
 }

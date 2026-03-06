@@ -43,7 +43,7 @@ fun EngagementStatsRow(
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(18.dp, Alignment.CenterHorizontally)
+        horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
     ) {
         if (!isOwnProfile) {
             Row(
@@ -73,7 +73,7 @@ fun EngagementStatsRow(
         }
 
         EngagementStatsItem(
-            count = stats.likes,
+            count = stats.followers,
             text = stringResource(R.string.Like),
             iconResId = drawable.ic_divo_favorite,
             onStatsClicked = {
@@ -89,7 +89,7 @@ fun EngagementStatsRow(
             }
         )
         EngagementStatsItem(
-            count = stats.saves,
+            count = stats.following,
             text = stringResource(R.string.Saved),
             iconResId = drawable.ic_divo_bookmark,
             innerPadding = 0.dp,
@@ -144,7 +144,7 @@ fun EngagementStatsRowPreview() {
     AppTheme {
         EngagementStatsRow(
             stats = UserStatistic(
-                11, 200, 150, 12, 2,
+                11, 200, 150,
             ),
             onClicked = {},
             isOwnProfile = false,

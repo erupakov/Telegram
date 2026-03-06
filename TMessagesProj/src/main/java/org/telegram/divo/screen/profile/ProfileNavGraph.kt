@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
 import org.telegram.divo.screen.photo.PhotoViewerScreen
 
 sealed class ProfileRoute(val route: String) {
@@ -32,8 +33,6 @@ sealed class ProfileRoute(val route: String) {
 fun ProfileNavGraph(
     initialUserId: Int,
     initialIsOwnProfile: Boolean,
-    onEditBackgroundClicked: () -> Unit,
-    onEditClicked: () -> Unit,
     onEditLinksClicked: () -> Unit,
     showWorkHistory: () -> Unit,
     onNavigateBack: () -> Unit,
@@ -53,7 +52,9 @@ fun ProfileNavGraph(
             ProfileScreen(
                 userId = initialUserId,
                 isOwnProfile = initialIsOwnProfile,
-                onEditClicked = onEditClicked,
+                onEditClicked = {
+                    nav.navigate(ProfileRoute.Edit.route)
+                },
                 onEditLinksClicked = onEditLinksClicked,
                 showWorkHistory = showWorkHistory,
                 onPhotoClicked = { photoUrl ->
@@ -62,7 +63,6 @@ fun ProfileNavGraph(
                 onProfileClicked = { anotherUserId ->
                     nav.navigate(ProfileRoute.OtherProfile.createRoute(anotherUserId))
                 },
-                onEditBackgroundClicked = onEditBackgroundClicked,
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
@@ -81,7 +81,7 @@ fun ProfileNavGraph(
             ProfileScreen(
                 userId = userId,
                 isOwnProfile = false,
-                onEditClicked = onEditClicked,
+                onEditClicked = { nav.navigate(ProfileRoute.Edit.route) },
                 onEditLinksClicked = onEditLinksClicked,
                 showWorkHistory = showWorkHistory,
                 onPhotoClicked = { photoUrl ->
@@ -90,7 +90,6 @@ fun ProfileNavGraph(
                 onProfileClicked = { anotherUserId ->
                     //nav.navigate(ProfileRoute.OtherProfile.createRoute(anotherUserId))
                 },
-                onEditBackgroundClicked = onEditBackgroundClicked,
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
@@ -102,6 +101,14 @@ fun ProfileNavGraph(
             PhotoViewerScreen(
                 url = Uri.decode(backStackEntry.arguments?.getString("url") ?: ""),
                 onBack = { nav.popBackStack() }
+            )
+        }
+
+        composable(
+            route = ProfileRoute.Edit.route
+        ) {
+            EditMyProfileScreen(
+                onCloseScreen = { nav.popBackStack() }
             )
         }
     }

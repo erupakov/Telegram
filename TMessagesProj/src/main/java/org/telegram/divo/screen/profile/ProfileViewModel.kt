@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.OffsetPaginator
@@ -68,7 +69,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         when (intent) {
             is ProfileIntent.OnLoad -> loadData(userId = intent.userId, isOwnProfile = intent.isOwnProfile)
             is ProfileIntent.OpenSocialLink -> { } // openLink(intent.url)
-            is ProfileIntent.OnBackgroundPhotoSelected -> {} // uploadPhoto(intent.filePath, isBackground = true)
+            is ProfileIntent.OnBackgroundPhotoSelected -> { changeBackground(intent.file) }
             is ProfileIntent.OnPortfolioPhotoSelected -> { uploadPhoto(intent.file) }
             is ProfileIntent.OnClearPortfolioUpload -> {}
             is ProfileIntent.OnLoadEngagementStats -> loadEngagementStats(intent.type, false)
@@ -78,11 +79,11 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    fun loadData(userId: Int, isOwnProfile: Boolean) {
+    private fun loadData(userId: Int, isOwnProfile: Boolean) {
         viewModelScope.launch {
             setState { copy(userId = userId, isOwnProfile = isOwnProfile) }
 
-            launch { loadUserProfile() }
+            launch { loadUserProfile(isOwnProfile = isOwnProfile) }
             launch { loadPortfolio() }
             launch { loadSimilarProfiles() }
             observePaginator()
@@ -151,36 +152,78 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    private suspend fun loadUserProfile() {
+    private fun loadUserProfile(isOwnProfile: Boolean) {
+        if (isOwnProfile) {
+            observeOwnProfile()
+        } else {
+            loadOtherUserProfile()
+        }
+    }
+
+    private fun observeOwnProfile() {
         setState { copy(isLoading = true, errorMessage = null) }
 
-        val result: DivoResult<UserInfo> = DivoApi.userRepository.getUserById(state.value.userId)
+        viewModelScope.launch {
+            DivoApi.userRepository.currentUserFlow
+                .filterNotNull()
+                .collect { userData ->
+                    val params = mapPhysicalParams(userData)
+                    val social = mapSocialLinks(userData.userSocialNetworks)
+                    val stats = UserStatistic(
+                        followers = userData.statistic.followersCount,
+                        following = userData.statistic.followingCount,
+                        views = userData.statistic.viewsCount,
+                    )
+                    setState {
+                        copy(
+                            isLoading = false,
+                            userInfo = userData,
+                            physicalParams = params,
+                            socialLinks = social,
+                            statistic = stats,
+                        )
+                    }
+                }
+        }
 
-        if (result is DivoResult.Success) {
-            val userData = result.value
-            val params = mapPhysicalParams(userData)
-            val social = mapSocialLinks(userData.userSocialNetworks)
-            val stats = UserStatistic(
-                followers = userData.statistic.followersCount,
-                following = userData.statistic.followingCount,
-                views = userData.statistic.viewsCount,
-                likes = userData.statistic.followersCount, //TODO понять откуда подтягивать данные
-                saves = userData.statistic.followingCount, //TODO понять откуда подтягивать данные
-            )
-            setState {
-                copy(
-                    isLoading = false,
-                    userInfo = userData,
-                    physicalParams = params,
-                    socialLinks = social,
-                    statistic = stats,
-                )
+        viewModelScope.launch {
+            if (DivoApi.userRepository.currentUserFlow.value == null) {
+                val result = DivoApi.userRepository.getCurrentUserInfo()
+                if (result !is DivoResult.Success) {
+                    val errorMsg = result.getErrorMessage()
+                    setState { copy(isLoading = false, errorMessage = errorMsg) }
+                    sendEffect(ProfileEffect.ShowError(errorMsg))
+                }
             }
-        } else {
-            val errorMsg = result.getErrorMessage()
-            Log.d("MyTag", "${state.value.userId} $errorMsg")
-            setState { copy(isLoading = false, errorMessage = errorMsg) }
-            sendEffect(ProfileEffect.ShowError(errorMsg))
+        }
+    }
+
+    private fun loadOtherUserProfile() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true, errorMessage = null) }
+
+            val result = DivoApi.userRepository.getUserById(state.value.userId)
+
+            if (result is DivoResult.Success) {
+                val userData = result.value
+                setState {
+                    copy(
+                        isLoading = false,
+                        userInfo = userData,
+                        physicalParams = mapPhysicalParams(userData),
+                        socialLinks = mapSocialLinks(userData.userSocialNetworks),
+                        statistic = UserStatistic(
+                            followers = userData.statistic.followersCount,
+                            following = userData.statistic.followingCount,
+                            views = userData.statistic.viewsCount,
+                        ),
+                    )
+                }
+            } else {
+                val errorMsg = result.getErrorMessage()
+                setState { copy(isLoading = false, errorMessage = errorMsg) }
+                sendEffect(ProfileEffect.ShowError(errorMsg))
+            }
         }
     }
 
@@ -247,6 +290,43 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
                         copy(portfolioUploading = false, errorMessage = result.getErrorMessage())
                     }
                     sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
+                }
+            }
+        }
+    }
+
+    private fun changeBackground(file: Result<File>) {
+        viewModelScope.launch {
+            val userInfo = state.value.userInfo
+            if (userInfo != null) {
+                setState { copy(backgroundChanging = true) }
+
+                val result = file
+                    .fold(
+                        onSuccess = { DivoApi.userRepository.uploadPhoto(it) },
+                        onFailure = { DivoResult.UnknownError(it) }
+                    )
+                    .flatMap  {
+                        DivoApi.userRepository.updateProfile(
+                            userInfo = userInfo.copy(photoUuid = it.uuid)
+                        )
+                    }
+
+                when (result) {
+                    is DivoResult.Success -> setState {
+                        copy(
+                            backgroundChanging = false,
+                            userInfo = userInfo?.copy(
+                                photoUrl = result.value.photoUrl
+                            )
+                        )
+                    }
+                    else -> {
+                        setState {
+                            copy(backgroundChanging = false, errorMessage = result.getErrorMessage())
+                        }
+                        sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
+                    }
                 }
             }
         }

@@ -58,6 +58,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -69,6 +70,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberAsyncImagePainter
 import org.telegram.divo.common.LockScreenOrientation
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.RoleChip
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.components.items.DMButton
@@ -174,13 +176,21 @@ fun ModelsHomeScreen(
                         )
                     }
                     currentRestModels.isEmpty() && state.isLoadingAllUsers -> {
-                        Box(
+                        Column(
                             modifier = Modifier
                                 .weight(1f)
                                 .fillMaxWidth(),
-                            contentAlignment = Alignment.Center
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            CircularProgressIndicator(color = AppTheme.colors.accentColor)
+                            LottieProgressIndicator(modifier = Modifier.size(32.dp))
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = stringResource(R.string.LoadingModelsList).uppercase(),
+                                style = AppTheme.typography.helveticaNeueLtCom,
+                                fontSize = 12.sp,
+                                color = Color.Black
+                            )
                         }
                     }
                     else -> {

@@ -1,26 +1,34 @@
 package org.telegram.divo.screen.edit_my_profile
 
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -31,21 +39,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.android.exoplayer2.util.Log
 import kotlinx.coroutines.launch
+import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.common.uriToFile
+import org.telegram.divo.components.DivoTextField
+import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.TelegramUserAvatarEditable
 import org.telegram.divo.components.UIButton
-import org.telegram.divo.components.UiDarkTextField
 import org.telegram.divo.screen.your_parameters.YourParametersScreen
 import org.telegram.divo.style.AppTheme
-import org.telegram.messenger.MessagesStorage
 import org.telegram.messenger.R
 
 
@@ -62,13 +77,12 @@ enum class ProfileDestination(
 @Composable
 fun EditMyProfileScreen(
     viewModel: EditMyProfileViewModel = viewModel(),
-    messageStorage: MessagesStorage,
+    //messageStorage: MessagesStorage,
     onCloseScreen: () -> Unit = {},
-    onEditImageClicked: () -> Unit = {}
 ) {
-    LaunchedEffect(messageStorage) {
-        viewModel.setMessageStorage(messageStorage)
-    }
+//    LaunchedEffect(messageStorage) {
+//        viewModel.setMessageStorage(messageStorage)
+//    }
 
     // Refresh data when screen becomes visible
     LifecycleResumeEffect(Unit) {
@@ -93,18 +107,34 @@ fun EditMyProfileScreen(
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        modifier = Modifier.padding(top = 36.dp),
         containerColor = AppTheme.colors.backgroundDark,
         topBar = {
-            TopAppBar(
-                title = { Text("Profile", color = AppTheme.colors.textColor) },
+            CenterAlignedTopAppBar(
+                modifier = Modifier.padding(top = 36.dp),
+                title = {
+                    Text(
+                        modifier = Modifier.padding(top = 3.dp),
+                        text = stringResource(R.string.Profile).uppercase(),
+                        style = AppTheme.typography.helveticaNeueLtCom,
+                        color = AppTheme.colors.textColor,
+                        fontSize = 20.sp
+                    )
+                },
                 navigationIcon = {
-                    IconButton(onClick = onCloseScreen) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_divo_back),
-                            contentDescription = null,
-                            modifier = Modifier.size(12.dp),
-                            tint = AppTheme.colors.textColor
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                            .clickableWithoutRipple { onCloseScreen() },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(painter = painterResource(R.drawable.ic_arrow_back_21), contentDescription = "Back", tint = Color.White)
+                        Spacer(modifier = Modifier.width(7.dp))
+                        Text(
+                            modifier = Modifier.padding(top = 2.dp),
+                            text = "Back",
+                            style = AppTheme.typography.helveticaNeueRegular,
+                            fontSize = 17.sp,
+                            color = Color.White,
                         )
                     }
                 },
@@ -123,7 +153,7 @@ fun EditMyProfileScreen(
 
             PrimaryTabRow(
                 selectedTabIndex = selectedTab,
-                modifier = Modifier,
+                modifier = Modifier.padding(horizontal = 16.dp),
                 containerColor = Color.Transparent,
                 indicator = {
                     TabRowDefaults.PrimaryIndicator(
@@ -131,36 +161,43 @@ fun EditMyProfileScreen(
                         width = Dp.Unspecified,
                         color = Color.White
                     )
-                }
-
+                },
+                divider = { }
             ) {
-                ProfileDestination.entries.forEachIndexed { index, destination ->
-                    Tab(
-                        modifier = Modifier.width(100.dp),
-                        selected = pagerState.currentPage == index,
-                        onClick = {
-                            selectedTab = index
-                            scope.launch {
-                                pagerState.animateScrollToPage(index)
-                            }
-                        },
-                        text = { Text(text = destination.name, color = Color.White) },
-                        selectedContentColor = Color.White,
-                        unselectedContentColor = Color.White.copy(alpha = 0.7f)
-                    )
+                CompositionLocalProvider(LocalRippleConfiguration provides null) {
+                    ProfileDestination.entries.forEachIndexed { index, destination ->
+                        Tab(
+                            modifier = Modifier.width(100.dp).height(22.dp),
+                            selected = pagerState.currentPage == index,
+                            onClick = {
+                                selectedTab = index
+                                scope.launch {
+                                    pagerState.animateScrollToPage(index)
+                                }
+                            },
+                            text = {
+                                Text(
+                                    text = destination.name,
+                                    color = Color.White,
+                                    fontSize = 10.sp,
+                                    style = AppTheme.typography.helveticaNeueLtCom
+                                )
+                            },
+                            selectedContentColor = Color.White,
+                            unselectedContentColor = Color.White.copy(alpha = 0.7f)
+                        )
+                    }
                 }
             }
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxWidth(),
-                userScrollEnabled = false
             ) { page ->
                 if (page == 0) {
                     EditMyProfileScreenView(
                         uiState,
                         onIntent = { viewModel.setIntent(it) },
                         onCloseScreen = onCloseScreen,
-                        onEditImageClicked = onEditImageClicked
                     )
                 } else {
                     YourParametersScreen(
@@ -175,18 +212,22 @@ fun EditMyProfileScreen(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditMyProfileScreenView(
     uiState: EditMyProfileViewModel.EventListViewState,
     onIntent: (EditMyProfileViewModel.EditMyProfileIntent) -> Unit = {},
     onCloseScreen: () -> Unit = {},
-    onEditImageClicked: () -> Unit = {}
 ) {
     var fName by rememberSaveable { mutableStateOf(uiState.fName) }
     var lName by rememberSaveable { mutableStateOf(uiState.lName) }
     var bio by rememberSaveable { mutableStateOf(uiState.bio) }
+    var selectedAvatarUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+
+    val openGallery = rememberGalleryLauncher { uri ->
+        selectedAvatarUri = uri
+    }
+    val context = LocalContext.current
 
     // Sync local state when uiState changes (e.g., after loading or update)
     LaunchedEffect(uiState.fName, uiState.lName, uiState.bio) {
@@ -202,57 +243,97 @@ fun EditMyProfileScreenView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // Use key to force recomposition when avatar changes
-        key(uiState.avatarUpdateTimestamp) {
+        key(uiState.avatarUrl, selectedAvatarUri) {
+            Spacer(Modifier.height(16.dp))
+
             TelegramUserAvatarEditable(
-                user = uiState.userFull.user,
-                modifier = Modifier,
-                onEditClick = { onEditImageClicked() }
+                avatarUrl = uiState.avatarUrl,
+                localUri = selectedAvatarUri,
+                onEditClick = { openGallery() }
             )
         }
 
-        UiDarkTextField(
+        DivoTextField(
+            modifier = Modifier.padding(top = 24.dp),
             value = fName,
-            onValueChange = {
-                fName = it
-            },
-            label = "First Name",
-            modifier = Modifier.padding(top = 8.dp)
+            onValueChange = { fName = it },
+            placeholder = "First name",
+            backgroundColor = Color.White.copy(0.05f),
+            borderColor = Color.White.copy(0.40f),
+            cornerRadius = 10.dp,
+            placeholderColor = Color.White.copy(0.50f),
+            cursorColor = Color.White,
+            textStyle = AppTheme.typography.helveticaNeueRegular.copy(
+                fontSize = 16.sp,
+                color = Color.White
+            ),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp)
         )
-        UiDarkTextField(
-            label = "Last Name",
-            value = lName,
-            onValueChange = {
-                lName = it
-            },
-            modifier = Modifier.padding(top = 8.dp)
 
+        DivoTextField(
+            modifier = Modifier.padding(top = 12.dp),
+            value = lName,
+            onValueChange = { lName = it },
+            placeholder = "Last name",
+            backgroundColor = Color.White.copy(0.05f),
+            borderColor = Color.White.copy(0.40f),
+            cornerRadius = 10.dp,
+            placeholderColor = Color.White.copy(0.50f),
+            cursorColor = Color.White,
+            textStyle = AppTheme.typography.helveticaNeueRegular.copy(
+                fontSize = 16.sp,
+                color = Color.White
+            ),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp)
         )
-        UiDarkTextField(
-            label = "Biography",
+
+        DivoTextField(
+            modifier = Modifier.padding(top = 12.dp),
             value = bio,
-            onValueChange = {
-                bio = it
-            },
+            onValueChange = { bio = it },
+            placeholder = "France's Top Model...",
+            innerLabel = "Biography",
+            innerLabelColor = Color.White.copy(0.50f),
+            backgroundColor = Color.White.copy(0.05f),
+            borderColor = Color.White.copy(0.40f),
+            cornerRadius = 10.dp,
+            placeholderColor = Color.White.copy(0.50f),
+            cursorColor = Color.White,
             minLines = 5,
-            singleLine = false,
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .fillMaxWidth()
+            maxLines = 5,
+            textStyle = AppTheme.typography.helveticaNeueRegular.copy(
+                fontSize = 16.sp,
+                color = Color.White
+            ),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp)
         )
+
         Spacer(modifier = Modifier.size(16.dp))
 
-        UIButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                onIntent(
-                    EditMyProfileViewModel.EditMyProfileIntent.OnSaveClicked(
-                        fName = fName,
-                        lName = lName,
-                        bio = bio
-                    )
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                LottieProgressIndicator(
+                    modifier = Modifier.size(32.dp).align(Alignment.Center),
                 )
-            })
+            }
+        } else {
+            UIButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Save",
+                onClick = {
+                    onIntent(
+                        EditMyProfileViewModel.EditMyProfileIntent.OnSaveClicked(
+                            fName = fName,
+                            lName = lName,
+                            bio = bio,
+                            file = selectedAvatarUri?.let { context.uriToFile(it) }
+                        )
+                    )
+                })
+        }
     }
 }
 

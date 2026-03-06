@@ -4,12 +4,13 @@ import com.google.gson.annotations.SerializedName
 import org.telegram.divo.dal.dto.common.CityDto
 import org.telegram.divo.dal.dto.common.PhotoDto
 import org.telegram.divo.dal.dto.common.UserSocialNetworkDto
+import org.telegram.divo.dal.dto.common.UuidContainerDto
 import org.telegram.divo.dal.dto.common.toEntities
 import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyAddress
 import org.telegram.divo.entity.Appearance
-import org.telegram.divo.entity.City
+import org.telegram.divo.entity.Customer
 import org.telegram.divo.entity.EyeColor
 import org.telegram.divo.entity.Gender
 import org.telegram.divo.entity.HairColor
@@ -45,7 +46,8 @@ class UserDataDto(
     @SerializedName("isFavorite") val isFavorite: Boolean,
     @SerializedName("isFollowed") val isFollowed: Boolean,
     @SerializedName("userRatingStatus") val userRatingStatus: String,
-    @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>
+    @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>,
+    @SerializedName("customer") val customer: CustomerDto?,
 )
 
 class GenderDto(
@@ -130,6 +132,12 @@ class StatisticDto(
     @SerializedName("modelsCount") val modelsCount: Int
 )
 
+data class CustomerDto(
+    @SerializedName("site") val site: String? = null,
+    @SerializedName("description") val description: String? = null,
+    @SerializedName("background") val backgroundUuid: UuidContainerDto? = null
+)
+
 fun UserInfoResponse.toEntity(): UserInfo = data.toEntity()
 
 fun UserDataDto.toEntity(): UserInfo =
@@ -142,7 +150,9 @@ fun UserDataDto.toEntity(): UserInfo =
         email = email,
         phone = phone,
         photoUrl = photo.fullUrl,
+        photoUuid = photo.fileUuid,
         avatarUrl = avatar.fullUrl,
+        avatarUuid = avatar.fileUuid,
         role = role,
         subrole = subrole,
         roleLabel = roleLabel,
@@ -150,7 +160,7 @@ fun UserDataDto.toEntity(): UserInfo =
         pushNotifications = pushNotifications,
         isRegistrationFinished = isRegistrationFinished,
         model = model.toEntity(),
-//        customer = customer,
+        customer = customer?.toEntity(),
 //        agency = agency,
 //        agencyEmployee = agencyEmployee,
         statistic = statistic.toEntity(),
@@ -164,6 +174,13 @@ private fun GenderDto.toEntity(): Gender =
     Gender(
         id = id,
         title = title
+    )
+
+private fun CustomerDto.toEntity(): Customer =
+    Customer(
+        site = site,
+        description = description,
+        backgroundUuid = backgroundUuid?.uuid
     )
 
 private fun StatisticDto.toEntity(): Statistic =

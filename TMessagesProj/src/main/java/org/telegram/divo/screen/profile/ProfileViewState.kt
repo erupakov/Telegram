@@ -26,6 +26,7 @@ data class ProfileViewState(
     val isLoadingAllUsers: Boolean = false,
     val isLoadingMoreFeed: Boolean = false,
     val feedHasMore: Boolean = true,
+    val backgroundChanging: Boolean = false,
 
     // Search
     val searchQuery: String = "",
@@ -67,8 +68,6 @@ data class UserStatistic(
     val followers: Int = 0,
     val following: Int = 0,
     val views: Int = 0,
-    val likes: Int = 0,
-    val saves: Int = 0
 )
 
 sealed class ProfileIntent : ViewIntent {
@@ -83,8 +82,7 @@ sealed class ProfileIntent : ViewIntent {
     ) : ProfileIntent()
 
     class OnBackgroundPhotoSelected(
-        val photo: TLRPC.InputFile,
-        val localPath: String?
+        val file: Result<File>
     ) : ProfileIntent()
 
     class OpenSocialLink(val url: String) : ProfileIntent()

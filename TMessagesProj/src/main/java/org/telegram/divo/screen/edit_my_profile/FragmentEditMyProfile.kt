@@ -40,16 +40,16 @@ class FragmentEditMyProfile : BaseFragment(), ImageUpdater.ImageUpdaterDelegate 
             setContent {
                 EditMyProfileScreen(
                     viewModel = viewModel,
-                    messageStorage = messagesStorage,
-                    onCloseScreen = { finishFragment() },
-                    onEditImageClicked = {
-                        imageUpdater?.openMenu(
-                            /* hasAvatar = */ false,
-                            /* onDeleteAvatar = */ Runnable { },
-                            /* onDismiss = */ null,
-                            /* type = */ TYPE_SET_PHOTO_FOR_USER
-                        )
-                    }
+                    //messageStorage = messagesStorage,
+                    //onCloseScreen = { finishFragment() },
+//                    onEditImageClicked = {
+//                        imageUpdater?.openMenu(
+//                            /* hasAvatar = */ false,
+//                            /* onDeleteAvatar = */ Runnable { },
+//                            /* onDismiss = */ null,
+//                            /* type = */ TYPE_SET_PHOTO_FOR_USER
+//                        )
+//                    }
                 )
             }
         }

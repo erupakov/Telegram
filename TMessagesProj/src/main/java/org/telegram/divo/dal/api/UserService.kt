@@ -6,6 +6,7 @@ import org.telegram.divo.dal.dto.user.AddGalleryRequest
 import org.telegram.divo.dal.dto.user.AddToGalleryResponse
 import org.telegram.divo.dal.dto.user.AgencyModelsRequest
 import org.telegram.divo.dal.dto.user.AgencyModelsResponse
+import org.telegram.divo.dal.dto.user.UpdateProfileRequest
 import org.telegram.divo.dal.dto.user.UploadFileResponse
 import org.telegram.divo.dal.dto.user.UpsertSocialNetworkRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListRequest
@@ -30,6 +31,11 @@ interface UserService {
     @GET("user/{userId}")
     suspend fun getUserById(
         @Path("userId") userId: Int
+    ): UserInfoResponse
+
+    @POST("user/update-profile")
+    suspend fun updateProfile(
+        @Body request: UpdateProfileRequest
     ): UserInfoResponse
 
     @POST("user-gallery/list")
