@@ -83,6 +83,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
     public String currentPicturePath;
     private TLRPC.PhotoSize bigPhoto;
     private TLRPC.PhotoSize smallPhoto;
+    private Bitmap smallPhotoBitmap;
     private boolean isVideo;
     private String uploadingImage;
     private String uploadingVideo;
@@ -144,7 +145,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         } else {
             bitmap = ImageLoader.loadBitmap(path, null, 800, 800, true);
         }
-        processBitmap(bitmap, avatarObject);
+        processBitmap(false, bitmap, avatarObject);
     }
 
     public void setUseAttachMenu(boolean value) {
@@ -176,6 +177,14 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
     public interface ImageUpdaterDelegate {
         void didUploadPhoto(TLRPC.InputFile photo, TLRPC.InputFile video, double videoStartTimestamp, String videoPath, TLRPC.PhotoSize bigSize, TLRPC.PhotoSize smallSize, boolean isVideo, TLRPC.VideoSize emojiMarkup);
 
+        default PhotoViewer.PlaceProviderObject getCloseIntoObject() {
+            return null;
+        }
+
+        default boolean supportsBulletin() {
+            return false;
+        }
+
         default String getInitialSearchString() {
             return null;
         }
@@ -184,7 +193,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
 
         }
 
-        default void didStartUpload(boolean isVideo) {
+        default void didStartUpload(boolean fromAvatarConstructor, boolean isVideo) {
 
         }
 
@@ -199,6 +208,16 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
 
     public boolean isUploadingImage() {
         return uploadingImage != null || uploadingVideo != null || convertingVideo != null;
+    }
+
+    public String getUploadingFilePath() {
+        if (uploadingImage != null) {
+            return uploadingImage;
+        }
+        if (uploadingVideo != null) {
+            return uploadingVideo;
+        }
+        return null;
     }
 
     public void clear() {
@@ -341,6 +360,12 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         }
     }
 
+    public void updateColors() {
+        if (chatAttachAlert != null) {
+            chatAttachAlert.checkColors();
+        }
+    }
+
     public boolean dismissDialogOnPause(Dialog dialog) {
         return dialog != chatAttachAlert;
     }
@@ -376,7 +401,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
             }
 
             @Override
-            public void actionButtonPressed(boolean canceled, boolean notify, int scheduleDate) {
+            public void actionButtonPressed(boolean canceled, boolean notify, int scheduleDate, int scheduleRepeatPeriod) {
                 if (photos.isEmpty() || delegate == null || sendPressed || canceled) {
                     return;
                 }
@@ -402,7 +427,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                         info.ttl = searchImage.ttl;
                     }
                 }
-                didSelectPhotos(media);
+                didSelectPhotos(false, media);
             }
 
             @Override
@@ -450,14 +475,15 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         }
         if (chatAttachAlert == null) {
             chatAttachAlert = new ChatAttachAlert(parentFragment.getParentActivity(), parentFragment, forceDarkTheme, showingFromDialog);
-            chatAttachAlert.setAvatarPicker(canSelectVideo ? 2 : 1, searchAvailable);
+            chatAttachAlert.setAvatarPicker(canSelectVideo ? 2 : 1, searchAvailable, delegate != null && delegate.supportsBulletin() ? delegate::getCloseIntoObject : null);
             chatAttachAlert.setDelegate(new ChatAttachAlert.ChatAttachViewDelegate() {
 
                 @Override
-                public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, long effectId, boolean invertMedia, boolean forceDocument) {
+                public void didPressedButton(int button, boolean arg, boolean notify, int scheduleDate, int scheduleRepeatPeriod, long effectId, boolean invertMedia, boolean forceDocument, long payStars) {
                     if (parentFragment == null || parentFragment.getParentActivity() == null || chatAttachAlert == null) {
                         return;
                     }
+                    boolean fromAvatarConstructor = false;
                     if (button == 8 || button == 7) {
                         HashMap<Object, Object> photos = chatAttachAlert.getPhotoLayout().getSelectedPhotos();
                         ArrayList<Object> order = chatAttachAlert.getPhotoLayout().getSelectedPhotosOrder();
@@ -475,6 +501,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                                     info.path = photoEntry.path;
                                 }
                                 info.thumbPath = photoEntry.thumbPath;
+                                info.coverPath = photoEntry.coverPath;
                                 info.videoEditedInfo = photoEntry.editedInfo;
                                 info.isVideo = photoEntry.isVideo;
                                 info.caption = photoEntry.caption != null ? photoEntry.caption.toString() : null;
@@ -482,6 +509,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                                 info.masks = photoEntry.stickers;
                                 info.ttl = photoEntry.ttl;
                                 info.emojiMarkup = photoEntry.emojiMarkup;
+                                fromAvatarConstructor = info.emojiMarkup instanceof TLRPC.TL_videoSizeEmojiMarkup;
                             } else if (object instanceof MediaController.SearchImage) {
                                 MediaController.SearchImage searchImage = (MediaController.SearchImage) object;
                                 if (searchImage.imagePath != null) {
@@ -490,6 +518,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                                     info.searchImage = searchImage;
                                 }
                                 info.thumbPath = searchImage.thumbPath;
+                                info.coverPath = searchImage.coverPath;
                                 info.videoEditedInfo = searchImage.editedInfo;
                                 info.caption = searchImage.caption != null ? searchImage.caption.toString() : null;
                                 info.entities = searchImage.entities;
@@ -503,7 +532,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                                 searchImage.date = (int) (System.currentTimeMillis() / 1000);
                             }
                         }
-                        didSelectPhotos(media);
+                        didSelectPhotos(fromAvatarConstructor, media);
 
                         if (button != 8) {
                             chatAttachAlert.dismiss(true);
@@ -560,7 +589,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         }
     }
 
-    private void didSelectPhotos(ArrayList<SendMessagesHelper.SendingMediaInfo> photos) {
+    private void didSelectPhotos(boolean fromAvatarConstructor, ArrayList<SendMessagesHelper.SendingMediaInfo> photos) {
         if (!photos.isEmpty()) {
             SendMessagesHelper.SendingMediaInfo info = photos.get(0);
             Bitmap bitmap = null;
@@ -614,7 +643,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                     }
                 }
             }
-            processBitmap(bitmap, avatarObject);
+            processBitmap(fromAvatarConstructor, bitmap, avatarObject);
         }
     }
 
@@ -708,7 +737,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         fragment.setDelegate(new PhotoAlbumPickerActivity.PhotoAlbumPickerActivityDelegate() {
             @Override
             public void didSelectPhotos(ArrayList<SendMessagesHelper.SendingMediaInfo> photos, boolean notify, int scheduleDate) {
-                ImageUpdater.this.didSelectPhotos(photos);
+                ImageUpdater.this.didSelectPhotos(false, photos);
             }
 
             @Override
@@ -744,7 +773,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
             } catch (Exception e) {
                 FileLog.e(e);
                 Bitmap bitmap = ImageLoader.loadBitmap(path, uri, 800, 800, true);
-                processBitmap(bitmap, null);
+                processBitmap(false, bitmap, null);
             }
         });
     }
@@ -762,9 +791,14 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         PhotoViewer.getInstance().setParentActivity(parentFragment);
         PhotoViewer.getInstance().openPhotoForSelect(arrayList, 0, PhotoViewer.SELECT_TYPE_AVATAR, false, new PhotoViewer.EmptyPhotoViewerProvider() {
             @Override
-            public void sendButtonPressed(int index, VideoEditedInfo videoEditedInfo, boolean notify, int scheduleDate, boolean forceDocument) {
+            public void sendButtonPressed(int index, VideoEditedInfo videoEditedInfo, boolean notify, int scheduleDate, int scheduleRepeatPeriod, boolean forceDocument) {
                 MediaController.PhotoEntry photoEntry = (MediaController.PhotoEntry) arrayList.get(0);
                 processEntry(photoEntry);
+            }
+
+            @Override
+            public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview, boolean closing) {
+                return delegate == null ? null : delegate.getCloseIntoObject();
             }
 
             @Override
@@ -777,6 +811,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                 return false;
             }
         }, null);
+        PhotoViewer.getInstance().closePhotoAfterSelectWithAnimation = true;
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -807,7 +842,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         }
     }
 
-    private void processBitmap(Bitmap bitmap, MessageObject avatarObject) {
+    private void processBitmap(boolean fromAvatarConstructor, Bitmap bitmap, MessageObject avatarObject) {
         if (bitmap == null) {
             return;
         }
@@ -820,7 +855,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         smallPhoto = ImageLoader.scaleAndSaveImage(bitmap, 150, 150, 80, false, 150, 150);
         if (smallPhoto != null) {
             try {
-                Bitmap b = BitmapFactory.decodeFile(FileLoader.getInstance(currentAccount).getPathToAttach(smallPhoto, true).getAbsolutePath());
+                Bitmap b = smallPhotoBitmap = BitmapFactory.decodeFile(FileLoader.getInstance(currentAccount).getPathToAttach(smallPhoto, true).getAbsolutePath());
                 String key = smallPhoto.location.volume_id + "_" + smallPhoto.location.local_id + "@50_50";
                 ImageLoader.getInstance().putImageToCache(new BitmapDrawable(b), key, true);
             } catch (Throwable ignore) {
@@ -835,7 +870,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                 if (avatarObject != null && avatarObject.videoEditedInfo != null) {
                     if (supportEmojiMarkup && !MessagesController.getInstance(currentAccount).uploadMarkupVideo) {
                         if (delegate != null) {
-                            delegate.didStartUpload(true);
+                            delegate.didStartUpload(fromAvatarConstructor, true);
                         }
                         if (delegate != null) {
                             //skip upload step
@@ -855,12 +890,12 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                     MediaController.getInstance().scheduleVideoConvert(avatarObject, true, true, false);
                     uploadingImage = null;
                     if (delegate != null) {
-                        delegate.didStartUpload(true);
+                        delegate.didStartUpload(fromAvatarConstructor, true);
                     }
                     isVideo = true;
                 } else {
                     if (delegate != null) {
-                        delegate.didStartUpload(false);
+                        delegate.didStartUpload(fromAvatarConstructor, false);
                     }
                     isVideo = false;
                 }
@@ -877,9 +912,13 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
         }
     }
 
+    public Bitmap getPreviewBitmap() {
+        return smallPhotoBitmap;
+    }
+
     @Override
     public void didFinishEdit(Bitmap bitmap) {
-        processBitmap(bitmap, null);
+        processBitmap(false, bitmap, null);
     }
 
     private void cleanup() {
@@ -946,7 +985,7 @@ public class ImageUpdater implements NotificationCenter.NotificationCenterDelega
                 uploadingImage = null;
                 if (id == NotificationCenter.fileLoaded || id == NotificationCenter.httpFileDidLoad) {
                     Bitmap bitmap = ImageLoader.loadBitmap(finalPath, null, 800, 800, true);
-                    processBitmap(bitmap, null);
+                    processBitmap(false, bitmap, null);
                 } else {
                     imageReceiver.setImageBitmap((Drawable) null);
                     if (delegate != null) {

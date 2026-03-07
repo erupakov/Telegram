@@ -45,7 +45,7 @@ import org.telegram.ui.Components.RecyclerListView;
 
 import java.util.ArrayList;
 
-public class PrivacyUsersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, ContactsActivity.ContactsActivityDelegate {
+public class PrivacyUsersActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
 
     private RecyclerListView listView;
     private LinearLayoutManager layoutManager;
@@ -207,9 +207,11 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
                     }
                     if (isAlwaysShare && rulesType == PrivacyControlActivity.PRIVACY_RULES_TYPE_INVITE) {
                         args.putBoolean("allowPremium", true);
+                    } else if (rulesType == PrivacyControlActivity.PRIVACY_RULES_TYPE_GIFTS) {
+                        args.putBoolean("allowMiniapps", true);
                     }
                     GroupCreateActivity fragment = new GroupCreateActivity(args);
-                    fragment.setDelegate((premium, ids) -> {
+                    fragment.setDelegate((premium, miniapps, ids) -> {
                         for (Long id1 : ids) {
                             if (uidArray.contains(id1)) {
                                 continue;
@@ -382,14 +384,6 @@ public class PrivacyUsersActivity extends BaseFragment implements NotificationCe
         if (listViewAdapter != null) {
             listViewAdapter.notifyDataSetChanged();
         }
-    }
-
-    @Override
-    public void didSelectContact(final TLRPC.User user, String param, ContactsActivity activity) {
-        if (user == null) {
-            return;
-        }
-        getMessagesController().blockPeer(user.id);
     }
 
     private class ListAdapter extends RecyclerListView.SelectionAdapter {

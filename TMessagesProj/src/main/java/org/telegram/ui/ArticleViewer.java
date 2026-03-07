@@ -24,7 +24,6 @@ import android.animation.IntEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
@@ -747,7 +746,6 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         private final Paint blackPaint = new Paint();
 
         private Runnable attachRunnable;
-        private boolean selfLayout;
         private int startedTrackingPointerId;
         private boolean maybeStartTracking;
         private boolean startedTracking;
@@ -766,7 +764,6 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             super(context);
         }
 
-        @TargetApi(21)
         @Override
         public WindowInsets dispatchApplyWindowInsets(WindowInsets insets) {
             if (sheet != null) return super.dispatchApplyWindowInsets(insets);
@@ -793,7 +790,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
             int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
-            if (Build.VERSION.SDK_INT >= 21 && lastInsets != null) {
+            if (lastInsets != null) {
                 setMeasuredDimension(widthSize, heightSize);
                 WindowInsets insets = (WindowInsets) lastInsets;
                 if (AndroidUtilities.incorrectDisplaySizeFix) {
@@ -862,9 +859,6 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         @SuppressWarnings("DrawAllocation")
         @Override
         protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-            if (selfLayout) {
-                return;
-            }
             int width = right - left;
             if (anchorsOffsetMeasuredWidth != width) {
                 for (int i = 0; i < pages.length; i++) {
@@ -876,7 +870,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             }
             int x;
             int y = 0;
-            if (Build.VERSION.SDK_INT >= 21 && lastInsets != null) {
+            if (lastInsets != null) {
                 WindowInsets insets = (WindowInsets) lastInsets;
                 x = insets.getSystemWindowInsetLeft();
 
@@ -1169,7 +1163,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         @Override
         protected void dispatchDraw(Canvas canvas) {
             super.dispatchDraw(canvas);
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP || lastInsets == null) {
+            if (lastInsets == null) {
                 if (bWidth != 0 && bHeight != 0) {
                     blackPaint.setAlpha((int) (255 * windowView.getAlpha()));
                     if (bX == 0 && bY == 0) {
@@ -1187,7 +1181,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 int w = getMeasuredWidth();
                 int h = getMeasuredHeight();
                 canvas.drawRect(innerTranslationX, 0, w, h, backgroundPaint);
-                if (Build.VERSION.SDK_INT >= 21 && lastInsets != null) {
+                if (lastInsets != null) {
                     WindowInsets insets = (WindowInsets) lastInsets;
                     canvas.drawRect(innerTranslationX, 0, w, insets.getSystemWindowInsetTop(), statusBarPaint);
                     if (hasCutout) {
@@ -1252,7 +1246,9 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             if (checkingForLongPress && windowView != null) {
                 checkingForLongPress = false;
                 if (pressedLink != null) {
-                    windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    try {
+                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    } catch (Exception ignored) {}
                     showCopyPopup(pressedLink.getSpan().getUrl());
                     pressedLink = null;
                     pressedLinkOwnerLayout = null;
@@ -1266,10 +1262,14 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                         textSelectionHelper.trySelect(pressedLinkOwnerView);
                     }
                     if (textSelectionHelper.isInSelectionMode()) {
-                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                        try {
+                            windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                        } catch (Exception ignored) {}
                     }
                 } else if (pressedLinkOwnerLayout != null && pressedLinkOwnerView != null) {
-                    windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    try {
+                        windowView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+                    } catch (Exception ignored) {}
 
                     int[] location = new int[2];
                     pressedLinkOwnerView.getLocationInWindow(location);
@@ -1718,9 +1718,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             pages[0].setVisibility(View.VISIBLE);
             int index = order == 1 ? 0 : 1;
             pages[index].setBackgroundColor(sheet == null ? 0 : backgroundPaint.getColor());
-            if (Build.VERSION.SDK_INT >= 18) {
-                pages[index].setLayerType(View.LAYER_TYPE_HARDWARE, null);
-            }
+            pages[index].setLayerType(View.LAYER_TYPE_HARDWARE, null);
             if (order == 1) {
                 pages[0].setTranslationX(AndroidUtilities.displaySize.x);
                 pageSwitchAnimation.playTogether(
@@ -1744,9 +1742,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     textSelectionHelper.setParentView(pages[0].listView);
                     textSelectionHelper.layoutManager = pages[0].layoutManager;
                     pages[index].setBackgroundDrawable(null);
-                    if (Build.VERSION.SDK_INT >= 18) {
-                        pages[index].setLayerType(View.LAYER_TYPE_NONE, null);
-                    }
+                    pages[index].setLayerType(View.LAYER_TYPE_NONE, null);
                     pageSwitchAnimation = null;
                     windowView.openingPage = false;
                 }
@@ -3377,7 +3373,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     sheet.dismiss(true);
                 }
             }
-            Browser.openUrl(parentActivity, Uri.parse(url), true, true, false, progress, null, true, true);
+            Browser.openUrl(parentActivity, Uri.parse(url), true, true, false, progress, null, true, true, false);
             return true;
         };
 
@@ -3660,7 +3656,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.messagePlayingDidReset);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.messagePlayingPlayStateChanged);
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.messagePlayingDidStart);
-        if (parentActivity == activity) {
+        if (parentActivity == activity || parentActivity != null && isSheet && sheet != null && sheet.dialog != null) {
             updatePaintColors();
             refreshThemeColors();
             return;
@@ -3731,7 +3727,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         };
         windowView.addView(containerView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP | Gravity.LEFT));
         //containerView.setFitsSystemWindows(true);
-        if (Build.VERSION.SDK_INT >= 21 && sheet == null) {
+        if (sheet == null) {
             windowView.setFitsSystemWindows(true);
             containerView.setOnApplyWindowInsetsListener((v, insets) -> {
                 if (Build.VERSION.SDK_INT >= 30) {
@@ -3996,8 +3992,9 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                             end = Math.max(sb.getSpanEnd(spans[i]), end);
                         }
                         Uri uri = Utilities.uriParseSafe(url);
+                        if (uri != null && TextUtils.equals(uri.getScheme(), "javascript")) return;
                         if (spans.length > 0 && start == 0 && end > 0 || uri != null && uri.getScheme() != null) {
-                            if (uri.getScheme() == null && uri.getHost() == null && uri.getPath() != null) {
+                            if (uri != null && uri.getScheme() == null && uri.getHost() == null && uri.getPath() != null) {
                                 url = Browser.replace(uri, "https", null, uri.getPath(), "/");
                             }
                             page.getWebView().loadUrl(url);
@@ -4413,9 +4410,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     LinearLayout linearLayout = new LinearLayout(activity);
                     linearLayout.setOrientation(LinearLayout.VERTICAL);
                     TextView textView = new TextView(activity);
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        textView.setLetterSpacing(0.025f);
-                    }
+                    textView.setLetterSpacing(0.025f);
                     textView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
                     textView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
                     linearLayout.addView(textView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 0, 24, 0, 24, 0));
@@ -4612,13 +4607,11 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         navigationBarPaint.setColor(navigationColor);
         windowLayoutParams.systemUiVisibility = uiFlags;
 
-        if (Build.VERSION.SDK_INT >= 21) {
-            windowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
-                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR |
-                    WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
-            if (Build.VERSION.SDK_INT >= 28) {
-                windowLayoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-            }
+        windowLayoutParams.flags |= WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+                WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR |
+                WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS;
+        if (Build.VERSION.SDK_INT >= 28) {
+            windowLayoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
         }
 
         textSelectionHelper = new TextSelectionHelper.ArticleTextSelectionHelper();
@@ -5238,13 +5231,11 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 }
             }
             try {
-                if (Build.VERSION.SDK_INT >= 21) {
-                    windowLayoutParams.flags = WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR |
-                            WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
-                            WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
-                    if (Build.VERSION.SDK_INT >= 28) {
-                        windowLayoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
-                    }
+                windowLayoutParams.flags = WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR |
+                        WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS |
+                        WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+                if (Build.VERSION.SDK_INT >= 28) {
+                    windowLayoutParams.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
                 }
                 //windowLayoutParams.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN;
                 windowView.setFocusable(false);
@@ -5306,9 +5297,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 if (containerView == null || windowView == null) {
                     return;
                 }
-                if (Build.VERSION.SDK_INT >= 18) {
-                    containerView.setLayerType(View.LAYER_TYPE_NONE, null);
-                }
+                containerView.setLayerType(View.LAYER_TYPE_NONE, null);
                 animationInProgress = 0;
                 AndroidUtilities.hideKeyboard(parentActivity.getCurrentFocus());
             };
@@ -5333,9 +5322,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 animatorSet.start();
             });
         }
-        if (Build.VERSION.SDK_INT >= 18) {
-            containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }
+        containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         return true;
     }
 
@@ -5527,9 +5514,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             if (containerView == null) {
                 return;
             }
-            if (Build.VERSION.SDK_INT >= 18) {
-                containerView.setLayerType(View.LAYER_TYPE_NONE, null);
-            }
+            containerView.setLayerType(View.LAYER_TYPE_NONE, null);
             animationInProgress = 0;
             onClosed();
         };
@@ -5545,9 +5530,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             }
         });
         transitionAnimationStartTime = System.currentTimeMillis();
-        if (Build.VERSION.SDK_INT >= 18) {
-            containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }
+        containerView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
         animatorSet.start();
 
         for (int i = 0; i < videoStates.size(); ++i) {
@@ -8235,6 +8218,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
     private class BlockEmbedCell extends FrameLayout implements TextSelectionHelper.ArticleSelectableView {
 
         private class TelegramWebviewProxy {
+            @Keep
             @JavascriptInterface
             public void postEvent(final String eventName, final String eventData) {
                 AndroidUtilities.runOnUIThread(() -> {
@@ -8395,16 +8379,12 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 webView.getSettings().setDomStorageEnabled(true);
 
                 webView.getSettings().setAllowContentAccess(true);
-                if (Build.VERSION.SDK_INT >= 17) {
-                    webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-                    webView.addJavascriptInterface(new TelegramWebviewProxy(), "TelegramWebviewProxy");
-                }
+                webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+                webView.addJavascriptInterface(new TelegramWebviewProxy(), "TelegramWebviewProxy");
 
-                if (Build.VERSION.SDK_INT >= 21) {
-                    webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-                    CookieManager cookieManager = CookieManager.getInstance();
-                    cookieManager.setAcceptThirdPartyCookies(webView, true);
-                }
+                webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+                CookieManager cookieManager = CookieManager.getInstance();
+                cookieManager.setAcceptThirdPartyCookies(webView, true);
 
                 webView.setWebChromeClient(new WebChromeClient() {
 
@@ -8447,15 +8427,20 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 webView.setWebViewClient(new WebViewClient() {
                     @Override
                     public boolean onRenderProcessGone(WebView view, RenderProcessGoneDetail detail) {
-                        if (LaunchActivity.instance != null && LaunchActivity.instance.isFinishing()) {
+                        try {
+                            if (LaunchActivity.instance != null && LaunchActivity.instance.isFinishing()) {
+                                return true;
+                            }
+                            new AlertDialog.Builder(getContext(), null)
+                                    .setTitle(getString(R.string.ChromeCrashTitle))
+                                    .setMessage(AndroidUtilities.replaceSingleTag(getString(R.string.ChromeCrashMessage), () -> Browser.openUrl(getContext(), "https://play.google.com/store/apps/details?id=com.google.android.webview")))
+                                    .setPositiveButton(getString(R.string.OK), null)
+                                    .show();
                             return true;
+                        } catch (Exception e) {
+                            FileLog.e(e);
+                            return false;
                         }
-                        new AlertDialog.Builder(getContext(), null)
-                                .setTitle(getString(R.string.ChromeCrashTitle))
-                                .setMessage(AndroidUtilities.replaceSingleTag(getString(R.string.ChromeCrashMessage), () -> Browser.openUrl(getContext(), "https://play.google.com/store/apps/details?id=com.google.android.webview")))
-                                .setPositiveButton(getString(R.string.OK), null)
-                                .show();
-                        return true;
                     }
 
                     @Override
@@ -12669,7 +12654,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         }
 
         @Override
-        public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview) {
+        public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview, boolean closing) {
             if (index < 0 || index >= pageBlocks.size()) {
                 return null;
             }
@@ -12893,10 +12878,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         public final BotWebViewContainer webViewContainer;
         private boolean swipeBack;
 
-        private int errorShownCode;
-        private String errorShownDescription;
         private boolean errorShown;
-        private boolean dangerousShown;
         public ErrorContainer errorContainer;
 
         public boolean backButton, forwardButton;
@@ -13001,9 +12983,9 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 }
 
                 @Override
-                public void onWebViewCreated() {
-                    super.onWebViewCreated();
-                    swipeContainer.setWebView(webViewContainer.getWebView());
+                public void onWebViewCreated(MyWebView webView) {
+                    super.onWebViewCreated(webView);
+                    swipeContainer.setWebView(webView);
                 }
 
                 @Override
@@ -13039,7 +13021,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                 protected void onErrorShown(boolean shown, int errorCode, String description) {
                     if (shown) {
                         createErrorContainer();
-                        errorContainer.set(getWebView() != null ? getWebView().getUrl() : null, errorShownCode = errorCode, errorShownDescription = description);
+                        errorContainer.set(getWebView() != null ? getWebView().getUrl() : null, errorCode, description);
                         errorContainer.setDark(AndroidUtilities.computePerceivedBrightness(getThemedColor(Theme.key_iv_background)) <= .721f, false);
                         errorContainer.setBackgroundColor(getThemedColor(Theme.key_iv_background));
                     }
@@ -13155,7 +13137,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             });
             swipeContainer.addView(webViewContainer, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
             swipeContainer.setScrollEndListener(() -> webViewContainer.invalidateViewPortHeight(true));
-            swipeContainer.setDelegate(() -> {
+            swipeContainer.setDelegate(byTap -> {
                 if (sheet != null) {
                     swipeBack = true;
                     sheet.dismiss(true);
@@ -13251,9 +13233,9 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         }
 
         public int getBackgroundColor() {
-            if (isWeb() && dangerousShown) {
-                return 0xFFB3261E;
-            }
+//            if (isWeb() && dangerousShown) {
+//                return 0xFFB3261E;
+//            }
             if (isWeb() && SharedConfig.adaptableColorInBrowser) {
                 if (errorShown) {
                     return getThemedColor(Theme.key_iv_background);
@@ -13285,6 +13267,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                             try {
                                 try {
                                     Uri uri2 = Uri.parse(url);
+                                    if (uri2.getHost() == null) uri2 = uri;
                                     String hostname = Browser.IDN_toUnicode(uri2.getHost());
                                     String[] levels = hostname.split("\\.");
                                     if (levels.length > 2 && actionBar != null && HintView2.measureCorrectly(hostname, actionBar.titlePaint) > AndroidUtilities.displaySize.x - dp(3 * 54)) {
@@ -13634,7 +13617,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
 
             if (webView != null) {
                 webView.onResume();
-                pageLayout.webViewContainer.replaceWebView(webView, proxy);
+                pageLayout.webViewContainer.replaceWebView(UserConfig.selectedAccount, webView, proxy);
                 pageLayout.setWebBgColor(true, actionBarColor);
                 pageLayout.setWebBgColor(false, backgroundColor);
             } else if (lastUrl != null) {
@@ -13784,12 +13767,19 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
 
         public boolean preserve;
 
-        private BottomSheetTabDialog dialog;
+        public BottomSheetTabDialog dialog;
+        private boolean hadDialog;
 
         @Override
         public boolean setDialog(BottomSheetTabDialog dialog) {
             this.dialog = dialog;
+            if (dialog != null) hadDialog = true;
             return true;
+        }
+
+        @Override
+        public boolean hadDialog() {
+            return hadDialog;
         }
 
         @Override
@@ -13822,10 +13812,11 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
 
         @Override
         public boolean isShown() {
-            return !dismissing && openProgress > 0.5f && windowView != null && windowView.isAttachedToWindow() && windowView.isVisible() && backProgress < 1f;
+            return !dismissing && !released && openProgress > 0.5f && windowView != null && windowView.isAttachedToWindow() && windowView.isVisible() && backProgress < 1f;
         }
 
         public void attachInternal(BaseFragment fragment) {
+            this.released = false;
             this.fragment = fragment;
             this.resourcesProvider = fragment.getResourceProvider();
             if (fragment instanceof ChatActivity) {
@@ -13833,10 +13824,6 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
                     ((ChatActivity) fragment).getChatActivityEnterView().closeKeyboard();
                     ((ChatActivity) fragment).getChatActivityEnterView().hidePopup(true, false);
                 }
-            }
-            if (fragment.getParentActivity() instanceof LaunchActivity) {
-                LaunchActivity activity = (LaunchActivity) fragment.getParentActivity();
-                activity.requestCustomNavigationBar();
             }
             if (dialog != null) {
                 dialog.attach();
@@ -13867,6 +13854,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
 
         private boolean dismissing;
         private boolean dismissingIntoTabs;
+        private boolean released;
 
         @Override
         public void dismiss(boolean tabs) {
@@ -13887,6 +13875,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
 
         @Override
         public void release() {
+            released = true;
             if (pages[0] != null && pages[0].swipeBack) {
                 pages[0].swipeContainer.setSwipeOffsetY(-pages[0].swipeContainer.offsetY + pages[0].swipeContainer.topActionBarOffsetY);
                 pages[0].swipeBack = false;
@@ -14023,6 +14012,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             checkFullyVisible();
             updateTranslation();
             windowView.invalidate();
+            windowView.requestLayout();
         }
 
         private float openProgress;
@@ -14135,7 +14125,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             if (dialog != null) {
                 dialog.updateNavigationBarColor();
             } else {
-                LaunchActivity.instance.checkSystemBarColors(true, true, true, false);
+                LaunchActivity.instance.checkSystemBarColors(true, true, true);
                 AndroidUtilities.setLightNavigationBar(getWindowView(), AndroidUtilities.computePerceivedBrightness(getNavigationBarColor(getThemedColor(Theme.key_windowBackgroundGray))) >= .721f);
             }
         }
@@ -14464,7 +14454,7 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
         private final TextView titleView;
         private final TextView descriptionView;
         private final TextView codeView;
-        private final ButtonWithCounterView buttonView;
+        public final ButtonWithCounterView buttonView;
 
         public ErrorContainer(Context context) {
             super(context);
@@ -14528,13 +14518,19 @@ public class ArticleViewer implements NotificationCenter.NotificationCenterDeleg
             }
         }
 
-        public void set(String url, int code, String descrpiption) {
+        public void set(String botName, String description) {
+            titleView.setText(getString(R.string.WebErrorTitle));
+            descriptionView.setText(AndroidUtilities.replaceTags(formatString(R.string.WebErrorInfoBot, botName)));
+            codeView.setText(description);
+        }
+
+        public void set(String url, int code, String description) {
             titleView.setText(getString(R.string.WebErrorTitle));
             url = BotWebViewContainer.magic2tonsite(url);
             CharSequence cs = AndroidUtilities.replaceTags(url == null || Uri.parse(url) == null || Uri.parse(url).getAuthority() == null ? getString(R.string.WebErrorInfo) : formatString(R.string.WebErrorInfoDomain, Uri.parse(url).getAuthority()));
             cs = Emoji.replaceEmoji(cs, descriptionView.getPaint().getFontMetricsInt(), false);
             descriptionView.setText(cs);
-            codeView.setText(descrpiption);
+            codeView.setText(description);
         }
 
         @Override

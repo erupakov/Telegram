@@ -66,6 +66,7 @@ import org.telegram.messenger.browser.Browser;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
+import org.telegram.tgnet.tl.TL_account;
 import org.telegram.tgnet.tl.TL_bots;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarMenu;
@@ -294,11 +295,7 @@ public class ChangeUsernameActivity extends BaseFragment {
                     if (username == null || ((UsernameCell) view).loading) {
                         return;
                     }
-                    if (username.editable) {
-                        if (botId != 0) {
-                            return;
-                        }
-
+                    if (username.editable && botId == 0) {
                         listView.smoothScrollToPosition(0);
                         focusUsernameField(true);
                         return;
@@ -312,7 +309,7 @@ public class ChangeUsernameActivity extends BaseFragment {
                             boolean reqActive = !username.active;
                             TLObject req;
                             if (botId == 0) {
-                                TLRPC.TL_account_toggleUsername toggle = new TLRPC.TL_account_toggleUsername();
+                                TL_account.toggleUsername toggle = new TL_account.toggleUsername();
                                 toggle.username = reqUsername;
                                 toggle.active = reqActive;
                                 req = toggle;
@@ -342,6 +339,29 @@ public class ChangeUsernameActivity extends BaseFragment {
                                     }
                                     TLRPC.User user = MessagesController.getInstance(currentAccount).getUser(getUserId());
                                     getMessagesController().updateUsernameActiveness(user, username.username, username.active);
+
+                                    if (botId != 0 && usernames != null) {
+                                        boolean allInactive = true;
+                                        for (TLRPC.TL_username thisUsername : usernames) {
+                                            if (thisUsername.active) {
+                                                allInactive = false;
+                                                break;
+                                            }
+                                        }
+                                        if (allInactive) {
+                                            TLRPC.TL_username editableUsername = null;
+                                            for (TLRPC.TL_username thisUsername : usernames) {
+                                                if (thisUsername.editable) {
+                                                    editableUsername = thisUsername;
+                                                    break;
+                                                }
+                                            }
+                                            if (editableUsername != null) {
+                                                toggleUsername(editableUsername, true, false);
+                                                getMessagesController().updateUsernameActiveness(user, editableUsername.username, editableUsername.active);
+                                            }
+                                        }
+                                    }
                                 });
                             });
                             loadingUsernames.add(username.username);
@@ -612,7 +632,7 @@ public class ChangeUsernameActivity extends BaseFragment {
 
         TLObject req;
         if (botId == 0) {
-            TLRPC.TL_account_reorderUsernames reorder = new TLRPC.TL_account_reorderUsernames();
+            TL_account.reorderUsernames reorder = new TL_account.reorderUsernames();
             reorder.order = usernames;
             req = reorder;
         } else {
@@ -901,6 +921,7 @@ public class ChangeUsernameActivity extends BaseFragment {
 
             loadingView = new ImageView(getContext());
             loadingDrawable = new CircularProgressDrawable(AndroidUtilities.dp(7), AndroidUtilities.dp(1.35f), Theme.getColor(Theme.key_windowBackgroundWhiteBlueText, resourcesProvider));
+            loadingView.setScaleType(ImageView.ScaleType.CENTER);
             loadingView.setImageDrawable(loadingDrawable);
             loadingView.setAlpha(0f);
             loadingView.setVisibility(View.VISIBLE);
@@ -1296,7 +1317,7 @@ public class ChangeUsernameActivity extends BaseFragment {
             lastCheckName = name;
             final String nameFinal = name;
             checkRunnable = () -> {
-                TLRPC.TL_account_checkUsername req = new TLRPC.TL_account_checkUsername();
+                TL_account.checkUsername req = new TL_account.checkUsername();
                 req.username = nameFinal;
                 checkReqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                     checkReqId = 0;
@@ -1371,7 +1392,7 @@ public class ChangeUsernameActivity extends BaseFragment {
 
         final AlertDialog progressDialog = new AlertDialog(getParentActivity(), AlertDialog.ALERT_TYPE_SPINNER);
 
-        final TLRPC.TL_account_updateUsername req = new TLRPC.TL_account_updateUsername();
+        final TL_account.updateUsername req = new TL_account.updateUsername();
         req.username = username;
 
         NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.updateInterfaces, MessagesController.UPDATE_MASK_NAME);

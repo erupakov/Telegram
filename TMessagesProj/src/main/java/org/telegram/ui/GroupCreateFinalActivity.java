@@ -256,12 +256,12 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
     }
 
     @Override
-    public boolean onBackPressed() {
+    public boolean onBackPressed(boolean invoked) {
         if (editText != null && editText.isPopupShowing()) {
-            editText.hidePopup(true);
+            if (invoked) editText.hidePopup(true);
             return false;
         }
-        return true;
+        return super.onBackPressed(invoked);
     }
 
     @Override
@@ -622,7 +622,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
                 }
                 LocationActivity fragment = new LocationActivity(LocationActivity.LOCATION_TYPE_GROUP);
                 fragment.setDialogId(0);
-                fragment.setDelegate((location, live, notify, scheduleDate) -> {
+                fragment.setDelegate((location, live, notify, scheduleDate, payStars) -> {
                     currentGroupCreateLocation.setLatitude(location.geo.lat);
                     currentGroupCreateLocation.setLongitude(location.geo._long);
                     currentGroupCreateAddress = location.address;
@@ -740,7 +740,7 @@ public class GroupCreateFinalActivity extends BaseFragment implements Notificati
     }
 
     @Override
-    public void didStartUpload(boolean isVideo) {
+    public void didStartUpload(boolean fromAvatarConstructor, boolean isVideo) {
         if (avatarProgressView == null) {
             return;
         }

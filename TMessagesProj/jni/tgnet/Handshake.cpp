@@ -365,24 +365,24 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
             if (serverPublicKeys.empty()) {
                 if (ConnectionsManager::getInstance(currentDatacenter->instanceNum).testBackend) {
                     serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
-                                                  "MIIBCgKCAQEAvKLEOWTzt9Hn3/9Kdp/RdHcEhzmd8xXeLSpHIIzaXTLJDw8BhJy1\n"
-                                                  "jR/iqeG8Je5yrtVabqMSkA6ltIpgylH///FojMsX1BHu4EPYOXQgB0qOi6kr08iX\n"
-                                                  "ZIH9/iOPQOWDsL+Lt8gDG0xBy+sPe/2ZHdzKMjX6O9B4sOsxjFrk5qDoWDrioJor\n"
-                                                  "AJ7eFAfPpOBf2w73ohXudSrJE0lbQ8pCWNpMY8cB9i8r+WBitcvouLDAvmtnTX7a\n"
-                                                  "khoDzmKgpJBYliAY4qA73v7u5UIepE8QgV0jCOhxJCPubP8dg+/PlLLVKyxU5Cdi\n"
-                                                  "QtZj2EMy4s9xlNKzX8XezE0MHEa6bQpnFwIDAQAB\n"
+                                                  "MIIBCgKCAQEAyMEdY1aR+sCR3ZSJrtztKTKqigvO/vBfqACJLZtS7QMgCGXJ6XIR\n"
+                                                  "yy7mx66W0/sOFa7/1mAZtEoIokDP3ShoqF4fVNb6XeqgQfaUHd8wJpDWHcR2OFwv\n"
+                                                  "plUUI1PLTktZ9uW2WE23b+ixNwJjJGwBDJPQEQFBE+vfmH0JP503wr5INS1poWg/\n"
+                                                  "j25sIWeYPHYeOrFp/eXaqhISP6G+q2IeTaWTXpwZj4LzXq5YOpk4bYEQ6mvRq7D1\n"
+                                                  "aHWfYmlEGepfaYR8Q0YqvvhYtMte3ITnuSJs171+GDqpdKcSwHnd6FudwGO4pcCO\n"
+                                                  "j4WcDuXc2CTHgH8gFTNhp/Y8/SpDOhvn9QIDAQAB\n"
                                                   "-----END RSA PUBLIC KEY-----");
-                    serverPublicKeysFingerprints.push_back(0xa9e071c1771060cd);
+                    serverPublicKeysFingerprints.push_back(0xb25898df208d2603);
                 } else {
                     serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
-                                                  "MIIBCgKCAQEAvKLEOWTzt9Hn3/9Kdp/RdHcEhzmd8xXeLSpHIIzaXTLJDw8BhJy1\n"
-                                                  "jR/iqeG8Je5yrtVabqMSkA6ltIpgylH///FojMsX1BHu4EPYOXQgB0qOi6kr08iX\n"
-                                                  "ZIH9/iOPQOWDsL+Lt8gDG0xBy+sPe/2ZHdzKMjX6O9B4sOsxjFrk5qDoWDrioJor\n"
-                                                  "AJ7eFAfPpOBf2w73ohXudSrJE0lbQ8pCWNpMY8cB9i8r+WBitcvouLDAvmtnTX7a\n"
-                                                  "khoDzmKgpJBYliAY4qA73v7u5UIepE8QgV0jCOhxJCPubP8dg+/PlLLVKyxU5Cdi\n"
-                                                  "QtZj2EMy4s9xlNKzX8XezE0MHEa6bQpnFwIDAQAB\n"
+                                                  "MIIBCgKCAQEA6LszBcC1LGzyr992NzE0ieY+BSaOW622Aa9Bd4ZHLl+TuFQ4lo4g\n"
+                                                  "5nKaMBwK/BIb9xUfg0Q29/2mgIR6Zr9krM7HjuIcCzFvDtr+L0GQjae9H0pRB2OO\n"
+                                                  "62cECs5HKhT5DZ98K33vmWiLowc621dQuwKWSQKjWf50XYFw42h21P2KXUGyp2y/\n"
+                                                  "+aEyZ+uVgLLQbRA1dEjSDZ2iGRy12Mk5gpYc397aYp438fsJoHIgJ2lgMv5h7WY9\n"
+                                                  "t6N/byY9Nw9p21Og3AoXSL2q/2IJ1WRUhebgAdGVMlV1fkuOQoEzR7EdpqtQD9Cs\n"
+                                                  "5+bfo3Nhmcyvk5ftB0WkJ9z6bNZ7yxrP8wIDAQAB\n"
                                                   "-----END RSA PUBLIC KEY-----");
-                    serverPublicKeysFingerprints.push_back(0xa9e071c1771060cd);
+                    serverPublicKeysFingerprints.push_back(0xd09d1d85de64fd85);
                 }
             }
 
@@ -536,7 +536,9 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
 
             bool ok = false;
             uint32_t offset = encryptedDataSize + paddedDataSize + ivSize + SHA256_DIGEST_LENGTH;
-            size_t resLen = BN_bn2bin(rsaKey->n, innerDataBuffer->bytes() + offset);
+            const BIGNUM *n = NULL;
+            RSA_get0_key(rsaKey, &n, NULL, NULL);
+            size_t resLen = BN_bn2bin(n, innerDataBuffer->bytes() + offset);
             const auto shift = (256 - resLen);
 
             for (auto i = 0; i != 256; ++i) {
@@ -559,7 +561,10 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
         }
         BIGNUM *a = BN_bin2bn(innerDataBuffer->bytes(), encryptedDataSize, nullptr);
         BIGNUM *r = BN_new();
-        BN_mod_exp(r, a, rsaKey->e, rsaKey->n, bnContext);
+        const BIGNUM *n = NULL;
+        const BIGNUM *e = NULL;
+        RSA_get0_key(rsaKey, &n, &e, NULL);
+        BN_mod_exp(r, a, e, n, bnContext);
         uint32_t size = BN_num_bytes(r);
         auto rsaEncryptedData = new ByteArray(size >= 256 ? size : 256);
         BN_bn2bin(r, rsaEncryptedData->bytes + (size < 256 ? (256 - size) : 0));
@@ -1003,11 +1008,14 @@ void Handshake::loadCdnConfig(Datacenter *datacenter) {
                 BIO_write(keyBio, publicKey->public_key.c_str(), (int) publicKey->public_key.length());
                 RSA *rsaKey = PEM_read_bio_RSAPublicKey(keyBio, nullptr, nullptr, nullptr);
 
-                int nBytes = BN_num_bytes(rsaKey->n);
-                int eBytes = BN_num_bytes(rsaKey->e);
+                const BIGNUM *n = NULL;
+                const BIGNUM *e = NULL;
+                RSA_get0_key(rsaKey, &n, &e, NULL);
+                int nBytes = BN_num_bytes(n);
+                int eBytes = BN_num_bytes(e);
                 std::string nStr(nBytes, 0), eStr(eBytes, 0);
-                BN_bn2bin(rsaKey->n, (uint8_t *)&nStr[0]);
-                BN_bn2bin(rsaKey->e, (uint8_t *)&eStr[0]);
+                BN_bn2bin(n, (uint8_t *)&nStr[0]);
+                BN_bn2bin(e, (uint8_t *)&eStr[0]);
                 buffer->writeString(nStr);
                 buffer->writeString(eStr);
                 SHA1(buffer->bytes(), buffer->position(), sha1Buffer);

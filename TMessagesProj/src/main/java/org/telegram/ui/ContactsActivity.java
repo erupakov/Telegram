@@ -420,6 +420,8 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 canvas.drawRect(0, 0, getMeasuredWidth(), actionBar.getMeasuredHeight(), actionBarPaint);
                 parentLayout.drawHeaderShadow(canvas, (int) actionBarBottom);
                 super.dispatchDraw(canvas);
+
+                // canvas.drawColor(0x8000FF00);
             }
 
             @Override
@@ -524,6 +526,10 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 } else if (object instanceof String) {
                     String str = (String) object;
                     if (!str.equals("section")) {
+                        if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                            AccountFrozenAlert.show(currentAccount);
+                            return;
+                        }
                         NewContactBottomSheet activity = new NewContactBottomSheet(ContactsActivity.this, getContext());
                         activity.setInitialPhoneNumber(str, true);
                         activity.show();
@@ -560,17 +566,33 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 if ((!onlyUsers || inviteViaLink != 0) && section == 0) {
                     if (needPhonebook) {
                         if (row == 0) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             presentFragment(new InviteContactsActivity());
                         }
                     } else if (inviteViaLink != 0) {
                         if (row == 0) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             presentFragment(new GroupInviteActivity(chatId != 0 ? chatId : channelId));
                         }
                     } else {
                         if (row == 0) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             Bundle args = new Bundle();
                             presentFragment(new GroupCreateActivity(args), false);
                         } else if (row == 1) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             AndroidUtilities.requestAdjustNothing(getParentActivity(), getClassGuid());
                             new NewContactBottomSheet(ContactsActivity.this, getContext()) {
                                 @Override
@@ -580,6 +602,10 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                                 }
                             }.show();
                         } else if (row == 2) {
+                            if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                                AccountFrozenAlert.show(currentAccount);
+                                return;
+                            }
                             SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                             if (!BuildVars.DEBUG_VERSION && preferences.getBoolean("channel_intro", false)) {
                                 Bundle args = new Bundle();
@@ -794,9 +820,13 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
 
         if (!createSecretChat && !returnAsResult) {
             floatingButtonContainer = new FrameLayout(context);
-            frameLayout.addView(floatingButtonContainer, LayoutHelper.createFrame((Build.VERSION.SDK_INT >= 21 ? 56 : 60) + 20, (Build.VERSION.SDK_INT >= 21 ? 56 : 60) + 20, (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM, LocaleController.isRTL ? 4 : 0, 0, LocaleController.isRTL ? 0 : 4, 0));
+            frameLayout.addView(floatingButtonContainer, makeLayoutParamsForFloatingContainer(0));
             floatingButtonContainer.setOnClickListener(v -> {
                 AndroidUtilities.requestAdjustNothing(getParentActivity(), getClassGuid());
+                if (MessagesController.getInstance(currentAccount).isFrozen()) {
+                    AccountFrozenAlert.show(currentAccount);
+                    return;
+                }
                 new NewContactBottomSheet(ContactsActivity.this, getContext()) {
                     @Override
                     public void dismissInternal() {
@@ -809,14 +839,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
             floatingButton = new RLottieImageView(context);
             floatingButton.setScaleType(ImageView.ScaleType.CENTER);
             Drawable drawable = Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(56), Theme.getColor(Theme.key_chats_actionBackground), Theme.getColor(Theme.key_chats_actionPressedBackground));
-            if (Build.VERSION.SDK_INT < 21) {
-                Drawable shadowDrawable = context.getResources().getDrawable(R.drawable.floating_shadow).mutate();
-                shadowDrawable.setColorFilter(new PorterDuffColorFilter(0xff000000, PorterDuff.Mode.MULTIPLY));
-                CombinedDrawable combinedDrawable = new CombinedDrawable(shadowDrawable, drawable, 0, 0);
-                combinedDrawable.setIconSize(AndroidUtilities.dp(56), AndroidUtilities.dp(56));
-                drawable = combinedDrawable;
-            }
-            floatingButton.setBackgroundDrawable(drawable);
+            floatingButton.setBackground(drawable);
             floatingButton.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_actionIcon), PorterDuff.Mode.MULTIPLY));
             SharedPreferences preferences = MessagesController.getGlobalMainSettings();
             boolean configAnimationsEnabled = preferences.getBoolean("view_animations", true);
@@ -826,20 +849,18 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                 floatingButton.setAnimation(configAnimationsEnabled ? R.raw.write_contacts_fab_icon : R.raw.write_contacts_fab_icon_reverse, 52, 52);
             }
             floatingButtonContainer.setContentDescription(LocaleController.getString(R.string.CreateNewContact));
-            if (Build.VERSION.SDK_INT >= 21) {
-                StateListAnimator animator = new StateListAnimator();
-                animator.addState(new int[]{android.R.attr.state_pressed}, ObjectAnimator.ofFloat(floatingButton, View.TRANSLATION_Z, AndroidUtilities.dp(2), AndroidUtilities.dp(4)).setDuration(200));
-                animator.addState(new int[]{}, ObjectAnimator.ofFloat(floatingButton, View.TRANSLATION_Z, AndroidUtilities.dp(4), AndroidUtilities.dp(2)).setDuration(200));
-                floatingButton.setStateListAnimator(animator);
-                floatingButton.setOutlineProvider(new ViewOutlineProvider() {
-                    @SuppressLint("NewApi")
-                    @Override
-                    public void getOutline(View view, Outline outline) {
-                        outline.setOval(0, 0, AndroidUtilities.dp(56), AndroidUtilities.dp(56));
-                    }
-                });
-            }
-            floatingButtonContainer.addView(floatingButton, LayoutHelper.createFrame((Build.VERSION.SDK_INT >= 21 ? 56 : 60), (Build.VERSION.SDK_INT >= 21 ? 56 : 60), Gravity.LEFT | Gravity.TOP, 10, 6, 10, 0));
+            StateListAnimator animator = new StateListAnimator();
+            animator.addState(new int[]{android.R.attr.state_pressed}, ObjectAnimator.ofFloat(floatingButton, View.TRANSLATION_Z, AndroidUtilities.dp(2), AndroidUtilities.dp(4)).setDuration(200));
+            animator.addState(new int[]{}, ObjectAnimator.ofFloat(floatingButton, View.TRANSLATION_Z, AndroidUtilities.dp(4), AndroidUtilities.dp(2)).setDuration(200));
+            floatingButton.setStateListAnimator(animator);
+            floatingButton.setOutlineProvider(new ViewOutlineProvider() {
+                @SuppressLint("NewApi")
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    outline.setOval(0, 0, AndroidUtilities.dp(56), AndroidUtilities.dp(56));
+                }
+            });
+            floatingButtonContainer.addView(floatingButton, LayoutHelper.createFrame(56, 56, Gravity.LEFT | Gravity.TOP, 10, 6, 10, 0));
         }
 
         if (initialSearchString != null) {
@@ -1088,12 +1109,12 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
     }
 
     @Override
-    public boolean onBackPressed() {
+    public boolean onBackPressed(boolean invoked) {
         if (actionBar.isActionModeShowed()) {
-            hideActionMode();
+            if (invoked) hideActionMode();
             return false;
         } else {
-            return super.onBackPressed();
+            return super.onBackPressed(invoked);
         }
     }
 
@@ -1381,7 +1402,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         });
         if (floatingButtonContainer != null) {
             ((ViewGroup) fragmentView).removeView(floatingButtonContainer);
-            parentLayout.getOverlayContainerView().addView(floatingButtonContainer);
+            parentLayout.getOverlayContainerView().addView(floatingButtonContainer, makeLayoutParamsForFloatingContainer(AndroidUtilities.navigationBarHeight));
         }
         valueAnimator.setDuration(150);
         valueAnimator.setInterpolator(new DecelerateInterpolator(1.5f));
@@ -1396,7 +1417,7 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
                         viewParent = (ViewGroup) floatingButtonContainer.getParent();
                         viewParent.removeView(floatingButtonContainer);
                     }
-                    ((ViewGroup) fragmentView).addView(floatingButtonContainer);
+                    ((ViewGroup) fragmentView).addView(floatingButtonContainer, makeLayoutParamsForFloatingContainer(0));
 
                     previousFabContainer.setVisibility(View.VISIBLE);
                     if (!isOpen) {
@@ -1633,5 +1654,14 @@ public class ContactsActivity extends BaseFragment implements NotificationCenter
         themeDescriptions.add(new ThemeDescription(listView, 0, new Class[]{ProfileSearchCell.class}, null, new Paint[]{Theme.dialogs_nameEncryptedPaint[0], Theme.dialogs_nameEncryptedPaint[1], Theme.dialogs_searchNameEncryptedPaint}, null, null, Theme.key_chats_secretName));
 
         return themeDescriptions;
+    }
+
+    private static ViewGroup.LayoutParams makeLayoutParamsForFloatingContainer(int bottomMargin) {
+        FrameLayout.LayoutParams lp = LayoutHelper.createFrame(56 + 20, 56 + 20,
+                (LocaleController.isRTL ? Gravity.LEFT : Gravity.RIGHT) | Gravity.BOTTOM,
+                LocaleController.isRTL ? 4 : 0, 0, LocaleController.isRTL ? 0 : 4, 0);
+        lp.bottomMargin = bottomMargin;
+
+        return lp;
     }
 }

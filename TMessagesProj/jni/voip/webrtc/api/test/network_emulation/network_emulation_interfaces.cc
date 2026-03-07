@@ -26,4 +26,20 @@ EmulatedIpPacket::EmulatedIpPacket(const rtc::SocketAddress& from,
   RTC_DCHECK(to.family() == AF_INET || to.family() == AF_INET6);
 }
 
+DataRate EmulatedNetworkOutgoingStats::AverageSendRate() const {
+  RTC_DCHECK_GE(packets_sent, 2);
+  RTC_DCHECK(first_packet_sent_time.IsFinite());
+  RTC_DCHECK(last_packet_sent_time.IsFinite());
+  return (bytes_sent - first_sent_packet_size) /
+         (last_packet_sent_time - first_packet_sent_time);
+}
+
+DataRate EmulatedNetworkIncomingStats::AverageReceiveRate() const {
+  RTC_DCHECK_GE(packets_received, 2);
+  RTC_DCHECK(first_packet_received_time.IsFinite());
+  RTC_DCHECK(last_packet_received_time.IsFinite());
+  return (bytes_received - first_received_packet_size) /
+         (last_packet_received_time - first_packet_received_time);
+}
+
 }  // namespace webrtc

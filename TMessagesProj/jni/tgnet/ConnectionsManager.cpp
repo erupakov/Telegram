@@ -577,9 +577,18 @@ int32_t ConnectionsManager::getCurrentTime() {
     return (int32_t) (getCurrentTimeMillis() / 1000) + timeDifference;
 }
 
+int32_t ConnectionsManager::getCurrentPingTime() {
+    return (int32_t) currentPingTimeLive;
+}
+
 uint32_t ConnectionsManager::getCurrentDatacenterId() {
     Datacenter *datacenter = getDatacenterWithId(DEFAULT_DATACENTER_ID);
     return datacenter != nullptr ? datacenter->getDatacenterId() : INT_MAX;
+}
+
+int64_t ConnectionsManager::getCurrentAuthKeyId() {
+    Datacenter *datacenter = getDatacenterWithId(DEFAULT_DATACENTER_ID);
+    return datacenter != nullptr ? datacenter->getPermanentAuthKeyId() : 0;
 }
 
 bool ConnectionsManager::isTestBackend() {
@@ -710,7 +719,7 @@ void ConnectionsManager::onConnectionClosed(Connection *connection, int reason) 
                         } else {
                             requestingSecondAddress = 0;
                         }
-                        // delegate->onRequestNewServerIpAndPort(requestingSecondAddress, instanceNum);
+                        delegate->onRequestNewServerIpAndPort(requestingSecondAddress, instanceNum);
                     } else {
                         if (LOGS_ENABLED) DEBUG_D("connection has usefull data, don't request anything");
                     }
@@ -1160,6 +1169,8 @@ void ConnectionsManager::processServerResponse(TLObject *message, int64_t messag
             if (!registeredForInternalPush) {
                 registerForInternalPushUpdates();
             }
+            int32_t diff = getCurrentTimeMonotonicMillis() - sendingPushPingTime;
+            currentPingTimeLive = (diff + currentPingTimeLive) / 2;
             if (LOGS_ENABLED) DEBUG_D("connection(%p, account%u, dc%u, type %d) received push ping", connection, instanceNum, datacenter->getDatacenterId(), connection->getConnectionType());
             sendingPushPing = false;
         } else {
@@ -1192,7 +1203,7 @@ void ConnectionsManager::processServerResponse(TLObject *message, int64_t messag
                 }
             } else if (response->ping_id == lastPingId) {
                 int32_t diff = (int32_t) (getCurrentTimeMonotonicMillis() / 1000) - pingTime;
-
+                currentPingTimeLive = ((getCurrentTimeMonotonicMillis() - pingTimeMs) + currentPingTimeLive) / 2;
                 if (abs(diff) < 10) {
                     currentPingTime = (diff + currentPingTime) / 2;
                     if (messageId != 0) {
@@ -1234,7 +1245,7 @@ void ConnectionsManager::processServerResponse(TLObject *message, int64_t messag
         }
         RpcError *error = hasResult ? dynamic_cast<RpcError *>(response->result.get()) : nullptr;
         if (error != nullptr) {
-            if (LOGS_ENABLED) DEBUG_E("message_id %lld connection(%p, account%u, dc%u, type %d) rpc error %d: %s", messageId, connection, instanceNum, datacenter->getDatacenterId(), connection->getConnectionType(), error->error_code, error->error_message.c_str());
+            if (LOGS_ENABLED) DEBUG_E("message_id %lld req_msg_id %lld connection(%p, account%u, dc%u, type %d) rpc error %d: %s", messageId, resultMid, connection, instanceNum, datacenter->getDatacenterId(), connection->getConnectionType(), error->error_code, error->error_message.c_str());
             if (error->error_code == 303) {
                 uint32_t migrateToDatacenterId = DEFAULT_DATACENTER_ID;
 
@@ -1266,7 +1277,7 @@ void ConnectionsManager::processServerResponse(TLObject *message, int64_t messag
                 if (!request->respondsToMessageId(resultMid)) {
                     continue;
                 }
-                if (LOGS_ENABLED) DEBUG_D("got response for request %p - %s (messageId = 0x%" PRIx64 ")", request->rawRequest, typeid(*request->rawRequest).name(), request->messageId);
+                if (LOGS_ENABLED) DEBUG_D("got response for request %p, req_id = %d - %s (messageId = 0x%" PRIx64 ")", request->rawRequest, request->requestToken, typeid(*request->rawRequest).name(), request->messageId);
                 bool discardResponse = false;
                 bool isError = false;
                 bool allowInitConnection = true;
@@ -1295,6 +1306,7 @@ void ConnectionsManager::processServerResponse(TLObject *message, int64_t messag
                         static std::string authKeyPermEmpty = "AUTH_KEY_PERM_EMPTY";
                         static std::string workerBusy = "WORKER_BUSY_TOO_LONG_RETRY";
                         static std::string integrityCheckClassic = "INTEGRITY_CHECK_CLASSIC_";
+                        static std::string captchaCheck = "RECAPTCHA_CHECK_";
                         bool processEvenFailed = error->error_code == 500 && error->error_message.find(authRestart) != std::string::npos;
                         bool isWorkerBusy = error->error_code == 500 && error->error_message.find(workerBusy) != std::string::npos;
                         if (LOGS_ENABLED) DEBUG_E("request %p rpc error %d: %s", request, error->error_code, error->error_message.c_str());
@@ -1316,10 +1328,24 @@ void ConnectionsManager::processServerResponse(TLObject *message, int64_t messag
                             std::string project = err.substr(integrityCheckClassic.size(), index - integrityCheckClassic.size());
                             std::string nonce = err.substr(integrityCheckClassic.size() + project.size() + 1, err.size() - (integrityCheckClassic.size() + project.size() + 1));
                             request->awaitingIntegrityCheck = true;
+                            request->awaitingCaptchaCheck = false;
                             request->startTime = 0;
                             request->startTimeMillis = 0;
                             if (delegate != nullptr) {
                                 delegate->onIntegrityCheckClassic(instanceNum, request->requestToken, project, nonce);
+                            }
+                        } else if (error->error_code == 403 && error->error_message.find(captchaCheck) != std::string::npos) {
+                            discardResponse = true;
+                            std::string err = error->error_message;
+                            int index = err.find('_', captchaCheck.size());
+                            std::string action = err.substr(captchaCheck.size(), index - captchaCheck.size());
+                            std::string key_id = err.substr(captchaCheck.size() + action.size() + 2, err.size() - (captchaCheck.size() + action.size() + 1));
+                            request->awaitingIntegrityCheck = false;
+                            request->awaitingCaptchaCheck = true;
+                            request->startTime = 0;
+                            request->startTimeMillis = 0;
+                            if (delegate != nullptr) {
+                                delegate->onCaptchaCheck(instanceNum, request->requestToken, action, key_id);
                             }
                         } else {
                             bool failServerErrors = (request->requestFlags & RequestFlagFailOnServerErrors) == 0 || processEvenFailed;
@@ -1756,9 +1782,11 @@ void ConnectionsManager::sendPing(Datacenter *datacenter, bool usePushConnection
     request->ping_id = ++lastPingId;
     if (usePushConnection) {
         request->disconnect_delay = 60 * 7;
+        sendingPushPingTime = getCurrentTimeMonotonicMillis();
     } else {
         request->disconnect_delay = testBackend ? 10 : 35;
-        pingTime = (int32_t) (getCurrentTimeMonotonicMillis() / 1000);
+        pingTimeMs = getCurrentTimeMonotonicMillis();
+        pingTime = (int32_t) (pingTimeMs / 1000);
     }
 
     auto networkMessage = new NetworkMessage();
@@ -1795,36 +1823,34 @@ void ConnectionsManager::initDatacenters() {
             datacenters[1] = datacenter;
         }
 
-#if 0
-//        if (datacenters.find(2) == datacenters.end()) {
-//            datacenter = new Datacenter(instanceNum, 2);
-//             datacenter->addAddressAndPort("149.154.167.51", 443, 0, "");
-//             datacenter->addAddressAndPort("95.161.76.100", 443, 0, "");
-//             datacenter->addAddressAndPort("2001:67c:4e8:f002:0000:0000:0000:000a", 443, 1, "");
-//            datacenters[2] = datacenter;
-//        }
-//
-//        if (datacenters.find(3) == datacenters.end()) {
-//            datacenter = new Datacenter(instanceNum, 3);
-//            datacenter->addAddressAndPort("149.154.175.100", 443, 0, "");
-//            datacenter->addAddressAndPort("2001:b28:f23d:f003:0000:0000:0000:000a", 443, 1, "");
-//            datacenters[3] = datacenter;
-//        }
-//
-//        if (datacenters.find(4) == datacenters.end()) {
-//            datacenter = new Datacenter(instanceNum, 4);
-//            datacenter->addAddressAndPort("149.154.167.91", 443, 0, "");
-//            datacenter->addAddressAndPort("2001:67c:4e8:f004:0000:0000:0000:000a", 443, 1, "");
-//            datacenters[4] = datacenter;
-//        }
-//
-//        if (datacenters.find(5) == datacenters.end()) {
-//            datacenter = new Datacenter(instanceNum, 5);
-//            datacenter->addAddressAndPort("149.154.171.5", 443, 0, "");
-//            datacenter->addAddressAndPort("2001:b28:f23f:f005:0000:0000:0000:000a", 443, 1, "");
-//            datacenters[5] = datacenter;
-//        }
-#endif
+        if (datacenters.find(2) == datacenters.end()) {
+            datacenter = new Datacenter(instanceNum, 2);
+            datacenter->addAddressAndPort("149.154.167.51", 443, 0, "");
+            datacenter->addAddressAndPort("95.161.76.100", 443, 0, "");
+            datacenter->addAddressAndPort("2001:67c:4e8:f002:0000:0000:0000:000a", 443, 1, "");
+            datacenters[2] = datacenter;
+        }
+
+        if (datacenters.find(3) == datacenters.end()) {
+            datacenter = new Datacenter(instanceNum, 3);
+            datacenter->addAddressAndPort("149.154.175.100", 443, 0, "");
+            datacenter->addAddressAndPort("2001:b28:f23d:f003:0000:0000:0000:000a", 443, 1, "");
+            datacenters[3] = datacenter;
+        }
+
+        if (datacenters.find(4) == datacenters.end()) {
+            datacenter = new Datacenter(instanceNum, 4);
+            datacenter->addAddressAndPort("149.154.167.91", 443, 0, "");
+            datacenter->addAddressAndPort("2001:67c:4e8:f004:0000:0000:0000:000a", 443, 1, "");
+            datacenters[4] = datacenter;
+        }
+
+        if (datacenters.find(5) == datacenters.end()) {
+            datacenter = new Datacenter(instanceNum, 5);
+            datacenter->addAddressAndPort("149.154.171.5", 443, 0, "");
+            datacenter->addAddressAndPort("2001:b28:f23f:f005:0000:0000:0000:000a", 443, 1, "");
+            datacenters[5] = datacenter;
+        }
     } else {
         if (datacenters.find(1) == datacenters.end()) {
             datacenter = new Datacenter(instanceNum, 1);
@@ -1834,21 +1860,19 @@ void ConnectionsManager::initDatacenters() {
             datacenters[1] = datacenter;
         }
 
-#if 0
-//        if (datacenters.find(2) == datacenters.end()) {
-//            datacenter = new Datacenter(instanceNum, 2);
-//            datacenter->addAddressAndPort("149.154.167.40", 443, 0, "");
-//            datacenter->addAddressAndPort("2001:67c:4e8:f002:0000:0000:0000:000e", 443, 1, "");
-//            datacenters[2] = datacenter;
-//        }
-//
-//        if (datacenters.find(3) == datacenters.end()) {
-//            datacenter = new Datacenter(instanceNum, 3);
-//            datacenter->addAddressAndPort("149.154.175.117", 443, 0, "");
-//            datacenter->addAddressAndPort("2001:b28:f23d:f003:0000:0000:0000:000e", 443, 1, "");
-//            datacenters[3] = datacenter;
-//        }
-#endif
+        if (datacenters.find(2) == datacenters.end()) {
+            datacenter = new Datacenter(instanceNum, 2);
+            datacenter->addAddressAndPort("149.154.167.40", 443, 0, "");
+            datacenter->addAddressAndPort("2001:67c:4e8:f002:0000:0000:0000:000e", 443, 1, "");
+            datacenters[2] = datacenter;
+        }
+
+        if (datacenters.find(3) == datacenters.end()) {
+            datacenter = new Datacenter(instanceNum, 3);
+            datacenter->addAddressAndPort("149.154.175.117", 443, 0, "");
+            datacenter->addAddressAndPort("2001:b28:f23d:f003:0000:0000:0000:000e", 443, 1, "");
+            datacenters[3] = datacenter;
+        }
     }
 }
 
@@ -2195,6 +2219,7 @@ void ConnectionsManager::receivedIntegrityCheckClassic(int32_t requestToken, std
                 invokeIntegrity->token = token;
                 invokeIntegrity->query = std::move(request->rpcRequest);
                 request->rpcRequest = std::unique_ptr<invokeWithGooglePlayIntegrity>(invokeIntegrity);
+                request->serializedLength = request->rpcRequest->getObjectSize();
 
                 request->awaitingIntegrityCheck = false;
                 request->requestFlags &=~ RequestFlagFailOnServerErrors;
@@ -2208,6 +2233,37 @@ void ConnectionsManager::receivedIntegrityCheckClassic(int32_t requestToken, std
         }
 
         if (LOGS_ENABLED) DEBUG_E("account%d: received integrity token but no request %d found", instanceNum, requestToken);
+    });
+}
+
+void ConnectionsManager::receivedCaptchaResult(int32_t requestTokensCount, int32_t* requestTokens, std::string token) {
+    scheduleTask([&, requestTokensCount, requestTokens, token] {
+        for (int i = 0; i < requestTokensCount; ++i) {
+            auto requestToken = requestTokens[i];
+            for (auto iter = runningRequests.begin(); iter != runningRequests.end(); iter++) {
+                Request *request = iter->get();
+                if (requestToken != 0 && request->requestToken == requestToken) {
+                    auto invoke = new invokeWithReCaptcha();
+                    invoke->token = token;
+                    invoke->query = std::move(request->rpcRequest);
+                    request->rpcRequest = std::unique_ptr<invokeWithReCaptcha>(invoke);
+                    request->serializedLength = request->rpcRequest->getObjectSize();
+
+                    request->awaitingCaptchaCheck = false;
+                    request->requestFlags &=~ RequestFlagFailOnServerErrors;
+
+                    if (LOGS_ENABLED) DEBUG_D("account%d: received captcha result token, wrapping %s", instanceNum, token.c_str());
+
+                    processRequestQueue(request->connectionType, request->datacenterId);
+
+                    return;
+                }
+            }
+
+            if (LOGS_ENABLED) DEBUG_E("account%d: received captcha result token but no request %d found", instanceNum, requestToken);
+        }
+
+        delete[] requestTokens;
     });
 }
 
@@ -2329,6 +2385,7 @@ void ConnectionsManager::requestSaltsForDatacenter(Datacenter *datacenter, bool 
 }
 
 void ConnectionsManager::clearRequestsForDatacenter(Datacenter *datacenter, HandshakeType type) {
+    if (datacenter == nullptr) return;
     for (auto & runningRequest : runningRequests) {
         Request *request = runningRequest.get();
         Datacenter *requestDatacenter = getDatacenterWithId(request->datacenterId);
@@ -2480,7 +2537,7 @@ void ConnectionsManager::processRequestQueue(uint32_t connectionTypes, uint32_t 
         Datacenter *requestDatacenter = getDatacenterWithId(datacenterId);
         if (requestDatacenter == nullptr) {
             if (std::find(unknownDatacenterIds.begin(), unknownDatacenterIds.end(), datacenterId) == unknownDatacenterIds.end()) {
-                // unknownDatacenterIds.push_back(datacenterId);
+                unknownDatacenterIds.push_back(datacenterId);
             }
             iter++;
             continue;
@@ -2531,21 +2588,23 @@ void ConnectionsManager::processRequestQueue(uint32_t connectionTypes, uint32_t 
             forceThisRequest = false;
         }
 
-        if ((forceThisRequest || (
+        bool failedButTimeToTryAgain = (
             abs(currentTime - request->startTime) > maxTimeout && (
                 currentTime >= request->minStartTime ||
                 (request->failedByFloodWait != 0 && (request->minStartTime - currentTime) > request->failedByFloodWait) ||
                 (request->failedByFloodWait == 0 && abs(currentTime - request->minStartTime) >= 60)
             )
-        )) && !request->awaitingIntegrityCheck) {
+        );
+
+        if ((forceThisRequest || failedButTimeToTryAgain) && !request->awaitingIntegrityCheck && !request->awaitingCaptchaCheck) {
             if (!forceThisRequest && request->connectionToken > 0) {
                 if ((request->connectionType & ConnectionTypeGeneric || request->connectionType & ConnectionTypeTemp) && request->connectionToken == connection->getConnectionToken()) {
-                    if (LOGS_ENABLED) DEBUG_D("request token is valid, not retrying %s (%p)", typeInfo.name(), request->rawRequest);
+//                    if (LOGS_ENABLED) DEBUG_D("request token is valid, not retrying %s (%p)", typeInfo.name(), request->rawRequest);
                     iter++;
                     continue;
                 } else {
                     if (connection->getConnectionToken() != 0 && request->connectionToken == connection->getConnectionToken()) {
-                        if (LOGS_ENABLED) DEBUG_D("request download token is valid, not retrying %s (%p)", typeInfo.name(), request->rawRequest);
+//                        if (LOGS_ENABLED) DEBUG_D("request download token is valid, not retrying %s (%p)", typeInfo.name(), request->rawRequest);
                         iter++;
                         continue;
                     }
@@ -2560,17 +2619,15 @@ void ConnectionsManager::processRequestQueue(uint32_t connectionTypes, uint32_t 
             request->retryCount++;
 
             if (!request->failedBySalt) {
-                if (request->connectionType & ConnectionTypeDownload) {
-                    uint32_t retryMax = 10;
-                    if (!(request->requestFlags & RequestFlagForceDownload)) {
-                        if (request->failedByFloodWait) {
-                            retryMax = 2;
-                        } else {
-                            retryMax = 6;
-                        }
+                if (request->connectionType & ConnectionTypeDownload && (!request->failedByFloodWait || !failedButTimeToTryAgain)) {
+                    uint32_t retryMax;
+                    if (request->requestFlags & RequestFlagForceDownload) {
+                        retryMax = 10;
+                    } else {
+                        retryMax = 6;
                     }
                     if (request->retryCount >= retryMax && !request->premiumFloodWait) {
-                        if (LOGS_ENABLED) DEBUG_E("timed out %s, message_id = 0x%" PRIx64, typeInfo.name(), request->messageId);
+                        if (LOGS_ENABLED) DEBUG_E("timed out %s (%d/%d), req_id = %d, message_id = 0x%" PRIx64, typeInfo.name(), request->retryCount, retryMax, request->requestToken, request->messageId);
                         auto error = new TL_error();
                         error->code = -123;
                         error->text = "RETRY_LIMIT";
@@ -2731,7 +2788,7 @@ void ConnectionsManager::processRequestQueue(uint32_t connectionTypes, uint32_t 
         Datacenter *requestDatacenter = getDatacenterWithId(datacenterId);
         if (requestDatacenter == nullptr) {
             if (std::find(unknownDatacenterIds.begin(), unknownDatacenterIds.end(), datacenterId) == unknownDatacenterIds.end()) {
-                // unknownDatacenterIds.push_back(datacenterId);
+                unknownDatacenterIds.push_back(datacenterId);
             }
             if (LOGS_ENABLED)
                 DEBUG_D("skip queue, token = %d: unknown dc", request->requestToken);
@@ -3520,7 +3577,6 @@ inline bool checkPhoneByPrefixesRules(std::string phone, std::string rules) {
 }
 
 void ConnectionsManager::applyDnsConfig(NativeByteBuffer *buffer, std::string phone, int32_t date) {
-#if 0
     scheduleTask([&, buffer, phone, date] {
         int32_t realDate = date;
         if (LOGS_ENABLED) DEBUG_D("trying to decrypt config %d", requestingSecondAddress);
@@ -3590,7 +3646,6 @@ void ConnectionsManager::applyDnsConfig(NativeByteBuffer *buffer, std::string ph
         }
         buffer->reuse();
     });
-#endif
 }
 
 void ConnectionsManager::init(uint32_t version, int32_t layer, int32_t apiId, std::string deviceModel, std::string systemVersion, std::string appVersion, std::string langCode, std::string systemLangCode, std::string configPath, std::string logPath, std::string regId, std::string cFingerpting, std::string installerId, std::string packageId, int32_t timezoneOffset, int64_t userId, bool userPremium, bool isPaused, bool enablePushConnection, bool hasNetwork, int32_t networkType, int32_t performanceClass) {
