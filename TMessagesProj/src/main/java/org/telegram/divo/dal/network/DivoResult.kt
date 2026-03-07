@@ -67,7 +67,7 @@ fun DivoResult<*>.getErrorMessage(): String {
     return when (this) {
         is DivoResult.Success -> ""
         is DivoResult.NetworkError -> exception.message ?: "Network error"
-        is DivoResult.HttpError -> "HTTP error: $code"
+        is DivoResult.HttpError -> body?.message ?: "HTTP error: $code"
         is DivoResult.UnknownError -> throwable.message ?: "Unknown error"
     }
 }

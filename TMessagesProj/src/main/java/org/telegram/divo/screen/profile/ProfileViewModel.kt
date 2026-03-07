@@ -113,7 +113,6 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
                 setState {
                     copy(
                         searchResults = pState.items,
-                        isSearching = pState.isLoading,
                         isLoadingMoreSearch = pState.isLoadingMore,
                         searchHasMore = pState.hasMore,
                     )
@@ -132,7 +131,9 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
           
             viewModelScope.launch {
                 if (state.value.feedItems.isEmpty()) {
+                    setState { copy(isLoadingStats = true) }
                     feedPaginator.loadInitial()
+                    setState { copy(isLoadingStats = false) }
                 }
             }
             return
@@ -140,9 +141,10 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
 
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MS)
-            setState { copy(isSearchMode = true) }
+            setState { copy(isSearchMode = true, isLoadingStats = true) }
             searchPaginator.reset()
             searchPaginator.loadInitial()
+            setState { copy(isLoadingStats = false) }
         }
     }
 
@@ -245,8 +247,13 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
     //TODO временно
     private fun loadEngagementStats(type: StatsType, loadMore: Boolean) {
         viewModelScope.launch {
-            if (loadMore) feedPaginator.loadMore()
-            else feedPaginator.loadInitial()
+            if (loadMore) {
+                feedPaginator.loadMore()
+            } else {
+                setState { copy(isLoadingStats = true) }
+                feedPaginator.loadInitial()
+                setState { copy(isLoadingStats = false) }
+            }
         }
     }
 

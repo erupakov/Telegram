@@ -24,6 +24,7 @@ data class ProfileViewState(
     val portfolioLoading: Boolean = false,
     val portfolioUploading: Boolean = false,
     val isLoadingAllUsers: Boolean = false,
+    val isLoadingStats: Boolean = false,
     val isLoadingMoreFeed: Boolean = false,
     val feedHasMore: Boolean = true,
     val backgroundChanging: Boolean = false,
@@ -31,7 +32,6 @@ data class ProfileViewState(
     // Search
     val searchQuery: String = "",
     val searchResults: List<FeedlineItem> = emptyList(),
-    val isSearching: Boolean = false,
     val isSearchMode: Boolean = false,
     val searchHasMore: Boolean = true,
     val isLoadingMoreSearch: Boolean = false,

@@ -9,6 +9,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.style.DivoFont.HelveticaNeue
 import org.telegram.divo.style.DivoFont.HelveticaNeueLtCom77
+import org.telegram.divo.style.DivoFont.ManropeRegular
 import org.telegram.messenger.R
 
 object DivoFont {
@@ -24,6 +25,12 @@ object DivoFont {
             resId = R.font.helvetica_neue_medium,
         )
     )
+
+    val ManropeRegular = FontFamily(
+        Font(
+            resId = R.font.manrope_regular
+        )
+    )
 }
 
 
@@ -37,6 +44,7 @@ data class AppTypography(
     val textItemDate: TextStyle,
     val helveticaNeueLtCom: TextStyle,
     val helveticaNeueRegular: TextStyle,
+    val manropeRegular: TextStyle
 )
 
 val LocalCustomTypography = staticCompositionLocalOf {
@@ -72,5 +80,8 @@ val LocalCustomTypography = staticCompositionLocalOf {
             fontFamily = HelveticaNeue,
             fontWeight = FontWeight.Normal,
         ),
+        manropeRegular = TextStyle(
+            fontFamily = ManropeRegular
+        )
     )
 }

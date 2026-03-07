@@ -2,6 +2,7 @@ package org.telegram.divo.components
 
 import android.net.Uri
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +21,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -138,35 +142,44 @@ fun TelegramPhotoBackground(
     photo: String?,
     modifier: Modifier = Modifier,
 ) {
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val startYPx = with(LocalDensity.current) { (screenHeight * 0.23f).toPx() } // 20% без блюра
+    val endYPx = with(LocalDensity.current) { (screenHeight * 0.5f).toPx() }   // переход 10%
 
     val hazeState = remember { HazeState() }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ) {
 
         DivoAsyncImage(
             url = photo,
             contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            alignment = Alignment.TopCenter,
             modifier = Modifier
-                .fillMaxSize()
+                .matchParentSize()
                 .hazeSource(state = hazeState)
         )
 
         Box(
             modifier = Modifier
-                .fillMaxSize()
-
+                .matchParentSize()
                 .hazeEffect(
                     state = hazeState,
                     style = HazeStyle(
-                        backgroundColor = Color.Black,
+                        backgroundColor = Color.White,
                         blurRadius = 30.dp,
                         tints = listOf(HazeTint(Color.Black.copy(alpha = 0.1f)))
                     )
                 ) {
                     progressive = HazeProgressive.verticalGradient(
+                        startY = startYPx,
                         startIntensity = 0f,
+                        endY = endYPx,
                         endIntensity = 1f,
-                        easing = CubicBezierEasing(0.4f, 0f, 0.2f, 0.85f)
+                        easing = LinearEasing
                     )
                 }
         )
@@ -209,7 +222,18 @@ fun TelegramUserAvatarEditable(
                         modifier = Modifier
                             .size(100.dp),
                         url = avatarUrl,
-                        localUri = localUri
+                        localUri = localUri,
+                        placeholderColor = Color.Transparent,
+                        loadingContent = {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                LottieProgressIndicator(
+                                    modifier = Modifier.size(32.dp),
+                                )
+                            }
+                        }
                     )
                 }
             }

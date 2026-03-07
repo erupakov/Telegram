@@ -11,12 +11,13 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -55,6 +56,7 @@ import kotlinx.coroutines.launch
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.uriToFile
+import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.TelegramUserAvatarEditable
@@ -111,6 +113,7 @@ fun EditMyProfileScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 modifier = Modifier.padding(top = 36.dp),
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = {
                     Text(
                         modifier = Modifier.padding(top = 3.dp),
@@ -121,22 +124,11 @@ fun EditMyProfileScreen(
                     )
                 },
                 navigationIcon = {
-                    Row(
+                    BackButton(
                         modifier = Modifier
-                            .padding(start = 16.dp)
-                            .clickableWithoutRipple { onCloseScreen() },
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(painter = painterResource(R.drawable.ic_arrow_back_21), contentDescription = "Back", tint = Color.White)
-                        Spacer(modifier = Modifier.width(7.dp))
-                        Text(
-                            modifier = Modifier.padding(top = 2.dp),
-                            text = "Back",
-                            style = AppTheme.typography.helveticaNeueRegular,
-                            fontSize = 17.sp,
-                            color = Color.White,
-                        )
-                    }
+                            .padding(start = 16.dp),
+                        onBackClicked = onCloseScreen
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = AppTheme.colors.backgroundDark
@@ -192,6 +184,7 @@ fun EditMyProfileScreen(
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxWidth(),
+                userScrollEnabled = false
             ) { page ->
                 if (page == 0) {
                     EditMyProfileScreenView(
@@ -239,6 +232,7 @@ fun EditMyProfileScreenView(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -321,7 +315,7 @@ fun EditMyProfileScreenView(
             }
         } else {
             UIButton(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                 text = "Save",
                 onClick = {
                     onIntent(

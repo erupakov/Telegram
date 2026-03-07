@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -40,16 +41,17 @@ fun SocialLinksSection(
     onEditLinksClicked: () -> Unit,
     onSocialLinkClicked: (String) -> Unit
 ) {
-    // Check if any social links exist
-    val hasAnyLinks = socialLinks.instagram.isNotBlank() ||
-            socialLinks.tiktok.isNotBlank() ||
-            socialLinks.youtube.isNotBlank() ||
-            socialLinks.website.isNotBlank()
+    val filledLinksCount = listOf(
+        socialLinks.instagram,
+        socialLinks.tiktok,
+        socialLinks.youtube,
+        socialLinks.website
+    ).count { it.isNotBlank() }
 
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
-        if (isOwnProfile && hasAnyLinks) {
+        if (isOwnProfile && filledLinksCount != 0) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -62,7 +64,8 @@ fun SocialLinksSection(
             }
         }
 
-        if (hasAnyLinks) {
+        if (filledLinksCount != 0) {
+            if (!isOwnProfile) Spacer(modifier = Modifier.height(12.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -73,6 +76,7 @@ fun SocialLinksSection(
                     SocialLinkItem(
                         iconResId = R.drawable.icon_divo_instagram,
                         username = extractUsername(socialLinks.instagram),
+                        filledLinksCount = filledLinksCount,
                         onClick = { onSocialLinkClicked(socialLinks.instagram) }
                     )
                 }
@@ -80,6 +84,7 @@ fun SocialLinksSection(
                     SocialLinkItem(
                         iconResId = R.drawable.icon_divo_tiktok,
                         username = extractUsername(socialLinks.tiktok),
+                        filledLinksCount = filledLinksCount,
                         onClick = { onSocialLinkClicked(socialLinks.tiktok) }
                     )
                 }
@@ -87,6 +92,7 @@ fun SocialLinksSection(
                     SocialLinkItem(
                         iconResId = R.drawable.icon_divo_youtube,
                         username = extractPath(socialLinks.youtube),
+                        filledLinksCount = filledLinksCount,
                         onClick = { onSocialLinkClicked(socialLinks.youtube) }
                     )
                 }
@@ -94,6 +100,7 @@ fun SocialLinksSection(
                     SocialLinkItem(
                         iconResId = R.drawable.icon_divo_web,
                         username = extractDomain(socialLinks.website),
+                        filledLinksCount = filledLinksCount,
                         onClick = { onSocialLinkClicked(socialLinks.website) }
                     )
                 }
@@ -106,36 +113,69 @@ fun SocialLinksSection(
 private fun RowScope.SocialLinkItem(
     @DrawableRes iconResId: Int,
     username: String,
+    filledLinksCount: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = modifier
-            .weight(1f)
-            .clip(RoundedCornerShape(6.dp))
-            .background(AppTheme.colors.blackAlpha12)
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+    if (filledLinksCount == 1) {
+        Box(
+            modifier = modifier
+                .weight(1f)
+                .clip(RoundedCornerShape(6.dp))
+                .background(AppTheme.colors.blackAlpha12)
+                .clickable { onClick() }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
         ) {
-            Icon(
-                painter = painterResource(iconResId),
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(Modifier.height(4.dp))
-            Text(
-                text = "@$username",
-                style = AppTheme.typography.helveticaNeueRegular,
-                color = Color.White,
-                fontSize = 10.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
+            ) {
+                Icon(
+                    painter = painterResource(iconResId),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "@$username",
+                    style = AppTheme.typography.helveticaNeueRegular,
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    } else {
+        Box(
+            modifier = modifier
+                .weight(1f)
+                .clip(RoundedCornerShape(6.dp))
+                .background(AppTheme.colors.blackAlpha12)
+                .clickable { onClick() }
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    painter = painterResource(iconResId),
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "@$username",
+                    style = AppTheme.typography.helveticaNeueRegular,
+                    color = Color.White,
+                    fontSize = 10.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

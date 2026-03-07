@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -45,6 +46,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -200,7 +202,7 @@ private fun ProfileScreenContent(
             searchQuery = uiState.searchQuery,
             searchResults = uiState.searchResults,
             isSearchMode = uiState.isSearchMode,
-            isSearching = uiState.isSearching,
+            isLoadingStats = uiState.isLoadingStats,
             isLoadingMoreSearch = uiState.isLoadingMoreSearch,
             onQueryChanged = onQueryChanged,
             onLoadMoreSearch = onLoadMoreSearch,
@@ -210,7 +212,11 @@ private fun ProfileScreenContent(
         )
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) { detectTapGestures { } }
+    ) {
         uiState.userInfo?.photoUrl?.let { url ->
             TelegramPhotoBackground(
                 photo = url,
