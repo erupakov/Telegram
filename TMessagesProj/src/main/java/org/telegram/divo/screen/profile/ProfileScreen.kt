@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -45,6 +46,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -135,6 +137,7 @@ fun ProfileScreen(
             onLoadMore = { viewModel.setIntent(ProfileIntent.OnLoadMoreEngagementStats(it)) },
             onQueryChanged = { viewModel.setIntent(ProfileIntent.OnSearchQueryChanged(it)) },
             onLoadMoreSearch = { viewModel.setIntent(ProfileIntent.OnLoadMoreSearchResults) },
+            onLoadMoreImages = { viewModel.setIntent(ProfileIntent.OnLoadMorePortfolio) },
             onImageSelected = {
                 viewModel.setIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(it)))
             }
@@ -157,6 +160,7 @@ private fun ProfileScreenContent(
     onSocialLinkClicked: (String) -> Unit = {},
     onStatsClicked: (StatsType) -> Unit = {},
     onLoadMore: (StatsType) -> Unit = {},
+    onLoadMoreImages: () -> Unit,
     onQueryChanged: (String) -> Unit,
     onLoadMoreSearch: () -> Unit,
     onImageSelected: (Uri) -> Unit,
@@ -200,7 +204,7 @@ private fun ProfileScreenContent(
             searchQuery = uiState.searchQuery,
             searchResults = uiState.searchResults,
             isSearchMode = uiState.isSearchMode,
-            isSearching = uiState.isSearching,
+            isLoadingStats = uiState.isLoadingStats,
             isLoadingMoreSearch = uiState.isLoadingMoreSearch,
             onQueryChanged = onQueryChanged,
             onLoadMoreSearch = onLoadMoreSearch,
@@ -210,7 +214,11 @@ private fun ProfileScreenContent(
         )
     }
 
-    Box(modifier = modifier.fillMaxSize()) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .pointerInput(Unit) { detectTapGestures { } }
+    ) {
         uiState.userInfo?.photoUrl?.let { url ->
             TelegramPhotoBackground(
                 photo = url,
@@ -287,6 +295,9 @@ private fun ProfileScreenContent(
                                         similarItems = uiState.similarModels,
                                         isUploading = uiState.portfolioUploading,
                                         isOwnProfile = uiState.isOwnProfile,
+                                        isLoadingMore = uiState.isLoadingMoreImages,
+                                        hasMore = uiState.hasMoreImages,
+                                        onLoadMore = onLoadMoreImages,
                                         onPhotoClicked = onPhotoClicked,
                                         onSimilarClicked = onProfileClicked,
                                         onImageSelected = onImageSelected

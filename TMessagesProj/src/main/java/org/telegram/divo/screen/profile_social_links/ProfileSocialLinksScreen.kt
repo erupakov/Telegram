@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -99,10 +100,11 @@ fun ProfileSocialLinksScreenView(
 //    var website by remember(uiState.website) { mutableStateOf(uiState.website) }
 
     Scaffold(
-        modifier = Modifier.padding(top = 36.dp),
         containerColor = AppTheme.colors.backgroundDark,
         topBar = {
             TopAppBar(
+                modifier = Modifier.padding(top = 36.dp),
+                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = {
                     Text(
                         text = "EDIT SOCIAL LINKS",

@@ -23,7 +23,7 @@ import kotlin.random.Random
 class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
 
     companion object {
-        private const val PAGE_SIZE = 15
+        private const val PAGE_SIZE = 10
         private const val SEARCH_DEBOUNCE_MS = 400L
     }
 
@@ -61,6 +61,23 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
+    private val portfolioPaginator = OffsetPaginator(limit = 20) { offset, limit ->
+        when (val result = DivoApi.userRepository.getUserGalleryList(
+            userId = state.value.userId,
+            limit = limit,
+            offset = offset,
+        )) {
+            is DivoResult.Success -> {
+                val data = result.value
+                PaginatedResult(
+                    items = data.items,
+                    totalCount = data.pagination?.totalCount ?: data.items.size
+                )
+            }
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
+
     override fun createInitialState(): ProfileViewState {
         return ProfileViewState()
     }
@@ -76,6 +93,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             is ProfileIntent.OnLoadMoreEngagementStats -> loadEngagementStats(intent.type, true)
             is ProfileIntent.OnSearchQueryChanged -> onSearchQueryChanged(intent.query)
             is ProfileIntent.OnLoadMoreSearchResults -> loadMoreSearchResults()
+            is ProfileIntent.OnLoadMorePortfolio -> loadMorePortfolio()
         }
     }
 
@@ -84,10 +102,10 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             setState { copy(userId = userId, isOwnProfile = isOwnProfile) }
 
             launch { loadUserProfile(isOwnProfile = isOwnProfile) }
-            launch { loadPortfolio() }
             launch { loadSimilarProfiles() }
             observePaginator()
             observeSearchPaginator()
+            observeGalleryListPaginator()
         }
     }
 
@@ -113,9 +131,22 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
                 setState {
                     copy(
                         searchResults = pState.items,
-                        isSearching = pState.isLoading,
                         isLoadingMoreSearch = pState.isLoadingMore,
                         searchHasMore = pState.hasMore,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun observeGalleryListPaginator() {
+        viewModelScope.launch {
+            portfolioPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        userGalleryItems = pState.items,
+                        isLoadingMoreImages = pState.isLoadingMore,
+                        hasMoreImages = pState.hasMore
                     )
                 }
             }
@@ -132,7 +163,9 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
           
             viewModelScope.launch {
                 if (state.value.feedItems.isEmpty()) {
+                    setState { copy(isLoadingStats = true) }
                     feedPaginator.loadInitial()
+                    setState { copy(isLoadingStats = false) }
                 }
             }
             return
@@ -140,15 +173,22 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
 
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MS)
-            setState { copy(isSearchMode = true) }
+            setState { copy(isSearchMode = true, isLoadingStats = true) }
             searchPaginator.reset()
             searchPaginator.loadInitial()
+            setState { copy(isLoadingStats = false) }
         }
     }
 
     private fun loadMoreSearchResults() {
         viewModelScope.launch {
             searchPaginator.loadMore()
+        }
+    }
+
+    private fun loadMorePortfolio() {
+        viewModelScope.launch {
+            portfolioPaginator.loadMore()
         }
     }
 
@@ -227,26 +267,16 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    private suspend fun loadPortfolio() {
-        val result = DivoApi.userRepository.getUserGalleryList(state.value.userId)
-
-        if (result is DivoResult.Success) {
-            val userData = result.value
-            setState {
-                copy(userGalleryItems = userData)
-            }
-        } else {
-            val errorMsg = result.getErrorMessage()
-            setState { copy(isLoading = false, errorMessage = errorMsg) }
-            sendEffect(ProfileEffect.ShowError(errorMsg))
-        }
-    }
-
     //TODO временно
     private fun loadEngagementStats(type: StatsType, loadMore: Boolean) {
         viewModelScope.launch {
-            if (loadMore) feedPaginator.loadMore()
-            else feedPaginator.loadInitial()
+            if (loadMore) {
+                feedPaginator.loadMore()
+            } else {
+                setState { copy(isLoadingStats = true) }
+                feedPaginator.loadInitial()
+                setState { copy(isLoadingStats = false) }
+            }
         }
     }
 
@@ -339,8 +369,8 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             gender = user.gender.title,
             age = user.birthday.formattedAge(),
             height = appearance.height,
-            waist = appearance.waist,
-            hips = appearance.hips,
+            waist = appearance.waist.toInt(),
+            hips = appearance.hips.toInt(),
             shoeSize = appearance.shoesSize,
             hairLength = appearance.hairLength.title,
             hairColor = appearance.hairColor.title,

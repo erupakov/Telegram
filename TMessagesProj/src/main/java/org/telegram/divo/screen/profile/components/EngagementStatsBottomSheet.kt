@@ -1,14 +1,17 @@
 package org.telegram.divo.screen.profile.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -36,28 +39,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoTextField
+import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.components.shimmer
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EngagementStatsBottomSheet(
     stats: StatsType?,
     feeds: List<FeedItem>,
+    isLoadingStats: Boolean,
     isLoadingMoreFeed: Boolean,
     searchQuery: String,
     searchResults: List<FeedlineItem>,
     isSearchMode: Boolean,
-    isSearching: Boolean,
     isLoadingMoreSearch: Boolean,
     onQueryChanged: (String) -> Unit,
     onLoadMoreSearch: () -> Unit,
@@ -97,6 +105,7 @@ fun EngagementStatsBottomSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = statsSheetState,
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
         containerColor = Color.White,
         shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
         dragHandle = {
@@ -109,76 +118,87 @@ fun EngagementStatsBottomSheet(
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.95f)
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(modifier = Modifier.height(20.dp))
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+            val configuration = LocalConfiguration.current
+            val screenHeight = configuration.screenHeightDp.dp
+            val topOffset = screenHeight * 0.05f
+            val targetHeight = (maxHeight - topOffset).coerceAtLeast(0.dp)
 
-            Text(
-                text = stats?.value.orEmpty(),
-                style = AppTheme.typography.helveticaNeueLtCom,
-                fontSize = 20.sp,
-                color = Color.Black
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            DivoTextField(
-                value = searchQuery,
-                onValueChange = onQueryChanged,
-                leadingIcon = R.drawable.ic_divo_search,
-                trailingIcon = if (searchQuery.isNotBlank()) Icons.Default.Close else null,
-                onTrailingIconClick = { onQueryChanged("") }
-            )
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            LazyColumn(
-                state = lazyListState,
-                contentPadding = PaddingValues(bottom = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(targetHeight)
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                when {
-                    isSearchMode -> {
-                        items(searchResults, key = { it.id }) { item ->
-                            StatsDetailRow(
-                                name = item.user?.fullName.orEmpty(),
-                                type = item.user?.roleLabel.orEmpty(),
-                                avatarUrl = item.searchImageUrl.orEmpty(),
-                                onClicked = { item.user?.id?.let(onProfileClicked) }
-                            )
-                        }
-                        if (isLoadingMoreSearch) {
-                            item {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().height(72.dp).navigationBarsPadding(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(color = Color.Black)
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = stats?.value.orEmpty(),
+                    style = AppTheme.typography.helveticaNeueLtCom,
+                    fontSize = 20.sp,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                DivoTextField(
+                    value = searchQuery,
+                    onValueChange = onQueryChanged,
+                    leadingIcon = R.drawable.ic_divo_search,
+                    trailingIcon = if (searchQuery.isNotBlank()) Icons.Default.Close else null,
+                    onTrailingIconClick = { onQueryChanged("") }
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                if (isLoadingStats) {
+                    EngagementStatsLoadingContent()
+                } else {
+                    LazyColumn(
+                        state = lazyListState,
+                        contentPadding = PaddingValues(bottom = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        when {
+                            isSearchMode -> {
+                                items(searchResults, key = { it.id }) { item ->
+                                    StatsDetailRow(
+                                        name = item.user?.fullName.orEmpty(),
+                                        type = item.user?.roleLabel.orEmpty(),
+                                        avatarUrl = item.searchImageUrl.orEmpty(),
+                                        onClicked = { item.user?.id?.let(onProfileClicked) }
+                                    )
+                                }
+                                if (isLoadingMoreSearch) {
+                                    item {
+                                        Box(
+                                            modifier = Modifier.fillMaxWidth().height(72.dp).navigationBarsPadding(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator(color = Color.Black)
+                                        }
+                                    }
                                 }
                             }
-                        }
-                    }
-                    else -> {
-                        items(feeds, key = { it.id }) { user ->
-                            StatsDetailRow(
-                                name = user.user.fullName,
-                                type = user.user.role,
-                                avatarUrl = user.files.first().url,
-                                onClicked = { onProfileClicked(user.id) }
-                            )
-                        }
-                        if (isLoadingMoreFeed) {
-                            item {
-                                Box(
-                                    modifier = Modifier.fillMaxWidth().height(72.dp).navigationBarsPadding(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    CircularProgressIndicator(color = Color.Black)
+                            else -> {
+                                items(feeds, key = { it.id }) { user ->
+                                    StatsDetailRow(
+                                        name = user.user.fullName,
+                                        type = user.user.role,
+                                        avatarUrl = user.files.first().url,
+                                        onClicked = { onProfileClicked(user.id) }
+                                    )
+                                }
+                                if (isLoadingMoreFeed) {
+                                    item {
+                                        Box(
+                                            modifier = Modifier.fillMaxWidth().height(54.dp).navigationBarsPadding(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            LottieProgressIndicator(modifier = Modifier.size(32.dp))
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -239,6 +259,46 @@ private fun StatsDetailRow(
     }
 }
 
+@Composable
+private fun EngagementStatsLoadingContent() {
+    Column(
+        modifier = Modifier.fillMaxSize().background(Color.White)
+    ) {
+        repeat(10) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .clip(CircleShape)
+                        .shimmer(),
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Column {
+                    Box(
+                        modifier = Modifier
+                            .width(200.dp)
+                            .height(16.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .shimmer()
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(250.dp)
+                            .height(16.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .shimmer()
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(14.dp))
+        }
+    }
+}
+
 enum class StatsType(val value: String) {
     LIKES("LIKES"),
     VIEWS("VIEWED"),
@@ -253,10 +313,10 @@ private fun EngagementStatsBottomSheetPreview() {
             stats = StatsType.SAVES,
             feeds = emptyList(),
             isLoadingMoreFeed = false,
+            isLoadingStats = false,
             searchQuery = "",
             searchResults = emptyList(),
             isSearchMode = false,
-            isSearching = false,
             isLoadingMoreSearch = false,
             onQueryChanged = {},
             onLoadMoreSearch = {},

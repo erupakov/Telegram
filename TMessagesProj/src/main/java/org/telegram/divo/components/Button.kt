@@ -82,6 +82,7 @@ fun UIButton(
         )
     ) {
         Text(
+            modifier = Modifier.padding(top = 1.dp),
             text = text,
             style = AppTheme.typography.textButton,
             color = AppTheme.colors.buttonTextColor,

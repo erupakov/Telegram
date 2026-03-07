@@ -16,7 +16,10 @@ data class ProfileViewState(
     val userId: Int = -1,
     val isOwnProfile: Boolean = false,
     val userInfo: UserInfo? = null,
+
     val userGalleryItems: List<UserGalleryItem> = listOf(),
+    val isLoadingMoreImages: Boolean = false,
+    val hasMoreImages: Boolean = true,
 
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -24,14 +27,13 @@ data class ProfileViewState(
     val portfolioLoading: Boolean = false,
     val portfolioUploading: Boolean = false,
     val isLoadingAllUsers: Boolean = false,
+    val isLoadingStats: Boolean = false,
     val isLoadingMoreFeed: Boolean = false,
     val feedHasMore: Boolean = true,
     val backgroundChanging: Boolean = false,
 
-    // Search
     val searchQuery: String = "",
     val searchResults: List<FeedlineItem> = emptyList(),
-    val isSearching: Boolean = false,
     val isSearchMode: Boolean = false,
     val searchHasMore: Boolean = true,
     val isLoadingMoreSearch: Boolean = false,
@@ -89,6 +91,7 @@ sealed class ProfileIntent : ViewIntent {
     class OnLoadEngagementStats(val type: StatsType) : ProfileIntent()
     class OnSearchQueryChanged(val query: String) : ProfileIntent()
     object OnLoadMoreSearchResults : ProfileIntent()
+    object OnLoadMorePortfolio : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {

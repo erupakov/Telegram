@@ -23,6 +23,27 @@ fun String.formattedAge(locale: Locale = Locale.getDefault()): String {
     }
 }
 
+fun String?.toDateFloat(): Float {
+    try {
+        val birthDate = LocalDate.parse(this)
+        val age = Period.between(birthDate, LocalDate.now()).years
+
+        return age.toFloat()
+    } catch (_: Exception) {
+        return -1f
+    }
+}
+
+fun Float.toDateString(): String {
+    return try {
+        LocalDate.now()
+            .minusYears(this.toLong())
+            .toString()
+    } catch (_: Exception) {
+        ""
+    }
+}
+
 fun Int.toShortString(): String = when {
     this >= 1_000_000 -> {
         val value = this / 100_000 / 10.0

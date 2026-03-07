@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import org.telegram.divo.dal.dto.common.GalleryItemDto
 import org.telegram.divo.dal.dto.common.PaginationDto
 import org.telegram.divo.dal.dto.common.toEntity
-import org.telegram.divo.entity.UserGalleryItem
+import org.telegram.divo.entity.UserGalleryList
 
 class UserGalleryListResponse(
     @SerializedName("data") val data: UserGalleryListData? = null,
@@ -15,5 +15,7 @@ class UserGalleryListData(
     @SerializedName("pagination") val pagination: PaginationDto
 )
 
-fun UserGalleryListResponse.toEntities(): List<UserGalleryItem> =
-    data?.items?.map { it.toEntity() } ?: emptyList()
+fun UserGalleryListResponse.toEntities(): UserGalleryList = UserGalleryList(
+    items = data?.items?.map { it.toEntity() } ?: emptyList(),
+    pagination = data?.pagination?.meta?.toEntity()
+)

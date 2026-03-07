@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
@@ -37,7 +36,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -56,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -68,12 +67,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.rememberAsyncImagePainter
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.size.Size
+import com.google.android.exoplayer2.util.Log
+import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.LockScreenOrientation
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.RoleChip
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.components.items.DMButton
+import org.telegram.divo.components.rememberIsOnline
+import org.telegram.divo.components.shimmer
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont.HelveticaNeue
@@ -95,6 +101,13 @@ fun ModelsHomeScreen(
     val currentModels = if (state.selectedTab == Tab.ALL_USERS) state.allUserModels else state.models
     val currentRestModels = if (state.selectedTab == Tab.ALL_USERS) state.feedItems else listOf()
     val pagerState = rememberPagerState(pageCount = { currentRestModels.size })
+
+    val isOnline = rememberIsOnline()
+    if (!isOnline) {
+        Log.d("MyTag", "Ожидание сети...")
+    } else {
+        Log.d("MyTag", "Связь установлена!")
+    }
 
     LockScreenOrientation()
     LaunchedEffect(Unit) {
@@ -400,17 +413,9 @@ private fun ModelPage(
         contentAlignment = Alignment.TopEnd
     ) {
         if (backgroundPhoto.isNotEmpty()) {
-            Image(
-                painter = rememberAsyncImagePainter(backgroundPhoto),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(AppTheme.colors.backgroundDark)
+            DivoAsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                url = backgroundPhoto
             )
         }
 
@@ -461,13 +466,11 @@ private fun ModelPage(
                 ) {
                     val avatarUrl = feed.previewImage.url
                     if (avatarUrl.isNotEmpty()) {
-                        Image(
-                            painter = rememberAsyncImagePainter(avatarUrl),
-                            contentDescription = null,
-                            contentScale = ContentScale.Crop,
+                        DivoAsyncImage(
                             modifier = Modifier
                                 .size(68.dp)
-                                .clip(CircleShape)
+                                .clip(CircleShape),
+                            url = avatarUrl
                         )
                     } else {
                         val initials = feed.user.fullName.split(" ")
@@ -592,23 +595,41 @@ private fun ThumbsRow(
     feed: FeedItem,
     onPhotoClicked: (String) -> Unit,
 ) {
+    val context = LocalContext.current
+    val images = remember(feed.files) { feed.files.drop(1) }
+
+    // Предзагружаем все картинки сразу
+    LaunchedEffect(images) {
+        images.forEach { file ->
+            val request = ImageRequest.Builder(context)
+                .data(file.url)
+                .size(Size(126.dp.value.toInt(), 136.dp.value.toInt()))
+                .build()
+            context.imageLoader.enqueue(request)
+        }
+    }
+
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
-        val images = feed.files.drop(1)
-
-        items(
-            items = images,
-            key = { it.uuid }
-        ) { thumb ->
-            Image(
+        items(items = images, key = { it.uuid }) { thumb ->
+            DivoAsyncImage(
                 modifier = Modifier
                     .size(width = 126.dp, height = 136.dp)
                     .clickableWithoutRipple { onPhotoClicked(thumb.url) },
-                painter = rememberAsyncImagePainter(thumb.url),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
+                url = thumb.url,
+                placeholderColor = Color.Transparent,
+                loadingContent = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .shimmer(
+                                shimmerColor = Color.Black.copy(0.2f),
+                                highlightColor = Color.White.copy(0.1f)
+                            ),
+                    )
+                }
             )
         }
     }

@@ -95,8 +95,8 @@ class AppearanceDto(
     @SerializedName("height") val height: Float,
     @SerializedName("weight") val weight: Float,
     @SerializedName("breastSize") val breastSize: String,
-    @SerializedName("waist") val waist: Int,
-    @SerializedName("hips") val hips: Int,
+    @SerializedName("waist") val waist: Float,
+    @SerializedName("hips") val hips: Float,
     @SerializedName("shoesSize") val shoesSize: Float,
     @SerializedName("hairColor") val hairColor: HairColorDto,
     @SerializedName("hairLength") val hairLength: HairLengthDto,
@@ -154,7 +154,7 @@ fun UserDataDto.toEntity(): UserInfo =
         avatarUrl = avatar.fullUrl,
         avatarUuid = avatar.fileUuid,
         role = role,
-        subrole = subrole,
+        subrole = subrole.orEmpty(),
         roleLabel = roleLabel,
         measuringSystem = measuringSystem,
         pushNotifications = pushNotifications,
@@ -178,9 +178,9 @@ private fun GenderDto.toEntity(): Gender =
 
 private fun CustomerDto.toEntity(): Customer =
     Customer(
-        site = site,
-        description = description,
-        backgroundUuid = backgroundUuid?.uuid
+        site = site.orEmpty(),
+        description = description.orEmpty(),
+        backgroundUuid = backgroundUuid?.uuid.orEmpty()
     )
 
 private fun StatisticDto.toEntity(): Statistic =
@@ -198,7 +198,7 @@ private fun ModelDto.toEntity(): Model =
         education = education.orEmpty(),
         workExperience = workExperience.orEmpty(),
         languages = languages,
-        profileUrl = profileUrl,
+        profileUrl = profileUrl.orEmpty(),
         additionalInformation = additionalInformation,
         hasInternationalPassport = hasInternationalPassport,
         hasTattoo = hasTattoo,
@@ -211,22 +211,22 @@ private fun AgencyDto.toEntity(): Agency =
     Agency(
         id = id,
         title = title,
-        site = site,
-        email = email,
-        description = description,
-        employeeTitle = employeeTitle,
+        site = site.orEmpty(),
+        email = email.orEmpty(),
+        description = description.orEmpty(),
+        employeeTitle = employeeTitle.orEmpty(),
         address = address?.toEntity(),
         photo = photo?.toEntity()
     )
 
 private fun AgencyAddressDto.toEntity(): AgencyAddress =
     AgencyAddress(
-        street = street,
-        house = house,
-        apartment = apartment,
-        formatted = formatted,
-        latitude = latitude,
-        longitude = longitude,
+        street = street.orEmpty(),
+        house = house.orEmpty(),
+        apartment = apartment.orEmpty(),
+        formatted = formatted.orEmpty(),
+        latitude = latitude ?: 0.0,
+        longitude = longitude ?: 0.0,
         city = city?.toEntity()
     )
 

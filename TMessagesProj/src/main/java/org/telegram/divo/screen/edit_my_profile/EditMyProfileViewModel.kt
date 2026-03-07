@@ -3,20 +3,11 @@ package org.telegram.divo.screen.edit_my_profile
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
-import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
-import org.telegram.divo.entity.User
-import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.screen.profile.ProfileEffect
-import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLoader
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.MessagesStorage
 import org.telegram.messenger.NotificationCenter
@@ -25,43 +16,7 @@ import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLRPC
 import java.io.File
 
-class EditMyProfileViewModel :
-    BaseViewModel<
-            EditMyProfileViewModel.EventListViewState,
-            EditMyProfileViewModel.EditMyProfileIntent,
-            EditMyProfileViewModel.Effect
-            >() {
-
-    data class EventListViewState(
-        val fName: String = "",
-        val lName: String = "",
-        val bio: String = "",
-        val avatarUrl: String = "",
-        val userFull: UserInfo? = null,
-        val isLoading: Boolean = false,
-        val errorMessage: String? = null,
-    ) : ViewState
-
-    sealed class EditMyProfileIntent : ViewIntent {
-        data class OnSaveClicked(val fName: String, val lName: String, val bio: String, val file: Result<File>?) :
-            EditMyProfileIntent()
-
-        data object OnLoad : EditMyProfileIntent()
-        data class OnAvatarUploaded(
-            val photo: TLRPC.InputFile?,
-            val video: TLRPC.InputFile?,
-            val videoStartTimestamp: Double,
-            val videoPath: String?,
-            val bigSize: TLRPC.PhotoSize?,
-            val smallSize: TLRPC.PhotoSize?,
-            val isVideo: Boolean,
-            val emojiMarkup: TLRPC.VideoSize?
-        ) : EditMyProfileIntent()
-    }
-
-    sealed class Effect : ViewEffect {
-        data object NavigateBack : Effect()
-    }
+class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIntent, Effect>() {
 
     override fun createInitialState(): EventListViewState {
         return EventListViewState()
@@ -96,7 +51,7 @@ class EditMyProfileViewModel :
         viewModelScope.launch {
             val userInfo = state.value.userFull
             if (userInfo != null) {
-                setState { copy(isLoading = true) }
+                setState { copy(isSaved = true) }
 
                 val uploadedUuid = if (file != null) {
                     val uploadResult = file.fold(
@@ -104,7 +59,7 @@ class EditMyProfileViewModel :
                         onFailure = { DivoResult.UnknownError(it) }
                     )
                     if (uploadResult !is DivoResult.Success) {
-                        setState { copy(isLoading = false, errorMessage = uploadResult.getErrorMessage()) }
+                        setState { copy(isSaved = false, errorMessage = uploadResult.getErrorMessage()) }
                         return@launch
                     }
                     uploadResult.value.uuid
@@ -122,11 +77,11 @@ class EditMyProfileViewModel :
 
                 when (result) {
                     is DivoResult.Success -> {
-                        setState { copy(isLoading = false) }
-                        sendEffect(Effect.NavigateBack)
+                        setState { copy(isSaved = false) }
+                        sendEffect(Effect.SaveSuccess)
                     }
                     else -> {
-                        setState { copy(isLoading = false, errorMessage = result.getErrorMessage()) }
+                        setState { copy(isSaved = false, errorMessage = result.getErrorMessage()) }
                     }
                 }
             }
@@ -143,14 +98,6 @@ class EditMyProfileViewModel :
         if (userFull != null && updatedUser != null) {
             userFull.user = updatedUser
         }
-
-//        setState {
-//            copy(
-//                userFull = userFull ?: state.value.userFull,
-//                avatarUpdateTimestamp = System.currentTimeMillis(),
-//                isLoading = false
-//            )
-//        }
     }
 
 
@@ -162,15 +109,6 @@ class EditMyProfileViewModel :
 
         val me = uc.currentUser
         val userFull = mc.getUserFull(uc.clientUserId)
-
-//        setState {
-//            copy(
-//                fName = me?.first_name ?: userFull?.user?.first_name ?: "",
-//                lName = me?.last_name ?: userFull?.user?.last_name ?: "",
-//                bio = userFull?.about ?: "",
-//                errorMessage = null
-//            )
-//        }
     }
 
     override fun handleIntent(intent: EditMyProfileIntent) {

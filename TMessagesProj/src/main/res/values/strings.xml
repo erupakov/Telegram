@@ -19,6 +19,97 @@
     <string name="EditSocialLinks">Edit Social Links</string>
     <string name="ManageWorkExperience">Manage Work Experience</string>
     <string name="Profile">My Profile</string>
+
+    <!--your parameters screen-->
+    <string name="ParametersSaved">Parameters saved</string>
+    <string name="YourParameters">Your parameters</string>
+    <string name="ButtonBack">Back</string>
+
+    <string name="SelectGender">Select a Gender</string>
+    <string name="LabelAge">Age (y.o)</string>
+    <string name="AgeMin">14</string>
+    <string name="AgeMax">45</string>
+    <string name="LabelHeight">Height (cm)</string>
+    <string name="HeightMin">140</string>
+    <string name="HeightMax">220</string>
+    <string name="LabelWaist">Waist (cm)</string>
+    <string name="WaistMin">48</string>
+    <string name="WaistMax">90</string>
+    <string name="LabelHips">Hips (cm)</string>
+    <string name="HipsMin">80</string>
+    <string name="HipsMax">110</string>
+    <string name="LabelShoeSize">Shoe size (EU)</string>
+    <string name="ShoeSizeMin">36</string>
+    <string name="ShoeSizeMax">42</string>
+    <string name="ChooseHairLength">Choose your hair length</string>
+    <string name="ChooseHairColor">Choose your hair color</string>
+    <string name="ChooseEyeColor">Choose your eye color</string>
+    <string name="ChooseSkinColor">Choose your skin color</string>
+    <string name="ChooseBreastSize">Choose your breast size</string>
+    <string name="Female">Female</string>
+
+    <string-array name="GenderItems">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string-array name="HairLengthItems">
+        <item>Short haircut</item>
+        <item>Bob haircut</item>
+        <item>Below the shoulders</item>
+        <item>Below shoulder blades</item>
+        <item>Bald</item>
+    </string-array>
+
+    <string-array name="HairColorItems">
+        <item>Black</item>
+        <item>Blond</item>
+        <item>Brown</item>
+        <item>Chestnut</item>
+        <item>Auburn</item>
+        <item>Red</item>
+        <item>Titian</item>
+    </string-array>
+
+    <string-array name="EyeColorItems">
+        <item>Black</item>
+        <item>Brown</item>
+        <item>Blue</item>
+        <item>Dark blue</item>
+        <item>Grey</item>
+        <item>Green</item>
+        <item>Amber</item>
+        <item>Hazel</item>
+        <item>Heterichromic</item>
+    </string-array>
+
+    <string-array name="SkinColorItems">
+        <item>Light</item>
+        <item>Medium</item>
+        <item>Brown</item>
+        <item>Dark brown</item>
+        <item>Freckled</item>
+    </string-array>
+
+    <string-array name="BreastSizeItems">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>DD</item>
+        <item>E</item>
+        <item>F</item>
+    </string-array>
+
+    <!--edit my profile screen-->
+    <string name="FirstNameEditProfileScreen">First name</string>
+    <string name="LastNameEditProfileScreen">Last name</string>
+    <string name="BiographyPlaceholder">France\'s Top Model…</string>
+    <string name="Biography">Biography</string>
+    <string name="SaveEditProfileScreen">Save</string>
+    <string name="TabBiography">BIOGRAPHY</string>
+    <string name="TabAppearance">APPEARANCE</string>
+
     <!--divo view end-->
 
     <string name="LanguageName">English</string>

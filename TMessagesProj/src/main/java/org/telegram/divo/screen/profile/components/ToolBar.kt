@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.profile.components
 
-import android.net.Uri
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -19,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -31,15 +29,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
@@ -50,7 +45,7 @@ import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.formattedAge
-import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.components.BackButton
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -76,23 +71,12 @@ fun ToolBar(
             .background(Color.Transparent),
         contentAlignment = Alignment.Center
     ) {
-        Row(
+        BackButton(
             modifier = Modifier
                 .padding(start = 16.dp)
-                .align(Alignment.CenterStart)
-                .clickableWithoutRipple { onNavigateBack() },
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(painter = painterResource(R.drawable.ic_arrow_back_21), contentDescription = "Back", tint = Color.White)
-            Spacer(modifier = Modifier.width(7.dp))
-            Text(
-                modifier = Modifier.padding(top = 2.dp),
-                text = "Back",
-                style = AppTheme.typography.helveticaNeueRegular,
-                fontSize = 17.sp,
-                color = Color.White,
-            )
-        }
+                .align(Alignment.CenterStart),
+            onBackClicked = onNavigateBack
+        )
 
         Box(
             modifier = Modifier
@@ -142,7 +126,7 @@ fun ToolBar(
                                 text = {
                                     Text(
                                         text = stringResource(title),
-                                        style = AppTheme.typography.helveticaNeueRegular,
+                                        style = AppTheme.typography.manropeRegular,
                                         fontSize = 17.sp,
                                         color = Color.Black
                                     )

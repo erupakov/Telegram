@@ -117,8 +117,7 @@ private fun TabButton(
 @Composable
 private fun BiographyContent(bio: String) {
     var expanded by remember { mutableStateOf(false) }
-    val account = UserConfig.selectedAccount
-    val test = UserConfig.getInstance(account).clientUserId
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,8 +137,7 @@ private fun BiographyContent(bio: String) {
             Text(
                 text = if (expanded) "SEE LESS" else "SEE MORE",
                 color = Color.White,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
+                fontSize = 10.sp,
                 modifier = Modifier
                     .align(Alignment.End)
                     .clickableWithoutRipple { expanded = !expanded }
@@ -157,11 +155,13 @@ private fun AppearanceContent(params: PhysicalParams) {
         modifier = Modifier
         .fillMaxWidth()
     ) {
-        Column {
+        Column(
+            horizontalAlignment = Alignment.End
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp),
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 // Left column
@@ -205,18 +205,18 @@ private fun AppearanceContent(params: PhysicalParams) {
                     }
                 }
             }
+
+            Text(
+                text = "SEE MORE",
+                style = AppTheme.typography.helveticaNeueLtCom,
+                color = Color.White,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .clickableWithoutRipple { expanded = !expanded }
+                    .padding(top = 4.dp, end = 16.dp, bottom = 12.dp)
+            )
         }
-        Text(
-            text = "SEE MORE",
-            style = AppTheme.typography.helveticaNeueLtCom,
-            color = Color.White,
-            fontSize = 10.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .clickableWithoutRipple { expanded = !expanded }
-                .padding(top = 4.dp, end = 16.dp, bottom = 12.dp)
-        )
     }
 }
 

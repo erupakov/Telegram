@@ -23,6 +23,7 @@ import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.AgencyModels
 import org.telegram.divo.entity.UploadedFile
 import org.telegram.divo.entity.UserGalleryItem
+import org.telegram.divo.entity.UserGalleryList
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.entity.UserSocialNetwork
 import java.io.File
@@ -73,9 +74,9 @@ class UserRepository(
 
     suspend fun getUserGalleryList(
         userId: Int,
-        offset: Int = 0,
-        limit: Int = 10,
-    ): DivoResult<List<UserGalleryItem>> = resultOf {
+        offset: Int,
+        limit: Int,
+    ): DivoResult<UserGalleryList> = resultOf {
         service.getUserGalleryList(
             request = UserGalleryListRequest(
                 userId = userId,
