@@ -245,9 +245,30 @@ public class AndroidUtilities {
     public final static String TYPEFACE_MERRIWEATHER_BOLD = "fonts/mw_bold.ttf";
     public final static String TYPEFACE_COURIER_NEW_BOLD = "fonts/courier_new_bold.ttf";
 
+    public final static String TYPEFACE_HELVETICA_NEUE_MEDIUM = "fonts/helvetica_neue_medium.otf";
+    public final static String TYPEFACE_HELVETICA_NEUE_LT_COM_77_BOLD_CONDENSED = "fonts/helvetica_neue_lt_com_77_bold_condensed.ttf";
+
     public static Typeface mediumTypeface;
     public static ThreadLocal<byte[]> readBufferLocal = new ThreadLocal<>();
     public static ThreadLocal<byte[]> bufferLocal = new ThreadLocal<>();
+
+    private static Typeface _helveticaNeueLtCom77BoldCondensed;
+    private static Typeface _helveticaNeueMedium;
+
+    public static Typeface helveticaNeueMedium() {
+        if (_helveticaNeueMedium == null) {
+            _helveticaNeueMedium = getTypeface(TYPEFACE_HELVETICA_NEUE_MEDIUM);
+        }
+        return _helveticaNeueMedium;
+    }
+
+    public static Typeface helveticaNeueLtCom77BoldCondensed() {
+        if (_helveticaNeueLtCom77BoldCondensed == null) {
+            _helveticaNeueLtCom77BoldCondensed = getTypeface(TYPEFACE_HELVETICA_NEUE_LT_COM_77_BOLD_CONDENSED);
+        }
+
+        return _helveticaNeueLtCom77BoldCondensed;
+    }
 
     public static Typeface bold() {
         if (mediumTypeface == null) {

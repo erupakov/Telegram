@@ -79,13 +79,13 @@ class FragmentProfileN : BaseFragment() {
         return composeView
     }
 
-    override fun onBackPressed(): Boolean {
+    override fun onBackPressed(invoked: Boolean): Boolean {
         val nav = navController
         if (nav != null && nav.previousBackStackEntry != null) {
             nav.popBackStack()
             return false
         }
-        return super.onBackPressed()
+        return super.onBackPressed(invoked)
     }
 
 //    override fun didUploadPhoto(

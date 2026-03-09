@@ -100,9 +100,13 @@
     <string name="RegistrationProfileInfo">Apply as a Professional Model</string>
     <!--payments view-->
     <string name="PaymentSuccessfullyPaid">You have just successfully transferred %1$s to %2$s for %3$s</string>
+    <string name="PaymentSuccessfullyPaidSubscription">You have just successfully transferred %1$s to %2$s for %3$s until %4$s</string>
     <string name="PaymentSuccessfullyPaidNoItem">You have just successfully transferred %1$s to %2$s</string>
+    <string name="PaymentSuccessfullyPaidSubscriptionNoItem">You have just successfully transferred %1$s to %2$s until %3$s</string>
     <string name="PaymentSuccessfullyPaidRecurrent">You successfully transferred %1$s to %2$s for %3$s and allowed future recurrent payments</string>
     <string name="PaymentSuccessfullyPaidNoItemRecurrent">You successfully transferred %1$s to %2$s and allowed future recurrent payments</string>
+    <string name="PaymentSuccessfullyPaidMeSubscription">%1$s have transferred %2$s for %3$s subscription until %4$s</string>
+    <string name="PaymentSuccessfullyPaidMeNoItemSubscription">%1$s have transferred %2$s for subscription until %3$s</string>
     <string name="PaymentCheckout">Checkout</string>
     <string name="PaymentShippingMethod">Shipping methods</string>
     <string name="PaymentNoShippingMethod">Sorry, it is not possible to deliver to your address.</string>

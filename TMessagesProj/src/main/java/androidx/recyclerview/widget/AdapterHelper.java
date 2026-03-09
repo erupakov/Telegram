@@ -100,6 +100,9 @@ class AdapterHelper implements OpReorderer.Callback {
         }
         return sb.toString();
     }
+
+    AdapterHelper(Callback callback) {
+        this(callback, false);
     }
 
     AdapterHelper(Callback callback, boolean disableRecycler) {

@@ -28,6 +28,7 @@ import androidx.dynamicanimation.animation.SpringAnimation;
 import androidx.dynamicanimation.animation.SpringForce;
 
 import org.telegram.messenger.AndroidUtilities;
+import org.telegram.messenger.R;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.SimpleFloatPropertyCompat;
@@ -81,7 +82,7 @@ public class CodeNumberField extends EditTextBoldCursor {
     public CodeNumberField(Context context) {
         super(context);
         setBackground(null);
-        setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
         setMovementMethod(null);
         addTextChangedListener(new TextWatcher() {
             @Override
@@ -140,9 +141,9 @@ public class CodeNumberField extends EditTextBoldCursor {
         successScaleSpringAnimation.cancel();
         if (newProgress != 0f) {
             successScaleSpringAnimation.setSpring(new SpringForce(1f)
-                    .setStiffness(500)
-                    .setDampingRatio(SpringForce.DAMPING_RATIO_LOW_BOUNCY)
-                    .setFinalPosition(SPRING_MULTIPLIER))
+                            .setStiffness(500)
+                            .setDampingRatio(SpringForce.DAMPING_RATIO_LOW_BOUNCY)
+                            .setFinalPosition(SPRING_MULTIPLIER))
                     .setStartValue(SPRING_MULTIPLIER)
                     .setStartVelocity(4000)
                     .start();
@@ -155,9 +156,9 @@ public class CodeNumberField extends EditTextBoldCursor {
 
         anim.cancel();
         anim.setSpring(new SpringForce(progress)
-                .setStiffness(400f)
-                .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
-                .setFinalPosition(progress))
+                        .setStiffness(400f)
+                        .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
+                        .setFinalPosition(progress))
                 .start();
     }
 

@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.view.GestureDetectorCompat;
 
@@ -43,10 +44,8 @@ public class CustomPhoneKeyboardView extends ViewGroup {
         checkFindEditText();
         if (editText == null || editText.length() == 0 && !dispatchBackWhenEmpty) return;
 
-        try {
-            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-            playSoundEffect(SoundEffectConstants.CLICK);
-        } catch (Exception ignore) {}
+        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
+        playSoundEffect(SoundEffectConstants.CLICK);
         editText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DEL));
         editText.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DEL));
 
@@ -108,9 +107,7 @@ public class CustomPhoneKeyboardView extends ViewGroup {
                 checkFindEditText();
                 if (editText == null) return;
 
-                try {
-                    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
-                } catch (Exception ignore) {}
+                performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING);
                 if (editText instanceof EditTextBoldCursor) {
                     ((EditTextBoldCursor) editText).setTextWatchersSuppressed(true, false);
                 }
@@ -246,7 +243,8 @@ public class CustomPhoneKeyboardView extends ViewGroup {
     }
 
     public void updateColors() {
-        backButton.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        backButton.setColorFilter(ContextCompat.getColor(getContext(),R.color.divo_text_color)); //DIVO
+//        backButton.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         for (View v : views) {
             if (v != null) {
                 v.setBackground(getButtonDrawable());
@@ -277,8 +275,10 @@ public class CustomPhoneKeyboardView extends ViewGroup {
         }
 
         private void updateColors() {
-            numberTextPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            symbolsTextPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
+            numberTextPaint.setColor(ContextCompat.getColor(getContext(),R.color.divo_text_color)); //DIVO
+            symbolsTextPaint.setColor(ContextCompat.getColor(getContext(),R.color.divo_text_color)); //DIVO
+//            numberTextPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+//            symbolsTextPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
         }
 
         @Override

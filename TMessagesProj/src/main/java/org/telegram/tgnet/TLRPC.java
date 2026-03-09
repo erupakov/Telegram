@@ -65,6 +65,220 @@ public class TLRPC {
     public static final int LAYER = 191;
     // DIVO START  --------------------------
 
+//    public static class TL_account_changePhone extends TLObject {
+//        public static final int constructor = 0x70c32edb;
+//
+//        public String phone_number;
+//        public String phone_code_hash;
+//        public String phone_code;
+//
+//        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+//            return User.TLdeserialize(stream, constructor, exception);
+//        }
+//
+//        public void serializeToStream(OutputSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            stream.writeString(phone_number);
+//            stream.writeString(phone_code_hash);
+//            stream.writeString(phone_code);
+//        }
+//    }
+//
+//    public static class TL_account_confirmPhone extends TLObject {
+//        public static final int constructor = 0x5f2178c3;
+//
+//        public String phone_code_hash;
+//        public String phone_code;
+//
+//        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+//            return Bool.TLdeserialize(stream, constructor, exception);
+//        }
+//
+//        public void serializeToStream(OutputSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            stream.writeString(phone_code_hash);
+//            stream.writeString(phone_code);
+//        }
+//    }
+//
+//    public static class TL_account_getPassword extends TLObject {
+//        public static final int constructor = 0x548a30f5;
+//
+//
+//        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+//            return TL_account_password.TLdeserialize(stream, constructor, exception);
+//        }
+//
+//        public void serializeToStream(OutputSerializedData stream) {
+//            stream.writeInt32(constructor);
+//        }
+//    }
+//
+//    public static abstract class account_Password extends TLObject {
+//
+//        public int flags;
+//        public boolean has_recovery;
+//        public boolean has_secure_values;
+//        public boolean has_password;
+//        public PasswordKdfAlgo current_algo;
+//        public byte[] srp_B;
+//        public long srp_id;
+//        public String hint;
+//        public String email_unconfirmed_pattern;
+//        public PasswordKdfAlgo new_algo;
+//        public SecurePasswordKdfAlgo new_secure_algo;
+//        public byte[] secure_random;
+//        public int pending_reset_date;
+//        public String login_email_pattern;
+//
+//        public static account_Password TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
+//            account_Password result = null;
+//            switch (constructor) {
+//                case 0x957b50fb:
+//                    result = new TL_account_password();
+//                    break;
+//                case 0x185b184f:
+//                    result = new TL_account_password_layer144();
+//                    break;
+//            }
+//            if (result == null && exception) {
+//                throw new RuntimeException(String.format("can't parse magic %x in account_Password", constructor));
+//            }
+//            if (result != null) {
+//                result.readParams(stream, exception);
+//            }
+//            return result;
+//        }
+//    }
+//
+//    public static class TL_account_password extends account_Password {
+//        public static final int constructor = 0x957b50fb;
+//
+//        public void readParams(InputSerializedData stream, boolean exception) {
+//            flags = stream.readInt32(exception);
+//            has_recovery = (flags & 1) != 0;
+//            has_secure_values = (flags & 2) != 0;
+//            has_password = (flags & 4) != 0;
+//            if ((flags & 4) != 0) {
+//                current_algo = PasswordKdfAlgo.TLdeserialize(stream, stream.readInt32(exception), exception);
+//            }
+//            if ((flags & 4) != 0) {
+//                srp_B = stream.readByteArray(exception);
+//            }
+//            if ((flags & 4) != 0) {
+//                srp_id = stream.readInt64(exception);
+//            }
+//            if ((flags & 8) != 0) {
+//                hint = stream.readString(exception);
+//            }
+//            if ((flags & 16) != 0) {
+//                email_unconfirmed_pattern = stream.readString(exception);
+//            }
+//            new_algo = PasswordKdfAlgo.TLdeserialize(stream, stream.readInt32(exception), exception);
+//            new_secure_algo = SecurePasswordKdfAlgo.TLdeserialize(stream, stream.readInt32(exception), exception);
+//            secure_random = stream.readByteArray(exception);
+//            if ((flags & 32) != 0) {
+//                pending_reset_date = stream.readInt32(exception);
+//            }
+//            if ((flags & 64) != 0) {
+//                login_email_pattern = stream.readString(exception);
+//            }
+//        }
+//
+//        public void serializeToStream(OutputSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            flags = has_recovery ? (flags | 1) : (flags & ~1);
+//            flags = has_secure_values ? (flags | 2) : (flags & ~2);
+//            flags = has_password ? (flags | 4) : (flags & ~4);
+//            stream.writeInt32(flags);
+//            if ((flags & 4) != 0) {
+//                current_algo.serializeToStream(stream);
+//            }
+//            if ((flags & 4) != 0) {
+//                stream.writeByteArray(srp_B);
+//            }
+//            if ((flags & 4) != 0) {
+//                stream.writeInt64(srp_id);
+//            }
+//            if ((flags & 8) != 0) {
+//                stream.writeString(hint);
+//            }
+//            if ((flags & 16) != 0) {
+//                stream.writeString(email_unconfirmed_pattern);
+//            }
+//            new_algo.serializeToStream(stream);
+//            new_secure_algo.serializeToStream(stream);
+//            stream.writeByteArray(secure_random);
+//            if ((flags & 32) != 0) {
+//                stream.writeInt32(pending_reset_date);
+//            }
+//            if ((flags & 64) != 0) {
+//                stream.writeString(login_email_pattern);
+//            }
+//        }
+//    }
+//
+//    public static class TL_account_password_layer144 extends account_Password {
+//        public static final int constructor = 0x185b184f;
+//
+//        public void readParams(InputSerializedData stream, boolean exception) {
+//            flags = stream.readInt32(exception);
+//            has_recovery = (flags & 1) != 0;
+//            has_secure_values = (flags & 2) != 0;
+//            has_password = (flags & 4) != 0;
+//            if ((flags & 4) != 0) {
+//                current_algo = PasswordKdfAlgo.TLdeserialize(stream, stream.readInt32(exception), exception);
+//            }
+//            if ((flags & 4) != 0) {
+//                srp_B = stream.readByteArray(exception);
+//            }
+//            if ((flags & 4) != 0) {
+//                srp_id = stream.readInt64(exception);
+//            }
+//            if ((flags & 8) != 0) {
+//                hint = stream.readString(exception);
+//            }
+//            if ((flags & 16) != 0) {
+//                email_unconfirmed_pattern = stream.readString(exception);
+//            }
+//            new_algo = PasswordKdfAlgo.TLdeserialize(stream, stream.readInt32(exception), exception);
+//            new_secure_algo = SecurePasswordKdfAlgo.TLdeserialize(stream, stream.readInt32(exception), exception);
+//            secure_random = stream.readByteArray(exception);
+//            if ((flags & 32) != 0) {
+//                pending_reset_date = stream.readInt32(exception);
+//            }
+//        }
+//
+//        public void serializeToStream(OutputSerializedData stream) {
+//            stream.writeInt32(constructor);
+//            flags = has_recovery ? (flags | 1) : (flags & ~1);
+//            flags = has_secure_values ? (flags | 2) : (flags & ~2);
+//            flags = has_password ? (flags | 4) : (flags & ~4);
+//            stream.writeInt32(flags);
+//            if ((flags & 4) != 0) {
+//                current_algo.serializeToStream(stream);
+//            }
+//            if ((flags & 4) != 0) {
+//                stream.writeByteArray(srp_B);
+//            }
+//            if ((flags & 4) != 0) {
+//                stream.writeInt64(srp_id);
+//            }
+//            if ((flags & 8) != 0) {
+//                stream.writeString(hint);
+//            }
+//            if ((flags & 16) != 0) {
+//                stream.writeString(email_unconfirmed_pattern);
+//            }
+//            new_algo.serializeToStream(stream);
+//            new_secure_algo.serializeToStream(stream);
+//            stream.writeByteArray(secure_random);
+//            if ((flags & 32) != 0) {
+//                stream.writeInt32(pending_reset_date);
+//            }
+//        }
+//    }
+
     public static class TL_profile_createWorkExperience extends TLObject {
         public static int constructor = 0xe2db6d53;
 
