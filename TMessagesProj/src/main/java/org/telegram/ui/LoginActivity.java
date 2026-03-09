@@ -155,6 +155,7 @@ import org.telegram.tgnet.SerializedData;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
+import org.telegram.tgnet.tl.TL_stats;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
@@ -880,7 +881,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 setCustomKeyboardVisible(v.hasCustomKeyboard(), false);
 
                 currentDoneType = DONE_TYPE_FLOATING;
-                boolean needFloatingButton = a == VIEW_PHONE_INPUT || a == VIEW_REGISTER ||
+                boolean needFloatingButton = a == VIEW_PHONE_INPUT ||
+
+
+                        //a == VIEW_REGISTER ||
                         a == VIEW_PASSWORD || a == VIEW_NEW_PASSWORD_STAGE_1 || a == VIEW_NEW_PASSWORD_STAGE_2 ||
                         a == VIEW_ADD_EMAIL;
                 showDoneButton(needFloatingButton, false);
@@ -1049,13 +1053,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         } else if (requestCode == BasePermissionsActivity.REQUEST_CODE_OPEN_CAMERA) {
             if (granted) {
-                LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
-                registerView.imageUpdater.openCamera();
+                //DIVO
+//                LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
+//                registerView.imageUpdater.openCamera();
             }
         } else if (requestCode == BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR) {
             if (granted) {
-                LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
-                registerView.post(() -> registerView.imageUpdater.openGallery());
+                //DIVO
+//                LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
+//                registerView.post(() -> registerView.imageUpdater.openGallery());
             }
         }
     }
@@ -1189,11 +1195,14 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (invoked && views[currentViewNum].onBackPressed(false)) {
                 setPage(VIEW_PHONE_INPUT, true, null, true);
             }
-        } else if (currentViewNum == VIEW_REGISTER) {
-            if (invoked) {
-                ((LoginActivityRegisterView) views[currentViewNum]).wrongNumber.callOnClick();
-            }
-        } else if (currentViewNum == VIEW_NEW_PASSWORD_STAGE_1) {
+        }
+        //DIVO
+        //else if (currentViewNum == VIEW_REGISTER) {
+        //   if (invoked) {
+        //        ((LoginActivityRegisterView) views[currentViewNum]).wrongNumber.callOnClick();
+        //   }
+        //}
+        else if (currentViewNum == VIEW_NEW_PASSWORD_STAGE_1) {
             if (invoked) {
                 views[currentViewNum].onBackPressed(true);
                 setPage(VIEW_RECOVER, true, null, true);
@@ -1218,10 +1227,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     @Override
     public void onActivityResultFragment(int requestCode, int resultCode, Intent data) {
-        LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
-        if (registerView != null) {
-            registerView.imageUpdater.onActivityResult(requestCode, resultCode, data);
-        }
+        //LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
+//        if (registerView != null) {
+//            registerView.imageUpdater.onActivityResult(requestCode, resultCode, data);
+//        }
     }
 
     private void needShowAlert(String title, String text) {
@@ -1670,7 +1679,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     public void setPage(@ViewNumber int page, boolean animated, Bundle params, boolean back) {
-        boolean needFloatingButton = page == VIEW_PHONE_INPUT || page == VIEW_REGISTER || page == VIEW_PASSWORD ||
+        boolean needFloatingButton = page == VIEW_PHONE_INPUT || page == VIEW_PASSWORD ||
                 page == VIEW_NEW_PASSWORD_STAGE_1 || page == VIEW_NEW_PASSWORD_STAGE_2 || page == VIEW_ADD_EMAIL || page == VIEW_CODE_PHRASE || page == VIEW_CODE_WORD;
         if (page == currentViewNum) {
             animated = false;
@@ -3293,6 +3302,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 sendCode.api_hash = BuildVars.APP_HASH;
                 sendCode.api_id = BuildVars.APP_ID;
                 sendCode.phone_number = phone;
+                settings.token = "test";
                 sendCode.settings = settings;
                 req = sendCode;
             }
@@ -5742,7 +5752,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                     params.putString("phoneFormated", requestPhone);
                                     params.putString("phoneHash", phoneHash);
                                     params.putString("code", phoneCode);
-                                    setPage(VIEW_REGISTER, true, params, false);
+                                    // setPage(VIEW_REGISTER, true, params, false);
                                 } else {
                                     if (error.text.equals("2FA_RECENT_CONFIRM")) {
                                         needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ResetAccountCancelledAlert", R.string.ResetAccountCancelledAlert));
@@ -6855,7 +6865,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (authorization.terms_of_service != null) {
                             currentTermsOfService = authorization.terms_of_service;
                         }
-                        animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
+                        //animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
                     } else {
                         animateSuccess(() -> {
                             if (response instanceof TL_account.TL_emailVerified && activityMode == MODE_CHANGE_LOGIN_EMAIL) {
@@ -10825,7 +10835,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     params.putString("phoneFormated", requestPhone);
                     params.putString("phoneHash", phoneHash);
                     params.putString("code", phoneCode);
-                    setPage(VIEW_REGISTER, true, params, false);
+                    // setPage(VIEW_REGISTER, true, params, false);
                 } else {
                     if (error.text.equals("2FA_RECENT_CONFIRM")) {
                         needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ResetAccountCancelledAlert", R.string.ResetAccountCancelledAlert));
@@ -11744,7 +11754,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         params.putString("phoneHash", phoneHash);
                         params.putString("code", req.phone_code);
 
-                        setPage(VIEW_REGISTER, true, params, false);
+                        //setPage(VIEW_REGISTER, true, params, false);
                     } else {
                         onAuthSuccess((TLRPC.TL_auth_authorization) response);
                     }

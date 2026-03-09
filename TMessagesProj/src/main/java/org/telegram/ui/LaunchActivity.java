@@ -10,9 +10,9 @@ package org.telegram.ui;
 
 import static android.view.View.GONE;
 import static org.telegram.messenger.LocaleController.formatPluralString;
-import static org.telegram.messenger.LocaleController.getString;
 import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_ACCOUNTS;
 import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_BOOSTS_FOR_USERS;
+import static org.telegram.ui.ReportBottomSheet.openStory;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -53,7 +53,6 @@ import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
 import android.util.Base64;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.ActionMode;
 import android.view.Gravity;
@@ -234,6 +233,7 @@ import org.telegram.ui.Stars.StarGiftSheet;
 import org.telegram.ui.Stars.StarsController;
 import org.telegram.ui.Stars.StarsIntroActivity;
 import org.telegram.ui.Stars.SuperRipple;
+import org.telegram.ui.Stars.SuperRippleFallback;
 import org.telegram.ui.Stories.StoriesController;
 import org.telegram.ui.Stories.StoriesListPlaceProvider;
 import org.telegram.ui.Stories.StoryViewer;
@@ -395,6 +395,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     private WindowAnimatedInsetsProvider rootAnimatedInsetsListener;
 
     public static LaunchActivity instance;
+    private View customNavigationBar;
 
     public WindowAnimatedInsetsProvider getRootAnimatedInsetsListener() {
         return rootAnimatedInsetsListener;
@@ -8973,7 +8974,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     getActionBarLayout().presentFragment(params.setRemoveLast(actionBarLayout.getFragmentStack().size() > 1).setNoAnimation(forceWithoutAnimation).setCheckPresentFromDelegate(false));
                     return false;
                 }
-            } else if (layersActionBarLayout != null && layout != layersActionBarLayout) {
+            } else if (layout != layersActionBarLayout) {
                 layersActionBarLayout.getView().setVisibility(View.VISIBLE);
                 drawerLayoutContainer.setAllowOpenDrawer(false, true);
 
@@ -9143,9 +9144,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     }
 
     public static BaseFragment getLastFragment() {
-        if (BubbleActivity.instance != null && BubbleActivity.instance.actionBarLayout != null) {
-            return BubbleActivity.instance.actionBarLayout.getLastFragment();
-        }
         if (instance != null && !instance.sheetFragmentsStack.isEmpty()) {
             return instance.sheetFragmentsStack.get(instance.sheetFragmentsStack.size() - 1).getLastFragment();
         }
@@ -9171,9 +9169,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
 
     // last fragment that is not finishing itself
     public static BaseFragment getSafeLastFragment() {
-        if (BubbleActivity.instance != null && BubbleActivity.instance.actionBarLayout != null) {
-            return BubbleActivity.instance.actionBarLayout.getSafeLastFragment();
-        }
         if (instance != null && !instance.sheetFragmentsStack.isEmpty()) {
             return instance.sheetFragmentsStack.get(instance.sheetFragmentsStack.size() - 1).getSafeLastFragment();
         }
@@ -9211,8 +9206,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     }
 
     private ValueAnimator navBarAnimator;
-
-    @Deprecated
     public void animateNavigationBarColor(int toColor) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return;
@@ -9488,9 +9481,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         if (lastFragment == null) return;
 
         BaseFragment sheetFragment =
-            lastFragment.getParentLayout() instanceof ActionBarLayout ?
-                ((ActionBarLayout) lastFragment.getParentLayout()).getSheetFragment(false) :
-                null;
+                lastFragment.getParentLayout() instanceof ActionBarLayout ?
+                        ((ActionBarLayout) lastFragment.getParentLayout()).getSheetFragment(false) :
+                        null;
 
         if (sheetFragment != null && sheetFragment.sheetsStack != null) {
             for (int i = sheetFragment.sheetsStack.size() - 1; i >= 0; --i) {
@@ -9504,12 +9497,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 sheet.dismiss(true);
             }
         }
-
-        final ArrayList<BotWebViewSheet> botSheets = new ArrayList<>();
-        for (BotWebViewSheet sheet : BotWebViewSheet.activeSheets)
-            botSheets.add(sheet);
-        for (BotWebViewSheet sheet : botSheets)
-            sheet.dismiss(true);
     }
 
     public static void makeRipple(float x, float y, float intensity) {
@@ -9525,11 +9512,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             if (currentRipple == null || currentRipple.view != parent) {
                 currentRipple = new SuperRipple(parent);
             }
-        }/* else if (Build.VERSION.SDK_INT >= 26) {
+        } else if (Build.VERSION.SDK_INT >= 26) {
             if (currentRipple == null || currentRipple.view != parent) {
                 currentRipple = new SuperRippleFallback(parent);
             }
-        }*/
+        }
         if (currentRipple != null) {
             currentRipple.animate(x, y, intensity);
         }
