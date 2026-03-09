@@ -4692,7 +4692,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             switch (activityMode) {
                 case MODE_CHANGE_PHONE_NUMBER: {
-                    TLRPC.TL_account_changePhone req = new TLRPC.TL_account_changePhone();
+                    TL_account.changePhone req = new TL_account.changePhone();
                     req.phone_number = requestPhone;
                     req.phone_code = code;
                     req.phone_code_hash = phoneHash;
@@ -4786,7 +4786,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }
                 case MODE_CANCEL_ACCOUNT_DELETION: {
                     requestPhone = cancelDeletionPhone;
-                    TLRPC.TL_account_confirmPhone req = new TLRPC.TL_account_confirmPhone();
+                    TL_account.confirmPhone req = new TL_account.confirmPhone();
                     req.phone_code = code;
                     req.phone_code_hash = phoneHash;
                     destroyTimer();
@@ -4882,12 +4882,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             lastError = error.text;
                             if (error.text.contains("SESSION_PASSWORD_NEEDED")) {
                                 ok = true;
-                                TLRPC.TL_account_getPassword req2 = new TLRPC.TL_account_getPassword();
+                                TL_account.getPassword req2 = new TL_account.getPassword();
                                 ConnectionsManager.getInstance(currentAccount).sendRequest(req2, (response1, error1) -> AndroidUtilities.runOnUIThread(() -> {
                                     nextPressed = false;
                                     showDoneButton(false, true);
                                     if (error1 == null) {
-                                        TLRPC.account_Password password = (TLRPC.account_Password) response1;
+                                        TL_account.Password password = (TL_account.Password) response1;
                                         if (!TwoStepVerificationActivity.canHandleCurrentPassword(password, true)) {
                                             AlertsCreator.showUpdateAppAlert(getParentActivity(), getString("UpdateAppAlert", R.string.UpdateAppAlert), true);
                                             return;
