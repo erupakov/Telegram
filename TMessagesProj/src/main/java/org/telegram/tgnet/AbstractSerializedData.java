@@ -1,16 +1,6 @@
 package org.telegram.tgnet;
 
-public abstract class AbstractSerializedData implements InputSerializedData, OutputSerializedData {
-    private TLDataSourceType dataSourceType = TLDataSourceType.UNKNOWN;
-
-    public void setDataSourceType(TLDataSourceType dataSourceType) {
-        this.dataSourceType = dataSourceType;
-    }
-
-    @Override
-    public TLDataSourceType getDataSourceType() {
-        return dataSourceType;
-    }
+public abstract class AbstractSerializedData {
 
     public abstract void writeInt32(int x);
 
@@ -67,52 +57,4 @@ public abstract class AbstractSerializedData implements InputSerializedData, Out
     public abstract int getPosition();
 
     public abstract int remaining();
-}
-
-interface InputSerializedData {
-    TLDataSourceType getDataSourceType();
-
-    boolean readBool(boolean exception);
-    int readInt32(boolean exception);
-    long readInt64(boolean exception);
-    byte readByte(boolean exception);
-    void readBytes(byte[] b, boolean exception);
-    byte[] readData(int count, boolean exception);
-    String readString(boolean exception);
-    byte[] readByteArray(boolean exception);
-    float readFloat(boolean exception);
-    double readDouble(boolean exception);
-    NativeByteBuffer readByteBuffer(boolean exception);
-
-    int length();
-    void skip(int count);
-    int getPosition();
-    int remaining();
-
-}
-
-enum TLDataSourceType {
-    UNKNOWN, // from database or locally created  todo: split
-    NETWORK; // from server
-}
-
-interface OutputSerializedData {
-
-    void writeInt32(int value);
-    void writeInt64(long value);
-    void writeBool(boolean value);
-    void writeBytes(byte[] b);
-    void writeBytes(byte[] b, int offset, int count);
-    void writeByte(int i);
-    void writeByte(byte b);
-    void writeString(String s);
-    void writeByteArray(byte[] b, int offset, int count);
-    void writeByteArray(byte[] b);
-    void writeFloat(float f);
-    void writeDouble(double d);
-    void writeByteBuffer(NativeByteBuffer buffer);
-
-    void skip(int count);
-    int getPosition();
-
 }
