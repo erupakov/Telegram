@@ -1,7 +1,7 @@
 package org.telegram.divo.screen.profile
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
@@ -61,7 +61,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    private val portfolioPaginator = OffsetPaginator(limit = 20) { offset, limit ->
+    private val portfolioPaginator = OffsetPaginator(limit = 12) { offset, limit ->
         when (val result = DivoApi.userRepository.getUserGalleryList(
             userId = state.value.userId,
             limit = limit,
@@ -72,6 +72,22 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
                 PaginatedResult(
                     items = data.items,
                     totalCount = data.pagination?.totalCount ?: data.items.size
+                )
+            }
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
+
+    private val videoPaginator = OffsetPaginator(limit = 15) { offset, limit ->
+        when (val result = DivoApi.publicationRepository.getPublicationList(
+            offset = offset,
+            limit = limit,
+            userId = state.value.userId
+        )) {
+            is DivoResult.Success -> {
+                PaginatedResult(
+                    items = result.value.items.filter { it.files.any { f -> f.isVideo } },
+                    totalCount = result.value.pagination?.totalCount ?: result.value.items.size
                 )
             }
             else -> throw Exception(result.getErrorMessage())
@@ -94,6 +110,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             is ProfileIntent.OnSearchQueryChanged -> onSearchQueryChanged(intent.query)
             is ProfileIntent.OnLoadMoreSearchResults -> loadMoreSearchResults()
             is ProfileIntent.OnLoadMorePortfolio -> loadMorePortfolio()
+            is ProfileIntent.OnLoadMoreVideos -> viewModelScope.launch { videoPaginator.loadMore() }
         }
     }
 
@@ -102,10 +119,13 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             setState { copy(userId = userId, isOwnProfile = isOwnProfile) }
 
             launch { loadUserProfile(isOwnProfile = isOwnProfile) }
+            launch { portfolioPaginator.loadInitial() }
             launch { loadSimilarProfiles() }
+            launch { videoPaginator.loadInitial() }
             observePaginator()
             observeSearchPaginator()
             observeGalleryListPaginator()
+            observeVideoPaginator()
         }
     }
 
@@ -153,6 +173,20 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
+    private fun observeVideoPaginator() {
+        viewModelScope.launch {
+            videoPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        videoItems = pState.items.distinctBy { it.id }.toPersistentList(),
+                        isLoadingMoreVideos = pState.isLoadingMore,
+                        hasMoreVideos = pState.hasMore,
+                    )
+                }
+            }
+        }
+    }
+
     private fun onSearchQueryChanged(query: String) {
         searchJob?.cancel()
         setState { copy(searchQuery = query) }
@@ -160,7 +194,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         if (query.isBlank()) {
             searchPaginator.reset()
             setState { copy(isSearchMode = false) }
-          
+
             viewModelScope.launch {
                 if (state.value.feedItems.isEmpty()) {
                     setState { copy(isLoadingStats = true) }
@@ -292,7 +326,6 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
                 )
             }
         } else {
-            Log.d("MyTag", result.getErrorMessage())
             sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
         }
     }

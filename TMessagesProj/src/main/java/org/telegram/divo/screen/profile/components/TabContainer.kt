@@ -118,6 +118,7 @@ fun TabContainer(
                             pagerState.animateScrollToPage(index)
                         }
                     },
+                    unselectedContentColor = Color.LightGray,
                     selectedContentColor = Color.White
                 )
             }

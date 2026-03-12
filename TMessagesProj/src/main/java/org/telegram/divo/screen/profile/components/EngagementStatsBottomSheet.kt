@@ -44,7 +44,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoTextField
@@ -226,7 +225,7 @@ private fun StatsDetailRow(
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape),
-            url = avatarUrl
+            model = avatarUrl
         )
         Spacer(modifier = Modifier.width(10.dp))
         Column {

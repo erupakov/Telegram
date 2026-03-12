@@ -1103,15 +1103,16 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         }
     }
 
-
+    //DIVO--START
     private boolean shouldShowBottomBar(BaseFragment f) {
-        return f instanceof org.telegram.divo.screen.models.FragmentModels   // Models
-                || f instanceof org.telegram.divo.screen.event_list.FragmentEventList // Events
-                || f instanceof org.telegram.ui.DialogsActivity               // Chats
-                || f instanceof org.telegram.divo.screen.settings.FragmentSettings; // Settings
+        if (f instanceof FragmentModels) return ((FragmentModels) f).isOnHomeScreen();
+
+        return f instanceof FragmentEventList
+                || f instanceof DialogsActivity
+                || f instanceof FragmentSettings;
     }
 
-    private void updateBottomBarVisibility() {
+    public void updateBottomBarVisibility() {
         BaseFragment last = actionBarLayout != null ? actionBarLayout.getLastFragment() : null;
         boolean show = last != null && shouldShowBottomBar(last);
         if (bottomNav != null) {
@@ -1120,6 +1121,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         int bottomBarHeight = AndroidUtilities.dp(56); // same height you use
         actionBarLayout.getView().setPadding(0, 0, 0, show ? bottomBarHeight : 0);
     }
+    //DIVO--END
 
     @Override
     public void onThemeProgress(float progress) {

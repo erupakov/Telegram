@@ -84,7 +84,7 @@ fun SimilarProfilesRow(
                             .size(158.dp)
                             .padding(4.dp)
                             .clip(RoundedCornerShape(4.dp)),
-                        url = model.photoUrl,
+                        model = model.photoUrl,
                     )
                     Column(
                         modifier = Modifier

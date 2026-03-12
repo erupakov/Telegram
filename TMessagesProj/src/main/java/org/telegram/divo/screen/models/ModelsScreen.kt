@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -81,6 +82,7 @@ import org.telegram.divo.components.items.DMButton
 import org.telegram.divo.components.rememberIsOnline
 import org.telegram.divo.components.shimmer
 import org.telegram.divo.entity.FeedItem
+import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont.HelveticaNeue
 import org.telegram.messenger.FileLoader
@@ -95,7 +97,7 @@ fun ModelsHomeScreen(
     viewModel: ModelsViewModel = androidx.lifecycle.viewmodel.compose.viewModel<ModelsViewModel>(),
     onSearch: () -> Unit = {},
     onClick: (Int) -> Unit = {},
-    onPhotoClicked: (String) -> Unit = {},
+    onPhotoClicked: (List<GalleryItem>, Int) -> Unit = { _, _ -> },
 ) {
     val state by viewModel.state.collectAsState()
     val currentModels = if (state.selectedTab == Tab.ALL_USERS) state.allUserModels else state.models
@@ -405,7 +407,7 @@ fun TabsRow(
 private fun ModelPage(
     feed: FeedItem,
     onClick: (Int) -> Unit,
-    onPhotoClicked: (String) -> Unit,
+    onPhotoClicked: (List<GalleryItem>, Int) -> Unit,
 ) {
     val backgroundPhoto = feed.files.first().url
     Box(
@@ -415,7 +417,14 @@ private fun ModelPage(
         if (backgroundPhoto.isNotEmpty()) {
             DivoAsyncImage(
                 modifier = Modifier.fillMaxSize(),
-                url = backgroundPhoto
+                model = backgroundPhoto,
+                loadingContent = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
+                    )
+                }
             )
         }
 
@@ -470,7 +479,7 @@ private fun ModelPage(
                             modifier = Modifier
                                 .size(68.dp)
                                 .clip(CircleShape),
-                            url = avatarUrl
+                            model = avatarUrl
                         )
                     } else {
                         val initials = feed.user.fullName.split(" ")
@@ -546,7 +555,13 @@ private fun ModelPage(
                 }
             }
             Spacer(Modifier.height(16.dp))
-            ThumbsRow(feed, onPhotoClicked)
+            ThumbsRow(
+                feed = feed,
+                onPhotoClicked = {
+                    val items = feed.files.map { GalleryItem(it.url, false) }
+                    onPhotoClicked(items, it)
+                }
+            )
         }
     }
 }
@@ -593,12 +608,11 @@ private fun ReactionPill(
 @Composable
 private fun ThumbsRow(
     feed: FeedItem,
-    onPhotoClicked: (String) -> Unit,
+    onPhotoClicked: (Int) -> Unit
 ) {
     val context = LocalContext.current
     val images = remember(feed.files) { feed.files.drop(1) }
 
-    // Предзагружаем все картинки сразу
     LaunchedEffect(images) {
         images.forEach { file ->
             val request = ImageRequest.Builder(context)
@@ -613,12 +627,12 @@ private fun ThumbsRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
-        items(items = images, key = { it.uuid }) { thumb ->
+        itemsIndexed(items = images, key = { _, it -> it.uuid }) { index, thumb ->
             DivoAsyncImage(
                 modifier = Modifier
                     .size(width = 126.dp, height = 136.dp)
-                    .clickableWithoutRipple { onPhotoClicked(thumb.url) },
-                url = thumb.url,
+                    .clickableWithoutRipple { onPhotoClicked(index) },
+                model = thumb.url,
                 placeholderColor = Color.Transparent,
                 loadingContent = {
                     Box(

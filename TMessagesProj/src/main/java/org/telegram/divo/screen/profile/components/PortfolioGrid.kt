@@ -1,7 +1,6 @@
 package org.telegram.divo.screen.profile.components
 
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,9 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
-import org.telegram.divo.common.DivoAsyncImage
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.UserGalleryItem
@@ -42,22 +42,24 @@ fun PortfolioGrid(
     val currentHasMore by rememberUpdatedState(hasMore)
     val currentIsLoadingMore by rememberUpdatedState(isLoadingMore)
 
+    val currentItems by rememberUpdatedState(portfolioItems)
+
     LaunchedEffect(gridState) {
         snapshotFlow {
-            val layoutInfo = gridState.layoutInfo
-            val lastVisible = layoutInfo.visibleItemsInfo
-                .lastOrNull()?.index ?: return@snapshotFlow false
-
-            val footerCount = 1
-            val contentItemsCount = layoutInfo.totalItemsCount - footerCount
-
-            lastVisible >= contentItemsCount - 3
-        }
-            .distinctUntilChanged()
-            .filter { it }
-            .collect {
-                if (currentHasMore && !currentIsLoadingMore) onLoadMore()
+            val info = gridState.layoutInfo
+            val lastVisible = info.visibleItemsInfo
+                .lastOrNull { it.index < currentItems.size }
+                ?.index ?: 0
+            Triple(lastVisible, currentItems.size, info.totalItemsCount)
+        }.collect { (lastVisible, itemCount, _) ->
+            if (itemCount > 0
+                && lastVisible >= itemCount - 4
+                && currentHasMore
+                && !currentIsLoadingMore
+            ) {
+                onLoadMore()
             }
+        }
     }
 
     LazyVerticalGrid(
@@ -67,14 +69,18 @@ fun PortfolioGrid(
     ) {
         items(
             items = portfolioItems,
-            key = { it.id }
+            key = { it.id },
+            contentType = { "photo" }
         ) { item ->
-            DivoAsyncImage(
+            AsyncImage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickableWithoutRipple { (onPhotoClicked(item.photoUrl)) }
                     .aspectRatio(1f),
-                url = item.previewUrl
+                model = item.previewUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                placeholder = ColorPainter(Color.White)
             )
         }
 

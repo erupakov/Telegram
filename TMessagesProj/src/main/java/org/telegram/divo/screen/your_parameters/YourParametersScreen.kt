@@ -1,10 +1,7 @@
 package org.telegram.divo.screen.your_parameters
 
 import android.widget.Toast
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -24,12 +20,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -40,20 +34,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -63,8 +50,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.toDateFloat
+import org.telegram.divo.components.DivoSlider
 import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.style.AppTheme
@@ -457,79 +444,4 @@ fun ParameterSlider(
 @Composable
 fun YourParametersScreenPreview() {
     YourParametersScreen()
-}
-
-@Composable
-fun DivoSlider(
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    modifier: Modifier = Modifier,
-    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
-) {
-    var sliderWidth by remember { mutableFloatStateOf(0f) }
-    val thumbRadius = 8.dp
-    val trackHeight = 6.dp
-
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(thumbRadius * 2)
-            .onSizeChanged { sliderWidth = it.width.toFloat() }
-            .pointerInput(Unit) {
-                detectDragGestures { change, _ ->
-                    change.consume()
-                    val newValue = (change.position.x / sliderWidth)
-                        .coerceIn(0f, 1f)
-                        .let { valueRange.start + it * (valueRange.endInclusive - valueRange.start) }
-                    onValueChange(newValue)
-                }
-            }
-            .pointerInput(Unit) {
-                detectTapGestures { offset ->
-                    val newValue = (offset.x / sliderWidth)
-                        .coerceIn(0f, 1f)
-                        .let { valueRange.start + it * (valueRange.endInclusive - valueRange.start) }
-                    onValueChange(newValue)
-                }
-            }
-    ) {
-        val fraction = (value - valueRange.start) / (valueRange.endInclusive - valueRange.start)
-
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val trackY = size.height / 2
-            val trackHeightPx = trackHeight.toPx()
-            val thumbRadiusPx = thumbRadius.toPx()
-            val thumbX = fraction * size.width
-
-            // Inactive track — только правая часть
-            drawRoundRect(
-                color = Color(0xFF7A7A7A),
-                topLeft = Offset(thumbX, trackY - trackHeightPx / 2),
-                size = Size(size.width - thumbX, trackHeightPx),
-                cornerRadius = CornerRadius(trackHeightPx / 2)
-            )
-
-            // Active track — левая часть
-            drawRoundRect(
-                color = Color(0xFF7A7A7A),
-                topLeft = Offset(0f, trackY - trackHeightPx / 2),
-                size = Size(thumbX, trackHeightPx),
-                cornerRadius = CornerRadius(trackHeightPx / 2)
-            )
-
-            // Thumb outer circle
-            drawCircle(
-                color = Color(0xFFBF7A54),
-                radius = thumbRadiusPx,
-                center = Offset(thumbX, trackY)
-            )
-
-            // Thumb inner circle
-            drawCircle(
-                color = Color(0xFFD9D9D9),
-                radius = thumbRadiusPx - 2.dp.toPx(),
-                center = Offset(thumbX, trackY)
-            )
-        }
-    }
 }

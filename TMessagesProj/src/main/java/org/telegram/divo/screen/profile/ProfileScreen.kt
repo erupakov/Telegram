@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -51,7 +50,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.common.LaunchedEffectOnce
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.uriToFile
@@ -66,6 +64,7 @@ import org.telegram.divo.screen.profile.components.SocialLinksSection
 import org.telegram.divo.screen.profile.components.StatsType
 import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBar
+import org.telegram.divo.screen.profile.components.VideoGrid
 
 @Composable
 fun ProfileScreen(
@@ -76,7 +75,7 @@ fun ProfileScreen(
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: () -> Unit = {},
-    onPhotoClicked: (String) -> Unit = {},
+    onGalleryClicked: (String, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -112,7 +111,9 @@ fun ProfileScreen(
             contentAlignment = Alignment.Center
         ) {
             LottieProgressIndicator(
-                modifier = Modifier.size(32.dp).align(Alignment.Center),
+                modifier = Modifier
+                    .size(32.dp)
+                    .align(Alignment.Center),
             )
         }
     } else {
@@ -128,10 +129,9 @@ fun ProfileScreen(
             showWorkHistory = showWorkHistory,
             onProfileClicked = onProfileClicked,
             onEditBackgroundClicked = {
-                Log.d("MyTag", "$it")
                 viewModel.setIntent(ProfileIntent.OnBackgroundPhotoSelected(context.uriToFile(it)))
             },
-            onPhotoClicked = onPhotoClicked,
+            onGalleryClicked = { url, isVideo -> onGalleryClicked(url, isVideo) },
             onSocialLinkClicked = { url ->  }, //viewModel.openSocialLink(url)
             onStatsClicked = { viewModel.setIntent(ProfileIntent.OnLoadEngagementStats(it)) },
             onLoadMore = { viewModel.setIntent(ProfileIntent.OnLoadMoreEngagementStats(it)) },
@@ -140,7 +140,8 @@ fun ProfileScreen(
             onLoadMoreImages = { viewModel.setIntent(ProfileIntent.OnLoadMorePortfolio) },
             onImageSelected = {
                 viewModel.setIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(it)))
-            }
+            },
+            onLoadMoreVideos = { viewModel.setIntent(ProfileIntent.OnLoadMoreVideos) },
         )
     }
 }
@@ -154,7 +155,7 @@ private fun ProfileScreenContent(
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: () -> Unit = {},
-    onPhotoClicked: (String) -> Unit = {},
+    onGalleryClicked: (String, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
     onEditBackgroundClicked: (Uri) -> Unit = {},
     onSocialLinkClicked: (String) -> Unit = {},
@@ -164,6 +165,7 @@ private fun ProfileScreenContent(
     onQueryChanged: (String) -> Unit,
     onLoadMoreSearch: () -> Unit,
     onImageSelected: (Uri) -> Unit,
+    onLoadMoreVideos: () -> Unit
 ) {
     val pageCount = if (uiState.isOwnProfile) 2 else 3
     val pagerState = rememberPagerState(pageCount = { pageCount })
@@ -179,13 +181,12 @@ private fun ProfileScreenContent(
 
     val tabBarOffsetY by remember {
         derivedStateOf {
-            val layoutInfo = lazyListState.layoutInfo
-            val pagerItem = layoutInfo.visibleItemsInfo.find { it.key == "pager" }
-            pagerItem?.offset?.toFloat()?.coerceAtLeast(0f) ?: 0f
+            lazyListState.layoutInfo.visibleItemsInfo
+                .firstOrNull { it.key == "pager" }
+                ?.offset?.toFloat() ?: 0f
         }
     }
-
-    val pagerNestedScrollConnection = remember {
+    val pagerNestedScrollConnection = remember(isHeaderCollapsed) {
         PagerNestedScrollConnection(lazyListState, isHeaderCollapsed)
     }
 
@@ -227,9 +228,13 @@ private fun ProfileScreenContent(
         }
 
         if (uiState.backgroundChanging) {
-            Box(modifier = Modifier.fillMaxWidth().padding(top = 134.dp)) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 134.dp)) {
                 LottieProgressIndicator(
-                    modifier = Modifier.size(32.dp).align(Alignment.Center),
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.Center),
                     color = Color.White
                 )
             }
@@ -298,11 +303,22 @@ private fun ProfileScreenContent(
                                         isLoadingMore = uiState.isLoadingMoreImages,
                                         hasMore = uiState.hasMoreImages,
                                         onLoadMore = onLoadMoreImages,
-                                        onPhotoClicked = onPhotoClicked,
+                                        onPhotoClicked = { onGalleryClicked(it, false) },
                                         onSimilarClicked = onProfileClicked,
                                         onImageSelected = onImageSelected
                                     )
-
+                                    1 -> {
+                                        val isPageActive = pagerState.currentPage == 1
+                                        VideoGrid(
+                                            videoItems = uiState.videoItems,
+                                            isOwnProfile = uiState.isOwnProfile,
+                                            isLoadingMore = uiState.isLoadingMoreVideos,
+                                            isActive = isPageActive,
+                                            hasMore = uiState.hasMoreVideos,
+                                            onLoadMore = onLoadMoreVideos,
+                                            onVideoClicked = { onGalleryClicked(it, true) },
+                                        )
+                                    }
                                     else -> EmptyGridPlaceholder()
                                 }
                             }

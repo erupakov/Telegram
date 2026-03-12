@@ -1,29 +1,17 @@
 package org.telegram.divo.screen.profile
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.lifecycle.setViewTreeLifecycleOwner
-import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.navigation.NavController
-import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import org.telegram.divo.screen.edit_my_profile.FragmentEditMyProfile
-import org.telegram.divo.screen.profile_social_links.FragmentProfileSocialLinks
-import org.telegram.divo.screen.work_history.FragmentWorkHistory
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
-import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.Components.ImageUpdater
 
 class FragmentProfileN : BaseFragment() {
 
     //private var imageUpdater: ImageUpdater? = null
-    private val viewModel by lazy { ProfileViewModel() }
     private var isUploadingBackground = false
 
     private val targetUserId: Int by lazy {
@@ -52,31 +40,16 @@ class FragmentProfileN : BaseFragment() {
 //            imageUpdater?.setUser(user)
 //        }
 
-        val composeView = ComposeView(context).apply {
-            (getParentActivity() as? androidx.activity.ComponentActivity)?.let { activity ->
-                setViewTreeLifecycleOwner(activity)
-                setViewTreeViewModelStoreOwner(activity)
-                setViewTreeSavedStateRegistryOwner(activity)
-            }
-
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        return ComposeView(context).apply {
             setContent {
                 ProfileNavGraph(
-                    initialUserId = targetUserId,
-                    initialIsOwnProfile = isOwnProfile,
-                    onEditLinksClicked = {
-                        presentFragment(FragmentProfileSocialLinks())
-                    },
-                    showWorkHistory = {
-                        presentFragment(FragmentWorkHistory())
-                    },
-                    onNavigateBack = { finishFragment() },
+                    userId = targetUserId,
+                    isOwnProfile = true,
                     onNavControllerReady = { navController = it },
+                    onNavigateBack = { finishFragment() }
                 )
             }
         }
-
-        return composeView
     }
 
     override fun onBackPressed(): Boolean {

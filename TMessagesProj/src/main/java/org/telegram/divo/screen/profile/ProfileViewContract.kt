@@ -1,15 +1,17 @@
 package org.telegram.divo.screen.profile
 
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FeedlineItem
+import org.telegram.divo.entity.Publication
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.profile.components.StatsType
-import org.telegram.tgnet.TLRPC
 import java.io.File
 
 data class ProfileViewState(
@@ -20,6 +22,10 @@ data class ProfileViewState(
     val userGalleryItems: List<UserGalleryItem> = listOf(),
     val isLoadingMoreImages: Boolean = false,
     val hasMoreImages: Boolean = true,
+
+    val videoItems: PersistentList<Publication> = persistentListOf(),
+    val isLoadingMoreVideos: Boolean = false,
+    val hasMoreVideos: Boolean = true,
 
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -92,6 +98,7 @@ sealed class ProfileIntent : ViewIntent {
     class OnSearchQueryChanged(val query: String) : ProfileIntent()
     object OnLoadMoreSearchResults : ProfileIntent()
     object OnLoadMorePortfolio : ProfileIntent()
+    object OnLoadMoreVideos : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
