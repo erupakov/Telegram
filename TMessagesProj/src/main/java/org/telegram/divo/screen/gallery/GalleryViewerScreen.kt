@@ -153,7 +153,7 @@ private fun GalleryPagerContent(
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            beyondViewportPageCount = 1,
+            beyondViewportPageCount = 2,
             key = { page ->
                 if (page < uiState.items.size) uiState.items[page].url else "loader"
             }

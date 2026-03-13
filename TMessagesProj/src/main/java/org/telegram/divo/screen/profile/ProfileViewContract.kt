@@ -11,13 +11,14 @@ import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.Publication
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.screen.profile.components.Destination
 import org.telegram.divo.screen.profile.components.StatsType
 import java.io.File
 
 data class ProfileViewState(
     val userId: Int = -1,
     val isOwnProfile: Boolean = false,
-    val userInfo: UserInfo? = null,
+    val userInfo: UserInfo = UserInfo(),
 
     val userGalleryItems: List<UserGalleryItem> = listOf(),
     val isLoadingMoreImages: Boolean = false,
@@ -49,7 +50,38 @@ data class ProfileViewState(
     val socialLinks: SocialLinks = SocialLinks(),
     val physicalParams: PhysicalParams = PhysicalParams(),
     val statistic: UserStatistic = UserStatistic()
-) : ViewState
+) : ViewState {
+
+    val isModel: Boolean
+        get() = userInfo.role == "new_face" || userInfo.role == "model"
+
+    val pageCount: Int
+        get() = when {
+            !isModel -> 5
+            isModel && isOwnProfile -> 2
+            else -> 3
+        }
+
+    val destinationTabs: List<Destination>
+        get() = when (pageCount) {
+            2 -> buildList {
+                add(Destination.SONGS)
+                add(Destination.ALBUM)
+            }
+            3 -> buildList {
+                add(Destination.SONGS)
+                add(Destination.ALBUM)
+                add(Destination.PLAYLISTS)
+            }
+            else -> buildList {
+                add(Destination.SONGS)
+                add(Destination.ALBUM)
+                add(Destination.AGENCY)
+                add(Destination.PLAYLISTS)
+                add(Destination.EVENT)
+            }
+        }
+}
 
 data class SocialLinks(
     val instagram: String = "",

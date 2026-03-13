@@ -30,7 +30,6 @@ import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.screen.profile.PhysicalParams
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
-import org.telegram.messenger.UserConfig
 
 @Composable
 fun BiographyAppearanceSection(
@@ -69,7 +68,7 @@ fun BiographyAppearanceSection(
 
         // Tab content
         when (selectedTab) {
-            0 -> BiographyContent(bio = uiState.userInfo?.model?.agency?.description.orEmpty())
+            0 -> BiographyContent(bio = uiState.userInfo.model.agency.description)
             1 -> AppearanceContent(params = uiState.physicalParams)
         }
     }

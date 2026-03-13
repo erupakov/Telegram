@@ -8,6 +8,7 @@ import org.telegram.divo.entity.UserInfo
 data class YourParametersViewState(
     val isLoading: Boolean = false,
     val userFull: UserInfo = UserInfo(),
+    val touchedFields: Set<ParameterField> = emptySet(),
     val errorMessage: String = "",
 ) : ViewState
 
@@ -32,4 +33,8 @@ sealed class YourParametersEffect : ViewEffect {
     data object NavigateBack : YourParametersEffect()
     data object SaveSuccess : YourParametersEffect()
     data class Error(val message: String) : YourParametersEffect()
+}
+
+enum class ParameterField {
+    GENDER, HAIR_LENGTH, HAIR_COLOR, EYE_COLOR, SKIN_COLOR, BREAST_SIZE
 }

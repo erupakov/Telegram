@@ -67,6 +67,7 @@ fun YourParametersScreen(
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     val parametersSavedText = stringResource(R.string.ParametersSaved)
+    val touched = state.touchedFields
 
     LaunchedEffect(Unit) {
         viewModel.setIntent(YourParametersIntent.OnLoad)
@@ -127,11 +128,9 @@ fun YourParametersScreen(
                 ParameterSelector(
                     label = stringResource(R.string.SelectGender),
                     items = stringArrayResource(R.array.GenderItems).toList(),
-                    selectedValue = state.userFull.gender.title,
+                    selectedValue = state.userFull.gender.title.takeIf { ParameterField.GENDER in touched } ?: "",
                     onItemSelected = { _, title ->
-                        viewModel.setIntent(
-                            YourParametersIntent.OnGenderChanged(title)
-                        )
+                        viewModel.setIntent(YourParametersIntent.OnGenderChanged(title))
                     }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -214,44 +213,36 @@ fun YourParametersScreen(
                 ParameterSelector(
                     label = stringResource(R.string.ChooseHairLength),
                     items = stringArrayResource(R.array.HairLengthItems).toList(),
-                    selectedValue = state.userFull.model.appearance.hairLength.title,
+                    selectedValue = state.userFull.model.appearance.hairLength.title.takeIf { ParameterField.HAIR_LENGTH in touched } ?: "",
                     onItemSelected = { index, title ->
-                        viewModel.setIntent(
-                            YourParametersIntent.OnHairLengthChanged(index, title)
-                        )
+                        viewModel.setIntent(YourParametersIntent.OnHairLengthChanged(index, title))
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 ParameterSelector(
                     label = stringResource(R.string.ChooseHairColor),
                     items = stringArrayResource(R.array.HairColorItems).toList(),
-                    selectedValue = state.userFull.model.appearance.hairColor.title,
+                    selectedValue = state.userFull.model.appearance.hairColor.title.takeIf { ParameterField.HAIR_COLOR in touched } ?: "",
                     onItemSelected = { index, title ->
-                        viewModel.setIntent(
-                            YourParametersIntent.OnHairColorChanged(index, title)
-                        )
+                        viewModel.setIntent(YourParametersIntent.OnHairColorChanged(index, title))
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 ParameterSelector(
                     label = stringResource(R.string.ChooseEyeColor),
                     items = stringArrayResource(R.array.EyeColorItems).toList(),
-                    selectedValue = state.userFull.model.appearance.eyeColor.title,
+                    selectedValue = state.userFull.model.appearance.eyeColor.title.takeIf { ParameterField.EYE_COLOR in touched } ?: "",
                     onItemSelected = { index, title ->
-                        viewModel.setIntent(
-                            YourParametersIntent.OnEyeColorChanged(index, title)
-                        )
+                        viewModel.setIntent(YourParametersIntent.OnEyeColorChanged(index, title))
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 ParameterSelector(
                     label = stringResource(R.string.ChooseSkinColor),
                     items = stringArrayResource(R.array.SkinColorItems).toList(),
-                    selectedValue = state.userFull.model.appearance.skinColor.title,
+                    selectedValue = state.userFull.model.appearance.skinColor.title.takeIf { ParameterField.SKIN_COLOR in touched } ?: "",
                     onItemSelected = { index, title ->
-                        viewModel.setIntent(
-                            YourParametersIntent.OnSkinColorChanged(index, title)
-                        )
+                        viewModel.setIntent(YourParametersIntent.OnSkinColorChanged(index, title))
                     }
                 )
                 if (state.userFull.gender.title == stringResource(R.string.Female)) {
@@ -260,11 +251,9 @@ fun YourParametersScreen(
                     ParameterSelector(
                         label = stringResource(R.string.ChooseBreastSize),
                         items = items,
-                        selectedValue = state.userFull.model.appearance.breastSize,
+                        selectedValue = state.userFull.model.appearance.breastSize.takeIf { ParameterField.BREAST_SIZE in touched } ?: "",
                         onItemSelected = { index, _ ->
-                            viewModel.setIntent(
-                                YourParametersIntent.OnBreastSizeChanged(items[index - 1])
-                            )
+                            viewModel.setIntent(YourParametersIntent.OnBreastSizeChanged(items[index - 1]))
                         }
                     )
                 }

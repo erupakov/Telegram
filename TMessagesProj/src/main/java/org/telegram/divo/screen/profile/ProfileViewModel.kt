@@ -360,36 +360,33 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
 
     private fun changeBackground(file: Result<File>) {
         viewModelScope.launch {
-            val userInfo = state.value.userInfo
-            if (userInfo != null) {
-                setState { copy(backgroundChanging = true) }
+            setState { copy(backgroundChanging = true) }
 
-                val result = file
-                    .fold(
-                        onSuccess = { DivoApi.userRepository.uploadPhoto(it) },
-                        onFailure = { DivoResult.UnknownError(it) }
+            val result = file
+                .fold(
+                    onSuccess = { DivoApi.userRepository.uploadPhoto(it) },
+                    onFailure = { DivoResult.UnknownError(it) }
+                )
+                .flatMap  {
+                    DivoApi.userRepository.updateProfile(
+                        userInfo = state.value.userInfo.copy(photoUuid = it.uuid)
                     )
-                    .flatMap  {
-                        DivoApi.userRepository.updateProfile(
-                            userInfo = userInfo.copy(photoUuid = it.uuid)
-                        )
-                    }
+                }
 
-                when (result) {
-                    is DivoResult.Success -> setState {
-                        copy(
-                            backgroundChanging = false,
-                            userInfo = userInfo?.copy(
-                                photoUrl = result.value.photoUrl
-                            )
+            when (result) {
+                is DivoResult.Success -> setState {
+                    copy(
+                        backgroundChanging = false,
+                        userInfo = userInfo.copy(
+                            photoUrl = result.value.photoUrl
                         )
+                    )
+                }
+                else -> {
+                    setState {
+                        copy(backgroundChanging = false, errorMessage = result.getErrorMessage())
                     }
-                    else -> {
-                        setState {
-                            copy(backgroundChanging = false, errorMessage = result.getErrorMessage())
-                        }
-                        sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
-                    }
+                    sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
                 }
             }
         }

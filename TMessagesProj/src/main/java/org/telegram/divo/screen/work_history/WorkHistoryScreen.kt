@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,6 +19,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -51,6 +53,7 @@ import org.telegram.messenger.R
 @Composable
 fun WorkHistoryScreen(
     viewModel: WorkHistoryViewModel = viewModel(),
+    isOwnProfile: Boolean,
     onBack: () -> Unit = {},
     onCreateClicked: () -> Unit = {},
 ) {
@@ -64,6 +67,7 @@ fun WorkHistoryScreen(
     val state = viewModel.state.collectAsState().value
     WorkHistoryScreenView(
         state = state,
+        isOwnProfile = isOwnProfile,
         onIntent = {
             viewModel.setIntent(it)
         },
@@ -79,6 +83,7 @@ fun WorkHistoryScreen(
 private fun WorkHistoryScreenView(
     state: WorkHistoryViewModel.State = WorkHistoryViewModel.State(),
     onIntent: (WorkHistoryViewModel.Intent) -> Unit = {},
+    isOwnProfile: Boolean = false,
     onCreateClicked: () -> Unit = {},
     onBack: () -> Unit = {}
 
@@ -93,16 +98,17 @@ private fun WorkHistoryScreenView(
                 onCreate = {
                     onCreateClicked()
                 },
-                createEnabled = true//.isValid()
+                createEnabled = isOwnProfile
             )
         },
     ) { padding ->
 
-        if(state.experiences.isEmpty()){
+        if (state.experiences.isEmpty()){
             WorkHistoryEmpty(
-                onCreateClicked
+                isOwnProfile = isOwnProfile,
+                onCreateClicked = onCreateClicked
             )
-        }else{
+        } else {
             LazyColumn(
                 modifier = Modifier.padding(padding)
             ) {
@@ -125,16 +131,16 @@ private fun WorkHistoryScreenView(
 @Preview
 @Composable
 private fun WorkHistoryEmpty(
+    isOwnProfile: Boolean = false,
     onCreateClicked:()-> Unit ={}
 ) {
-    Column {
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-        )
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Image(
                 painterResource(R.drawable.divo_work_history_empty),
                 contentDescription = null,
@@ -145,26 +151,25 @@ private fun WorkHistoryEmpty(
                 modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
                 textAlign = TextAlign.Center
             )
-            Text(
-                text = "Click the button below\n" +
-                        "to add your work\nexperience",
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center
-            )
+            if (isOwnProfile) {
+                Text(
+                    text = "Click the button below\n" +
+                            "to add your work\nexperience",
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth().padding( 16.dp),
-            contentAlignment = Alignment.BottomCenter
-        ) {
+
+        if (isOwnProfile) {
             UIButton(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding( 16.dp),
                 text = "Add Work Experience",
                 onClick = {
                     onCreateClicked()
-                })
+                }
+            )
         }
     }
 }
@@ -341,7 +346,7 @@ private fun TopBar(
     onCreate: () -> Unit,
     createEnabled: Boolean
 ) {
-    TopAppBar(
+    CenterAlignedTopAppBar(
         title = {
             Text(
                 text = "WORK EXPERIENCE",
@@ -361,14 +366,16 @@ private fun TopBar(
                 fontSize = 16.sp)
         },
         actions = {
-            Text(
-                "Create",
-                color = if (createEnabled) Color(0xFFBF825E) else Color(0xFFB9B9B9),
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable(createEnabled) { onCreate() }
-                    .padding(8.dp),
-                fontSize = 16.sp)
+            if (createEnabled) {
+                Text(
+                    "Create",
+                    color = if (createEnabled) Color(0xFFBF825E) else Color(0xFFB9B9B9),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable(createEnabled) { onCreate() }
+                        .padding(8.dp),
+                    fontSize = 16.sp)
+            }
         }
     )
 }

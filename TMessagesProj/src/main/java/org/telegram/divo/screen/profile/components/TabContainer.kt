@@ -1,6 +1,7 @@
 package org.telegram.divo.screen.profile.components
 
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
@@ -19,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,13 +41,9 @@ fun TabContainer(
     modifier: Modifier = Modifier,
     lazyListState: LazyListState,
     pagerState: PagerState,
-    isOwnProfile: Boolean,
+    destinations: List<Destination>,
 ) {
     val coroutineScope = rememberCoroutineScope()
-
-    val destinations = Destination.entries.filter {
-        !(isOwnProfile && it == Destination.PLAYLISTS)
-    }
 
     val selectedDestination = pagerState.currentPage
     val flingBehavior = ScrollableDefaults.flingBehavior()
@@ -107,10 +105,15 @@ fun TabContainer(
                     modifier = Modifier.width(100.dp),
                     selected = selectedDestination == index,
                     icon = {
+                        val iconColor by animateColorAsState(
+                            if (selectedDestination == index) Color.White else Color.White.copy(0.5f)
+                        )
+
                         Icon(
                             imageVector = ImageVector.vectorResource(destination.iconResId),
                             modifier = Modifier.size(24.dp),
-                            contentDescription = destination.contentDescription
+                            contentDescription = destination.contentDescription,
+                            tint = iconColor
                         )
                     },
                     onClick = {
@@ -118,8 +121,6 @@ fun TabContainer(
                             pagerState.animateScrollToPage(index)
                         }
                     },
-                    unselectedContentColor = Color.LightGray,
-                    selectedContentColor = Color.White
                 )
             }
         }
@@ -128,13 +129,14 @@ fun TabContainer(
 
 enum class Destination(
     val route: String,
-    @DrawableRes
-    val iconResId: Int,
+    @DrawableRes val iconResId: Int,
     val contentDescription: String,
 ) {
     SONGS("songs", R.drawable.divo_profile_tab_1, "Songs"),
     ALBUM("album", R.drawable.divo_profile_tab_2, "Album"),
-    PLAYLISTS("playlist", R.drawable.divo_profile_tab_3, "Playlist")
+    PLAYLISTS("playlist", R.drawable.divo_profile_tab_3, "Playlist"),
+    AGENCY("agency", R.drawable.ic_divo_agency, "Agency"),
+    EVENT("event", R.drawable.ic_divo_event, "event")
 }
 
 @Preview
@@ -142,9 +144,9 @@ enum class Destination(
 private fun TabContainerPreview() {
     AppTheme {
         TabContainer(
-            isOwnProfile = false,
             lazyListState = rememberLazyListState(),
-            pagerState = rememberPagerState(0) { 3 }
+            pagerState = rememberPagerState(0) { 3 },
+            destinations = listOf(Destination.SONGS, Destination.ALBUM, Destination.PLAYLISTS)
         )
     }
 }

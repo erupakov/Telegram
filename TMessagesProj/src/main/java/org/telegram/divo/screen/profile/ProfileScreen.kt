@@ -2,14 +2,13 @@ package org.telegram.divo.screen.profile
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,8 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -56,9 +53,11 @@ import org.telegram.divo.common.uriToFile
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.TelegramPhotoBackground
 import org.telegram.divo.components.items.ProfileNameItem
+import org.telegram.divo.screen.profile.components.AgencyInfoSection
 import org.telegram.divo.screen.profile.components.BiographyAppearanceSection
 import org.telegram.divo.screen.profile.components.EngagementStatsBottomSheet
 import org.telegram.divo.screen.profile.components.EngagementStatsRow
+import org.telegram.divo.screen.profile.components.DivoColumnContent
 import org.telegram.divo.screen.profile.components.PortfolioGrid
 import org.telegram.divo.screen.profile.components.SocialLinksSection
 import org.telegram.divo.screen.profile.components.StatsType
@@ -74,7 +73,7 @@ fun ProfileScreen(
     onEditClicked: () -> Unit = {},
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
-    showWorkHistory: () -> Unit = {},
+    showWorkHistory: (Boolean) -> Unit = {},
     onGalleryClicked: (String, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
 ) {
@@ -126,7 +125,7 @@ fun ProfileScreen(
                 onEditLinksClicked()
             },
             onNavigateBack = onNavigateBack,
-            showWorkHistory = showWorkHistory,
+            showWorkHistory = { showWorkHistory(isOwnProfile) },
             onProfileClicked = onProfileClicked,
             onEditBackgroundClicked = {
                 viewModel.setIntent(ProfileIntent.OnBackgroundPhotoSelected(context.uriToFile(it)))
@@ -167,7 +166,7 @@ private fun ProfileScreenContent(
     onImageSelected: (Uri) -> Unit,
     onLoadMoreVideos: () -> Unit
 ) {
-    val pageCount = if (uiState.isOwnProfile) 2 else 3
+    val pageCount = uiState.pageCount
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val lazyListState = rememberLazyListState()
 
@@ -220,12 +219,10 @@ private fun ProfileScreenContent(
             .fillMaxSize()
             .pointerInput(Unit) { detectTapGestures { } }
     ) {
-        uiState.userInfo?.photoUrl?.let { url ->
-            TelegramPhotoBackground(
-                photo = url,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        TelegramPhotoBackground(
+            photo = uiState.userInfo.photoUrl,
+            modifier = Modifier.fillMaxSize()
+        )
 
         if (uiState.backgroundChanging) {
             Box(modifier = Modifier
@@ -251,7 +248,7 @@ private fun ProfileScreenContent(
                 onEditBackgroundClicked = {
                     openGallery()
                 },
-                onManageWorkExperienceClicked = {},
+                onManageWorkExperienceClicked = showWorkHistory,
                 onNavigateBack = onNavigateBack,
             )
 
@@ -282,6 +279,7 @@ private fun ProfileScreenContent(
                             )
                         }
 
+                        Log.d("Role", uiState.pageCount.toString())
                         item(key = "pager") {
                             HorizontalPager(
                                 state = pagerState,
@@ -319,7 +317,9 @@ private fun ProfileScreenContent(
                                             onVideoClicked = { onGalleryClicked(it, true) },
                                         )
                                     }
-                                    else -> EmptyGridPlaceholder()
+                                    2 -> if (uiState.isModel) DivoColumnContent("Vogue Inside") else DivoColumnContent("Model")
+                                    3 -> DivoColumnContent("Vogue Inside")
+                                    else -> DivoColumnContent("June 26 · 5:00 PM · \uD83C\uDDFA\uD83C\uDDF8 New York", isEvent = true)
                                 }
                             }
                         }
@@ -336,22 +336,11 @@ private fun ProfileScreenContent(
                         .zIndex(1f),
                     lazyListState = lazyListState,
                     pagerState = pagerState,
-                    isOwnProfile = uiState.isOwnProfile
+                    destinations = uiState.destinationTabs
                 )
             }
         }
     }
-}
-
-@Composable
-private fun EmptyGridPlaceholder() {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) { }
 }
 
 @Composable
@@ -369,7 +358,7 @@ private fun ProfileHeaderContent(
         modifier = modifier
     ) {
         ProfileNameItem(
-            modifier = Modifier.padding(top = 150.dp),
+            modifier = Modifier.padding(top = 140.dp),
             uiState
         )
 
@@ -394,6 +383,14 @@ private fun ProfileHeaderContent(
             onTabSelected = { selectedBioTab = it },
             uiState = uiState
         )
+
+        if (uiState.userInfo.model.agency.title.isNotEmpty()) {
+            AgencyInfoSection(
+                title = uiState.userInfo.model.agency.title,
+                photoUrl = uiState.userInfo.model.agency.photo.fullUrl,
+                onClicked = showWorkHistory
+            )
+        }
 
         SocialLinksSection(
             socialLinks = uiState.socialLinks,

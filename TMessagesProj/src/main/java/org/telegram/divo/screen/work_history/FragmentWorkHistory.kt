@@ -13,6 +13,7 @@ class FragmentWorkHistory : BaseFragment() {
         val composeView = ComposeView(context)
         composeView.setContent {
             WorkHistoryScreen(
+                isOwnProfile = false,
                 onBack = {
                     finishFragment()
                 },

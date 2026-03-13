@@ -10,12 +10,14 @@ import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyAddress
 import org.telegram.divo.entity.Appearance
+import org.telegram.divo.entity.City
 import org.telegram.divo.entity.Customer
 import org.telegram.divo.entity.EyeColor
 import org.telegram.divo.entity.Gender
 import org.telegram.divo.entity.HairColor
 import org.telegram.divo.entity.HairLength
 import org.telegram.divo.entity.Model
+import org.telegram.divo.entity.Photo
 import org.telegram.divo.entity.SkinColor
 import org.telegram.divo.entity.Statistic
 import org.telegram.divo.entity.UserInfo
@@ -27,27 +29,29 @@ class UserInfoResponse(
 
 class UserDataDto(
     @SerializedName("id") val id: Int,
-    @SerializedName("fullName") val fullName: String,
-    @SerializedName("gender") val gender: GenderDto,
-    @SerializedName("birthday") val birthday: String,
-    @SerializedName("city") val city: CityDto,
-    @SerializedName("email") val email: String,
-    @SerializedName("phone") val phone: String,
-    @SerializedName("photo") val photo: PhotoDto,
-    @SerializedName("avatar") val avatar: PhotoDto,
-    @SerializedName("role") val role: String,
+    @SerializedName("fullName") val fullName: String?,
+    @SerializedName("gender") val gender: GenderDto?,
+    @SerializedName("birthday") val birthday: String?,
+    @SerializedName("city") val city: CityDto?,
+    @SerializedName("email") val email: String?,
+    @SerializedName("phone") val phone: String?,
+    @SerializedName("photo") val photo: PhotoDto?,
+    @SerializedName("avatar") val avatar: PhotoDto?,
+    @SerializedName("role") val role: String?,
     @SerializedName("subrole") val subrole: String?,
-    @SerializedName("roleLabel") val roleLabel: String,
-    @SerializedName("measuringSystem") val measuringSystem: String,
+    @SerializedName("roleLabel") val roleLabel: String?,
+    @SerializedName("measuringSystem") val measuringSystem: String?,
     @SerializedName("pushNotifications") val pushNotifications: Boolean,
     @SerializedName("isRegistrationFinished") val isRegistrationFinished: Boolean,
-    @SerializedName("model") val model: ModelDto,
+    @SerializedName("model") val model: ModelDto?,
+    @SerializedName("agency") val agency: AgencyDto?,
     @SerializedName("statistic") val statistic: StatisticDto,
     @SerializedName("isFavorite") val isFavorite: Boolean,
     @SerializedName("isFollowed") val isFollowed: Boolean,
-    @SerializedName("userRatingStatus") val userRatingStatus: String,
+    @SerializedName("userRatingStatus") val userRatingStatus: String?,
     @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>,
     @SerializedName("customer") val customer: CustomerDto?,
+    @SerializedName("agencyEmployee") val agencyEmployee: AgencyEmployeeDto?,
 )
 
 class GenderDto(
@@ -74,10 +78,11 @@ class AgencyDto(
     @SerializedName("title") val title: String,
     @SerializedName("site") val site: String?,
     @SerializedName("email") val email: String?,
+    @SerializedName("socialNetworks") val socialNetworks: List<UserSocialNetworkDto>?,
     @SerializedName("description") val description: String?,
     @SerializedName("employeeTitle") val employeeTitle: String?,
     @SerializedName("address") val address: AgencyAddressDto?,
-    @SerializedName("photo") val photo: PhotoDto?
+    @SerializedName("photo") val photo: PhotoDto?,
 )
 
 class AgencyAddressDto(
@@ -102,6 +107,10 @@ class AppearanceDto(
     @SerializedName("hairLength") val hairLength: HairLengthDto,
     @SerializedName("eyeColor") val eyeColor: EyeColorDto,
     @SerializedName("skinColor") val skinColor: SkinColorDto
+)
+
+class AgencyEmployeeDto(
+    @SerializedName("role") val role: String
 )
 
 class HairColorDto(
@@ -140,35 +149,40 @@ data class CustomerDto(
 
 fun UserInfoResponse.toEntity(): UserInfo = data.toEntity()
 
-fun UserDataDto.toEntity(): UserInfo =
-    UserInfo(
+fun UserDataDto.toEntity(): UserInfo {
+    val source = photo ?: agency?.photo
+    val photoUrl = source?.fullUrl.orEmpty()
+    val photoUuid = source?.fileUuid.orEmpty()
+
+    return UserInfo(
         id = id,
-        fullName = fullName,
-        gender = gender.toEntity(),
-        birthday = birthday,
-        city = city.toEntity(),
-        email = email,
-        phone = phone,
-        photoUrl = photo.fullUrl,
-        photoUuid = photo.fileUuid,
-        avatarUrl = avatar.fullUrl,
-        avatarUuid = avatar.fileUuid,
-        role = role,
+        fullName = fullName.orEmpty(),
+        gender = gender?.toEntity() ?: Gender(),
+        birthday = birthday.orEmpty(),
+        city = city?.toEntity() ?: City(),
+        email = email.orEmpty(),
+        phone = phone.orEmpty(),
+        photoUrl = photoUrl,
+        photoUuid = photoUuid,
+        avatarUrl = avatar?.fullUrl.orEmpty(),
+        avatarUuid = avatar?.fileUuid.orEmpty(),
+        role = role.orEmpty(),
         subrole = subrole.orEmpty(),
-        roleLabel = roleLabel,
-        measuringSystem = measuringSystem,
+        roleLabel = roleLabel.orEmpty(),
+        measuringSystem = measuringSystem.orEmpty(),
         pushNotifications = pushNotifications,
         isRegistrationFinished = isRegistrationFinished,
-        model = model.toEntity(),
+        model = model?.toEntity() ?: Model(),
         customer = customer?.toEntity(),
 //        agency = agency,
 //        agencyEmployee = agencyEmployee,
         statistic = statistic.toEntity(),
         isFavorite = isFavorite,
         isFollowed = isFollowed,
-        userRatingStatus = userRatingStatus,
+        userRatingStatus = userRatingStatus.orEmpty(),
         userSocialNetworks = userSocialNetworks.toEntities()
     )
+}
 
 private fun GenderDto.toEntity(): Gender =
     Gender(
@@ -194,7 +208,7 @@ private fun StatisticDto.toEntity(): Statistic =
 
 private fun ModelDto.toEntity(): Model =
     Model(
-        agency = agency?.toEntity(),
+        agency = agency?.toEntity() ?: Agency(),
         education = education.orEmpty(),
         workExperience = workExperience.orEmpty(),
         languages = languages,
@@ -216,7 +230,7 @@ private fun AgencyDto.toEntity(): Agency =
         description = description.orEmpty(),
         employeeTitle = employeeTitle.orEmpty(),
         address = address?.toEntity(),
-        photo = photo?.toEntity()
+        photo = photo?.toEntity() ?: Photo()
     )
 
 private fun AgencyAddressDto.toEntity(): AgencyAddress =

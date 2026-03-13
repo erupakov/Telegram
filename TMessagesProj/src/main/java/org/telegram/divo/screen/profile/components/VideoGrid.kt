@@ -46,7 +46,6 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_SURFACE_VIEW
-import coil.compose.AsyncImage
 import coil.decode.VideoFrameDecoder
 import coil.request.ImageRequest
 import coil.request.videoFrameMillis
@@ -56,11 +55,12 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.entity.Publication
 
-private const val SURFACE_READY_DELAY_MS = 500L
+private const val SURFACE_READY_DELAY_MS = 300L
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(UnstableApi::class, FlowPreview::class)
@@ -170,7 +170,12 @@ fun VideoGrid(
             .distinctUntilChanged()
             .collect { scrolling ->
                 if (scrolling) {
-                    playerPool.forEach { it.pause() }
+                    playerPool.forEach {
+                        it.pause()
+                        it.clearMediaItems()
+                    }
+                    playingMap.clear()
+                    slotReady.clear()
                 }
             }
     }
@@ -241,7 +246,7 @@ fun VideoGrid(
         derivedStateOf {
             val info = gridState.layoutInfo
             val last = info.visibleItemsInfo.lastOrNull()?.index ?: return@derivedStateOf false
-            last >= currentItems.size - 3
+            last >= currentItems.size - 6
         }
     }
 
@@ -270,6 +275,10 @@ fun VideoGrid(
             val isReady by remember(index) {
                 derivedStateOf { slot?.let { slotReady[it] } == true }
             }
+            val displayMetrics = context.resources.displayMetrics
+            val cellSizePx = remember {
+                (displayMetrics.widthPixels / 3)
+            }
 
             val thumbRequest = remember(item.id) {
                 fileUrl?.let { url ->
@@ -279,7 +288,9 @@ fun VideoGrid(
                         .memoryCacheKey("thumb_$url")
                         .diskCacheKey("thumb_$url")
                         .videoFrameMillis(0L)
-                        .size(300)
+                        .size(cellSizePx, cellSizePx)
+                        .crossfade(false)
+                        .allowHardware(true)
                         .build()
                 }
             }
@@ -310,7 +321,13 @@ fun VideoGrid(
         }
 
         if (isOwnProfile) {
-            item(span = { GridItemSpan(maxLineSpan) }) {}
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                PortfolioAddButton(
+                    isUploading = false,
+                    isVideo = true,
+                    onMediaSelected = {}
+                )
+            }
         }
     }
 }
@@ -332,7 +349,7 @@ fun VideoThumbnailItem(
 
     Box(modifier = modifier.clip(RectangleShape)) {
         if (thumbRequest != null) {
-            AsyncImage(
+            DivoAsyncImage(
                 model = thumbRequest,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,

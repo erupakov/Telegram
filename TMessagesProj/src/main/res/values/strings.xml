@@ -6,7 +6,10 @@
 
     <!--profile screen-->
     <string name="SimilarProfiles">You may be interested in similar profiles</string>
-    <string name="UploadPhotos">Upload your photos</string>
+    <string name="UploadPhotos">Upload your photo</string>
+    <string name="UploadVideos">Upload your video</string>
+    <string name="UploadingPhotos">Upload your photo…</string>
+    <string name="UploadingVideos">Upload your video…</string>
     <string name="MyLinks">My Links</string>
     <string name="EditLinks">Edit Links</string>
     <string name="SendDM">Send DM</string>
@@ -19,6 +22,8 @@
     <string name="EditSocialLinks">Edit Social Links</string>
     <string name="ManageWorkExperience">Manage Work Experience</string>
     <string name="Profile">My Profile</string>
+    <string name="CurrentAgency">Current Agency</string>
+    <string name="SeeHistory">see history</string>
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>

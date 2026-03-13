@@ -35,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -43,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.formattedAge
 import org.telegram.divo.components.BackButton
 import org.telegram.divo.screen.profile.ProfileViewState
@@ -214,32 +212,37 @@ private fun TitleContent(
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = uiState.userInfo?.fullName.orEmpty(),
+            text = uiState.userInfo.fullName,
             color = Color.White,
             style = AppTheme.typography.helveticaNeueLtCom,
             fontSize = 14.sp,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Row {
-            uiState.userInfo?.let { userInfo ->
+            uiState.userInfo.let { userInfo ->
                 Text(
                     text = userInfo.roleLabel.lowercase(),
                     color = Color.White,
                     style = AppTheme.typography.helveticaNeueRegular,
                     fontSize = 10.sp,
                 )
-                Text(
-                    text = " · ${userInfo.birthday.formattedAge()} · ",
-                    style = AppTheme.typography.helveticaNeueRegular,
-                    color = AppTheme.colors.textColor,
-                    fontSize = 10.sp,
-                )
-                Text(
-                    text = userInfo.city.name,
-                    style = AppTheme.typography.helveticaNeueRegular,
-                    color = AppTheme.colors.textColor,
-                    fontSize = 10.sp,
-                )
+                if (userInfo.birthday.isNotEmpty()) {
+                    Text(
+                        text = " · ${userInfo.birthday.formattedAge()} · ",
+                        style = AppTheme.typography.helveticaNeueRegular,
+                        color = AppTheme.colors.textColor,
+                        fontSize = 10.sp,
+                    )
+                }
+
+                if (userInfo.city.name.isNotEmpty()) {
+                    Text(
+                        text = userInfo.city.name,
+                        style = AppTheme.typography.helveticaNeueRegular,
+                        color = AppTheme.colors.textColor,
+                        fontSize = 10.sp,
+                    )
+                }
             }
         }
     }

@@ -13,11 +13,15 @@ import androidx.navigation.navArgument
 import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
+import org.telegram.divo.screen.profile_social_links.ProfileSocialLinksScreen
+import org.telegram.divo.screen.work_create_edit.CreateWorkHistoryScreen
+import org.telegram.divo.screen.work_history.WorkHistoryScreen
 
 sealed class ProfileRoute(val route: String) {
     data object Edit : ProfileRoute("profile_edit")
     data object EditLinks : ProfileRoute("profile_edit_links")
     data object WorkHistory : ProfileRoute("profile_work_history")
+    data object CreateWorkHistory : ProfileRoute("create_work_history")
 
     data object Profile : ProfileRoute("profile/{userId}") {
         const val ROUTE = "profile/{userId}"
@@ -95,9 +99,27 @@ fun ProfileNavGraph(
             )
         }
 
-        composable(ProfileRoute.EditLinks.route) { }
+        composable(ProfileRoute.EditLinks.route) {
+            ProfileSocialLinksScreen(
+                onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
 
-        composable(ProfileRoute.WorkHistory.route) { }
+        composable(ProfileRoute.WorkHistory.route) {
+            WorkHistoryScreen(
+                isOwnProfile = isOwnProfile,
+                onCreateClicked = {
+                    nav.navigate(ProfileRoute.CreateWorkHistory.route)
+                },
+                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
+
+        composable(ProfileRoute.CreateWorkHistory.route) {
+            CreateWorkHistoryScreen(
+                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
 
         composable(
             route = ProfileRoute.Gallery.ROUTE,

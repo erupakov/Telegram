@@ -31,7 +31,7 @@ data class Gender(
     val title: String = ""
 )
 data class Model(
-    val agency: Agency? = Agency(),
+    val agency: Agency = Agency(),
     val education: String = "",
     val workExperience: String = "",
     val languages: String = "",
@@ -51,7 +51,7 @@ data class Agency(
     val description: String = "",
     val employeeTitle: String = "",
     val address: AgencyAddress? = AgencyAddress(),
-    val photo: Photo? = Photo()
+    val photo: Photo = Photo()
 )
 
 data class AgencyAddress(

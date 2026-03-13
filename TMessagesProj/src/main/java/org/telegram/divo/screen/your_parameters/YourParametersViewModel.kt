@@ -18,7 +18,10 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
         when (intent) {
             is YourParametersIntent.OnGenderChanged -> setState {
                 val gender = Gender(id = intent.gender.lowercase(), title = intent.gender)
-                copy(userFull = userFull.copy(gender = gender))
+                copy(
+                    userFull = userFull.copy(gender = gender),
+                    touchedFields = touchedFields + ParameterField.GENDER
+                )
             }
             is YourParametersIntent.OnAgeChanged -> setState {
                 copy(userFull = userFull.copy(birthday = intent.age.toDateString()))
@@ -27,11 +30,49 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
             is YourParametersIntent.OnWaistChanged -> updateAppearance { copy(waist = intent.waist) }
             is YourParametersIntent.OnHipsChanged -> updateAppearance { copy(hips = intent.hips) }
             is YourParametersIntent.OnShoeSizeChanged -> updateAppearance { copy(shoesSize = intent.shoeSize) }
-            is YourParametersIntent.OnHairLengthChanged -> updateAppearance { copy(hairLength = hairLength.copy(id = intent.hairLength, title = intent.title)) }
-            is YourParametersIntent.OnHairColorChanged -> updateAppearance { copy(hairColor = hairColor.copy(id = intent.color, title = intent.title)) }
-            is YourParametersIntent.OnEyeColorChanged -> updateAppearance { copy(eyeColor = eyeColor.copy(id = intent.color, title = intent.title)) }
-            is YourParametersIntent.OnSkinColorChanged -> updateAppearance { copy(skinColor = skinColor.copy(id = intent.color, title = intent.title)) }
-            is YourParametersIntent.OnBreastSizeChanged -> updateAppearance { copy(breastSize = intent.size) }
+            is YourParametersIntent.OnHairLengthChanged -> setState {
+                val appearance = userFull.model.appearance.copy(
+                    hairLength = userFull.model.appearance.hairLength.copy(id = intent.hairLength, title = intent.title)
+                )
+                copy(
+                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    touchedFields = touchedFields + ParameterField.HAIR_LENGTH
+                )
+            }
+            is YourParametersIntent.OnHairColorChanged -> setState {
+                val appearance = userFull.model.appearance.copy(
+                    hairColor = userFull.model.appearance.hairColor.copy(id = intent.color, title = intent.title)
+                )
+                copy(
+                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    touchedFields = touchedFields + ParameterField.HAIR_COLOR
+                )
+            }
+            is YourParametersIntent.OnEyeColorChanged -> setState {
+                val appearance = userFull.model.appearance.copy(
+                    eyeColor = userFull.model.appearance.eyeColor.copy(id = intent.color, title = intent.title)
+                )
+                copy(
+                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    touchedFields = touchedFields + ParameterField.EYE_COLOR
+                )
+            }
+            is YourParametersIntent.OnSkinColorChanged -> setState {
+                val appearance = userFull.model.appearance.copy(
+                    skinColor = userFull.model.appearance.skinColor.copy(id = intent.color, title = intent.title)
+                )
+                copy(
+                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    touchedFields = touchedFields + ParameterField.SKIN_COLOR
+                )
+            }
+            is YourParametersIntent.OnBreastSizeChanged -> setState {
+                val appearance = userFull.model.appearance.copy(breastSize = intent.size)
+                copy(
+                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    touchedFields = touchedFields + ParameterField.BREAST_SIZE
+                )
+            }
             is YourParametersIntent.OnBackClicked -> sendEffect(YourParametersEffect.NavigateBack)
             is YourParametersIntent.OnSaveClicked -> updateProfile()
             is YourParametersIntent.OnLoad -> loadUserProfile()
