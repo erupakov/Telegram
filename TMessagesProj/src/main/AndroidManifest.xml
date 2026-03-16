@@ -99,7 +99,7 @@
         android:allowBackup="true"
         android:restoreAnyVersion="true"
         android:backupAgent=".BackupAgent"
-        android:hardwareAccelerated="@bool/useHardwareAcceleration"
+        android:hardwareAccelerated="true"
         android:largeHeap="true"
         android:theme="@style/Theme.TMessages.Start"
         android:manageSpaceActivity="org.telegram.ui.ExternalActionActivity"
@@ -210,8 +210,9 @@
         <activity
             android:name="org.telegram.ui.LaunchActivity"
             android:theme="@style/Theme.TMessages.Start"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-            android:hardwareAccelerated="@bool/useHardwareAcceleration"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode|smallestScreenSize|screenLayout"
+            android:supportsPictureInPicture="true"
+            android:hardwareAccelerated="true"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:exported="true">
@@ -251,7 +252,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.chatengine.messenger.android.profile"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.messenger.android.profile"/>
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -295,14 +296,14 @@
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.chatengine.messenger.android.call"/>
-                <data android:mimeType="vnd.android.cursor.item/vnd.org.chatengine.messenger.android.call.video"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.messenger.android.call"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.org.telegram.messenger.android.call.video"/>
             </intent-filter>
         </activity-alias>
         <activity
             android:name="org.telegram.ui.BubbleActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-            android:hardwareAccelerated="@bool/useHardwareAcceleration"
+            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize"
             android:allowEmbedded="true"
             android:documentLaunchMode="always"
@@ -310,7 +311,7 @@
         <activity
             android:name="org.telegram.ui.ShareActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-            android:hardwareAccelerated="@bool/useHardwareAcceleration"
+            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustPan"
             android:excludeFromRecents="true"
             android:stateNotNeeded="true"
@@ -326,7 +327,7 @@
         <activity
             android:name="org.telegram.ui.ExternalActionActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-            android:hardwareAccelerated="@bool/useHardwareAcceleration"
+            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">
@@ -337,7 +338,7 @@
         <activity
             android:name="org.telegram.ui.ChatsWidgetConfigActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-            android:hardwareAccelerated="@bool/useHardwareAcceleration"
+            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">
@@ -347,7 +348,7 @@
         <activity
             android:name="org.telegram.ui.ContactsWidgetConfigActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"
-            android:hardwareAccelerated="@bool/useHardwareAcceleration"
+            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
             <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">
@@ -357,7 +358,7 @@
 <!--        <activity-->
 <!--            android:name="org.telegram.ui.FeedWidgetConfigActivity"-->
 <!--            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode"-->
-<!--            android:hardwareAccelerated="@bool/useHardwareAcceleration"-->
+<!--            android:hardwareAccelerated="true"-->
 <!--            android:windowSoftInputMode="adjustPan">-->
 <!--            <intent-filter android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round">-->
 <!--                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>-->
