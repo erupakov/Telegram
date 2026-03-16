@@ -1,8 +1,11 @@
 package org.telegram.divo.dal.repository
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -23,17 +26,21 @@ import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.AgencyModels
 import org.telegram.divo.entity.UploadedFile
 import org.telegram.divo.entity.UserGalleryItem
+import org.telegram.divo.entity.UserGalleryList
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.entity.UserSocialNetwork
 import java.io.File
 import java.util.TimeZone
 
+private const val MAX_CACHED_USERS = 5
+
 class UserRepository(
     private val service: UserService
 ) {
-
     private val _currentUserCache = MutableStateFlow<UserInfo?>(null)
     val currentUserFlow: StateFlow<UserInfo?> = _currentUserCache.asStateFlow()
+
+    private val _galleryCache = MutableStateFlow<Map<Int, UserGalleryList>>(emptyMap())
 
     suspend fun getCurrentUserInfo(forceRefresh: Boolean = false): DivoResult<UserInfo> = resultOf {
         if (!forceRefresh) {
@@ -71,20 +78,6 @@ class UserRepository(
             .also { _currentUserCache.value = it }
     }
 
-    suspend fun getUserGalleryList(
-        userId: Int,
-        offset: Int = 0,
-        limit: Int = 10,
-    ): DivoResult<List<UserGalleryItem>> = resultOf {
-        service.getUserGalleryList(
-            request = UserGalleryListRequest(
-                userId = userId,
-                offset = offset,
-                limit = limit
-            )
-        ).toEntities()
-    }
-
     suspend fun getAgencyModels(
         agencyId: Int = 1,
         offset: Int = 0,
@@ -96,19 +89,56 @@ class UserRepository(
         ).toEntities()
     }
 
-    suspend fun uploadPhoto(file: File): DivoResult<UploadedFile> = resultOf {
-        service.uploadFile(file.toMultipart()).toEntity()
-    }
-
-    suspend fun addToGallery(uuid: String): DivoResult<UserGalleryItem> = resultOf {
-        service.addToGallery(AddGalleryRequest(uuid)).data.toEntity()
-    }
-
     suspend fun upsertSocialNetwork(socialNetworkId: Int, nickname: String): DivoResult<Unit> = resultOf {
         service.upsertSocialNetwork(
             UpsertSocialNetworkRequest(socialNetworkId, nickname)
         )
         _currentUserCache.value = service.getCurrentUserInfo().toEntity()
+    }
+
+    fun galleryFlow(userId: Int): Flow<UserGalleryList?> =
+        _galleryCache.map { it[userId] }
+
+    fun getGalleryCache(userId: Int): UserGalleryList? =
+        _galleryCache.value[userId]
+
+    suspend fun getUserGalleryList(
+        userId: Int,
+        offset: Int,
+        limit: Int,
+    ): DivoResult<UserGalleryList> = resultOf {
+        if (offset == 0) {
+            _galleryCache.value[userId]?.let { return@resultOf it }
+        }
+
+        service.getUserGalleryList(
+            request = UserGalleryListRequest(
+                userId = userId,
+                offset = offset,
+                limit = limit
+            )
+        ).toEntities().also { newPage ->
+            updateGalleryCache(userId, newPage, offset)
+        }
+    }
+
+    suspend fun addToGallery(uuid: String): DivoResult<UserGalleryItem> = resultOf {
+        service.addToGallery(AddGalleryRequest(uuid)).data.toEntity().also { newItem ->
+            _currentUserCache.value?.id?.let { userId ->
+                _galleryCache.update { cache ->
+                    val existing = cache[userId]
+                    if (existing != null) {
+                        cache + (userId to existing.copy(
+                            items = listOf(newItem) + existing.items
+                        ))
+                    } else cache
+                }
+            }
+        }
+    }
+
+    suspend fun uploadPhoto(file: File): DivoResult<UploadedFile> = resultOf {
+        service.uploadFile(file.toMultipart()).toEntity()
     }
 
     suspend fun getUserSocialNetworks(): DivoResult<List<UserSocialNetwork>> = resultOf {
@@ -122,6 +152,29 @@ class UserRepository(
             filename = name,
             body = requestBody
         )
+    }
+
+    private fun updateGalleryCache(userId: Int, newPage: UserGalleryList, offset: Int) {
+        _galleryCache.update { cache ->
+            val existing = cache[userId]
+
+            val merged = if (existing == null || offset == 0) {
+                newPage
+            } else {
+                existing.copy(
+                    items = (existing.items + newPage.items).distinctBy { it.id },
+                    pagination = newPage.pagination
+                )
+            }
+
+            val updated = cache + (userId to merged)
+
+            if (updated.size > MAX_CACHED_USERS) {
+                updated.entries.drop(1).associate { it.key to it.value }
+            } else {
+                updated
+            }
+        }
     }
 }
 

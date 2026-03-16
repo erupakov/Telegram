@@ -1,11 +1,12 @@
 package org.telegram.divo.screen.edit_my_profile
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,10 +18,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalRippleConfiguration
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
@@ -42,18 +43,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.exoplayer2.util.Log
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.uriToFile
 import org.telegram.divo.components.BackButton
@@ -85,7 +84,8 @@ fun EditMyProfileScreen(
 //    LaunchedEffect(messageStorage) {
 //        viewModel.setMessageStorage(messageStorage)
 //    }
-
+    val context = LocalContext.current
+    val parametersSavedText = stringResource(R.string.ParametersSaved)
     // Refresh data when screen becomes visible
     LifecycleResumeEffect(Unit) {
         viewModel.getData()
@@ -95,7 +95,11 @@ fun EditMyProfileScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { action ->
             when (action) {
-                EditMyProfileViewModel.Effect.NavigateBack -> onCloseScreen()
+                Effect.NavigateBack -> onCloseScreen()
+                Effect.SaveSuccess -> {
+                    Toast.makeText(context, parametersSavedText, Toast.LENGTH_SHORT).show()
+                    onCloseScreen()
+                }
             }
         }
     }
@@ -168,8 +172,12 @@ fun EditMyProfileScreen(
                                 }
                             },
                             text = {
+                                val tabText = when (destination) {
+                                    ProfileDestination.BIOGRAPHY -> stringResource(R.string.TabBiography)
+                                    ProfileDestination.APPEARANCE -> stringResource(R.string.TabAppearance)
+                                }
                                 Text(
-                                    text = destination.name,
+                                    text = tabText,
                                     color = Color.White,
                                     fontSize = 10.sp,
                                     style = AppTheme.typography.helveticaNeueLtCom
@@ -190,14 +198,11 @@ fun EditMyProfileScreen(
                     EditMyProfileScreenView(
                         uiState,
                         onIntent = { viewModel.setIntent(it) },
-                        onCloseScreen = onCloseScreen,
                     )
                 } else {
                     YourParametersScreen(
                         showTitle = false,
-                        onSaved = {
-
-                        }
+                        onSaved = onCloseScreen
                     )
                 }
             }
@@ -208,9 +213,8 @@ fun EditMyProfileScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditMyProfileScreenView(
-    uiState: EditMyProfileViewModel.EventListViewState,
-    onIntent: (EditMyProfileViewModel.EditMyProfileIntent) -> Unit = {},
-    onCloseScreen: () -> Unit = {},
+    uiState: EventListViewState,
+    onIntent: (EditMyProfileIntent) -> Unit = {},
 ) {
     var fName by rememberSaveable { mutableStateOf(uiState.fName) }
     var lName by rememberSaveable { mutableStateOf(uiState.lName) }
@@ -229,104 +233,113 @@ fun EditMyProfileScreenView(
         bio = uiState.bio
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
+    if (uiState.isLoading) {
+        EditMyProfileLoadingContent()
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-        key(uiState.avatarUrl, selectedAvatarUri) {
-            Spacer(Modifier.height(16.dp))
+            key(uiState.avatarUrl, selectedAvatarUri) {
+                Spacer(Modifier.height(16.dp))
 
-            TelegramUserAvatarEditable(
-                avatarUrl = uiState.avatarUrl,
-                localUri = selectedAvatarUri,
-                onEditClick = { openGallery() }
-            )
-        }
-
-        DivoTextField(
-            modifier = Modifier.padding(top = 24.dp),
-            value = fName,
-            onValueChange = { fName = it },
-            placeholder = "First name",
-            backgroundColor = Color.White.copy(0.05f),
-            borderColor = Color.White.copy(0.40f),
-            cornerRadius = 10.dp,
-            placeholderColor = Color.White.copy(0.50f),
-            cursorColor = Color.White,
-            textStyle = AppTheme.typography.helveticaNeueRegular.copy(
-                fontSize = 16.sp,
-                color = Color.White
-            ),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp)
-        )
-
-        DivoTextField(
-            modifier = Modifier.padding(top = 12.dp),
-            value = lName,
-            onValueChange = { lName = it },
-            placeholder = "Last name",
-            backgroundColor = Color.White.copy(0.05f),
-            borderColor = Color.White.copy(0.40f),
-            cornerRadius = 10.dp,
-            placeholderColor = Color.White.copy(0.50f),
-            cursorColor = Color.White,
-            textStyle = AppTheme.typography.helveticaNeueRegular.copy(
-                fontSize = 16.sp,
-                color = Color.White
-            ),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp)
-        )
-
-        DivoTextField(
-            modifier = Modifier.padding(top = 12.dp),
-            value = bio,
-            onValueChange = { bio = it },
-            placeholder = "France's Top Model...",
-            innerLabel = "Biography",
-            innerLabelColor = Color.White.copy(0.50f),
-            backgroundColor = Color.White.copy(0.05f),
-            borderColor = Color.White.copy(0.40f),
-            cornerRadius = 10.dp,
-            placeholderColor = Color.White.copy(0.50f),
-            cursorColor = Color.White,
-            minLines = 5,
-            maxLines = 5,
-            textStyle = AppTheme.typography.helveticaNeueRegular.copy(
-                fontSize = 16.sp,
-                color = Color.White
-            ),
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp)
-        )
-
-        Spacer(modifier = Modifier.size(16.dp))
-
-        if (uiState.isLoading) {
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                LottieProgressIndicator(
-                    modifier = Modifier.size(32.dp).align(Alignment.Center),
+                TelegramUserAvatarEditable(
+                    avatarUrl = uiState.avatarUrl,
+                    localUri = selectedAvatarUri,
+                    onEditClick = { openGallery() }
                 )
             }
-        } else {
-            UIButton(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                text = "Save",
-                onClick = {
-                    onIntent(
-                        EditMyProfileViewModel.EditMyProfileIntent.OnSaveClicked(
-                            fName = fName,
-                            lName = lName,
-                            bio = bio,
-                            file = selectedAvatarUri?.let { context.uriToFile(it) }
-                        )
+
+            DivoTextField(
+                modifier = Modifier.padding(top = 24.dp),
+                value = fName,
+                onValueChange = { fName = it },
+                placeholder = stringResource(R.string.FirstNameEditProfileScreen),
+                backgroundColor = Color.White.copy(0.05f),
+                borderColor = Color.White.copy(0.40f),
+                cornerRadius = 10.dp,
+                placeholderColor = Color.White.copy(0.50f),
+                cursorColor = Color.White,
+                textStyle = AppTheme.typography.helveticaNeueRegular.copy(
+                    fontSize = 16.sp,
+                    color = Color.White
+                ),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp)
+            )
+
+            DivoTextField(
+                modifier = Modifier.padding(top = 12.dp),
+                value = lName,
+                onValueChange = { lName = it },
+                placeholder = stringResource(R.string.LastNameEditProfileScreen),
+                backgroundColor = Color.White.copy(0.05f),
+                borderColor = Color.White.copy(0.40f),
+                cornerRadius = 10.dp,
+                placeholderColor = Color.White.copy(0.50f),
+                cursorColor = Color.White,
+                textStyle = AppTheme.typography.helveticaNeueRegular.copy(
+                    fontSize = 16.sp,
+                    color = Color.White
+                ),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp)
+            )
+
+            DivoTextField(
+                modifier = Modifier.padding(top = 12.dp),
+                value = bio,
+                onValueChange = { bio = it },
+                placeholder = stringResource(R.string.BiographyPlaceholder),
+                innerLabel = stringResource(R.string.Biography),
+                innerLabelColor = Color.White.copy(0.50f),
+                backgroundColor = Color.White.copy(0.05f),
+                borderColor = Color.White.copy(0.40f),
+                cornerRadius = 10.dp,
+                placeholderColor = Color.White.copy(0.50f),
+                cursorColor = Color.White,
+                minLines = 5,
+                maxLines = 5,
+                textStyle = AppTheme.typography.helveticaNeueRegular.copy(
+                    fontSize = 16.sp,
+                    color = Color.White
+                ),
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp)
+            )
+
+            Spacer(modifier = Modifier.size(16.dp))
+
+            if (uiState.isSaved) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(AppTheme.colors.buttonColor),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LottieProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = Color.White
                     )
-                })
+                }
+            } else {
+                UIButton(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    text = stringResource(R.string.SaveEditProfileScreen),
+                    onClick = {
+                        onIntent(
+                            EditMyProfileIntent.OnSaveClicked(
+                                fName = fName,
+                                lName = lName,
+                                bio = bio,
+                                file = selectedAvatarUri?.let { context.uriToFile(it) }
+                            )
+                        )
+                    })
+            }
         }
     }
 }

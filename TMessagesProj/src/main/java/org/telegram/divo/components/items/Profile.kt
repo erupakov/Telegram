@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -20,8 +19,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -42,9 +39,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -310,7 +304,7 @@ fun ProfileNameItem(
                 modifier  = Modifier
                     .size(68.dp)
                     .clip(CircleShape),
-                photoUrl = uiState.userInfo?.avatarUrl,
+                photoUrl = uiState.userInfo.avatarUrl,
                 68
             )
 
@@ -333,7 +327,7 @@ fun ProfileNameItem(
 
             Box(modifier = Modifier.padding(end = 16.dp)) {
                 Text(
-                    text = uiState.userInfo?.fullName?.uppercase().orEmpty(),
+                    text = uiState.userInfo.fullName.uppercase(),
                     style = AppTheme.typography.helveticaNeueLtCom,
                     color = AppTheme.colors.textColor,
                     fontSize = 34.sp,
@@ -364,11 +358,11 @@ fun ProfileNameItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                val age = uiState.userInfo?.birthday
-                val city = uiState.userInfo?.city
-                RoleChip(uiState.userInfo?.roleLabel?.lowercase().orEmpty())
+                val age = uiState.userInfo.birthday
+                val city = uiState.userInfo.city
+                RoleChip(uiState.userInfo.roleLabel.lowercase())
                 Spacer(modifier = Modifier.width(10.dp))
-                if (age != null) {
+                if (age.isNotEmpty()) {
                     Text(
                         text = "${age.formattedAge()} · ",
                         style = AppTheme.typography.helveticaNeueRegular,
@@ -376,7 +370,7 @@ fun ProfileNameItem(
                         color = AppTheme.colors.textColor,
                     )
                 }
-                if (city != null) {
+                if (city.name.isNotEmpty() && city.countryCode.isNotEmpty()) {
                     Text(
                         text = uiState.userInfo.city.countryCode.toCountryFlagEmoji()
                     )

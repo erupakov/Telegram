@@ -1,20 +1,15 @@
 package org.telegram.divo.components
 
 import android.net.Uri
-import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -52,7 +47,7 @@ fun TelegramUserAvatar(
 ) {
     DivoAsyncImage(
         modifier = modifier.size(sizeDp.dp),
-        url = photoUrl,
+        model = photoUrl,
     )
 }
 
@@ -154,13 +149,20 @@ fun TelegramPhotoBackground(
     ) {
 
         DivoAsyncImage(
-            url = photo,
+            model = photo,
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
             alignment = Alignment.TopCenter,
             modifier = Modifier
                 .matchParentSize()
-                .hazeSource(state = hazeState)
+                .hazeSource(state = hazeState),
+            loadingContent = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                )
+            }
         )
 
         Box(
@@ -221,8 +223,7 @@ fun TelegramUserAvatarEditable(
                     DivoAsyncImage(
                         modifier = Modifier
                             .size(100.dp),
-                        url = avatarUrl,
-                        localUri = localUri,
+                        model = localUri ?: avatarUrl,
                         placeholderColor = Color.Transparent,
                         loadingContent = {
                             Box(

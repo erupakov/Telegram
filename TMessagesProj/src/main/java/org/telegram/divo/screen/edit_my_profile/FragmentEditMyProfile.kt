@@ -66,7 +66,7 @@ class FragmentEditMyProfile : BaseFragment(), ImageUpdater.ImageUpdaterDelegate 
         emojiMarkup: TLRPC.VideoSize?
     ) {
         viewModel.setIntent(
-            EditMyProfileViewModel.EditMyProfileIntent.OnAvatarUploaded(
+            EditMyProfileIntent.OnAvatarUploaded(
                 photo,
                 video,
                 videoStartTimestamp,

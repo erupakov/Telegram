@@ -33,10 +33,11 @@ import org.telegram.messenger.R
 fun PortfolioAddButton(
     modifier: Modifier = Modifier,
     isUploading: Boolean,
-    onImageSelected: (Uri) -> Unit,
+    isVideo: Boolean = false,
+    onMediaSelected: (Uri) -> Unit,
 ) {
-    val openGallery = rememberGalleryLauncher { uri ->
-        onImageSelected(uri)
+    val openGallery = rememberGalleryLauncher(isVideo) { uri ->
+        onMediaSelected(uri)
     }
 
     Box(
@@ -62,7 +63,7 @@ fun PortfolioAddButton(
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
-                    text = "Uploading Photos...",
+                    text = if (isVideo) stringResource(R.string.UploadingVideos) else stringResource(R.string.UploadingPhotos),
                     style = AppTheme.typography.helveticaNeueRegular,
                     fontSize = 10.sp,
                     color = Color.White
@@ -74,7 +75,7 @@ fun PortfolioAddButton(
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
-                    text = stringResource(R.string.UploadPhotos),
+                    text = if (isVideo) stringResource(R.string.UploadVideos) else stringResource(R.string.UploadPhotos),
                     style = AppTheme.typography.helveticaNeueRegular,
                     fontSize = 10.sp,
                     color = Color.White

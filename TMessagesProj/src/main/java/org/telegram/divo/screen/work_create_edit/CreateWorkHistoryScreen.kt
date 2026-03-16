@@ -48,7 +48,7 @@ fun CreateWorkHistoryScreen(
         viewModel.effect.collect {
             when (it) {
                 CreateWorkHistoryViewModel.Effect.NavigateBack -> {
-                    // onBack()
+                    onBack()
                 }
 
                 else -> {}

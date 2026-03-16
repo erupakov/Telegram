@@ -11,16 +11,10 @@ import org.telegram.divo.common.ViewState
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.entity.UserSocialNetwork
-import org.telegram.divo.screen.profile.SocialLinks
-import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.FileLog
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.MessagesStorage
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.UserConfig
-import org.telegram.tgnet.ConnectionsManager
-import org.telegram.tgnet.RequestDelegate
-import org.telegram.tgnet.TLObject
 import org.telegram.tgnet.TLRPC
 
 class ProfileSocialLinksViewModel :
@@ -35,6 +29,7 @@ class ProfileSocialLinksViewModel :
         val tiktokUser: String = "",
         val youtubePath: String = "",
         val website: String = "",
+        val isUploading: Boolean = false,
         val isLoading: Boolean = false,
         val errorMessage: String? = null,
     ) : ViewState
@@ -166,7 +161,7 @@ class ProfileSocialLinksViewModel :
 
         setState {
             copy(
-                isLoading = false,
+                isUploading = false,
                 instagramUser = instagram,
                 tiktokUser = tiktok,
                 youtubePath = youtube,
@@ -200,7 +195,7 @@ class ProfileSocialLinksViewModel :
     //TODO временно
     fun updateLinks(socialLinks: List<UserSocialNetwork>) {
         viewModelScope.launch {
-            setState { copy(isLoading = true, errorMessage = null) }
+            setState { copy(isUploading = true, errorMessage = null) }
 
             val results = socialLinks.map { link ->
                 async {
@@ -216,12 +211,12 @@ class ProfileSocialLinksViewModel :
             if (hasError) {
                 setState {
                     copy(
-                        isLoading = false,
+                        isUploading = false,
                         errorMessage = "Не удалось обновить некоторые соцсети"
                     )
                 }
             } else {
-                setState { copy(isLoading = false) }
+                setState { copy(isUploading = false) }
             }
         }
     }

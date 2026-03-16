@@ -21,7 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +37,7 @@ private fun ButtonPreview() {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         UIButtonSmall()
         UIButton()
+        UIButtonNew()
     }
 }
 
@@ -82,8 +85,40 @@ fun UIButton(
         )
     ) {
         Text(
+            modifier = Modifier.padding(top = 1.dp),
             text = text,
             style = AppTheme.typography.textButton,
+            color = AppTheme.colors.buttonTextColor,
+            fontFamily = DivoFont.HelveticaNeueLtCom77,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Preview
+@Composable
+fun UIButtonNew(
+    modifier: Modifier = Modifier,
+    text: String = "Save",
+    textStyle: TextStyle = AppTheme.typography.textButton,
+    shape: Shape = RoundedCornerShape(99.dp),
+    enabled: Boolean = true,
+    onClick: () -> Unit = {},
+) {
+    Button(
+        enabled = enabled,
+        modifier = modifier
+            .height(56.dp),
+        onClick = onClick,
+        shape = shape,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = AppTheme.colors.buttonColor
+        ),
+    ) {
+        Text(
+            modifier = Modifier.padding(top = 2.dp),
+            text = text,
+            style = textStyle,
             color = AppTheme.colors.buttonTextColor,
             fontFamily = DivoFont.HelveticaNeueLtCom77,
             fontWeight = FontWeight.Bold

@@ -226,7 +226,7 @@ private fun StatsDetailRow(
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape),
-            url = avatarUrl
+            model = avatarUrl
         )
         Spacer(modifier = Modifier.width(10.dp))
         Column {

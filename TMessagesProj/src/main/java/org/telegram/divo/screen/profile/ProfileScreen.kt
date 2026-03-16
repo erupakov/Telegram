@@ -2,14 +2,13 @@ package org.telegram.divo.screen.profile
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,12 +18,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -51,21 +47,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.common.LaunchedEffectOnce
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.uriToFile
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.TelegramPhotoBackground
 import org.telegram.divo.components.items.ProfileNameItem
+import org.telegram.divo.screen.profile.components.AgencyInfoSection
 import org.telegram.divo.screen.profile.components.BiographyAppearanceSection
 import org.telegram.divo.screen.profile.components.EngagementStatsBottomSheet
 import org.telegram.divo.screen.profile.components.EngagementStatsRow
+import org.telegram.divo.screen.profile.components.DivoColumnContent
 import org.telegram.divo.screen.profile.components.PortfolioGrid
 import org.telegram.divo.screen.profile.components.SocialLinksSection
 import org.telegram.divo.screen.profile.components.StatsType
 import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBar
+import org.telegram.divo.screen.profile.components.VideoGrid
 
 @Composable
 fun ProfileScreen(
@@ -75,8 +73,8 @@ fun ProfileScreen(
     onEditClicked: () -> Unit = {},
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
-    showWorkHistory: () -> Unit = {},
-    onPhotoClicked: (String) -> Unit = {},
+    showWorkHistory: (Boolean) -> Unit = {},
+    onGalleryClicked: (String, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
 ) {
     val context = LocalContext.current
@@ -112,7 +110,9 @@ fun ProfileScreen(
             contentAlignment = Alignment.Center
         ) {
             LottieProgressIndicator(
-                modifier = Modifier.size(32.dp).align(Alignment.Center),
+                modifier = Modifier
+                    .size(32.dp)
+                    .align(Alignment.Center),
             )
         }
     } else {
@@ -125,21 +125,22 @@ fun ProfileScreen(
                 onEditLinksClicked()
             },
             onNavigateBack = onNavigateBack,
-            showWorkHistory = showWorkHistory,
+            showWorkHistory = { showWorkHistory(isOwnProfile) },
             onProfileClicked = onProfileClicked,
             onEditBackgroundClicked = {
-                Log.d("MyTag", "$it")
                 viewModel.setIntent(ProfileIntent.OnBackgroundPhotoSelected(context.uriToFile(it)))
             },
-            onPhotoClicked = onPhotoClicked,
+            onGalleryClicked = { url, isVideo -> onGalleryClicked(url, isVideo) },
             onSocialLinkClicked = { url ->  }, //viewModel.openSocialLink(url)
             onStatsClicked = { viewModel.setIntent(ProfileIntent.OnLoadEngagementStats(it)) },
             onLoadMore = { viewModel.setIntent(ProfileIntent.OnLoadMoreEngagementStats(it)) },
             onQueryChanged = { viewModel.setIntent(ProfileIntent.OnSearchQueryChanged(it)) },
             onLoadMoreSearch = { viewModel.setIntent(ProfileIntent.OnLoadMoreSearchResults) },
+            onLoadMoreImages = { viewModel.setIntent(ProfileIntent.OnLoadMorePortfolio) },
             onImageSelected = {
                 viewModel.setIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(it)))
-            }
+            },
+            onLoadMoreVideos = { viewModel.setIntent(ProfileIntent.OnLoadMoreVideos) },
         )
     }
 }
@@ -153,17 +154,19 @@ private fun ProfileScreenContent(
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: () -> Unit = {},
-    onPhotoClicked: (String) -> Unit = {},
+    onGalleryClicked: (String, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
     onEditBackgroundClicked: (Uri) -> Unit = {},
     onSocialLinkClicked: (String) -> Unit = {},
     onStatsClicked: (StatsType) -> Unit = {},
     onLoadMore: (StatsType) -> Unit = {},
+    onLoadMoreImages: () -> Unit,
     onQueryChanged: (String) -> Unit,
     onLoadMoreSearch: () -> Unit,
     onImageSelected: (Uri) -> Unit,
+    onLoadMoreVideos: () -> Unit
 ) {
-    val pageCount = if (uiState.isOwnProfile) 2 else 3
+    val pageCount = uiState.pageCount
     val pagerState = rememberPagerState(pageCount = { pageCount })
     val lazyListState = rememberLazyListState()
 
@@ -177,13 +180,12 @@ private fun ProfileScreenContent(
 
     val tabBarOffsetY by remember {
         derivedStateOf {
-            val layoutInfo = lazyListState.layoutInfo
-            val pagerItem = layoutInfo.visibleItemsInfo.find { it.key == "pager" }
-            pagerItem?.offset?.toFloat()?.coerceAtLeast(0f) ?: 0f
+            lazyListState.layoutInfo.visibleItemsInfo
+                .firstOrNull { it.key == "pager" }
+                ?.offset?.toFloat() ?: 0f
         }
     }
-
-    val pagerNestedScrollConnection = remember {
+    val pagerNestedScrollConnection = remember(isHeaderCollapsed) {
         PagerNestedScrollConnection(lazyListState, isHeaderCollapsed)
     }
 
@@ -217,17 +219,19 @@ private fun ProfileScreenContent(
             .fillMaxSize()
             .pointerInput(Unit) { detectTapGestures { } }
     ) {
-        uiState.userInfo?.photoUrl?.let { url ->
-            TelegramPhotoBackground(
-                photo = url,
-                modifier = Modifier.fillMaxSize()
-            )
-        }
+        TelegramPhotoBackground(
+            photo = uiState.userInfo.photoUrl,
+            modifier = Modifier.fillMaxSize()
+        )
 
         if (uiState.backgroundChanging) {
-            Box(modifier = Modifier.fillMaxWidth().padding(top = 134.dp)) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 134.dp)) {
                 LottieProgressIndicator(
-                    modifier = Modifier.size(32.dp).align(Alignment.Center),
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.Center),
                     color = Color.White
                 )
             }
@@ -244,7 +248,7 @@ private fun ProfileScreenContent(
                 onEditBackgroundClicked = {
                     openGallery()
                 },
-                onManageWorkExperienceClicked = {},
+                onManageWorkExperienceClicked = showWorkHistory,
                 onNavigateBack = onNavigateBack,
             )
 
@@ -275,6 +279,7 @@ private fun ProfileScreenContent(
                             )
                         }
 
+                        Log.d("Role", uiState.pageCount.toString())
                         item(key = "pager") {
                             HorizontalPager(
                                 state = pagerState,
@@ -293,12 +298,28 @@ private fun ProfileScreenContent(
                                         similarItems = uiState.similarModels,
                                         isUploading = uiState.portfolioUploading,
                                         isOwnProfile = uiState.isOwnProfile,
-                                        onPhotoClicked = onPhotoClicked,
+                                        isLoadingMore = uiState.isLoadingMoreImages,
+                                        hasMore = uiState.hasMoreImages,
+                                        onLoadMore = onLoadMoreImages,
+                                        onPhotoClicked = { onGalleryClicked(it, false) },
                                         onSimilarClicked = onProfileClicked,
                                         onImageSelected = onImageSelected
                                     )
-
-                                    else -> EmptyGridPlaceholder()
+                                    1 -> {
+                                        val isPageActive = pagerState.currentPage == 1
+                                        VideoGrid(
+                                            videoItems = uiState.videoItems,
+                                            isOwnProfile = uiState.isOwnProfile,
+                                            isLoadingMore = uiState.isLoadingMoreVideos,
+                                            isActive = isPageActive,
+                                            hasMore = uiState.hasMoreVideos,
+                                            onLoadMore = onLoadMoreVideos,
+                                            onVideoClicked = { onGalleryClicked(it, true) },
+                                        )
+                                    }
+                                    2 -> if (uiState.isModel) DivoColumnContent("Vogue Inside") else DivoColumnContent("Model")
+                                    3 -> DivoColumnContent("Vogue Inside")
+                                    else -> DivoColumnContent("June 26 · 5:00 PM · \uD83C\uDDFA\uD83C\uDDF8 New York", isEvent = true)
                                 }
                             }
                         }
@@ -315,22 +336,11 @@ private fun ProfileScreenContent(
                         .zIndex(1f),
                     lazyListState = lazyListState,
                     pagerState = pagerState,
-                    isOwnProfile = uiState.isOwnProfile
+                    destinations = uiState.destinationTabs
                 )
             }
         }
     }
-}
-
-@Composable
-private fun EmptyGridPlaceholder() {
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) { }
 }
 
 @Composable
@@ -348,7 +358,7 @@ private fun ProfileHeaderContent(
         modifier = modifier
     ) {
         ProfileNameItem(
-            modifier = Modifier.padding(top = 150.dp),
+            modifier = Modifier.padding(top = 140.dp),
             uiState
         )
 
@@ -373,6 +383,14 @@ private fun ProfileHeaderContent(
             onTabSelected = { selectedBioTab = it },
             uiState = uiState
         )
+
+        if (uiState.userInfo.model.agency.title.isNotEmpty()) {
+            AgencyInfoSection(
+                title = uiState.userInfo.model.agency.title,
+                photoUrl = uiState.userInfo.model.agency.photo.fullUrl,
+                onClicked = showWorkHistory
+            )
+        }
 
         SocialLinksSection(
             socialLinks = uiState.socialLinks,

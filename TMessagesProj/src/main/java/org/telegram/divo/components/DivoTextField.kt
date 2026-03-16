@@ -43,7 +43,7 @@ import org.telegram.messenger.R
 fun DivoTextField(
     modifier: Modifier = Modifier,
     value: String,
-    onValueChange: (String) -> Unit,
+    onValueChange: (String) -> Unit = {},
     placeholder: String = "Search",
     @DrawableRes leadingIcon: Int? = null,
     trailingIcon: ImageVector? = null,
@@ -59,6 +59,7 @@ fun DivoTextField(
     textStyle: TextStyle = TextStyle(fontSize = 17.sp),
     contentPadding: PaddingValues = PaddingValues(horizontal = 8.dp, vertical = 10.dp),
     innerLabel: String? = null,
+    readOnly: Boolean = false,
     innerLabelColor: Color = Color.Black.copy(alpha = 0.5f),
 ) {
     Column(modifier = modifier) {
@@ -74,6 +75,7 @@ fun DivoTextField(
         BasicTextField(
             value = value,
             onValueChange = onValueChange,
+            readOnly = readOnly,
             minLines = minLines,
             maxLines = maxLines,
             textStyle = textStyle,

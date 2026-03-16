@@ -5,6 +5,8 @@ import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedResponse
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
 import org.telegram.divo.dal.dto.publication.FeedlineSearchResponse
+import org.telegram.divo.dal.dto.publication.PublicationListRequest
+import org.telegram.divo.dal.dto.publication.PublicationListResponse
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -22,6 +24,11 @@ interface PublicationService {
     suspend fun searchFeedline(
         @Body request: FeedlineSearchRequest
     ): FeedlineSearchResponse
+
+    @POST("publication/list")
+    suspend fun getPublicationList(
+        @Body request: PublicationListRequest
+    ): PublicationListResponse
 
     @POST("publication/like")
     suspend fun like(@Body body: Map<String, Any?>): ResponseBody
