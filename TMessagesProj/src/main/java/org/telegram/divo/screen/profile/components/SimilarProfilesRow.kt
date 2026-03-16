@@ -133,6 +133,5 @@ fun SimilarProfilesRow(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
     }
 }

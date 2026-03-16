@@ -6,28 +6,35 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.LaunchActivity
+import org.telegram.ui.MainTabsActivity
+import org.telegram.ui.MainTabsActivityController
 
-class FragmentModels : BaseFragment() {
+class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
 
     private var modelsNavController: NavController? = null
     private var profileNavController: NavController? = null
 
     private val isOnHomeScreen = mutableStateOf(true)
 
+    private var mainTabsController: MainTabsActivityController? = null
+
+    fun setMainTabsActivityController(controller: MainTabsActivityController) {
+        this.mainTabsController = controller
+    }
+
     fun isOnHomeScreen(): Boolean = isOnHomeScreen.value
 
     override fun createView(context: Context): View {
         actionBar.setAddToContainer(false)
 
-        return ComposeView(context).apply {
+        fragmentView = ComposeView(context).apply {
             setContent {
                 ModelsNavGraph(
                     onNavControllerReady = { navController ->
                         this@FragmentModels.modelsNavController = navController
                         navController.addOnDestinationChangedListener { _, destination, _ ->
                             isOnHomeScreen.value = destination.route == ModelsRoute.Models.route
-                            (parentActivity as? LaunchActivity)?.updateBottomBarVisibility()
+                            mainTabsController?.setTabsVisible(isOnHomeScreen.value)
                         }
                     },
                     onInnerNavControllerReady = { navController ->
@@ -36,13 +43,22 @@ class FragmentModels : BaseFragment() {
                 )
             }
         }
+        return fragmentView
     }
 
     override fun isLightStatusBar(): Boolean {
         return true
     }
 
-    override fun onBackPressed(): Boolean {
+    override fun isSupportEdgeToEdge(): Boolean {
+        return true
+    }
+
+    override fun drawEdgeNavigationBar(): Boolean {
+        return false
+    }
+
+    override fun onBackPressed(invoked: Boolean): Boolean {
         val inner = profileNavController
         if (inner != null && inner.previousBackStackEntry != null) {
             inner.popBackStack()
@@ -55,6 +71,6 @@ class FragmentModels : BaseFragment() {
             return false
         }
 
-        return super.onBackPressed()
+        return super.onBackPressed(invoked)
     }
 }

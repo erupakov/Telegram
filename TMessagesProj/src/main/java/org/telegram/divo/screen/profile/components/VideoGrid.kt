@@ -4,9 +4,13 @@ import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -260,6 +264,11 @@ fun VideoGrid(
         columns = GridCells.Fixed(3),
         state = gridState,
         modifier = modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            bottom = WindowInsets.navigationBars
+                .asPaddingValues()
+                .calculateBottomPadding() + 16.dp
+        )
     ) {
         itemsIndexed(
             items = videoItems,

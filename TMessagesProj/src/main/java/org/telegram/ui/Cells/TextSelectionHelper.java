@@ -272,7 +272,9 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
                 textY = maybeTextY;
 
                 selectedView = newView;
-                textSelectionOverlay.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                try {
+                    textSelectionOverlay.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS, HapticFeedbackConstants.FLAG_IGNORE_VIEW_SETTING);
+                } catch (Exception ignored) {}
                 AndroidUtilities.cancelRunOnUIThread(showActionsRunnable);
                 AndroidUtilities.runOnUIThread(showActionsRunnable);
                 showHandleViews();
@@ -1629,6 +1631,13 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
     }
 
     protected void drawSelection(Canvas canvas, Layout layout, int selectionStart, int selectionEnd, boolean hasStart, boolean hasEnd, float minX) {
+        if (layout == null || layout.getText() == null) {
+            return;
+        }
+
+        selectionStart = Utilities.clamp(selectionStart, layout.getText().length(), 0);
+        selectionEnd = Utilities.clamp(selectionEnd, layout.getText().length(), 0);
+
         selectionPath.reset();
         selectionHandlePath.reset();
         final float R = cornerRadius * 1.65f;
@@ -1751,10 +1760,14 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
         }
 
         if (tempPath2.rectsCount == 0 && !padAtEnd) {
-            int left = (int) layout.getPrimaryHorizontal(start),
-                right = (int) layout.getPrimaryHorizontal(end);
-            int top = layout.getLineTop(line), bottom = layout.getLineBottom(line);
-            selectionPath.addRect(left - cornerRadius / 2, top, right + cornerRadius / 4, bottom, Path.Direction.CW);
+            try {
+                int left = (int) layout.getPrimaryHorizontal(start),
+                    right = (int) layout.getPrimaryHorizontal(end);
+                int top = layout.getLineTop(line), bottom = layout.getLineBottom(line);
+                selectionPath.addRect(left - cornerRadius / 2, top, right + cornerRadius / 4, bottom, Path.Direction.CW);
+            } catch (Exception e) {
+                FileLog.e(e);
+            }
         }
     }
 
@@ -2736,7 +2749,7 @@ public abstract class TextSelectionHelper<Cell extends TextSelectionHelper.Selec
             arrayList.clear();
             view.fillTextLayoutBlocks(arrayList);
 
-            if (!arrayList.isEmpty()) {
+            if (i >= 0 && i < arrayList.size()) {
                 TextLayoutBlock layoutBlock = arrayList.get(i);
 
                 if (layoutBlock != null && layoutBlock.getLayout() != null && layoutBlock.getLayout().getText() != null) {

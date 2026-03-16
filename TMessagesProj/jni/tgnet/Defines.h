@@ -16,9 +16,9 @@
 #include <inttypes.h>
 #include "ByteArray.h"
 
-#define USE_DEBUG_SESSION true
+#define USE_DEBUG_SESSION false
 #define READ_BUFFER_SIZE 1024 * 1024 * 2
-#define DEBUG_VERSION
+//#define DEBUG_VERSION
 #define PFS_ENABLED 1
 #define DEFAULT_DATACENTER_ID INT_MAX
 #define DC_UPDATE_TIME 60 * 60
@@ -155,6 +155,7 @@ typedef struct ConnectiosManagerDelegate {
     virtual int32_t getInitFlags(int32_t instanceNum) = 0;
     virtual void onPremiumFloodWait(int32_t instanceNum, int32_t requestToken, bool isUpload) = 0;
     virtual void onIntegrityCheckClassic(int32_t instanceNum, int32_t requestToken, std::string project, std::string nonce) = 0;
+    virtual void onCaptchaCheck(int32_t instanceNum, int32_t requestToken, std::string action, std::string key_id) = 0;
 } ConnectiosManagerDelegate;
 
 typedef struct HandshakeDelegate {

@@ -141,9 +141,9 @@ public class CodeNumberField extends EditTextBoldCursor {
         successScaleSpringAnimation.cancel();
         if (newProgress != 0f) {
             successScaleSpringAnimation.setSpring(new SpringForce(1f)
-                    .setStiffness(500)
-                    .setDampingRatio(SpringForce.DAMPING_RATIO_LOW_BOUNCY)
-                    .setFinalPosition(SPRING_MULTIPLIER))
+                            .setStiffness(500)
+                            .setDampingRatio(SpringForce.DAMPING_RATIO_LOW_BOUNCY)
+                            .setFinalPosition(SPRING_MULTIPLIER))
                     .setStartValue(SPRING_MULTIPLIER)
                     .setStartVelocity(4000)
                     .start();
@@ -156,9 +156,9 @@ public class CodeNumberField extends EditTextBoldCursor {
 
         anim.cancel();
         anim.setSpring(new SpringForce(progress)
-                .setStiffness(400f)
-                .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
-                .setFinalPosition(progress))
+                        .setStiffness(400f)
+                        .setDampingRatio(SpringForce.DAMPING_RATIO_NO_BOUNCY)
+                        .setFinalPosition(progress))
                 .start();
     }
 

@@ -13,7 +13,6 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -37,7 +36,6 @@ import android.view.animation.Interpolator;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.core.graphics.ColorUtils;
 import androidx.core.math.MathUtils;
 import androidx.exifinterface.media.ExifInterface;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -61,7 +59,6 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.ChatActionCell;
 import org.telegram.ui.ChatActivity;
-import org.telegram.ui.Components.spoilers.SpoilerEffect;
 import org.telegram.ui.Components.spoilers.SpoilerEffect2;
 import org.telegram.ui.LaunchActivity;
 import org.telegram.ui.PhotoViewer;
@@ -105,6 +102,8 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
         super(alert, context, themeDelegate);
 
         this.themeDelegate = themeDelegate;
+        occupyNavigationBar = true;
+
         setWillNotDraw(false);
 
         ActionBarMenu menu = parentAlert.actionBar.createMenu();
@@ -180,7 +179,6 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
         listView.setClipToPadding(false);
         listView.setOverScrollMode(RecyclerListView.OVER_SCROLL_NEVER);
         listView.setVerticalScrollBarEnabled(false);
-        listView.setPadding(0, 0, 0, AndroidUtilities.dp(46));
 
         groupsView = new PreviewGroupsView(context);
         groupsView.setClipToPadding(true);
@@ -396,12 +394,10 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
                     rotate = false;
                     try {
                         if (photo.isVideo) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                                MediaMetadataRetriever m = new MediaMetadataRetriever();
-                                m.setDataSource(photo.path);
-                                String rotation = m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
-                                rotate = rotation != null && (rotation.equals("90") || rotation.equals("270"));
-                            }
+                            MediaMetadataRetriever m = new MediaMetadataRetriever();
+                            m.setDataSource(photo.path);
+                            String rotation = m.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
+                            rotate = rotation != null && (rotation.equals("90") || rotation.equals("270"));
                         } else {
                             ExifInterface exif = new ExifInterface(photo.path);
                             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
@@ -821,8 +817,8 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
             paddingTop = 0;
         }
 //        paddingTop -= AndroidUtilities.dp(9);
-        if (listView.getPaddingTop() != paddingTop) {
-            listView.setPadding(listView.getPaddingLeft(), paddingTop, listView.getPaddingRight(), listView.getPaddingBottom());
+        if (listView.getPaddingTop() != paddingTop || listView.getPaddingBottom() != listPaddingBottom) {
+            listView.setPaddingWithoutRequestLayout(listView.getPaddingLeft(), paddingTop, listView.getPaddingRight(), listPaddingBottom);
             invalidate();
         }
 
@@ -1213,6 +1209,7 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
             hintView.setVisiblePart(y, hintView.getMeasuredHeight());
             if (hintView.hasGradientService()) {
                 hintView.drawBackground(canvas, true);
+                hintView.drawReactions(canvas, true, null);
             }
             hintView.draw(canvas);
             canvas.restore();
@@ -1482,7 +1479,7 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
             }
 
             @Override
-            public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview) {
+            public PhotoViewer.PlaceProviderObject getPlaceForPhoto(MessageObject messageObject, TLRPC.FileLocation fileLocation, int index, boolean needPreview, boolean closing) {
                 if (index < 0 || index >= photos.size() || !isPhotoChecked(index)) {
                     return null;
                 }
@@ -1842,7 +1839,7 @@ public class ChatAttachAlertPhotoLayoutPreview extends ChatAttachAlert.AttachAle
                         ArrayList<Object> objectArrayList = new ArrayList<>(arrayList);
                         PhotoViewer.getInstance().openPhotoForSelect(objectArrayList, position, type, false, photoViewerProvider, chatActivity);
                         if (photoLayout.captionForAllMedia()) {
-                            PhotoViewer.getInstance().setCaption(parentAlert.getCommentTextView().getText());
+                            PhotoViewer.getInstance().setCaption(parentAlert.getCommentView().getText());
                         }
                     }
                     tapMediaCell = null;

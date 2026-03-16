@@ -20,21 +20,22 @@ import org.telegram.ui.ChangeUsernameActivity
 class FragmentSettings : BaseFragment() {
     override fun createView(context: Context): View {
         actionBar.setAddToContainer(false)
-        val composeView = ComposeView(context)
-        composeView.setContent {
-            SettingsScreen(
-                navigateToFillParameters = { presentFragment(FragmentYourParameters()) },
-                navigateToProfile = { presentFragment(FragmentProfileN.newInstance(it, true)) },
-                navigateToSavedMessages = { openSavedMessages() },
-                navigateToStickers = { presentFragment(StickersActivity(MediaDataController.TYPE_IMAGE, null)) },
-                navigateToNotifications = { presentFragment(NotificationsSettingsActivity()) },
-                navigateToPrivacy = { presentFragment(PrivacySettingsActivity()) },
-                navigateToDataStorage = { presentFragment(DataSettingsActivity()) },
-                navigateToAppearance = { presentFragment(ThemeActivity(ThemeActivity.THEME_TYPE_BASIC)) },
-                navigateToSetUsername = { presentFragment(ChangeUsernameActivity()) }
-            )
+        fragmentView = ComposeView(context).apply {
+            setContent {
+                SettingsScreen(
+                    navigateToFillParameters = { presentFragment(FragmentYourParameters()) },
+                    navigateToProfile = { presentFragment(FragmentProfileN.newInstance(it, true)) },
+                    navigateToSavedMessages = { openSavedMessages() },
+                    navigateToStickers = { presentFragment(StickersActivity(MediaDataController.TYPE_IMAGE, null)) },
+                    navigateToNotifications = { presentFragment(NotificationsSettingsActivity()) },
+                    navigateToPrivacy = { presentFragment(PrivacySettingsActivity()) },
+                    navigateToDataStorage = { presentFragment(DataSettingsActivity()) },
+                    navigateToAppearance = { presentFragment(ThemeActivity(ThemeActivity.THEME_TYPE_BASIC)) },
+                    navigateToSetUsername = { presentFragment(ChangeUsernameActivity()) }
+                )
+            }
         }
-        return composeView
+        return fragmentView
     }
 
     private fun openSavedMessages() {
@@ -42,5 +43,13 @@ class FragmentSettings : BaseFragment() {
         val userId = UserConfig.getInstance(currentAccount).getClientUserId()
         args.putLong("user_id", userId)
         presentFragment(ChatActivity(args))
+    }
+
+    override fun isSupportEdgeToEdge(): Boolean {
+        return true
+    }
+
+    override fun drawEdgeNavigationBar(): Boolean {
+        return false
     }
 }

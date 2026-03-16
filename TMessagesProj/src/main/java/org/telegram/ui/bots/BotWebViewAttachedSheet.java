@@ -29,6 +29,7 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
@@ -56,6 +57,7 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SendMessagesHelper;
+import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
 import org.telegram.messenger.Utilities;
 import org.telegram.messenger.browser.Browser;
@@ -118,11 +120,11 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         }
         String str;
         if (currentBot.show_in_side_menu && currentBot.show_in_attach_menu) {
-            str = LocaleController.formatString("BotAttachMenuShortcatAddedAttachAndSide", R.string.BotAttachMenuShortcatAddedAttachAndSide, user.first_name);
+            str = LocaleController.formatString(R.string.BotAttachMenuShortcatAddedAttachAndSide, user.first_name);
         } else if (currentBot.show_in_side_menu) {
-            str = LocaleController.formatString("BotAttachMenuShortcatAddedSide", R.string.BotAttachMenuShortcatAddedSide, user.first_name);
+            str = LocaleController.formatString(R.string.BotAttachMenuShortcatAddedSide, user.first_name);
         } else {
-            str = LocaleController.formatString("BotAttachMenuShortcatAddedAttach", R.string.BotAttachMenuShortcatAddedAttach, user.first_name);
+            str = LocaleController.formatString( R.string.BotAttachMenuShortcatAddedAttach, user.first_name);
         }
         AndroidUtilities.runOnUIThread(() -> {
             BulletinFactory.of(windowView, resourcesProvider)
@@ -173,6 +175,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
     private long lastSwipeTime;
 
     private ChatAttachAlertBotWebViewLayout.WebViewSwipeContainer swipeContainer;
+    private FrameLayout.LayoutParams swipeContainerLayoutParams;
     private BotWebViewContainer webViewContainer;
     private ChatAttachAlertBotWebViewLayout.WebProgressView progressView;
     private Theme.ResourcesProvider resourcesProvider;
@@ -187,6 +190,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
     private long peerId;
     private long queryId;
     private int replyToMsgId;
+    private long monoforumTopicId;
     private boolean silent;
     private String buttonText;
     private boolean forceExpnaded;
@@ -274,10 +278,11 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
             botButtons.setState(tab.buttons, false);
         }
         needCloseConfirmation = tab.confirmDismiss;
+        currentAccount = tab.props != null ? tab.props.currentAccount : UserConfig.selectedAccount;
         if (tab.webView != null) {
 //            tab.webView.resumeTimers();
             tab.webView.onResume();
-            webViewContainer.replaceWebView(tab.webView, tab.proxy);
+            webViewContainer.replaceWebView(currentAccount, tab.webView, tab.proxy);
             webViewContainer.setState(tab.ready || tab.webView.isPageLoaded(), tab.lastUrl);
             if (Theme.isCurrentThemeDark() != tab.themeIsDark) {
 //                webViewContainer.notifyThemeChanged();
@@ -352,6 +357,14 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
             prolongWebView.silent = silent;
             if (replyToMsgId != 0) {
                 prolongWebView.reply_to = SendMessagesHelper.getInstance(currentAccount).createReplyInput(replyToMsgId);
+                if (monoforumTopicId != 0) {
+                    prolongWebView.reply_to.monoforum_peer_id = MessagesController.getInstance(currentAccount).getInputPeer(monoforumTopicId);
+                    prolongWebView.reply_to.flags |= 32;
+                }
+                prolongWebView.flags |= 1;
+            } else if (monoforumTopicId != 0) {
+                prolongWebView.reply_to = new TLRPC.TL_inputReplyToMonoForum();
+                prolongWebView.reply_to.monoforum_peer_id = MessagesController.getInstance(currentAccount).getInputPeer(monoforumTopicId);
                 prolongWebView.flags |= 1;
             }
             ConnectionsManager.getInstance(currentAccount).sendRequest(prolongWebView, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
@@ -416,8 +429,8 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         swipeContainer.setShouldWaitWebViewScroll(true);
         webViewContainer = new BotWebViewContainer(getContext(), resourcesProvider, getColor(Theme.key_windowBackgroundWhite), true) {
             @Override
-            public void onWebViewCreated() {
-                super.onWebViewCreated();
+            public void onWebViewCreated(MyWebView webView) {
+                super.onWebViewCreated(webView);
                 swipeContainer.setWebView(webViewContainer.getWebView());
             }
         };
@@ -569,7 +582,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
                     DialogsActivity dialogsActivity = new DialogsActivity(args);
                     AndroidUtilities.hideKeyboard(windowView);
                     OverlayActionBarLayoutDialog overlayActionBarLayoutDialog = new OverlayActionBarLayoutDialog(getContext(), resourcesProvider);
-                    dialogsActivity.setDelegate((fragment, dids, message1, param, notify, scheduleDate, topicsFragment) -> {
+                    dialogsActivity.setDelegate((fragment, dids, message1, param, notify, scheduleDate, scheduleRepeatPeriod, topicsFragment) -> {
                         long did = dids.get(0).dialogId;
 
                         Bundle args1 = new Bundle();
@@ -626,7 +639,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
 
             @Override
             public boolean isClipboardAvailable() {
-                return MediaDataController.getInstance(currentAccount).botInAttachMenu(botId);
+                return MediaDataController.getInstance(currentAccount).botInAttachMenu(botId) || MessagesController.getInstance(currentAccount).whitelistedBots.contains(botId);
             }
         });
 
@@ -740,14 +753,8 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
             lastSwipeTime = System.currentTimeMillis();
         });
         swipeContainer.setScrollEndListener(() -> webViewContainer.invalidateViewPortHeight(true));
-        swipeContainer.setDelegate(() -> {
-//            if (can_minimize) {
-                dismiss(true, null);
-//            } else {
-//                if (!onCheckDismissByUser()) {
-//                    swipeContainer.stickTo(0);
-//                }
-//            }
+        swipeContainer.setDelegate(byTap -> {
+            dismiss(true, null);
         });
         swipeContainer.setTopActionBarOffsetY(ActionBar.getCurrentActionBarHeight() + AndroidUtilities.statusBarHeight - dp(24));
         swipeContainer.setIsKeyboardVisible(obj -> windowView.getKeyboardHeight() >= dp(20));
@@ -922,6 +929,11 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         return true;
     }
 
+    @Override
+    public boolean hadDialog() {
+        return dialog != null;
+    }
+
     Drawable verifiedDrawable;
 
     public void requestWebView(BaseFragment fragment, WebViewRequestProps props) {
@@ -930,6 +942,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         this.peerId = props.peerId;
         this.botId = props.botId;
         this.replyToMsgId = props.replyToMsgId;
+        this.monoforumTopicId = props.monoforumTopicId;
         this.silent = props.silent;
         this.buttonText = props.buttonText;
         this.currentWebApp = props.app;
@@ -946,6 +959,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         if (userbot != null && userbot.verified || userInfo != null && userInfo.user != null && userInfo.user.verified) {
             verifiedDrawable = getContext().getResources().getDrawable(R.drawable.verified_profile).mutate();
             verifiedDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_featuredStickers_addButton), PorterDuff.Mode.SRC_IN));
+            verifiedDrawable.setAlpha(0xFF);
             actionBar.getTitleTextView().setDrawablePadding(dp(2));
             actionBar.getTitleTextView().setRightDrawable(new Drawable() {
                 @Override
@@ -997,7 +1011,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         settingsItem = otherItem.addSubItem(R.id.menu_settings, R.drawable.msg_settings, LocaleController.getString(R.string.BotWebViewSettings));
         settingsItem.setVisibility(View.GONE);
         otherItem.addSubItem(R.id.menu_reload_page, R.drawable.msg_retry, LocaleController.getString(R.string.BotWebViewReloadPage));
-        if (currentBot != null && MediaDataController.getInstance(currentAccount).canCreateAttachedMenuBotShortcut(currentBot.bot_id)) {
+        if (userbot != null && userbot.bot_has_main_app) {
             otherItem.addSubItem(R.id.menu_add_to_home_screen_bot, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
         }
         otherItem.addSubItem(R.id.menu_share_bot, R.drawable.msg_share, LocaleController.getString(R.string.BotShare));
@@ -1082,6 +1096,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
                     req.peer = MessagesController.getInstance(currentAccount).getInputPeer(botId);
                     req.platform = "android";
                     req.compact = props.compact;
+                    req.fullscreen = props.fullscreen;
 
                     req.url = props.buttonUrl;
                     req.flags |= 2;
@@ -1111,6 +1126,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
                     req.platform = "android";
                     req.from_side_menu = (props.flags & FLAG_FROM_SIDE_MENU) != 0;
                     req.compact = props.compact;
+                    req.fullscreen = props.fullscreen;
                     if (themeParams != null) {
                         req.theme_params = new TLRPC.TL_dataJSON();
                         req.theme_params.data = themeParams.toString();
@@ -1141,6 +1157,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
                     req.bot = MessagesController.getInstance(currentAccount).getInputUser(botId);
                     req.platform = "android";
                     req.compact = props.compact;
+                    req.fullscreen = props.fullscreen;
                     if (props.buttonUrl != null) {
                         req.url = props.buttonUrl;
                         req.flags |= 2;
@@ -1148,6 +1165,14 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
 
                     if (replyToMsgId != 0) {
                         req.reply_to = SendMessagesHelper.getInstance(currentAccount).createReplyInput(replyToMsgId);
+                        if (monoforumTopicId != 0) {
+                            req.reply_to.monoforum_peer_id = MessagesController.getInstance(currentAccount).getInputPeer(monoforumTopicId);
+                            req.reply_to.flags |= 32;
+                        }
+                        req.flags |= 1;
+                    } else if (monoforumTopicId != 0) {
+                        req.reply_to = new TLRPC.TL_inputReplyToMonoForum();
+                        req.reply_to.monoforum_peer_id = MessagesController.getInstance(currentAccount).getInputPeer(monoforumTopicId);
                         req.flags |= 1;
                     }
 
@@ -1180,6 +1205,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
                     req.peer = fragment instanceof ChatActivity ? ((ChatActivity) fragment).getCurrentUser() != null ? MessagesController.getInputPeer(((ChatActivity) fragment).getCurrentUser()) : MessagesController.getInputPeer(((ChatActivity) fragment).getCurrentChat())
                             : MessagesController.getInputPeer(props.botUser);
                     req.compact = props.compact;
+                    req.fullscreen = props.fullscreen;
 
                     if (!TextUtils.isEmpty(props.startParam)) {
                         req.start_param = props.startParam;
@@ -1210,6 +1236,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
                     req.peer = fragment instanceof ChatActivity ? ((ChatActivity) fragment).getCurrentUser() != null ? MessagesController.getInputPeer(((ChatActivity) fragment).getCurrentUser()) : MessagesController.getInputPeer(((ChatActivity) fragment).getCurrentChat())
                             : MessagesController.getInputPeer(props.botUser);
                     req.compact = props.compact;
+                    req.fullscreen = props.fullscreen;
 
                     if (!TextUtils.isEmpty(props.startParam)) {
                         req.start_param = props.startParam;
@@ -1539,7 +1566,7 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
         if (dialog != null) {
             dialog.updateNavigationBarColor();
         } else if (attachedToParent() && LaunchActivity.instance != null) {
-            LaunchActivity.instance.checkSystemBarColors(true, true, true, false);
+            LaunchActivity.instance.checkSystemBarColors(true, true, true);
             //LaunchActivity.instance.setNavigationBarColor(fragment.getNavigationBarColor(), false);
         }
     }
@@ -1851,7 +1878,9 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
             return;
         }
         MessagesController.getInstance(currentAccount).loadFullUser(user, 0, true, (userFull2) -> {
-            whenDone.run(hasPrivacy(userFull2));
+            AndroidUtilities.runOnUIThread(() -> {
+                whenDone.run(hasPrivacy(userFull2));
+            });
         });
     }
 
@@ -1891,9 +1920,13 @@ public class BotWebViewAttachedSheet implements NotificationCenter.NotificationC
             lastFragment.presentFragment(ChatActivity.of(botId));
         }
         AndroidUtilities.runOnUIThread(() -> {
-            SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of("/privacy", botId, null, null, null, false, null, null, null, true, 0, null, false));
+            SendMessagesHelper.getInstance(currentAccount).sendMessage(SendMessagesHelper.SendMessageParams.of("/privacy", botId, null, null, null, false, null, null, null, true, 0, 0, null, false));
         }, 150);
         return true;
     }
 
+    @Override
+    public BulletinFactory getBulletinFactory() {
+        return BulletinFactory.of(windowView, resourcesProvider);
+    }
 }

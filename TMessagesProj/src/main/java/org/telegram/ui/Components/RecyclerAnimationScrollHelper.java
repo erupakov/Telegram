@@ -51,8 +51,21 @@ public class RecyclerAnimationScrollHelper {
     }
 
     public void scrollToPosition(int position, int offset, final boolean bottom, boolean smooth) {
-        if (recyclerView.fastScrollAnimationRunning || (recyclerView.getItemAnimator() != null && recyclerView.getItemAnimator().isRunning())) {
+        scrollToPosition(position, offset, bottom, smooth, false);
+    }
+
+    public void scrollToPosition(int position, int offset, final boolean bottom, boolean smooth, boolean waitForAnimations) {
+        if (recyclerView.fastScrollAnimationRunning) {
             return;
+        }
+        if (recyclerView.getItemAnimator() != null) {
+            if (waitForAnimations) {
+                if (recyclerView.getItemAnimator().isRunning(() -> scrollToPosition(position, offset, bottom, smooth, false))) {
+                    return;
+                }
+            } else if (recyclerView.getItemAnimator().isRunning()) {
+                return;
+            }
         }
         if (!smooth || scrollDirection == SCROLL_DIRECTION_UNSET) {
             layoutManager.scrollToPositionWithOffset(position, offset, bottom);
@@ -201,7 +214,7 @@ public class RecyclerAnimationScrollHelper {
                     int finalHeight = scrollDown ? oldH : recyclerView.getHeight() - oldT;
                     scrollLength = finalHeight + (scrollDown ? -top : bottom - recyclerView.getHeight());
                 }
-
+                final int paddingBottomStart = recyclerView.getPaddingBottom();
                 if (animator != null) {
                     animator.removeAllListeners();
                     animator.cancel();
@@ -224,11 +237,12 @@ public class RecyclerAnimationScrollHelper {
                         }
                     }
 
+                    final int additionalY = paddingBottomStart - recyclerView.getPaddingBottom();
                     size = incomingViews.size();
                     for (int i = 0; i < size; i++) {
                         View view = incomingViews.get(i);
                         if (scrollDown) {
-                            view.setTranslationY((scrollLength) * (1f - value));
+                            view.setTranslationY((scrollLength) * (1f - value) + additionalY);
                         } else {
                             view.setTranslationY(-(scrollLength) * (1f - value));
                         }

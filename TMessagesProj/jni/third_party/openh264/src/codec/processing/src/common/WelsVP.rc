@@ -86,7 +86,7 @@ BEGIN
             VALUE "FileDescription", "Cisco OpenH264  video preprocessing"
             VALUE "FileVersion", "0, 0, 0, 0"
             VALUE "InternalName", "welsvp.dll"
-            VALUE "LegalCopyright", "© 2011-2015 Cisco and/or its affiliates. All rights reserved."
+            VALUE "LegalCopyright", "ï¿½ 2011-2015 Cisco and/or its affiliates. All rights reserved."
             VALUE "OriginalFilename", "welsvp.dll"
             VALUE "ProductName", "Cisco OpenH264 video preprocessing"
             VALUE "ProductVersion", "0, 0, 0, 0"

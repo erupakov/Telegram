@@ -59,10 +59,10 @@ class MediaConstraints {
   // These keys are google specific.
   static const char kGoogEchoCancellation[];  // googEchoCancellation
 
-  static const char kAutoGainControl[];       // googAutoGainControl
-  static const char kNoiseSuppression[];      // googNoiseSuppression
-  static const char kHighpassFilter[];        // googHighpassFilter
-  static const char kAudioMirroring[];        // googAudioMirroring
+  static const char kAutoGainControl[];   // googAutoGainControl
+  static const char kNoiseSuppression[];  // googNoiseSuppression
+  static const char kHighpassFilter[];    // googHighpassFilter
+  static const char kAudioMirroring[];    // googAudioMirroring
   static const char
       kAudioNetworkAdaptorConfig[];  // googAudioNetworkAdaptorConfig
   static const char kInitAudioRecordingOnSend[];  // InitAudioRecordingOnSend;
@@ -88,9 +88,6 @@ class MediaConstraints {
   static const char kEnableIPv6[];  // googIPv6
   // Temporary constraint to enable suspend below min bitrate feature.
   static const char kEnableVideoSuspendBelowMinBitrate[];
-  // googSuspendBelowMinBitrate
-  // Constraint to enable combined audio+video bandwidth estimation.
-  static const char kCombinedAudioVideoBwe[];  // googCombinedAudioVideoBwe
   static const char kScreencastMinBitrate[];   // googScreencastMinBitrate
   static const char kCpuOveruseDetection[];    // googCpuOveruseDetection
 

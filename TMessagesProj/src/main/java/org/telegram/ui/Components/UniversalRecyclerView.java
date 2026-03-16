@@ -1,7 +1,16 @@
 package org.telegram.ui.Components;
 
+import static org.telegram.messenger.AndroidUtilities.dp;
+import static org.telegram.messenger.AndroidUtilities.dpf2;
+import static org.telegram.ui.ActionBar.Theme.multAlpha;
+
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.Rect;
+import android.graphics.RectF;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
@@ -17,6 +26,7 @@ import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.Utilities;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
+import org.telegram.ui.Cells.TextInfoPrivacyCell;
 
 import java.util.ArrayList;
 
@@ -24,7 +34,7 @@ public class UniversalRecyclerView extends RecyclerListView {
 
     public LinearLayoutManager layoutManager;
     public final UniversalAdapter adapter;
-    private ItemTouchHelper itemTouchHelper;
+    public ItemTouchHelper itemTouchHelper;
 
     private boolean doNotDetachViews;
     public void doNotDetachViews() {
@@ -70,7 +80,7 @@ public class UniversalRecyclerView extends RecyclerListView {
         Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick,
         Theme.ResourcesProvider resourcesProvider
     ) {
-        this(context, currentAccount, classGuid, dialog, fillItems, onClick, onLongClick, resourcesProvider, UItem.MAX_SPAN_COUNT);
+        this(context, currentAccount, classGuid, dialog, fillItems, onClick, onLongClick, resourcesProvider, UItem.MAX_SPAN_COUNT, LinearLayoutManager.VERTICAL);
     }
 
     public UniversalRecyclerView(
@@ -82,12 +92,13 @@ public class UniversalRecyclerView extends RecyclerListView {
         Utilities.Callback5<UItem, View, Integer, Float, Float> onClick,
         Utilities.Callback5Return<UItem, View, Integer, Float, Float, Boolean> onLongClick,
         Theme.ResourcesProvider resourcesProvider,
-        int spansCount
+        int spansCount,
+        int orientation
     ) {
         super(context, resourcesProvider);
 
         if (spansCount == UItem.MAX_SPAN_COUNT) {
-            setLayoutManager(layoutManager = new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false) {
+            setLayoutManager(layoutManager = new LinearLayoutManager(context, orientation, false) {
                 @Override
                 protected int getExtraLayoutSpace(State state) {
                     if (doNotDetachViews) return AndroidUtilities.displaySize.y;
@@ -139,12 +150,37 @@ public class UniversalRecyclerView extends RecyclerListView {
                 super.onMoveAnimationUpdate(holder);
                 invalidate();
             }
+            @Override
+            protected void onRemoveAnimationUpdate(ViewHolder holder) {
+                super.onRemoveAnimationUpdate(holder);
+                if (hasSections()) invalidate();
+            }
+            @Override
+            protected void onAddAnimationUpdate(ViewHolder holder) {
+                super.onAddAnimationUpdate(holder);
+                if (hasSections()) invalidate();
+            }
+            @Override
+            protected void onChangeAnimationUpdate(ViewHolder holder) {
+                super.onChangeAnimationUpdate(holder);
+                if (hasSections()) invalidate();
+            }
         };
         itemAnimator.setSupportsChangeAnimations(false);
         itemAnimator.setDelayAnimations(false);
         itemAnimator.setInterpolator(CubicBezierInterpolator.EASE_OUT_QUINT);
         itemAnimator.setDurations(350);
         setItemAnimator(itemAnimator);
+    }
+
+    public void makeHorizontal() {
+        setLayoutManager(layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false) {
+            @Override
+            protected int getExtraLayoutSpace(State state) {
+                if (doNotDetachViews) return AndroidUtilities.displaySize.y;
+                return super.getExtraLayoutSpace(state);
+            }
+        });
     }
 
     public void setSpanCount(int spanCount) {
@@ -173,13 +209,35 @@ public class UniversalRecyclerView extends RecyclerListView {
         }
     }
 
+    public int getSpanCount() {
+        if (layoutManager instanceof ExtendedGridLayoutManager) {
+            return ((ExtendedGridLayoutManager) layoutManager).getSpanCount();
+        }
+        return UItem.MAX_SPAN_COUNT;
+    }
+
+    public void listenReorder(Utilities.Callback2<Integer, ArrayList<UItem>> onReordered) {
+        listenReorder(onReordered, false);
+    }
+
+    private boolean reorderingOnOtherAxis;
     private boolean reorderingAllowed;
     public void listenReorder(
-        Utilities.Callback2<Integer, ArrayList<UItem>> onReordered
+        Utilities.Callback2<Integer, ArrayList<UItem>> onReordered,
+        boolean otherAxis
     ) {
+        reorderingOnOtherAxis = otherAxis;
         itemTouchHelper = new ItemTouchHelper(new TouchHelperCallback());
         itemTouchHelper.attachToRecyclerView(this);
         adapter.listenReorder(onReordered);
+    }
+
+    protected void swappedElements() {
+
+    }
+
+    public boolean isReorderAllowed() {
+        return reorderingAllowed;
     }
 
     public void allowReorder(boolean allow) {
@@ -192,7 +250,7 @@ public class UniversalRecyclerView extends RecyclerListView {
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        adapter.drawWhiteSections(canvas, this);
+        if (!hasSections()) adapter.drawWhiteSections(canvas, this);
         super.dispatchDraw(canvas);
     }
 
@@ -241,18 +299,6 @@ public class UniversalRecyclerView extends RecyclerListView {
         return -1;
     }
 
-    public View findViewByPosition(int position) {
-        if (position == NO_POSITION) return null;
-        for (int i = 0; i < getChildCount(); ++i) {
-            View child = getChildAt(i);
-            int childPosition = getChildAdapterPosition(child);
-            if (childPosition != NO_POSITION && childPosition == position) {
-                return child;
-            }
-        }
-        return null;
-    }
-
     private class TouchHelperCallback extends ItemTouchHelper.Callback {
         @Override
         public boolean isLongPressDragEnabled() {
@@ -262,7 +308,19 @@ public class UniversalRecyclerView extends RecyclerListView {
         @Override
         public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull ViewHolder viewHolder) {
             if (reorderingAllowed && adapter.isReorderItem(viewHolder.getAdapterPosition())) {
-                return makeMovementFlags(ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0);
+                int flags = 0;
+                if (layoutManager.getOrientation() == LinearLayoutManager.HORIZONTAL) {
+                    flags |= ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                    if (reorderingOnOtherAxis) {
+                        flags |= ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                    }
+                } else {
+                    flags |= ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                    if (reorderingOnOtherAxis) {
+                        flags |= ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+                    }
+                }
+                return makeMovementFlags(flags, 0);
             } else {
                 return makeMovementFlags(0, 0);
             }
@@ -274,6 +332,7 @@ public class UniversalRecyclerView extends RecyclerListView {
                 return false;
             }
             adapter.swapElements(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+            swappedElements();
             return true;
         }
 
@@ -303,5 +362,25 @@ public class UniversalRecyclerView extends RecyclerListView {
             super.clearView(recyclerView, viewHolder);
             viewHolder.itemView.setPressed(false);
         }
+    }
+
+    public void setSections() {
+        setSections(dp(12), dp(16), false);
+    }
+    public void setSections(boolean topPadding) {
+        setSections(dp(12), dp(16), topPadding);
+    }
+    public void setSections(int padding, float roundRadius, boolean topPadding) {
+        super.setSections(
+            view -> {
+                if (view.getParent() != this) return false;
+                final ViewHolder viewHolder = getChildViewHolder(view);
+                return !UniversalAdapter.isShadow(viewHolder.getItemViewType());
+            },
+            UniversalAdapter::isShadow,
+            padding, roundRadius,
+            super::drawBackgroundRect,
+            topPadding
+        );
     }
 }
