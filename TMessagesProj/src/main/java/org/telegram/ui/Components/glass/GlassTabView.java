@@ -145,7 +145,7 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         if (selectedFactor > 0) {
             final float alpha = AnimatorUtils.DECELERATE_INTERPOLATOR.getInterpolation(selectedFactor);
 
-            paintCounterBackground.setColor(Theme.multAlpha(colorSelected, 0.09f * alpha));
+            paintCounterBackground.setColor(Theme.multAlpha(0xFF333333, 0.09f * alpha));
             tmpRectF.set(0, 0, viewWidth, getHeight());
             final float r = Math.min(tmpRectF.width(), tmpRectF.height()) / 2f;
             final float s = lerp(0.6f, 1, selectedFactor) * MathUtils.clamp(attachScale, 0, 1);
@@ -256,9 +256,9 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
     }
 
     public void updateColorsLottie() {
-        colorDefault = Theme.getColor(Theme.key_glass_tabUnselected, resourcesProvider);
-        colorSelected = Theme.getColor(Theme.key_glass_tabSelected, resourcesProvider);
-        colorSelectedText = Theme.getColor(Theme.key_glass_tabSelectedText, resourcesProvider);
+        colorDefault = 0xFF333333;
+        colorSelected = 0xFF333333;
+        colorSelectedText = 0xFF333333;
         updateColors();
         invalidate();
     }
@@ -405,9 +405,23 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         tab.textView.setText(LocaleController.getString(stringRes));
         tab.checkPlayAnimation(false);
         tab.imageView.setLayoutParams(LayoutHelper.createFrame(24, 24, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 4, 0, 0));
-        tab.colorDefault = Theme.getColor(Theme.key_glass_tabUnselected, resourcesProvider);
-        tab.colorSelected = Theme.getColor(Theme.key_glass_tabSelected, resourcesProvider);
-        tab.colorSelectedText = Theme.getColor(Theme.key_glass_tabSelectedText, resourcesProvider);
+        tab.colorDefault = 0xFF333333;
+        tab.colorSelected = 0xFF333333;
+        tab.colorSelectedText = 0xFF333333;
+        tab.updateColors();
+        return tab;
+    }
+
+    public static GlassTabView createMainTabWithIcon(Context context, Theme.ResourcesProvider resourcesProvider, int iconRes, @StringRes int stringRes) {
+        GlassTabView tab = new GlassTabView(context);
+        tab.resourcesProvider = resourcesProvider;
+        tab.tabAnimation = null;
+        tab.textView.setText(LocaleController.getString(stringRes));
+        tab.imageView.setImageResource(iconRes);
+        tab.imageView.setLayoutParams(LayoutHelper.createFrame(24, 24, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 4, 0, 0));
+        tab.colorDefault = 0xFF333333;
+        tab.colorSelected = 0xFF333333;
+        tab.colorSelectedText = 0xFF333333;
         tab.updateColors();
         return tab;
     }
@@ -426,9 +440,9 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         tab.backupImageView = backupImageView;
 
         tab.addView(backupImageView, LayoutHelper.createFrame(22, 22, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 5, 0, 0));
-        tab.colorDefault = Theme.getColor(Theme.key_glass_tabUnselected, resourcesProvider);
-        tab.colorSelected = Theme.getColor(Theme.key_glass_tabSelected, resourcesProvider);
-        tab.colorSelectedText = Theme.getColor(Theme.key_glass_tabSelectedText, resourcesProvider);
+        tab.colorDefault = 0xFF333333;
+        tab.colorSelected = 0xFF333333;
+        tab.colorSelectedText = 0xFF333333;
         tab.updateColors();
         return tab;
     }

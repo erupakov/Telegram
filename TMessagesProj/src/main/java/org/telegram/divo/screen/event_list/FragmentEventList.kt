@@ -12,22 +12,30 @@ class FragmentEventList : BaseFragment() {
     override fun createView(context: Context): View {
         actionBar.setAddToContainer(false)
 
-        val composeView = ComposeView(context)
-        composeView.setContent {
-            EventListScreen(
-                onNavigateToEventDetails = {
-                    presentFragment(FragmentEventDetails())
-                },
-                onNavigateToCreateEvent = {
-                    presentFragment(FragmentEventCreate())
-                },
-                onNavigateToSearch = {
-                    presentFragment(FragmentEventFilter())
+        fragmentView = ComposeView(context).apply {
+            setContent {
+                EventListScreen(
+                    onNavigateToEventDetails = {
+                        presentFragment(FragmentEventDetails())
+                    },
+                    onNavigateToCreateEvent = {
+                        presentFragment(FragmentEventCreate())
+                    },
+                    onNavigateToSearch = {
+                        presentFragment(FragmentEventFilter())
 
-                }
-            )
+                    }
+                )
+            }
         }
-        return composeView
+        return fragmentView
     }
 
+    override fun isSupportEdgeToEdge(): Boolean {
+        return true
+    }
+
+    override fun drawEdgeNavigationBar(): Boolean {
+        return false
+    }
 }

@@ -9,7 +9,6 @@
 package org.telegram.ui;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
-import static android.view.View.GONE;
 import static org.telegram.messenger.LocaleController.formatPluralString;
 import static org.telegram.ui.Components.Premium.LimitReachedBottomSheet.TYPE_BOOSTS_FOR_USERS;
 
@@ -26,7 +25,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -85,20 +83,14 @@ import androidx.core.content.pm.ShortcutInfoCompat;
 import androidx.core.content.pm.ShortcutManagerCompat;
 import androidx.core.graphics.ColorUtils;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 
 import com.google.android.gms.common.api.Status;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.common.primitives.Longs;
 import com.google.firebase.appindexing.Action;
 import com.google.firebase.appindexing.FirebaseUserActions;
 import com.google.firebase.appindexing.builders.AssistActionBuilder;
 
 import org.telegram.PhoneFormat.PhoneFormat;
-import org.telegram.divo.screen.models.FragmentModels;
-import org.telegram.divo.screen.settings.FragmentSettings;
-import org.telegram.divo.screen.event_list.FragmentEventList;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -313,7 +305,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
     public final ArrayList<Dialog> visibleDialogs = new ArrayList<>();
     private Dialog proxyErrorDialog;
     private RecyclerListView sideMenu;
-    private BottomNavigationView bottomNav;
     private SelectAnimatedEmojiDialog.SelectAnimatedEmojiDialogWindow selectAnimatedEmojiDialog;
     private View rippleAbove;
     public Dialog getVisibleDialog() {
@@ -535,97 +526,11 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 setVisibility(GONE);
             }
         });
-
-        //DIVO--START
-        bottomNav = new BottomNavigationView(this);
-        bottomNav.setLabelVisibilityMode(NavigationBarView.LABEL_VISIBILITY_LABELED);
-        bottomNav.setLayoutParams(new FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-                Gravity.BOTTOM
-        ));
-
-        String bottomBarColor = "#F5F5F5";
-        bottomNav.setBackgroundColor(Color.parseColor(bottomBarColor));
-
-        // Добавляем пункты меню (можно вынести в res/menu)
-        Menu menu = bottomNav.getMenu();
-        menu.add(Menu.NONE, 1, Menu.NONE, "Models").setIcon(R.drawable.baseline_account_circle_24);
-        menu.add(Menu.NONE, 2, Menu.NONE, "Events").setIcon(R.drawable.baseline_calendar_item);
-        menu.add(Menu.NONE, 3, Menu.NONE, "Chats").setIcon(R.drawable.baseline_icon_chat_divo);
-        menu.add(Menu.NONE, 4, Menu.NONE, "Settings").setIcon(R.drawable.baseline_settings_24);
-
-        String unselectedColor = "#9A9B9D";
-        String selectedIconColor = "#BE7852";
-        String selectedTextColor = "#000000";
-
-        ColorStateList iconColors = new ColorStateList(
-                new int[][]{
-                        new int[]{android.R.attr.state_checked},
-                        new int[]{-android.R.attr.state_checked}
-                },
-                new int[]{
-                        Color.parseColor(selectedIconColor), // выбранный
-                        Color.parseColor(unselectedColor)   // не выбранный
-                }
-        );
-
-        ColorStateList textColors = new ColorStateList(
-                new int[][]{
-                        new int[]{android.R.attr.state_checked},
-                        new int[]{-android.R.attr.state_checked}
-                },
-                new int[]{
-                        Color.parseColor(selectedTextColor), // выбранный
-                        Color.parseColor(unselectedColor)
-                }
-        );
-
-        bottomNav.setItemIconTintList(iconColors);
-        bottomNav.setItemTextColor(textColors);
-        bottomNav.setSelectedItemId(3);
-        bottomNav.setVisibility(GONE);
-
-        frameLayout.addView(bottomNav);
-
-// Обработчик переключений
-        bottomNav.setOnItemSelectedListener(item -> {
-            BaseFragment fragment;
-            switch (item.getItemId()) {
-                case 1:
-                    fragment = new FragmentModels();
-                    break;
-                case 2:
-                    fragment = new FragmentEventList();
-                    break;
-                case 3:
-                    fragment = new DialogsActivity(null);
-
-                    break;
-                case 4:
-                    fragment = new FragmentSettings();
-                    break;
-                default:
-                    return false;
-            }
-            actionBarLayout.removeAllFragments();
-            actionBarLayout.addFragmentToStack(fragment);
-            return true;
-        });
-
-        int bottomBarHeight = AndroidUtilities.dp(56); // стандартная высота навигации
-        actionBarLayout.getView().setPadding(0, 0, 0, bottomBarHeight);
-        actionBarLayout.getView().setClipToPadding(false);
-
-
-
-
         setupActionBarLayout();
         drawerLayoutContainer.setParentActionBarLayout(actionBarLayout);
         actionBarLayout.setDrawerLayoutContainer(drawerLayoutContainer);
         actionBarLayout.setFragmentStack(mainFragmentsStack);
         actionBarLayout.setFragmentStackChangedListener(() -> {
-            updateBottomBarVisibility();
             checkSystemBarColors(true, false);
             if (getLastFragment() != null && getLastFragment().getLastStoryViewer() != null) {
                 getLastFragment().getLastStoryViewer().updatePlayingMode();
@@ -950,26 +855,6 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         webViewSheet.requestWebView(lastFragment, props);
         webViewSheet.show();
     }
-
-    //DIVO--START
-    private boolean shouldShowBottomBar(BaseFragment f) {
-        if (f instanceof FragmentModels) return ((FragmentModels) f).isOnHomeScreen();
-
-        return f instanceof FragmentEventList
-                || f instanceof DialogsActivity
-                || f instanceof FragmentSettings;
-    }
-
-    public void updateBottomBarVisibility() {
-        BaseFragment last = actionBarLayout != null ? actionBarLayout.getLastFragment() : null;
-        boolean show = last != null && shouldShowBottomBar(last);
-        if (bottomNav != null) {
-            bottomNav.setVisibility(show ? View.VISIBLE : GONE);
-        }
-        int bottomBarHeight = AndroidUtilities.dp(56); // same height you use
-        actionBarLayout.getView().setPadding(0, 0, 0, show ? bottomBarHeight : 0);
-    }
-    //DIVO--END
 
     @Override
     public void onThemeProgress(float progress) {

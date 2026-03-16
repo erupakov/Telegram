@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -135,8 +136,6 @@ fun ModelsHomeScreen(
         containerColor = Color.White,
         topBar = {
             TopAppBar(
-                modifier = Modifier
-                    .padding(top = 32.dp),
                 colors = TopAppBarDefaults.topAppBarColors(
                     Color.White
                 ),
@@ -159,7 +158,7 @@ fun ModelsHomeScreen(
         Box(
             Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             Column(
                 Modifier
@@ -562,6 +561,7 @@ private fun ModelPage(
                     onPhotoClicked(items, it)
                 }
             )
+            Spacer(Modifier.navigationBarsPadding().height(60.dp))
         }
     }
 }

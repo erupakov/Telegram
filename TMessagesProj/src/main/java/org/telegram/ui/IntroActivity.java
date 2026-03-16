@@ -296,7 +296,10 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                 if (string instanceof TLRPC.TL_langPackString) {
                     AndroidUtilities.runOnUIThread(() -> {
                         if (!destroyed) {
-                            switchLanguageTextView.setText(string.value);
+                            try {
+                                switchLanguageTextView.setText(string.value);
+                            } catch (Exception ignored) {}
+
                             SharedPreferences preferences = MessagesController.getGlobalMainSettings();
                             preferences.edit().putString("language_showed2", finalSystemLang.toLowerCase()).apply();
                         }

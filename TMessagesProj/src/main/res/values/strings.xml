@@ -3,6 +3,10 @@
     <!--divo view start-->
     <string name="AppName">Divo</string>
     <string name="AppNameBeta">Divo Beta</string>
+    <string name="DivoMainTabsModels">Models</string>
+    <string name="DivoMainTabsEvents">Events</string>
+    <string name="DivoMainTabsChats">Chats</string>
+    <string name="DivoMainTabsSettings">Settings</string>
 
     <!--profile screen-->
     <string name="SimilarProfiles">You may be interested in similar profiles</string>
