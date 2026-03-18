@@ -68,7 +68,7 @@ fun BiographyAppearanceSection(
 
         // Tab content
         when (selectedTab) {
-            0 -> BiographyContent(bio = uiState.userInfo.model.agency.description)
+            0 -> BiographyContent(bio = uiState.userInfo.model?.description.orEmpty())
             1 -> AppearanceContent(params = uiState.physicalParams)
         }
     }

@@ -28,7 +28,7 @@ class SettingsViewModel :
         val userId: Int = -1,
         val userName: String = "",
         val phoneNumber: String = "",
-        val userFull: TLRPC.UserFull,
+        val userFull: TLRPC.UserFull? = null,
         val settingsItems: List<SettingsItem> = listOf(
             SettingsItem(
                 title = "Saved Messages",

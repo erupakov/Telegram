@@ -370,7 +370,7 @@ fun ProfileNameItem(
                         color = AppTheme.colors.textColor,
                     )
                 }
-                if (city.name.isNotEmpty() && city.countryCode.isNotEmpty()) {
+                if (city != null) {
                     Text(
                         text = uiState.userInfo.city.countryCode.toCountryFlagEmoji()
                     )

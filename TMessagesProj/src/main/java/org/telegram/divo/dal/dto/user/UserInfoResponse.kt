@@ -64,13 +64,19 @@ class ModelDto(
     @SerializedName("education") val education: String?,
     @SerializedName("workExperience") val workExperience: String?,
     @SerializedName("languages") val languages: String,
+    @SerializedName("description") val description: String?,
     @SerializedName("profileUrl") val profileUrl: String?,
     @SerializedName("additionalInformation") val additionalInformation: String,
     @SerializedName("hasInternationalPassport") val hasInternationalPassport: Boolean,
     @SerializedName("hasTattoo") val hasTattoo: Boolean,
     @SerializedName("hasPiercing") val hasPiercing: Boolean,
     @SerializedName("hasActingEducation") val hasActingEducation: Boolean,
-    @SerializedName("appearance") val appearance: AppearanceDto
+    @SerializedName("appearance") val appearance: AppearanceDto,
+    @SerializedName("tiktokUrl") val tiktokUrl: String?,
+    @SerializedName("youtubeUrl") val youtubeUrl: String?,
+    @SerializedName("telegramUrl") val telegramUrl: String?,
+    @SerializedName("instagramUrl") val instagramUrl: String?,
+    @SerializedName("websiteUrl") val websiteUrl: String?,
 )
 
 class AgencyDto(
@@ -157,9 +163,9 @@ fun UserDataDto.toEntity(): UserInfo {
     return UserInfo(
         id = id,
         fullName = fullName.orEmpty(),
-        gender = gender?.toEntity() ?: Gender(),
+        gender = gender?.toEntity(),
         birthday = birthday.orEmpty(),
-        city = city?.toEntity() ?: City(),
+        city = city?.toEntity(),
         email = email.orEmpty(),
         phone = phone.orEmpty(),
         photoUrl = photoUrl,
@@ -172,7 +178,7 @@ fun UserDataDto.toEntity(): UserInfo {
         measuringSystem = measuringSystem.orEmpty(),
         pushNotifications = pushNotifications,
         isRegistrationFinished = isRegistrationFinished,
-        model = model?.toEntity() ?: Model(),
+        model = model?.toEntity(),
         customer = customer?.toEntity(),
 //        agency = agency,
 //        agencyEmployee = agencyEmployee,
@@ -208,17 +214,22 @@ private fun StatisticDto.toEntity(): Statistic =
 
 private fun ModelDto.toEntity(): Model =
     Model(
-        agency = agency?.toEntity() ?: Agency(),
+        agency = agency?.toEntity(),
         education = education.orEmpty(),
         workExperience = workExperience.orEmpty(),
         languages = languages,
+        description = description.orEmpty(),
         profileUrl = profileUrl.orEmpty(),
         additionalInformation = additionalInformation,
         hasInternationalPassport = hasInternationalPassport,
         hasTattoo = hasTattoo,
         hasPiercing = hasPiercing,
         hasActingEducation = hasActingEducation,
-        appearance = appearance.toEntity()
+        appearance = appearance.toEntity(),
+        tiktokUrl = tiktokUrl,
+        youtubeUrl = youtubeUrl,
+        instagramUrl = instagramUrl,
+        websiteUrl = websiteUrl
     )
 
 private fun AgencyDto.toEntity(): Agency =
@@ -230,7 +241,7 @@ private fun AgencyDto.toEntity(): Agency =
         description = description.orEmpty(),
         employeeTitle = employeeTitle.orEmpty(),
         address = address?.toEntity(),
-        photo = photo?.toEntity() ?: Photo()
+        photo = photo?.toEntity()
     )
 
 private fun AgencyAddressDto.toEntity(): AgencyAddress =

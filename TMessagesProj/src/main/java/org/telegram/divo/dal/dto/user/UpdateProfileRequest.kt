@@ -11,7 +11,7 @@ class UpdateProfileRequest(
     @SerializedName("fullName") val fullName: String,
     @SerializedName("phone") val phone: String,
     @SerializedName("timezone") val timezone: String,
-    @SerializedName("gender") val gender: String,
+    @SerializedName("gender") val gender: String?,
     @SerializedName("birthday") val birthday: String,
     @SerializedName("geoCityId") val geoCityId: Int?,
     @SerializedName("measuringSystem") val measuringSystem: String,
@@ -29,12 +29,17 @@ class UpdateProfileModelDto(
     @SerializedName("profileUrl") val profileUrl: String?,
     @SerializedName("education") val education: String?,
     @SerializedName("workExperience") val workExperience: String?,
+    @SerializedName("description") val description: String?,
     @SerializedName("languages") val languages: String?,
     @SerializedName("hasInternationalPassport") val hasInternationalPassport: Boolean,
     @SerializedName("hasTattoo") val hasTattoo: Boolean,
     @SerializedName("hasPiercing") val hasPiercing: Boolean,
     @SerializedName("hasActingEducation") val hasActingEducation: Boolean,
-    @SerializedName("appearance") val appearance: UpdateProfileAppearanceDto?
+    @SerializedName("appearance") val appearance: UpdateProfileAppearanceDto?,
+    @SerializedName("tiktokUrl") val tiktokUrl: String?,
+    @SerializedName("youtubeUrl") val youtubeUrl: String?,
+    @SerializedName("instagramUrl") val instagramUrl: String?,
+    @SerializedName("websiteUrl") val websiteUrl: String?,
 )
 
 class UpdateProfileAppearanceDto(
@@ -68,7 +73,7 @@ fun UserInfo.toDto(
         fullName = fullName,
         phone = phone,
         timezone = timezone,
-        gender = gender.id,
+        gender = gender?.id,
         birthday = birthday,
         geoCityId = geoCityId,
         measuringSystem = measuringSystem,
@@ -77,7 +82,7 @@ fun UserInfo.toDto(
         isRegistrationFinished = isRegistrationFinished,
         photo = photoUuid?.let { UuidContainerDto(it) },
         avatar = avatarUuid?.let { UuidContainerDto(it) },
-        model = model.toDto(),
+        model = model?.toDto(),
         customer = customer
     )
 
@@ -88,11 +93,16 @@ fun Model.toDto(): UpdateProfileModelDto =
         education = education,
         workExperience = workExperience,
         languages = languages,
+        description = description,
         hasInternationalPassport = hasInternationalPassport,
         hasTattoo = hasTattoo,
         hasPiercing = hasPiercing,
         hasActingEducation = hasActingEducation,
-        appearance = appearance.toDto()
+        appearance = appearance?.toDto(),
+        tiktokUrl = tiktokUrl,
+        youtubeUrl = youtubeUrl,
+        websiteUrl = websiteUrl,
+        instagramUrl = instagramUrl
     )
 
 fun Appearance.toDto(): UpdateProfileAppearanceDto =

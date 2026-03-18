@@ -128,7 +128,7 @@ fun YourParametersScreen(
                 ParameterSelector(
                     label = stringResource(R.string.SelectGender),
                     items = stringArrayResource(R.array.GenderItems).toList(),
-                    selectedValue = state.userFull.gender.title.takeIf { ParameterField.GENDER in touched } ?: "",
+                    selectedValue = state.userFull.gender?.title.takeIf { ParameterField.GENDER in touched } ?: "",
                     onItemSelected = { _, title ->
                         viewModel.setIntent(YourParametersIntent.OnGenderChanged(title))
                     }
@@ -152,7 +152,7 @@ fun YourParametersScreen(
                 ParameterSlider(
                     label = stringResource(R.string.LabelHeight),
                     range = 140f..220f,
-                    value = state.userFull.model.appearance.height,
+                    value = state.userFull.model?.appearance?.height ?: 0f,
                     onValueChange = {
                         viewModel.setIntent(
                             YourParametersIntent.OnHeightChanged(
@@ -169,7 +169,7 @@ fun YourParametersScreen(
                     range = 48f..90f,
                     minLabel = stringResource(R.string.WaistMin),
                     maxLabel = stringResource(R.string.WaistMax),
-                    value = state.userFull.model.appearance.waist,
+                    value = state.userFull.model?.appearance?.waist ?: 0f,
                     onValueChange = {
                         viewModel.setIntent(
                             YourParametersIntent.OnWaistChanged(
@@ -184,7 +184,7 @@ fun YourParametersScreen(
                     range = 80f..110f,
                     minLabel = stringResource(R.string.HipsMin),
                     maxLabel = stringResource(R.string.HipsMax),
-                    value = state.userFull.model.appearance.hips,
+                    value = state.userFull.model?.appearance?.hips ?: 0f,
                     onValueChange = {
                         viewModel.setIntent(
                             YourParametersIntent.OnHipsChanged(
@@ -199,7 +199,7 @@ fun YourParametersScreen(
                     range = 36f..42f,
                     minLabel = stringResource(R.string.ShoeSizeMin),
                     maxLabel = stringResource(R.string.ShoeSizeMax),
-                    value = state.userFull.model.appearance.shoesSize,
+                    value = state.userFull.model?.appearance?.shoesSize ?: 0f,
                     onValueChange = {
                         viewModel.setIntent(
                             YourParametersIntent.OnShoeSizeChanged(
@@ -213,7 +213,7 @@ fun YourParametersScreen(
                 ParameterSelector(
                     label = stringResource(R.string.ChooseHairLength),
                     items = stringArrayResource(R.array.HairLengthItems).toList(),
-                    selectedValue = state.userFull.model.appearance.hairLength.title.takeIf { ParameterField.HAIR_LENGTH in touched } ?: "",
+                    selectedValue = state.userFull.model?.appearance?.hairLength?.title?.takeIf { ParameterField.HAIR_LENGTH in touched } ?: "",
                     onItemSelected = { index, title ->
                         viewModel.setIntent(YourParametersIntent.OnHairLengthChanged(index, title))
                     }
@@ -222,7 +222,7 @@ fun YourParametersScreen(
                 ParameterSelector(
                     label = stringResource(R.string.ChooseHairColor),
                     items = stringArrayResource(R.array.HairColorItems).toList(),
-                    selectedValue = state.userFull.model.appearance.hairColor.title.takeIf { ParameterField.HAIR_COLOR in touched } ?: "",
+                    selectedValue = state.userFull.model?.appearance?.hairColor?.title?.takeIf { ParameterField.HAIR_COLOR in touched } ?: "",
                     onItemSelected = { index, title ->
                         viewModel.setIntent(YourParametersIntent.OnHairColorChanged(index, title))
                     }
@@ -231,7 +231,7 @@ fun YourParametersScreen(
                 ParameterSelector(
                     label = stringResource(R.string.ChooseEyeColor),
                     items = stringArrayResource(R.array.EyeColorItems).toList(),
-                    selectedValue = state.userFull.model.appearance.eyeColor.title.takeIf { ParameterField.EYE_COLOR in touched } ?: "",
+                    selectedValue = state.userFull.model?.appearance?.eyeColor?.title?.takeIf { ParameterField.EYE_COLOR in touched } ?: "",
                     onItemSelected = { index, title ->
                         viewModel.setIntent(YourParametersIntent.OnEyeColorChanged(index, title))
                     }
@@ -240,18 +240,18 @@ fun YourParametersScreen(
                 ParameterSelector(
                     label = stringResource(R.string.ChooseSkinColor),
                     items = stringArrayResource(R.array.SkinColorItems).toList(),
-                    selectedValue = state.userFull.model.appearance.skinColor.title.takeIf { ParameterField.SKIN_COLOR in touched } ?: "",
+                    selectedValue = state.userFull.model?.appearance?.skinColor?.title?.takeIf { ParameterField.SKIN_COLOR in touched } ?: "",
                     onItemSelected = { index, title ->
                         viewModel.setIntent(YourParametersIntent.OnSkinColorChanged(index, title))
                     }
                 )
-                if (state.userFull.gender.title == stringResource(R.string.Female)) {
+                if (state.userFull.gender?.title == stringResource(R.string.Female)) {
                     Spacer(modifier = Modifier.height(16.dp))
                     val items = stringArrayResource(R.array.BreastSizeItems).toList()
                     ParameterSelector(
                         label = stringResource(R.string.ChooseBreastSize),
                         items = items,
-                        selectedValue = state.userFull.model.appearance.breastSize.takeIf { ParameterField.BREAST_SIZE in touched } ?: "",
+                        selectedValue = state.userFull.model?.appearance?.breastSize?.takeIf { ParameterField.BREAST_SIZE in touched } ?: "",
                         onItemSelected = { index, _ ->
                             viewModel.setIntent(YourParametersIntent.OnBreastSizeChanged(items[index - 1]))
                         }

@@ -5,6 +5,7 @@ import android.view.View
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
+import org.telegram.divo.common.AppImageLoader
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.MainTabsActivity
 import org.telegram.ui.MainTabsActivityController
@@ -25,6 +26,7 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
     fun isOnHomeScreen(): Boolean = isOnHomeScreen.value
 
     override fun createView(context: Context): View {
+        AppImageLoader.init(context)
         actionBar.setAddToContainer(false)
 
         fragmentView = ComposeView(context).apply {

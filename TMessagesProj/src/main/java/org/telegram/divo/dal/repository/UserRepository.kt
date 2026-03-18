@@ -24,6 +24,7 @@ import org.telegram.divo.dal.dto.user.toDto
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.AgencyModels
+import org.telegram.divo.entity.Engagement
 import org.telegram.divo.entity.UploadedFile
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserGalleryList
@@ -61,16 +62,16 @@ class UserRepository(
                 fullName = userInfo.fullName,
                 phone = userInfo.phone,
                 timezone = TimeZone.getDefault().id,
-                gender = userInfo.gender.id,
+                gender = userInfo.gender?.id,
                 birthday = userInfo.birthday,
-                geoCityId = userInfo.city.id,
+                geoCityId = userInfo.city?.id,
                 measuringSystem = userInfo.measuringSystem,
                 subrole = userInfo.subrole,
                 pushNotifications = userInfo.pushNotifications,
                 isRegistrationFinished = userInfo.isRegistrationFinished,
                 photo = UuidContainerDto(userInfo.photoUuid),
                 avatar = UuidContainerDto(userInfo.avatarUuid),
-                model = userInfo.model.toDto(),
+                model = userInfo.model?.toDto(),
                 customer = userInfo.customer?.toDto()
             )
         )
@@ -143,6 +144,10 @@ class UserRepository(
 
     suspend fun getUserSocialNetworks(): DivoResult<List<UserSocialNetwork>> = resultOf {
         service.getUserSocialNetworks().toEntities()
+    }
+
+    suspend fun getEngagement(offset: Int, limit: Int): DivoResult<Engagement> = resultOf {
+        service.getEngagement(offset = offset, limit = limit).toEntity()
     }
 
     private fun File.toMultipart(): MultipartBody.Part {

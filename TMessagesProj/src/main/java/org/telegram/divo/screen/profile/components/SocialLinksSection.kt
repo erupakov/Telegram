@@ -30,23 +30,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.screen.profile.SocialLinks
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
 @Composable
 fun SocialLinksSection(
-    socialLinks: SocialLinks,
+    instagram: String,
+    tiktok: String,
+    youtube: String,
+    website: String,
     isOwnProfile: Boolean,
     onEditLinksClicked: () -> Unit,
-    onSocialLinkClicked: (String) -> Unit
+    onSocialLinkClicked: (SocialNetworkType) -> Unit
 ) {
-    val filledLinksCount = listOf(
-        socialLinks.instagram,
-        socialLinks.tiktok,
-        socialLinks.youtube,
-        socialLinks.website
-    ).count { it.isNotBlank() }
+    val filledLinksCount = listOf(instagram, tiktok, youtube, website).count { it.isNotBlank() }
 
     Column(
         modifier = Modifier.padding(horizontal = 16.dp)
@@ -72,36 +71,36 @@ fun SocialLinksSection(
                     .horizontalScroll(rememberScrollState()),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                if (socialLinks.instagram.isNotBlank()) {
+                if (instagram.isNotBlank()) {
                     SocialLinkItem(
                         iconResId = R.drawable.icon_divo_instagram,
-                        username = extractUsername(socialLinks.instagram),
+                        username = instagram,
                         filledLinksCount = filledLinksCount,
-                        onClick = { onSocialLinkClicked(socialLinks.instagram) }
+                        onClick = { onSocialLinkClicked(SocialNetworkType.INSTAGRAM) }
                     )
                 }
-                if (socialLinks.tiktok.isNotBlank()) {
+                if (tiktok.isNotBlank()) {
                     SocialLinkItem(
                         iconResId = R.drawable.icon_divo_tiktok,
-                        username = extractUsername(socialLinks.tiktok),
+                        username = tiktok,
                         filledLinksCount = filledLinksCount,
-                        onClick = { onSocialLinkClicked(socialLinks.tiktok) }
+                        onClick = { onSocialLinkClicked(SocialNetworkType.TIKTOK) }
                     )
                 }
-                if (socialLinks.youtube.isNotBlank()) {
+                if (youtube.isNotBlank()) {
                     SocialLinkItem(
                         iconResId = R.drawable.icon_divo_youtube,
-                        username = extractPath(socialLinks.youtube),
+                        username = youtube,
                         filledLinksCount = filledLinksCount,
-                        onClick = { onSocialLinkClicked(socialLinks.youtube) }
+                        onClick = { onSocialLinkClicked(SocialNetworkType.YOUTUBE) }
                     )
                 }
-                if (socialLinks.website.isNotBlank()) {
+                if (website.isNotBlank()) {
                     SocialLinkItem(
                         iconResId = R.drawable.icon_divo_web,
-                        username = extractDomain(socialLinks.website),
+                        username = website,
                         filledLinksCount = filledLinksCount,
-                        onClick = { onSocialLinkClicked(socialLinks.website) }
+                        onClick = { onSocialLinkClicked(SocialNetworkType.WEBSITE) }
                     )
                 }
             }
@@ -138,7 +137,7 @@ private fun RowScope.SocialLinkItem(
                 )
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = "@$username",
+                    text = username,
                     style = AppTheme.typography.helveticaNeueRegular,
                     color = Color.White,
                     fontSize = 10.sp,
@@ -168,7 +167,7 @@ private fun RowScope.SocialLinkItem(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "@$username",
+                    text = username,
                     style = AppTheme.typography.helveticaNeueRegular,
                     color = Color.White,
                     fontSize = 10.sp,
@@ -178,37 +177,4 @@ private fun RowScope.SocialLinkItem(
             }
         }
     }
-}
-
-private fun extractUsername(url: String): String {
-    if (url.isBlank()) return ""
-    return url
-        .replace("https://", "")
-        .replace("http://", "")
-        .replace("www.", "")
-        .substringAfter("/")
-        .removePrefix("@")
-        .trim('/')
-        .ifEmpty { url }
-}
-
-private fun extractPath(url: String): String {
-    if (url.isBlank()) return ""
-    return url
-        .replace("https://", "")
-        .replace("http://", "")
-        .replace("www.", "")
-        .substringAfter("/")
-        .trim('/')
-        .ifEmpty { url }
-}
-
-private fun extractDomain(url: String): String {
-    if (url.isBlank()) return ""
-    return url
-        .replace("https://", "")
-        .replace("http://", "")
-        .replace("www.", "")
-        .substringBefore("/")
-        .ifEmpty { url }
 }

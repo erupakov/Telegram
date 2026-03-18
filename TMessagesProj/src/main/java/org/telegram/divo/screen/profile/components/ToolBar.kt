@@ -235,7 +235,7 @@ private fun TitleContent(
                     )
                 }
 
-                if (userInfo.city.name.isNotEmpty()) {
+                if (userInfo.city != null) {
                     Text(
                         text = userInfo.city.name,
                         style = AppTheme.typography.helveticaNeueRegular,

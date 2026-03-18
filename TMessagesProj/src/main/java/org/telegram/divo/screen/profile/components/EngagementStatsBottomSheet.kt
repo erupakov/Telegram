@@ -50,6 +50,7 @@ import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.shimmer
+import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.style.AppTheme
@@ -60,7 +61,7 @@ import org.telegram.messenger.R
 @Composable
 fun EngagementStatsBottomSheet(
     stats: StatsType?,
-    feeds: List<FeedItem>,
+    items: List<EngagementUser>,
     isLoadingStats: Boolean,
     isLoadingMoreFeed: Boolean,
     searchQuery: String,
@@ -182,11 +183,11 @@ fun EngagementStatsBottomSheet(
                                 }
                             }
                             else -> {
-                                items(feeds, key = { it.id }) { user ->
+                                items(items, key = { it.id }) { user ->
                                     StatsDetailRow(
-                                        name = user.user.fullName,
-                                        type = user.user.role,
-                                        avatarUrl = user.files.first().url,
+                                        name = user.fullName,
+                                        type = user.role,
+                                        avatarUrl = user.photoUrl,
                                         onClicked = { onProfileClicked(user.id) }
                                     )
                                 }
@@ -311,7 +312,7 @@ private fun EngagementStatsBottomSheetPreview() {
     AppTheme {
         EngagementStatsBottomSheet(
             stats = StatsType.SAVES,
-            feeds = emptyList(),
+            items = emptyList(),
             isLoadingMoreFeed = false,
             isLoadingStats = false,
             searchQuery = "",

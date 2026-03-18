@@ -1,11 +1,13 @@
 package org.telegram.divo.entity
 
+import com.google.gson.annotations.SerializedName
+
 data class UserInfo(
     val id: Int = 0,
     val fullName: String = "",
-    val gender: Gender = Gender(),
+    val gender: Gender? = null,
     val birthday: String = "",
-    val city: City = City(),
+    val city: City? = null,
     val email: String = "",
     val phone: String = "",
     val photoUrl: String = "",
@@ -18,8 +20,8 @@ data class UserInfo(
     val measuringSystem: String = "",
     val pushNotifications: Boolean = false,
     val isRegistrationFinished: Boolean = false,
-    val model: Model = Model(),
-    val customer: Customer? = Customer(),
+    val model: Model? = null,
+    val customer: Customer? = null,
     val statistic: Statistic = Statistic(),
     val isFavorite: Boolean = false,
     val isFollowed: Boolean = false,
@@ -31,17 +33,22 @@ data class Gender(
     val title: String = ""
 )
 data class Model(
-    val agency: Agency = Agency(),
+    val agency: Agency? = null,
     val education: String = "",
     val workExperience: String = "",
     val languages: String = "",
+    val description: String = "",
     val profileUrl: String = "",
     val additionalInformation: String = "",
     val hasInternationalPassport: Boolean = false,
     val hasTattoo: Boolean = false,
     val hasPiercing: Boolean = false,
     val hasActingEducation: Boolean = false,
-    val appearance: Appearance = Appearance()
+    val appearance: Appearance? = null,
+    val tiktokUrl: String? = null,
+    val youtubeUrl: String? = null,
+    val instagramUrl: String? = null,
+    val websiteUrl: String? = null,
 )
 data class Agency(
     val id: Int = 0,
@@ -50,8 +57,8 @@ data class Agency(
     val email: String = "",
     val description: String = "",
     val employeeTitle: String = "",
-    val address: AgencyAddress? = AgencyAddress(),
-    val photo: Photo = Photo()
+    val address: AgencyAddress? = null,
+    val photo: Photo? = null
 )
 
 data class AgencyAddress(

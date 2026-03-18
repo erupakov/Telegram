@@ -1,13 +1,16 @@
 package org.telegram.divo.screen.models
 
 import androidx.lifecycle.viewModelScope
+import com.google.android.play.integrity.internal.a
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.OffsetPaginator
 import org.telegram.divo.common.PaginatedResult
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
+import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -29,134 +32,6 @@ import org.telegram.divo.screen.models.ModelsViewIntent.LoadMoreAllUsers
 import org.telegram.divo.screen.models.ModelsViewIntent.OnShowMockDataClicked
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
-import org.telegram.tgnet.TLRPC.TL_error
-
-
-data class Story(
-    val id: String,
-    val imageUrl: String,
-    val userName: String,
-    val watched: Boolean = false,
-)
-
-data class Model(
-    val id: String,
-    val name: String,
-    val imageUrl: String = "",
-    val avatarUrl: String = "",
-    val emotions: List<Emotions> = emptyList(),
-    val photos: List<String> = emptyList(),
-    val roleLabel: String = "",
-    val userProfile: TLRPC.TL_userProfile? = null
-)
-
-enum class Tab(val displayName: String) {
-    SUBSCRIBED(displayName = "Subscribed Models"),
-    ALL_USERS(displayName = "All Users"),
-    AGENCIES_PRO(displayName = "Agencies & Pro Members")
-}
-
-sealed class Emotions(
-    open val selected: Boolean,
-    open val emoji: String,
-    open val count: Int
-) {
-    data class Like(
-        override val selected: Boolean,
-        override val emoji: String,
-        override val count: Int,
-    ) : Emotions(selected, emoji, count)
-
-    data class Fire(
-        override val selected: Boolean,
-        override val emoji: String,
-        override val count: Int,
-    ) : Emotions(selected, emoji, count)
-
-    data class Hearth(
-        override val selected: Boolean,
-        override val emoji: String,
-        override val count: Int,
-    ) : Emotions(selected, emoji, count)
-}
-
-// State
-data class ModelsViewState(
-    val feedItems: List<FeedItem> = emptyList(),
-    val stories: List<Story> = emptyList(),
-    val models: List<Model> = emptyList(),
-    val selectedTab: Tab = Tab.SUBSCRIBED,
-    val isLoading: Boolean = false,
-    val error: String? = null,
-    val allUserModels: List<Model> = emptyList(),
-    val isLoadingAllUsers: Boolean = false,
-    val isLoadingMoreFeed: Boolean = false,
-    val feedHasMore: Boolean = true,
-    val showMockData: Boolean = false,
-) : ViewState {
-    companion object {
-        val preview = ModelsViewState(
-            stories = List(5) { index ->
-                Story(
-                    id = "$index",
-                    imageUrl = "https://randomuser.me/api/portraits/women/5$index.jpg",
-                    userName = "User $index",
-                    watched = false
-                )
-            },
-            models = List(10) { index ->
-                Model(
-                    id = "model_$index",
-                    name = "Model $index",
-                    imageUrl = "https://randomuser.me/api/portraits/women/46.jpg",
-                    avatarUrl = "https://randomuser.me/api/portraits/women/42.jpg",
-                    emotions = listOf(
-                        Emotions.Like(selected = true, emoji = "👍", count = 10),
-                        Emotions.Fire(selected = false, emoji = "🔥", count = 5),
-                        Emotions.Hearth(selected = false, emoji = "❤️", count = 2)
-                    ),
-                    photos = List(5) { photoIndex -> "https://randomuser.me/api/portraits/women/4$photoIndex.jpg" },
-                    roleLabel = "Model"
-                )
-            },
-            selectedTab = Tab.SUBSCRIBED,
-            isLoading = false,
-            error = null
-        )
-        val default = ModelsViewState(
-            stories = emptyList(),
-            models = emptyList(),
-            selectedTab = Tab.SUBSCRIBED,
-            isLoading = false,
-            error = null
-        )
-    }
-}
-
-// Intent
-sealed class ModelsViewIntent : ViewIntent {
-    data object LoadInitialData : ModelsViewIntent()
-    data class OnTabSelected(val tab: Tab) : ModelsViewIntent()
-    data class OnStoryClick(val storyId: String) : ModelsViewIntent()
-    data class OnEmotionClick(val modelId: String, val emotion: Emotions) : ModelsViewIntent()
-    data class OnSendDmClick(val modelId: String) : ModelsViewIntent()
-    data class OnBookmarkClick(val modelId: String) : ModelsViewIntent()
-    data object OnSearchClick : ModelsViewIntent()
-    data object OnAddStoryClick : ModelsViewIntent()
-    data class OnPhotoClick(val modelId: String, val photoUrl: String) : ModelsViewIntent()
-    data object LoadMoreAllUsers : ModelsViewIntent()
-    data object OnShowMockDataClicked : ModelsViewIntent()
-}
-
-// Action
-sealed class ModelsViewEffect : ViewEffect {
-    data class NavigateToStory(val storyId: String) : ModelsViewEffect()
-    data class NavigateToDirectMessage(val modelId: String) : ModelsViewEffect()
-    data object NavigateToSearch : ModelsViewEffect()
-    data object NavigateToAddStory : ModelsViewEffect()
-    data class ShowError(val message: String) : ModelsViewEffect()
-}
-
 
 class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
 
@@ -166,48 +41,82 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
 
     private val currentAccount = UserConfig.selectedAccount
 
-    private val feedPaginator = OffsetPaginator(
-        limit = PAGE_SIZE
-    ) { offset, limit ->
-        when (val result = DivoApi.publicationRepository.getFeed(offset, limit)) {
-            is DivoResult.Success -> {
-                val feed = result.value
-                PaginatedResult(
-                    items = feed.items,
-                    totalCount = feed.pagination?.totalCount ?: feed.items.size
-                )
-            }
+    override fun createInitialState(): ModelsViewState = ModelsViewState()
+
+    private val subscribedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        val request = FeedRequestDto(
+            offset = offset, limit = limit,
+            subscribedOnly = true
+        )
+        when (val result = DivoApi.publicationRepository.getFeed(request)) {
+            is DivoResult.Success -> PaginatedResult(
+                items = result.value.items,
+                totalCount = result.value.pagination?.totalCount ?: result.value.items.size
+            )
             else -> throw Exception(result.getErrorMessage())
         }
     }
 
-    override fun createInitialState(): ModelsViewState = ModelsViewState()
+    private val allUsersPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        val request = FeedRequestDto(
+            offset = offset, limit = limit,
+        )
+        when (val result = DivoApi.publicationRepository.getFeed(request)) {
+            is DivoResult.Success -> PaginatedResult(
+                items = result.value.items,
+                totalCount = result.value.pagination?.totalCount ?: result.value.items.size
+            )
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
+
+    private val agenciesPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        val request = FeedRequestDto(
+            offset = offset, limit = limit,
+            subscribedOnly = false
+        )
+        when (val result = DivoApi.publicationRepository.getFeed(request)) {
+            is DivoResult.Success -> PaginatedResult(
+                items = result.value.items,
+                totalCount = result.value.pagination?.totalCount ?: result.value.items.size
+            )
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
 
     init {
         setIntent(LoadInitialData)
-        observePaginator()
-    }
-
-    private fun observePaginator() {
         viewModelScope.launch {
-            feedPaginator.state.collect { pState ->
-                setState {
-                    copy(
-                        feedItems = pState.items,
-                        isLoadingAllUsers = pState.isLoading,
-                        isLoadingMoreFeed = pState.isLoadingMore,
-                        feedHasMore = pState.hasMore,
-                        error = pState.error ?: error
-                    )
+            merge(
+                subscribedPaginator.state.map { it to Tab.SUBSCRIBED },
+                allUsersPaginator.state.map { it to Tab.ALL_USERS },
+                agenciesPaginator.state.map { it to Tab.AGENCIES_PRO }
+            ).collect { (paginatorState, tab) ->
+                if (tab != Tab.AGENCIES_PRO) {
+                    setState {
+                        copy(
+                            tabFeeds = tabFeeds + (tab to paginatorState.items),
+                            tabLoadingStates = tabLoadingStates + (tab to paginatorState.isLoading),
+                            tabLoadingMoreStates = tabLoadingMoreStates + (tab to paginatorState.isLoadingMore),
+                            tabHasMore = tabHasMore + (tab to paginatorState.hasMore),
+                            error = paginatorState.error
+                        )
+                    }
                 }
             }
         }
     }
 
+    private fun currentPaginator(): OffsetPaginator<FeedItem> = when (state.value.selectedTab) {
+        Tab.ALL_USERS -> allUsersPaginator
+        Tab.SUBSCRIBED -> subscribedPaginator
+        Tab.AGENCIES_PRO -> agenciesPaginator
+    }
+
     override fun handleIntent(intent: ModelsViewIntent) {
         when (intent) {
             is LoadInitialData -> loadInitialData()
-            is OnTabSelected -> selectTab(intent.tab)
+            is OnTabSelected -> onTabSelected(intent.tab)
             is OnStoryClick -> sendEffect(NavigateToStory(intent.storyId))
             is OnEmotionClick -> reactToModel(intent.modelId, intent.emotion)
             is OnSendDmClick -> sendEffect(NavigateToDirectMessage(intent.modelId))
@@ -215,7 +124,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             is OnAddStoryClick -> sendEffect(NavigateToAddStory)
             is OnBookmarkClick -> bookmarkModel(intent.modelId)
             is OnPhotoClick -> zoomPhoto(intent.modelId, intent.photoUrl)
-            is LoadMoreAllUsers -> loadAllUsers(loadMore = true)
+            is LoadMoreAllUsers -> loadFeed(loadMore = true)
             is OnShowMockDataClicked -> setState { copy(showMockData = true) }
         }
     }
@@ -231,30 +140,31 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                 models = ModelsViewState.preview.models
             )
         }
-    }
-
-    private fun selectTab(tab: Tab) {
-        setState { copy(selectedTab = tab, showMockData = false) }
-        when (tab) {
-            Tab.ALL_USERS -> {
-                if (state.value.feedItems.isEmpty() && !state.value.isLoadingAllUsers) {
-                    loadAllUsers(loadMore = false)
-                }
-            }
-            else -> {
-                setState { copy(isLoading = true) }
-                // TODO: Load models for the selected tab from repository
-                setState { copy(isLoading = false, models = ModelsViewState.preview.models) }
-            }
+        viewModelScope.launch {
+            listOf(
+                subscribedPaginator,
+                allUsersPaginator,
+                agenciesPaginator
+            ).map { paginator ->
+                async { paginator.loadInitial() }
+            }.awaitAll()
         }
     }
 
-    private fun loadAllUsers(loadMore: Boolean) {
+    private fun onTabSelected(tab: Tab) {
+        setState { copy(selectedTab = tab) }
+
+        if (currentPaginator().state.value.items.isEmpty()) {
+            loadFeed(loadMore = false)
+        }
+    }
+
+    private fun loadFeed(loadMore: Boolean) {
         viewModelScope.launch {
             if (loadMore) {
-                feedPaginator.loadMore()
+                currentPaginator().loadMore()
             } else {
-                feedPaginator.loadInitial()
+                currentPaginator().loadInitial()
             }
         }
     }

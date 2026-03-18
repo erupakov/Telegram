@@ -6,9 +6,10 @@ import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.entity.AgencyModel
-import org.telegram.divo.entity.FeedItem
+import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.Publication
+import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.profile.components.Destination
@@ -35,8 +36,6 @@ data class ProfileViewState(
     val portfolioUploading: Boolean = false,
     val isLoadingAllUsers: Boolean = false,
     val isLoadingStats: Boolean = false,
-    val isLoadingMoreFeed: Boolean = false,
-    val feedHasMore: Boolean = true,
     val backgroundChanging: Boolean = false,
 
     val searchQuery: String = "",
@@ -45,8 +44,17 @@ data class ProfileViewState(
     val searchHasMore: Boolean = true,
     val isLoadingMoreSearch: Boolean = false,
 
+    val likedItems: List<EngagementUser> = emptyList(),
+    val viewedItems: List<EngagementUser> = emptyList(),
+    val followedItems: List<EngagementUser> = emptyList(),
+    val isLoadingLiked: Boolean = false,
+    val isLoadingViewed: Boolean = false,
+    val isLoadingFollowed: Boolean = false,
+    val hasMoreLiked: Boolean = true,
+    val hasMoreViewed: Boolean = true,
+    val hasMoreFollowed: Boolean = true,
+
     val similarModels: List<AgencyModel> = emptyList(),
-    val feedItems: List<FeedItem> = emptyList(),
     val socialLinks: SocialLinks = SocialLinks(),
     val physicalParams: PhysicalParams = PhysicalParams(),
     val statistic: UserStatistic = UserStatistic()
@@ -81,6 +89,11 @@ data class ProfileViewState(
                 add(Destination.EVENT)
             }
         }
+
+    val instagramUser get() = userInfo.model?.instagramUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
+    val tiktokUser get() = userInfo.model?.tiktokUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
+    val youtubeUser get() = userInfo.model?.youtubeUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
+    val website get() = userInfo.model?.websiteUrl?.removePrefix("https://")?.removePrefix("http://").orEmpty()
 }
 
 data class SocialLinks(
@@ -125,8 +138,7 @@ sealed class ProfileIntent : ViewIntent {
         val file: Result<File>
     ) : ProfileIntent()
 
-    class OpenSocialLink(val url: String) : ProfileIntent()
-    class OnLoadEngagementStats(val type: StatsType) : ProfileIntent()
+    class OpenSocialLink(val socialNetworkType: SocialNetworkType) : ProfileIntent()
     class OnSearchQueryChanged(val query: String) : ProfileIntent()
     object OnLoadMoreSearchResults : ProfileIntent()
     object OnLoadMorePortfolio : ProfileIntent()

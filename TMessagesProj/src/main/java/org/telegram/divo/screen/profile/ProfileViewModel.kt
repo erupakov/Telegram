@@ -3,7 +3,8 @@ package org.telegram.divo.screen.profile
 import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
@@ -14,8 +15,8 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.entity.UserSocialNetwork
 import org.telegram.divo.screen.profile.components.StatsType
 import java.io.File
 import kotlin.random.Random
@@ -29,37 +30,71 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
 
     private var searchJob: Job? = null
 
-    private val feedPaginator = OffsetPaginator(
-        limit = PAGE_SIZE
-    ) { offset, limit ->
-        when (val result = DivoApi.publicationRepository.getFeed(offset, limit)) {
+    private val likedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        when (val result = DivoApi.userRepository.getEngagement(offset = offset, limit = limit)) {
             is DivoResult.Success -> {
-                val feed = result.value
+                setState {
+                    copy(statistic = state.value.statistic.copy(following = result.value.liked.totalCount))
+                }
                 PaginatedResult(
-                    items = feed.items,
-                    totalCount = feed.pagination?.totalCount ?: feed.items.size
+                    items = result.value.liked.items,
+                    totalCount = result.value.liked.totalCount
                 )
             }
             else -> throw Exception(result.getErrorMessage())
         }
     }
 
-    private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        when (val result = DivoApi.publicationRepository.searchFeeds(
-            offset = offset,
-            limit = limit,
-            query = state.value.searchQuery
-        )) {
+    private val viewedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        when (val result = DivoApi.userRepository.getEngagement(offset = offset, limit = limit)) {
             is DivoResult.Success -> {
-                val data = result.value
+                setState {
+                    copy(statistic = state.value.statistic.copy(following = result.value.viewed.totalCount))
+                }
                 PaginatedResult(
-                    items = data.items,
-                    totalCount = data.pagination?.totalCount ?: data.items.size
+                    items = result.value.viewed.items,
+                    totalCount = result.value.viewed.totalCount
                 )
             }
             else -> throw Exception(result.getErrorMessage())
         }
     }
+
+    private val followedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        when (val result = DivoApi.userRepository.getEngagement(offset = offset, limit = limit)) {
+            is DivoResult.Success -> {
+                setState {
+                    copy(statistic = state.value.statistic.copy(following = result.value.followed.totalCount))
+                }
+                PaginatedResult(
+                    items = result.value.followed.items,
+                    totalCount = result.value.followed.totalCount
+                )
+            }
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
+
+    init {
+        loadEngagement()
+    }
+
+//    private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+//        when (val result = DivoApi.publicationRepository.searchFeeds(
+//            offset = offset,
+//            limit = limit,
+//            query = state.value.searchQuery
+//        )) {
+//            is DivoResult.Success -> {
+//                val data = result.value
+//                PaginatedResult(
+//                    items = data.items,
+//                    totalCount = data.pagination?.totalCount ?: data.items.size
+//                )
+//            }
+//            else -> throw Exception(result.getErrorMessage())
+//        }
+//    }
 
     private val portfolioPaginator = OffsetPaginator(limit = 12) { offset, limit ->
         when (val result = DivoApi.userRepository.getUserGalleryList(
@@ -101,14 +136,13 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
     override fun handleIntent(intent: ProfileIntent) {
         when (intent) {
             is ProfileIntent.OnLoad -> loadData(userId = intent.userId, isOwnProfile = intent.isOwnProfile)
-            is ProfileIntent.OpenSocialLink -> { } // openLink(intent.url)
+            is ProfileIntent.OpenSocialLink -> openLink(intent.socialNetworkType)
             is ProfileIntent.OnBackgroundPhotoSelected -> { changeBackground(intent.file) }
             is ProfileIntent.OnPortfolioPhotoSelected -> { uploadPhoto(intent.file) }
             is ProfileIntent.OnClearPortfolioUpload -> {}
-            is ProfileIntent.OnLoadEngagementStats -> loadEngagementStats(intent.type, false)
-            is ProfileIntent.OnLoadMoreEngagementStats -> loadEngagementStats(intent.type, true)
-            is ProfileIntent.OnSearchQueryChanged -> onSearchQueryChanged(intent.query)
-            is ProfileIntent.OnLoadMoreSearchResults -> loadMoreSearchResults()
+            is ProfileIntent.OnLoadMoreEngagementStats -> loadMoreEngagement(intent.type)
+            is ProfileIntent.OnSearchQueryChanged -> {}//onSearchQueryChanged(intent.query)
+            is ProfileIntent.OnLoadMoreSearchResults -> {}//loadMoreSearchResults()
             is ProfileIntent.OnLoadMorePortfolio -> loadMorePortfolio()
             is ProfileIntent.OnLoadMoreVideos -> viewModelScope.launch { videoPaginator.loadMore() }
         }
@@ -122,42 +156,63 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             launch { portfolioPaginator.loadInitial() }
             launch { loadSimilarProfiles() }
             launch { videoPaginator.loadInitial() }
-            observePaginator()
-            observeSearchPaginator()
+            observeEngagementPaginators()
+            //observeSearchPaginator()
             observeGalleryListPaginator()
             observeVideoPaginator()
         }
     }
 
-    private fun observePaginator() {
+    private fun observeEngagementPaginators() {
         viewModelScope.launch {
-            feedPaginator.state.collect { pState ->
+            likedPaginator.state.collect { pState ->
                 setState {
                     copy(
-                        feedItems = pState.items,
-                        isLoadingAllUsers = pState.isLoading,
-                        isLoadingMoreFeed = pState.isLoadingMore,
-                        feedHasMore = pState.hasMore,
-                        errorMessage = pState.error ?: state.value.errorMessage
+                        likedItems = pState.items,
+                        isLoadingLiked = pState.isLoading || pState.isLoadingMore,
+                        hasMoreLiked = pState.hasMore
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            viewedPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        viewedItems = pState.items,
+                        isLoadingViewed = pState.isLoading || pState.isLoadingMore,
+                        hasMoreViewed = pState.hasMore
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            followedPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        followedItems = pState.items,
+                        isLoadingFollowed = pState.isLoading || pState.isLoadingMore,
+                        hasMoreFollowed = pState.hasMore
                     )
                 }
             }
         }
     }
 
-    private fun observeSearchPaginator() {
-        viewModelScope.launch {
-            searchPaginator.state.collect { pState ->
-                setState {
-                    copy(
-                        searchResults = pState.items,
-                        isLoadingMoreSearch = pState.isLoadingMore,
-                        searchHasMore = pState.hasMore,
-                    )
-                }
-            }
-        }
-    }
+    //TODO пока нет ручки для поиска
+//    private fun observeSearchPaginator() {
+//        viewModelScope.launch {
+//            searchPaginator.state.collect { pState ->
+//                setState {
+//                    copy(
+//                        searchResults = pState.items,
+//                        isLoadingMoreSearch = pState.isLoadingMore,
+//                        searchHasMore = pState.hasMore,
+//                    )
+//                }
+//            }
+//        }
+//    }
 
     private fun observeGalleryListPaginator() {
         viewModelScope.launch {
@@ -187,38 +242,39 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    private fun onSearchQueryChanged(query: String) {
-        searchJob?.cancel()
-        setState { copy(searchQuery = query) }
-
-        if (query.isBlank()) {
-            searchPaginator.reset()
-            setState { copy(isSearchMode = false) }
-
-            viewModelScope.launch {
-                if (state.value.feedItems.isEmpty()) {
-                    setState { copy(isLoadingStats = true) }
-                    feedPaginator.loadInitial()
-                    setState { copy(isLoadingStats = false) }
-                }
-            }
-            return
-        }
-
-        searchJob = viewModelScope.launch {
-            delay(SEARCH_DEBOUNCE_MS)
-            setState { copy(isSearchMode = true, isLoadingStats = true) }
-            searchPaginator.reset()
-            searchPaginator.loadInitial()
-            setState { copy(isLoadingStats = false) }
-        }
-    }
-
-    private fun loadMoreSearchResults() {
-        viewModelScope.launch {
-            searchPaginator.loadMore()
-        }
-    }
+    //TODO пока нет ручки для поиска
+//    private fun onSearchQueryChanged(query: String) {
+//        searchJob?.cancel()
+//        setState { copy(searchQuery = query) }
+//
+//        if (query.isBlank()) {
+//            searchPaginator.reset()
+//            setState { copy(isSearchMode = false) }
+//
+//            viewModelScope.launch {
+//                if (state.value.feedItems.isEmpty()) {
+//                    setState { copy(isLoadingStats = true) }
+//                    feedPaginator.loadInitial()
+//                    setState { copy(isLoadingStats = false) }
+//                }
+//            }
+//            return
+//        }
+//
+//        searchJob = viewModelScope.launch {
+//            delay(SEARCH_DEBOUNCE_MS)
+//            setState { copy(isSearchMode = true, isLoadingStats = true) }
+//            searchPaginator.reset()
+//            searchPaginator.loadInitial()
+//            setState { copy(isLoadingStats = false) }
+//        }
+//    }
+//
+//    private fun loadMoreSearchResults() {
+//        viewModelScope.launch {
+//            searchPaginator.loadMore()
+//        }
+//    }
 
     private fun loadMorePortfolio() {
         viewModelScope.launch {
@@ -242,19 +298,12 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
                 .filterNotNull()
                 .collect { userData ->
                     val params = mapPhysicalParams(userData)
-                    val social = mapSocialLinks(userData.userSocialNetworks)
-                    val stats = UserStatistic(
-                        followers = userData.statistic.followersCount,
-                        following = userData.statistic.followingCount,
-                        views = userData.statistic.viewsCount,
-                    )
+
                     setState {
                         copy(
                             isLoading = false,
                             userInfo = userData,
                             physicalParams = params,
-                            socialLinks = social,
-                            statistic = stats,
                         )
                     }
                 }
@@ -285,12 +334,6 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
                         isLoading = false,
                         userInfo = userData,
                         physicalParams = mapPhysicalParams(userData),
-                        socialLinks = mapSocialLinks(userData.userSocialNetworks),
-                        statistic = UserStatistic(
-                            followers = userData.statistic.followersCount,
-                            following = userData.statistic.followingCount,
-                            views = userData.statistic.viewsCount,
-                        ),
                     )
                 }
             } else {
@@ -301,15 +344,22 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    //TODO временно
-    private fun loadEngagementStats(type: StatsType, loadMore: Boolean) {
+    private fun loadEngagement() {
         viewModelScope.launch {
-            if (loadMore) {
-                feedPaginator.loadMore()
-            } else {
-                setState { copy(isLoadingStats = true) }
-                feedPaginator.loadInitial()
-                setState { copy(isLoadingStats = false) }
+            listOf(
+                async { likedPaginator.loadInitial() },
+                async { viewedPaginator.loadInitial() },
+                async { followedPaginator.loadInitial() }
+            ).awaitAll()
+        }
+    }
+
+    fun loadMoreEngagement(statsType: StatsType) {
+        viewModelScope.launch {
+            when (statsType) {
+                StatsType.LIKES -> likedPaginator.loadMore()
+                StatsType.VIEWS -> viewedPaginator.loadMore()
+                StatsType.SAVES -> followedPaginator.loadMore()
             }
         }
     }
@@ -393,50 +443,32 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
     }
 
     private fun mapPhysicalParams(user: UserInfo): PhysicalParams {
-        val appearance = user.model.appearance
+        val appearance = user.model?.appearance
 
         return PhysicalParams(
-            gender = user.gender.title,
+            gender = user.gender?.title.orEmpty(),
             age = user.birthday.formattedAge(),
-            height = appearance.height,
-            waist = appearance.waist.toInt(),
-            hips = appearance.hips.toInt(),
-            shoeSize = appearance.shoesSize,
-            hairLength = appearance.hairLength.title,
-            hairColor = appearance.hairColor.title,
-            eyeColor = appearance.eyeColor.title,
-            skinColor = appearance.skinColor.title,
-            breastSize = appearance.breastSize
+            height = appearance?.height ?: 0f,
+            waist = appearance?.waist?.toInt() ?: 0,
+            hips = appearance?.hips?.toInt() ?: 0,
+            shoeSize = appearance?.shoesSize ?: 0f,
+            hairLength = appearance?.hairLength?.title.orEmpty(),
+            hairColor = appearance?.hairColor?.title.orEmpty(),
+            eyeColor = appearance?.eyeColor?.title.orEmpty(),
+            skinColor = appearance?.skinColor?.title.orEmpty(),
+            breastSize = appearance?.breastSize.orEmpty()
         )
     }
 
-    private fun mapSocialLinks(socials: List<UserSocialNetwork>): SocialLinks {
-        return SocialLinks(
-            instagram = socials
-                .firstOrNull { it.provider == "instagram" }
-                ?.name
-                .orEmpty(),
 
-            tiktok = socials
-                .firstOrNull { it.provider == "facebook" }
-                ?.name
-                .orEmpty(),
+    private fun openLink(socialNetworkType: SocialNetworkType) {
+        val url = when (socialNetworkType) {
+            SocialNetworkType.TIKTOK -> state.value.userInfo.model?.tiktokUrl.orEmpty()
+            SocialNetworkType.INSTAGRAM -> state.value.userInfo.model?.instagramUrl.orEmpty()
+            SocialNetworkType.WEBSITE -> state.value.userInfo.model?.websiteUrl.orEmpty()
+            SocialNetworkType.YOUTUBE -> state.value.userInfo.model?.youtubeUrl.orEmpty()
+        }
 
-            youtube = socials
-                .firstOrNull { it.provider == "youtube" }
-                ?.name
-                .orEmpty(),
-
-            website = socials
-                .firstOrNull { it.provider == "website" }
-                ?.name
-                .orEmpty()
-        )
+        sendEffect(ProfileEffect.OpenUrl(url))
     }
-
-//    private fun openLink(url: String) {
-//        if (url.isNotEmpty()) {
-//            sendEffect(ProfileEffect.OpenUrl(url))
-//        }
-//    }
 }

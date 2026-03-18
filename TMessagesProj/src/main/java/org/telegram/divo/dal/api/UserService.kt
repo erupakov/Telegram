@@ -6,6 +6,7 @@ import org.telegram.divo.dal.dto.user.AddGalleryRequest
 import org.telegram.divo.dal.dto.user.AddToGalleryResponse
 import org.telegram.divo.dal.dto.user.AgencyModelsRequest
 import org.telegram.divo.dal.dto.user.AgencyModelsResponse
+import org.telegram.divo.dal.dto.user.EngagementResponse
 import org.telegram.divo.dal.dto.user.UpdateProfileRequest
 import org.telegram.divo.dal.dto.user.UploadFileResponse
 import org.telegram.divo.dal.dto.user.UpsertSocialNetworkRequest
@@ -19,6 +20,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  * User-related endpoints from the Divo backend.
@@ -67,6 +69,12 @@ interface UserService {
 
     @GET("user-social-network")
     suspend fun getUserSocialNetworks(): List<UserSocialNetworkDto>
+
+    @GET("user/engagement")
+    suspend fun getEngagement(
+        @Query("offset") offset: Int,
+        @Query("limit") limit: Int
+    ): EngagementResponse
 }
 
 

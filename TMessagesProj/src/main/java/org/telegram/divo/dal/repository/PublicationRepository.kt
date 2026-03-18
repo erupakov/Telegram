@@ -25,12 +25,9 @@ class PublicationRepository(
     private val _publicationCache = MutableStateFlow<Map<Int, PublicationList>>(emptyMap())
 
     suspend fun getFeed(
-        offset: Int = 0,
-        limit: Int = 5,
+        requestDto: FeedRequestDto
     ): DivoResult<Feed> = resultOf {
-        service.getFeed(
-            FeedRequestDto(offset, limit)
-        ).toEntity()
+        service.getFeed(requestDto).toEntity()
     }
 
     suspend fun searchFeeds(

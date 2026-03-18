@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.common.LaunchedEffectOnce
+import org.telegram.divo.common.LockScreenOrientation
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.uriToFile
 import org.telegram.divo.components.LottieProgressIndicator
@@ -65,6 +66,8 @@ import org.telegram.divo.screen.profile.components.StatsType
 import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBar
 import org.telegram.divo.screen.profile.components.VideoGrid
+import androidx.core.net.toUri
+import org.telegram.divo.entity.SocialNetworkType
 
 @Composable
 fun ProfileScreen(
@@ -89,10 +92,11 @@ fun ProfileScreen(
             when (effect) {
                 is ProfileEffect.OpenUrl -> {
                     try {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(effect.url))
+                        Log.d("MyTag", effect.url)
+                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
                         context.startActivity(intent)
                     } catch (e: Exception) {
-                        // Handle error
+                        Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
                     }
                 }
                 is ProfileEffect.ShowError -> {
@@ -132,8 +136,7 @@ fun ProfileScreen(
                 viewModel.setIntent(ProfileIntent.OnBackgroundPhotoSelected(context.uriToFile(it)))
             },
             onGalleryClicked = { url, isVideo -> onGalleryClicked(url, isVideo) },
-            onSocialLinkClicked = { url ->  }, //viewModel.openSocialLink(url)
-            onStatsClicked = { viewModel.setIntent(ProfileIntent.OnLoadEngagementStats(it)) },
+            onSocialLinkClicked = { viewModel.setIntent(ProfileIntent.OpenSocialLink(it)) },
             onLoadMore = { viewModel.setIntent(ProfileIntent.OnLoadMoreEngagementStats(it)) },
             onQueryChanged = { viewModel.setIntent(ProfileIntent.OnSearchQueryChanged(it)) },
             onLoadMoreSearch = { viewModel.setIntent(ProfileIntent.OnLoadMoreSearchResults) },
@@ -158,7 +161,7 @@ private fun ProfileScreenContent(
     onGalleryClicked: (String, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
     onEditBackgroundClicked: (Uri) -> Unit = {},
-    onSocialLinkClicked: (String) -> Unit = {},
+    onSocialLinkClicked: (SocialNetworkType) -> Unit = {},
     onStatsClicked: (StatsType) -> Unit = {},
     onLoadMore: (StatsType) -> Unit = {},
     onLoadMoreImages: () -> Unit,
@@ -196,12 +199,19 @@ private fun ProfileScreenContent(
     val openGallery = rememberGalleryLauncher { uri ->
         onEditBackgroundClicked(uri)
     }
+    LockScreenOrientation()
 
-    if (showStatsSheet) {
+    val (items, isLoadingMore)  = when (selectedStat) {
+        StatsType.LIKES -> uiState.likedItems to uiState.isLoadingLiked
+        StatsType.VIEWS -> uiState.viewedItems to uiState.isLoadingViewed
+        else -> uiState.followedItems to uiState.isLoadingFollowed
+    }
+
+    if (showStatsSheet && selectedStat != null && items.isNotEmpty()) {
         EngagementStatsBottomSheet(
             stats = selectedStat,
-            feeds = uiState.feedItems,
-            isLoadingMoreFeed = uiState.isLoadingMoreFeed,
+            items = items,
+            isLoadingMoreFeed = isLoadingMore,
             searchQuery = uiState.searchQuery,
             searchResults = uiState.searchResults,
             isSearchMode = uiState.isSearchMode,
@@ -351,7 +361,7 @@ private fun ProfileHeaderContent(
     onEditLinksClicked: () -> Unit,
     showWorkHistory: () -> Unit,
     onStatsClicked: (StatsType) -> Unit,
-    onSocialLinkClicked: (String) -> Unit = {}
+    onSocialLinkClicked: (SocialNetworkType) -> Unit = {}
 ) {
     var selectedBioTab by rememberSaveable { mutableIntStateOf(0) }
 
@@ -385,16 +395,19 @@ private fun ProfileHeaderContent(
             uiState = uiState
         )
 
-        if (uiState.userInfo.model.agency.title.isNotEmpty()) {
+        if (uiState.userInfo.model?.agency != null) {
             AgencyInfoSection(
                 title = uiState.userInfo.model.agency.title,
-                photoUrl = uiState.userInfo.model.agency.photo.fullUrl,
+                photoUrl = uiState.userInfo.model.agency.photo?.fullUrl.orEmpty(),
                 onClicked = showWorkHistory
             )
         }
 
         SocialLinksSection(
-            socialLinks = uiState.socialLinks,
+            instagram = uiState.instagramUser,
+            tiktok = uiState.tiktokUser,
+            youtube = uiState.youtubeUser,
+            website = uiState.website,
             isOwnProfile = uiState.isOwnProfile,
             onEditLinksClicked = onEditLinksClicked,
             onSocialLinkClicked = onSocialLinkClicked

@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.models
 
+import android.widget.Toast
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,21 +12,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.pager.PagerDefaults
-import androidx.compose.foundation.pager.VerticalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -39,7 +42,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -48,6 +50,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,7 +58,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -65,6 +70,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -73,11 +79,14 @@ import coil.imageLoader
 import coil.request.ImageRequest
 import coil.size.Size
 import com.google.android.exoplayer2.util.Log
+import kotlinx.coroutines.flow.distinctUntilChanged
 import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.LaunchedEffectOnce
 import org.telegram.divo.common.LockScreenOrientation
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.RoleChip
+import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.components.items.DMButton
 import org.telegram.divo.components.rememberIsOnline
@@ -100,11 +109,20 @@ fun ModelsHomeScreen(
     onClick: (Int) -> Unit = {},
     onPhotoClicked: (List<GalleryItem>, Int) -> Unit = { _, _ -> },
 ) {
+    val context = LocalContext.current
     val state by viewModel.state.collectAsState()
-    val currentModels = if (state.selectedTab == Tab.ALL_USERS) state.allUserModels else state.models
-    val currentRestModels = if (state.selectedTab == Tab.ALL_USERS) state.feedItems else listOf()
-    val pagerState = rememberPagerState(pageCount = { currentRestModels.size })
+    val currentRestModels = state.feedItems
 
+    val listState = rememberLazyListState()
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    val bottomInset = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
+    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val cardHeight = remember(bottomInset, statusBarHeight) {
+        screenHeight - statusBarHeight - bottomInset - 284.dp
+    }
+    Log.d("MyTag", currentRestModels.isEmpty().toString())
     val isOnline = rememberIsOnline()
     if (!isOnline) {
         Log.d("MyTag", "Ожидание сети...")
@@ -113,117 +131,164 @@ fun ModelsHomeScreen(
     }
 
     LockScreenOrientation()
-    LaunchedEffect(Unit) {
+
+    LaunchedEffectOnce {
         viewModel.setIntent(ModelsViewIntent.LoadInitialData)
     }
 
-    if (state.selectedTab == Tab.ALL_USERS) {
-        LaunchedEffect(pagerState.currentPage, currentRestModels.size) {
-            if (currentRestModels.isNotEmpty()
-                && pagerState.currentPage >= currentRestModels.size - 3
-                && state.feedHasMore
-                && !state.isLoadingAllUsers
-                && !state.isLoadingMoreFeed
-            ) {
-                viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
-            }
+    LaunchedEffect(state.error) {
+        if (!state.error.isNullOrBlank()) {
+            Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
         }
     }
 
+    LaunchedEffect(
+        listState,
+        currentRestModels.size,
+        state.feedHasMore,
+        state.isLoadingAllUsers,
+        state.isLoadingMoreFeed,
+        state.selectedTab
+    ) {
+        snapshotFlow {
+            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+        }
+            .distinctUntilChanged()
+            .collect { lastVisibleIndex ->
+                if (currentRestModels.isNotEmpty() &&
+                    lastVisibleIndex >= currentRestModels.size - 3 &&
+                    state.feedHasMore &&
+                    !state.isLoadingAllUsers &&
+                    !state.isLoadingMoreFeed
+                ) {
+                    viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
+                }
+            }
+    }
+
     Scaffold(
-        modifier = Modifier
-            .fillMaxSize(),
-        containerColor = Color.White,
+        modifier = Modifier.fillMaxSize(),
+        containerColor = AppTheme.colors.backgroundNew,
+        contentColor = AppTheme.colors.backgroundNew,
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    Color.White
+                    containerColor = AppTheme.colors.backgroundNew,
+                    scrolledContainerColor = AppTheme.colors.backgroundNew,
                 ),
                 title = {
-                    TextTitle("Models".uppercase())
-                },
-                actions = {
-                    IconButton(onClick = {}) {
-                        androidx.compose.material3.Icon(
-                            modifier = Modifier,
-                            painter = painterResource(R.drawable.ic_ab_search),
-                            contentDescription = "",
-                            tint = AppTheme.colors.buttonColor
-                        )
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp),
+                        contentAlignment = Alignment.BottomStart
+                    ) {
+                        TextTitle("Models".uppercase())
                     }
                 },
+                actions = {
+                    RoundedButton(
+                        modifier = Modifier.padding(end = 8.dp),
+                        resId = R.drawable.ic_divo_search_24,
+                        iconSize = 24.dp,
+                        onClick = onSearch
+                    )
+                },
+                scrollBehavior = scrollBehavior
             )
         }
     ) { paddingValues ->
-        Box(
-            Modifier
+        LazyColumn(
+            state = listState,
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(top = paddingValues.calculateTopPadding())
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .background(AppTheme.colors.backgroundNew),
+            contentPadding = PaddingValues(bottom = bottomInset + 66.dp)
         ) {
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.White)
-            ) {
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                StoriesRow()
-
+            item { Spacer(modifier = Modifier.height(8.dp)) }
+            item { StoriesRow() }
+            item {
                 TabsRow(
                     tabs = Tab.entries.map { it.displayName.uppercase() },
                     selectedIndex = state.selectedTab.ordinal,
-                    onTabSelected = {
-                        viewModel.setIntent(ModelsViewIntent.OnTabSelected(Tab.entries.get(it)))
-                    },
+                    onTabSelected = { viewModel.setIntent(ModelsViewIntent.OnTabSelected(Tab.entries[it])) }
                 )
+            }
 
-                when {
-                    state.selectedTab != Tab.ALL_USERS && !state.showMockData -> {
-                        NotImplementedPlaceholder(
+            when {
+                state.selectedTab == Tab.AGENCIES_PRO -> {
+                    item {
+                        Box(
                             modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            onShowMockData = {
-                                viewModel.setIntent(ModelsViewIntent.OnShowMockDataClicked)
-                            }
-                        )
-                    }
-                    currentRestModels.isEmpty() && state.isLoadingAllUsers -> {
-                        Column(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                                .fillMaxSize()
                         ) {
-                            LottieProgressIndicator(modifier = Modifier.size(32.dp))
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = stringResource(R.string.LoadingModelsList).uppercase(),
-                                style = AppTheme.typography.helveticaNeueLtCom,
-                                fontSize = 12.sp,
-                                color = Color.Black
+                            Placeholder(
+                                modifier = Modifier.align(Alignment.Center),
+                                cardHeight = cardHeight,
+                                onShowMockData = { viewModel.setIntent(ModelsViewIntent.OnShowMockDataClicked) }
                             )
                         }
                     }
-                    else -> {
-                        VerticalPager(
-                            state = pagerState,
+                }
+
+                currentRestModels.isEmpty() && !state.isLoadingAllUsers -> {
+                    item {
+                        Box(
                             modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            reverseLayout = false,
-                            userScrollEnabled = true,
-                            beyondViewportPageCount = 1,
-                            flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
-                        ) { page ->
-                            ModelPage(
-                                feed = currentRestModels[page],
-                                onClick = { onClick(it) },
-                                onPhotoClicked = onPhotoClicked
+                                .fillMaxSize()
+                        ) {
+                            Placeholder(
+                                modifier = Modifier.align(Alignment.Center),
+                                text = state.emptyText.uppercase(),
+                                cardHeight = cardHeight,
+                                onShowMockData = { viewModel.setIntent(ModelsViewIntent.OnShowMockDataClicked) }
                             )
                         }
+                    }
+                }
+
+                currentRestModels.isEmpty() && state.isLoadingAllUsers -> {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .fillMaxWidth()
+                                    .height(cardHeight)
+                                    .padding(top = 18.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ) {
+                                LottieProgressIndicator(modifier = Modifier.size(32.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Text(
+                                    text = stringResource(R.string.LoadingModelsList).uppercase(),
+                                    style = AppTheme.typography.helveticaNeueLtCom,
+                                    fontSize = 12.sp,
+                                    color = Color.Black
+                                )
+                            }
+                        }
+                    }
+                }
+
+                else -> {
+                    itemsIndexed(
+                        items = currentRestModels,
+                        key = { i, d -> d.id }
+                    ) { i, feedItem ->
+                        Log.d("ModelPage", "$i")
+                        ModelPage(
+                            feed = feedItem,
+                            cardHeight = cardHeight,
+                            onClick = onClick,
+                            onPhotoClicked = onPhotoClicked
+                        )
                     }
                 }
             }
@@ -240,7 +305,7 @@ private fun StoriesRow(
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White),
+            .background(AppTheme.colors.backgroundNew),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -261,7 +326,7 @@ private fun StoriesRow(
                         }
                         .then(
                             if (story.id == "0") {
-                                Modifier.background(Color(0xFFE7E7E8))
+                                Modifier.background(Color.White)
                             } else {
                                 Modifier.border(
                                     width = 3.dp, brush = Brush.horizontalGradient(
@@ -279,11 +344,11 @@ private fun StoriesRow(
                     Card(
                         modifier = Modifier
                             .size(54.dp)
-                            .background(Color(0xFFE7E7E8)),
+                            .background(Color.White),
                         shape = CircleShape,
                     ) {
                         Box(
-                            modifier = Modifier.fillMaxSize().background(Color(0xFFE7E7E8)),
+                            modifier = Modifier.fillMaxSize().background(Color.White),
                             contentAlignment = Alignment.Center,
                         ) {
                             if (story.id == "0") {
@@ -293,7 +358,7 @@ private fun StoriesRow(
                                     tint = Color.Black,
                                     modifier = Modifier
                                         .size(24.dp)
-                                        .background(Color(0xFFE7E7E8))
+                                        .background(Color.White)
                                 )
                             } else {
                                 Image(
@@ -349,7 +414,7 @@ fun TabsRow(
     TabRow(
         selectedTabIndex = selectedIndex,
         modifier = modifier.fillMaxWidth(),
-        backgroundColor = Color.White,
+        backgroundColor = AppTheme.colors.backgroundNew,
         contentColor = activeColor,
         indicator = { tabPositions ->
             val targetIndicatorWidth = tabWidths[selectedIndex]
@@ -404,28 +469,33 @@ fun TabsRow(
 
 @Composable
 private fun ModelPage(
+    modifier: Modifier = Modifier,
     feed: FeedItem,
+    cardHeight: Dp,
     onClick: (Int) -> Unit,
     onPhotoClicked: (List<GalleryItem>, Int) -> Unit,
 ) {
     val backgroundPhoto = feed.files.first().url
     Box(
-        modifier = Modifier.fillMaxSize().clickableWithoutRipple { onClick(feed.id) },
+        modifier = modifier
+            .fillMaxWidth()
+            .height(cardHeight)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .clip(RoundedCornerShape(26.dp))
+            .clickableWithoutRipple { onClick(feed.id) },
         contentAlignment = Alignment.TopEnd
     ) {
-        if (backgroundPhoto.isNotEmpty()) {
-            DivoAsyncImage(
-                modifier = Modifier.fillMaxSize(),
-                model = backgroundPhoto,
-                loadingContent = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.White)
-                    )
-                }
-            )
-        }
+        DivoAsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = backgroundPhoto,
+            loadingContent = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                )
+            }
+        )
 
         Column(
             Modifier
@@ -561,7 +631,6 @@ private fun ModelPage(
                     onPhotoClicked(items, it)
                 }
             )
-            Spacer(Modifier.navigationBarsPadding().height(60.dp))
         }
     }
 }
@@ -631,6 +700,7 @@ private fun ThumbsRow(
             DivoAsyncImage(
                 modifier = Modifier
                     .size(width = 126.dp, height = 136.dp)
+                    .clip(RoundedCornerShape(16.dp))
                     .clickableWithoutRipple { onPhotoClicked(index) },
                 model = thumb.url,
                 placeholderColor = Color.Transparent,
@@ -651,39 +721,27 @@ private fun ThumbsRow(
 
 
 @Composable
-private fun NotImplementedPlaceholder(
+private fun Placeholder(
     modifier: Modifier = Modifier,
+    cardHeight: Dp,
+    text: String = "NOT IMPLEMENTED YET",
     onShowMockData: () -> Unit
 ) {
     Column(
         modifier = modifier
-            .background(Color.White)
-            .padding(horizontal = 32.dp),
+            .fillMaxWidth()
+            .height(cardHeight)
+            .padding(top = 18.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "NOT IMPLEMENTED YET",
+            text = text,
             fontFamily = HelveticaNeue,
             fontWeight = FontWeight.Bold,
             fontSize = 18.sp,
             color = Color(0xFF222222)
         )
-        Spacer(Modifier.height(24.dp))
-        Card(
-            onClick = onShowMockData,
-            shape = RoundedCornerShape(12.dp),
-            colors = CardDefaults.cardColors(containerColor = AppTheme.colors.accentColor)
-        ) {
-            Text(
-                text = "SEE TEST UI WITH MOCK DATA",
-                fontFamily = HelveticaNeue,
-                fontWeight = FontWeight.Bold,
-                fontSize = 14.sp,
-                color = Color.White,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 14.dp)
-            )
-        }
     }
 }
 

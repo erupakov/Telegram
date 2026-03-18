@@ -31,45 +31,45 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
             is YourParametersIntent.OnHipsChanged -> updateAppearance { copy(hips = intent.hips) }
             is YourParametersIntent.OnShoeSizeChanged -> updateAppearance { copy(shoesSize = intent.shoeSize) }
             is YourParametersIntent.OnHairLengthChanged -> setState {
-                val appearance = userFull.model.appearance.copy(
+                val appearance = userFull.model?.appearance?.copy(
                     hairLength = userFull.model.appearance.hairLength.copy(id = intent.hairLength, title = intent.title)
                 )
                 copy(
-                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    userFull = userFull.copy(model = userFull.model?.copy(appearance = appearance)),
                     touchedFields = touchedFields + ParameterField.HAIR_LENGTH
                 )
             }
             is YourParametersIntent.OnHairColorChanged -> setState {
-                val appearance = userFull.model.appearance.copy(
+                val appearance = userFull.model?.appearance?.copy(
                     hairColor = userFull.model.appearance.hairColor.copy(id = intent.color, title = intent.title)
                 )
                 copy(
-                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    userFull = userFull.copy(model = userFull.model?.copy(appearance = appearance)),
                     touchedFields = touchedFields + ParameterField.HAIR_COLOR
                 )
             }
             is YourParametersIntent.OnEyeColorChanged -> setState {
-                val appearance = userFull.model.appearance.copy(
+                val appearance = userFull.model?.appearance?.copy(
                     eyeColor = userFull.model.appearance.eyeColor.copy(id = intent.color, title = intent.title)
                 )
                 copy(
-                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    userFull = userFull.copy(model = userFull.model?.copy(appearance = appearance)),
                     touchedFields = touchedFields + ParameterField.EYE_COLOR
                 )
             }
             is YourParametersIntent.OnSkinColorChanged -> setState {
-                val appearance = userFull.model.appearance.copy(
+                val appearance = userFull.model?.appearance?.copy(
                     skinColor = userFull.model.appearance.skinColor.copy(id = intent.color, title = intent.title)
                 )
                 copy(
-                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    userFull = userFull.copy(model = userFull.model?.copy(appearance = appearance)),
                     touchedFields = touchedFields + ParameterField.SKIN_COLOR
                 )
             }
             is YourParametersIntent.OnBreastSizeChanged -> setState {
-                val appearance = userFull.model.appearance.copy(breastSize = intent.size)
+                val appearance = userFull.model?.appearance?.copy(breastSize = intent.size)
                 copy(
-                    userFull = userFull.copy(model = userFull.model.copy(appearance = appearance)),
+                    userFull = userFull.copy(model = userFull.model?.copy(appearance = appearance)),
                     touchedFields = touchedFields + ParameterField.BREAST_SIZE
                 )
             }
@@ -81,8 +81,8 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
 
     private fun updateAppearance(update: Appearance.() -> Appearance) {
         setState {
-            val appearance = userFull.model.appearance.update()
-            val model = userFull.model.copy(appearance = appearance)
+            val appearance = userFull.model?.appearance?.update()
+            val model = userFull.model?.copy(appearance = appearance)
             copy(userFull = userFull.copy(model = model))
         }
     }

@@ -34,7 +34,7 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
                     copy(
                         fName = parts.getOrNull(0).orEmpty(),
                         lName = parts.getOrNull(1).orEmpty(),
-                        bio = user.customer?.description.orEmpty(),
+                        bio = user.model?.description.orEmpty(),
                         userFull = user,
                         avatarUrl = user.avatarUrl,
                         isLoading = false
@@ -70,7 +70,7 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
                 val result = DivoApi.userRepository.updateProfile(
                     userInfo = userInfo.copy(
                         fullName = "$fNameRaw $lNameRaw",
-                        customer = userInfo.customer?.copy(description = aboutRaw),
+                        model = userInfo.model?.copy(description = aboutRaw),
                         avatarUuid = uploadedUuid
                     )
                 )

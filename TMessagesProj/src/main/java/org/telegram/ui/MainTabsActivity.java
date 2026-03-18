@@ -94,7 +94,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             iBlur3SourceTabGlass.setupRenderer(new RenderNodeWithHash.Renderer() {
                 @Override
                 public void renderNodeCalculateHash(IBlur3Hash hash) {
-                    hash.add(getThemedColor(Theme.key_windowBackgroundWhite));
+                    hash.add(0xFFFFFFFF); // Force White
                     hash.add(SharedConfig.chatBlurEnabled());
 
                     for (int a = 0, N = fragmentsArr.size(); a < N; a++) {
@@ -127,7 +127,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                     final int width = fragmentView.getMeasuredWidth();
                     final int height = fragmentView.getMeasuredHeight();
 
-                    canvas.drawColor(getThemedColor(Theme.key_windowBackgroundWhite));
+                    canvas.drawColor(0xFFFFFFFF); // Force White
 
                     for (int a = 0, N = fragmentsArr.size(); a < N; a++) {
                         final FragmentState state = fragmentsArr.valueAt(a);
@@ -245,7 +245,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
         selectTab(viewPager.getCurrentPosition(), false);
 
-        iBlur3SourceColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
+        iBlur3SourceColor.setColor(0xFFFFFFFF); // Force White
 
 
         ViewPositionWatcher viewPositionWatcher = new ViewPositionWatcher(contentView);
@@ -689,7 +689,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     }
 
     private void blur3_updateColors() {
-        iBlur3SourceColor.setColor(getThemedColor(Theme.key_windowBackgroundWhite));
+        iBlur3SourceColor.setColor(0xFFFFFFFF); // Force White
         tabsViewBackground.updateColors();
         blur3_invalidateBlur();
         fadeView.invalidate();
