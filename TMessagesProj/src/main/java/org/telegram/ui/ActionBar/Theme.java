@@ -4983,7 +4983,7 @@ public class Theme {
                 oldEditorNew.commit();
             }
 
-            selectedAutoNightType = preferences.getInt("selectedAutoNightType", Build.VERSION.SDK_INT >= 29 ? AUTO_NIGHT_TYPE_SYSTEM : AUTO_NIGHT_TYPE_NONE);
+            selectedAutoNightType = AUTO_NIGHT_TYPE_NONE;//DIVO preferences.getInt("selectedAutoNightType", Build.VERSION.SDK_INT >= 29 ? AUTO_NIGHT_TYPE_SYSTEM : AUTO_NIGHT_TYPE_NONE);
             autoNightScheduleByLocation = preferences.getBoolean("autoNightScheduleByLocation", false);
             autoNightBrighnessThreshold = preferences.getFloat("autoNightBrighnessThreshold", 0.25f);
             autoNightDayStartTime = preferences.getInt("autoNightDayStartTime", 22 * 60);
@@ -5093,7 +5093,7 @@ public class Theme {
 
     public static void saveAutoNightThemeConfig() {
         SharedPreferences.Editor editor = MessagesController.getGlobalMainSettings().edit();
-        editor.putInt("selectedAutoNightType", selectedAutoNightType);
+        editor.putInt("selectedAutoNightType", AUTO_NIGHT_TYPE_NONE); //DIVO selectedAutoNightType
         editor.putBoolean("autoNightScheduleByLocation", autoNightScheduleByLocation);
         editor.putFloat("autoNightBrighnessThreshold", autoNightBrighnessThreshold);
         editor.putInt("autoNightDayStartTime", autoNightDayStartTime);

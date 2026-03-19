@@ -1,5 +1,8 @@
 package org.telegram.divo.screen.gallery
 
+import android.content.Intent
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -8,13 +11,17 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -22,6 +29,10 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -40,20 +51,28 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.LaunchedEffectOnce
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.BackButton
+import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.components.PopupMenuItem
+import org.telegram.divo.screen.profile.ProfileEffect
+import org.telegram.messenger.R
 import kotlin.math.abs
 
 @Composable
 fun GalleryViewerScreen(
     viewModel: GalleryViewerViewModel = viewModel(),
+    isOwnProfile: Boolean = false,
     source: GallerySource,
     onBack: () -> Unit,
 ) {
@@ -61,7 +80,20 @@ fun GalleryViewerScreen(
         viewModel.setIntent(GalleryIntent.OnLoad(source))
     }
 
+    val context = LocalContext.current
     val uiState by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                GalleryEffect.Deleted -> {
+                    onBack()
+                    Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show()
+                }
+                is GalleryEffect.ShowError -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     if (uiState.source == null || uiState.isLoading) {
         Box(
@@ -80,8 +112,10 @@ fun GalleryViewerScreen(
 
     GalleryPagerContent(
         uiState = uiState,
+        isOwnProfile = isOwnProfile,
         onLoadMore = { viewModel.setIntent(GalleryIntent.OnLoadMore) },
         onBack = onBack,
+        onDelete = { viewModel.setIntent(GalleryIntent.OnDelete(it)) }
     )
 }
 
@@ -89,8 +123,10 @@ fun GalleryViewerScreen(
 @Composable
 private fun GalleryPagerContent(
     uiState: GalleryViewerState,
+    isOwnProfile: Boolean,
     onLoadMore: () -> Unit,
     onBack: () -> Unit,
+    onDelete: (Int) -> Unit,
 ) {
     val pagerState = rememberPagerState(
         initialPage = uiState.initialIndex,
@@ -101,6 +137,7 @@ private fun GalleryPagerContent(
     val scope = rememberCoroutineScope()
 
     var isSyncingFromPager by remember { mutableStateOf(false) }
+    var showDropdownMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState.currentPage) {
         if (!thumbnailListState.isScrollInProgress) {
@@ -112,6 +149,14 @@ private fun GalleryPagerContent(
             } finally {
                 isSyncingFromPager = false
             }
+        }
+    }
+
+    LaunchedEffect(controlsVisible, pagerState.currentPage) {
+        if (controlsVisible) {
+            val index = pagerState.currentPage
+                .coerceAtMost((uiState.items.size - 1).coerceAtLeast(0))
+            thumbnailListState.scrollToItem(index)
         }
     }
 
@@ -132,7 +177,7 @@ private fun GalleryPagerContent(
                 && centerIndex in 0 until uiState.items.size
                 && centerIndex != pagerState.currentPage
             ) {
-                pagerState.scrollToPage(centerIndex)   // мгновенно, без анимации
+                pagerState.scrollToPage(centerIndex)
             }
         }
     }
@@ -157,7 +202,7 @@ private fun GalleryPagerContent(
             modifier = Modifier.fillMaxSize(),
             beyondViewportPageCount = 2,
             key = { page ->
-                if (page < uiState.items.size) uiState.items[page].url else "loader"
+                if (page < uiState.items.size) "${uiState.items[page].url}$page" else "loader"
             }
         ) { page ->
             if (page >= uiState.items.size) {
@@ -188,11 +233,39 @@ private fun GalleryPagerContent(
             exit = fadeOut(tween(200)),
             modifier = Modifier.align(Alignment.TopStart),
         ) {
-            BackButton(
-                modifier = Modifier.padding(start = 16.dp, top = 44.dp),
-                onBackClicked = onBack
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                BackButton(
+                    modifier = Modifier.padding(start = 16.dp),
+                    onBackClicked = onBack
+                )
+                if (isOwnProfile) {
+                    IconButton(onClick = { showDropdownMenu = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = null, tint = Color.White)
+                    }
+                }
+            }
         }
+
+        DivoPopupMenu(
+            visible = showDropdownMenu,
+            onDismiss = { showDropdownMenu = false },
+            offset = IntOffset(x = -32, y = 100),
+            items = listOf(
+                PopupMenuItem(
+                    titleRes = R.string.ButtonDelete,
+                    onClick = {
+                        val currentItem = uiState.items.getOrNull(pagerState.currentPage)
+                        currentItem?.let { onDelete(it.id) }
+                    }
+                ),
+            )
+        )
 
         val isPhotoSource =
             uiState.source is GallerySource.Portfolio || uiState.source is GallerySource.Feed

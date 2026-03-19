@@ -149,6 +149,7 @@ fun ProfileNavGraph(
 
             GalleryViewerScreen(
                 source = source,
+                isOwnProfile = isOwnProfile,
                 onBack = { if (!nav.popBackStack()) onNavigateBack() },
             )
         }

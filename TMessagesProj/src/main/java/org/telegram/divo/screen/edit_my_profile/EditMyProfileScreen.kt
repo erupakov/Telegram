@@ -86,7 +86,15 @@ fun EditMyProfileScreen(
 //    }
     val context = LocalContext.current
     val parametersSavedText = stringResource(R.string.ParametersSaved)
-    // Refresh data when screen becomes visible
+
+    val uiState = viewModel.state.collectAsState().value
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { ProfileDestination.entries.size }
+    )
+    var selectedTab by remember { mutableIntStateOf(0) }
+    val scope = rememberCoroutineScope()
+
     LifecycleResumeEffect(Unit) {
         viewModel.getData()
         onPauseOrDispose { }
@@ -98,26 +106,18 @@ fun EditMyProfileScreen(
                 Effect.NavigateBack -> onCloseScreen()
                 Effect.SaveSuccess -> {
                     Toast.makeText(context, parametersSavedText, Toast.LENGTH_SHORT).show()
-                    onCloseScreen()
+                    val page = ProfileDestination.APPEARANCE.ordinal
+                    selectedTab = page
+                    pagerState.scrollToPage(page)
                 }
             }
         }
     }
 
-    val uiState = viewModel.state.collectAsState().value
-    val pagerState = rememberPagerState(
-        initialPage = 0,
-        pageCount = { ProfileDestination.entries.size }
-    )
-    var selectedTab by remember { mutableIntStateOf(0) }
-    val scope = rememberCoroutineScope()
-
     Scaffold(
         containerColor = AppTheme.colors.backgroundDark,
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier.padding(top = 36.dp),
-                windowInsets = WindowInsets(0, 0, 0, 0),
                 title = {
                     Text(
                         modifier = Modifier.padding(top = 3.dp),

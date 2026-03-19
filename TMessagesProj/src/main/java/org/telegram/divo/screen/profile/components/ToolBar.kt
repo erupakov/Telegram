@@ -44,6 +44,8 @@ import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.telegram.divo.common.formattedAge
 import org.telegram.divo.components.BackButton
+import org.telegram.divo.components.DivoPopupMenu
+import org.telegram.divo.components.PopupMenuItem
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -97,60 +99,16 @@ fun ToolBar(
             }
         }
 
-        if (showDropdownMenu) {
-            Popup(
-                alignment = Alignment.TopEnd,
-                offset = IntOffset(x = -32, y = 146),
-                onDismissRequest = { showDropdownMenu = false },
-                properties = PopupProperties(focusable = true)
-            ) {
-                Surface(
-                    modifier = Modifier.width(250.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    color = Color(0xFFEEEEEE),
-                    shadowElevation = 8.dp,
-                    tonalElevation = 0.dp
-                ) {
-                    Column {
-                        val items = listOf(
-                            R.string.EditProfile to onEditProfileClicked,
-                            R.string.ChangeProfileBackground to onEditBackgroundClicked,
-                            R.string.EditSocialLinks to onEditSocialLinksClicked,
-                            R.string.ManageWorkExperience to onManageWorkExperienceClicked,
-                        )
-
-                        items.forEachIndexed { index, (title, action) ->
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = stringResource(title),
-                                        style = AppTheme.typography.manropeRegular,
-                                        fontSize = 17.sp,
-                                        color = Color.Black
-                                    )
-                                },
-                                onClick = {
-                                    showDropdownMenu = false
-                                    action()
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(
-                                    horizontal = 16.dp,
-                                    vertical = 11.dp
-                                )
-                            )
-
-                            if (index < items.lastIndex) {
-                                HorizontalDivider(
-                                    color = Color(0xFFE0E0E0),
-                                    thickness = 0.5.dp
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        DivoPopupMenu(
+            visible = showDropdownMenu,
+            onDismiss = { showDropdownMenu = false },
+            items = listOf(
+                PopupMenuItem(R.string.EditProfile, onEditProfileClicked),
+                PopupMenuItem(R.string.ChangeProfileBackground, onEditBackgroundClicked),
+                PopupMenuItem(R.string.EditSocialLinks, onEditSocialLinksClicked),
+                PopupMenuItem(R.string.ManageWorkExperience, onManageWorkExperienceClicked),
+            )
+        )
 
         Box(
             modifier = Modifier.align(Alignment.CenterEnd)

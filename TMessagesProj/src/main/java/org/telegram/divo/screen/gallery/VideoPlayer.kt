@@ -123,6 +123,7 @@ fun VideoPlayer(
     }
 
     var isReady by remember { mutableStateOf(false) }
+    var isBuffering by remember { mutableStateOf(false) }
     var isPlaying by remember { mutableStateOf(true) }
     var duration by remember { mutableLongStateOf(0L) }
     var currentPosition by remember { mutableLongStateOf(0L) }
@@ -147,6 +148,10 @@ fun VideoPlayer(
             override fun onPlaybackStateChanged(state: Int) {
                 if (state == Player.STATE_READY) {
                     if (player.duration > 0L) duration = player.duration
+                    isBuffering = false
+                }
+                if (state == Player.STATE_BUFFERING) {
+                    isBuffering = true
                 }
             }
             override fun onVideoSizeChanged(videoSize: VideoSize) {
@@ -235,7 +240,12 @@ fun VideoPlayer(
                     },
                 contentAlignment = Alignment.Center,
             ) {
-                if (isPlaying) {
+                if (isBuffering) {
+                    LottieProgressIndicator(
+                        modifier = Modifier.size(32.dp),
+                        color = Color.White,
+                    )
+                } else if (isPlaying) {
                     Canvas(modifier = Modifier.size(28.dp)) {
                         val barWidth = size.width * 0.22f
                         val barHeight = size.height * 0.75f

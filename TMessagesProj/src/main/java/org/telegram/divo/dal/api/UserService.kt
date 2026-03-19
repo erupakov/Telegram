@@ -1,6 +1,7 @@
 package org.telegram.divo.dal.api
 
 import okhttp3.MultipartBody
+import org.telegram.divo.dal.dto.common.EmptyResponse
 import org.telegram.divo.dal.dto.common.UserSocialNetworkDto
 import org.telegram.divo.dal.dto.user.AddGalleryRequest
 import org.telegram.divo.dal.dto.user.AddToGalleryResponse
@@ -15,6 +16,7 @@ import org.telegram.divo.dal.dto.user.UserGalleryListResponse
 import org.telegram.divo.dal.dto.user.UserInfoResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -44,6 +46,11 @@ interface UserService {
     suspend fun getUserGalleryList(
         @Body request: UserGalleryListRequest
     ): UserGalleryListResponse
+
+    @DELETE("user-gallery/{id}")
+    suspend fun deleteFromGallery(
+        @Path("id") id: Int
+    ): EmptyResponse
 
     @POST("agency/{agencyId}/models/list")
     suspend fun getAgencyModels(

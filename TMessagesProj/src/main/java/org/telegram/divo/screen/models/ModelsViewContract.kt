@@ -62,7 +62,7 @@ data class ModelsViewState(
     val tabHasMore: Map<Tab, Boolean> = Tab.entries.associateWith { true },
     val stories: List<Story> = emptyList(),
     val models: List<Model> = emptyList(),
-    val selectedTab: Tab = Tab.SUBSCRIBED,
+    val selectedTab: Tab = Tab.ALL_USERS,
     val isLoading: Boolean = false,
     val error: String? = null,
     val allUserModels: List<Model> = emptyList(),

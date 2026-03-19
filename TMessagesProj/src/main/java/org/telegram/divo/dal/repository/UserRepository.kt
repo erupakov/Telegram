@@ -138,6 +138,18 @@ class UserRepository(
         }
     }
 
+    suspend fun deleteFromGallery(id: Int): DivoResult<Unit> = resultOf {
+        service.deleteFromGallery(id)
+        _currentUserCache.value?.id?.let { userId ->
+            _galleryCache.update { cache ->
+                val existing = cache[userId] ?: return@update cache
+                cache + (userId to existing.copy(
+                    items = existing.items.filter { it.id != id }
+                ))
+            }
+        }
+    }
+
     suspend fun uploadPhoto(file: File): DivoResult<UploadedFile> = resultOf {
         service.uploadFile(file.toMultipart()).toEntity()
     }

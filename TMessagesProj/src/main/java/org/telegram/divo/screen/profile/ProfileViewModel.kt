@@ -113,7 +113,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    private val videoPaginator = OffsetPaginator(limit = 15) { offset, limit ->
+    private val videoPaginator = OffsetPaginator(limit = 10) { offset, limit ->
         when (val result = DivoApi.publicationRepository.getPublicationList(
             offset = offset,
             limit = limit,
@@ -139,6 +139,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             is ProfileIntent.OpenSocialLink -> openLink(intent.socialNetworkType)
             is ProfileIntent.OnBackgroundPhotoSelected -> { changeBackground(intent.file) }
             is ProfileIntent.OnPortfolioPhotoSelected -> { uploadPhoto(intent.file) }
+            is ProfileIntent.OnVideoSelected -> uploadVideo(intent.file)
             is ProfileIntent.OnClearPortfolioUpload -> {}
             is ProfileIntent.OnLoadMoreEngagementStats -> loadMoreEngagement(intent.type)
             is ProfileIntent.OnSearchQueryChanged -> {}//onSearchQueryChanged(intent.query)
@@ -219,12 +220,21 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             portfolioPaginator.state.collect { pState ->
                 setState {
                     copy(
-                        userGalleryItems = pState.items,
                         isLoadingMoreImages = pState.isLoadingMore,
                         hasMoreImages = pState.hasMore
                     )
                 }
             }
+        }
+
+        viewModelScope.launch {
+            DivoApi.userRepository.galleryFlow(state.value.userId)
+                .filterNotNull()
+                .collect { gallery ->
+                    setState {
+                        copy(userGalleryItems = gallery.items)
+                    }
+                }
         }
     }
 
@@ -233,12 +243,26 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
             videoPaginator.state.collect { pState ->
                 setState {
                     copy(
-                        videoItems = pState.items.distinctBy { it.id }.toPersistentList(),
                         isLoadingMoreVideos = pState.isLoadingMore,
                         hasMoreVideos = pState.hasMore,
                     )
                 }
             }
+        }
+
+        viewModelScope.launch {
+            DivoApi.publicationRepository.publicationFlow(state.value.userId)
+                .filterNotNull()
+                .collect { data ->
+                    setState {
+                        copy(
+                            videoItems = data.items
+                                .filter { it.files.any { f -> f.isVideo } }
+                                .distinctBy { it.id }
+                                .toPersistentList()
+                        )
+                    }
+                }
         }
     }
 
@@ -382,7 +406,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
 
     private fun uploadPhoto(file: Result<File>) {
         viewModelScope.launch {
-            setState { copy(portfolioUploading = true) }
+            setState { copy(mediaUploading = true) }
 
             val result = file
                 .fold(
@@ -393,15 +417,41 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
 
             when (result) {
                 is DivoResult.Success -> setState {
-                    copy(
-                        portfolioUploading = false,
-                        userGalleryItems = listOf(result.value) + userGalleryItems
-                    )
+                    copy(mediaUploading = false)
                 }
                 else -> {
                     setState {
-                        copy(portfolioUploading = false, errorMessage = result.getErrorMessage())
+                        copy(mediaUploading = false, errorMessage = result.getErrorMessage())
                     }
+                    sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
+                }
+            }
+        }
+    }
+
+    private fun uploadVideo(file: Result<File>) {
+        viewModelScope.launch {
+            setState { copy(mediaUploading = true) }
+
+            val result = file
+                .fold(
+                    onSuccess = { DivoApi.userRepository.uploadPhoto(it) },
+                    onFailure = { DivoResult.UnknownError(it) }
+                )
+                .flatMap {
+                    DivoApi.publicationRepository.createPublication(
+                        title = "",
+                        description = "",
+                        type = "educational",
+                        fileUuids = listOf(it.uuid),
+                        userId = state.value.userId
+                    )
+                }
+
+            when (result) {
+                is DivoResult.Success -> setState { copy(mediaUploading = false) }
+                else -> {
+                    setState { copy(mediaUploading = false, errorMessage = result.getErrorMessage()) }
                     sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
                 }
             }

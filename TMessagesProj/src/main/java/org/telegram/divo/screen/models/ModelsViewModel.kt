@@ -73,7 +73,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     private val agenciesPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
         val request = FeedRequestDto(
             offset = offset, limit = limit,
-            subscribedOnly = false
+            modelsOnly = true
         )
         when (val result = DivoApi.publicationRepository.getFeed(request)) {
             is DivoResult.Success -> PaginatedResult(
@@ -92,16 +92,14 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                 allUsersPaginator.state.map { it to Tab.ALL_USERS },
                 agenciesPaginator.state.map { it to Tab.AGENCIES_PRO }
             ).collect { (paginatorState, tab) ->
-                if (tab != Tab.AGENCIES_PRO) {
-                    setState {
-                        copy(
-                            tabFeeds = tabFeeds + (tab to paginatorState.items),
-                            tabLoadingStates = tabLoadingStates + (tab to paginatorState.isLoading),
-                            tabLoadingMoreStates = tabLoadingMoreStates + (tab to paginatorState.isLoadingMore),
-                            tabHasMore = tabHasMore + (tab to paginatorState.hasMore),
-                            error = paginatorState.error
-                        )
-                    }
+                setState {
+                    copy(
+                        tabFeeds = tabFeeds + (tab to paginatorState.items),
+                        tabLoadingStates = tabLoadingStates + (tab to paginatorState.isLoading),
+                        tabLoadingMoreStates = tabLoadingMoreStates + (tab to paginatorState.isLoadingMore),
+                        tabHasMore = tabHasMore + (tab to paginatorState.hasMore),
+                        error = paginatorState.error
+                    )
                 }
             }
         }

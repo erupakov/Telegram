@@ -15,11 +15,13 @@ data class GalleryViewerState(
 
 sealed class GalleryIntent : ViewIntent {
     data class OnLoad(val source: GallerySource) : GalleryIntent()
+    data class OnDelete(val id: Int) : GalleryIntent()
     object OnLoadMore : GalleryIntent()
 }
 
 sealed class GalleryEffect : ViewEffect {
     data class ShowError(val message: String) : GalleryEffect()
+    object Deleted : GalleryEffect()
 }
 
 sealed class GallerySource {
@@ -29,6 +31,7 @@ sealed class GallerySource {
 }
 
 data class GalleryItem(
+    val id: Int,
     val url: String,
     val isVideo: Boolean,
 )

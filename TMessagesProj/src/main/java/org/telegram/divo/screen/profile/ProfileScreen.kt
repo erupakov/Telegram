@@ -2,7 +2,6 @@ package org.telegram.divo.screen.profile
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -92,7 +90,6 @@ fun ProfileScreen(
             when (effect) {
                 is ProfileEffect.OpenUrl -> {
                     try {
-                        Log.d("MyTag", effect.url)
                         val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
                         context.startActivity(intent)
                     } catch (e: Exception) {
@@ -144,6 +141,9 @@ fun ProfileScreen(
             onImageSelected = {
                 viewModel.setIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(it)))
             },
+            onVideoSelected = {
+                viewModel.setIntent(ProfileIntent.OnVideoSelected(context.uriToFile(it)))
+            },
             onLoadMoreVideos = { viewModel.setIntent(ProfileIntent.OnLoadMoreVideos) },
         )
     }
@@ -168,6 +168,7 @@ private fun ProfileScreenContent(
     onQueryChanged: (String) -> Unit,
     onLoadMoreSearch: () -> Unit,
     onImageSelected: (Uri) -> Unit,
+    onVideoSelected: (Uri) -> Unit,
     onLoadMoreVideos: () -> Unit
 ) {
     val pageCount = uiState.pageCount
@@ -290,7 +291,6 @@ private fun ProfileScreenContent(
                             )
                         }
 
-                        Log.d("Role", uiState.pageCount.toString())
                         item(key = "pager") {
                             HorizontalPager(
                                 state = pagerState,
@@ -307,7 +307,7 @@ private fun ProfileScreenContent(
                                     0 -> PortfolioGrid(
                                         portfolioItems = uiState.userGalleryItems,
                                         similarItems = uiState.similarModels,
-                                        isUploading = uiState.portfolioUploading,
+                                        isUploading = uiState.mediaUploading,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isLoadingMore = uiState.isLoadingMoreImages,
                                         hasMore = uiState.hasMoreImages,
@@ -324,8 +324,10 @@ private fun ProfileScreenContent(
                                             isLoadingMore = uiState.isLoadingMoreVideos,
                                             isActive = isPageActive,
                                             hasMore = uiState.hasMoreVideos,
+                                            isUploading = uiState.mediaUploading,
                                             onLoadMore = onLoadMoreVideos,
                                             onVideoClicked = { onGalleryClicked(it, true) },
+                                            onVideoSelected = onVideoSelected
                                         )
                                     }
                                     2 -> if (uiState.isModel) DivoColumnContent("Vogue Inside") else DivoColumnContent("Model")

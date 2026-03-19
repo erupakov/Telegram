@@ -122,7 +122,7 @@ fun ModelsHomeScreen(
     val cardHeight = remember(bottomInset, statusBarHeight) {
         screenHeight - statusBarHeight - bottomInset - 284.dp
     }
-    Log.d("MyTag", currentRestModels.isEmpty().toString())
+
     val isOnline = rememberIsOnline()
     if (!isOnline) {
         Log.d("MyTag", "Ожидание сети...")
@@ -218,21 +218,6 @@ fun ModelsHomeScreen(
             }
 
             when {
-                state.selectedTab == Tab.AGENCIES_PRO -> {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            Placeholder(
-                                modifier = Modifier.align(Alignment.Center),
-                                cardHeight = cardHeight,
-                                onShowMockData = { viewModel.setIntent(ModelsViewIntent.OnShowMockDataClicked) }
-                            )
-                        }
-                    }
-                }
-
                 currentRestModels.isEmpty() && !state.isLoadingAllUsers -> {
                     item {
                         Box(
@@ -282,7 +267,6 @@ fun ModelsHomeScreen(
                         items = currentRestModels,
                         key = { i, d -> d.id }
                     ) { i, feedItem ->
-                        Log.d("ModelPage", "$i")
                         ModelPage(
                             feed = feedItem,
                             cardHeight = cardHeight,
@@ -627,7 +611,7 @@ private fun ModelPage(
             ThumbsRow(
                 feed = feed,
                 onPhotoClicked = {
-                    val items = feed.files.map { GalleryItem(it.url, false) }
+                    val items = feed.files.map { GalleryItem(it.order, it.url, false) }
                     onPhotoClicked(items, it)
                 }
             )

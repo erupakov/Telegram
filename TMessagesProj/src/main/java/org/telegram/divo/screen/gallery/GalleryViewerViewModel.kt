@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.gallery
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
@@ -24,6 +23,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
         when (intent) {
             is GalleryIntent.OnLoad -> load(intent.source)
             is GalleryIntent.OnLoadMore -> loadMore()
+            is GalleryIntent.OnDelete -> delete(intent.id)
         }
     }
 
@@ -31,7 +31,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
         viewModelScope.launch {
             setState { copy(isLoading = true) }
             if (source is GallerySource.Feed) {
-                Log.d("MyTag", "${source.initialIndex}")
+
                 setState {
                     copy(
                         source = source,
@@ -91,7 +91,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                         .collect { data ->
                             setState {
                                 copy(
-                                    items = data.items.map { GalleryItem(it.photoUrl, isVideo = false) },
+                                    items = data.items.map { GalleryItem(it.id, it.photoUrl, isVideo = false) },
                                     hasMore = data.hasMore(),
                                 )
                             }
@@ -106,7 +106,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                                     items = data.items.flatMap { publication ->
                                         publication.files
                                             .filter { it.isVideo }
-                                            .map { GalleryItem(it.fullUrl, isVideo = true) }
+                                            .map { GalleryItem(publication.id, it.fullUrl, isVideo = true) }
                                     },
                                     hasMore = data.hasMore(),
                                 )
@@ -161,14 +161,14 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
             is GallerySource.Portfolio -> DivoApi.userRepository
                 .getGalleryCache(source.userId)
                 ?.items
-                ?.map { GalleryItem(it.photoUrl, isVideo = false) }
+                ?.map { GalleryItem(it.id, it.photoUrl, isVideo = false) }
             is GallerySource.Video -> DivoApi.publicationRepository
                 .getPublicationCache(source.userId)
                 ?.items
                 ?.flatMap { publication ->
                     publication.files
                         .filter { it.isVideo }
-                        .map { GalleryItem(it.fullUrl, isVideo = true) }
+                        .map { GalleryItem(publication.id, it.fullUrl, isVideo = true) }
                 }
                 ?.takeIf { it.isNotEmpty() }
             is GallerySource.Feed -> null
@@ -191,5 +191,39 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
 
     private fun PublicationList.hasMore(): Boolean {
         return (pagination?.totalCount ?: 0) > items.size
+    }
+
+    private fun delete(id: Int) {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+
+            val result = when (val source = state.value.source) {
+                is GallerySource.Video -> DivoApi.publicationRepository.deletePublication(
+                    id = id,
+                    userId = source.userId
+                )
+                is GallerySource.Portfolio -> DivoApi.userRepository.deleteFromGallery(id)
+                else -> {
+                    setState { copy(isLoading = false) }
+                    return@launch
+                }
+            }
+
+            when (result) {
+                is DivoResult.Success -> {
+                    setState {
+                        copy(
+                            items = items.filter { it.id != id },
+                            isLoading = false
+                        )
+                    }
+                    sendEffect(GalleryEffect.Deleted)
+                }
+                else -> {
+                    setState { copy(isLoading = false) }
+                    sendEffect(GalleryEffect.ShowError(result.getErrorMessage()))
+                }
+            }
+        }
     }
 }

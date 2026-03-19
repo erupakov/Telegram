@@ -136,7 +136,6 @@ fun SettingsScreen(
     }
 
     Scaffold(
-        modifier = Modifier.padding(top = 32.dp),
         topBar = {
             SettingsTopBar(
                 title = "SETTINGS",
@@ -212,7 +211,7 @@ private fun SettingsTopBar(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(top = 34.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(

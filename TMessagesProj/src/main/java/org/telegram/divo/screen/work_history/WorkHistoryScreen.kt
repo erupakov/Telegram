@@ -58,8 +58,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.BackButton
+import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.PlaceholderAvatar
+import org.telegram.divo.components.PopupMenuItem
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.entity.WorkExperience
@@ -256,58 +258,15 @@ private fun WorkExperienceRow(
                 )
             }
 
-            if (menuExpanded) {
-                Popup(
-                    alignment = Alignment.TopEnd,
-                    offset = IntOffset(x = -34, y = -63),
-                    onDismissRequest = { menuExpanded = false },
-                    properties = PopupProperties(focusable = true)
-                ) {
-                    Surface(
-                        modifier = Modifier.width(250.dp),
-                        shape = RoundedCornerShape(16.dp),
-                        color = Color(0xFFEEEEEE),
-                        shadowElevation = 8.dp,
-                        tonalElevation = 0.dp
-                    ) {
-                        Column {
-                            val items = listOf(
-                                R.string.ButtonEdit to onEdit,
-                                R.string.ButtonDelete to onDelete
-                            )
-
-                            items.forEachIndexed { index, (title, action) ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(title),
-                                            style = AppTheme.typography.manropeRegular,
-                                            fontSize = 17.sp,
-                                            color = Color.Black
-                                        )
-                                    },
-                                    onClick = {
-                                        menuExpanded = false
-                                        action()
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentPadding = PaddingValues(
-                                        horizontal = 16.dp,
-                                        vertical = 11.dp
-                                    )
-                                )
-
-                                if (index < items.lastIndex) {
-                                    HorizontalDivider(
-                                        color = Color(0xFFE0E0E0),
-                                        thickness = 0.5.dp
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            DivoPopupMenu(
+                visible = menuExpanded,
+                onDismiss = { menuExpanded = false },
+                offset = IntOffset(x = -34, y = -63),
+                items = listOf(
+                    PopupMenuItem(R.string.ButtonEdit, onEdit),
+                    PopupMenuItem(R.string.ButtonDelete, onDelete),
+                )
+            )
         }
     }
 }

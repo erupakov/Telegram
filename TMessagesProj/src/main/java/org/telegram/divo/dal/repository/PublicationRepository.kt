@@ -1,5 +1,6 @@
 package org.telegram.divo.dal.repository
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -8,6 +9,8 @@ import okhttp3.ResponseBody
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.dal.api.PublicationService
+import org.telegram.divo.dal.dto.publication.CreatePublicationFileRequest
+import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
 import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
 import org.telegram.divo.dal.dto.publication.PublicationListRequest
@@ -15,6 +18,7 @@ import org.telegram.divo.dal.dto.publication.toEntities
 import org.telegram.divo.dal.dto.publication.toEntity
 import org.telegram.divo.entity.Feed
 import org.telegram.divo.entity.FeedlineSearchResult
+import org.telegram.divo.entity.Publication
 import org.telegram.divo.entity.PublicationList
 
 private const val MAX_CACHED_USERS = 5
@@ -73,6 +77,43 @@ class PublicationRepository(
 
     suspend fun unlike(payload: Map<String, Any?>): DivoResult<ResponseBody> {
         return resultOf { service.unlike(payload) }
+    }
+
+    suspend fun createPublication(
+        title: String,
+        description: String,
+        type: String,
+        fileUuids: List<String>,
+        userId: Int,
+    ): DivoResult<Publication> = resultOf {
+        service.createPublication(
+            CreatePublicationRequest(
+                title = title,
+                description = description,
+                type = type,
+                files = fileUuids.mapIndexed { index, uuid ->
+                    CreatePublicationFileRequest(order = index, fileUuid = uuid)
+                }
+            )
+        ).toEntity().also { newPublication ->
+            _publicationCache.update { cache ->
+                val existing = cache[userId] ?: return@update cache
+                cache + (userId to existing.copy(
+                    items = listOf(newPublication) + existing.items
+                ))
+            }
+        }
+    }
+
+    suspend fun deletePublication(id: Int, userId: Int): DivoResult<Unit> = resultOf {
+        Log.d("MyTag", id.toString())
+        service.deletePublication(id)
+        _publicationCache.update { cache ->
+            val existing = cache[userId] ?: return@update cache
+            cache + (userId to existing.copy(
+                items = existing.items.filter { it.id != id }
+            ))
+        }
     }
 
     private fun updatePublicationCache(userId: Int, newPage: PublicationList, offset: Int) {

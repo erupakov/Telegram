@@ -679,7 +679,7 @@ public class ThemeActivity extends BaseFragment implements NotificationCenter.No
             swipeGestureRow = rowCount++;
             swipeGestureInfoRow = rowCount++;
 
-            nightThemeRow = rowCount++;
+            //DIVO nightThemeRow = rowCount++;
             browserRow = rowCount++;
             liteModeRow = rowCount++;
             stickersRow = rowCount++;

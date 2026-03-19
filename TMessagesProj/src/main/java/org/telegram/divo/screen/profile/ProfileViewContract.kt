@@ -33,7 +33,7 @@ data class ProfileViewState(
     val errorMessage: String? = null,
 
     val portfolioLoading: Boolean = false,
-    val portfolioUploading: Boolean = false,
+    val mediaUploading: Boolean = false,
     val isLoadingAllUsers: Boolean = false,
     val isLoadingStats: Boolean = false,
     val backgroundChanging: Boolean = false,
@@ -131,6 +131,10 @@ sealed class ProfileIntent : ViewIntent {
     ) : ProfileIntent()
 
     class OnPortfolioPhotoSelected(
+        val file: Result<File>
+    ) : ProfileIntent()
+
+    class OnVideoSelected(
         val file: Result<File>
     ) : ProfileIntent()
 
