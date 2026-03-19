@@ -23,8 +23,6 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
         this.mainTabsController = controller
     }
 
-    fun isOnHomeScreen(): Boolean = isOnHomeScreen.value
-
     override fun createView(context: Context): View {
         AppImageLoader.init(context)
         actionBar.setAddToContainer(false)

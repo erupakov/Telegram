@@ -21,7 +21,9 @@ sealed class ProfileRoute(val route: String) {
     data object Edit : ProfileRoute("profile_edit")
     data object EditLinks : ProfileRoute("profile_edit_links")
     data object WorkHistory : ProfileRoute("profile_work_history")
-    data object CreateWorkHistory : ProfileRoute("create_work_history")
+    data object CreateWorkHistory : ProfileRoute("create_work_history?id={id}") {
+        fun create(id: Int? = null) = if (id != null) "create_work_history?id=$id" else "create_work_history?id=-1"
+    }
 
     data object Profile : ProfileRoute("profile/{userId}") {
         const val ROUTE = "profile/{userId}"
@@ -108,15 +110,21 @@ fun ProfileNavGraph(
         composable(ProfileRoute.WorkHistory.route) {
             WorkHistoryScreen(
                 isOwnProfile = isOwnProfile,
-                onCreateClicked = {
-                    nav.navigate(ProfileRoute.CreateWorkHistory.route)
+                onCreateClicked = { id ->
+                    nav.navigate(ProfileRoute.CreateWorkHistory.create(id))
                 },
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
 
-        composable(ProfileRoute.CreateWorkHistory.route) {
+        composable(
+            route = ProfileRoute.CreateWorkHistory.route,
+            arguments = listOf(navArgument("id") { type = NavType.IntType; defaultValue = -1 })
+        ) { backStackEntry ->
+            val editId = backStackEntry.arguments?.getInt("id")?.takeIf { it != -1 }
+
             CreateWorkHistoryScreen(
+                editId = editId,
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }

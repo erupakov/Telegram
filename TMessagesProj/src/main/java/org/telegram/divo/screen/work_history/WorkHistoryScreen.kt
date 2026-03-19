@@ -1,31 +1,36 @@
 package org.telegram.divo.screen.work_history
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,17 +42,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.components.BackButton
+import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.components.PlaceholderAvatar
 import org.telegram.divo.components.TextTitle
-import org.telegram.divo.components.UIButton
-import org.telegram.tgnet.TLRPC
+import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.entity.WorkExperience
+import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 
 @Composable
@@ -55,70 +76,73 @@ fun WorkHistoryScreen(
     viewModel: WorkHistoryViewModel = viewModel(),
     isOwnProfile: Boolean,
     onBack: () -> Unit = {},
-    onCreateClicked: () -> Unit = {},
+    onCreateClicked: (Int?) -> Unit = {},
 ) {
+    val context = LocalContext.current
+    val state = viewModel.state.collectAsState().value
+
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                else -> {}
+                Effect.NavigateBack -> onBack()
+                is Effect.ShowError -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                is Effect.NavigateToCreate -> onCreateClicked(it.id)
             }
         }
     }
-    val state = viewModel.state.collectAsState().value
+
     WorkHistoryScreenView(
         state = state,
         isOwnProfile = isOwnProfile,
         onIntent = {
             viewModel.setIntent(it)
         },
-        onCreateClicked = onCreateClicked,
-        onBack = onBack
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 private fun WorkHistoryScreenView(
-    state: WorkHistoryViewModel.State = WorkHistoryViewModel.State(),
-    onIntent: (WorkHistoryViewModel.Intent) -> Unit = {},
+    state: State = State(),
+    onIntent: (Intent) -> Unit = {},
     isOwnProfile: Boolean = false,
-    onCreateClicked: () -> Unit = {},
-    onBack: () -> Unit = {}
-
 ) {
     Scaffold(
-        modifier = Modifier.padding(top = 32.dp),
+        modifier = Modifier,
         topBar = {
             TopBar(
                 onBack = {
-                    onBack()
+                    onIntent(Intent.OnBackClicked)
                 },
                 onCreate = {
-                    onCreateClicked()
+                    onIntent(Intent.OnCreateClicked)
                 },
                 createEnabled = isOwnProfile
             )
         },
+        containerColor = AppTheme.colors.backgroundNew
     ) { padding ->
 
         if (state.experiences.isEmpty()){
             WorkHistoryEmpty(
+                modifier = Modifier.padding(padding),
                 isOwnProfile = isOwnProfile,
-                onCreateClicked = onCreateClicked
+                onCreateClicked = { onIntent(Intent.OnCreateClicked) }
             )
         } else {
             LazyColumn(
-                modifier = Modifier.padding(padding)
+                modifier = Modifier.padding(padding),
+                contentPadding = PaddingValues(vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 items(
                     items = state.experiences,
+                    key = { it.id }
                 ) { item ->
                     WorkExperienceRow(
                         item = item,
-                        onEdit = { onIntent(WorkHistoryViewModel.Intent.OnEditClicked(item.id)) },
-                        onDelete = { onIntent(WorkHistoryViewModel.Intent.OnDeleteClicked(item.id)) }
+                        onEdit = { onIntent(Intent.OnEditClicked(item.id)) },
+                        onDelete = { onIntent(Intent.OnDeleteClicked(item.id)) }
                     )
                 }
 
@@ -127,15 +151,14 @@ private fun WorkHistoryScreenView(
     }
 }
 
-
-@Preview
 @Composable
 private fun WorkHistoryEmpty(
+    modifier: Modifier = Modifier,
     isOwnProfile: Boolean = false,
-    onCreateClicked:()-> Unit ={}
+    onCreateClicked:()-> Unit
 ) {
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize().background(AppTheme.colors.backgroundNew)
     ) {
         Column(
             modifier = Modifier.align(Alignment.Center),
@@ -147,14 +170,13 @@ private fun WorkHistoryEmpty(
                 modifier = Modifier.size(68.dp)
             )
             TextTitle(
-                text = "There are no work\nexperience yet.",
+                text = stringResource(R.string.WorkHistoryEmptyTitle),
                 modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
                 textAlign = TextAlign.Center
             )
             if (isOwnProfile) {
                 Text(
-                    text = "Click the button below\n" +
-                            "to add your work\nexperience",
+                    text = stringResource(R.string.WorkHistoryEmptySubtitle),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center
@@ -163,9 +185,9 @@ private fun WorkHistoryEmpty(
         }
 
         if (isOwnProfile) {
-            UIButton(
+            UIButtonNew(
                 modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding( 16.dp),
-                text = "Add Work Experience",
+                text = stringResource(R.string.AddWorkExperience),
                 onClick = {
                     onCreateClicked()
                 }
@@ -174,33 +196,31 @@ private fun WorkHistoryEmpty(
     }
 }
 
-
 @Composable
 private fun WorkExperienceRow(
-    item: TLRPC.TL_profile_workExperience,
+    item: WorkExperience,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
-    val agencyName = item.agency?.name.orEmpty()
-    val subtitle = remember(item.start_date, item.end_date, item.is_current) {
-        buildWorkSubtitle(
-            startDateSeconds = item.start_date,
-            endDateSeconds = item.end_date,
-            isCurrent = item.is_current
-        )
-    }
+    val agencyName = item.agencyName.orEmpty()
+    val subtitle = buildWorkSubtitle(
+        startDate = item.startDate,
+        endDate = item.endDate,
+        isCurrent = item.isCurrent
+    )
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(start = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         AgencyAvatar(
-            name = agencyName,
-            modifier = Modifier.size(52.dp)
+            agencyName = agencyName,
+            avatarUrl = "",
+            modifier = Modifier.size(60.dp)
         )
 
         Column(
@@ -210,13 +230,20 @@ private fun WorkExperienceRow(
         ) {
             Text(
                 text = agencyName,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 20.sp
+                style = AppTheme.typography.helveticaNeueRegular,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
+            Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = subtitle,
-                color = Color(0xFF8A8A8A),
-                fontSize = 16.sp
+                color = Color.Black.copy(0.6f),
+                style = AppTheme.typography.helveticaNeueRegular,
+                fontSize = 14.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
@@ -224,116 +251,123 @@ private fun WorkExperienceRow(
             IconButton(onClick = { menuExpanded = true }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More"
+                    contentDescription = null,
+                    tint = Color.Black.copy(0.6f)
                 )
             }
 
-            DropdownMenu(
-                expanded = menuExpanded,
-                onDismissRequest = { menuExpanded = false }
-            ) {
-                DropdownMenuItem(
-                    text = { Text("Edit") },
-                    onClick = {
-                        menuExpanded = false
-                        onEdit()
+            if (menuExpanded) {
+                Popup(
+                    alignment = Alignment.TopEnd,
+                    offset = IntOffset(x = -34, y = -63),
+                    onDismissRequest = { menuExpanded = false },
+                    properties = PopupProperties(focusable = true)
+                ) {
+                    Surface(
+                        modifier = Modifier.width(250.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color(0xFFEEEEEE),
+                        shadowElevation = 8.dp,
+                        tonalElevation = 0.dp
+                    ) {
+                        Column {
+                            val items = listOf(
+                                R.string.ButtonEdit to onEdit,
+                                R.string.ButtonDelete to onDelete
+                            )
+
+                            items.forEachIndexed { index, (title, action) ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(title),
+                                            style = AppTheme.typography.manropeRegular,
+                                            fontSize = 17.sp,
+                                            color = Color.Black
+                                        )
+                                    },
+                                    onClick = {
+                                        menuExpanded = false
+                                        action()
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentPadding = PaddingValues(
+                                        horizontal = 16.dp,
+                                        vertical = 11.dp
+                                    )
+                                )
+
+                                if (index < items.lastIndex) {
+                                    HorizontalDivider(
+                                        color = Color(0xFFE0E0E0),
+                                        thickness = 0.5.dp
+                                    )
+                                }
+                            }
+                        }
                     }
-                )
-                DropdownMenuItem(
-                    text = { Text("Delete") },
-                    onClick = {
-                        menuExpanded = false
-                        onDelete()
-                    }
-                )
+                }
             }
         }
-    }
-
-    Divider(color = Color(0xFFEDEDED))
-}
-
-private fun buildWorkSubtitle(
-    startDateSeconds: Int,
-    endDateSeconds: Int,
-    isCurrent: Boolean
-): String {
-    val start = formatMonthYear(startDateSeconds)
-    val end = if (isCurrent || endDateSeconds == 0) "Present" else formatMonthYear(endDateSeconds)
-    val duration = computeDurationLabel(startDateSeconds, if (isCurrent) null else endDateSeconds)
-
-    return "$start - $end · $duration"
-}
-
-private fun formatMonthYear(epochSeconds: Int): String {
-    return try {
-        val dt = java.time.Instant.ofEpochSecond(epochSeconds.toLong())
-            .atZone(java.time.ZoneId.systemDefault())
-            .toLocalDate()
-        dt.format(
-            java.time.format.DateTimeFormatter.ofPattern(
-                "MMM yyyy",
-                java.util.Locale.ENGLISH
-            )
-        )
-    } catch (_: Throwable) {
-        ""
-    }
-}
-
-private fun computeDurationLabel(startSeconds: Int, endSecondsOrNull: Int?): String {
-    return try {
-        val start = java.time.Instant.ofEpochSecond(startSeconds.toLong())
-            .atZone(java.time.ZoneId.systemDefault())
-            .toLocalDate()
-            .withDayOfMonth(1)
-
-        val end = (endSecondsOrNull?.let {
-            java.time.Instant.ofEpochSecond(it.toLong())
-                .atZone(java.time.ZoneId.systemDefault())
-                .toLocalDate()
-        } ?: java.time.LocalDate.now()).withDayOfMonth(1)
-
-        val months = java.time.Period.between(start, end).toTotalMonths().toInt().coerceAtLeast(0)
-        val years = months / 12
-        val rem = months % 12
-
-        when {
-            years > 0 && rem > 0 -> "${years} year${if (years == 1) "" else "s"} ${rem} month${if (rem == 1) "" else "s"}"
-            years > 0 -> "${years} year${if (years == 1) "" else "s"}"
-            else -> "${rem} month${if (rem == 1) "" else "s"}"
-        }
-    } catch (_: Throwable) {
-        ""
     }
 }
 
 @Composable
-private fun AgencyAvatar(
-    name: String,
-    modifier: Modifier = Modifier
-) {
-    val initials = remember(name) {
-        name.trim()
-            .split(" ")
-            .filter { it.isNotBlank() }
-            .take(2)
-            .mapNotNull { it.firstOrNull()?.uppercaseChar()?.toString() }
-            .joinToString("")
-            .ifBlank { "A" }
+private fun buildWorkSubtitle(
+    startDate: String,
+    endDate: String?,
+    isCurrent: Boolean
+): String {
+    val start = formatMonthYear(startDate)
+    val end = if (isCurrent || endDate == null) "Present" else formatMonthYear(endDate)
+    val duration = computeDurationLabel(startDate, if (isCurrent) null else endDate)
+    return "$start - $end · $duration"
+}
+
+@Composable
+private fun computeDurationLabel(startDate: String, endDate: String?): String {
+    val months = remember(startDate, endDate) {
+        runCatching {
+            val start = LocalDate.parse(startDate).withDayOfMonth(1)
+            val end = (endDate?.let { LocalDate.parse(it) } ?: LocalDate.now()).withDayOfMonth(1)
+            Period.between(start, end).toTotalMonths().toInt().coerceAtLeast(0)
+        }.getOrDefault(0)
     }
 
-    Box(
-        modifier = modifier
-            .clip(CircleShape)
-            .background(Color(0xFFF2F2F2)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = initials,
-            fontWeight = FontWeight.SemiBold,
-            color = Color(0xFF6F6F6F),
-            fontSize = 18.sp
+    val years = months / 12
+    val rem = months % 12
+
+    return when {
+        years > 0 && rem > 0 -> {
+            val y = pluralStringResource(R.plurals.work_years, years, years)
+            val m = pluralStringResource(R.plurals.work_months, rem, rem)
+            "$y $m"
+        }
+        years > 0 -> pluralStringResource(R.plurals.work_years, years, years)
+        else -> pluralStringResource(R.plurals.work_months, months, months)
+    }
+}
+
+private fun formatMonthYear(date: String): String = try {
+    LocalDate.parse(date).format(DateTimeFormatter.ofPattern("MMM yyyy", Locale.ENGLISH))
+} catch (_: Throwable) { "" }
+
+@Composable
+private fun AgencyAvatar(
+    agencyName: String,
+    avatarUrl: String?,
+    modifier: Modifier = Modifier
+) {
+    if (avatarUrl.isNullOrBlank()) {
+        PlaceholderAvatar(
+            modifier = modifier,
+            name = agencyName,
+        )
+    } else {
+        DivoAsyncImage(
+            modifier = modifier
+                .clip(CircleShape),
+            model = avatarUrl
         )
     }
 }
@@ -349,34 +383,36 @@ private fun TopBar(
     CenterAlignedTopAppBar(
         title = {
             Text(
-                text = "WORK EXPERIENCE",
-                modifier = Modifier.fillMaxWidth(),
-                fontWeight = FontWeight.SemiBold,
+                text = stringResource(R.string.WorkExperience),
+                style = AppTheme.typography.helveticaNeueLtCom,
+                fontSize = 20.sp,
                 textAlign = TextAlign.Center
             )
         },
         navigationIcon = {
-            Text(
-                "Back",
-                color = Color(0xFFBF825E),
+            BackButton(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable { onBack() }
-                    .padding(8.dp),
-                fontSize = 16.sp)
+                    .padding(start = 16.dp, bottom = 7.dp),
+                color = AppTheme.colors.buttonColor,
+                onBackClicked = onBack
+            )
         },
         actions = {
             if (createEnabled) {
-                Text(
-                    "Create",
-                    color = if (createEnabled) Color(0xFFBF825E) else Color(0xFFB9B9B9),
+                Icon(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable(createEnabled) { onCreate() }
-                        .padding(8.dp),
-                    fontSize = 16.sp)
+                        .padding(end = 14.dp, bottom = 7.dp)
+                        .size(17.dp)
+                        .clickableWithoutRipple { onCreate() },
+                    painter = painterResource(R.drawable.ic_divo_plus),
+                    contentDescription = null,
+                    tint = AppTheme.colors.buttonColor
+                )
             }
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White
+        )
     )
 }
 

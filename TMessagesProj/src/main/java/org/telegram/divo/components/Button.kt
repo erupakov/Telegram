@@ -188,7 +188,7 @@ fun RoundedButton(
             )
             .clip(CircleShape)
             .background(Color.White)
-            .clickableWithoutRipple(onClick),
+            .clickableWithoutRipple(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Icon(

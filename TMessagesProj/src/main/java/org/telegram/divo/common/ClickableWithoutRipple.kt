@@ -7,9 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 
 fun Modifier.clickableWithoutRipple(
+    enabled: Boolean = true,
     onClick: () -> Unit
 ): Modifier = composed {
     clickable(
+        enabled = enabled,
         indication = null,
         interactionSource = remember { MutableInteractionSource() },
         onClick = onClick

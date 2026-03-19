@@ -1,38 +1,78 @@
 package org.telegram.divo.screen.work_create_edit
 
-import org.telegram.messenger.R
-import androidx.compose.foundation.BorderStroke
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Divider
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.tgnet.TLRPC
+import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.common.toFormattedDate
+import org.telegram.divo.components.BackButton
+import org.telegram.divo.components.DivoTextField
+import org.telegram.divo.components.PlaceholderAvatar
+import org.telegram.divo.components.TelegramUserAvatarEditable
+import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
 import java.time.Instant
 import java.time.ZoneId
 
-
 @Composable
 fun CreateWorkHistoryScreen(
-    viewModel: CreateWorkHistoryViewModel = viewModel(),
+    editId: Int? = null,
+    viewModel: CreateWorkHistoryViewModel = viewModel(
+        factory = CreateWorkHistoryViewModel.factory(editId)
+    ),
     onBack: () -> Unit = {},
     onPickCover: () -> Unit = {},
     onPickGallery: () -> Unit = {},
@@ -40,23 +80,27 @@ fun CreateWorkHistoryScreen(
     onPickTime: () -> Unit = {},
 ) {
 
-    LaunchedEffect(true) {
-        //viewModel.getEventTypes()
-    }
+    val context = LocalContext.current
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                CreateWorkHistoryViewModel.Effect.NavigateBack -> {
+                Effect.NavigateBack -> {
                     onBack()
                 }
-
-                else -> {}
+                is Effect.ShowSuccess -> {
+                    Toast.makeText(context, "Work experience added successfully", Toast.LENGTH_SHORT).show()
+                    onBack()
+                }
+                is Effect.ShowError -> {
+                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                }
             }
 
         }
     }
     val state = viewModel.state.collectAsState().value
+
     CreateWorkHistoryScreenView(
         state = state,
         onIntent = {
@@ -65,239 +109,260 @@ fun CreateWorkHistoryScreen(
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun CreateWorkHistoryScreenView(
-    state: CreateWorkHistoryViewModel.State = CreateWorkHistoryViewModel.State(),
-    onIntent: (CreateWorkHistoryViewModel.Intent) -> Unit = {},
+    state: State = State(),
+    onIntent: (Intent) -> Unit = {},
 ) {
-    var showParamSheet by remember { mutableStateOf(false) }
-    var showCountrySheet by remember { mutableStateOf(false) }
-    var showCitySheet by remember { mutableStateOf(false) }
-
-    var title by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
-
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
 
-    var startDate by remember { mutableStateOf("") }
-    var endDate by remember { mutableStateOf("") }
+    val startDatePickerState = key(state.startDateMil) {
+        rememberDatePickerState(
+            initialSelectedDateMillis = state.startDateMil
+        )
+    }
+    val endDatePickerState = key(state.startDateMil) {
+        rememberDatePickerState(
+            initialSelectedDateMillis = state.endDateMil,
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    val startMil = state.startDateMil
+                    return utcTimeMillis >= startMil
+                }
+            }
+        )
+    }
 
-    val datePickerState = rememberDatePickerState()
-    // Time picker state
-    val timePickerState = rememberTimePickerState(
-        initialHour = 0, initialMinute = 0, is24Hour = true
-    )
+    var selectedAvatarUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    val openGallery = rememberGalleryLauncher { uri ->
+        selectedAvatarUri = uri
+    }
 
     Scaffold(
-        modifier = Modifier.padding(top = 32.dp),
         topBar = {
             TopBar(
+                title = if (state.isEditMode) stringResource(R.string.EditExperience) else stringResource(R.string.CreateExperience),
+                actionText = if (state.isEditMode) stringResource(R.string.ButtonSave) else stringResource(R.string.ButtonCreate),
                 onBack = {
-                    onIntent(CreateWorkHistoryViewModel.Intent.OnBackClicked)
+                    onIntent(Intent.OnBackClicked)
                 }, onCreate = {
-                    onIntent(
-                        CreateWorkHistoryViewModel.Intent.OnCreateExperience
-                    )
+                    onIntent(Intent.OnCreateExperience)
                 },
                 createEnabled = state.createEnabled
             )
         },
+        containerColor = Color.White
+    ) { padding ->
+        Divider(modifier = Modifier.padding(padding))
 
-
-        ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-
-            SectionHeader("Work experience info")
-
-            AgencyAutoCompleteField(
-                query = state.query,
-                agencies = state.agencies,
-                selectedAgency = state.selectedAgency,
-                onQueryChange = { onIntent(CreateWorkHistoryViewModel.Intent.OnQueryChanged(it)) },
-                onAgencySelected = { agency ->
-                    onIntent(CreateWorkHistoryViewModel.Intent.OnAgencySelected(agency))
-                }
-            )
-
-
-
-
-            // Date & Time
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                OutlinedTextField(
-                    value = startDate,
-                    onValueChange = {},
-                    enabled = false,
-                    label = { Text("Start Date") },
-                    trailingIcon = {
-                        TextButton(onClick = {
-                            showStartDatePicker = true
-                        }) { Text("Pick") }
-                    },
-                    modifier = Modifier.weight(1f)
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(padding)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.TopCenter)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TelegramUserAvatarEditable(
+                    avatarUrl = state.avatarUrl,
+                    localUri = selectedAvatarUri,
+                    background = Color.White,
+                    borderColor = AppTheme.colors.buttonColor,
+                    isVisibleSmallIcon = state.isEditMode,
+                    usePlaceholder = true,
+                    placeholderSymbols = state.agencyName,
+                    smallIconResId = R.drawable.ic_divo_work_edit_avatar,
+                    onEditClick = { openGallery() }
                 )
-                OutlinedTextField(
-                    value = endDate,
-                    onValueChange = {},
-                    enabled = false,
-                    label = { Text("End Date") },
-                    trailingIcon = {
-                        TextButton(onClick = {
-                            showEndDatePicker = true
-                        }) { Text("Pick") }
-                    },
-                    modifier = Modifier.weight(1f)
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                Title(text = stringResource(R.string.WorkExperienceInfo))
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Title(
+                    text = stringResource(R.string.AgencyName),
+                    textColor = Color(0xFF3C3C43)
                 )
-            }
 
-            Row(verticalAlignment = Alignment.CenterVertically,) {
+                Spacer(modifier = Modifier.height(6.dp))
 
-                Checkbox(checked = state.isCurrent, onCheckedChange = { checked ->
-                    onIntent(CreateWorkHistoryViewModel.Intent.OnCurrentChanged(isCurrent = checked))
-                })
-                Text("I am currently working in this role", modifier = Modifier.padding(8.dp).clickable(onClick = {
-                    onIntent(CreateWorkHistoryViewModel.Intent.OnCurrentChanged(isCurrent = !state.isCurrent))
-                }))
-            }
+                DivoTextField(
+                    value = state.query,
+                    onValueChange = { onIntent(Intent.OnQueryChanged(it)) },
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+                    textStyle = TextStyle(fontSize = 16.sp),
+                    placeholderColor = Color(0x993C3C43),
+                    placeholder = stringResource(R.string.EnterAgencyName)
+                )
 
+                Spacer(modifier = Modifier.height(12.dp))
 
-            // Create Button
-            Button(
-                onClick = {
-                    onIntent(
-                        CreateWorkHistoryViewModel.Intent.OnCreateExperience
+                // Date & Time
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    DateField(
+                        modifier = Modifier.weight(1f),
+                        date = startDatePickerState.selectedDateMillis?.toFormattedDate().orEmpty(),
+                        title = stringResource(R.string.StartDate),
+                        onClick = { showStartDatePicker = true }
                     )
-                },
-                enabled = state.createEnabled,
+                    DateField(
+                        modifier = Modifier.weight(1f),
+                        date = endDatePickerState.selectedDateMillis?.toFormattedDate().orEmpty(),
+                        title = stringResource(R.string.EndDate),
+                        onClick = { if (!state.isCurrent) showEndDatePicker = true },
+                        enabled = !state.isCurrent
+                    )
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Checkbox(
+                        modifier = Modifier,
+                        checked = state.isCurrent,
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = AppTheme.colors.buttonColor
+                        ),
+                        onCheckedChange = { checked ->
+                            onIntent(Intent.OnCurrentChanged(isCurrent = checked))
+                        }
+                    )
+                    Text(
+                        text = stringResource(R.string.CurrentlyWorkingRole),
+                        style = AppTheme.typography.manropeRegular,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .clickable(
+                                onClick = { onIntent(Intent.OnCurrentChanged(isCurrent = !state.isCurrent)) }
+                            )
+                    )
+                }
+            }
+
+            UIButtonNew(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 6.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFBF825E), contentColor = Color.White
-                )
-            ) { Text("Create Event") }
-            Spacer(Modifier.height(6.dp))
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
+                    .align(Alignment.BottomCenter),
+                text = if (state.isEditMode) stringResource(R.string.SaveChanges) else stringResource(R.string.CreateNewWorkExperience),
+                enabled = state.createEnabled,
+                onClick = {
+                    onIntent(Intent.OnCreateExperience)
+                }
+            )
         }
     }
 
     if (showStartDatePicker) {
-        DatePickerDialog(onDismissRequest = { showStartDatePicker = false }, confirmButton = {
-            TextButton(
-                onClick = {
-                    val millis = datePickerState.selectedDateMillis
-                    if (millis != null) {
-                        val localDate = Instant
-                            .ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate()
-                        startDate = localDate.toString()
-                        onIntent(
-                            CreateWorkHistoryViewModel.Intent.OnStartDateSelected(startDate, millis)
-                        )
-                    }
-                    showStartDatePicker = false
-                }) { Text("OK") }
-        }, dismissButton = {
-            TextButton(onClick = { showStartDatePicker = false }) { Text("Cancel") }
-        }) {
-            DatePicker(state = datePickerState)
-        }
+        DivoDatePickerDialog(
+            state = startDatePickerState,
+            onDismiss = { showStartDatePicker = false },
+            onConfirm = { millis ->
+                val date = Instant.ofEpochMilli(millis)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+                    .toString()
+                onIntent(Intent.OnStartDateSelected(date, millis))
+            }
+        )
     }
 
     if (showEndDatePicker) {
-        DatePickerDialog(onDismissRequest = { showEndDatePicker = false }, confirmButton = {
-            TextButton(
-                onClick = {
-                    val millis = datePickerState.selectedDateMillis
-                    if (millis != null) {
-                        val localDate = Instant
-                            .ofEpochMilli(millis)
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDate()
-                        endDate = localDate.toString()
-                        onIntent(
-                            CreateWorkHistoryViewModel.Intent.OnEndDateSelected(startDate, millis)
-                        )
-                    }
-                    showEndDatePicker = false
-                }) { Text("OK") }
-        }, dismissButton = {
-            TextButton(onClick = { showEndDatePicker = false }) { Text("Cancel") }
-        }) {
-            DatePicker(state = datePickerState)
-        }
+        DivoDatePickerDialog(
+            state = endDatePickerState,
+            onDismiss = { showEndDatePicker = false },
+            onConfirm = { millis ->
+                val date = Instant.ofEpochMilli(millis)
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate()
+                    .toString()
+                onIntent(Intent.OnEndDateSelected(date, millis))
+            }
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AgencyAutoCompleteField(
-    query: String,
-    agencies: List<TLRPC.TL_profile_agency>,
-    selectedAgency: TLRPC.TL_profile_agency?,
-    onQueryChange: (String) -> Unit,
-    onAgencySelected: (TLRPC.TL_profile_agency) -> Unit,
-    modifier: Modifier = Modifier,
+private fun DivoDatePickerDialog(
+    state: DatePickerState,
+    onDismiss: () -> Unit,
+    onConfirm: (millis: Long) -> Unit,
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    var queryText by remember { mutableStateOf("") }
-    val showSuggestions = query.length >= 2 && agencies.isNotEmpty()
-
-    ExposedDropdownMenuBox(
-        expanded = expanded && showSuggestions,
-        onExpandedChange = { expanded = it },
-        modifier = modifier
-    ) {
-        OutlinedTextField(
-            value = queryText,
-            onValueChange = {
-                queryText = it
-                onQueryChange(queryText)
-                expanded = true
-            },
-            label = { Text("Agency Name") },
-            singleLine = true,
-            modifier = Modifier
-                .fillMaxWidth()
-                .menuAnchor(),
-            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words),
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) }
+    MaterialTheme(
+        colorScheme = MaterialTheme.colorScheme.copy(
+            primary = AppTheme.colors.buttonColor,
+            onPrimary = Color.White,
+            primaryContainer = AppTheme.colors.buttonColor,
+            onPrimaryContainer = Color.White,
+            surface = AppTheme.colors.backgroundNew,
+            onSurface = Color(0xFF3C3C43),
         )
-
-        ExposedDropdownMenu(
-            expanded = expanded && showSuggestions,
-            onDismissRequest = { expanded = false }
-        ) {
-            agencies.forEach { agency ->
-                val title = agency.name ?: "Agency" // depends on your TL schema
-                DropdownMenuItem(
-                    text = { Text(title) },
-                    onClick = {
-                        onAgencySelected(agency)
-                        expanded = false
-                    }
-                )
+    ) {
+        DatePickerDialog(
+            onDismissRequest = onDismiss,
+            confirmButton = {
+                TextButton(onClick = {
+                    state.selectedDateMillis?.let { onConfirm(it) }
+                    onDismiss()
+                }) { Text(stringResource(R.string.ButtonOk)) }
+            },
+            dismissButton = {
+                TextButton(onClick = onDismiss) { Text(stringResource(R.string.ButtonCancel)) }
             }
+        ) {
+            DatePicker(state = state)
         }
     }
 }
 
+@Composable
+private fun DateField(
+    modifier: Modifier = Modifier,
+    date: String,
+    title: String,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+) {
+    Column(modifier) {
+        Title(text = title, textColor = Color(0xFF3C3C43))
+        Spacer(modifier = Modifier.height(6.dp))
+        Box(modifier = Modifier.fillMaxWidth()) {
+            DivoTextField(
+                value = date,
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+                textStyle = TextStyle(
+                    fontSize = 16.sp,
+                    color = if (enabled) Color(0x993C3C43) else Color(0x403C3C43)
+                ),
+                readOnly = true,
+                trailingIcon = Icons.Default.DateRange
+            )
+
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickableWithoutRipple(enabled = enabled) { onClick() }
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
+    title: String,
+    actionText: String,
     onBack: () -> Unit,
     onCreate: () -> Unit,
     createEnabled: Boolean
@@ -305,243 +370,52 @@ private fun TopBar(
     TopAppBar(
         title = {
             Text(
-                text = "CREATE EXPERIENCE",
+                text = title,
                 modifier = Modifier.fillMaxWidth(),
-                fontWeight = FontWeight.SemiBold,
+                style = AppTheme.typography.helveticaNeueLtCom,
+                fontSize = 20.sp,
                 textAlign = TextAlign.Center
             )
         },
         navigationIcon = {
-            Text(
-                "Back",
-                color = Color(0xFFBF825E),
+            BackButton(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable { onBack() }
-                    .padding(8.dp),
-                fontSize = 16.sp)
+                    .padding(start = 8.dp, bottom = 7.dp),
+                color = AppTheme.colors.buttonColor,
+                onBackClicked = onBack
+            )
         },
         actions = {
             Text(
-                "Create",
+                text = actionText,
                 color = if (createEnabled) Color(0xFFBF825E) else Color(0xFFB9B9B9),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable(createEnabled) { onCreate() }
-                    .padding(8.dp),
-                fontSize = 16.sp)
-        }
+                    .clickableWithoutRipple { if (createEnabled) onCreate() }
+                    .padding(end = 8.dp, bottom = 7.dp),
+                fontSize = 17.sp,
+                style = AppTheme.typography.manropeRegular
+            )
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = Color.White
+        )
     )
 }
 
-
 @Composable
-private fun SectionHeader(text: String) {
+private fun Title(
+    modifier: Modifier = Modifier,
+    text: String,
+    textColor: Color = Color.Black,
+    fontWeight: FontWeight = FontWeight.Normal
+) {
     Text(
+        modifier = modifier.fillMaxWidth(),
         text = text,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 15.sp,
-        modifier = Modifier.padding(top = 6.dp)
+        fontWeight = fontWeight,
+        style = AppTheme.typography.helveticaNeueRegular,
+        color = textColor,
+        fontSize = 16.sp,
+        textAlign = TextAlign.Start
     )
-}
-
-@Composable
-private fun CoverPicker(
-    hasImage: Boolean, onPick: () -> Unit, onClear: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 180.dp),
-        shape = RoundedCornerShape(16.dp),
-        color = Color(0xFFF7F7F7),
-        border = BorderStroke(
-            1.dp, SolidDashed(color = Color(0xFFE2E2E2), intervals = floatArrayOf(10f, 12f))
-        )
-    ) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .clickable { if (!hasImage) onPick() },
-            contentAlignment = Alignment.Center
-        ) {
-
-        }
-    }
-}
-
-@Composable
-private fun GalleryPickerBox(
-    items: Int, onUpload: () -> Unit
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = 120.dp),
-        shape = RoundedCornerShape(12.dp),
-        color = Color(0xFFF7F7F7),
-        border = BorderStroke(
-            1.dp, SolidDashed(color = Color(0xFFE2E2E2), intervals = floatArrayOf(10f, 12f))
-        )
-    ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text("+", fontSize = 28.sp, color = Color(0xFF999999))
-            Text("Upload photo", color = Color(0xFF999999))
-            Spacer(Modifier.height(10.dp))
-            OutlinedButton(onClick = onUpload, shape = RoundedCornerShape(10.dp)) {
-                Text("Add to gallery ($items)")
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun CountryField(
-    label: String = "Country",
-    value: String = "",
-    placeholder: String = "Choose Country",
-    onClick: () -> Unit = {}
-) {
-    Box {
-        OutlinedTextField(
-            value = value.ifBlank { placeholder },
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(label) },
-            trailingIcon = {
-                Icon(
-                    painterResource(R.drawable.ic_arrow_drop_down),
-                    contentDescription = null
-                )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                disabledTextColor = Color.Black,
-                disabledBorderColor = Color(0xFFE4E4E4),
-                focusedBorderColor = Color(0xFFBF825E),
-                unfocusedBorderColor = Color(0xFFE4E4E4),
-            )
-        )
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .clickable(
-                    onClick = {
-                        onClick()
-                    },
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                )
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun CityField(
-    label: String = "City",
-    value: String = "",
-    placeholder: String = "Choose City",
-    onClick: () -> Unit = {}
-) {
-    Box {
-        OutlinedTextField(
-            value = value.ifBlank { placeholder },
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(label) },
-            trailingIcon = {
-                Icon(
-                    painterResource(R.drawable.ic_arrow_drop_down),
-                    contentDescription = null
-                )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = OutlinedTextFieldDefaults.colors(
-                disabledTextColor = Color.Black,
-                disabledBorderColor = Color(0xFFE4E4E4),
-                focusedBorderColor = Color(0xFFBF825E),
-                unfocusedBorderColor = Color(0xFFE4E4E4),
-            )
-        )
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .clickable(
-                    onClick = {
-                        onClick()
-                    },
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                )
-        )
-    }
-}
-
-@Composable
-private fun DropDownField(
-    label: String,
-    value: String,
-    options: List<String>,
-    onSelected: (String) -> Unit,
-    placeholder: String = "Choose"
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column {
-
-        OutlinedTextField(
-            value = value.ifBlank { placeholder },
-            onValueChange = {},
-            readOnly = true,
-            label = { Text(label) },
-            trailingIcon = {
-                Icon(
-                    painterResource(R.drawable.ic_arrow_drop_down),
-                    contentDescription = null
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable { expanded = true },
-            colors = OutlinedTextFieldDefaults.colors(
-                disabledTextColor = Color.Black,
-                disabledBorderColor = Color(0xFFE4E4E4),
-                focusedBorderColor = Color(0xFFBF825E),
-                unfocusedBorderColor = Color(0xFFE4E4E4),
-            )
-        )
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    text = { Text(option) },
-                    onClick = {
-                        onSelected(option)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-
-
-@Stable
-fun SolidDashed(color: Color, intervals: FloatArray): SolidColor {
-    return SolidColor(color).also { _ ->
-    }
 }

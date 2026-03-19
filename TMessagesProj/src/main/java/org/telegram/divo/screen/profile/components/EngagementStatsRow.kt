@@ -49,7 +49,7 @@ fun EngagementStatsRow(
             Row(
                 modifier = Modifier
                     .height(36.dp)
-                    .clickableWithoutRipple(onClicked)
+                    .clickableWithoutRipple(onClick = onClicked)
                     .clip(RoundedCornerShape(6.dp))
                     .background(AppTheme.colors.blackAlpha12)
                     .padding(horizontal = 10.dp),
@@ -110,7 +110,7 @@ private fun EngagementStatsItem(
     onStatsClicked: () -> Unit
 ) {
     Row(
-        modifier = modifier.clickableWithoutRipple(onStatsClicked),
+        modifier = modifier.clickableWithoutRipple(onClick = onStatsClicked),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center,
     ) {

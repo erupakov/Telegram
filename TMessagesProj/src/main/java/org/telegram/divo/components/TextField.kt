@@ -45,7 +45,6 @@ private val FieldBg = Color(0xFF2B2B2B)
 private val FieldBorder = Color(0xFF4A4A4A)
 private val FieldHint = Color(0x99FFFFFF)
 
-/** 46.dp custom “outlined card” text field with precise padding. */
 @Composable
 fun DivoTextFieldCard(
     value: String,

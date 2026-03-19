@@ -7,11 +7,13 @@ import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.api.SystemService
 import org.telegram.divo.dal.api.UserService
 import org.telegram.divo.dal.api.WalletService
+import org.telegram.divo.dal.api.WorkHistory
 import org.telegram.divo.dal.repository.AuthRepository
 import org.telegram.divo.dal.repository.EventRepository
 import org.telegram.divo.dal.repository.PublicationRepository
 import org.telegram.divo.dal.repository.UserRepository
 import org.telegram.divo.dal.repository.WalletRepository
+import org.telegram.divo.dal.repository.WorkHistoryRepository
 import org.telegram.messenger.ApplicationLoader
 import retrofit2.Retrofit
 
@@ -35,6 +37,11 @@ object DivoApi {
     val authRepository: AuthRepository by lazy {
         val service = retrofit.create(AuthService::class.java)
         AuthRepository(service, accessTokenProvider)
+    }
+
+    val workHistory: WorkHistoryRepository by lazy {
+        val service = retrofit.create(WorkHistory::class.java)
+        WorkHistoryRepository(service)
     }
 
     val userRepository: UserRepository by lazy {

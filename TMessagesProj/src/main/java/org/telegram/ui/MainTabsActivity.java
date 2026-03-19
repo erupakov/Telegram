@@ -382,7 +382,9 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             dialogsActivity.setMainTabsActivityController(new MainTabsActivityControllerImpl());
             return dialogsActivity;
         } else if (position == POSITION_SETTINGS) {
-            return new FragmentSettings();
+            FragmentSettings fragment = new FragmentSettings();
+            fragment.setMainTabsActivityController(new MainTabsActivityControllerImpl());
+            return fragment;
         }
         return null;
     }

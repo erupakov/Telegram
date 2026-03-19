@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
@@ -20,6 +21,7 @@ import org.telegram.messenger.R
 @Composable
 fun BackButton(
     modifier: Modifier = Modifier,
+    color: Color = Color.White,
     onBackClicked: () -> Unit
 ) {
     Row(
@@ -27,13 +29,17 @@ fun BackButton(
             .clickableWithoutRipple { onBackClicked() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(painter = painterResource(R.drawable.ic_arrow_back_21), contentDescription = null, tint = Color.White)
+        Icon(
+            painter = painterResource(R.drawable.ic_arrow_back_21),
+            contentDescription = null,
+            tint = color
+        )
         Spacer(modifier = Modifier.width(7.dp))
         Text(
-            text = "Back",
+            text = stringResource(R.string.ButtonBack),
             style = AppTheme.typography.manropeRegular,
             fontSize = 17.sp,
-            color = Color.White,
+            color = color,
         )
     }
 }

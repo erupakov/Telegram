@@ -1,6 +1,7 @@
 package org.telegram.divo.components
 
 import android.net.Uri
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,13 +17,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.exoplayer2.util.Log
 import dev.chrisbanes.haze.HazeProgressive
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -193,6 +194,12 @@ fun TelegramUserAvatarEditable(
     avatarUrl: String,
     modifier: Modifier = Modifier,
     localUri: Uri? = null,
+    background: Color = AppTheme.colors.backgroundDark,
+    borderColor: Color = Color.White.copy(alpha = 0.4f),
+    isVisibleSmallIcon: Boolean = true,
+    placeholderSymbols: String = "",
+    usePlaceholder: Boolean = false,
+    @DrawableRes smallIconResId: Int = R.drawable.ic_camera_add,
     onEditClick: () -> Unit
 ) {
     Box(
@@ -204,22 +211,21 @@ fun TelegramUserAvatarEditable(
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
-                .background(AppTheme.colors.backgroundDark)
+                .background(background)
                 .border(
                     width = 1.dp,
-                    color = Color.White.copy(alpha = 0.4f),
+                    color = borderColor,
                     shape = CircleShape
                 )
-                .clickableWithoutRipple(onEditClick)
+                .clickableWithoutRipple(onClick = onEditClick)
         ) {
-            if (avatarUrl.isNotEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(3.dp)
-                        .clip(CircleShape)
-                ) {
-                    Log.d("MyTag", localUri.toString())
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(3.dp)
+                    .clip(CircleShape)
+            ) {
+                if (localUri != null || avatarUrl.isNotEmpty()) {
                     DivoAsyncImage(
                         modifier = Modifier
                             .size(100.dp),
@@ -236,6 +242,20 @@ fun TelegramUserAvatarEditable(
                             }
                         }
                     )
+                } else {
+                    if (usePlaceholder) {
+                        PlaceholderAvatar(
+                            modifier = Modifier.fillMaxSize(),
+                            name = placeholderSymbols,
+                        )
+                    } else {
+                        Image(
+                            modifier = Modifier.align(Alignment.Center).size(32.dp),
+                            painter = painterResource(R.drawable.divo_add_photo_ic),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(borderColor)
+                        )
+                    }
                 }
             }
 
@@ -252,13 +272,15 @@ fun TelegramUserAvatarEditable(
             )
         }
 
-        Image(
-            modifier = Modifier
-                .size(32.dp)
-                .align(Alignment.BottomEnd)
-                .clip(CircleShape),
-            painter = painterResource(R.drawable.ic_camera_add),
-            contentDescription = null,
-        )
+        if (isVisibleSmallIcon) {
+            Image(
+                modifier = Modifier
+                    .size(32.dp)
+                    .align(Alignment.BottomEnd)
+                    .clip(CircleShape),
+                painter = painterResource(smallIconResId),
+                contentDescription = null,
+            )
+        }
     }
 }

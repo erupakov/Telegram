@@ -4,7 +4,6 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,10 +20,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -39,7 +34,6 @@ import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.components.shimmer
 import org.telegram.divo.entity.SocialNetworkType
-import org.telegram.divo.entity.UserSocialNetwork
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -87,7 +81,6 @@ fun ProfileSocialLinksScreenView(
         containerColor = AppTheme.colors.backgroundNew,
         topBar = {
             CenterAlignedTopAppBar(
-                modifier = Modifier.padding(top = 36.dp),
                 title = {
                     Text(
                         text = stringResource(R.string.EditSocialLinks).uppercase(),

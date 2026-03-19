@@ -3,8 +3,11 @@ package org.telegram.divo.common
 import android.content.Context
 import android.net.Uri
 import java.io.File
+import java.time.Instant
 import java.time.LocalDate
 import java.time.Period
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 fun String.toCountryFlagEmoji() =
@@ -43,6 +46,18 @@ fun Float.toDateString(): String {
         ""
     }
 }
+
+fun String.formatDate(): String = try {
+    val localDate = LocalDate.parse(this)
+    String.format(Locale.getDefault(), "%02d.%02d.%d", localDate.dayOfMonth, localDate.monthValue, localDate.year)
+} catch (_: Exception) {
+    this
+}
+
+fun Long.toFormattedDate(): String = Instant.ofEpochMilli(this)
+    .atZone(ZoneId.systemDefault())
+    .toLocalDate()
+    .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()))
 
 fun Int.toShortString(): String = when {
     this >= 1_000_000 -> {

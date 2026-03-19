@@ -1,114 +1,30 @@
 package org.telegram.divo.screen.work_create_edit
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
-import org.telegram.messenger.UserConfig
-import org.telegram.tgnet.ConnectionsManager
-import org.telegram.tgnet.RequestDelegate
-import org.telegram.tgnet.TLObject
-import org.telegram.tgnet.TLRPC
-import org.telegram.tgnet.TLRPC.TL_error
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.getErrorMessage
+import java.time.LocalDate
+import java.time.ZoneOffset
 
 class CreateWorkHistoryViewModel(
-) : BaseViewModel<CreateWorkHistoryViewModel.State,
-        CreateWorkHistoryViewModel.Intent,
-        CreateWorkHistoryViewModel.Effect>() {
+    private val editId: Int?
+) : BaseViewModel<State, Intent, Effect>() {
 
-    data class State(
-        val isLoading: Boolean = false,
-        val agencies: ArrayList<TLRPC.TL_profile_agency> = ArrayList(),
-        val selectedAgency: TLRPC.TL_profile_agency? = null,
-        val query: String = "",
-        val startDate: String? = null,
-        val startDateMil: Long? = null,
-        val endDate: String? = null,
-        val endDateMil: Long? = null,
-        val isCurrent: Boolean = false,
-        val createEnabled: Boolean = false,
-        val isEditMode: Boolean = false
-    ) : ViewState
-
-    sealed interface Intent : ViewIntent {
-        data object Load : Intent
-        data object OnBackClicked : Intent
-        data class OnAgencySelected(val agency: TLRPC.TL_profile_agency) : Intent
-        data class OnQueryChanged(val value: String) : Intent
-        data class OnStartDateSelected(val date: String, val mil:Long) : Intent
-        data class OnEndDateSelected(val date: String, val mil:Long) : Intent
-        data class OnCurrentChanged(val isCurrent: Boolean): Intent
-        data object OnCreateExperience: Intent
-
+    init {
+        onLoad(editId)
     }
-
-    sealed interface Effect : ViewEffect {
-        data object NavigateBack : Effect
-    }
-
-    private val currentAccount = UserConfig.selectedAccount
 
     override fun createInitialState(): State = State()
 
-    fun searchAgency(query: String) {
-//        if (query.length < 2) {
-//            setState { copy(agencies = ArrayList()) }
-//            return
-//        }
-        val req = TLRPC.TL_profile_searchAgencies()
-        req.offset = 0
-        req.limit = 30
-        req.query = query
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TL_error? ->
-                response
-                error
-                if (response is TLRPC.TL_profile_foundAgencies) {
-
-                    setState { copy(
-                        agencies = ArrayList(response.agencies)
-                    ) }
-                } else {
-                    response
-                }
-                error
-            },
-        )
-    }
-
-    fun checkData() {
-        val value = state.value
-        val startDateValid = value.startDate != null
-        val agencyValid = value.selectedAgency != null
-
-        val endDateValid = if (value.isCurrent) {
-            true
-        } else {
-            value.endDate != null
-        }
-
-        val createEnabled =
-            startDateValid &&
-                    agencyValid &&
-                    endDateValid
-
-        setState { copy(createEnabled = createEnabled) }
-    }
-
-
-
     override fun handleIntent(intent: Intent) {
         when (intent) {
-
-            Intent.Load -> {}
-            Intent.OnBackClicked -> sendEffect(Effect.NavigateBack)
-
-            is Intent.OnQueryChanged -> {
-                setState { copy(query = query, ) }
-                searchAgency(intent.value)
-            }
-
+            Intent.OnBackClicked -> { sendEffect(Effect.NavigateBack) }
+            is Intent.OnQueryChanged -> { setState { copy(query = intent.value) } }
             is Intent.OnStartDateSelected -> {
                 setState {
                     copy(
@@ -116,7 +32,6 @@ class CreateWorkHistoryViewModel(
                         startDateMil = intent.mil
                     )
                 }
-                checkData()
             }
             is Intent.OnEndDateSelected -> {
                 setState {
@@ -125,7 +40,6 @@ class CreateWorkHistoryViewModel(
                         endDateMil = intent.mil
                     )
                 }
-                checkData()
             }
             is Intent.OnCurrentChanged -> {
                 setState {
@@ -133,41 +47,103 @@ class CreateWorkHistoryViewModel(
                         isCurrent = intent.isCurrent
                     )
                 }
-                checkData()
             }
             is Intent.OnCreateExperience ->{
-                createWorkExperience()
+                if (state.value.isEditMode) updateWorkExperience()
+                else createWorkExperience()
             }
-            is Intent.OnAgencySelected -> {
-                setState { copy(selectedAgency = intent.agency, query = (intent.agency.name ?: "")) }
-                checkData()
+        }
+    }
+
+    private fun onLoad(editId: Int?) {
+        viewModelScope.launch {
+            editId?.let { id ->
+                val item = DivoApi.workHistory.cache.value?.find { it.id == id }
+                item?.let {
+                    setState {
+                        copy(
+                            isEditMode = true,
+                            agencyName = it.agencyName.orEmpty(),
+                            editId = id,
+                            query = it.agencyName.orEmpty(),
+                            startDate = it.startDate,
+                            startDateMil = LocalDate.parse(it.startDate)
+                                .atStartOfDay(ZoneOffset.UTC)
+                                .toInstant()
+                                .toEpochMilli(),
+                            endDate = it.endDate,
+                            endDateMil = it.endDate?.let { d ->
+                                LocalDate.parse(d)
+                                    .atStartOfDay(ZoneOffset.UTC)
+                                    .toInstant()
+                                    .toEpochMilli()
+                            } ?: System.currentTimeMillis(),
+                            isCurrent = it.isCurrent
+                        )
+                    }
+                }
             }
         }
     }
 
     private fun createWorkExperience() {
+        viewModelScope.launch {
+            val s = state.value
+            val startDate = s.startDate ?: return@launch
+            val endDate = if (s.isCurrent) null else s.endDate
 
-        val isCurrent = state.value.isCurrent
-        val selectedAgency = state.value.selectedAgency
+            if (endDate != null && endDate < startDate) {
+                sendEffect(Effect.ShowError("End date cannot be earlier than start date"))
+                return@launch
+            }
 
-        val req = TLRPC.TL_profile_createWorkExperience()
-        req.is_current = isCurrent
-        req.agency = selectedAgency
-        req.start_date = 1111
-        req.end_date = 1111
+            val result = DivoApi.workHistory.createWorkExperience(
+                agencyId = null,
+                agencyName = s.query,
+                startDate = startDate,
+                endDate = endDate,
+                isCurrent = s.isCurrent,
+            )
+            when (result) {
+                is DivoResult.Success -> sendEffect(Effect.ShowSuccess)
+                else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
 
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TL_error? ->
-                response
-                error
-                if (response is TLRPC.TL_profile_workExperience) {
-                    sendEffect(Effect.NavigateBack)
-                } else {
-                    response
-                }
-                error
-            },
-        )
+    private fun updateWorkExperience() {
+        viewModelScope.launch {
+            val s = state.value
+            val id = s.editId ?: return@launch
+            val startDate = s.startDate ?: return@launch
+            val endDate = if (s.isCurrent) null else s.endDate
+
+            if (endDate != null && endDate < startDate) {
+                sendEffect(Effect.ShowError("End date cannot be earlier than start date"))
+                return@launch
+            }
+
+            val result = DivoApi.workHistory.updateWorkExperience(
+                id = id,
+                agencyId = null,
+                agencyName = s.query,
+                startDate = startDate,
+                endDate = endDate,
+                isCurrent = s.isCurrent,
+            )
+            when (result) {
+                is DivoResult.Success -> sendEffect(Effect.ShowSuccess)
+                else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
+    companion object {
+        fun factory(editId: Int?) = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return CreateWorkHistoryViewModel(editId) as T
+            }
+        }
     }
 }

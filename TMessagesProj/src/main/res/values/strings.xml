@@ -7,6 +7,13 @@
     <string name="DivoMainTabsEvents">Events</string>
     <string name="DivoMainTabsChats">Chats</string>
     <string name="DivoMainTabsSettings">Settings</string>
+    <string name="ButtonBack">Back</string>
+    <string name="ButtonCreate">Create</string>
+    <string name="ButtonSave">Save</string>
+    <string name="ButtonOk">Ok</string>
+    <string name="ButtonCancel">Cancel</string>
+    <string name="ButtonEdit">Edit</string>
+    <string name="ButtonDelete">Delete</string>
 
     <!--profile screen-->
     <string name="SimilarProfiles">You may be interested in similar profiles</string>
@@ -32,7 +39,6 @@
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>
     <string name="YourParameters">Your parameters</string>
-    <string name="ButtonBack">Back</string>
 
     <string name="SelectGender">Select a Gender</string>
     <string name="LabelAge">Age (y.o)</string>
@@ -118,6 +124,31 @@
     <string name="SaveEditProfileScreen">Save</string>
     <string name="TabBiography">BIOGRAPHY</string>
     <string name="TabAppearance">APPEARANCE</string>
+
+    <!--work experience screen-->
+    <string name="CreateExperience">CREATE EXPERIENCE</string>
+    <string name="EditExperience">EDIT EXPERIENCE</string>
+    <string name="WorkExperience">WORK EXPERIENCE</string>
+    <string name="WorkExperienceInfo">Work experience info</string>
+    <string name="CurrentlyWorkingRole">I am currently working in this role</string>
+    <string name="CreateNewWorkExperience">Create New Work Experience</string>
+    <string name="AgencyName">Agency name</string>
+    <string name="EnterAgencyName">Enter agency name</string>
+    <string name="StartDate">Start date</string>
+    <string name="EndDate">End date</string>
+    <string name="AddWorkExperience">Add Work Experience</string>
+    <string name="WorkHistoryEmptyTitle">There are no work\nexperience yet.</string>
+    <string name="WorkHistoryEmptySubtitle">Click the button below\nto add your work\nexperience</string>
+    <string name="SaveChanges">Save Changes</string>
+
+    <plurals name="work_years">
+        <item quantity="one">%d year</item>
+        <item quantity="other">%d years</item>
+    </plurals>
+    <plurals name="work_months">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
 
     <!--divo view end-->
 
