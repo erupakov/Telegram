@@ -4,6 +4,7 @@ import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlin.coroutines.cancellation.CancellationException
 
 data class PaginatedResult<T>(
     val items: List<T>,
@@ -42,6 +43,8 @@ class OffsetPaginator<T>(
                 hasMore = result.items.size < result.totalCount,
                 currentOffset = result.items.size
             )
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Log.d("MyTag", "Paginator: loadInitial error: ${e.message}")
             _state.value = PaginatorState(

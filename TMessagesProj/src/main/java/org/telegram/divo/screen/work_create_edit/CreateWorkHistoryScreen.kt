@@ -1,7 +1,9 @@
 package org.telegram.divo.screen.work_create_edit
 
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.icons.Icons
@@ -44,12 +47,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -74,6 +79,7 @@ fun CreateWorkHistoryScreen(
         factory = CreateWorkHistoryViewModel.factory(editId)
     ),
     onBack: () -> Unit = {},
+    onNavigateToSearch: () -> Unit = {},
     onPickCover: () -> Unit = {},
     onPickGallery: () -> Unit = {},
     onPickDate: () -> Unit = {},
@@ -88,6 +94,9 @@ fun CreateWorkHistoryScreen(
                 Effect.NavigateBack -> {
                     onBack()
                 }
+                Effect.NavigateToSearch -> {
+                    onNavigateToSearch()
+                }
                 is Effect.ShowSuccess -> {
                     Toast.makeText(context, "Work experience added successfully", Toast.LENGTH_SHORT).show()
                     onBack()
@@ -96,7 +105,6 @@ fun CreateWorkHistoryScreen(
                     Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
                 }
             }
-
         }
     }
     val state = viewModel.state.collectAsState().value
@@ -169,19 +177,19 @@ fun CreateWorkHistoryScreenView(
                     .padding(horizontal = 16.dp, vertical = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                TelegramUserAvatarEditable(
-                    avatarUrl = state.avatarUrl,
-                    localUri = selectedAvatarUri,
-                    background = Color.White,
-                    borderColor = AppTheme.colors.buttonColor,
-                    isVisibleSmallIcon = state.isEditMode,
-                    usePlaceholder = true,
-                    placeholderSymbols = state.agencyName,
-                    smallIconResId = R.drawable.ic_divo_work_edit_avatar,
-                    onEditClick = { openGallery() }
-                )
+//                TelegramUserAvatarEditable(
+//                    avatarUrl = state.avatarUrl,
+//                    localUri = selectedAvatarUri,
+//                    background = Color.White,
+//                    borderColor = AppTheme.colors.buttonColor,
+//                    isVisibleSmallIcon = state.isEditMode,
+//                    usePlaceholder = true,
+//                    placeholderSymbols = state.agencyName,
+//                    smallIconResId = R.drawable.ic_divo_work_edit_avatar,
+//                    onEditClick = { openGallery() }
+//                )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(32.dp + 100.dp))
 
                 Title(text = stringResource(R.string.WorkExperienceInfo))
 
@@ -194,14 +202,23 @@ fun CreateWorkHistoryScreenView(
 
                 Spacer(modifier = Modifier.height(6.dp))
 
-                DivoTextField(
-                    value = state.query,
-                    onValueChange = { onIntent(Intent.OnQueryChanged(it)) },
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
-                    textStyle = TextStyle(fontSize = 16.sp),
-                    placeholderColor = Color(0x993C3C43),
-                    placeholder = stringResource(R.string.EnterAgencyName)
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color.Black.copy(alpha = 0.06f))
+                        .clickableWithoutRipple { onIntent(Intent.OnSearchSelected) },
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp),
+                        text = state.agencyName.ifBlank { stringResource(R.string.EnterAgencyName) },
+                        color = Color(0x993C3C43),
+                        fontSize = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(12.dp))
 

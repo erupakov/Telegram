@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.settings
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
@@ -58,8 +59,7 @@ fun SettingsNavGraph(
             route = SettingsRoute.Profile.ROUTE,
             arguments = listOf(navArgument("userId") { type = NavType.IntType })
         ) { backStackEntry ->
-            val userId = backStackEntry.arguments?.getInt("userId", -1)
-                ?.takeIf { it != -1 } ?: return@composable
+            val userId = backStackEntry.arguments?.getInt("userId") ?: -1
 
             ProfileNavGraph(
                 userId = userId,

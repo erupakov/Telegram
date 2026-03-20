@@ -5,10 +5,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import org.telegram.divo.dal.api.WorkHistory
+import org.telegram.divo.dal.dto.work_history.AgencyListRequest
 import org.telegram.divo.dal.dto.work_history.CreateWorkExperienceRequest
+import org.telegram.divo.dal.dto.work_history.toEntities
 import org.telegram.divo.dal.dto.work_history.toEntity
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
+import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.WorkExperience
 
 class WorkHistoryRepository(
@@ -16,6 +19,9 @@ class WorkHistoryRepository(
 ) {
     private val _cache = MutableStateFlow<List<WorkExperience>?>(null)
     val cache: StateFlow<List<WorkExperience>?> = _cache.asStateFlow()
+
+    private val _selectedAgency = MutableStateFlow("")
+    val selectedAgency: StateFlow<String> = _selectedAgency.asStateFlow()
 
     suspend fun getWorkHistory(): DivoResult<List<WorkExperience>> {
         _cache.value?.let { return DivoResult.Success(it) }
@@ -93,5 +99,24 @@ class WorkHistoryRepository(
                 }
             }
         }
+    }
+
+    suspend fun searchAgencies(
+        offset: Int,
+        limit: Int,
+        query: String,
+    ): DivoResult<Pair<List<Agency>, Int>> = resultOf {
+        val response = service.getAgencyList(
+            AgencyListRequest(offset = offset, limit = limit, title = query)
+        )
+        response.toEntities() to (response.data.pagination?.meta?.totalCount ?: 0)
+    }
+
+    fun selectAgency(agency: String) {
+        _selectedAgency.value = agency
+    }
+
+    fun clearSelectedAgency() {
+        _selectedAgency.value = ""
     }
 }

@@ -124,7 +124,7 @@ data class UserStatistic(
 )
 
 sealed class ProfileIntent : ViewIntent {
-    data class OnLoad(val userId: Int, val isOwnProfile: Boolean) : ProfileIntent()
+    data object OnLoad : ProfileIntent()
     object OnClearPortfolioUpload : ProfileIntent()
     class OnLoadMoreEngagementStats(
         val type: StatsType

@@ -1,8 +1,10 @@
 package org.telegram.divo.screen.work_create_edit
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
@@ -16,6 +18,7 @@ class CreateWorkHistoryViewModel(
 ) : BaseViewModel<State, Intent, Effect>() {
 
     init {
+        observeSelectedAgency()
         onLoad(editId)
     }
 
@@ -24,7 +27,6 @@ class CreateWorkHistoryViewModel(
     override fun handleIntent(intent: Intent) {
         when (intent) {
             Intent.OnBackClicked -> { sendEffect(Effect.NavigateBack) }
-            is Intent.OnQueryChanged -> { setState { copy(query = intent.value) } }
             is Intent.OnStartDateSelected -> {
                 setState {
                     copy(
@@ -52,6 +54,10 @@ class CreateWorkHistoryViewModel(
                 if (state.value.isEditMode) updateWorkExperience()
                 else createWorkExperience()
             }
+            Intent.OnSearchSelected -> {
+                DivoApi.workHistory.selectAgency(state.value.agencyName)
+                sendEffect(Effect.NavigateToSearch)
+            }
         }
     }
 
@@ -65,7 +71,6 @@ class CreateWorkHistoryViewModel(
                             isEditMode = true,
                             agencyName = it.agencyName.orEmpty(),
                             editId = id,
-                            query = it.agencyName.orEmpty(),
                             startDate = it.startDate,
                             startDateMil = LocalDate.parse(it.startDate)
                                 .atStartOfDay(ZoneOffset.UTC)
@@ -99,7 +104,7 @@ class CreateWorkHistoryViewModel(
 
             val result = DivoApi.workHistory.createWorkExperience(
                 agencyId = null,
-                agencyName = s.query,
+                agencyName = s.agencyName,
                 startDate = startDate,
                 endDate = endDate,
                 isCurrent = s.isCurrent,
@@ -126,7 +131,7 @@ class CreateWorkHistoryViewModel(
             val result = DivoApi.workHistory.updateWorkExperience(
                 id = id,
                 agencyId = null,
-                agencyName = s.query,
+                agencyName = s.agencyName,
                 startDate = startDate,
                 endDate = endDate,
                 isCurrent = s.isCurrent,
@@ -135,6 +140,16 @@ class CreateWorkHistoryViewModel(
                 is DivoResult.Success -> sendEffect(Effect.ShowSuccess)
                 else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
             }
+        }
+    }
+
+    private fun observeSelectedAgency() {
+        viewModelScope.launch {
+            DivoApi.workHistory.selectedAgency
+                .onStart { DivoApi.workHistory.clearSelectedAgency() }
+                .collect { agency ->
+                    setState { copy(agencyName = agency) }
+                }
         }
     }
 

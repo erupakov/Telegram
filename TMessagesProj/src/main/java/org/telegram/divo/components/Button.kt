@@ -192,7 +192,7 @@ fun RoundedButton(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            modifier = Modifier.padding(end = 1.dp).size(iconSize),
+            modifier = Modifier.size(iconSize),
             painter = painterResource(resId),
             contentDescription = null,
             tint = Color.Black

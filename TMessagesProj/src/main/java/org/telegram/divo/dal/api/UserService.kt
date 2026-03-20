@@ -79,6 +79,7 @@ interface UserService {
 
     @GET("user/engagement")
     suspend fun getEngagement(
+        @Query("userId") userId: Int,
         @Query("offset") offset: Int,
         @Query("limit") limit: Int
     ): EngagementResponse

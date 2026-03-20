@@ -2,6 +2,7 @@ package org.telegram.divo.screen.profile
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -66,12 +67,15 @@ import org.telegram.divo.screen.profile.components.ToolBar
 import org.telegram.divo.screen.profile.components.VideoGrid
 import androidx.core.net.toUri
 import org.telegram.divo.entity.SocialNetworkType
+import org.telegram.divo.screen.work_create_edit.CreateWorkHistoryViewModel
 
 @Composable
 fun ProfileScreen(
     userId: Int,
     isOwnProfile: Boolean = false,
-    viewModel: ProfileViewModel = viewModel(),
+    viewModel: ProfileViewModel = viewModel(
+        factory = ProfileViewModel.factory(userId, isOwnProfile)
+    ),
     onEditClicked: () -> Unit = {},
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
@@ -82,7 +86,7 @@ fun ProfileScreen(
     val context = LocalContext.current
 
     LaunchedEffectOnce {
-        viewModel.setIntent(ProfileIntent.OnLoad(userId, isOwnProfile))
+        viewModel.setIntent(ProfileIntent.OnLoad)
     }
 
     LaunchedEffect(Unit) {

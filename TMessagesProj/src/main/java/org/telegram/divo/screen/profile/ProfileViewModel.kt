@@ -1,5 +1,7 @@
 package org.telegram.divo.screen.profile
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
@@ -21,17 +23,27 @@ import org.telegram.divo.screen.profile.components.StatsType
 import java.io.File
 import kotlin.random.Random
 
-class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
+class ProfileViewModel(
+    private val userId: Int,
+    private val isOwnProfile: Boolean,
+) : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
 
     companion object {
         private const val PAGE_SIZE = 10
         private const val SEARCH_DEBOUNCE_MS = 400L
+
+        fun factory(userId: Int, isOwnProfile: Boolean) = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return ProfileViewModel(userId, isOwnProfile) as T
+            }
+        }
     }
 
     private var searchJob: Job? = null
 
     private val likedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        when (val result = DivoApi.userRepository.getEngagement(offset = offset, limit = limit)) {
+        when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
             is DivoResult.Success -> {
                 setState {
                     copy(statistic = state.value.statistic.copy(following = result.value.liked.totalCount))
@@ -46,7 +58,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
     }
 
     private val viewedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        when (val result = DivoApi.userRepository.getEngagement(offset = offset, limit = limit)) {
+        when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
             is DivoResult.Success -> {
                 setState {
                     copy(statistic = state.value.statistic.copy(following = result.value.viewed.totalCount))
@@ -61,7 +73,7 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
     }
 
     private val followedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        when (val result = DivoApi.userRepository.getEngagement(offset = offset, limit = limit)) {
+        when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
             is DivoResult.Success -> {
                 setState {
                     copy(statistic = state.value.statistic.copy(following = result.value.followed.totalCount))
@@ -75,8 +87,11 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    init {
-        loadEngagement()
+    override fun createInitialState(): ProfileViewState {
+        return ProfileViewState(
+            userId = userId,
+            isOwnProfile = isOwnProfile
+        )
     }
 
 //    private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
@@ -129,13 +144,13 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    override fun createInitialState(): ProfileViewState {
-        return ProfileViewState()
+    init {
+        loadEngagement()
     }
 
     override fun handleIntent(intent: ProfileIntent) {
         when (intent) {
-            is ProfileIntent.OnLoad -> loadData(userId = intent.userId, isOwnProfile = intent.isOwnProfile)
+            is ProfileIntent.OnLoad -> loadData()
             is ProfileIntent.OpenSocialLink -> openLink(intent.socialNetworkType)
             is ProfileIntent.OnBackgroundPhotoSelected -> { changeBackground(intent.file) }
             is ProfileIntent.OnPortfolioPhotoSelected -> { uploadPhoto(intent.file) }
@@ -149,10 +164,8 @@ class ProfileViewModel : BaseViewModel<ProfileViewState, ProfileIntent, ProfileE
         }
     }
 
-    private fun loadData(userId: Int, isOwnProfile: Boolean) {
+    private fun loadData() {
         viewModelScope.launch {
-            setState { copy(userId = userId, isOwnProfile = isOwnProfile) }
-
             launch { loadUserProfile(isOwnProfile = isOwnProfile) }
             launch { portfolioPaginator.loadInitial() }
             launch { loadSimilarProfiles() }

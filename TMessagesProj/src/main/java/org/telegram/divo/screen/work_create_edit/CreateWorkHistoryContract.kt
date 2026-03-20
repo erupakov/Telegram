@@ -8,7 +8,6 @@ import java.time.LocalDate
 data class State(
     val editId: Int? = null,
     val isLoading: Boolean = false,
-    val query: String = "",
     val agencyName: String = "",
     val avatarUrl: String = "",
     val startDate: String? = LocalDate.now().toString(),
@@ -20,23 +19,24 @@ data class State(
 ) : ViewState {
 
     val createEnabled: Boolean
-        get() = query.length >= 2 &&
+        get() = agencyName.isNotEmpty() &&
                 startDate != null &&
                 (isCurrent || endDate != null)
 }
 
 sealed interface Intent : ViewIntent {
     data object OnBackClicked : Intent
-    data class OnQueryChanged(val value: String) : Intent
     data class OnStartDateSelected(val date: String, val mil: Long) : Intent
     data class OnEndDateSelected(val date: String, val mil: Long) : Intent
     data class OnCurrentChanged(val isCurrent: Boolean): Intent
     data object OnCreateExperience: Intent
+    data object OnSearchSelected : Intent
 
 }
 
 sealed interface Effect : ViewEffect {
     data object NavigateBack : Effect
+    data object NavigateToSearch : Effect
     data object ShowSuccess : Effect
     data class ShowError(val message: String) : Effect
 }
