@@ -1,11 +1,11 @@
 package org.telegram.divo.dal.dto.user
 
 import com.google.gson.annotations.SerializedName
+import org.telegram.divo.dal.dto.common.AgencyDto
+import org.telegram.divo.dal.dto.common.CustomerDto
 import org.telegram.divo.dal.dto.common.UuidContainerDto
 import org.telegram.divo.entity.Appearance
-import org.telegram.divo.entity.Customer
 import org.telegram.divo.entity.Model
-import org.telegram.divo.entity.UserInfo
 
 class UpdateProfileRequest(
     @SerializedName("fullName") val fullName: String,
@@ -21,7 +21,8 @@ class UpdateProfileRequest(
     @SerializedName("photo") val photo: UuidContainerDto?,
     @SerializedName("avatar") val avatar: UuidContainerDto?,
     @SerializedName("model") val model: UpdateProfileModelDto?,
-    @SerializedName("customer") val customer: UpdateProfileCustomerDto?
+    @SerializedName("agency") val agency: UpdateProfileAgencyRequest?,
+    @SerializedName("customer") val customer: CustomerDto?
 )
 
 class UpdateProfileModelDto(
@@ -56,36 +57,6 @@ class UpdateProfileAppearanceDto(
     @SerializedName("skinColor") val skinColor: Int?
 )
 
-class UpdateProfileCustomerDto(
-    @SerializedName("site") val site: String?,
-    @SerializedName("description") val description: String?,
-    @SerializedName("background") val background: UuidContainerDto?
-)
-
-fun UserInfo.toDto(
-    timezone: String,
-    geoCityId: Int?,
-    photoUuid: String?,
-    avatarUuid: String?,
-    customer: UpdateProfileCustomerDto? = null
-): UpdateProfileRequest =
-    UpdateProfileRequest(
-        fullName = fullName,
-        phone = phone,
-        timezone = timezone,
-        gender = gender?.id,
-        birthday = birthday,
-        geoCityId = geoCityId,
-        measuringSystem = measuringSystem,
-        subrole = subrole,
-        pushNotifications = pushNotifications,
-        isRegistrationFinished = isRegistrationFinished,
-        photo = photoUuid?.let { UuidContainerDto(it) },
-        avatar = avatarUuid?.let { UuidContainerDto(it) },
-        model = model?.toDto(),
-        customer = customer
-    )
-
 fun Model.toDto(): UpdateProfileModelDto =
     UpdateProfileModelDto(
         agencyId = agency?.id,
@@ -118,11 +89,4 @@ fun Appearance.toDto(): UpdateProfileAppearanceDto =
         hairLength = hairLength.id,
         eyeColor = eyeColor.id,
         skinColor = skinColor.id
-    )
-
-fun Customer.toDto(): UpdateProfileCustomerDto =
-    UpdateProfileCustomerDto(
-        site = site,
-        description = description,
-        background = UuidContainerDto(backgroundUuid.orEmpty())
     )

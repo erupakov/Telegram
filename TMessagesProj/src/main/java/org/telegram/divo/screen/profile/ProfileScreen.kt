@@ -67,6 +67,7 @@ import org.telegram.divo.screen.profile.components.ToolBar
 import org.telegram.divo.screen.profile.components.VideoGrid
 import androidx.core.net.toUri
 import org.telegram.divo.entity.SocialNetworkType
+import org.telegram.divo.screen.profile.components.AgencyDescriptionSection
 import org.telegram.divo.screen.work_create_edit.CreateWorkHistoryViewModel
 
 @Composable
@@ -395,11 +396,19 @@ private fun ProfileHeaderContent(
             onStatsClicked = onStatsClicked
         )
 
-        BiographyAppearanceSection(
-            selectedTab = selectedBioTab,
-            onTabSelected = { selectedBioTab = it },
-            uiState = uiState
-        )
+        if (uiState.isModel) {
+            BiographyAppearanceSection(
+                selectedTab = selectedBioTab,
+                onTabSelected = { selectedBioTab = it },
+                uiState = uiState
+            )
+        } else {
+            uiState.userInfo.agency?.description?.let {
+                AgencyDescriptionSection(
+                    text = it
+                )
+            }
+        }
 
         if (uiState.userInfo.model?.agency != null) {
             AgencyInfoSection(

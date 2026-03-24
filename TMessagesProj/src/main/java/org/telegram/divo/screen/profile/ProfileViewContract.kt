@@ -9,6 +9,7 @@ import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.Publication
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
@@ -61,7 +62,7 @@ data class ProfileViewState(
 ) : ViewState {
 
     val isModel: Boolean
-        get() = userInfo.role == "new_face" || userInfo.role == "model"
+        get() = userInfo.role.isModel()
 
     val pageCount: Int
         get() = when {

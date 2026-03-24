@@ -7,6 +7,7 @@ import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.entity.Feed
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FileModel
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.User
 
 class FeedResponse(
@@ -104,7 +105,7 @@ private fun UserDto.toEntity(): User =
     User(
         id = id,
         fullName = fullName,
-        role = role,
+        role = RoleType.from(role),
         subrole = subrole,
         roleLabel = roleLabel
     )

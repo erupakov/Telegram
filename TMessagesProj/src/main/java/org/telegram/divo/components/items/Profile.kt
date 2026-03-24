@@ -48,7 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.formattedAge
 import org.telegram.divo.common.toCountryFlagEmoji
-import org.telegram.divo.components.RoleChip
+import org.telegram.divo.components.DivoChip
 import org.telegram.divo.components.TelegramUserAvatar
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
@@ -360,7 +360,12 @@ fun ProfileNameItem(
             ) {
                 val age = uiState.userInfo.birthday
                 val city = uiState.userInfo.city
-                RoleChip(uiState.userInfo.roleLabel.lowercase())
+                DivoChip(
+                    text = uiState.userInfo.roleLabel.lowercase(),
+                    resId = if (uiState.userInfo.role.isModel()) R.drawable.ic_divo_person_heart else R.drawable.ic_divo_agency,
+                    background = Color(0xFF2262D8),
+                    textColor = Color.White
+                )
                 Spacer(modifier = Modifier.width(10.dp))
                 if (age.isNotEmpty()) {
                     Text(

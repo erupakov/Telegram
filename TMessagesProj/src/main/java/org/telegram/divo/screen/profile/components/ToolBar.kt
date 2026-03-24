@@ -191,6 +191,8 @@ private fun TitleContent(
                         color = AppTheme.colors.textColor,
                         fontSize = 10.sp,
                     )
+                } else {
+                    Spacer(modifier = Modifier.width(2.dp))
                 }
 
                 if (userInfo.city != null) {

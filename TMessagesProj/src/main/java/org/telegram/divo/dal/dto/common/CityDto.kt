@@ -19,3 +19,12 @@ fun CityDto.toEntity(): City =
         areaName = areaName,
         name = name
     )
+
+fun City.toDto(): CityDto =
+    CityDto(
+        id = id,
+        countryCode = countryCode,
+        countryName = countryName,
+        areaName = areaName,
+        name = name
+    )

@@ -23,7 +23,7 @@ data class FeedItem(
 data class User(
     val id: Int,
     val fullName: String,
-    val role: String,
+    val role: RoleType,
     val subrole: String?,
     val roleLabel: String
 )

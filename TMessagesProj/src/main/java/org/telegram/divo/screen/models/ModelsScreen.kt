@@ -85,7 +85,7 @@ import org.telegram.divo.common.LaunchedEffectOnce
 import org.telegram.divo.common.LockScreenOrientation
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.RoleChip
+import org.telegram.divo.components.DivoChip
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.components.items.DMButton
@@ -565,7 +565,13 @@ private fun ModelPage(
                         maxLines = 2
                     )
                     Spacer(Modifier.height(6.dp))
-                    RoleChip(feed.user.roleLabel)
+
+                    DivoChip(
+                        text = feed.user.roleLabel,
+                        resId = if (feed.user.role.isModel()) R.drawable.ic_divo_person_heart else R.drawable.ic_divo_agency,
+                        background = Color(0xFF2262D8),
+                        textColor = Color.White
+                    )
                 }
                 Spacer(Modifier.width(10.dp))
             }

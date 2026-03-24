@@ -11,6 +11,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.telegram.divo.dal.api.UserService
 import org.telegram.divo.dal.dto.common.UuidContainerDto
+import org.telegram.divo.dal.dto.common.toDto
 import org.telegram.divo.dal.dto.common.toEntities
 import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.dal.dto.user.AddGalleryRequest
@@ -18,11 +19,12 @@ import org.telegram.divo.dal.dto.user.AgencyModelsRequest
 import org.telegram.divo.dal.dto.user.UpdateProfileRequest
 import org.telegram.divo.dal.dto.user.UpsertSocialNetworkRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListRequest
+import org.telegram.divo.dal.dto.user.toDto
 import org.telegram.divo.dal.dto.user.toEntities
 import org.telegram.divo.dal.dto.user.toEntity
-import org.telegram.divo.dal.dto.user.toDto
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
+import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyModels
 import org.telegram.divo.entity.Engagement
 import org.telegram.divo.entity.UploadedFile
@@ -72,11 +74,22 @@ class UserRepository(
                 photo = UuidContainerDto(userInfo.photoUuid),
                 avatar = UuidContainerDto(userInfo.avatarUuid),
                 model = userInfo.model?.toDto(),
+                agency = userInfo.agency?.toDto(),
                 customer = userInfo.customer?.toDto()
             )
         )
             .toEntity()
             .also { _currentUserCache.value = it }
+    }
+
+    suspend fun updateAgency(
+        agency: Agency
+    ): DivoResult<Unit> = resultOf {
+        service.updateAgency(
+            agency.toDto()
+        )
+
+        _currentUserCache.value = service.getCurrentUserInfo().toEntity()
     }
 
     suspend fun getAgencyModels(

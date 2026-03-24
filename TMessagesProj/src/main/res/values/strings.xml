@@ -35,6 +35,8 @@
     <string name="Profile">My Profile</string>
     <string name="CurrentAgency">Current Agency</string>
     <string name="SeeHistory">see history</string>
+    <string name="SeeLess">SEE LESS</string>
+    <string name="SeeMore">SEE MORE</string>
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>

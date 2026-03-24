@@ -14,13 +14,14 @@ data class UserInfo(
     val photoUuid: String = "",
     val avatarUrl: String = "",
     val avatarUuid: String = "",
-    val role: String = "",
+    val role: RoleType = RoleType.UNKNOWN,
     val subrole: String = "",
     val roleLabel: String = "",
     val measuringSystem: String = "",
     val pushNotifications: Boolean = false,
     val isRegistrationFinished: Boolean = false,
     val model: Model? = null,
+    val agency: Agency? = null,
     val customer: Customer? = null,
     val statistic: Statistic = Statistic(),
     val isFavorite: Boolean = false,
@@ -58,7 +59,8 @@ data class Agency(
     val description: String = "",
     val employeeTitle: String = "",
     val address: AgencyAddress? = null,
-    val photo: Photo? = null
+    val photo: Photo? = null,
+    val background: Photo? = null,
 )
 
 data class AgencyAddress(

@@ -17,3 +17,11 @@ fun PhotoDto.toEntity(): Photo =
         extension = extension,
         fileUuid = fileUuid
     )
+
+fun Photo.toDto(): PhotoDto =
+    PhotoDto(
+        fileName = fileName,
+        fullUrl = fullUrl,
+        extension = extension,
+        fileUuid = fileUuid
+    )
