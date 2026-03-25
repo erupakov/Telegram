@@ -9,7 +9,6 @@ import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.Publication
-import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
@@ -55,7 +54,7 @@ data class ProfileViewState(
     val hasMoreViewed: Boolean = true,
     val hasMoreFollowed: Boolean = true,
 
-    val similarModels: List<AgencyModel> = emptyList(),
+    val agencyModels: List<AgencyModel> = emptyList(),
     val socialLinks: SocialLinks = SocialLinks(),
     val physicalParams: PhysicalParams = PhysicalParams(),
     val statistic: UserStatistic = UserStatistic()

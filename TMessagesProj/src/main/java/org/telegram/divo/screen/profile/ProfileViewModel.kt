@@ -46,7 +46,7 @@ class ProfileViewModel(
         when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
             is DivoResult.Success -> {
                 setState {
-                    copy(statistic = state.value.statistic.copy(following = result.value.liked.totalCount))
+                    copy(statistic = state.value.statistic.copy(followers = result.value.liked.totalCount))
                 }
                 PaginatedResult(
                     items = result.value.liked.items,
@@ -61,7 +61,7 @@ class ProfileViewModel(
         when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
             is DivoResult.Success -> {
                 setState {
-                    copy(statistic = state.value.statistic.copy(following = result.value.viewed.totalCount))
+                    copy(statistic = state.value.statistic.copy(views = result.value.viewed.totalCount))
                 }
                 PaginatedResult(
                     items = result.value.viewed.items,
@@ -409,7 +409,7 @@ class ProfileViewModel(
         if (result is DivoResult.Success) {
             setState {
                 copy(
-                    similarModels = result.value.items,
+                    agencyModels = result.value.items,
                 )
             }
         } else {

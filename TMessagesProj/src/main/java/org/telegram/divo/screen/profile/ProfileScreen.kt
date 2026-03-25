@@ -2,7 +2,6 @@ package org.telegram.divo.screen.profile
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -68,7 +67,7 @@ import org.telegram.divo.screen.profile.components.VideoGrid
 import androidx.core.net.toUri
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.screen.profile.components.AgencyDescriptionSection
-import org.telegram.divo.screen.work_create_edit.CreateWorkHistoryViewModel
+import org.telegram.divo.screen.profile.components.AgencyModels
 
 @Composable
 fun ProfileScreen(
@@ -83,6 +82,7 @@ fun ProfileScreen(
     showWorkHistory: (Boolean) -> Unit = {},
     onGalleryClicked: (String, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
+    onAddModelClicked: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -150,6 +150,7 @@ fun ProfileScreen(
                 viewModel.setIntent(ProfileIntent.OnVideoSelected(context.uriToFile(it)))
             },
             onLoadMoreVideos = { viewModel.setIntent(ProfileIntent.OnLoadMoreVideos) },
+            onAddModelClicked = onAddModelClicked,
         )
     }
 }
@@ -174,7 +175,8 @@ private fun ProfileScreenContent(
     onLoadMoreSearch: () -> Unit,
     onImageSelected: (Uri) -> Unit,
     onVideoSelected: (Uri) -> Unit,
-    onLoadMoreVideos: () -> Unit
+    onLoadMoreVideos: () -> Unit,
+    onAddModelClicked: () -> Unit,
 ) {
     val pageCount = uiState.pageCount
     val pagerState = rememberPagerState(pageCount = { pageCount })
@@ -311,7 +313,7 @@ private fun ProfileScreenContent(
                                 when (page) {
                                     0 -> PortfolioGrid(
                                         portfolioItems = uiState.userGalleryItems,
-                                        similarItems = uiState.similarModels,
+                                        similarItems = uiState.agencyModels,
                                         isUploading = uiState.mediaUploading,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isLoadingMore = uiState.isLoadingMoreImages,
@@ -335,7 +337,18 @@ private fun ProfileScreenContent(
                                             onVideoSelected = onVideoSelected
                                         )
                                     }
-                                    2 -> if (uiState.isModel) DivoColumnContent("Vogue Inside") else DivoColumnContent("Model")
+                                    2 -> if (uiState.isModel) {
+                                        DivoColumnContent("Vogue Inside")
+                                    } else {
+                                        AgencyModels(
+                                            models = emptyList(),//uiState.agencyModels,
+                                            isOwnProfile = uiState.isOwnProfile,
+                                            isLoadingMoreModels = false, //TODO
+                                            onAddModelClicked = onAddModelClicked,
+                                            onModelClicked = {}, //TODO
+                                            onLoadMoreAgencyModels = {}  //TODO
+                                        )
+                                    }
                                     3 -> DivoColumnContent("Vogue Inside")
                                     else -> DivoColumnContent("June 26 · 5:00 PM · \uD83C\uDDFA\uD83C\uDDF8 New York", isEvent = true)
                                 }

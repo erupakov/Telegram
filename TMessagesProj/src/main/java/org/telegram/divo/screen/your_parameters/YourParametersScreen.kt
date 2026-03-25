@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,6 +56,9 @@ import org.telegram.divo.common.toDateFloat
 import org.telegram.divo.components.DivoSlider
 import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.screen.your_parameters.components.ParameterSelector
+import org.telegram.divo.screen.your_parameters.components.ParameterSlider
+import org.telegram.divo.screen.your_parameters.components.ParametersTopBar
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -90,11 +95,18 @@ fun YourParametersScreen(
         }
     }
 
-    Column {
+    Column(
+        modifier = Modifier.background(Color(0xFF222222))
+    ) {
+        if (!showTitle) {
+            ParametersTopBar(
+                onSaveClicked = { viewModel.setIntent(YourParametersIntent.OnSaveClicked(showTitle)) },
+                onBack = { viewModel.setIntent(YourParametersIntent.OnBackClicked) }
+            )
+        }
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color(0xFF222222))
         ) {
             val headerHeight = 44.dp
             val bottomBarHeight = 74.dp
@@ -136,7 +148,7 @@ fun YourParametersScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 ParameterSlider(
                     label = stringResource(R.string.LabelAge),
-                    range = 14f..45f,
+                    range = 0f..45f,
                     value = state.userFull.birthday.toDateFloat(),
                     onValueChange = {
                         viewModel.setIntent(
@@ -151,7 +163,7 @@ fun YourParametersScreen(
                 )
                 ParameterSlider(
                     label = stringResource(R.string.LabelHeight),
-                    range = 140f..220f,
+                    range = 0f..220f,
                     value = state.userFull.model?.appearance?.height ?: 0f,
                     onValueChange = {
                         viewModel.setIntent(
@@ -166,7 +178,7 @@ fun YourParametersScreen(
                 )
                 ParameterSlider(
                     label = stringResource(R.string.LabelWaist),
-                    range = 48f..90f,
+                    range = 0f..90f,
                     minLabel = stringResource(R.string.WaistMin),
                     maxLabel = stringResource(R.string.WaistMax),
                     value = state.userFull.model?.appearance?.waist ?: 0f,
@@ -181,7 +193,7 @@ fun YourParametersScreen(
                 )
                 ParameterSlider(
                     label = stringResource(R.string.LabelHips),
-                    range = 80f..110f,
+                    range = 0f..110f,
                     minLabel = stringResource(R.string.HipsMin),
                     maxLabel = stringResource(R.string.HipsMax),
                     value = state.userFull.model?.appearance?.hips ?: 0f,
@@ -196,7 +208,7 @@ fun YourParametersScreen(
                 )
                 ParameterSlider(
                     label = stringResource(R.string.LabelShoeSize),
-                    range = 36f..42f,
+                    range = 0f..42f,
                     minLabel = stringResource(R.string.ShoeSizeMin),
                     maxLabel = stringResource(R.string.ShoeSizeMax),
                     value = state.userFull.model?.appearance?.shoesSize ?: 0f,
@@ -260,10 +272,13 @@ fun YourParametersScreen(
                 Spacer(modifier = Modifier.height(bottomBarHeight + 16.dp))
             }
 
+            val bottomPadding = if (!showTitle) Modifier.navigationBarsPadding() else Modifier
             // Fixed bottom buttons (not scrollable)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .then(bottomPadding)
+                    .navigationBarsPadding()
                     .height(bottomBarHeight)
                     .background(
                         Brush.verticalGradient(
@@ -298,7 +313,7 @@ fun YourParametersScreen(
                     }
                 }
                 Button(
-                    onClick = { viewModel.setIntent(YourParametersIntent.OnSaveClicked) },
+                    onClick = { viewModel.setIntent(YourParametersIntent.OnSaveClicked(showTitle)) },
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight(),
@@ -316,115 +331,6 @@ fun YourParametersScreen(
                     }
                 }
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ParameterSelector(
-    modifier: Modifier = Modifier,
-    label: String,
-    items: List<String>,
-    selectedValue: String,
-    onItemSelected: (Int, String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    val selectedText = selectedValue.ifEmpty { label }
-
-    ExposedDropdownMenuBox(
-        modifier = modifier,
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
-    ) {
-        DivoTextField(
-            modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable),
-            value = selectedText,
-            placeholder = label,
-            trailingIcon = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-            backgroundColor = Color.White.copy(0.05f),
-            borderColor = Color.White.copy(0.40f),
-            cornerRadius = 10.dp,
-            placeholderColor = Color.White.copy(0.50f),
-            cursorColor = Color.White,
-            textStyle = AppTheme.typography.helveticaNeueRegular.copy(
-                fontSize = 16.sp,
-                color = Color.White
-            ),
-            readOnly = true,
-            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 14.dp, bottom = 13.dp),
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            containerColor = Color.Transparent,
-            modifier = Modifier
-                .background(
-                    color = Color(0xFF2A2A2A),
-                    shape = RoundedCornerShape(10.dp)
-                )
-        ) {
-            items.forEachIndexed { index, item ->
-                DropdownMenuItem(
-                    text = { Text(item, color = Color.White) },
-                    onClick = {
-                        onItemSelected(index + 1, item)
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun ParameterSlider(
-    label: String,
-    range: ClosedFloatingPointRange<Float>,
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    minLabel: String,
-    maxLabel: String,
-    valueFormatter: (Float) -> String
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = label,
-                color = Color.White.copy(alpha = 0.9f),
-                fontSize = 14.sp,
-            )
-            Text(
-                text = valueFormatter(value),
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Right
-            )
-        }
-
-        DivoSlider(
-            value = value,
-            onValueChange = onValueChange,
-            valueRange = range,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = minLabel, color = Color.White, fontSize = 16.sp)
-            Text(text = maxLabel, color = Color.White, fontSize = 16.sp)
         }
     }
 }

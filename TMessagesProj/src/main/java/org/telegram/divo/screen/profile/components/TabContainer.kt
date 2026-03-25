@@ -135,7 +135,7 @@ enum class Destination(
     SONGS("songs", R.drawable.divo_profile_tab_1, "Songs"),
     ALBUM("album", R.drawable.divo_profile_tab_2, "Album"),
     PLAYLISTS("playlist", R.drawable.divo_profile_tab_3, "Playlist"),
-    AGENCY("agency", R.drawable.ic_divo_agency, "Agency"),
+    AGENCY("agency", R.drawable.ic_divo_tab_agency, "Agency"),
     EVENT("event", R.drawable.ic_divo_event, "event")
 }
 

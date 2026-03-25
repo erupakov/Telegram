@@ -37,6 +37,10 @@
     <string name="SeeHistory">see history</string>
     <string name="SeeLess">SEE LESS</string>
     <string name="SeeMore">SEE MORE</string>
+    <string name="AddModel">Add Model</string>
+    <string name="AgencyModelsEmpty">There are no models from your agency yet.</string>
+    <string name="AgencyModelsEmptyHint">Click the button below \n to add your model</string>
+    <string name="PremiumLabel">Premium</string>
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>
@@ -152,7 +156,18 @@
         <item quantity="other">%d months</item>
     </plurals>
 
+    <!--add model screen-->
+    <string name="AddNewModel">ADD A NEW MODEL</string>
+    <string name="AddModelDescription">Fill out the model’s details to add them to your agency. You can update this information anytime.</string>
+    <string name="PersonalData">Personal data</string>
+    <string name="FullName">Full Name</string>
+    <string name="CountryLabel">Country</string>
+    <string name="ProfileLink">Link on profile in Divo</string>
+    <string name="NextStep">Next Step</string>
+
     <!--divo view end-->
+
+
 
     <string name="LanguageName">English</string>
     <string name="English">English</string>

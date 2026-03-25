@@ -84,10 +84,7 @@ fun ProfileSocialLinksScreenView(
                 title = {
                     Text(
                         text = stringResource(R.string.EditSocialLinks).uppercase(),
-                        style = AppTheme.typography.helveticaNeueLtCom,
-                        fontSize = 20.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
+                        style = AppTheme.typography.appBar,
                     )
                 },
                 navigationIcon = {
@@ -228,7 +225,7 @@ private fun SocialLinkField(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
-            cursorColor = AppTheme.colors.buttonColor
+            cursorColor = AppTheme.colors.accentOrange
         )
     )
 }

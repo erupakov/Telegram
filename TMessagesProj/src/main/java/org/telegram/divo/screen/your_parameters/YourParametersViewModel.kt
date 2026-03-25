@@ -9,6 +9,7 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.Appearance
 import org.telegram.divo.entity.Gender
+import org.telegram.divo.entity.Model
 
 class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParametersIntent, YourParametersEffect>() {
 
@@ -74,16 +75,17 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
                 )
             }
             is YourParametersIntent.OnBackClicked -> sendEffect(YourParametersEffect.NavigateBack)
-            is YourParametersIntent.OnSaveClicked -> updateProfile()
+            is YourParametersIntent.OnSaveClicked -> if (intent.isEditScreen) updateProfile() else sendEffect(YourParametersEffect.SaveSuccess)
             is YourParametersIntent.OnLoad -> loadUserProfile()
         }
     }
 
     private fun updateAppearance(update: Appearance.() -> Appearance) {
         setState {
-            val appearance = userFull.model?.appearance?.update()
-            val model = userFull.model?.copy(appearance = appearance)
-            copy(userFull = userFull.copy(model = model))
+            val currentAppearance = userFull.model?.appearance ?: Appearance()
+            val updatedAppearance = currentAppearance.update()
+            val updatedModel = (userFull.model ?: Model()).copy(appearance = updatedAppearance)
+            copy(userFull = userFull.copy(model = updatedModel))
         }
     }
 

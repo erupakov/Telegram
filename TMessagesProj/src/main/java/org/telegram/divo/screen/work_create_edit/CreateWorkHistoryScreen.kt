@@ -1,7 +1,6 @@
 package org.telegram.divo.screen.work_create_edit
 
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -64,8 +62,6 @@ import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.toFormattedDate
 import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.PlaceholderAvatar
-import org.telegram.divo.components.TelegramUserAvatarEditable
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -248,7 +244,7 @@ fun CreateWorkHistoryScreenView(
                         modifier = Modifier,
                         checked = state.isCurrent,
                         colors = CheckboxDefaults.colors(
-                            checkedColor = AppTheme.colors.buttonColor
+                            checkedColor = AppTheme.colors.accentOrange
                         ),
                         onCheckedChange = { checked ->
                             onIntent(Intent.OnCurrentChanged(isCurrent = checked))
@@ -318,9 +314,9 @@ private fun DivoDatePickerDialog(
 ) {
     MaterialTheme(
         colorScheme = MaterialTheme.colorScheme.copy(
-            primary = AppTheme.colors.buttonColor,
+            primary = AppTheme.colors.accentOrange,
             onPrimary = Color.White,
-            primaryContainer = AppTheme.colors.buttonColor,
+            primaryContainer = AppTheme.colors.accentOrange,
             onPrimaryContainer = Color.White,
             surface = AppTheme.colors.backgroundNew,
             onSurface = Color(0xFF3C3C43),
@@ -398,7 +394,7 @@ private fun TopBar(
             BackButton(
                 modifier = Modifier
                     .padding(start = 8.dp, bottom = 7.dp),
-                color = AppTheme.colors.buttonColor,
+                color = AppTheme.colors.accentOrange,
                 onBackClicked = onBack
             )
         },

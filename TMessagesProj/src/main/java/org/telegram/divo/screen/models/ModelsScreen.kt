@@ -543,7 +543,7 @@ private fun ModelPage(
                             modifier = Modifier
                                 .size(68.dp)
                                 .clip(CircleShape)
-                                .background(AppTheme.colors.accentColor),
+                                .background(AppTheme.colors.accentOrange),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(

@@ -6,10 +6,8 @@ import androidx.compose.ui.graphics.Color
 
 @Immutable
 data class AppColors(
-    val accentColor: Color = Color(0xFFBF7A54),
-
     val splashBgColor: Color = Color(0xFFDBFE01),
-    val buttonColor: Color = Color(0xFFFF772D),
+    val accentOrange: Color = Color(0xFFFF772D),
     val backButton: Color = Color(0xFF343434),
 
     val buttonTextColor: Color = Color(0xFFFEFEFE),
@@ -18,7 +16,6 @@ data class AppColors(
     val textHintColor: Color = Color(0xFF8D8D8D),
     val containerDuration: Color = Color(0x4DFFFFFF),
     val switchTumb: Color = Color(0xff222222),
-    val switchBackgroundChecked: Color = Color(0xFFBF7A54),
     val switchBackgroundUnChecked: Color = Color(0xffAFAFAF),
 
     val blackAlpha12: Color = Color(0x1F000000),
@@ -28,7 +25,7 @@ data class AppColors(
     val backgroundDark: Color = Color(0xFF222222),
     val backgroundLight: Color = Color(0xFF343434),
 
-)
+    )
 
 val MyLocalCustomColors = staticCompositionLocalOf {
     AppColors(

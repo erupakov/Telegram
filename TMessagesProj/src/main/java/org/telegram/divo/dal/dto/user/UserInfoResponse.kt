@@ -71,7 +71,7 @@ fun UserDataDto.toEntity(): UserInfo {
 
     return UserInfo(
         id = id,
-        fullName = if (role.isModel()) fullName.orEmpty() else agency?.employeeTitle.orEmpty(),
+        fullName = if (role.isModel()) fullName.orEmpty() else agency?.title.orEmpty(),
         gender = gender?.toEntity(),
         birthday = birthday.orEmpty(),
         city = city?.toEntity(),

@@ -60,7 +60,7 @@ fun UIButtonSmall(
             .width(48.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(6.dp),
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.buttonColor)
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.accentOrange)
     ) {
         Box(
             modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
@@ -89,7 +89,7 @@ fun UIButton(
         onClick = onClick,
         shape = RoundedCornerShape(4.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = AppTheme.colors.buttonColor
+            containerColor = AppTheme.colors.accentOrange
         )
     ) {
         Text(
@@ -120,7 +120,7 @@ fun UIButtonNew(
         onClick = onClick,
         shape = shape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = AppTheme.colors.buttonColor
+            containerColor = AppTheme.colors.accentOrange
         ),
     ) {
         Text(

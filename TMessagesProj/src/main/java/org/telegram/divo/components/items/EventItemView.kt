@@ -177,7 +177,7 @@ private fun EventCtaButton(
     onClick: () -> Unit,
 ) {
     val (backgroundColor, contentColor) = when (type) {
-        EventListViewModel.EventCtaType.Apply -> AppTheme.colors.buttonColor to AppTheme.colors.buttonTextColor
+        EventListViewModel.EventCtaType.Apply -> AppTheme.colors.accentOrange to AppTheme.colors.buttonTextColor
         EventListViewModel.EventCtaType.MyEvent -> Color(0xFFF2F2F2) to Color(0xFF2F2F2F)
     }
 

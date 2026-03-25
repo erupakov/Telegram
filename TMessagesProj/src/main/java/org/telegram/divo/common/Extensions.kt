@@ -33,7 +33,7 @@ fun String?.toDateFloat(): Float {
 
         return age.toFloat()
     } catch (_: Exception) {
-        return -1f
+        return 0f
     }
 }
 

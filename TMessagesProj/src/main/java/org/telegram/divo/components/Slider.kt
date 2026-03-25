@@ -44,7 +44,7 @@ fun AgeSlider(
             },
             valueRange = 14f..45f,
             colors = SliderDefaults.colors(
-                thumbColor = AppTheme.colors.buttonColor,
+                thumbColor = AppTheme.colors.accentOrange,
                 activeTrackColor = Color(0xFF9B9B9B),
                 inactiveTrackColor = Color(0xFF5C5C5C)
             ),

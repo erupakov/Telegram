@@ -2,6 +2,7 @@ package org.telegram.divo.dal.dto.user
 
 import com.google.gson.annotations.SerializedName
 import org.telegram.divo.dal.dto.common.CityDto
+import org.telegram.divo.dal.dto.common.PaginationDto
 import org.telegram.divo.dal.dto.common.PhotoDto
 import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.entity.AgencyModel
@@ -13,7 +14,7 @@ class AgencyModelsResponse(
 
 class AgencyModelsDataDto(
     @SerializedName("items") val items: List<ModelItemDto>,
-    // @SerializedName("pagination") val pagination: PaginationDto
+    @SerializedName("pagination") val pagination: PaginationDto
 )
 
 class ModelItemDto(

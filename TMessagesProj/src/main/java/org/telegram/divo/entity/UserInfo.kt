@@ -1,7 +1,5 @@
 package org.telegram.divo.entity
 
-import com.google.gson.annotations.SerializedName
-
 data class UserInfo(
     val id: Int = 0,
     val fullName: String = "",

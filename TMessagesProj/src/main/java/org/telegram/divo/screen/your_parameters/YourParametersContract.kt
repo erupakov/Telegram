@@ -25,7 +25,7 @@ sealed class YourParametersIntent : ViewIntent {
     data class OnSkinColorChanged(val color: Int, val title: String) : YourParametersIntent()
     data class OnBreastSizeChanged(val size: String) : YourParametersIntent()
     data object OnBackClicked : YourParametersIntent()
-    data object OnSaveClicked : YourParametersIntent()
+    data class OnSaveClicked(val isEditScreen: Boolean) : YourParametersIntent()
     data object OnLoad : YourParametersIntent()
 }
 

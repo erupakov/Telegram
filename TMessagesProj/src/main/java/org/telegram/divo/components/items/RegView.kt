@@ -101,7 +101,7 @@ fun RegButtonView(
                     checkedThumbColor = AppTheme.colors.switchTumb,
                     uncheckedThumbColor = AppTheme.colors.switchTumb,
                     uncheckedTrackColor = AppTheme.colors.switchBackgroundUnChecked,
-                    checkedTrackColor = AppTheme.colors.switchBackgroundChecked,
+                    checkedTrackColor = AppTheme.colors.accentOrange,
                 )
             )
             Spacer(Modifier.size(16.dp))

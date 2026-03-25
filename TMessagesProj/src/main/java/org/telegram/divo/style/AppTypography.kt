@@ -2,6 +2,7 @@ package org.telegram.divo.style
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -55,8 +56,9 @@ val LocalCustomTypography = staticCompositionLocalOf {
             lineHeight = 28.8.sp,
         ),
         appBar = TextStyle(
-            letterSpacing = (-4).sp,
-            fontSize = 34.sp,
+            fontFamily = HelveticaNeueLtCom77,
+            fontSize = 20.sp,
+            color = Color.Black,
         ),
         textButtonSmall = TextStyle(
             fontSize = 11.sp,
@@ -74,7 +76,8 @@ val LocalCustomTypography = staticCompositionLocalOf {
         ),
         helveticaNeueLtCom = TextStyle(
             fontFamily = HelveticaNeueLtCom77,
-            fontWeight = FontWeight.Normal
+            fontWeight = FontWeight.Normal,
+            color = Color.Black
         ),
         helveticaNeueRegular = TextStyle(
             fontFamily = HelveticaNeue,

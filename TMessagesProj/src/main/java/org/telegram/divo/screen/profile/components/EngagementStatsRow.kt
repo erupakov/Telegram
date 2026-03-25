@@ -19,6 +19,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -133,7 +134,9 @@ private fun EngagementStatsItem(
             text = text,
             style = AppTheme.typography.helveticaNeueRegular,
             fontSize = 10.sp,
-            color = Color.White
+            color = Color.White,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

@@ -98,7 +98,7 @@ private fun ImageCore(
                         imageVector = Icons.Outlined.Person,
                         contentDescription = "Failed to load image",
                         modifier = Modifier.size(errorIconSize),
-                        tint = AppTheme.colors.accentColor.copy(alpha = 0.4f),
+                        tint = AppTheme.colors.accentOrange.copy(alpha = 0.4f),
                     )
                 }
             },

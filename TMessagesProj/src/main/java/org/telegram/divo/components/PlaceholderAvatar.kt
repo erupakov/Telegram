@@ -46,7 +46,7 @@ fun PlaceholderAvatar(
         Text(
             text = initials,
             fontWeight = FontWeight.SemiBold,
-            color = AppTheme.colors.buttonColor,
+            color = AppTheme.colors.accentOrange,
             fontSize = 18.sp
         )
 
