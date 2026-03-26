@@ -66,7 +66,6 @@ data class ModelsViewState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val allUserModels: List<Model> = emptyList(),
-    val showMockData: Boolean = false,
 ) : ViewState {
 
     val feedItems get() = tabFeeds[selectedTab] ?: emptyList()
@@ -131,7 +130,6 @@ sealed class ModelsViewIntent : ViewIntent {
     data object OnAddStoryClick : ModelsViewIntent()
     data class OnPhotoClick(val modelId: String, val photoUrl: String) : ModelsViewIntent()
     data object LoadMoreAllUsers : ModelsViewIntent()
-    data object OnShowMockDataClicked : ModelsViewIntent()
 }
 
 // Action

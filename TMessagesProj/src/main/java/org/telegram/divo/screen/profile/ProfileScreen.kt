@@ -2,6 +2,7 @@ package org.telegram.divo.screen.profile
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -317,6 +318,7 @@ private fun ProfileScreenContent(
                                         isUploading = uiState.mediaUploading,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isLoadingMore = uiState.isLoadingMoreImages,
+                                        isFirstLoading = uiState.isLoadingImages,
                                         hasMore = uiState.hasMoreImages,
                                         onLoadMore = onLoadMoreImages,
                                         onPhotoClicked = { onGalleryClicked(it, false) },
@@ -325,10 +327,12 @@ private fun ProfileScreenContent(
                                     )
                                     1 -> {
                                         val isPageActive = pagerState.currentPage == 1
+
                                         VideoGrid(
                                             videoItems = uiState.videoItems,
                                             isOwnProfile = uiState.isOwnProfile,
                                             isLoadingMore = uiState.isLoadingMoreVideos,
+                                            isFirstLoading = uiState.isLoadingVideos,
                                             isActive = isPageActive,
                                             hasMore = uiState.hasMoreVideos,
                                             isUploading = uiState.mediaUploading,

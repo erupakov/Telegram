@@ -184,6 +184,7 @@ fun ProfileNavGraph(
         composable(ProfileRoute.YourParameters.route) {
             YourParametersScreen(
                 showTitle = false,
+                isFromAgency = true,
                 onSaved = {
                     nav.popBackStack(
                         ProfileRoute.AddModel.route,

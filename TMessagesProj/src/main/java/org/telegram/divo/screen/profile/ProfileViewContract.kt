@@ -24,8 +24,10 @@ data class ProfileViewState(
     val userGalleryItems: List<UserGalleryItem> = listOf(),
     val isLoadingMoreImages: Boolean = false,
     val hasMoreImages: Boolean = true,
+    val isLoadingImages: Boolean = false,
 
     val videoItems: PersistentList<Publication> = persistentListOf(),
+    val isLoadingVideos: Boolean = false,
     val isLoadingMoreVideos: Boolean = false,
     val hasMoreVideos: Boolean = true,
 

@@ -39,6 +39,7 @@ fun PortfolioGrid(
     isOwnProfile: Boolean,
     isUploading: Boolean,
     isLoadingMore: Boolean,
+    isFirstLoading: Boolean,
     hasMore: Boolean,
     onLoadMore: () -> Unit,
     onPhotoClicked: (String) -> Unit,
@@ -115,7 +116,13 @@ fun PortfolioGrid(
             )
         }
 
-        if (isOwnProfile) {
+        if (isFirstLoading) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                MediaLoadingContent()
+            }
+        }
+
+        if (isOwnProfile && !isFirstLoading) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 PortfolioAddButton(
                     isUploading = isUploading,

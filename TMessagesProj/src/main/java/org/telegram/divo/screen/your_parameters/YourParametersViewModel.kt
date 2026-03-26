@@ -75,7 +75,7 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
                 )
             }
             is YourParametersIntent.OnBackClicked -> sendEffect(YourParametersEffect.NavigateBack)
-            is YourParametersIntent.OnSaveClicked -> if (intent.isEditScreen) updateProfile() else sendEffect(YourParametersEffect.SaveSuccess)
+            is YourParametersIntent.OnSaveClicked -> if (intent.isEditScreen) sendEffect(YourParametersEffect.SaveSuccess) else updateProfile()
             is YourParametersIntent.OnLoad -> loadUserProfile()
         }
     }

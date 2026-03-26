@@ -29,7 +29,6 @@ import org.telegram.divo.screen.models.ModelsViewIntent.OnAddStoryClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnBookmarkClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnPhotoClick
 import org.telegram.divo.screen.models.ModelsViewIntent.LoadMoreAllUsers
-import org.telegram.divo.screen.models.ModelsViewIntent.OnShowMockDataClicked
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
 
@@ -123,7 +122,6 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             is OnBookmarkClick -> bookmarkModel(intent.modelId)
             is OnPhotoClick -> zoomPhoto(intent.modelId, intent.photoUrl)
             is LoadMoreAllUsers -> loadFeed(loadMore = true)
-            is OnShowMockDataClicked -> setState { copy(showMockData = true) }
         }
     }
 

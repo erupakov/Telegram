@@ -171,17 +171,19 @@ private fun AppearanceContent(params: PhysicalParams) {
                     if (params.height > 0) {
                         AppearanceRow("Height (cm)", params.height.toString())
                     }
-                    if (params.hips > 0) {
-                        AppearanceRow("Hips (cm)", params.hips.toString())
-                    }
-                    if (params.hairLength > "0" || expanded) {
-                        AppearanceRow("Hair length (cm)", params.hairLength.toString())
-                    }
-                    if (params.eyeColor.isNotEmpty()) {
-                        AppearanceRow("Eye color", params.eyeColor)
-                    }
-                    if (params.breastSize.isNotEmpty() && params.gender == "Female") {
-                        AppearanceRow("Breast size", params.breastSize)
+                    if (expanded) {
+                        if (params.hips > 0) {
+                            AppearanceRow("Hips (cm)", params.hips.toString())
+                        }
+                        if (params.hairLength > "0") {
+                            AppearanceRow("Hair length (cm)", params.hairLength)
+                        }
+                        if (params.eyeColor.isNotEmpty()) {
+                            AppearanceRow("Eye color", params.eyeColor)
+                        }
+                        if (params.breastSize.isNotEmpty() && params.gender == "Female") {
+                            AppearanceRow("Breast size", params.breastSize)
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.width(32.dp))
@@ -193,20 +195,22 @@ private fun AppearanceContent(params: PhysicalParams) {
                     if (params.waist > 0) {
                         AppearanceRow("Waist (cm)", params.waist.toString())
                     }
-                    if (params.shoeSize > 0) {
-                        AppearanceRow("Shoe size (EU)", params.shoeSize.toString())
-                    }
-                    if (params.hairColor.isNotEmpty()) {
-                        AppearanceRow("Hair color", params.hairColor)
-                    }
-                    if (params.skinColor.isNotEmpty()) {
-                        AppearanceRow("Skin color", params.skinColor)
+                    if (expanded) {
+                        if (params.shoeSize > 0) {
+                            AppearanceRow("Shoe size (EU)", params.shoeSize.toString())
+                        }
+                        if (params.hairColor.isNotEmpty()) {
+                            AppearanceRow("Hair color", params.hairColor)
+                        }
+                        if (params.skinColor.isNotEmpty()) {
+                            AppearanceRow("Skin color", params.skinColor)
+                        }
                     }
                 }
             }
 
             Text(
-                text = "SEE MORE",
+                text =  if (expanded) "SEE LESS" else "SEE MORE",
                 style = AppTheme.typography.helveticaNeueLtCom,
                 color = Color.White,
                 fontSize = 10.sp,

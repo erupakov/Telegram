@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.profile
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -7,7 +8,10 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.OffsetPaginator
@@ -17,6 +21,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.Publication
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.profile.components.StatsType
@@ -128,7 +133,7 @@ class ProfileViewModel(
         }
     }
 
-    private val videoPaginator = OffsetPaginator(limit = 10) { offset, limit ->
+    private val videoPaginator = OffsetPaginator(limit = 20) { offset, limit ->
         when (val result = DivoApi.publicationRepository.getPublicationList(
             offset = offset,
             limit = limit,
@@ -234,7 +239,8 @@ class ProfileViewModel(
                 setState {
                     copy(
                         isLoadingMoreImages = pState.isLoadingMore,
-                        hasMoreImages = pState.hasMore
+                        hasMoreImages = pState.hasMore,
+                        isLoadingImages = pState.isLoading
                     )
                 }
             }
@@ -258,12 +264,15 @@ class ProfileViewModel(
                     copy(
                         isLoadingMoreVideos = pState.isLoadingMore,
                         hasMoreVideos = pState.hasMore,
+                        isLoadingVideos = pState.isLoading
                     )
                 }
             }
         }
 
         viewModelScope.launch {
+            videoPaginator.state.first { !it.isLoading && !it.isLoadingMore }
+
             DivoApi.publicationRepository.publicationFlow(state.value.userId)
                 .filterNotNull()
                 .collect { data ->

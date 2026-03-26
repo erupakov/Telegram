@@ -66,6 +66,7 @@ import org.telegram.messenger.R
 fun YourParametersScreen(
     viewModel: YourParametersViewModel = viewModel(),
     showTitle: Boolean = true,
+    isFromAgency: Boolean = false,
     onSaved: () -> Unit = {},
     onBack: () -> Unit = {}
 ) {
@@ -98,9 +99,9 @@ fun YourParametersScreen(
     Column(
         modifier = Modifier.background(Color(0xFF222222))
     ) {
-        if (!showTitle) {
+        if (isFromAgency) {
             ParametersTopBar(
-                onSaveClicked = { viewModel.setIntent(YourParametersIntent.OnSaveClicked(showTitle)) },
+                onSaveClicked = { viewModel.setIntent(YourParametersIntent.OnSaveClicked(isFromAgency)) },
                 onBack = { viewModel.setIntent(YourParametersIntent.OnBackClicked) }
             )
         }
@@ -148,8 +149,8 @@ fun YourParametersScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 ParameterSlider(
                     label = stringResource(R.string.LabelAge),
-                    range = 0f..45f,
-                    value = state.userFull.birthday.toDateFloat(),
+                    range = 14f..45f,
+                    value = state.userFull.birthday.toDateFloat() ?: 14f,
                     onValueChange = {
                         viewModel.setIntent(
                             YourParametersIntent.OnAgeChanged(
@@ -163,8 +164,8 @@ fun YourParametersScreen(
                 )
                 ParameterSlider(
                     label = stringResource(R.string.LabelHeight),
-                    range = 0f..220f,
-                    value = state.userFull.model?.appearance?.height ?: 0f,
+                    range = 140f..220f,
+                    value = state.userFull.model?.appearance?.height ?: 140f,
                     onValueChange = {
                         viewModel.setIntent(
                             YourParametersIntent.OnHeightChanged(
@@ -178,10 +179,10 @@ fun YourParametersScreen(
                 )
                 ParameterSlider(
                     label = stringResource(R.string.LabelWaist),
-                    range = 0f..90f,
+                    range = 48f..90f,
                     minLabel = stringResource(R.string.WaistMin),
                     maxLabel = stringResource(R.string.WaistMax),
-                    value = state.userFull.model?.appearance?.waist ?: 0f,
+                    value = state.userFull.model?.appearance?.waist ?: 48f,
                     onValueChange = {
                         viewModel.setIntent(
                             YourParametersIntent.OnWaistChanged(
@@ -193,10 +194,10 @@ fun YourParametersScreen(
                 )
                 ParameterSlider(
                     label = stringResource(R.string.LabelHips),
-                    range = 0f..110f,
+                    range = 80f..110f,
                     minLabel = stringResource(R.string.HipsMin),
                     maxLabel = stringResource(R.string.HipsMax),
-                    value = state.userFull.model?.appearance?.hips ?: 0f,
+                    value = state.userFull.model?.appearance?.hips ?: 80f,
                     onValueChange = {
                         viewModel.setIntent(
                             YourParametersIntent.OnHipsChanged(
@@ -208,10 +209,10 @@ fun YourParametersScreen(
                 )
                 ParameterSlider(
                     label = stringResource(R.string.LabelShoeSize),
-                    range = 0f..42f,
+                    range = 36f..42f,
                     minLabel = stringResource(R.string.ShoeSizeMin),
                     maxLabel = stringResource(R.string.ShoeSizeMax),
-                    value = state.userFull.model?.appearance?.shoesSize ?: 0f,
+                    value = state.userFull.model?.appearance?.shoesSize ?: 36f,
                     onValueChange = {
                         viewModel.setIntent(
                             YourParametersIntent.OnShoeSizeChanged(
@@ -272,7 +273,7 @@ fun YourParametersScreen(
                 Spacer(modifier = Modifier.height(bottomBarHeight + 16.dp))
             }
 
-            val bottomPadding = if (!showTitle) Modifier.navigationBarsPadding() else Modifier
+            val bottomPadding = if (isFromAgency) Modifier.navigationBarsPadding() else Modifier
             // Fixed bottom buttons (not scrollable)
             Row(
                 modifier = Modifier

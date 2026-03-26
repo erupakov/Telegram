@@ -1,8 +1,12 @@
+@file:kotlin.OptIn(FlowPreview::class)
+
 package org.telegram.divo.screen.profile.components
 
 import android.net.Uri
+import androidx.annotation.OptIn
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -28,6 +32,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -37,6 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -44,32 +50,27 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.VideoSize
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
-import coil.decode.VideoFrameDecoder
-import coil.request.ImageRequest
-import coil.request.videoFrameMillis
-import coil.size.Precision
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
-import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.entity.Publication
+import org.telegram.divo.entity.PublicationFile
 
-@androidx.annotation.OptIn(UnstableApi::class)
-@OptIn(FlowPreview::class)
+@OptIn(UnstableApi::class, FlowPreview::class)
 @Composable
 fun VideoGrid(
     modifier: Modifier = Modifier,
     videoItems: List<Publication>,
     isOwnProfile: Boolean,
+    isFirstLoading: Boolean,
     isLoadingMore: Boolean,
     isUploading: Boolean,
     hasMore: Boolean,
@@ -92,13 +93,30 @@ fun VideoGrid(
                 repeatMode = Player.REPEAT_MODE_ONE
                 volume = 0f
                 playWhenReady = false
-                videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
             }
         }
     }
 
     val playingMap = remember { mutableStateMapOf<Int, Int>() }
     val slotReady = remember { mutableStateMapOf<Int, Boolean>() }
+
+    var lifecycleResumed by remember { mutableStateOf(true) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> lifecycleResumed = true
+                Lifecycle.Event.ON_PAUSE -> {
+                    lifecycleResumed = false
+                    playerPool.forEach { it.playWhenReady = false }
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     DisposableEffect(Unit) {
         onDispose {
@@ -110,31 +128,9 @@ fun VideoGrid(
         }
     }
 
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_PAUSE,
-                Lifecycle.Event.ON_STOP -> {
-                    playerPool.forEach { it.pause() }
-                    playingMap.clear()
-                    slotReady.clear()
-                }
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-    }
-
     LaunchedEffect(isActive) {
         if (!isActive) {
-            playerPool.forEach {
-                it.pause()
-                it.clearMediaItems()
-            }
-            playingMap.clear()
-            slotReady.clear()
+            playerPool.forEach { it.playWhenReady = false }
         }
     }
 
@@ -157,15 +153,30 @@ fun VideoGrid(
 
     LaunchedEffect(Unit) {
         snapshotFlow {
-            currentIsActive to gridState.layoutInfo.visibleItemsInfo
+            Triple(
+                currentIsActive,
+                lifecycleResumed,
+                gridState.layoutInfo.visibleItemsInfo
+            )
         }
-            .distinctUntilChanged()
             .debounce(150)
-            .collect { (active, visibleItems) ->
-                if (!active) return@collect
+            .collect { (tabActive, lcResumed, visibleItems) ->
+                val shouldPlay = tabActive && lcResumed
+
+                if (!shouldPlay) {
+                    playerPool.forEach { it.playWhenReady = false }
+                    return@collect
+                }
 
                 val visible = visibleItems.filter { it.index < currentItems.size }
-                if (visible.isEmpty()) return@collect
+                if (visible.isEmpty()) {
+                    playingMap.keys.toList().forEach { idx ->
+                        val slot = playingMap.remove(idx) ?: return@forEach
+                        slotReady.remove(slot)
+                        playerPool[slot].playWhenReady = false
+                    }
+                    return@collect
+                }
 
                 val viewportCenter = gridState.layoutInfo.viewportSize.height / 2
                 val sorted = visible.sortedBy { item ->
@@ -201,7 +212,7 @@ fun VideoGrid(
                 (playingMap.keys - pickedSet).forEach { idx ->
                     val slot = playingMap.remove(idx) ?: return@forEach
                     slotReady.remove(slot)
-                    playerPool[slot].pause()
+                    playerPool[slot].playWhenReady = false
                 }
 
                 val usedSlots = keptSlots.values.toSet()
@@ -223,17 +234,16 @@ fun VideoGrid(
 
                     if (currentUrl != url) {
                         slotReady[slot] = false
-                        player.stop()
-                        player.clearMediaItems()
                         player.setMediaItem(MediaItem.fromUri(url))
                         player.prepare()
                     }
 
-                    player.play()
+                    player.playWhenReady = true
                     playingMap[index] = slot
                 }
             }
     }
+
 
     val shouldLoadMore by remember {
         derivedStateOf {
@@ -242,7 +252,6 @@ fun VideoGrid(
             last >= currentItems.size - 3
         }
     }
-
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore && currentHasMore && !currentLoading) onLoadMore()
     }
@@ -263,45 +272,29 @@ fun VideoGrid(
             contentType = { _, _ -> "video" },
         ) { index, item ->
 
-            val fileUrl = remember(item.id) { item.files.firstOrNull()?.fullUrl }
             val slot by remember(index) { derivedStateOf { playingMap[index] } }
             val isReady by remember(index) {
                 derivedStateOf { slot?.let { slotReady[it] } == true }
             }
 
-            val cellSizePx = remember {
-                context.resources.displayMetrics.widthPixels / 3
-            }
-
-            val thumbRequest = remember(item.id) {
-                fileUrl?.let { url ->
-                    ImageRequest.Builder(context)
-                        .data(url)
-                        .decoderFactory { src, opts, _ ->
-                            VideoFrameDecoder(src.source, opts)
-                        }
-                        .memoryCacheKey("thumb_$url")
-                        .diskCacheKey("thumb_$url")
-                        .videoFrameMillis(0L)
-                        .size(cellSizePx, cellSizePx)
-                        .crossfade(false)
-                        .allowHardware(true)
-                        .precision(Precision.INEXACT)
-                        .placeholderMemoryCacheKey("thumb_$url")
-                        .build()
-                }
-            }
+            val file = item.files.firstOrNull()
 
             VideoThumbnailItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clickableWithoutRipple { fileUrl?.let(onVideoClicked) },
-                thumbRequest = thumbRequest,
+                    .clickableWithoutRipple { file?.fullUrl?.let(onVideoClicked) },
+                file = file,
                 isActive = isActive,
                 exoPlayer = slot?.let { playerPool[it] },
                 isVideoReady = isReady,
             )
+        }
+
+        if (isFirstLoading) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                MediaLoadingContent()
+            }
         }
 
         if (isLoadingMore) {
@@ -313,7 +306,7 @@ fun VideoGrid(
             }
         }
 
-        if (isOwnProfile) {
+        if (isOwnProfile && !isFirstLoading) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 PortfolioAddButton(
                     isUploading = isUploading,
@@ -325,11 +318,10 @@ fun VideoGrid(
     }
 }
 
-@androidx.annotation.OptIn(UnstableApi::class)
 @Composable
 fun VideoThumbnailItem(
     modifier: Modifier = Modifier,
-    thumbRequest: ImageRequest? = null,
+    file: PublicationFile? = null,
     isActive: Boolean = true,
     exoPlayer: ExoPlayer? = null,
     isVideoReady: Boolean = false,
@@ -355,7 +347,7 @@ fun VideoThumbnailItem(
         }
 
         val listener = object : Player.Listener {
-            override fun onVideoSizeChanged(size: androidx.media3.common.VideoSize) {
+            override fun onVideoSizeChanged(size: VideoSize) {
                 if (size.width > 0 && size.height > 0) {
                     videoAspect = size.width.toFloat() / size.height
                 }
@@ -373,23 +365,23 @@ fun VideoThumbnailItem(
     val cropScaleY = if (videoAspect < 1f) 1f / videoAspect else 1f
 
     Box(modifier = modifier.clip(RectangleShape)) {
-        if (thumbRequest != null) {
-            DivoAsyncImage(
-                model = thumbRequest,
+        if (file?.thumbnailBitmap != null) {
+            Image(
+                bitmap = file.thumbnailBitmap.asImageBitmap(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
             )
         }
 
-        if (exoPlayer != null && isActive) {
+        if (exoPlayer != null) {
             PlayerSurface(
                 player = exoPlayer,
                 surfaceType = SURFACE_TYPE_TEXTURE_VIEW,
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        alpha = videoAlpha
+                        alpha = if (isActive) videoAlpha else 0f
                         scaleX = cropScaleX
                         scaleY = cropScaleY
                     },

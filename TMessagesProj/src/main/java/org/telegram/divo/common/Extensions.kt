@@ -26,14 +26,14 @@ fun String.formattedAge(locale: Locale = Locale.getDefault()): String {
     }
 }
 
-fun String?.toDateFloat(): Float {
+fun String?.toDateFloat(): Float? {
     try {
         val birthDate = LocalDate.parse(this)
         val age = Period.between(birthDate, LocalDate.now()).years
 
         return age.toFloat()
     } catch (_: Exception) {
-        return 0f
+        return null
     }
 }
 
