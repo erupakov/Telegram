@@ -2,6 +2,7 @@ package org.telegram.divo.screen.profile.components
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -74,7 +75,7 @@ fun DivoColumnContent(
 ) {
     val mock = mockData.map { it.copy(followers = title) }
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(Color.White),
         contentPadding = PaddingValues(
             top = 16.dp,
             bottom = WindowInsets.navigationBars

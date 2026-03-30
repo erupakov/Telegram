@@ -1,7 +1,5 @@
 package org.telegram.divo.entity
 
-import com.google.gson.annotations.SerializedName
-
 data class UserInfo(
     val id: Int = 0,
     val fullName: String = "",
@@ -14,13 +12,14 @@ data class UserInfo(
     val photoUuid: String = "",
     val avatarUrl: String = "",
     val avatarUuid: String = "",
-    val role: String = "",
+    val role: RoleType = RoleType.UNKNOWN,
     val subrole: String = "",
     val roleLabel: String = "",
     val measuringSystem: String = "",
     val pushNotifications: Boolean = false,
     val isRegistrationFinished: Boolean = false,
     val model: Model? = null,
+    val agency: Agency? = null,
     val customer: Customer? = null,
     val statistic: Statistic = Statistic(),
     val isFavorite: Boolean = false,
@@ -58,7 +57,8 @@ data class Agency(
     val description: String = "",
     val employeeTitle: String = "",
     val address: AgencyAddress? = null,
-    val photo: Photo? = null
+    val photo: Photo? = null,
+    val background: Photo? = null,
 )
 
 data class AgencyAddress(
@@ -72,33 +72,33 @@ data class AgencyAddress(
 )
 
 data class Appearance(
-    val measuringSystem: String = "",
-    val height: Float = 0f,
-    val weight: Float = 0f,
-    val breastSize: String = "",
-    val waist: Float = 0f,
-    val hips: Float = 0f,
-    val shoesSize: Float = 0f,
-    val hairColor: HairColor = HairColor(),
-    val hairLength: HairLength = HairLength(),
-    val eyeColor: EyeColor = EyeColor(),
-    val skinColor: SkinColor = SkinColor()
+    val measuringSystem: String? = null,
+    val height: Float? = null,
+    val weight: Float? = null,
+    val breastSize: String? = null,
+    val waist: Float? = null,
+    val hips: Float? = null,
+    val shoesSize: Float? = null,
+    val hairColor: HairColor? = null,
+    val hairLength: HairLength? = null,
+    val eyeColor: EyeColor? = null,
+    val skinColor: SkinColor? = null
 )
 data class HairColor(
-    val id: Int = 0,
-    val title: String = ""
+    val id: Int? = null,
+    val title: String? = null
 )
 data class HairLength(
-    val id: Int = 0,
-    val title: String = ""
+    val id: Int? = null,
+    val title: String? = null
 )
 data class EyeColor(
-    val id: Int = 0,
-    val title: String = ""
+    val id: Int? = null,
+    val title: String? = null
 )
 data class SkinColor(
-    val id: Int = 0,
-    val title: String = ""
+    val id: Int? = null,
+    val title: String? = null
 )
 data class Statistic(
     val followersCount: Int = 0,

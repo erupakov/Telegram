@@ -97,7 +97,7 @@ class SettingsViewModel :
     init {
         //TODO временно
         viewModelScope.launch {
-            val result = DivoApi.userRepository.getCurrentUserInfo()
+            val result = DivoApi.userRepository.getCurrentUserInfo(true)
 
             if (result is DivoResult.Success) {
                 setState { copy(userId = result.value.id) }

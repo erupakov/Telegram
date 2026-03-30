@@ -24,8 +24,10 @@ data class ProfileViewState(
     val userGalleryItems: List<UserGalleryItem> = listOf(),
     val isLoadingMoreImages: Boolean = false,
     val hasMoreImages: Boolean = true,
+    val isLoadingImages: Boolean = false,
 
     val videoItems: PersistentList<Publication> = persistentListOf(),
+    val isLoadingVideos: Boolean = false,
     val isLoadingMoreVideos: Boolean = false,
     val hasMoreVideos: Boolean = true,
 
@@ -54,14 +56,14 @@ data class ProfileViewState(
     val hasMoreViewed: Boolean = true,
     val hasMoreFollowed: Boolean = true,
 
-    val similarModels: List<AgencyModel> = emptyList(),
+    val agencyModels: List<AgencyModel> = emptyList(),
     val socialLinks: SocialLinks = SocialLinks(),
     val physicalParams: PhysicalParams = PhysicalParams(),
     val statistic: UserStatistic = UserStatistic()
 ) : ViewState {
 
     val isModel: Boolean
-        get() = userInfo.role == "new_face" || userInfo.role == "model"
+        get() = userInfo.role.isModel()
 
     val pageCount: Int
         get() = when {

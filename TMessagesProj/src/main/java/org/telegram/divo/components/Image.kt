@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -22,6 +23,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import dev.chrisbanes.haze.HazeProgressive
@@ -191,44 +194,59 @@ fun TelegramPhotoBackground(
 
 @Composable
 fun TelegramUserAvatarEditable(
-    avatarUrl: String,
     modifier: Modifier = Modifier,
+    avatarUrl: String = "",
     localUri: Uri? = null,
+    size: Dp = 100.dp,
     background: Color = AppTheme.colors.backgroundDark,
     borderColor: Color = Color.White.copy(alpha = 0.4f),
+    showBorder: Boolean = true,
     isVisibleSmallIcon: Boolean = true,
     placeholderSymbols: String = "",
+    placeholderIconSize: Dp = 32.dp,
     usePlaceholder: Boolean = false,
     @DrawableRes smallIconResId: Int = R.drawable.ic_camera_add,
     onEditClick: () -> Unit
 ) {
     Box(
-        modifier = modifier.size(100.dp),
+        modifier = modifier.size(size),
         contentAlignment = Alignment.Center
     ) {
 
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(size)
                 .clip(CircleShape)
                 .background(background)
-                .border(
-                    width = 1.dp,
-                    color = borderColor,
-                    shape = CircleShape
+                .then(
+                    if (showBorder) {
+                        Modifier.border(
+                            width = 1.dp,
+                            color = borderColor,
+                            shape = CircleShape
+                        )
+                    } else {
+                        Modifier
+                    }
                 )
                 .clickableWithoutRipple(onClick = onEditClick)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(3.dp)
+                    .then(
+                        if (showBorder) {
+                            Modifier.padding(3.dp)
+                        } else {
+                            Modifier.padding(1.dp)
+                        }
+                    )
                     .clip(CircleShape)
             ) {
                 if (localUri != null || avatarUrl.isNotEmpty()) {
                     DivoAsyncImage(
                         modifier = Modifier
-                            .size(100.dp),
+                            .size(size),
                         model = localUri ?: avatarUrl,
                         placeholderColor = Color.Transparent,
                         loadingContent = {
@@ -237,7 +255,7 @@ fun TelegramUserAvatarEditable(
                                 contentAlignment = Alignment.Center
                             ) {
                                 LottieProgressIndicator(
-                                    modifier = Modifier.size(32.dp),
+                                    modifier = Modifier.size(placeholderIconSize),
                                 )
                             }
                         }
@@ -249,27 +267,29 @@ fun TelegramUserAvatarEditable(
                             name = placeholderSymbols,
                         )
                     } else {
-                        Image(
-                            modifier = Modifier.align(Alignment.Center).size(32.dp),
-                            painter = painterResource(R.drawable.divo_add_photo_ic),
+                        Icon(
+                            modifier = Modifier.align(Alignment.Center).size(placeholderIconSize),
+                            painter = painterResource(R.drawable.ic_divo_add_photo),
                             contentDescription = null,
-                            colorFilter = ColorFilter.tint(borderColor)
+                            tint = borderColor
                         )
                     }
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(1.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 2.dp,
-                        color = Color.White.copy(alpha = 0.05f),
-                        shape = CircleShape
-                    )
-            )
+            if (showBorder) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(1.dp)
+                        .clip(CircleShape)
+                        .border(
+                            width = 2.dp,
+                            color = Color.White.copy(alpha = 0.05f),
+                            shape = CircleShape
+                        )
+                )
+            }
         }
 
         if (isVisibleSmallIcon) {

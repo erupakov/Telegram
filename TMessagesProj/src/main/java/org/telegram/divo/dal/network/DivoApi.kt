@@ -1,5 +1,6 @@
 package org.telegram.divo.dal.network
 
+import org.telegram.divo.common.ThumbnailProcessor
 import org.telegram.divo.dal.api.AuthService
 import org.telegram.divo.dal.api.DictionaryService
 import org.telegram.divo.dal.api.EventService
@@ -51,7 +52,8 @@ object DivoApi {
 
     val publicationRepository: PublicationRepository by lazy {
         val service = retrofit.create(PublicationService::class.java)
-        PublicationRepository(service)
+        val thumbnailProcessor = ThumbnailProcessor()
+        PublicationRepository(service, thumbnailProcessor)
     }
 
     val eventRepository: EventRepository by lazy {

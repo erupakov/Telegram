@@ -23,7 +23,11 @@ import org.telegram.divo.dal.dto.auth.LoginRequest
  */
 object DivoApiClient {
 
-    private val gson: Gson by lazy { Gson() }
+    private val gson: Gson by lazy {
+        GsonBuilder()
+            .serializeNulls()
+            .create()
+    }
 
     fun createOkHttpClient(accessTokenProvider: AccessTokenProvider): OkHttpClient {
         val builder = OkHttpClient.Builder()

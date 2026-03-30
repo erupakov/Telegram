@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -23,6 +22,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +31,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -46,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.telegram.divo.common.DivoAsyncImage
@@ -92,7 +91,7 @@ fun SearchContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppTheme.colors.backgroundNew)
+            .background(AppTheme.colors.backgroundLight)
             .statusBarsPadding()
             .navigationBarsPadding()
             .imePadding()
@@ -209,7 +208,7 @@ private fun SuggestionItem(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(AppTheme.colors.buttonColor),
+                    .background(AppTheme.colors.accentOrange),
                 name = agencyName,
             )
         } else {
@@ -252,14 +251,17 @@ private fun SearchRow(
             value = value,
             onValueChange = onValueChanged,
             cornerRadius = 99.dp,
+            trailingIcon = if (value.isNotBlank()) Icons.Default.Close else null,
+            onTrailingIconClick = { onValueChanged("") },
             backgroundColor = Color.White,
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 13.dp),
+            horizontalContentPadding = 16.dp,
             textStyle = TextStyle(fontSize = 14.sp),
-            placeholder = stringResource(R.string.EnterAgencyName)
+            placeholder = stringResource(R.string.EnterAgencyName),
         )
         Spacer(Modifier.width(10.dp))
         RoundedButton(
             resId = R.drawable.ic_divo_close,
+            paddingEnd = 0.dp,
             onClick = onBack
         )
     }

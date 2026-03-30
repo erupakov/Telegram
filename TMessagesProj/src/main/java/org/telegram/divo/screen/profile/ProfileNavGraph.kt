@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.telegram.divo.screen.add_model.AddModelScreen
 import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
@@ -17,12 +18,15 @@ import org.telegram.divo.screen.profile_social_links.ProfileSocialLinksScreen
 import org.telegram.divo.screen.search.SearchScreen
 import org.telegram.divo.screen.work_create_edit.CreateWorkHistoryScreen
 import org.telegram.divo.screen.work_history.WorkHistoryScreen
+import org.telegram.divo.screen.your_parameters.YourParametersScreen
 
 sealed class ProfileRoute(val route: String) {
     data object Edit : ProfileRoute("profile_edit")
+    data object YourParameters : ProfileRoute("profile_your_parameters")
     data object Search : ProfileRoute("profile_search")
     data object EditLinks : ProfileRoute("profile_edit_links")
     data object WorkHistory : ProfileRoute("profile_work_history")
+    data object AddModel : ProfileRoute("profile_add_model")
     data object CreateWorkHistory : ProfileRoute("create_work_history?id={id}") {
         fun create(id: Int? = null) = if (id != null) "create_work_history?id=$id" else "create_work_history?id=-1"
     }
@@ -97,11 +101,15 @@ fun ProfileNavGraph(
                 onProfileClicked = { anotherUserId ->
                     nav.navigate(ProfileRoute.Profile.createRoute(anotherUserId))
                 },
+                onAddModelClicked = {
+                    nav.navigate(ProfileRoute.AddModel.route)
+                }
             )
         }
 
         composable(ProfileRoute.Edit.route) {
             EditMyProfileScreen(
+                onCreateWorkHistoryClicked = { nav.navigate(ProfileRoute.CreateWorkHistory.create(it)) },
                 onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
@@ -162,6 +170,28 @@ fun ProfileNavGraph(
 
         composable(ProfileRoute.Search.route) {
             SearchScreen(
+                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
+
+        composable(ProfileRoute.AddModel.route) {
+            AddModelScreen(
+                onNavigateToYourParameters = {
+                    nav.navigate(ProfileRoute.YourParameters.route)
+                },
+                onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
+        composable(ProfileRoute.YourParameters.route) {
+            YourParametersScreen(
+                showTitle = false,
+                isFromAgency = true,
+                onSaved = {
+                    nav.popBackStack(
+                        ProfileRoute.AddModel.route,
+                        inclusive = true
+                    )
+                },
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }

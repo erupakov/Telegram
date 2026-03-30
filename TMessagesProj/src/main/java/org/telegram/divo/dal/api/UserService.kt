@@ -7,14 +7,15 @@ import org.telegram.divo.dal.dto.user.AddGalleryRequest
 import org.telegram.divo.dal.dto.user.AddToGalleryResponse
 import org.telegram.divo.dal.dto.user.AgencyModelsRequest
 import org.telegram.divo.dal.dto.user.AgencyModelsResponse
+import org.telegram.divo.dal.dto.user.AppearancesResponse
 import org.telegram.divo.dal.dto.user.EngagementResponse
+import org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest
 import org.telegram.divo.dal.dto.user.UpdateProfileRequest
 import org.telegram.divo.dal.dto.user.UploadFileResponse
 import org.telegram.divo.dal.dto.user.UpsertSocialNetworkRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListResponse
 import org.telegram.divo.dal.dto.user.UserInfoResponse
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -41,6 +42,11 @@ interface UserService {
     suspend fun updateProfile(
         @Body request: UpdateProfileRequest
     ): UserInfoResponse
+
+    @POST("agency/update")
+    suspend fun updateAgency(
+        @Body body: UpdateProfileAgencyRequest
+    ): EmptyResponse
 
     @POST("user-gallery/list")
     suspend fun getUserGalleryList(
@@ -83,6 +89,9 @@ interface UserService {
         @Query("offset") offset: Int,
         @Query("limit") limit: Int
     ): EngagementResponse
+
+    @GET("dictionary/appearances")
+    suspend fun getAppearances(): AppearancesResponse
 }
 
 

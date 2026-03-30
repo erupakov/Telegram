@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -78,16 +77,13 @@ fun ProfileSocialLinksScreenView(
     onCloseScreen: () -> Unit = {}
 ) {
     Scaffold(
-        containerColor = AppTheme.colors.backgroundNew,
+        containerColor = AppTheme.colors.backgroundLight,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
                         text = stringResource(R.string.EditSocialLinks).uppercase(),
-                        style = AppTheme.typography.helveticaNeueLtCom,
-                        fontSize = 20.sp,
-                        color = Color.Black,
-                        fontWeight = FontWeight.Bold
+                        style = AppTheme.typography.appBar,
                     )
                 },
                 navigationIcon = {
@@ -98,7 +94,7 @@ fun ProfileSocialLinksScreenView(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppTheme.colors.backgroundNew
+                    containerColor = AppTheme.colors.backgroundLight
                 )
             )
         }
@@ -228,7 +224,7 @@ private fun SocialLinkField(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
-            cursorColor = AppTheme.colors.buttonColor
+            cursorColor = AppTheme.colors.accentOrange
         )
     )
 }

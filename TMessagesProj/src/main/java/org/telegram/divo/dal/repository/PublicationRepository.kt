@@ -1,13 +1,11 @@
 package org.telegram.divo.dal.repository
 
-import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import okhttp3.ResponseBody
-import org.telegram.divo.dal.network.DivoResult
-import org.telegram.divo.dal.network.resultOf
+import org.telegram.divo.common.ThumbnailProcessor
 import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.dto.publication.CreatePublicationFileRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
@@ -16,6 +14,8 @@ import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
 import org.telegram.divo.dal.dto.publication.PublicationListRequest
 import org.telegram.divo.dal.dto.publication.toEntities
 import org.telegram.divo.dal.dto.publication.toEntity
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.Feed
 import org.telegram.divo.entity.FeedlineSearchResult
 import org.telegram.divo.entity.Publication
@@ -24,7 +24,8 @@ import org.telegram.divo.entity.PublicationList
 private const val MAX_CACHED_USERS = 5
 
 class PublicationRepository(
-    private val service: PublicationService
+    private val service: PublicationService,
+    private val thumbnailProcessor: ThumbnailProcessor
 ) {
     private val _publicationCache = MutableStateFlow<Map<Int, PublicationList>>(emptyMap())
 
@@ -59,16 +60,15 @@ class PublicationRepository(
         limit: Int,
         userId: Int,
     ): DivoResult<PublicationList> = resultOf {
-        // Если первая страница и кеш есть — возвращаем кеш
         if (offset == 0) {
             _publicationCache.value[userId]?.let { return@resultOf it }
         }
 
         service.getPublicationList(
             PublicationListRequest(offset = offset, limit = limit, userId = userId)
-        ).toEntities().also { newPage ->
-            updatePublicationCache(userId, newPage, offset)
-        }
+        ).toEntities()
+            .let { page -> page.copy(items = thumbnailProcessor.withThumbnails(page.items)) }
+            .also { newPage -> updatePublicationCache(userId, newPage, offset) }
     }
 
     suspend fun like(payload: Map<String, Any?>): DivoResult<ResponseBody> {
@@ -86,7 +86,7 @@ class PublicationRepository(
         fileUuids: List<String>,
         userId: Int,
     ): DivoResult<Publication> = resultOf {
-        service.createPublication(
+        val newPublication = service.createPublication(
             CreatePublicationRequest(
                 title = title,
                 description = description,
@@ -95,18 +95,23 @@ class PublicationRepository(
                     CreatePublicationFileRequest(order = index, fileUuid = uuid)
                 }
             )
-        ).toEntity().also { newPublication ->
-            _publicationCache.update { cache ->
-                val existing = cache[userId] ?: return@update cache
-                cache + (userId to existing.copy(
-                    items = listOf(newPublication) + existing.items
-                ))
-            }
+        ).toEntity()
+
+        val publicationWithThumbnails = thumbnailProcessor
+            .withThumbnails(listOf(newPublication))
+            .first()
+
+        _publicationCache.update { cache ->
+            val existing = cache[userId] ?: return@update cache
+            cache + (userId to existing.copy(
+                items = listOf(publicationWithThumbnails) + existing.items
+            ))
         }
+
+        publicationWithThumbnails
     }
 
     suspend fun deletePublication(id: Int, userId: Int): DivoResult<Unit> = resultOf {
-        Log.d("MyTag", id.toString())
         service.deletePublication(id)
         _publicationCache.update { cache ->
             val existing = cache[userId] ?: return@update cache

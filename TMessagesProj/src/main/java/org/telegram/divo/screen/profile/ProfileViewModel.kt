@@ -8,6 +8,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.OffsetPaginator
@@ -46,14 +47,16 @@ class ProfileViewModel(
         when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
             is DivoResult.Success -> {
                 setState {
-                    copy(statistic = state.value.statistic.copy(following = result.value.liked.totalCount))
+                    copy(statistic = state.value.statistic.copy(followers = result.value.liked.totalCount))
                 }
                 PaginatedResult(
                     items = result.value.liked.items,
                     totalCount = result.value.liked.totalCount
                 )
             }
-            else -> throw Exception(result.getErrorMessage())
+            else -> {
+                throw Exception(result.getErrorMessage())
+            }
         }
     }
 
@@ -61,7 +64,7 @@ class ProfileViewModel(
         when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
             is DivoResult.Success -> {
                 setState {
-                    copy(statistic = state.value.statistic.copy(following = result.value.viewed.totalCount))
+                    copy(statistic = state.value.statistic.copy(views = result.value.viewed.totalCount))
                 }
                 PaginatedResult(
                     items = result.value.viewed.items,
@@ -128,7 +131,7 @@ class ProfileViewModel(
         }
     }
 
-    private val videoPaginator = OffsetPaginator(limit = 10) { offset, limit ->
+    private val videoPaginator = OffsetPaginator(limit = 20) { offset, limit ->
         when (val result = DivoApi.publicationRepository.getPublicationList(
             offset = offset,
             limit = limit,
@@ -234,7 +237,8 @@ class ProfileViewModel(
                 setState {
                     copy(
                         isLoadingMoreImages = pState.isLoadingMore,
-                        hasMoreImages = pState.hasMore
+                        hasMoreImages = pState.hasMore,
+                        isLoadingImages = pState.isLoading
                     )
                 }
             }
@@ -258,12 +262,15 @@ class ProfileViewModel(
                     copy(
                         isLoadingMoreVideos = pState.isLoadingMore,
                         hasMoreVideos = pState.hasMore,
+                        isLoadingVideos = pState.isLoading
                     )
                 }
             }
         }
 
         viewModelScope.launch {
+            videoPaginator.state.first { !it.isLoading && !it.isLoadingMore }
+
             DivoApi.publicationRepository.publicationFlow(state.value.userId)
                 .filterNotNull()
                 .collect { data ->
@@ -409,7 +416,7 @@ class ProfileViewModel(
         if (result is DivoResult.Success) {
             setState {
                 copy(
-                    similarModels = result.value.items,
+                    agencyModels = result.value.items,
                 )
             }
         } else {

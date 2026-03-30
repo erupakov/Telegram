@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.profile_social_links
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel

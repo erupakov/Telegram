@@ -35,27 +35,24 @@
     <string name="Profile">My Profile</string>
     <string name="CurrentAgency">Current Agency</string>
     <string name="SeeHistory">see history</string>
+    <string name="SeeLess">SEE LESS</string>
+    <string name="SeeMore">SEE MORE</string>
+    <string name="AddModel">Add Model</string>
+    <string name="AgencyModelsEmpty">There are no models from your agency yet.</string>
+    <string name="AgencyModelsEmptyHint">Click the button below \n to add your model</string>
+    <string name="PremiumLabel">Premium</string>
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>
     <string name="YourParameters">Your parameters</string>
-
+    <string name="DeleteParameter">Delete parameter</string>
     <string name="SelectGender">Select a Gender</string>
+    <string name="LabelGender">Gender</string>
     <string name="LabelAge">Age (y.o)</string>
-    <string name="AgeMin">14</string>
-    <string name="AgeMax">45</string>
     <string name="LabelHeight">Height (cm)</string>
-    <string name="HeightMin">140</string>
-    <string name="HeightMax">220</string>
     <string name="LabelWaist">Waist (cm)</string>
-    <string name="WaistMin">48</string>
-    <string name="WaistMax">90</string>
     <string name="LabelHips">Hips (cm)</string>
-    <string name="HipsMin">80</string>
-    <string name="HipsMax">110</string>
     <string name="LabelShoeSize">Shoe size (EU)</string>
-    <string name="ShoeSizeMin">36</string>
-    <string name="ShoeSizeMax">42</string>
     <string name="ChooseHairLength">Choose your hair length</string>
     <string name="ChooseHairColor">Choose your hair color</string>
     <string name="ChooseEyeColor">Choose your eye color</string>
@@ -66,44 +63,6 @@
     <string-array name="GenderItems">
         <item>Male</item>
         <item>Female</item>
-    </string-array>
-
-    <string-array name="HairLengthItems">
-        <item>Short haircut</item>
-        <item>Bob haircut</item>
-        <item>Below the shoulders</item>
-        <item>Below shoulder blades</item>
-        <item>Bald</item>
-    </string-array>
-
-    <string-array name="HairColorItems">
-        <item>Black</item>
-        <item>Blond</item>
-        <item>Brown</item>
-        <item>Chestnut</item>
-        <item>Auburn</item>
-        <item>Red</item>
-        <item>Titian</item>
-    </string-array>
-
-    <string-array name="EyeColorItems">
-        <item>Black</item>
-        <item>Brown</item>
-        <item>Blue</item>
-        <item>Dark blue</item>
-        <item>Grey</item>
-        <item>Green</item>
-        <item>Amber</item>
-        <item>Hazel</item>
-        <item>Heterichromic</item>
-    </string-array>
-
-    <string-array name="SkinColorItems">
-        <item>Light</item>
-        <item>Medium</item>
-        <item>Brown</item>
-        <item>Dark brown</item>
-        <item>Freckled</item>
     </string-array>
 
     <string-array name="BreastSizeItems">
@@ -124,6 +83,7 @@
     <string name="SaveEditProfileScreen">Save</string>
     <string name="TabBiography">BIOGRAPHY</string>
     <string name="TabAppearance">APPEARANCE</string>
+    <string name="TabExperience">EXPERIENCE</string>
 
     <!--work experience screen-->
     <string name="CreateExperience">CREATE EXPERIENCE</string>
@@ -150,7 +110,18 @@
         <item quantity="other">%d months</item>
     </plurals>
 
+    <!--add model screen-->
+    <string name="AddNewModel">ADD A NEW MODEL</string>
+    <string name="AddModelDescription">Fill out the model’s details to add them to your agency. You can update this information anytime.</string>
+    <string name="PersonalData">Personal data</string>
+    <string name="FullName">Full Name</string>
+    <string name="CountryLabel">Country</string>
+    <string name="ProfileLink">Link on profile in Divo</string>
+    <string name="NextStep">Next Step</string>
+
     <!--divo view end-->
+
+
 
     <string name="LanguageName">English</string>
     <string name="English">English</string>

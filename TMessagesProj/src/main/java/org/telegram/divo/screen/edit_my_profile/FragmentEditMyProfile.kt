@@ -40,6 +40,7 @@ class FragmentEditMyProfile : BaseFragment(), ImageUpdater.ImageUpdaterDelegate 
             setContent {
                 EditMyProfileScreen(
                     viewModel = viewModel,
+                    onCreateWorkHistoryClicked = {}
                     //messageStorage = messagesStorage,
                     //onCloseScreen = { finishFragment() },
 //                    onEditImageClicked = {
