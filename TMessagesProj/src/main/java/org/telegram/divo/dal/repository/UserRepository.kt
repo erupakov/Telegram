@@ -26,6 +26,7 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyModels
+import org.telegram.divo.entity.Appearances
 import org.telegram.divo.entity.Engagement
 import org.telegram.divo.entity.UploadedFile
 import org.telegram.divo.entity.UserGalleryItem
@@ -205,6 +206,10 @@ class UserRepository(
                 updated
             }
         }
+    }
+
+    suspend fun getAppearances(): DivoResult<Appearances> = resultOf {
+        service.getAppearances().data.toEntity()
     }
 }
 

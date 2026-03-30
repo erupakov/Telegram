@@ -2,7 +2,6 @@ package org.telegram.divo.screen.profile
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -66,6 +65,7 @@ import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBar
 import org.telegram.divo.screen.profile.components.VideoGrid
 import androidx.core.net.toUri
+import androidx.media3.common.util.UnstableApi
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.screen.profile.components.AgencyDescriptionSection
 import org.telegram.divo.screen.profile.components.AgencyModels
@@ -156,6 +156,7 @@ fun ProfileScreen(
     }
 }
 
+@androidx.annotation.OptIn(UnstableApi::class)
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun ProfileScreenContent(

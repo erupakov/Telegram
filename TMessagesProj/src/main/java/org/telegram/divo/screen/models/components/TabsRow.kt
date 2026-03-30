@@ -55,7 +55,7 @@ fun TabsRow(
     TabRow(
         selectedTabIndex = selectedIndex,
         modifier = modifier.fillMaxWidth(),
-        backgroundColor = AppTheme.colors.backgroundNew,
+        backgroundColor = AppTheme.colors.backgroundLight,
         contentColor = activeColor,
         indicator = { tabPositions ->
             val targetIndicatorWidth = tabWidths[selectedIndex]

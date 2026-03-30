@@ -95,7 +95,7 @@ private fun AddModelScreenContent(
     var showCountrySheet by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        containerColor = AppTheme.colors.backgroundNew,
+        containerColor = AppTheme.colors.backgroundLight,
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -112,7 +112,7 @@ private fun AddModelScreenContent(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = AppTheme.colors.backgroundNew
+                    containerColor = AppTheme.colors.backgroundLight
                 )
             )
         }
@@ -178,7 +178,7 @@ private fun AddModelScreenContent(
             UIButtonNew(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
                     .align(Alignment.BottomCenter),
                 text = stringResource(R.string.NextStep),
                 onClick = { onIntent(Intent.OnNextClicked) },
@@ -241,7 +241,7 @@ private fun TextField(
         value = text,
         onValueChange = onValueChange,
         cornerRadius = 41.dp,
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+        horizontalContentPadding = 16.dp,
         textStyle = TextStyle(
             fontSize = 16.sp,
             color = Color.Black

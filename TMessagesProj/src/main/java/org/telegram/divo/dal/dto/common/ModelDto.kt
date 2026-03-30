@@ -28,37 +28,37 @@ class ModelDto(
 )
 
 class AppearanceDto(
-    @SerializedName("measuringSystem") val measuringSystem: String,
-    @SerializedName("height") val height: Float,
-    @SerializedName("weight") val weight: Float,
-    @SerializedName("breastSize") val breastSize: String,
-    @SerializedName("waist") val waist: Float,
-    @SerializedName("hips") val hips: Float,
-    @SerializedName("shoesSize") val shoesSize: Float,
-    @SerializedName("hairColor") val hairColor: HairColorDto,
-    @SerializedName("hairLength") val hairLength: HairLengthDto,
-    @SerializedName("eyeColor") val eyeColor: EyeColorDto,
-    @SerializedName("skinColor") val skinColor: SkinColorDto
+    @SerializedName("measuringSystem") val measuringSystem: String?,
+    @SerializedName("height") val height: Float?,
+    @SerializedName("weight") val weight: Float?,
+    @SerializedName("breastSize") val breastSize: String?,
+    @SerializedName("waist") val waist: Float?,
+    @SerializedName("hips") val hips: Float?,
+    @SerializedName("shoesSize") val shoesSize: Float?,
+    @SerializedName("hairColor") val hairColor: HairColorDto?,
+    @SerializedName("hairLength") val hairLength: HairLengthDto?,
+    @SerializedName("eyeColor") val eyeColor: EyeColorDto?,
+    @SerializedName("skinColor") val skinColor: SkinColorDto?
 )
 
 class HairColorDto(
-    @SerializedName("id") val id: Int,
-    @SerializedName("title") val title: String
+    @SerializedName("id") val id: Int?,
+    @SerializedName("title") val title: String?
 )
 
 class HairLengthDto(
-    @SerializedName("id") val id: Int,
-    @SerializedName("title") val title: String
+    @SerializedName("id") val id: Int?,
+    @SerializedName("title") val title: String?
 )
 
 class EyeColorDto(
-    @SerializedName("id") val id: Int,
-    @SerializedName("title") val title: String
+    @SerializedName("id") val id: Int?,
+    @SerializedName("title") val title: String?
 )
 
 class SkinColorDto(
-    @SerializedName("id") val id: Int,
-    @SerializedName("title") val title: String
+    @SerializedName("id") val id: Int?,
+    @SerializedName("title") val title: String?
 )
 
 fun ModelDto.toEntity(): Model =
@@ -90,10 +90,10 @@ private fun AppearanceDto.toEntity(): Appearance =
         waist = waist,
         hips = hips,
         shoesSize = shoesSize,
-        hairColor = hairColor.toEntity(),
-        hairLength = hairLength.toEntity(),
-        eyeColor = eyeColor.toEntity(),
-        skinColor = skinColor.toEntity()
+        hairColor = hairColor?.toEntity(),
+        hairLength = hairLength?.toEntity(),
+        eyeColor = eyeColor?.toEntity(),
+        skinColor = skinColor?.toEntity()
     )
 
 private fun HairColorDto.toEntity(): HairColor =

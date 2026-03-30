@@ -24,7 +24,7 @@ fun MediaLoadingContent() {
                             .weight(1f)
                             .aspectRatio(1f)
                             .padding(0.5.dp)
-                            .background(AppTheme.colors.backgroundNew)
+                            .background(AppTheme.colors.backgroundLight)
                             .shimmer()
                     )
                 }

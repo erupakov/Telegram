@@ -44,13 +44,13 @@ class UpdateProfileModelDto(
 )
 
 class UpdateProfileAppearanceDto(
-    @SerializedName("measuringSystem") val measuringSystem: String,
-    @SerializedName("height") val height: Double?,
-    @SerializedName("weight") val weight: Double?,
+    @SerializedName("measuringSystem") val measuringSystem: String?,
+    @SerializedName("height") val height: Float?,
+    @SerializedName("weight") val weight: Float?,
     @SerializedName("breastSize") val breastSize: String?,
-    @SerializedName("waist") val waist: Double?,
-    @SerializedName("hips") val hips: Double?,
-    @SerializedName("shoesSize") val shoesSize: Double?,
+    @SerializedName("waist") val waist: Float?,
+    @SerializedName("hips") val hips: Float?,
+    @SerializedName("shoesSize") val shoesSize: Float?,
     @SerializedName("hairColor") val hairColor: Int?,
     @SerializedName("hairLength") val hairLength: Int?,
     @SerializedName("eyeColor") val eyeColor: Int?,
@@ -79,14 +79,14 @@ fun Model.toDto(): UpdateProfileModelDto =
 fun Appearance.toDto(): UpdateProfileAppearanceDto =
     UpdateProfileAppearanceDto(
         measuringSystem = measuringSystem,
-        height = height.toDouble(),
-        weight = weight.toDouble(),
+        height = height,
+        weight = weight,
         breastSize = breastSize,
-        waist = waist.toDouble(),
-        hips = hips.toDouble(),
-        shoesSize = shoesSize.toDouble(),
-        hairColor = hairColor.id,
-        hairLength = hairLength.id,
-        eyeColor = eyeColor.id,
-        skinColor = skinColor.id
+        waist = waist,
+        hips = hips,
+        shoesSize = shoesSize,
+        hairColor = hairColor?.id,
+        hairLength = hairLength?.id,
+        eyeColor = eyeColor?.id,
+        skinColor = skinColor?.id
     )

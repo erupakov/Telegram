@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -318,7 +317,7 @@ private fun DivoDatePickerDialog(
             onPrimary = Color.White,
             primaryContainer = AppTheme.colors.accentOrange,
             onPrimaryContainer = Color.White,
-            surface = AppTheme.colors.backgroundNew,
+            surface = AppTheme.colors.backgroundLight,
             onSurface = Color(0xFF3C3C43),
         )
     ) {
@@ -353,7 +352,7 @@ private fun DateField(
         Box(modifier = Modifier.fillMaxWidth()) {
             DivoTextField(
                 value = date,
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp),
+                horizontalContentPadding = 16.dp,
                 textStyle = TextStyle(
                     fontSize = 16.sp,
                     color = if (enabled) Color(0x993C3C43) else Color(0x403C3C43)

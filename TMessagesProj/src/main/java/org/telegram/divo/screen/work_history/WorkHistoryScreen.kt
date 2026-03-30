@@ -3,6 +3,7 @@ package org.telegram.divo.screen.work_history
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,18 +13,19 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -50,10 +52,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.PlaceholderAvatar
 import org.telegram.divo.components.PopupMenuItem
+import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.TextTitle
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.entity.WorkExperience
@@ -69,6 +71,7 @@ import java.util.Locale
 fun WorkHistoryScreen(
     viewModel: WorkHistoryViewModel = viewModel(),
     isOwnProfile: Boolean,
+    isFromEditScreen: Boolean = false,
     onBack: () -> Unit = {},
     onCreateClicked: (Int?) -> Unit = {},
 ) {
@@ -88,6 +91,7 @@ fun WorkHistoryScreen(
     WorkHistoryScreenView(
         state = state,
         isOwnProfile = isOwnProfile,
+        isFromEditScreen = isFromEditScreen,
         onIntent = {
             viewModel.setIntent(it)
         },
@@ -99,48 +103,71 @@ fun WorkHistoryScreen(
 private fun WorkHistoryScreenView(
     state: State = State(),
     onIntent: (Intent) -> Unit = {},
+    isFromEditScreen: Boolean,
     isOwnProfile: Boolean = false,
 ) {
-    Scaffold(
-        modifier = Modifier,
-        topBar = {
-            TopBar(
-                onBack = {
-                    onIntent(Intent.OnBackClicked)
-                },
-                onCreate = {
-                    onIntent(Intent.OnCreateClicked)
-                },
-                createEnabled = isOwnProfile
-            )
-        },
-        containerColor = AppTheme.colors.backgroundNew
-    ) { padding ->
-
-        if (state.experiences.isEmpty()){
-            WorkHistoryEmpty(
-                modifier = Modifier.padding(padding),
-                isOwnProfile = isOwnProfile,
-                onCreateClicked = { onIntent(Intent.OnCreateClicked) }
-            )
-        } else {
-            LazyColumn(
-                modifier = Modifier.padding(padding),
-                contentPadding = PaddingValues(vertical = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                items(
-                    items = state.experiences,
-                    key = { it.id }
-                ) { item ->
-                    WorkExperienceRow(
-                        item = item,
-                        onEdit = { onIntent(Intent.OnEditClicked(item.id)) },
-                        onDelete = { onIntent(Intent.OnDeleteClicked(item.id)) }
-                    )
-                }
-
+    Box(
+        modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundLight)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = if (isFromEditScreen && state.experiences.isNotEmpty()) 86.dp else 0.dp)
+        ) {
+            if (!isFromEditScreen) {
+                TopBar(
+                    onBack = {
+                        onIntent(Intent.OnBackClicked)
+                    },
+                    onCreate = {
+                        onIntent(Intent.OnCreateClicked)
+                    },
+                    createEnabled = isOwnProfile
+                )
+                Spacer(Modifier.height(8.dp))
             }
+
+            if (state.experiences.isEmpty()) {
+                WorkHistoryEmpty(
+                    modifier = Modifier,
+                    isOwnProfile = isOwnProfile,
+                    isFromEditScreen = isFromEditScreen,
+                    onCreateClicked = { onIntent(Intent.OnCreateClicked) }
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(AppTheme.colors.onBackground),
+                    contentPadding = PaddingValues(vertical = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    items(
+                        items = state.experiences,
+                        key = { it.id }
+                    ) { item ->
+                        WorkExperienceRow(
+                            item = item,
+                            onEdit = { onIntent(Intent.OnEditClicked(item.id)) },
+                            onDelete = { onIntent(Intent.OnDeleteClicked(item.id)) }
+                        )
+                    }
+
+                }
+            }
+        }
+        if (isFromEditScreen && state.experiences.isNotEmpty()) {
+            UIButtonNew(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 8.dp, start = 16.dp, end = 16.dp),
+                text = stringResource(R.string.AddWorkExperience),
+                onClick = {
+                    onIntent(Intent.OnCreateClicked)
+                }
+            )
         }
     }
 }
@@ -149,10 +176,11 @@ private fun WorkHistoryScreenView(
 private fun WorkHistoryEmpty(
     modifier: Modifier = Modifier,
     isOwnProfile: Boolean = false,
+    isFromEditScreen: Boolean,
     onCreateClicked:()-> Unit
 ) {
     Box(
-        modifier = modifier.fillMaxSize().background(AppTheme.colors.backgroundNew)
+        modifier = modifier.fillMaxSize()
     ) {
         Column(
             modifier = Modifier.align(Alignment.Center),
@@ -180,7 +208,11 @@ private fun WorkHistoryEmpty(
 
         if (isOwnProfile) {
             UIButtonNew(
-                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding( 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .then(if (isFromEditScreen) Modifier else Modifier.navigationBarsPadding())
+                    .padding(bottom = 8.dp, start = 16.dp, end = 16.dp),
                 text = stringResource(R.string.AddWorkExperience),
                 onClick = {
                     onCreateClicked()
@@ -311,13 +343,16 @@ private fun AgencyAvatar(
 ) {
     if (avatarUrl.isNullOrBlank()) {
         PlaceholderAvatar(
-            modifier = modifier,
+            modifier = modifier
+                .border(1.dp, AppTheme.colors.backgroundLight, shape = CircleShape),
             name = agencyName,
+            initialsColor = AppTheme.colors.textPrimary
         )
     } else {
         DivoAsyncImage(
             modifier = modifier
-                .clip(CircleShape),
+                .clip(CircleShape)
+                .border(1.dp, AppTheme.colors.backgroundLight, shape = CircleShape),
             model = avatarUrl
         )
     }
@@ -341,11 +376,10 @@ private fun TopBar(
             )
         },
         navigationIcon = {
-            BackButton(
+            RoundedButton(
                 modifier = Modifier
                     .padding(start = 16.dp, bottom = 7.dp),
-                color = AppTheme.colors.accentOrange,
-                onBackClicked = onBack
+                onClick = onBack
             )
         },
         actions = {
@@ -357,12 +391,12 @@ private fun TopBar(
                         .clickableWithoutRipple { onCreate() },
                     painter = painterResource(R.drawable.ic_divo_plus),
                     contentDescription = null,
-                    tint = AppTheme.colors.accentOrange
+                    tint = AppTheme.colors.textPrimary
                 )
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
+            containerColor = AppTheme.colors.backgroundLight
         )
     )
 }

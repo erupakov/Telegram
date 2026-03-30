@@ -34,7 +34,7 @@ fun DivoChip(
 ) {
     val borderModifier = Modifier.then(
         if (border > 0.dp) {
-            Modifier.border(border, AppTheme.colors.backgroundNew, RoundedCornerShape(24.dp))
+            Modifier.border(border, AppTheme.colors.backgroundLight, RoundedCornerShape(24.dp))
         } else {
             Modifier
         }

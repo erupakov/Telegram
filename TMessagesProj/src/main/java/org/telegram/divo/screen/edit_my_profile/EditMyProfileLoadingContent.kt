@@ -29,43 +29,43 @@ fun EditMyProfileLoadingContent() {
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(24.dp))
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(94.dp)
                 .clip(CircleShape)
+                .shimmer(highlightColor = color),
+        )
+        Spacer(Modifier.height(32.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(46.dp)
+                .clip(RoundedCornerShape(41.dp))
+                .shimmer(highlightColor = color),
+        )
+        Spacer(Modifier.height(12.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(46.dp)
+                .clip(RoundedCornerShape(41.dp))
+                .shimmer(highlightColor = color),
+        )
+        Spacer(Modifier.height(18.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(102.dp)
+                .clip(RoundedCornerShape(16.dp))
                 .shimmer(highlightColor = color),
         )
         Spacer(Modifier.height(20.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .size(46.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .shimmer(highlightColor = color),
-        )
-        Spacer(Modifier.height(12.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(46.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .shimmer(highlightColor = color),
-        )
-        Spacer(Modifier.height(12.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(102.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .shimmer(highlightColor = color),
-        )
-        Spacer(Modifier.height(16.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
                 .size(56.dp)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(41.dp))
                 .shimmer(highlightColor = color),
         )
     }

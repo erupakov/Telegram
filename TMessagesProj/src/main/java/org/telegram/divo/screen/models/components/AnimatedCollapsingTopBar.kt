@@ -48,7 +48,6 @@ import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.TextTitle
-import org.telegram.divo.screen.models.ModelsViewModel
 import org.telegram.divo.screen.models.ModelsViewState
 import org.telegram.divo.screen.models.Story
 import org.telegram.divo.style.AppTheme
@@ -68,7 +67,7 @@ fun AnimatedCollapsingTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(statusBarHeight + topBarHeight)
-            .background(AppTheme.colors.backgroundNew)
+            .background(AppTheme.colors.backgroundLight)
             .padding(top = statusBarHeight),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -122,7 +121,7 @@ fun AnimatedCollapsingTopBar(
                                     .fillMaxSize()
                                     .padding(1.5.dp)
                                     .clip(CircleShape)
-                                    .background(AppTheme.colors.backgroundNew)
+                                    .background(AppTheme.colors.backgroundLight)
                             ) {
                                 Image(
                                     painter = rememberAsyncImagePainter(story.imageUrl),
@@ -140,6 +139,7 @@ fun AnimatedCollapsingTopBar(
                 modifier = Modifier,
                 resId = R.drawable.ic_divo_search_24,
                 iconSize = 24.dp,
+                paddingEnd = 0.dp,
                 onClick = onSearch
             )
         }

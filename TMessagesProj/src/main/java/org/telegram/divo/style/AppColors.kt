@@ -12,6 +12,7 @@ data class AppColors(
 
     val buttonTextColor: Color = Color(0xFFFEFEFE),
     val textColor: Color = Color(0xFFFFFFFF),
+    val textPrimary: Color = Color(0xFF222222),
     val textSubtitleColor: Color = Color(0x99FFFFFF),
     val textHintColor: Color = Color(0xFF8D8D8D),
     val containerDuration: Color = Color(0x4DFFFFFF),
@@ -21,11 +22,10 @@ data class AppColors(
     val blackAlpha12: Color = Color(0x1F000000),
     val textLabelDark: Color = Color(0x80FFFFFF),
 
-    val backgroundNew: Color = Color(0xFFF0F0F0),
+    val backgroundLight: Color = Color(0xFFF0F0F0),
     val backgroundDark: Color = Color(0xFF222222),
-    val backgroundLight: Color = Color(0xFF343434),
-
-    )
+    val onBackground: Color = Color(0xFFFFFFFF)
+)
 
 val MyLocalCustomColors = staticCompositionLocalOf {
     AppColors(

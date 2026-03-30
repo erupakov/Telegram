@@ -24,6 +24,7 @@ import org.telegram.messenger.R
 fun PlaceholderAvatar(
     modifier: Modifier = Modifier,
     name: String,
+    initialsColor: Color = AppTheme.colors.accentOrange,
     isVisibleSmallIcon: Boolean = false,
     @DrawableRes smallIconResId: Int = R.drawable.ic_camera_add,
 ) {
@@ -46,7 +47,7 @@ fun PlaceholderAvatar(
         Text(
             text = initials,
             fontWeight = FontWeight.SemiBold,
-            color = AppTheme.colors.accentOrange,
+            color = initialsColor,
             fontSize = 18.sp
         )
 

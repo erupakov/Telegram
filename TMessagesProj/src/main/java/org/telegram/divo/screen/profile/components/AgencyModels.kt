@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.profile.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -182,7 +181,7 @@ private fun EmptyModels(
                 modifier = Modifier
                     .size(68.dp)
                     .clip(CircleShape)
-                    .background(AppTheme.colors.backgroundNew)
+                    .background(AppTheme.colors.backgroundLight)
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp).align(Alignment.Center),

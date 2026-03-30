@@ -45,7 +45,9 @@ data class AppTypography(
     val textItemDate: TextStyle,
     val helveticaNeueLtCom: TextStyle,
     val helveticaNeueRegular: TextStyle,
-    val manropeRegular: TextStyle
+    val manropeRegular: TextStyle,
+    val bodyLarge: TextStyle,
+    val bodyMedium: TextStyle,
 )
 
 val LocalCustomTypography = staticCompositionLocalOf {
@@ -85,6 +87,17 @@ val LocalCustomTypography = staticCompositionLocalOf {
         ),
         manropeRegular = TextStyle(
             fontFamily = ManropeRegular
+        ),
+        bodyLarge = TextStyle(
+            fontFamily = HelveticaNeue,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 21.sp,
+        ),
+        bodyMedium = TextStyle(
+            fontFamily = HelveticaNeue,
+            fontSize = 14.sp,
+            lineHeight = 18.sp
         )
     )
 }

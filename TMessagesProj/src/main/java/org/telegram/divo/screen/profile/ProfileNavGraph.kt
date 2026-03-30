@@ -109,6 +109,7 @@ fun ProfileNavGraph(
 
         composable(ProfileRoute.Edit.route) {
             EditMyProfileScreen(
+                onCreateWorkHistoryClicked = { nav.navigate(ProfileRoute.CreateWorkHistory.create(it)) },
                 onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }

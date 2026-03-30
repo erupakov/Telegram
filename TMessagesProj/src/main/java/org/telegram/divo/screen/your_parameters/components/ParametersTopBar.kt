@@ -54,7 +54,7 @@ fun ParametersTopBar(
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFF222222)
+            containerColor = AppTheme.colors.backgroundLight
         )
     )
 }

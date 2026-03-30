@@ -157,8 +157,8 @@ fun ModelsHomeScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             modifier = Modifier.fillMaxSize(),
-            containerColor = AppTheme.colors.backgroundNew,
-            contentColor = AppTheme.colors.backgroundNew,
+            containerColor = AppTheme.colors.backgroundLight,
+            contentColor = AppTheme.colors.backgroundLight,
             topBar = {
                 AnimatedCollapsingTopBar(
                     collapseFraction = collapseFraction,
@@ -173,7 +173,7 @@ fun ModelsHomeScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = paddingValues.calculateTopPadding())
-                    .background(AppTheme.colors.backgroundNew),
+                    .background(AppTheme.colors.backgroundLight),
                 contentPadding = PaddingValues(bottom = bottomInset + 66.dp)
             ) {
                 item {

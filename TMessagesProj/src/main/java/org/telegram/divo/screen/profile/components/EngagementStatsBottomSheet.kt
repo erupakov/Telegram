@@ -44,14 +44,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.shimmer
 import org.telegram.divo.entity.EngagementUser
-import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -147,6 +145,7 @@ fun EngagementStatsBottomSheet(
                     value = searchQuery,
                     onValueChange = onQueryChanged,
                     leadingIcon = R.drawable.ic_divo_search,
+                    height = 40.dp,
                     trailingIcon = if (searchQuery.isNotBlank()) Icons.Default.Close else null,
                     onTrailingIconClick = { onQueryChanged("") }
                 )

@@ -30,10 +30,12 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
             if (result is DivoResult.Success) {
                 val user = result.value
                 val parts = user.fullName.split(" ") //TODO временно
+                val fName = parts.getOrNull(0).orEmpty()
+                val lName = parts.getOrNull(1).orEmpty()
                 setState {
                     copy(
-                        fName = parts.getOrNull(0).orEmpty(),
-                        lName = parts.getOrNull(1).orEmpty(),
+                        fName = fName,
+                        lName = lName,
                         bio = user.model?.description.orEmpty(),
                         userFull = user,
                         avatarUrl = user.avatarUrl,

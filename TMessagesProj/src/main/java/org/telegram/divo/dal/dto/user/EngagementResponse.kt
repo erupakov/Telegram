@@ -45,7 +45,7 @@ class EngagementUserDto(
     @SerializedName("id")
     val id: Int,
     @SerializedName("fullName")
-    val fullName: String,
+    val fullName: String?,
     @SerializedName("role")
     val role: String,
     @SerializedName("roleLabel")
@@ -84,7 +84,7 @@ private fun EngagementListDto.toEntity(): EngagementList =
 private fun EngagementUserDto.toEntity(): EngagementUser =
     EngagementUser(
         id = id,
-        fullName = fullName,
+        fullName = fullName.orEmpty(),
         role = role,
         roleLabel = roleLabel,
         photoUrl = avatar?.fullUrl ?: photo?.fullUrl.orEmpty()

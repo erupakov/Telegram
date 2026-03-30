@@ -37,14 +37,21 @@ fun String?.toDateFloat(): Float? {
     }
 }
 
-fun Float.toDateString(): String {
-    return try {
-        LocalDate.now()
-            .minusYears(this.toLong())
-            .toString()
-    } catch (_: Exception) {
-        ""
-    }
+fun String.formatWeird(): String {
+    val cleaned = this.trim().removeSuffix(".")
+
+    val parts = cleaned.split(".")
+    if (parts.size < 2) return cleaned
+
+    val integer = parts[0]
+    val decimal = parts[1]
+
+    if (decimal.all { it == '0' }) return integer
+
+    if (decimal.endsWith("0")) return "$integer.$decimal"
+
+    val normalizedDecimal = decimal.trimStart('0')
+    return "$integer.$normalizedDecimal"
 }
 
 fun String.formatDate(): String = try {

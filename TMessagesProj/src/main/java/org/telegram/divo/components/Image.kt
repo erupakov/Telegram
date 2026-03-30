@@ -197,8 +197,10 @@ fun TelegramUserAvatarEditable(
     modifier: Modifier = Modifier,
     avatarUrl: String = "",
     localUri: Uri? = null,
+    size: Dp = 100.dp,
     background: Color = AppTheme.colors.backgroundDark,
     borderColor: Color = Color.White.copy(alpha = 0.4f),
+    showBorder: Boolean = true,
     isVisibleSmallIcon: Boolean = true,
     placeholderSymbols: String = "",
     placeholderIconSize: Dp = 32.dp,
@@ -207,32 +209,44 @@ fun TelegramUserAvatarEditable(
     onEditClick: () -> Unit
 ) {
     Box(
-        modifier = modifier.size(100.dp),
+        modifier = modifier.size(size),
         contentAlignment = Alignment.Center
     ) {
 
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(size)
                 .clip(CircleShape)
                 .background(background)
-                .border(
-                    width = 1.dp,
-                    color = borderColor,
-                    shape = CircleShape
+                .then(
+                    if (showBorder) {
+                        Modifier.border(
+                            width = 1.dp,
+                            color = borderColor,
+                            shape = CircleShape
+                        )
+                    } else {
+                        Modifier
+                    }
                 )
                 .clickableWithoutRipple(onClick = onEditClick)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(3.dp)
+                    .then(
+                        if (showBorder) {
+                            Modifier.padding(3.dp)
+                        } else {
+                            Modifier.padding(1.dp)
+                        }
+                    )
                     .clip(CircleShape)
             ) {
                 if (localUri != null || avatarUrl.isNotEmpty()) {
                     DivoAsyncImage(
                         modifier = Modifier
-                            .size(100.dp),
+                            .size(size),
                         model = localUri ?: avatarUrl,
                         placeholderColor = Color.Transparent,
                         loadingContent = {
@@ -263,17 +277,19 @@ fun TelegramUserAvatarEditable(
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(1.dp)
-                    .clip(CircleShape)
-                    .border(
-                        width = 2.dp,
-                        color = Color.White.copy(alpha = 0.05f),
-                        shape = CircleShape
-                    )
-            )
+            if (showBorder) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(1.dp)
+                        .clip(CircleShape)
+                        .border(
+                            width = 2.dp,
+                            color = Color.White.copy(alpha = 0.05f),
+                            shape = CircleShape
+                        )
+                )
+            }
         }
 
         if (isVisibleSmallIcon) {

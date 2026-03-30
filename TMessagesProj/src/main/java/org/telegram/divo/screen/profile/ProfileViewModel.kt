@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.profile
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,8 +7,6 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -21,7 +18,6 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
-import org.telegram.divo.entity.Publication
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.profile.components.StatsType
@@ -58,7 +54,9 @@ class ProfileViewModel(
                     totalCount = result.value.liked.totalCount
                 )
             }
-            else -> throw Exception(result.getErrorMessage())
+            else -> {
+                throw Exception(result.getErrorMessage())
+            }
         }
     }
 

@@ -110,6 +110,7 @@ fun UIButtonNew(
     text: String = "Save",
     textStyle: TextStyle = AppTheme.typography.textButton,
     shape: Shape = RoundedCornerShape(99.dp),
+    background: Color = AppTheme.colors.accentOrange,
     enabled: Boolean = true,
     onClick: () -> Unit = {},
 ) {
@@ -120,11 +121,11 @@ fun UIButtonNew(
         onClick = onClick,
         shape = shape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = AppTheme.colors.accentOrange
+            containerColor = background
         ),
     ) {
         Text(
-            modifier = Modifier.padding(top = 2.dp),
+            modifier = Modifier.padding(top = 3.dp),
             text = text,
             style = textStyle,
             color = AppTheme.colors.buttonTextColor,
@@ -170,12 +171,14 @@ fun UIButtonBack(
     }
 }
 
+@Preview
 @Composable
 fun RoundedButton(
     modifier: Modifier = Modifier,
-    @DrawableRes resId: Int,
+    @DrawableRes resId: Int = R.drawable.ic_divo_back,
     iconSize: Dp = 16.dp,
-    onClick: () -> Unit,
+    paddingEnd: Dp = 2.dp,
+    onClick: () -> Unit = {},
 ) {
     Box(
         modifier = modifier
@@ -192,7 +195,7 @@ fun RoundedButton(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            modifier = Modifier.size(iconSize),
+            modifier = Modifier.size(iconSize).padding(end = paddingEnd),
             painter = painterResource(resId),
             contentDescription = null,
             tint = Color.Black

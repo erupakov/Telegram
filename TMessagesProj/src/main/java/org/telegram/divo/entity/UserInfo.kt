@@ -72,33 +72,33 @@ data class AgencyAddress(
 )
 
 data class Appearance(
-    val measuringSystem: String = "",
-    val height: Float = 0f,
-    val weight: Float = 0f,
-    val breastSize: String = "",
-    val waist: Float = 0f,
-    val hips: Float = 0f,
-    val shoesSize: Float = 0f,
-    val hairColor: HairColor = HairColor(),
-    val hairLength: HairLength = HairLength(),
-    val eyeColor: EyeColor = EyeColor(),
-    val skinColor: SkinColor = SkinColor()
+    val measuringSystem: String? = null,
+    val height: Float? = null,
+    val weight: Float? = null,
+    val breastSize: String? = null,
+    val waist: Float? = null,
+    val hips: Float? = null,
+    val shoesSize: Float? = null,
+    val hairColor: HairColor? = null,
+    val hairLength: HairLength? = null,
+    val eyeColor: EyeColor? = null,
+    val skinColor: SkinColor? = null
 )
 data class HairColor(
-    val id: Int = 0,
-    val title: String = ""
+    val id: Int? = null,
+    val title: String? = null
 )
 data class HairLength(
-    val id: Int = 0,
-    val title: String = ""
+    val id: Int? = null,
+    val title: String? = null
 )
 data class EyeColor(
-    val id: Int = 0,
-    val title: String = ""
+    val id: Int? = null,
+    val title: String? = null
 )
 data class SkinColor(
-    val id: Int = 0,
-    val title: String = ""
+    val id: Int? = null,
+    val title: String? = null
 )
 data class Statistic(
     val followersCount: Int = 0,
