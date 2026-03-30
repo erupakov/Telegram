@@ -5,29 +5,16 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
 import org.telegram.divo.dal.network.DivoApi
-import org.telegram.divo.dal.network.DivoResult
-import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.usecase.SearchAgenciesUseCase
 
 class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
 
     private var searchJob: Job? = null
 
-    private val agencyPaginator = OffsetPaginator(limit = 10) { offset, limit ->
-        when (val result = DivoApi.workHistory.searchAgencies(
-            offset = offset,
-            limit = limit,
-            query = state.value.query
-        )) {
-            is DivoResult.Success -> PaginatedResult(
-                items = result.value.first,
-                totalCount = result.value.second
-            )
-            else -> throw Exception(result.getErrorMessage())
-        }
-    }
+    private val agencyPaginator = SearchAgenciesUseCase(
+        queryProvider = { state.value.query }
+    ).paginator
 
     init {
         observeAgencies()

@@ -1,7 +1,5 @@
-package org.telegram.divo.components.items
+package org.telegram.divo.screen.event_list.components
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,12 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,31 +21,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
-import org.telegram.divo.components.TelegramPhoto
-import org.telegram.divo.screen.event_list.EventListViewModel
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
+import dev.chrisbanes.haze.hazeEffect
+import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.screen.event_list.EventCtaType
 import org.telegram.divo.style.AppTheme
-import org.telegram.tgnet.TLRPC
 
 @Preview
 @Composable
 private fun EventItemViewPreview() {
     EventItemView(
         eventName = "Fashion Model Event",
-        eventImageUrl = "https://picsum.photos/200/300",
+        eventImageUrl = "https://divostorage.s3.eu-central-1.amazonaws.com/files/VtwUSQZN0qtJ1MgjaSfFMDKiChGSV6k5O0S2nix0_tempo_v17_288x288.jpg",
         eventOwnerName = "@NYFW",
-        eventOwnerImage = "https://picsum.photos/200/301",
+        eventOwnerImage = "https://divostorage.s3.eu-central-1.amazonaws.com/files/VtwUSQZN0qtJ1MgjaSfFMDKiChGSV6k5O0S2nix0_tempo_v17_288x288.jpg",
         dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
         durationText = "4d : 4h : 0m",
         ctaText = "Apply",
-        ctaType = EventListViewModel.EventCtaType.Apply,
+        ctaType = EventCtaType.Apply,
     )
 }
 
@@ -58,78 +54,51 @@ fun EventItemView(
     modifier: Modifier = Modifier,
     eventName: String,
     eventImageUrl: String = "",
-    eventPhoto: TLRPC.Photo? = null,
     eventOwnerName: String,
     eventOwnerImage: String,
     dateLocationText: String,
     durationText: String,
     ctaText: String,
-    ctaType: EventListViewModel.EventCtaType,
+    ctaType: EventCtaType,
     onCardClick: () -> Unit = {},
     onCtaClicked: () -> Unit = {},
 ) {
-    val gradientOverlay = remember {
-        Brush.verticalGradient(
-            colors = listOf(
-                Color(0x66000000),
-                Color(0x00000000),
-                Color(0xE6000000),
-            ),
-        )
-    }
-
     Card(
         modifier = modifier
-            .clickable(onClick = onCardClick),
+            .clickableWithoutRipple(onClick = onCardClick),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        shape = RectangleShape
+        shape = RoundedCornerShape(16.dp)
     ) {
+        val hazeState = remember { HazeState() }
+
         Box {
-            if (eventPhoto != null) {
-                TelegramPhoto(
-                    photo = eventPhoto,
-                    modifier = Modifier.fillMaxSize(),
-                )
-            } else if (eventImageUrl.isNotEmpty()) {
-                val painter = rememberAsyncImagePainter(eventImageUrl)
-                Image(
-                    modifier = Modifier.fillMaxSize(),
-                    painter = painter,
-                    contentDescription = eventName,
-                    contentScale = ContentScale.Crop,
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(gradientOverlay),
+            EventItemBackground(
+                url = eventImageUrl,
+                hazeState = hazeState
             )
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(14.dp)
                     .align(Alignment.BottomStart),
             ) {
-                EventOwnerItem(text = eventOwnerName, imageUrl = eventOwnerImage)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
                 Text(
                     text = eventName.uppercase(),
                     style = AppTheme.typography.textEventTitle,
                     color = AppTheme.colors.textColor,
                     maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
-
-                Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = dateLocationText,
+                    text = "June 26 · 5:00 PM · \uD83C\uDDFA\uD83C\uDDF8 New York",
                     style = AppTheme.typography.textItemDate,
-                    color = Color(0xFFE6E6E6),
-                    maxLines = 2,
+                    color = AppTheme.colors.textColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-
+                Spacer(Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -138,13 +107,14 @@ fun EventItemView(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
 
-                    DurationChip(text = durationText, modifier = Modifier)
+                    DurationChip(modifier = Modifier, text = "4d : 4h : 0m", hazeState = hazeState)
                     EventCtaButton(
                         text = ctaText,
                         type = ctaType,
                         onClick = onCtaClicked,
                     )
                 }
+                Spacer(Modifier.height(4.dp))
             }
         }
     }
@@ -152,19 +122,29 @@ fun EventItemView(
 
 @Composable
 private fun DurationChip(
-    modifier:Modifier,
-    text: String) {
-    Surface(
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        color = AppTheme.colors.containerDuration,
+    modifier: Modifier,
+    text: String,
+    hazeState: HazeState,
+) {
+    Box(
+        modifier = modifier
+            .height(22.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .hazeEffect(
+                state = hazeState,
+                style = HazeStyle(
+                    backgroundColor = Color.Black.copy(alpha = 0.3f),
+                    blurRadius = 20.dp,
+                    tints = listOf(HazeTint(Color.White.copy(alpha = 0.05f)))
+                )
+            ),
+        contentAlignment = Alignment.Center
     ) {
         Text(
-            modifier = Modifier
-                .padding(horizontal = 12.dp, vertical = 6.dp),
+            modifier = Modifier.padding(horizontal = 12.dp).offset(y = 1.dp),
             text = text,
             style = AppTheme.typography.helveticaNeueRegular,
-            fontSize = 10.sp,
+            fontSize = 12.sp,
             color = AppTheme.colors.textColor,
         )
     }
@@ -173,62 +153,31 @@ private fun DurationChip(
 @Composable
 private fun EventCtaButton(
     text: String,
-    type: EventListViewModel.EventCtaType,
+    type: EventCtaType,
     onClick: () -> Unit,
 ) {
     val (backgroundColor, contentColor) = when (type) {
-        EventListViewModel.EventCtaType.Apply -> AppTheme.colors.accentOrange to AppTheme.colors.buttonTextColor
-        EventListViewModel.EventCtaType.MyEvent -> Color(0xFFF2F2F2) to Color(0xFF2F2F2F)
+        EventCtaType.Apply -> AppTheme.colors.accentOrange to AppTheme.colors.buttonTextColor
+        EventCtaType.MyEvent -> Color(0xFFF2F2F2) to Color(0xFF2F2F2F)
     }
 
     Surface(
         modifier = Modifier
-            .height(28.dp)
+            .height(22.dp)
             .clickable(onClick = onClick),
         color = backgroundColor,
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(12.dp),
     ) {
         Box(
             modifier = Modifier.fillMaxHeight().padding(horizontal = 8.dp),
             contentAlignment = Alignment.Center,
         ) {
             Text(
+                modifier = Modifier.offset(y = 1.dp),
                 text = text,
                 style = AppTheme.typography.textButtonSmall,
                 color = contentColor,
             )
         }
-    }
-}
-
-@Composable
-fun EventOwnerItem(
-    text: String,
-    imageUrl: String,
-) {
-    val painter = rememberAsyncImagePainter(imageUrl)
-    Row(
-        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier
-                .size(28.dp)
-                .clip(CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Image(
-                modifier = Modifier.matchParentSize(),
-                painter = painter,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-            )
-        }
-        Spacer(modifier = Modifier.size(8.dp))
-        Text(
-            text = text,
-            style = AppTheme.typography.textButtonSmall,
-            color = Color.White,
-        )
     }
 }

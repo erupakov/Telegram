@@ -178,19 +178,24 @@ fun RoundedButton(
     @DrawableRes resId: Int = R.drawable.ic_divo_back,
     iconSize: Dp = 16.dp,
     paddingEnd: Dp = 2.dp,
+    shadowEnabled: Boolean = true,
     onClick: () -> Unit = {},
 ) {
     Box(
         modifier = modifier
             .size(40.dp)
-            .shadow(
-                elevation = 8.dp,
-                shape = CircleShape,
-                ambientColor = Color.Black.copy(alpha = 0.1f),
-                spotColor = Color.Black.copy(alpha = 0.2f)
+            .then(
+                if (shadowEnabled) {
+                    Modifier.shadow(
+                        elevation = 8.dp,
+                        shape = CircleShape,
+                        ambientColor = Color.Black.copy(alpha = 0.1f),
+                        spotColor = Color.Black.copy(alpha = 0.2f)
+                    )
+                } else Modifier
             )
             .clip(CircleShape)
-            .background(Color.White)
+            .background(AppTheme.colors.onBackground)
             .clickableWithoutRipple(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
@@ -198,7 +203,7 @@ fun RoundedButton(
             modifier = Modifier.size(iconSize).padding(end = paddingEnd),
             painter = painterResource(resId),
             contentDescription = null,
-            tint = Color.Black
+            tint = AppTheme.colors.textPrimary
         )
     }
 }

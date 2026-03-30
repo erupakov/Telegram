@@ -69,6 +69,7 @@ import androidx.media3.common.util.UnstableApi
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.screen.profile.components.AgencyDescriptionSection
 import org.telegram.divo.screen.profile.components.AgencyModels
+import org.telegram.divo.screen.profile.components.EventsColumn
 
 @Composable
 fun ProfileScreen(
@@ -152,6 +153,7 @@ fun ProfileScreen(
             },
             onLoadMoreVideos = { viewModel.setIntent(ProfileIntent.OnLoadMoreVideos) },
             onAddModelClicked = onAddModelClicked,
+            onLoadMoreEvents = { viewModel.setIntent(ProfileIntent.OnLoadMoreEvents) }
         )
     }
 }
@@ -179,6 +181,7 @@ private fun ProfileScreenContent(
     onVideoSelected: (Uri) -> Unit,
     onLoadMoreVideos: () -> Unit,
     onAddModelClicked: () -> Unit,
+    onLoadMoreEvents: () -> Unit,
 ) {
     val pageCount = uiState.pageCount
     val pagerState = rememberPagerState(pageCount = { pageCount })
@@ -355,7 +358,13 @@ private fun ProfileScreenContent(
                                         )
                                     }
                                     3 -> DivoColumnContent("Vogue Inside")
-                                    else -> DivoColumnContent("June 26 · 5:00 PM · \uD83C\uDDFA\uD83C\uDDF8 New York", isEvent = true)
+                                    else -> EventsColumn(
+                                        events = uiState.events,
+                                        isLoading = uiState.isLoadingEvents,
+                                        isLoadingMore = uiState.isLoadingMoreEvents,
+                                        onLoadMore = onLoadMoreEvents,
+                                        onClicked = {}
+                                    )
                                 }
                             }
                         }

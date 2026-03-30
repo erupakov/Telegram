@@ -119,6 +119,12 @@
     <string name="ProfileLink">Link on profile in Divo</string>
     <string name="NextStep">Next Step</string>
 
+    <!--events screen-->
+    <string name="EventList">Events</string>
+
+    <!--models screen-->
+    <string name="Models">Models</string>
+
     <!--divo view end-->
 
 

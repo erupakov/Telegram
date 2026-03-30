@@ -1,7 +1,6 @@
 package org.telegram.divo.screen.models
 
 import androidx.lifecycle.viewModelScope
-import com.google.android.play.integrity.internal.a
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.map
@@ -9,12 +8,8 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
-import org.telegram.divo.dal.dto.publication.FeedRequestDto
-import org.telegram.divo.dal.network.DivoApi
-import org.telegram.divo.dal.network.DivoResult
-import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.FeedItem
+import org.telegram.divo.usecase.GetFeedUseCase
 import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToAddStory
 import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToDirectMessage
 import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToSearch
@@ -42,46 +37,17 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
 
     override fun createInitialState(): ModelsViewState = ModelsViewState()
 
-    private val subscribedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        val request = FeedRequestDto(
-            offset = offset, limit = limit,
-            subscribedOnly = true
-        )
-        when (val result = DivoApi.publicationRepository.getFeed(request)) {
-            is DivoResult.Success -> PaginatedResult(
-                items = result.value.items,
-                totalCount = result.value.pagination?.totalCount ?: result.value.items.size
-            )
-            else -> throw Exception(result.getErrorMessage())
-        }
-    }
+    private val subscribedPaginator = GetFeedUseCase(
+        limit = PAGE_SIZE, subscribedOnly = true
+    ).paginator
 
-    private val allUsersPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        val request = FeedRequestDto(
-            offset = offset, limit = limit,
-        )
-        when (val result = DivoApi.publicationRepository.getFeed(request)) {
-            is DivoResult.Success -> PaginatedResult(
-                items = result.value.items,
-                totalCount = result.value.pagination?.totalCount ?: result.value.items.size
-            )
-            else -> throw Exception(result.getErrorMessage())
-        }
-    }
+    private val allUsersPaginator = GetFeedUseCase(
+        limit = PAGE_SIZE
+    ).paginator
 
-    private val agenciesPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        val request = FeedRequestDto(
-            offset = offset, limit = limit,
-            modelsOnly = true
-        )
-        when (val result = DivoApi.publicationRepository.getFeed(request)) {
-            is DivoResult.Success -> PaginatedResult(
-                items = result.value.items,
-                totalCount = result.value.pagination?.totalCount ?: result.value.items.size
-            )
-            else -> throw Exception(result.getErrorMessage())
-        }
-    }
+    private val agenciesPaginator = GetFeedUseCase(
+        limit = PAGE_SIZE, modelsOnly = true
+    ).paginator
 
     init {
         setIntent(LoadInitialData)
