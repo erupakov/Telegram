@@ -13,16 +13,16 @@ import retrofit2.http.Path
 interface WalletService {
 
     @POST("wallet/list")
-    suspend fun listWallets(@Body body: Map<String, Any?>): Response<ResponseBody>
+    suspend fun listWallets(@Body body: Map<String, Any?>): ResponseBody
 
     @GET("wallet/{walletId}")
-    suspend fun getWallet(@Path("walletId") walletId: Long): Response<ResponseBody>
+    suspend fun getWallet(@Path("walletId") walletId: Long): ResponseBody
 
     @POST("wallet/{walletId}/operations")
     suspend fun getOperations(
         @Path("walletId") walletId: Long,
         @Body body: Map<String, Any?>
-    ): Response<ResponseBody>
+    ): ResponseBody
 }
 
 

@@ -105,7 +105,9 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("unchecked")
 public class MediaDataController extends BaseController {
-    public final static String ATTACH_MENU_BOT_ANIMATED_ICON_KEY = "android_animated",
+    public final static String
+            ATTACH_MENU_BOT_ANIMATED_ICON_KEY = "android_animated",
+            ATTACH_MENU_BOT_ANIMATED_ICON_KEY_2 = "android_active_animated",
             ATTACH_MENU_BOT_STATIC_ICON_KEY = "default_static",
             ATTACH_MENU_BOT_SIDE_MENU_ICON_KEY = "android_side_menu_static",
             ATTACH_MENU_BOT_PLACEHOLDER_STATIC_KEY = "placeholder_static",
@@ -1806,9 +1808,9 @@ public class MediaDataController extends BaseController {
     }
 
     @Nullable
-    public static TLRPC.TL_attachMenuBotIcon getAnimatedAttachMenuBotIcon(@NonNull TLRPC.TL_attachMenuBot bot) {
+    public static TLRPC.TL_attachMenuBotIcon getAnimatedAttachMenuBotIcon(@NonNull TLRPC.TL_attachMenuBot bot, boolean selected) {
         for (TLRPC.TL_attachMenuBotIcon icon : bot.icons) {
-            if (icon.name.equals(ATTACH_MENU_BOT_ANIMATED_ICON_KEY)) {
+            if (icon.name.equals(selected ? ATTACH_MENU_BOT_ANIMATED_ICON_KEY_2 : ATTACH_MENU_BOT_ANIMATED_ICON_KEY)) {
                 return icon;
             }
         }
@@ -2798,28 +2800,28 @@ public class MediaDataController extends BaseController {
                 processLoadedDiceStickers(name, isEmoji, stickerSet, true, date);
             });
         } else {
-            TLRPC.TL_messages_getStickerSet req = new TLRPC.TL_messages_getStickerSet();
-            if (Objects.equals(getUserConfig().premiumGiftsStickerPack, name)) {
-                req.stickerset = new TLRPC.TL_inputStickerSetPremiumGifts();
-            } else if (isEmoji) {
-                TLRPC.TL_inputStickerSetDice inputStickerSetDice = new TLRPC.TL_inputStickerSetDice();
-                inputStickerSetDice.emoticon = name;
-                req.stickerset = inputStickerSetDice;
-            } else {
-                TLRPC.TL_inputStickerSetShortName inputStickerSetShortName = new TLRPC.TL_inputStickerSetShortName();
-                inputStickerSetShortName.short_name = name;
-                req.stickerset = inputStickerSetShortName;
-            }
-            getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                if (BuildConfig.DEBUG && error != null) { //supress test backend warning
-                    return;
-                }
-                if (response instanceof TLRPC.TL_messages_stickerSet) {
-                    processLoadedDiceStickers(name, isEmoji, (TLRPC.TL_messages_stickerSet) response, false, (int) (System.currentTimeMillis() / 1000));
-                } else {
-                    processLoadedDiceStickers(name, isEmoji, null, false, (int) (System.currentTimeMillis() / 1000));
-                }
-            }));
+//            TLRPC.TL_messages_getStickerSet req = new TLRPC.TL_messages_getStickerSet();
+//            if (Objects.equals(getUserConfig().premiumGiftsStickerPack, name)) {
+//                req.stickerset = new TLRPC.TL_inputStickerSetPremiumGifts();
+//            } else if (isEmoji) {
+//                TLRPC.TL_inputStickerSetDice inputStickerSetDice = new TLRPC.TL_inputStickerSetDice();
+//                inputStickerSetDice.emoticon = name;
+//                req.stickerset = inputStickerSetDice;
+//            } else {
+//                TLRPC.TL_inputStickerSetShortName inputStickerSetShortName = new TLRPC.TL_inputStickerSetShortName();
+//                inputStickerSetShortName.short_name = name;
+//                req.stickerset = inputStickerSetShortName;
+//            }
+//            getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+//                if (BuildConfig.DEBUG && error != null) { //supress test backend warning
+//                    return;
+//                }
+//                if (response instanceof TLRPC.TL_messages_stickerSet) {
+//                    processLoadedDiceStickers(name, isEmoji, (TLRPC.TL_messages_stickerSet) response, false, (int) (System.currentTimeMillis() / 1000));
+//                } else {
+//                    processLoadedDiceStickers(name, isEmoji, null, false, (int) (System.currentTimeMillis() / 1000));
+//                }
+//            }));
         }
     }
 
@@ -2982,26 +2984,26 @@ public class MediaDataController extends BaseController {
                     }
                 });
             } else if (type == TYPE_EMOJI) {
-                TLRPC.TL_messages_getStickerSet req = new TLRPC.TL_messages_getStickerSet();
-                req.stickerset = new TLRPC.TL_inputStickerSetAnimatedEmoji();
-
-                getConnectionsManager().sendRequest(req, (response, error) -> {
-                    if (response instanceof TLRPC.TL_messages_stickerSet) {
-                        ArrayList<TLRPC.TL_messages_stickerSet> newStickerArray = new ArrayList<>();
-                        newStickerArray.add((TLRPC.TL_messages_stickerSet) response);
-                        processLoadedStickers(type, newStickerArray, false, (int) (System.currentTimeMillis() / 1000), calcStickersHash(newStickerArray), () -> {
-                            if (onFinish != null) {
-                                onFinish.run(null);
-                            }
-                        });
-                    } else {
-                        processLoadedStickers(type, null, false, (int) (System.currentTimeMillis() / 1000), 0, () -> {
-                            if (onFinish != null) {
-                                onFinish.run(null);
-                            }
-                        });
-                    }
-                });
+//                TLRPC.TL_messages_getStickerSet req = new TLRPC.TL_messages_getStickerSet();
+//                req.stickerset = new TLRPC.TL_inputStickerSetAnimatedEmoji();
+//
+//                getConnectionsManager().sendRequest(req, (response, error) -> {
+//                    if (response instanceof TLRPC.TL_messages_stickerSet) {
+//                        ArrayList<TLRPC.TL_messages_stickerSet> newStickerArray = new ArrayList<>();
+//                        newStickerArray.add((TLRPC.TL_messages_stickerSet) response);
+//                        processLoadedStickers(type, newStickerArray, false, (int) (System.currentTimeMillis() / 1000), calcStickersHash(newStickerArray), () -> {
+//                            if (onFinish != null) {
+//                                onFinish.run(null);
+//                            }
+//                        });
+//                    } else {
+//                        processLoadedStickers(type, null, false, (int) (System.currentTimeMillis() / 1000), 0, () -> {
+//                            if (onFinish != null) {
+//                                onFinish.run(null);
+//                            }
+//                        });
+//                    }
+//                });
             } else {
                 TLObject req;
                 long hash;
@@ -8072,6 +8074,10 @@ public class MediaDataController extends BaseController {
     }
 
     public void loadBotKeyboard(MessagesStorage.TopicKey topicKey) {
+        loadBotKeyboard(topicKey, false);
+    }
+
+    public void loadBotKeyboard(MessagesStorage.TopicKey topicKey, boolean postNotificationIfNotFound) {
         TLRPC.Message keyboard = botKeyboards.get(topicKey);
         if (keyboard != null) {
             getNotificationCenter().postNotificationName(NotificationCenter.botKeyboardDidLoad, keyboard, topicKey);
@@ -8099,7 +8105,7 @@ public class MediaDataController extends BaseController {
                 }
                 cursor.dispose();
 
-                if (botKeyboard != null) {
+                if (botKeyboard != null || postNotificationIfNotFound) {
                     TLRPC.Message botKeyboardFinal = botKeyboard;
                     AndroidUtilities.runOnUIThread(() -> getNotificationCenter().postNotificationName(NotificationCenter.botKeyboardDidLoad, botKeyboardFinal, topicKey));
                 }

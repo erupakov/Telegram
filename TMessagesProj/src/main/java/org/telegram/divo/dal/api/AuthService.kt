@@ -1,8 +1,8 @@
 package org.telegram.divo.dal.api
 
-import org.telegram.divo.dto.auth.LoginRequest
-import org.telegram.divo.dto.auth.LoginResponse
-import org.telegram.divo.dto.auth.RegistrationRequest
+import org.telegram.divo.dal.dto.auth.LoginRequest
+import org.telegram.divo.dal.dto.auth.LoginResponse
+import org.telegram.divo.dal.dto.auth.RegistrationRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -13,12 +13,12 @@ import retrofit2.http.POST
 interface AuthService {
 
     @POST("auth/login")
-    suspend fun login(@Body body: LoginRequest): Response<LoginResponse>
+    suspend fun login(@Body body: LoginRequest): LoginResponse
 
     @POST("auth/registration")
-    suspend fun registration(@Body body: RegistrationRequest): Response<LoginResponse>
+    suspend fun registration(@Body body: RegistrationRequest): LoginResponse
 
     @POST("auth/logout")
-    suspend fun logout(): Response<Unit>
+    suspend fun logout()
 }
 

@@ -1,9 +1,9 @@
 package org.telegram.divo.screen.auth
 
-import org.telegram.divo.base.ViewEffect
-import org.telegram.divo.base.ViewIntent
-import org.telegram.divo.base.ViewState
-import org.telegram.divo.dto.auth.LoginResponse
+import org.telegram.divo.common.ViewEffect
+import org.telegram.divo.common.ViewIntent
+import org.telegram.divo.common.ViewState
+import org.telegram.divo.dal.dto.auth.LoginResponse
 
 data class AuthViewState(
     val isLoading: Boolean = false,

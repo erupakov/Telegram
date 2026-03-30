@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="AppName">Telegram</string>
-    <string name="AppNameBeta">Telegram Beta</string>
+    <string name="AppName">Divo</string>
+    <string name="AppNameBeta">Divo Beta</string>
     <string name="LanguageName">Português (Brasil)</string>
     <string name="English">Inglês</string>
     <string name="LanguageNameInEnglish">Portuguese (Brazil)</string>
@@ -416,7 +416,6 @@
     <string name="Languages_other">%1$d Idiomas</string>
     <string name="ChooseLanguages">Escolher idiomas</string>
     <string name="TranslateMessagesInfo1">O botão \'Traduzir\' aparecerá quando você tocar uma vez em uma mensagem de texto.</string>
-    <string name="TranslateMessagesInfo2">O Google pode ter acesso ao texto das mensagens que você traduzir.</string>
     <string name="Language">Idioma</string>
     <string name="LanguageCustom">Personalizado</string>
     <string name="LanguageTitle">Alterar idioma?</string>

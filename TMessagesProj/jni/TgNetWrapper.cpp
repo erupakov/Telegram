@@ -290,6 +290,7 @@ void setPushConnectionEnabled(JNIEnv *env, jclass c, jint instanceNum, jboolean 
 }
 
 void applyDnsConfig(JNIEnv *env, jclass c, jint instanceNum, jlong address, jstring phone, jint date) {
+
     const char *phoneStr = env->GetStringUTFChars(phone, 0);
 
     ConnectionsManager::getInstance(instanceNum).applyDnsConfig((NativeByteBuffer *) (intptr_t) address, phoneStr, date);
@@ -561,6 +562,18 @@ static JNINativeMethod ConnectionsManagerMethods[] = {
         {"native_receivedCaptchaResult", "(I[ILjava/lang/String;)V", (void *) receivedCaptchaResult},
         {"native_isGoodPrime", "([BI)Z", (void *) isGoodPrime},
 };
+
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_org_telegram_tgnet_ConnectionsManager_native_1test_1AuthAuthorization(JNIEnv *env, jclass clazz, jlong address) {
+    auto *buffer = (NativeByteBuffer *) (intptr_t) address;
+    bool error = false;
+
+    int constructorId = buffer->readInt32(&error);
+    auth_Authorization::TLdeserialize(buffer, constructorId, 0, error);
+    return !error;
+}
 
 inline int registerNativeMethods(JNIEnv *env, const char *className, JNINativeMethod *methods, int methodsCount) {
     jclass clazz;

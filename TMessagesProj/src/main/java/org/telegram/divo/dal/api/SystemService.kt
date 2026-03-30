@@ -10,6 +10,6 @@ import retrofit2.http.GET
 interface SystemService {
 
     @GET("system/feature-flags")
-    suspend fun getFeatureFlags(): Response<ResponseBody>
+    suspend fun getFeatureFlags(): ResponseBody
 }
 

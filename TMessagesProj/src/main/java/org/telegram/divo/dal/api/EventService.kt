@@ -13,10 +13,10 @@ import retrofit2.http.Path
 interface EventService {
 
     @POST("event/list")
-    suspend fun listEvents(@Body body: Map<String, Any?>): Response<ResponseBody>
+    suspend fun listEvents(@Body body: Map<String, Any?>): ResponseBody
 
     @GET("event/{id}")
-    suspend fun getEvent(@Path("id") id: Long): Response<ResponseBody>
+    suspend fun getEvent(@Path("id") id: Long): ResponseBody
 }
 
 

@@ -2,10 +2,10 @@ package org.telegram.divo.screen.auth
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.telegram.divo.base.BaseViewModel
-import org.telegram.divo.dal.DivoApi
-import org.telegram.divo.dal.DivoResult
-import org.telegram.divo.dto.auth.LoginRequest
+import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.dto.auth.LoginRequest
 
 class AuthViewModel :
     BaseViewModel<AuthViewState, AuthViewIntent, AuthViewEffect>() {
@@ -39,9 +39,9 @@ class AuthViewModel :
                 deviceType = deviceType
             )
 
-            when (val result = DivoApi.authDao.login(request)) {
+            when (val result = DivoApi.authRepository.login(request)) {
                 is DivoResult.Success -> {
-                    setState { copy(isLoading = false, loginResponse = result.data) }
+                    setState { copy(isLoading = false, loginResponse = result.value) }
                     sendEffect(AuthViewEffect.LoginSuccess)
                 }
 

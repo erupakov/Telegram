@@ -10,12 +10,12 @@ import retrofit2.http.GET
 interface DictionaryService {
 
     @GET("dictionary/gender")
-    suspend fun getGenders(): Response<ResponseBody>
+    suspend fun getGenders(): ResponseBody
 
     @GET("dictionary/appearances")
-    suspend fun getAppearances(): Response<ResponseBody>
+    suspend fun getAppearances(): ResponseBody
 
     @GET("dictionary/payments")
-    suspend fun getPayments(): Response<ResponseBody>
+    suspend fun getPayments(): ResponseBody
 }
 
