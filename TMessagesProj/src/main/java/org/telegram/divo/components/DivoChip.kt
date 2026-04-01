@@ -3,6 +3,7 @@ package org.telegram.divo.components
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -26,11 +27,12 @@ import org.telegram.divo.style.AppTheme
 fun DivoChip(
     modifier: Modifier = Modifier,
     text: String,
-    @DrawableRes resId: Int,
-    background: Color,
-    textColor: Color,
+    @DrawableRes resId: Int? = null,
+    background: Color = Color(0xFF2262D8),
+    textColor: Color = AppTheme.colors.onBackground,
     iconSize: Dp = 16.dp,
-    border: Dp = 0.dp
+    border: Dp = 0.dp,
+    contentPadding: PaddingValues = PaddingValues(start = 6.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
 ) {
     val borderModifier = Modifier.then(
         if (border > 0.dp) {
@@ -45,16 +47,19 @@ fun DivoChip(
             .clip(RoundedCornerShape(24.dp))
             .then(borderModifier)
             .background(background)
-            .padding(start = 6.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
+            .padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            painter = painterResource(resId),
-            modifier = Modifier.size(iconSize),
-            tint = textColor,
-            contentDescription = null
-        )
-        Spacer(Modifier.width(2.dp))
+        resId?.let {
+            Icon(
+                painter = painterResource(it),
+                modifier = Modifier.size(iconSize),
+                tint = textColor,
+                contentDescription = null
+            )
+            Spacer(Modifier.width(2.dp))
+        }
+
         Text(
             modifier = Modifier.padding(top = 1.dp),
             text = text,

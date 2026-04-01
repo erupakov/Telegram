@@ -1,6 +1,6 @@
 package org.telegram.divo.dal.api
 
-import okhttp3.ResponseBody
+import org.telegram.divo.dal.dto.event.EventDetailsResponse
 import org.telegram.divo.dal.dto.event.EventListRequest
 import org.telegram.divo.dal.dto.event.EventListResponse
 import retrofit2.http.Body
@@ -17,7 +17,7 @@ interface EventService {
     suspend fun listEvents(@Body request: EventListRequest): EventListResponse
 
     @GET("event/{id}")
-    suspend fun getEvent(@Path("id") id: Long): ResponseBody
+    suspend fun getEvent(@Path("id") id: Int): EventDetailsResponse
 }
 
 

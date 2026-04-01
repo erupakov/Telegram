@@ -31,18 +31,6 @@ class ProfileViewModel(
     private val isOwnProfile: Boolean,
 ) : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
 
-    companion object {
-        private const val PAGE_SIZE = 10
-        private const val SEARCH_DEBOUNCE_MS = 400L
-
-        fun factory(userId: Int, isOwnProfile: Boolean) = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return ProfileViewModel(userId, isOwnProfile) as T
-            }
-        }
-    }
-
     private var searchJob: Job? = null
 
     private val eventPaginator = GetEventListUseCase().paginator
@@ -507,5 +495,17 @@ class ProfileViewModel(
         }
 
         sendEffect(ProfileEffect.OpenUrl(url))
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 10
+        private const val SEARCH_DEBOUNCE_MS = 400L
+
+        fun factory(userId: Int, isOwnProfile: Boolean) = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return ProfileViewModel(userId, isOwnProfile) as T
+            }
+        }
     }
 }

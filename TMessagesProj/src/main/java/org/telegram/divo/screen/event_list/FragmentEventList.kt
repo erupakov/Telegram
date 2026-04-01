@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.divo.screen.event_create.FragmentEventCreate
-import org.telegram.divo.screen.event_details.FragmentEventDetails
 import org.telegram.divo.screen.event_filter.FragmentEventFilter
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.MainTabsActivityController
@@ -39,9 +38,6 @@ class FragmentEventList : BaseFragment() {
                     },
                     onInnerNavControllerReady = { navController ->
                         detailNavController = navController
-                    },
-                    onNavigateToEventDetails = {
-                        presentFragment(FragmentEventDetails())
                     },
                     onNavigateToCreateEvent = {
                         presentFragment(FragmentEventCreate())

@@ -1,24 +1,23 @@
 package org.telegram.divo.screen.event_list
 
-import android.util.Log
+import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -34,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,19 +45,19 @@ import org.telegram.divo.screen.event_list.components.EventListTopBar
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
-object EventIntentData{
-    var eventId: Long = 0
+object EventIntentData {
+    var eventId: Int = 0
 }
-
 
 @Composable
 fun EventListScreen(
     viewModel: EventListViewModel = viewModel(),
-    onNavigateToEventDetails: (Long) -> Unit = {},
+    onNavigateToEventDetails: (Int) -> Unit = {},
     onNavigateToCreateEvent: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(true){
        // viewModel.getEventList(null)
@@ -71,6 +71,9 @@ fun EventListScreen(
                 is EventListEffect.NavigateToEventDetails -> onNavigateToEventDetails(
                     action.eventId
                 )
+                is EventListEffect.ShowError -> {
+                    Toast.makeText(context, action.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -78,9 +81,7 @@ fun EventListScreen(
         state = state,
         onEventClick = {
             EventIntentData.eventId = it
-            onNavigateToEventDetails(
-                it
-            )
+            onNavigateToEventDetails(it)
         },
         onCtaClick = {  },
         onSearchClick = {
@@ -98,8 +99,8 @@ fun EventListScreen(
 @Composable
 private fun EventListContent(
     state: EventListViewState,
-    onEventClick: (Long) -> Unit,
-    onCtaClick: (Long) -> Unit,
+    onEventClick: (Int) -> Unit,
+    onCtaClick: (Int) -> Unit,
     onSearchClick: () -> Unit,
     onAddEventClick: () -> Unit,
     onLoadMore: () -> Unit,
@@ -133,30 +134,15 @@ private fun EventListContent(
         },
     ) { innerPadding ->
         when {
-            state.isLoading -> {
+            state.isLoading || state.events.isEmpty() || state.isRoleLoading -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(top = innerPadding.calculateTopPadding()),
+                        .padding(top = innerPadding.calculateTopPadding(), bottom = bottomInset),
                     contentAlignment = Alignment.Center,
                 ) {
                     LottieProgressIndicator(
                         modifier = Modifier.size(32.dp)
-                    )
-                }
-            }
-
-            state.events.isEmpty() -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = innerPadding.calculateTopPadding()),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = state.errorMessage ?: "No events yet",
-                        color = Color(0xFF000000),
-                        fontSize = 16.sp,
                     )
                 }
             }
@@ -182,14 +168,11 @@ private fun EventListContent(
                                 .fillMaxWidth(),
                             eventName = event.title.orEmpty(),
                             eventImageUrl = event.creator?.avatar?.fullUrl.orEmpty(),
-                            eventOwnerName = "",
-                            eventOwnerImage = "",
-                            dateLocationText = "",
-                            durationText = "",
+                            isModel = state.isModel,
                             ctaText = "Apply",
                             ctaType = EventCtaType.Apply,
-                            onCardClick = { onEventClick(event.id.toLong()) },
-                            onCtaClicked = { onCtaClick(event.id.toLong()) },
+                            onCardClick = { onEventClick(event.id) },
+                            onCtaClicked = { onCtaClick(event.id) },
                         )
                     }
 

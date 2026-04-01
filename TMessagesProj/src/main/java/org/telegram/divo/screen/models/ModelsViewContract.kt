@@ -128,7 +128,6 @@ sealed class ModelsViewIntent : ViewIntent {
     data class OnBookmarkClick(val modelId: String) : ModelsViewIntent()
     data object OnSearchClick : ModelsViewIntent()
     data object OnAddStoryClick : ModelsViewIntent()
-    data class OnPhotoClick(val modelId: String, val photoUrl: String) : ModelsViewIntent()
     data object LoadMoreAllUsers : ModelsViewIntent()
 }
 

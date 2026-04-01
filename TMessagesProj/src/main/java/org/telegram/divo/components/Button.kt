@@ -2,11 +2,14 @@ package org.telegram.divo.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -28,7 +31,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,7 +56,7 @@ private fun ButtonPreview() {
 
 @Composable
 fun UIButtonSmall(
-    text: String = "Apply",
+    text: String = stringResource(R.string.ButtonApply),
     onClick: () -> Unit = {}
 ) {
     Card(
@@ -79,7 +84,7 @@ fun UIButtonSmall(
 @Composable
 fun UIButton(
     modifier: Modifier = Modifier,
-    text: String = "Apply",
+    text: String = stringResource(R.string.ButtonApply),
     enabled: Boolean = true,
     onClick: () -> Unit = {},
 ) {
@@ -107,7 +112,8 @@ fun UIButton(
 @Composable
 fun UIButtonNew(
     modifier: Modifier = Modifier,
-    text: String = "Save",
+    text: String = stringResource(R.string.ButtonSave),
+    height: Dp = 56.dp,
     textStyle: TextStyle = AppTheme.typography.textButton,
     shape: Shape = RoundedCornerShape(99.dp),
     background: Color = AppTheme.colors.accentOrange,
@@ -117,7 +123,7 @@ fun UIButtonNew(
     Button(
         enabled = enabled,
         modifier = modifier
-            .height(56.dp),
+            .height(height),
         onClick = onClick,
         shape = shape,
         colors = ButtonDefaults.buttonColors(
@@ -173,12 +179,37 @@ fun UIButtonBack(
 
 @Preview
 @Composable
+fun RoundedGlassButton(
+    modifier: Modifier = Modifier,
+    @DrawableRes resId: Int = R.drawable.ic_divo_back,
+    shadowEnabled: Boolean = true,
+    borderColor: Color = AppTheme.colors.onBackground.copy(alpha = 0.4f),
+    background: Color = AppTheme.colors.onBackground.copy(alpha = 0.2f),
+    iconTint: Color = AppTheme.colors.onBackground,
+    onClick: () -> Unit = {},
+) {
+    RoundedButton(
+        modifier = modifier,
+        resId = resId,
+        shadowEnabled = shadowEnabled,
+        borderColor = borderColor,
+        background = background,
+        iconTint = iconTint,
+        onClick = onClick
+    )
+}
+
+@Preview
+@Composable
 fun RoundedButton(
     modifier: Modifier = Modifier,
     @DrawableRes resId: Int = R.drawable.ic_divo_back,
     iconSize: Dp = 16.dp,
     paddingEnd: Dp = 2.dp,
     shadowEnabled: Boolean = true,
+    borderColor: Color = Color.Unspecified,
+    background: Color = AppTheme.colors.onBackground,
+    iconTint: Color = AppTheme.colors.textPrimary,
     onClick: () -> Unit = {},
 ) {
     Box(
@@ -195,7 +226,12 @@ fun RoundedButton(
                 } else Modifier
             )
             .clip(CircleShape)
-            .background(AppTheme.colors.onBackground)
+            .then(
+                if (borderColor.isSpecified) {
+                    Modifier.border(0.5.dp, borderColor, CircleShape)
+                } else Modifier
+            )
+            .background(background)
             .clickableWithoutRipple(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
@@ -203,10 +239,35 @@ fun RoundedButton(
             modifier = Modifier.size(iconSize).padding(end = paddingEnd),
             painter = painterResource(resId),
             contentDescription = null,
-            tint = AppTheme.colors.textPrimary
+            tint = iconTint
         )
     }
 }
+
+@Composable
+fun RoundedGlassContainer(
+    modifier: Modifier = Modifier,
+    space: Dp = 0.dp,
+    height: Dp = 40.dp,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 10.dp),
+    borderColor: Color = AppTheme.colors.onBackground.copy(alpha = 0.4f),
+    background: Color = AppTheme.colors.onBackground.copy(alpha = 0.2f),
+    content: @Composable (RowScope.() -> Unit)
+) {
+    Row(
+        modifier = modifier
+            .height(height)
+            .clip(CircleShape)
+            .border(0.5.dp, borderColor, CircleShape)
+            .background(background)
+            .padding(contentPadding),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(space)
+    ) {
+        content()
+    }
+}
+
 
 
 

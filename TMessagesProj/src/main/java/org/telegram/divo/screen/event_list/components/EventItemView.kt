@@ -23,7 +23,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
@@ -34,30 +33,12 @@ import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.screen.event_list.EventCtaType
 import org.telegram.divo.style.AppTheme
 
-@Preview
-@Composable
-private fun EventItemViewPreview() {
-    EventItemView(
-        eventName = "Fashion Model Event",
-        eventImageUrl = "https://divostorage.s3.eu-central-1.amazonaws.com/files/VtwUSQZN0qtJ1MgjaSfFMDKiChGSV6k5O0S2nix0_tempo_v17_288x288.jpg",
-        eventOwnerName = "@NYFW",
-        eventOwnerImage = "https://divostorage.s3.eu-central-1.amazonaws.com/files/VtwUSQZN0qtJ1MgjaSfFMDKiChGSV6k5O0S2nix0_tempo_v17_288x288.jpg",
-        dateLocationText = "May 27 · 5:00 PM · 🇺🇸 New York",
-        durationText = "4d : 4h : 0m",
-        ctaText = "Apply",
-        ctaType = EventCtaType.Apply,
-    )
-}
-
 @Composable
 fun EventItemView(
     modifier: Modifier = Modifier,
     eventName: String,
+    isModel: Boolean,
     eventImageUrl: String = "",
-    eventOwnerName: String,
-    eventOwnerImage: String,
-    dateLocationText: String,
-    durationText: String,
     ctaText: String,
     ctaType: EventCtaType,
     onCardClick: () -> Unit = {},
@@ -108,11 +89,14 @@ fun EventItemView(
                 ) {
 
                     DurationChip(modifier = Modifier, text = "4d : 4h : 0m", hazeState = hazeState)
-                    EventCtaButton(
-                        text = ctaText,
-                        type = ctaType,
-                        onClick = onCtaClicked,
-                    )
+
+                    if (isModel) {
+                        EventCtaButton(
+                            text = ctaText,
+                            type = ctaType,
+                            onClick = onCtaClicked,
+                        )
+                    }
                 }
                 Spacer(Modifier.height(4.dp))
             }

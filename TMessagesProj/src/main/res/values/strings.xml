@@ -10,6 +10,7 @@
     <string name="ButtonBack">Back</string>
     <string name="ButtonCreate">Create</string>
     <string name="ButtonSave">Save</string>
+    <string name="ButtonApply">Apply</string>
     <string name="ButtonOk">Ok</string>
     <string name="ButtonCancel">Cancel</string>
     <string name="ButtonEdit">Edit</string>
@@ -52,7 +53,14 @@
     <string name="LabelHeight">Height (cm)</string>
     <string name="LabelWaist">Waist (cm)</string>
     <string name="LabelHips">Hips (cm)</string>
+    <string name="LabelWeight">Weight (kg)</string>
     <string name="LabelShoeSize">Shoe size (EU)</string>
+    <string name="LabelShoeSizeUS">Shoe size (US)</string>
+    <string name="LabelBreastSize">Breast Size</string>
+    <string name="LabelHairColor">Hair Color</string>
+    <string name="LabelHairLength">Hair Length</string>
+    <string name="LabelEyeColor">Eye Color</string>
+    <string name="LabelSkinColor">Skin Color</string>
     <string name="ChooseHairLength">Choose your hair length</string>
     <string name="ChooseHairColor">Choose your hair color</string>
     <string name="ChooseEyeColor">Choose your eye color</string>
@@ -121,6 +129,14 @@
 
     <!--events screen-->
     <string name="EventList">Events</string>
+    <string name="OrganizationLabel">Organization</string>
+    <string name="ParametersForApplying">Parameters for Applying</string>
+    <string name="AgeRange">%1$d-%2$d</string>
+    <string name="PreviousEvents">Previous events</string>
+    <plurals name="ParticipantsCount">
+        <item quantity="one">%d participant</item>
+        <item quantity="other">%d participants</item>
+    </plurals>
 
     <!--models screen-->
     <string name="Models">Models</string>

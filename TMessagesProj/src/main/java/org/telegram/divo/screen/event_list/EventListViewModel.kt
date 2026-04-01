@@ -1,13 +1,13 @@
 package org.telegram.divo.screen.event_list
 
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.usecase.GetEventListUseCase
+import org.telegram.divo.usecase.IsModelUserUseCase
 
 class EventListViewModel :
     BaseViewModel<EventListViewState, EventListIntent, EventListEffect>() {
@@ -17,8 +17,8 @@ class EventListViewModel :
     private val eventPaginator = GetEventListUseCase(limit = 10).paginator
 
     init {
-        observeOwnProfile()
         observeEvents()
+        loadRoleInfo()
         setIntent(EventListIntent.OnLoad)
     }
 
@@ -54,37 +54,31 @@ class EventListViewModel :
                         isLoading = paginatorState.isLoading,
                         isLoadingMore = paginatorState.isLoadingMore,
                         hasMore = paginatorState.hasMore,
-                        errorMessage = paginatorState.error
                     )
+                }
+                paginatorState.error?.let {
+                    sendEffect(EventListEffect.ShowError(it))
                 }
             }
         }
     }
 
-    private fun observeOwnProfile() {
-        setState { copy(isLoading = true, errorMessage = null) }
-
+    private fun loadRoleInfo() {
         viewModelScope.launch {
-            DivoApi.userRepository.currentUserFlow
-                .filterNotNull()
-                .collect { userData ->
-                    setState {
-                        copy(
-                            isLoading = false,
-                            userInfo = userData,
-                        )
-                    }
-                }
-        }
+            setState { copy(isRoleLoading = true) }
+            val result = IsModelUserUseCase(DivoApi.userRepository).invoke()
 
-        viewModelScope.launch {
-            if (DivoApi.userRepository.currentUserFlow.value == null) {
-                val result = DivoApi.userRepository.getCurrentUserInfo()
-                if (result !is DivoResult.Success) {
-                    val errorMsg = result.getErrorMessage()
-                    setState { copy(isLoading = false, errorMessage = errorMsg) }
-                    //sendEffect(ProfileEffect.ShowError(errorMsg))
+            if (result is DivoResult.Success) {
+                setState {
+                    copy(
+                        isModel = result.value,
+                        isRoleLoading = false
+                    )
                 }
+            } else {
+                val errorMsg = result.getErrorMessage()
+                setState { copy(isRoleLoading = false) }
+                sendEffect(EventListEffect.ShowError(errorMsg))
             }
         }
     }

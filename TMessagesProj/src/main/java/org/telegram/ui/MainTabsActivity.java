@@ -374,7 +374,9 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             fragment.setMainTabsActivityController(new MainTabsActivityControllerImpl());
             return fragment;
         } else if (position == POSITION_EVENTS) {
-            return new FragmentEventList();
+            FragmentEventList fragment = new FragmentEventList();
+            fragment.setMainTabsActivityController(new MainTabsActivityControllerImpl());
+            return fragment;
         } else if (position == POSITION_CHATS) {
             Bundle args = new Bundle();
             args.putBoolean("hasMainTabs", true);

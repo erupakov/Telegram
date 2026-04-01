@@ -5,6 +5,7 @@ import android.net.Uri
 import java.io.File
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -93,6 +94,27 @@ fun Context.uriToFile(uri: Uri): Result<File> {
 
         file
     }
+}
+
+fun String.toEventDisplayDate(
+    countryCode: String?,
+    city: String?,
+    showTime: Boolean = true
+): String = try {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    val localDateTime = LocalDateTime.parse(this, formatter)
+
+    val date = localDateTime.format(DateTimeFormatter.ofPattern("MMMM d", Locale.ENGLISH))
+    val flag = countryCode?.toCountryFlagEmoji()
+
+    if (showTime) {
+        val time = localDateTime.format(DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH))
+        "$date · $time · $flag $city"
+    } else {
+        "$date · $flag $city"
+    }
+} catch (_: Exception) {
+    this
 }
 
 private fun Context.getExtension(uri: Uri): String {

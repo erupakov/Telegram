@@ -22,7 +22,6 @@ import org.telegram.divo.screen.models.ModelsViewIntent.OnSendDmClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnSearchClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnAddStoryClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnBookmarkClick
-import org.telegram.divo.screen.models.ModelsViewIntent.OnPhotoClick
 import org.telegram.divo.screen.models.ModelsViewIntent.LoadMoreAllUsers
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
@@ -86,7 +85,6 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             is OnSearchClick -> sendEffect(NavigateToSearch)
             is OnAddStoryClick -> sendEffect(NavigateToAddStory)
             is OnBookmarkClick -> bookmarkModel(intent.modelId)
-            is OnPhotoClick -> zoomPhoto(intent.modelId, intent.photoUrl)
             is LoadMoreAllUsers -> loadFeed(loadMore = true)
         }
     }
@@ -188,11 +186,6 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
 
     private fun bookmarkModel(modelId: String) {
         // TODO: Call repository to bookmark the model
-        // Optimistically update the UI
-    }
-
-    private fun zoomPhoto(modelId: String, photoUrl: String) {
-        // TODO: Call repository to zoom photo
         // Optimistically update the UI
     }
 }
