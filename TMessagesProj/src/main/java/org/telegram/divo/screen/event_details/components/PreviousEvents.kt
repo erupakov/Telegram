@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.toEventDisplayDate
+import org.telegram.divo.common.utils.toEventDisplayDate
 import org.telegram.divo.components.DivoChip
 import org.telegram.divo.entity.Event
 import org.telegram.divo.style.AppTheme

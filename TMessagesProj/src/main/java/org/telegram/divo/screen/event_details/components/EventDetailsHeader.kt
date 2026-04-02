@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -44,14 +45,14 @@ import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.toEventDisplayDate
-import org.telegram.divo.common.toShortString
+import org.telegram.divo.common.utils.DivoShareType
+import org.telegram.divo.common.utils.DivoSharingHelper
+import org.telegram.divo.common.utils.toEventDisplayDate
+import org.telegram.divo.common.utils.toShortString
 import org.telegram.divo.components.DivoChip
-import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.RoundedGlassButton
 import org.telegram.divo.components.RoundedGlassContainer
 import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.entity.Engagement
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -60,7 +61,6 @@ import org.telegram.messenger.R
 fun EventDetailsHeader(
     event: EventDetails?,
     isModel: Boolean,
-    onShareClicked: () -> Unit,
     onMenuClicked: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -72,21 +72,24 @@ fun EventDetailsHeader(
         Background(
             backgroundUrl = event?.creator?.photo?.fullUrl,
         )
-        ButtonsSection(
-            modifier = Modifier.align(Alignment.TopCenter),
-            event = event,
-            onShareClicked = onShareClicked,
-            onMenuClicked = onMenuClicked,
-            onBack = onBack
-        )
-        ContentSection(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 16.dp),
-            event = event,
-            isModel = isModel
-        )
+        Column(
+            modifier = Modifier.fillMaxSize().padding(top = 38.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            ButtonsSection(
+                modifier = Modifier,
+                event = event,
+                onMenuClicked = onMenuClicked,
+                onBack = onBack
+            )
+            ContentSection(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                event = event,
+                isModel = isModel
+            )
+        }
     }
 }
 
@@ -94,12 +97,14 @@ fun EventDetailsHeader(
 private fun ButtonsSection(
     modifier: Modifier = Modifier,
     event: EventDetails?,
-    onShareClicked: () -> Unit,
     onMenuClicked: () -> Unit,
     onBack: () -> Unit,
 ) {
+    val context = LocalContext.current
+
     Column(
-        modifier = modifier.statusBarsPadding().padding(horizontal = 16.dp)
+        modifier = modifier
+            .padding(horizontal = 16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -112,13 +117,25 @@ private fun ButtonsSection(
                 space = 10.dp
             ) {
                 Icon(
-                    modifier = Modifier.size(24.dp).clickableWithoutRipple { onShareClicked() },
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickableWithoutRipple {
+                            DivoSharingHelper.share(
+                                context = context,
+                                type = DivoShareType.EVENT,
+                                id = event?.id,
+                                customMessage = "${event?.title} - ${event?.creator?.roleLabel}",
+                                imageUrl = event?.creator?.photo?.fullUrl
+                            )
+                        },
                     painter = painterResource(R.drawable.ic_divo_share_model),
                     contentDescription = null,
                     tint = AppTheme.colors.onBackground
                 )
                 Icon(
-                    modifier = Modifier.size(24.dp).clickableWithoutRipple { onMenuClicked() },
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickableWithoutRipple { onMenuClicked() },
                     painter = painterResource(R.drawable.ic_ab_other),
                     contentDescription = null,
                     tint = AppTheme.colors.onBackground
@@ -237,11 +254,11 @@ private fun EngagementItem(
             tint = AppTheme.colors.onBackground
         )
         Text(
-            modifier = Modifier.offset(y = 2.dp),
+            modifier = Modifier.offset(y = 0.5.dp),
             text = count.toShortString(),
             style = AppTheme.typography.helveticaNeueRegular,
             color = AppTheme.colors.onBackground,
-            fontSize = 11.sp,
+            fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -266,10 +283,14 @@ private fun Background(
                 .hazeSource(state = hazeState),
             model = backgroundUrl,
             loadingContent = {
-                Box(modifier = Modifier.fillMaxSize().background(Color(0xFFBF7A54)))
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFBF7A54)))
             },
             errorContent = {
-                Box(modifier = Modifier.fillMaxSize().background(Color(0xFFBF7A54)))
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFFBF7A54)))
             }
         )
 

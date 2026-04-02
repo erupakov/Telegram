@@ -134,15 +134,28 @@ private fun EventListContent(
         },
     ) { innerPadding ->
         when {
-            state.isLoading || state.events.isEmpty() || state.isRoleLoading -> {
+            state.isLoading || state.isRoleLoading -> {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(top = innerPadding.calculateTopPadding(), bottom = bottomInset),
+                        .fillMaxSize(),
                     contentAlignment = Alignment.Center,
                 ) {
                     LottieProgressIndicator(
                         modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+
+            state.events.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = "No events yet",
+                        color = Color(0xFF000000),
+                        fontSize = 16.sp,
                     )
                 }
             }

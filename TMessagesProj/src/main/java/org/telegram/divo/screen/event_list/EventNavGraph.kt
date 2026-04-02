@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.screen.event_details.EventDetailsNavGraph
 
 sealed class EventRoute(val route: String) {
@@ -27,7 +28,17 @@ fun EventsNavGraph(
 ) {
     val nav = rememberNavController()
 
-    LaunchedEffect(nav) { onNavControllerReady(nav) }
+    LaunchedEffect(nav) {
+        onNavControllerReady(nav)
+    }
+
+    LaunchedEffect(DivoDeeplinkDispatcher.pendingEventId) {
+        val pendingId = DivoDeeplinkDispatcher.pendingEventId
+        if (pendingId != null) {
+            nav.navigate(EventRoute.Detail.createRoute(pendingId))
+            DivoDeeplinkDispatcher.consumePendingEventId()
+        }
+    }
 
     NavHost(
         navController = nav,

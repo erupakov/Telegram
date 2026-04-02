@@ -15,6 +15,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,6 @@ fun EventDetailsScreen(
             when (action) {
                 EventDetailsEffect.Back -> onBack()
                 is EventDetailsEffect.ShowError -> Toast.makeText(context, action.message, Toast.LENGTH_SHORT).show()
-                EventDetailsEffect.Share -> {}
                 is EventDetailsEffect.NavigateToGallery -> { onPhotoClicked(action.items, action.id) }
                 EventDetailsEffect.NavigateToParams -> { onParamsClicked() }
                 is EventDetailsEffect.NavigateToPrevEvent -> { onPrevEventClicked(action.id) }
@@ -64,7 +64,8 @@ fun EventDetailsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(AppTheme.colors.backgroundLight)
+                .background(AppTheme.colors.backgroundLight),
+            contentAlignment = Alignment.Center
         ) {
             LottieProgressIndicator(modifier = Modifier.size(32.dp))
         }
@@ -97,7 +98,6 @@ private fun EventDetailsContent(
                 EventDetailsHeader(
                     event = uiState.eventDetails,
                     isModel = uiState.isModel,
-                    onShareClicked = { onIntent(EventDetailsIntent.OnShareClicked) },
                     onMenuClicked = {},
                     onBack = { onIntent(EventDetailsIntent.OnBackClicked) }
                 )

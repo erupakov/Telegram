@@ -2,7 +2,6 @@ package org.telegram.divo.screen.profile.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -28,8 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.formattedAge
-import org.telegram.divo.common.toCountryFlagEmoji
+import org.telegram.divo.common.utils.formattedAge
+import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R

@@ -1,4 +1,4 @@
-package org.telegram.divo.common
+package org.telegram.divo.common.utils
 
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever

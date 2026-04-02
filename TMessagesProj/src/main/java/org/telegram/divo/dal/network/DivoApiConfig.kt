@@ -7,9 +7,8 @@ package org.telegram.divo.dal.network
  */
 object DivoApiConfig {
 
-    /**
-     * Base URL for Retrofit. Must end with a trailing slash.
-     */
+    const val WEB_URL: String = "https://api.divo.fashion/"
+
     const val BASE_URL: String = "https://api-stage.divo.fashion/api/"
 
     /**

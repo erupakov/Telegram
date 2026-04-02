@@ -26,7 +26,6 @@ sealed class EventDetailsIntent : ViewIntent {
     data object OnSearchClicked : EventDetailsIntent()
     data object OnAddEventClicked : EventDetailsIntent()
     data object OnBackClicked : EventDetailsIntent()
-    data object OnShareClicked : EventDetailsIntent()
     data object OnParamsClick : EventDetailsIntent()
     data class OnEventCardClicked(val eventId: Long) : EventDetailsIntent()
     data class OnEventCtaClicked(val eventId: Long) : EventDetailsIntent()
@@ -36,7 +35,6 @@ sealed class EventDetailsIntent : ViewIntent {
 
 sealed class EventDetailsEffect : ViewEffect {
     data object Back : EventDetailsEffect()
-    data object Share : EventDetailsEffect()
     data object NavigateToParams : EventDetailsEffect()
     data class NavigateToGallery(val items: List<GalleryItem>, val id: Int) : EventDetailsEffect()
     data class NavigateToPrevEvent(val id: Int) : EventDetailsEffect()

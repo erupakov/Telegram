@@ -1,6 +1,6 @@
 package org.telegram.divo.dal.network
 
-import org.telegram.divo.common.ThumbnailProcessor
+import org.telegram.divo.common.utils.ThumbnailProcessor
 import org.telegram.divo.dal.api.AuthService
 import org.telegram.divo.dal.api.DictionaryService
 import org.telegram.divo.dal.api.EventService

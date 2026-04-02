@@ -5,6 +5,7 @@ import android.view.View
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
+import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.screen.event_create.FragmentEventCreate
 import org.telegram.divo.screen.event_filter.FragmentEventFilter
 import org.telegram.ui.ActionBar.BaseFragment
@@ -31,6 +32,7 @@ class FragmentEventList : BaseFragment() {
                 EventsNavGraph(
                     onNavControllerReady = { navController ->
                         this@FragmentEventList.eventsNavController = navController
+                        DivoDeeplinkDispatcher.eventsNavController = navController
                         navController.addOnDestinationChangedListener { _, destination, _ ->
                             isOnHomeScreen.value = destination.route == EventRoute.Events.route
                             mainTabsController?.setTabsVisible(isOnHomeScreen.value)

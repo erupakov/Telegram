@@ -1,4 +1,4 @@
-package org.telegram.divo.common
+package org.telegram.divo.common.utils
 
 import android.content.Context
 import android.net.Uri

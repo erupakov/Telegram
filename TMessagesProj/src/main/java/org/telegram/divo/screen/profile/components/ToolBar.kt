@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,15 +13,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,14 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.telegram.divo.common.formattedAge
+import org.telegram.divo.common.utils.DivoShareType
+import org.telegram.divo.common.utils.DivoSharingHelper
+import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.PopupMenuItem
@@ -63,6 +57,7 @@ fun ToolBar(
     onManageWorkExperienceClicked: () -> Unit,
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(
         modifier = modifier
@@ -114,21 +109,19 @@ fun ToolBar(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
             //TODO пока не понятно назначение кнопки
-            IconButton(onClick = {  }) {
+            IconButton(
+                onClick = {
+                    DivoSharingHelper.share(
+                        context = context,
+                        type = DivoShareType.PROFILE,
+                        id = uiState.userInfo.id,
+                        customMessage = "${uiState.userInfo.fullName} - ${uiState.userInfo.roleLabel}",
+                        imageUrl = uiState.userInfo.avatarUrl
+                    )
+                }
+            ) {
                 Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = Color.White)
             }
-//            DropdownMenu(
-//                expanded = showDropdownMenu,
-//                onDismissRequest = { showDropdownMenu = false }
-//            ) {
-//                DropdownMenuItem(
-//                    text = { Text("Edit Background Image") },
-//                    onClick = {
-//                        showDropdownMenu = false
-//                        onEditBackgroundClicked()
-//                    }
-//                )
-//            }
         }
     }
 }

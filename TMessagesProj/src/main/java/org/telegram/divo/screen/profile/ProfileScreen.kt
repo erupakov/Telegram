@@ -49,7 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.common.LaunchedEffectOnce
 import org.telegram.divo.common.LockScreenOrientation
 import org.telegram.divo.common.rememberGalleryLauncher
-import org.telegram.divo.common.uriToFile
+import org.telegram.divo.common.utils.uriToFile
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.TelegramPhotoBackground
 import org.telegram.divo.components.items.ProfileNameItem

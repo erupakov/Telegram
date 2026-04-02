@@ -26,7 +26,6 @@ class EventDetailsViewModel(
             is EventDetailsIntent.OnEventCtaClicked -> {}
             EventDetailsIntent.OnSearchClicked -> {}
             EventDetailsIntent.OnBackClicked -> sendEffect(Back)
-            EventDetailsIntent.OnShareClicked -> sendEffect(Share)
             is EventDetailsIntent.OnPhotoClick -> sendEffect(NavigateToGallery(intent.items, intent.id))
             EventDetailsIntent.OnParamsClick -> sendEffect(NavigateToParams)
             is EventDetailsIntent.OnPrevEventClicked -> sendEffect(NavigateToPrevEvent(intent.eventId))

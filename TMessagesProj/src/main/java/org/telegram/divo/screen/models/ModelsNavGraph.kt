@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GallerySourceHolder
@@ -40,7 +41,17 @@ fun ModelsNavGraph(
 ) {
     val nav = rememberNavController()
 
-    LaunchedEffect(nav) { onNavControllerReady(nav) }
+    LaunchedEffect(nav) {
+        onNavControllerReady(nav)
+    }
+
+    LaunchedEffect(DivoDeeplinkDispatcher.pendingProfileId) {
+        val pendingId = DivoDeeplinkDispatcher.pendingProfileId
+        if (pendingId != null) {
+            nav.navigate(ModelsRoute.Profile.createRoute(pendingId))
+            DivoDeeplinkDispatcher.consumePendingProfileId()
+        }
+    }
 
     NavHost(
         navController = nav,
@@ -63,7 +74,7 @@ fun ModelsNavGraph(
             arguments = listOf(navArgument("userId") { type = NavType.IntType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getInt("userId", -1)
-                ?.takeIf { it != -1 } ?: return@composable
+                ?.takeIf { it != -1 } ?: -1
 
             ProfileNavGraph(
                 userId = userId,
