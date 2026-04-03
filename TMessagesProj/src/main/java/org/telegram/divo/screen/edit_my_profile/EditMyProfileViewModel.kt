@@ -29,13 +29,10 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
 
             if (result is DivoResult.Success) {
                 val user = result.value
-                val parts = user.fullName.split(" ") //TODO временно
-                val fName = parts.getOrNull(0).orEmpty()
-                val lName = parts.getOrNull(1).orEmpty()
                 setState {
                     copy(
-                        fName = fName,
-                        lName = lName,
+                        isModel = user.role.isModel(),
+                        fName = user.fullName,
                         bio = user.model?.description.orEmpty(),
                         userFull = user,
                         avatarUrl = user.avatarUrl,
@@ -49,7 +46,7 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
         }
     }
 
-    private fun updateProfile(fNameRaw: String, lNameRaw: String, aboutRaw: String, file: Result<File>?) {
+    private fun updateProfile(fNameRaw: String, aboutRaw: String, file: Result<File>?) {
         viewModelScope.launch {
             val userInfo = state.value.userFull
             if (userInfo != null) {
@@ -68,12 +65,13 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
                 } else {
                     userInfo.avatarUuid
                 }
-
+                val isModel = state.value.isModel
                 val result = DivoApi.userRepository.updateProfile(
                     userInfo = userInfo.copy(
-                        fullName = "$fNameRaw $lNameRaw",
-                        model = userInfo.model?.copy(description = aboutRaw),
-                        avatarUuid = uploadedUuid
+                        fullName = if (isModel) fNameRaw else userInfo.fullName,
+                        model = if (isModel) userInfo.model?.copy(description = aboutRaw) else userInfo.model,
+                        avatarUuid = uploadedUuid,
+                        agency = if (isModel) userInfo.agency else userInfo.agency?.copy(description = aboutRaw, title = fNameRaw)
                     )
                 )
 
@@ -117,7 +115,7 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
         when (intent) {
             EditMyProfileIntent.OnLoad -> Unit
             is EditMyProfileIntent.OnSaveClicked -> {
-                updateProfile(intent.fName, intent.lName, intent.bio, intent.file)
+                updateProfile(intent.fName, intent.bio, intent.file)
             }
 
             is EditMyProfileIntent.OnAvatarUploaded -> {

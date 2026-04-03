@@ -63,7 +63,6 @@ enum class ProfileDestination {
     BIOGRAPHY, APPEARANCE, EXPERIENCE
 }
 
-
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EditMyProfileScreen(
@@ -95,7 +94,7 @@ fun EditMyProfileScreen(
 
     val pagerState = rememberPagerState(
         initialPage = 0,
-        pageCount = { ProfileDestination.entries.size }
+        pageCount = { if (uiState.isModel) ProfileDestination.entries.size else 1 }
     )
 
     val scope = rememberCoroutineScope()
@@ -126,9 +125,11 @@ fun EditMyProfileScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
+                    val titleId = if (uiState.isModel) R.string.Profile else R.string.MyAgencyProfile
+
                     Text(
                         modifier = Modifier.padding(top = 3.dp),
-                        text = stringResource(R.string.Profile).uppercase(),
+                        text = stringResource(titleId).uppercase(),
                         style = AppTheme.typography.appBar
                     )
                 },
@@ -153,19 +154,21 @@ fun EditMyProfileScreen(
         ) {
             Spacer(Modifier.height(14.dp))
 
-            DivoTabSelector(
-                modifier = Modifier.fillMaxWidth(),
-                tabs = tabs,
-                selectedIndex = pagerState.currentPage,
-                onTabSelected = { index ->
-                    scope.launch {
-                        pagerState.animateScrollToPage(index)
-                    }
-                },
-                horizontalPadding = 16.dp,
-            )
+            if (uiState.isModel) {
+                DivoTabSelector(
+                    modifier = Modifier.fillMaxWidth(),
+                    tabs = tabs,
+                    selectedIndex = pagerState.currentPage,
+                    onTabSelected = { index ->
+                        scope.launch {
+                            pagerState.animateScrollToPage(index)
+                        }
+                    },
+                    horizontalPadding = 16.dp,
+                )
 
-            Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(24.dp))
+            }
 
             HorizontalPager(
                 state = pagerState,
@@ -212,7 +215,6 @@ fun EditMyProfileScreenView(
     onIntent: (EditMyProfileIntent) -> Unit = {},
 ) {
     var fName by rememberSaveable { mutableStateOf(uiState.fName) }
-    var lName by rememberSaveable { mutableStateOf(uiState.lName) }
     var bio by rememberSaveable { mutableStateOf(uiState.bio) }
     var selectedAvatarUri by rememberSaveable { mutableStateOf<Uri?>(null) }
 
@@ -221,15 +223,13 @@ fun EditMyProfileScreenView(
     }
     val context = LocalContext.current
 
-    // Sync local state when uiState changes (e.g., after loading or update)
-    LaunchedEffect(uiState.fName, uiState.lName, uiState.bio) {
+    LaunchedEffect(uiState.fName, uiState.bio) {
         fName = uiState.fName
-        lName = uiState.lName
         bio = uiState.bio
     }
 
     if (uiState.isLoading) {
-        EditMyProfileLoadingContent()
+        EditMyProfileLoadingContent(uiState.isModel)
     } else {
         Column(
             modifier = Modifier
@@ -255,26 +255,9 @@ fun EditMyProfileScreenView(
                 modifier = Modifier.padding(top = 32.dp),
                 value = fName,
                 onValueChange = { fName = it },
-                placeholder = stringResource(R.string.FirstNameEditProfileScreen),
+                placeholder = stringResource(R.string.FullNameEditProfileScreen),
                 trailingIcon = if (fName.isNotBlank()) Icons.Default.Close else null,
                 onTrailingIconClick = { fName = "" },
-                backgroundColor = AppTheme.colors.onBackground,
-                cornerRadius = 41.dp,
-                placeholderColor = AppTheme.colors.textPrimary.copy(0.6f),
-                textStyle = AppTheme.typography.bodyLarge.copy(
-                    color = AppTheme.colors.textPrimary
-                ),
-                horizontalContentPadding = 16.dp,
-                verticalContentPadding = 16.dp
-            )
-
-            DivoTextField(
-                modifier = Modifier.padding(top = 12.dp),
-                value = lName,
-                onValueChange = { lName = it },
-                trailingIcon = if (lName.isNotBlank()) Icons.Default.Close else null,
-                onTrailingIconClick = { lName = "" },
-                placeholder = stringResource(R.string.LastNameEditProfileScreen),
                 backgroundColor = AppTheme.colors.onBackground,
                 cornerRadius = 41.dp,
                 placeholderColor = AppTheme.colors.textPrimary.copy(0.6f),
@@ -331,7 +314,6 @@ fun EditMyProfileScreenView(
                         onIntent(
                             EditMyProfileIntent.OnSaveClicked(
                                 fName = fName,
-                                lName = lName,
                                 bio = bio,
                                 file = selectedAvatarUri?.let { context.uriToFile(it) }
                             )

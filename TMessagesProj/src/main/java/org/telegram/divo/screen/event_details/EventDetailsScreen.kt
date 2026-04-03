@@ -98,6 +98,7 @@ private fun EventDetailsContent(
                 EventDetailsHeader(
                     event = uiState.eventDetails,
                     isModel = uiState.isModel,
+                    isOwnProfile = uiState.isOwnProfile,
                     onMenuClicked = {},
                     onBack = { onIntent(EventDetailsIntent.OnBackClicked) }
                 )
@@ -141,15 +142,17 @@ private fun EventDetailsContent(
                 }
             }
 
-            item(key = "prevTitle") {
-                if (uiState.events.isNotEmpty()) {
-                    Spacer(Modifier.height(20.dp))
-                    PreviousEvents(
-                        events = uiState.events,
-                        onClick = { onIntent(EventDetailsIntent.OnPrevEventClicked(it)) }
-                    )
+            uiState.eventDetails?.previousEventsFromSameOrigin?.let {
+                if (it.isNotEmpty()) {
+                    item(key = "prevTitle") {
+                        Spacer(Modifier.height(20.dp))
+                        PreviousEvents(
+                            events = it,
+                            onClick = { id -> onIntent(EventDetailsIntent.OnPrevEventClicked(id)) }
+                        )
+                        Spacer(Modifier.height(20.dp))
+                    }
                 }
-                Spacer(Modifier.height(20.dp))
             }
         }
     }

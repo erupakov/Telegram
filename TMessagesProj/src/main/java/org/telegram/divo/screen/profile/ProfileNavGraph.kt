@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.telegram.divo.screen.add_model.AddModelScreen
 import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
+import org.telegram.divo.screen.event_details.EventDetailsNavGraph
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
 import org.telegram.divo.screen.profile_social_links.ProfileSocialLinksScreen
@@ -32,8 +33,11 @@ sealed class ProfileRoute(val route: String) {
     }
 
     data object Profile : ProfileRoute("profile/{userId}") {
-        const val ROUTE = "profile/{userId}"
         fun createRoute(userId: Int) = "profile/$userId"
+    }
+
+    data object Event : ProfileRoute("event/{eventId}") {
+        fun createRoute(eventId: Int) = "event/$eventId"
     }
 
     object Gallery : ProfileRoute("gallery/{sourceType}/{userId}/{initialIndex}") {
@@ -63,7 +67,7 @@ fun ProfileNavGraph(
         startDestination = ProfileRoute.Profile.createRoute(userId)
     ) {
         composable(
-            route = ProfileRoute.Profile.ROUTE,
+            route = ProfileRoute.Profile.route,
             arguments = listOf(navArgument("userId") { type = NavType.IntType })
         ) { backStackEntry ->
             val currentUserId = backStackEntry.arguments
@@ -73,7 +77,7 @@ fun ProfileNavGraph(
 
             val profileViewModel: ProfileViewModel = viewModel(
                 key = "profile_$currentUserId",
-                factory = ProfileViewModel.factory(userId, isOwnProfile)
+                factory = ProfileViewModel.factory(currentUserId, isOwnProfile)
             )
             val uiState = profileViewModel.state.collectAsState().value
 
@@ -103,6 +107,9 @@ fun ProfileNavGraph(
                 },
                 onAddModelClicked = {
                     nav.navigate(ProfileRoute.AddModel.route)
+                },
+                onEventClicked = {
+                    nav.navigate(ProfileRoute.Event.createRoute(it))
                 }
             )
         }
@@ -193,6 +200,18 @@ fun ProfileNavGraph(
                     )
                 },
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
+        composable(
+            route = ProfileRoute.Event.route,
+            arguments = listOf(navArgument("eventId") { type = NavType.IntType; defaultValue = -1 })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId")?.takeIf { it != -1 } ?: -1
+
+            EventDetailsNavGraph(
+                eventId = eventId,
+                isOwnProfile = isOwnProfile,
+                onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
     }

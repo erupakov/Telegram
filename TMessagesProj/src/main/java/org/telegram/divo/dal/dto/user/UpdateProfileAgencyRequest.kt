@@ -7,7 +7,7 @@ import org.telegram.divo.entity.AgencyAddress
 
 class UpdateProfileAgencyRequest(
     @SerializedName("agencyId") val agencyId: Int,
-    @SerializedName("employeeTitle") val employeeTitle: String?,
+    @SerializedName("title") val title: String?,
     @SerializedName("description") val description: String?,
     @SerializedName("address") val address: UpdateAgencyAddressDto?,
     @SerializedName("background") val background: UuidContainerDto?,
@@ -27,7 +27,7 @@ class UpdateAgencyAddressDto(
 fun Agency.toDto(): UpdateProfileAgencyRequest =
     UpdateProfileAgencyRequest(
         agencyId = id,
-        employeeTitle = employeeTitle,
+        title = title,
         description = description,
         address = address?.toDto(),
         background = background?.let { UuidContainerDto(it.fileUuid) },

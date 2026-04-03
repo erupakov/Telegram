@@ -97,15 +97,15 @@ fun Context.uriToFile(uri: Uri): Result<File> {
 }
 
 fun String.toEventDisplayDate(
-    countryCode: String?,
-    city: String?,
+    countryCode: String? = null,
+    city: String? = null,
     showTime: Boolean = true
 ): String = try {
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     val localDateTime = LocalDateTime.parse(this, formatter)
 
     val date = localDateTime.format(DateTimeFormatter.ofPattern("MMMM d", Locale.ENGLISH))
-    val flag = countryCode?.toCountryFlagEmoji()
+    val flag = countryCode?.toCountryFlagEmoji().orEmpty()
 
     if (showTime) {
         val time = localDateTime.format(DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH))

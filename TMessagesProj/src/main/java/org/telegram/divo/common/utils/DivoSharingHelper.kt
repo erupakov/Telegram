@@ -4,6 +4,10 @@ import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.telegram.divo.dal.network.DivoApiConfig
 import java.io.File
 import java.io.FileOutputStream
@@ -31,6 +35,7 @@ enum class DivoShareType(val pathSegment: String) {
 object DivoSharingHelper {
     fun share(
         context: Context,
+        scope: CoroutineScope,
         type: DivoShareType,
         id: Int? = null,
         imageUrl: String? = null,
@@ -42,8 +47,12 @@ object DivoSharingHelper {
         if (imageUrl.isNullOrBlank()) {
             openShareSheet(context, textBody, null)
         } else {
-            val downloadedFile = downloadImageToCache(context, imageUrl)
-            openShareSheet(context, textBody, downloadedFile)
+            scope.launch(Dispatchers.IO) {
+                val downloadedFile = downloadImageToCache(context, imageUrl)
+                withContext(Dispatchers.Main) {
+                    openShareSheet(context, textBody, downloadedFile)
+                }
+            }
         }
     }
 

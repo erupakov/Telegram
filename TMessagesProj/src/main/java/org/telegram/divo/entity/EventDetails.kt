@@ -17,7 +17,17 @@ data class EventDetails(
     val address: EventAddress?,
     val files: List<EventFile>,
     val modelAttributes: EventModelAttributes?,
-    val creator: EventCreator?
+    val creator: EventCreator?,
+    val previousEventsFromSameOrigin: List<PreviousEvent>
+)
+
+data class PreviousEvent(
+    val id: Int,
+    val title: String?,
+    val date: String,
+    val photo: Photo?,
+    val type: String?,
+    val address: EventAddress?
 )
 
 data class EventAddress(

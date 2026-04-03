@@ -85,6 +85,7 @@ fun ProfileScreen(
     onGalleryClicked: (String, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
     onAddModelClicked: () -> Unit,
+    onEventClicked: (Int) -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -153,7 +154,8 @@ fun ProfileScreen(
             },
             onLoadMoreVideos = { viewModel.setIntent(ProfileIntent.OnLoadMoreVideos) },
             onAddModelClicked = onAddModelClicked,
-            onLoadMoreEvents = { viewModel.setIntent(ProfileIntent.OnLoadMoreEvents) }
+            onLoadMoreEvents = { viewModel.setIntent(ProfileIntent.OnLoadMoreEvents) },
+            onEventClicked = onEventClicked
         )
     }
 }
@@ -182,6 +184,7 @@ private fun ProfileScreenContent(
     onLoadMoreVideos: () -> Unit,
     onAddModelClicked: () -> Unit,
     onLoadMoreEvents: () -> Unit,
+    onEventClicked: (Int) -> Unit,
 ) {
     val pageCount = uiState.pageCount
     val pagerState = rememberPagerState(pageCount = { pageCount })
@@ -349,21 +352,23 @@ private fun ProfileScreenContent(
                                         DivoColumnContent("Vogue Inside")
                                     } else {
                                         AgencyModels(
-                                            models = emptyList(),//uiState.agencyModels,
+                                            models = uiState.agencyModels,
                                             isOwnProfile = uiState.isOwnProfile,
                                             isLoadingMoreModels = false, //TODO
                                             onAddModelClicked = onAddModelClicked,
-                                            onModelClicked = {}, //TODO
+                                            onModelClicked = onProfileClicked,
                                             onLoadMoreAgencyModels = {}  //TODO
                                         )
                                     }
                                     3 -> DivoColumnContent("Vogue Inside")
                                     else -> EventsColumn(
                                         events = uiState.events,
+                                        isOwnProfile = uiState.isOwnProfile,
+                                        isModel = uiState.isModel,
                                         isLoading = uiState.isLoadingEvents,
                                         isLoadingMore = uiState.isLoadingMoreEvents,
                                         onLoadMore = onLoadMoreEvents,
-                                        onClicked = {}
+                                        onEventClicked = onEventClicked
                                     )
                                 }
                             }

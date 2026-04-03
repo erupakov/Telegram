@@ -42,8 +42,8 @@ sealed class EventDetailsRoute(val route: String) {
 fun EventDetailsNavGraph(
     eventId: Int,
     isOwnProfile: Boolean = false,
-    onNavControllerReady: (NavController) -> Unit,
     onNavigateBack: () -> Unit,
+    onNavControllerReady: (NavController) -> Unit = {},
 ) {
     val nav = rememberNavController()
 
@@ -64,7 +64,7 @@ fun EventDetailsNavGraph(
 
             val eventDetailsViewModel: EventDetailsViewModel = viewModel(
                 key = "event_detail_$currentEventId",
-                factory = EventDetailsViewModel.factory(eventId, isOwnProfile)
+                factory = EventDetailsViewModel.factory(currentEventId, isOwnProfile)
             )
 
             EventDetailsScreen(

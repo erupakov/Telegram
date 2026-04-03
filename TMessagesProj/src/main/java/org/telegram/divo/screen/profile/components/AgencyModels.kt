@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
@@ -56,8 +57,12 @@ fun AgencyModels(
     onModelClicked: (Int) -> Unit,
     onLoadMoreAgencyModels: () -> Unit,
 ) {
-    if (models.isEmpty() && isOwnProfile) {
+    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 8.dp
+
+    if (models.isEmpty()) {
         EmptyModels(
+            isOwnProfile = isOwnProfile,
+            bottomPadding = bottomPadding,
             onClick = onAddModelClicked
         )
     } else {
@@ -77,28 +82,44 @@ fun AgencyModels(
             }
         }
 
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White),
-            state = lazyListState,
-            contentPadding = PaddingValues(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = WindowInsets.navigationBars
-                    .asPaddingValues()
-                    .calculateBottomPadding() + 16.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(
-                items = models,
-                key = { it.id }
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White),
+                state = lazyListState,
+                contentPadding = PaddingValues(
+                    top = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = WindowInsets.navigationBars
+                        .asPaddingValues()
+                        .calculateBottomPadding() + 76.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                ModelItem(
-                    item = it,
-                    onClicked = onModelClicked
+                items(
+                    items = models,
+                    key = { it.id }
+                ) {
+                    ModelItem(
+                        item = it,
+                        onClicked = onModelClicked
+                    )
+                }
+            }
+
+            if (isOwnProfile) {
+                UIButtonNew(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, bottom = bottomPadding)
+                        .align(Alignment.BottomCenter),
+                    text = stringResource(R.string.AddModel),
+                    onClick = onAddModelClicked
                 )
             }
         }
@@ -113,7 +134,7 @@ private fun ModelItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickableWithoutRipple { onClicked(item.id) },
+            .clickableWithoutRipple { onClicked(item.userId) },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         DivoAsyncImage(
@@ -160,14 +181,14 @@ private fun ModelItem(
 
 @Composable
 private fun EmptyModels(
+    isOwnProfile: Boolean,
+    bottomPadding: Dp,
     onClick: () -> Unit = {}
 ) {
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 8.dp
-
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(AppTheme.colors.backgroundLight)
             .padding(horizontal = 16.dp)
     ) {
         Column(
@@ -198,23 +219,27 @@ private fun EmptyModels(
                 lineHeight = 30.sp,
                 textAlign = TextAlign.Center,
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.AgencyModelsEmptyHint),
-                style = AppTheme.typography.helveticaNeueRegular,
-                fontSize = 16.sp,
-                lineHeight = 18.sp,
-                textAlign = TextAlign.Center,
-            )
+            if (isOwnProfile) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.AgencyModelsEmptyHint),
+                    style = AppTheme.typography.helveticaNeueRegular,
+                    fontSize = 16.sp,
+                    lineHeight = 18.sp,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
 
-        UIButtonNew(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = bottomPadding)
-                .align(Alignment.BottomCenter),
-            text = stringResource(R.string.AddModel),
-            onClick = onClick
-        )
+        if (isOwnProfile) {
+            UIButtonNew(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = bottomPadding)
+                    .align(Alignment.BottomCenter),
+                text = stringResource(R.string.AddModel),
+                onClick = onClick
+            )
+        }
     }
 }
