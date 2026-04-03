@@ -18,18 +18,14 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.math.MathUtils;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.telegram.divo.screen.event_list.FragmentEventList;
 import org.telegram.divo.screen.models.FragmentModels;
 import org.telegram.divo.screen.settings.FragmentSettings;
-import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLoader;
 import org.telegram.messenger.LiteMode;
@@ -38,7 +34,6 @@ import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.messenger.SharedConfig;
-import org.telegram.messenger.UserConfig;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.ActionBar.ThemeDescription;
@@ -374,7 +369,9 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             fragment.setMainTabsActivityController(new MainTabsActivityControllerImpl());
             return fragment;
         } else if (position == POSITION_EVENTS) {
-            return new FragmentEventList();
+            FragmentEventList fragment = new FragmentEventList();
+            fragment.setMainTabsActivityController(new MainTabsActivityControllerImpl());
+            return fragment;
         } else if (position == POSITION_CHATS) {
             Bundle args = new Bundle();
             args.putBoolean("hasMainTabs", true);
@@ -401,6 +398,13 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         for (int a = 0; a < tabs.length; a++) {
             GlassTabView tab = tabs[a];
             tab.setSelected(a == position, animated);
+        }
+    }
+
+    public void switchToTabPosition(int position) {
+        if (viewPager != null) {
+            selectTab(position, false);
+            viewPager.scrollToPosition(position);
         }
     }
 
@@ -567,6 +571,14 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.needSetDayNightTheme);
 
         super.onFragmentDestroy();
+    }
+
+    @Override
+    public void onTransitionAnimationEnd(boolean isOpen, boolean backward) {
+        super.onTransitionAnimationEnd(isOpen, backward);
+        if (isOpen) {
+            org.telegram.divo.common.utils.DivoDeeplinkDispatcher.INSTANCE.processPendingDeeplink(parentLayout);
+        }
     }
 
     @Override

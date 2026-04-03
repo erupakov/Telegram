@@ -45,7 +45,7 @@ import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.rememberGalleryLauncher
-import org.telegram.divo.common.uriToFile
+import org.telegram.divo.common.utils.uriToFile
 import org.telegram.divo.components.DivoTabSelector
 import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.LottieProgressIndicator

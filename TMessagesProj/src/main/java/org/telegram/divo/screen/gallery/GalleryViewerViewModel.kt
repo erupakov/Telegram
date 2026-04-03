@@ -9,6 +9,7 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.PublicationList
 import org.telegram.divo.entity.UserGalleryList
+import org.telegram.divo.screen.gallery.GalleryEffect.*
 
 class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, GalleryEffect>() {
 
@@ -139,7 +140,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                 )
 
                 if (result !is DivoResult.Success) {
-                    sendEffect(GalleryEffect.ShowError(result.getErrorMessage()))
+                    sendEffect(ShowError(result.getErrorMessage()))
                 }
             }
             is GallerySource.Video -> {
@@ -149,7 +150,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                     limit = PAGE_SIZE,
                 )
                 if (result !is DivoResult.Success) {
-                    sendEffect(GalleryEffect.ShowError(result.getErrorMessage()))
+                    sendEffect(ShowError(result.getErrorMessage()))
                 }
             }
             is GallerySource.Feed -> return

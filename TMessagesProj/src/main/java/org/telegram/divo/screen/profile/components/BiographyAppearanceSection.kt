@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -30,6 +31,7 @@ import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.screen.profile.PhysicalParams
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
 
 @Composable
 fun BiographyAppearanceSection(
@@ -134,7 +136,7 @@ private fun BiographyContent(bio: String) {
 
         if (bio.length > 100) {
             Text(
-                text = if (expanded) "SEE LESS" else "SEE MORE",
+                text = stringResource(if (expanded) R.string.SeeLess else R.string.SeeMore),
                 color = Color.White,
                 fontSize = 10.sp,
                 modifier = Modifier

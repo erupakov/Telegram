@@ -11,9 +11,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
-import org.telegram.divo.common.formattedAge
+import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
@@ -21,6 +19,10 @@ import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.profile.components.StatsType
+import org.telegram.divo.usecase.EngagementInteractor
+import org.telegram.divo.usecase.GetEventListUseCase
+import org.telegram.divo.usecase.GetUserGalleryUseCase
+import org.telegram.divo.usecase.GetUserVideosUseCase
 import java.io.File
 import kotlin.random.Random
 
@@ -29,66 +31,31 @@ class ProfileViewModel(
     private val isOwnProfile: Boolean,
 ) : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
 
-    companion object {
-        private const val PAGE_SIZE = 10
-        private const val SEARCH_DEBOUNCE_MS = 400L
-
-        fun factory(userId: Int, isOwnProfile: Boolean) = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                @Suppress("UNCHECKED_CAST")
-                return ProfileViewModel(userId, isOwnProfile) as T
-            }
-        }
-    }
-
     private var searchJob: Job? = null
 
-    private val likedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
-            is DivoResult.Success -> {
-                setState {
-                    copy(statistic = state.value.statistic.copy(followers = result.value.liked.totalCount))
-                }
-                PaginatedResult(
-                    items = result.value.liked.items,
-                    totalCount = result.value.liked.totalCount
-                )
-            }
-            else -> {
-                throw Exception(result.getErrorMessage())
-            }
-        }
-    }
+    private val eventPaginator = GetEventListUseCase().paginator
 
-    private val viewedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
-            is DivoResult.Success -> {
-                setState {
-                    copy(statistic = state.value.statistic.copy(views = result.value.viewed.totalCount))
-                }
-                PaginatedResult(
-                    items = result.value.viewed.items,
-                    totalCount = result.value.viewed.totalCount
-                )
-            }
-            else -> throw Exception(result.getErrorMessage())
-        }
-    }
+    private val portfolioPaginator = GetUserGalleryUseCase(
+        userId = userId
+    ).paginator
 
-    private val followedPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-        when (val result = DivoApi.userRepository.getEngagement(userId = state.value.userId, offset = offset, limit = limit)) {
-            is DivoResult.Success -> {
-                setState {
-                    copy(statistic = state.value.statistic.copy(following = result.value.followed.totalCount))
-                }
-                PaginatedResult(
-                    items = result.value.followed.items,
-                    totalCount = result.value.followed.totalCount
-                )
-            }
-            else -> throw Exception(result.getErrorMessage())
-        }
-    }
+    private val videoPaginator = GetUserVideosUseCase(
+        userId = userId
+    ).paginator
+
+    private val engagement = EngagementInteractor(
+        userId = userId,
+        limit = PAGE_SIZE,
+        onFollowersCount = { count ->
+            setState { copy(statistic = statistic.copy(followers = count)) }
+        },
+        onViewsCount = { count ->
+            setState { copy(statistic = statistic.copy(views = count)) }
+        },
+        onFollowingCount = { count ->
+            setState { copy(statistic = statistic.copy(following = count)) }
+        },
+    )
 
     override fun createInitialState(): ProfileViewState {
         return ProfileViewState(
@@ -114,39 +81,6 @@ class ProfileViewModel(
 //        }
 //    }
 
-    private val portfolioPaginator = OffsetPaginator(limit = 12) { offset, limit ->
-        when (val result = DivoApi.userRepository.getUserGalleryList(
-            userId = state.value.userId,
-            limit = limit,
-            offset = offset,
-        )) {
-            is DivoResult.Success -> {
-                val data = result.value
-                PaginatedResult(
-                    items = data.items,
-                    totalCount = data.pagination?.totalCount ?: data.items.size
-                )
-            }
-            else -> throw Exception(result.getErrorMessage())
-        }
-    }
-
-    private val videoPaginator = OffsetPaginator(limit = 20) { offset, limit ->
-        when (val result = DivoApi.publicationRepository.getPublicationList(
-            offset = offset,
-            limit = limit,
-            userId = state.value.userId
-        )) {
-            is DivoResult.Success -> {
-                PaginatedResult(
-                    items = result.value.items.filter { it.files.any { f -> f.isVideo } },
-                    totalCount = result.value.pagination?.totalCount ?: result.value.items.size
-                )
-            }
-            else -> throw Exception(result.getErrorMessage())
-        }
-    }
-
     init {
         loadEngagement()
     }
@@ -164,6 +98,7 @@ class ProfileViewModel(
             is ProfileIntent.OnLoadMoreSearchResults -> {}//loadMoreSearchResults()
             is ProfileIntent.OnLoadMorePortfolio -> loadMorePortfolio()
             is ProfileIntent.OnLoadMoreVideos -> viewModelScope.launch { videoPaginator.loadMore() }
+            ProfileIntent.OnLoadMoreEvents -> viewModelScope.launch { eventPaginator.loadMore() }
         }
     }
 
@@ -173,16 +108,18 @@ class ProfileViewModel(
             launch { portfolioPaginator.loadInitial() }
             launch { loadSimilarProfiles() }
             launch { videoPaginator.loadInitial() }
+            launch { eventPaginator.loadInitial() }
             observeEngagementPaginators()
             //observeSearchPaginator()
             observeGalleryListPaginator()
             observeVideoPaginator()
+            observeEvents()
         }
     }
 
     private fun observeEngagementPaginators() {
         viewModelScope.launch {
-            likedPaginator.state.collect { pState ->
+            engagement.likedPaginator.state.collect { pState ->
                 setState {
                     copy(
                         likedItems = pState.items,
@@ -193,7 +130,7 @@ class ProfileViewModel(
             }
         }
         viewModelScope.launch {
-            viewedPaginator.state.collect { pState ->
+            engagement.viewedPaginator.state.collect { pState ->
                 setState {
                     copy(
                         viewedItems = pState.items,
@@ -204,7 +141,7 @@ class ProfileViewModel(
             }
         }
         viewModelScope.launch {
-            followedPaginator.state.collect { pState ->
+            engagement.followedPaginator.state.collect { pState ->
                 setState {
                     copy(
                         followedItems = pState.items,
@@ -358,8 +295,26 @@ class ProfileViewModel(
                 val result = DivoApi.userRepository.getCurrentUserInfo()
                 if (result !is DivoResult.Success) {
                     val errorMsg = result.getErrorMessage()
-                    setState { copy(isLoading = false, errorMessage = errorMsg) }
+                    setState { copy(isLoading = false) }
                     sendEffect(ProfileEffect.ShowError(errorMsg))
+                }
+            }
+        }
+    }
+
+    private fun observeEvents() {
+        viewModelScope.launch {
+            eventPaginator.state.collect { paginatorState ->
+                setState {
+                    copy(
+                        events = paginatorState.items,
+                        isLoadingEvents = paginatorState.isLoading,
+                        isLoadingMoreEvents = paginatorState.isLoadingMore,
+                        hasMoreEvents = paginatorState.hasMore,
+                    )
+                }
+                paginatorState.error?.let {
+                    sendEffect(ProfileEffect.ShowError(it))
                 }
             }
         }
@@ -391,9 +346,9 @@ class ProfileViewModel(
     private fun loadEngagement() {
         viewModelScope.launch {
             listOf(
-                async { likedPaginator.loadInitial() },
-                async { viewedPaginator.loadInitial() },
-                async { followedPaginator.loadInitial() }
+                async { engagement.likedPaginator.loadInitial() },
+                async { engagement.viewedPaginator.loadInitial() },
+                async { engagement.followedPaginator.loadInitial() }
             ).awaitAll()
         }
     }
@@ -401,9 +356,9 @@ class ProfileViewModel(
     fun loadMoreEngagement(statsType: StatsType) {
         viewModelScope.launch {
             when (statsType) {
-                StatsType.LIKES -> likedPaginator.loadMore()
-                StatsType.VIEWS -> viewedPaginator.loadMore()
-                StatsType.SAVES -> followedPaginator.loadMore()
+                StatsType.LIKES -> engagement.likedPaginator.loadMore()
+                StatsType.VIEWS -> engagement.viewedPaginator.loadMore()
+                StatsType.SAVES -> engagement.followedPaginator.loadMore()
             }
         }
     }
@@ -540,5 +495,17 @@ class ProfileViewModel(
         }
 
         sendEffect(ProfileEffect.OpenUrl(url))
+    }
+
+    companion object {
+        private const val PAGE_SIZE = 10
+        private const val SEARCH_DEBOUNCE_MS = 400L
+
+        fun factory(userId: Int, isOwnProfile: Boolean) = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return ProfileViewModel(userId, isOwnProfile) as T
+            }
+        }
     }
 }

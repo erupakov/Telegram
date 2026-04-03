@@ -46,8 +46,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.formattedAge
-import org.telegram.divo.common.toCountryFlagEmoji
+import org.telegram.divo.common.utils.formattedAge
+import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.components.DivoChip
 import org.telegram.divo.components.TelegramUserAvatar
 import org.telegram.divo.screen.profile.ProfileViewState

@@ -35,3 +35,7 @@ data class GalleryItem(
     val url: String,
     val isVideo: Boolean,
 )
+
+object GallerySourceHolder {
+    var pendingSource: GallerySource? = null
+}

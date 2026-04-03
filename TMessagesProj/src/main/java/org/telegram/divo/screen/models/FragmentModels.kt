@@ -5,7 +5,7 @@ import android.view.View
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
-import org.telegram.divo.common.AppImageLoader
+import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.MainTabsActivity
 import org.telegram.ui.MainTabsActivityController
@@ -24,7 +24,6 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
     }
 
     override fun createView(context: Context): View {
-        //AppImageLoader.init(context)
         actionBar.setAddToContainer(false)
 
         fragmentView = ComposeView(context).apply {
@@ -32,6 +31,7 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
                 ModelsNavGraph(
                     onNavControllerReady = { navController ->
                         this@FragmentModels.modelsNavController = navController
+                        DivoDeeplinkDispatcher.modelsNavController = navController
                         navController.addOnDestinationChangedListener { _, destination, _ ->
                             isOnHomeScreen.value = destination.route == ModelsRoute.Models.route
                             mainTabsController?.setTabsVisible(isOnHomeScreen.value)

@@ -7,6 +7,7 @@ import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.EngagementUser
+import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.Publication
 import org.telegram.divo.entity.SocialNetworkType
@@ -30,6 +31,11 @@ data class ProfileViewState(
     val isLoadingVideos: Boolean = false,
     val isLoadingMoreVideos: Boolean = false,
     val hasMoreVideos: Boolean = true,
+
+    val events: List<Event> = emptyList(),
+    val isLoadingEvents: Boolean = false,
+    val isLoadingMoreEvents: Boolean = false,
+    val hasMoreEvents: Boolean = true,
 
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -149,6 +155,7 @@ sealed class ProfileIntent : ViewIntent {
     object OnLoadMoreSearchResults : ProfileIntent()
     object OnLoadMorePortfolio : ProfileIntent()
     object OnLoadMoreVideos : ProfileIntent()
+    object OnLoadMoreEvents : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {

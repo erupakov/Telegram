@@ -1,6 +1,7 @@
 package org.telegram.divo.screen.models
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -8,14 +9,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.screen.gallery.GallerySource
+import org.telegram.divo.screen.gallery.GallerySourceHolder
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
 import org.telegram.divo.screen.profile.ProfileNavGraph
-
-object GallerySourceHolder {
-    var pendingSource: GallerySource? = null
-}
 
 sealed class ModelsRoute(val route: String) {
     data object Models : ModelsRoute("models")
@@ -25,12 +24,12 @@ sealed class ModelsRoute(val route: String) {
         fun createRoute(userId: Int) = "profile/$userId"
     }
 
-    object GalleryViewer : ModelsRoute("gallery/{sourceType}/{userId}/{initialIndex}") {
-        const val ROUTE = "gallery/{sourceType}/{userId}/{initialIndex}"
+    object GalleryViewer : ModelsRoute("gallery/{sourceType}") {
+        const val ROUTE = "gallery/{sourceType}"
 
         fun createRoute(items: List<GalleryItem>, initialIndex: Int): String {
             GallerySourceHolder.pendingSource = GallerySource.Feed(items.drop(1), initialIndex)
-            return "gallery/feed/0/$initialIndex"
+            return "gallery/feed"
         }
     }
 }
@@ -42,7 +41,17 @@ fun ModelsNavGraph(
 ) {
     val nav = rememberNavController()
 
-    LaunchedEffect(nav) { onNavControllerReady(nav) }
+    LaunchedEffect(nav) {
+        onNavControllerReady(nav)
+    }
+
+    LaunchedEffect(DivoDeeplinkDispatcher.pendingProfileId) {
+        val pendingId = DivoDeeplinkDispatcher.pendingProfileId
+        if (pendingId != null) {
+            nav.navigate(ModelsRoute.Profile.createRoute(pendingId))
+            DivoDeeplinkDispatcher.consumePendingProfileId()
+        }
+    }
 
     NavHost(
         navController = nav,
@@ -65,7 +74,7 @@ fun ModelsNavGraph(
             arguments = listOf(navArgument("userId") { type = NavType.IntType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getInt("userId", -1)
-                ?.takeIf { it != -1 } ?: return@composable
+                ?.takeIf { it != -1 } ?: -1
 
             ProfileNavGraph(
                 userId = userId,
@@ -78,20 +87,19 @@ fun ModelsNavGraph(
             route = ModelsRoute.GalleryViewer.ROUTE,
             arguments = listOf(
                 navArgument("sourceType") { type = NavType.StringType },
-                navArgument("userId") { type = NavType.IntType },
-                navArgument("initialIndex") { type = NavType.IntType },
             )
         ) { backStackEntry ->
             val sourceType = backStackEntry.arguments?.getString("sourceType") ?: return@composable
-            val userId = backStackEntry.arguments?.getInt("userId") ?: 0
-            val initialIndex = backStackEntry.arguments?.getInt("initialIndex") ?: 0
-
             val source = when (sourceType) {
-                "portfolio" -> GallerySource.Portfolio(userId, initialIndex)
-                "video" -> GallerySource.Video(userId, initialIndex)
                 "feed" -> GallerySourceHolder.pendingSource
                     ?: return@composable
                 else -> return@composable
+            }
+
+            DisposableEffect(Unit) {
+                onDispose {
+                    GallerySourceHolder.pendingSource = null
+                }
             }
 
             GalleryViewerScreen(

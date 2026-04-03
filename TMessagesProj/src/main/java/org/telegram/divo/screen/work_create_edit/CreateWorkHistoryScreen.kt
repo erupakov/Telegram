@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.rememberGalleryLauncher
-import org.telegram.divo.common.toFormattedDate
+import org.telegram.divo.common.utils.toFormattedDate
 import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.UIButtonNew

@@ -1,7 +1,5 @@
 package org.telegram.divo.screen.gallery
 
-import android.content.Intent
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -20,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -55,7 +52,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.DivoAsyncImage
@@ -65,7 +61,6 @@ import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.PopupMenuItem
-import org.telegram.divo.screen.profile.ProfileEffect
 import org.telegram.messenger.R
 import kotlin.math.abs
 
@@ -79,7 +74,6 @@ fun GalleryViewerScreen(
     LaunchedEffectOnce {
         viewModel.setIntent(GalleryIntent.OnLoad(source))
     }
-
     val context = LocalContext.current
     val uiState by viewModel.state.collectAsState()
 
@@ -201,9 +195,7 @@ private fun GalleryPagerContent(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
             beyondViewportPageCount = 2,
-            key = { page ->
-                if (page < uiState.items.size) "${uiState.items[page].url}$page" else "loader"
-            }
+            key = { page -> "${uiState.items[page].url}$page" }
         ) { page ->
             if (page >= uiState.items.size) {
                 Box(
@@ -324,7 +316,7 @@ private fun ThumbnailStrip(
         ) {
             itemsIndexed(
                 items = items,
-                key = { _, item -> "thumb_${item.url}" }
+                key = { index, item -> "thumb_${item.url}$index" }
             ) { index, item ->
                 val isSelected = index == currentPage
 

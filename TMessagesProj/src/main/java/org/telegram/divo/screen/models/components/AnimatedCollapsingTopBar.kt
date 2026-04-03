@@ -22,11 +22,11 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,7 +88,12 @@ fun AnimatedCollapsingTopBar(
                         },
                     contentAlignment = Alignment.BottomStart
                 ) {
-                    TextTitle("MODELS")
+                    Text(
+                        modifier = Modifier.offset(y = 4.dp),
+                        text = stringResource(R.string.Models).uppercase(),
+                        color = AppTheme.colors.textPrimary,
+                        style = AppTheme.typography.displayLarge
+                    )
                 }
 
                 val topBarItemsAlpha = if (collapseFraction >= 1f) 1f else 0f

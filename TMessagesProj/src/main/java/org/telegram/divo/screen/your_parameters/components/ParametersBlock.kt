@@ -24,8 +24,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.formatWeird
-import org.telegram.divo.common.formattedAge
+import org.telegram.divo.common.utils.formatWeird
+import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
