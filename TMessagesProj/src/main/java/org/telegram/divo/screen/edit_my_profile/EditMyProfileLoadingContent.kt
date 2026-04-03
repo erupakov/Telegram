@@ -19,9 +19,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.telegram.divo.components.shimmer
 
-@Preview
 @Composable
-fun EditMyProfileLoadingContent() {
+fun EditMyProfileLoadingContent(
+    isModel: Boolean
+) {
     val color = Color.White.copy(alpha = 0.05f)
     Column(
         modifier = Modifier
@@ -29,7 +30,10 @@ fun EditMyProfileLoadingContent() {
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.height(24.dp))
+        if (isModel) {
+            Spacer(Modifier.height(24.dp))
+        }
+
         Box(
             modifier = Modifier
                 .size(94.dp)
@@ -37,14 +41,6 @@ fun EditMyProfileLoadingContent() {
                 .shimmer(highlightColor = color),
         )
         Spacer(Modifier.height(32.dp))
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .size(46.dp)
-                .clip(RoundedCornerShape(41.dp))
-                .shimmer(highlightColor = color),
-        )
-        Spacer(Modifier.height(12.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()

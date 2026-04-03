@@ -61,6 +61,7 @@ import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.PopupMenuItem
+import org.telegram.divo.components.RoundedButton
 import org.telegram.messenger.R
 import kotlin.math.abs
 
@@ -228,14 +229,16 @@ private fun GalleryPagerContent(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .statusBarsPadding(),
+                    .statusBarsPadding()
+                    .padding(top = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                BackButton(
+                RoundedButton(
                     modifier = Modifier.padding(start = 16.dp),
-                    onBackClicked = onBack
+                    onClick = onBack
                 )
+
                 if (isOwnProfile) {
                     IconButton(onClick = { showDropdownMenu = true }) {
                         Icon(Icons.Default.MoreVert, contentDescription = null, tint = Color.White)

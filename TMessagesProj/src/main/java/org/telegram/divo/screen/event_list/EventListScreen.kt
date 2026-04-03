@@ -59,10 +59,6 @@ fun EventListScreen(
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(true){
-       // viewModel.getEventList(null)
-    }
-
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect { action ->
             when (action) {
@@ -179,11 +175,8 @@ private fun EventListContent(
                             modifier = Modifier
                                 .aspectRatio(0.8f)
                                 .fillMaxWidth(),
-                            eventName = event.title.orEmpty(),
-                            eventImageUrl = event.creator?.avatar?.fullUrl.orEmpty(),
+                            event = event,
                             isModel = state.isModel,
-                            ctaText = "Apply",
-                            ctaType = EventCtaType.Apply,
                             onCardClick = { onEventClick(event.id) },
                             onCtaClicked = { onCtaClick(event.id) },
                         )
@@ -231,7 +224,7 @@ private fun TopBarIconFilterButton(
                 tint = Color(0xFFBF7A54),
             )
         }
-        if(filterCount!= null && filterCount > 1){
+        if (filterCount!= null && filterCount > 1) {
             Card(modifier = Modifier.size(12.dp), shape = CircleShape){
                 Text("9+")
             }

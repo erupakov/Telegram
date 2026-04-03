@@ -9,12 +9,16 @@ data class Event(
     val id: Int,
     val title: String?,
     val description: String?,
+    val date: String,
+    val dateTo: String,
+    val city: String,
+    //val countryCode: String,
     val type: String?,
     val likesCount: Int,
     val appliesCount: Int,
     val isLikedByUser: Boolean,
     val creator: EventCreator?,
-    val files: List<EventFile>
+    val files: List<EventFile>,
 )
 
 data class EventCreator(

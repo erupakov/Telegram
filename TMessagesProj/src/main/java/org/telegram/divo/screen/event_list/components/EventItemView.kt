@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.event_list.components
 
+import android.content.Context
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +18,17 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,18 +36,22 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
+import kotlinx.coroutines.delay
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.utils.toEventDisplayDate
+import org.telegram.divo.entity.Event
 import org.telegram.divo.screen.event_list.EventCtaType
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun EventItemView(
     modifier: Modifier = Modifier,
-    eventName: String,
+    event: Event,
     isModel: Boolean,
-    eventImageUrl: String = "",
-    ctaText: String,
-    ctaType: EventCtaType,
     onCardClick: () -> Unit = {},
     onCtaClicked: () -> Unit = {},
 ) {
@@ -54,7 +65,7 @@ fun EventItemView(
 
         Box {
             EventItemBackground(
-                url = eventImageUrl,
+                url = event.creator?.avatar?.fullUrl.orEmpty(),
                 hazeState = hazeState
             )
 
@@ -65,7 +76,7 @@ fun EventItemView(
                     .align(Alignment.BottomStart),
             ) {
                 Text(
-                    text = eventName.uppercase(),
+                    text = event.title.orEmpty().uppercase(),
                     style = AppTheme.typography.textEventTitle,
                     color = AppTheme.colors.textColor,
                     maxLines = 2,
@@ -73,7 +84,7 @@ fun EventItemView(
                 )
 
                 Text(
-                    text = "June 26 · 5:00 PM · \uD83C\uDDFA\uD83C\uDDF8 New York",
+                    text = event.date.toEventDisplayDate(city = event.city),
                     style = AppTheme.typography.textItemDate,
                     color = AppTheme.colors.textColor,
                     maxLines = 1,
@@ -88,12 +99,11 @@ fun EventItemView(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
 
-                    DurationChip(modifier = Modifier, text = "4d : 4h : 0m", hazeState = hazeState)
+                    DurationChip(dateFrom = event.date, dateTo = event.dateTo, hazeState = hazeState)
 
                     if (isModel) {
                         EventCtaButton(
-                            text = ctaText,
-                            type = ctaType,
+                            text = stringResource(R.string.ButtonApply),
                             onClick = onCtaClicked,
                         )
                     }
@@ -106,12 +116,25 @@ fun EventItemView(
 
 @Composable
 private fun DurationChip(
-    modifier: Modifier,
-    text: String,
+    dateFrom: String,
+    dateTo: String,
     hazeState: HazeState,
 ) {
+    val context = LocalContext.current
+
+    var countdownText by remember {
+        mutableStateOf(resolveLabel(context, dateFrom, dateTo))
+    }
+
+    LaunchedEffect(dateFrom, dateTo) {
+        while (true) {
+            countdownText = resolveLabel(context, dateFrom, dateTo)
+            delay(60_000L)
+        }
+    }
+
     Box(
-        modifier = modifier
+        modifier = Modifier
             .height(22.dp)
             .clip(RoundedCornerShape(12.dp))
             .hazeEffect(
@@ -125,8 +148,10 @@ private fun DurationChip(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            modifier = Modifier.padding(horizontal = 12.dp).offset(y = 1.dp),
-            text = text,
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .offset(y = 1.dp),
+            text = countdownText,
             style = AppTheme.typography.helveticaNeueRegular,
             fontSize = 12.sp,
             color = AppTheme.colors.textColor,
@@ -134,22 +159,58 @@ private fun DurationChip(
     }
 }
 
+private fun resolveLabel(context: Context, dateFrom: String, dateTo: String): String {
+    val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    val from = runCatching { formatter.parse(dateFrom) }.getOrNull() ?: return ""
+    val to = runCatching { formatter.parse(dateTo) }.getOrNull() ?: return ""
+    val now = Date()
+
+    return when {
+        now.after(to) -> context.getString(R.string.CountdownFinished)
+        now.after(from) -> context.getString(R.string.CountdownStarted)
+        else -> calculateCountdown(context, dateFrom, dateTo)
+            ?: context.getString(R.string.CountdownFinished)
+    }
+}
+
+private fun calculateCountdown(context: Context, dateFrom: String, dateTo: String): String? {
+    return try {
+        val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val from = formatter.parse(dateFrom) ?: return null
+        val to = formatter.parse(dateTo) ?: return null
+        val now = Date()
+
+        when {
+            now.before(from) -> {
+                val diffMillis = from.time - now.time
+                formatCountdown(context, diffMillis)
+            }
+            now.after(to) -> null
+            else -> null
+        }
+    } catch (e: Exception) {
+        null
+    }
+}
+
+private fun formatCountdown(context: Context, diffMillis: Long): String {
+    val totalMinutes = diffMillis / 1000 / 60
+    val days = totalMinutes / (60 * 24)
+    val hours = (totalMinutes % (60 * 24)) / 60
+    val minutes = totalMinutes % 60
+    return context.getString(R.string.CountdownFormat, days, hours, minutes)
+}
+
 @Composable
 private fun EventCtaButton(
     text: String,
-    type: EventCtaType,
     onClick: () -> Unit,
 ) {
-    val (backgroundColor, contentColor) = when (type) {
-        EventCtaType.Apply -> AppTheme.colors.accentOrange to AppTheme.colors.buttonTextColor
-        EventCtaType.MyEvent -> Color(0xFFF2F2F2) to Color(0xFF2F2F2F)
-    }
-
     Surface(
         modifier = Modifier
             .height(22.dp)
             .clickable(onClick = onClick),
-        color = backgroundColor,
+        color = AppTheme.colors.accentOrange,
         shape = RoundedCornerShape(12.dp),
     ) {
         Box(
@@ -160,7 +221,7 @@ private fun EventCtaButton(
                 modifier = Modifier.offset(y = 1.dp),
                 text = text,
                 style = AppTheme.typography.textButtonSmall,
-                color = contentColor,
+                color = AppTheme.colors.onBackground,
             )
         }
     }

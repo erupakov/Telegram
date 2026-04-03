@@ -8,6 +8,7 @@ import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.EventCreator
 import org.telegram.divo.entity.EventFile
 import org.telegram.divo.entity.EventList
+import org.telegram.divo.entity.PreviousEvent
 
 class EventListResponse(
     @SerializedName("data") val data: EventListDataDto?,
@@ -27,9 +28,13 @@ class EventDto(
     @SerializedName("type") val type: String?,
     @SerializedName("likesCount") val likesCount: Int,
     @SerializedName("appliesCount") val appliesCount: Int,
+    @SerializedName("date") val date: String?,
+    @SerializedName("dateTo") val dateTo: String?,
+    @SerializedName("city") val city: String?,
+    //@SerializedName("countryCode") val countryCode: String?,
     @SerializedName("isLikedByUser") val isLikedByUser: Boolean,
     @SerializedName("creator") val creator: EventCreatorDto?,
-    @SerializedName("files") val files: List<EventFileDto>?
+    @SerializedName("files") val files: List<EventFileDto>?,
 )
 
 class EventCreatorDto(
@@ -48,6 +53,15 @@ class EventFileDto(
     @SerializedName("extension") val extension: String
 )
 
+class PreviousEventDto(
+    @SerializedName("id") val id: Int,
+    @SerializedName("title") val title: String?,
+    @SerializedName("date") val date: String?,
+    @SerializedName("photo") val photo: PhotoDto?,
+    @SerializedName("type") val type: EventTypeDto?,
+    @SerializedName("address") val address: EventAddressDto?
+)
+
 fun EventListResponse.toEntity() = EventList(
     items = data?.items?.map { it.toEntity() } ?: emptyList(),
     pagination = data?.pagination?.meta?.toEntity()
@@ -60,9 +74,12 @@ fun EventDto.toEntity() = Event(
     type = type,
     likesCount = likesCount,
     appliesCount = appliesCount,
+    date = date.orEmpty(),
+    dateTo = dateTo.orEmpty(),
+    city = city.orEmpty(),
     isLikedByUser = isLikedByUser,
     creator = creator?.toEntity(),
-    files = files?.map { it.toEntity() } ?: emptyList()
+    files = files?.map { it.toEntity() } ?: emptyList(),
 )
 
 fun EventCreatorDto.toEntity() = EventCreator(
@@ -79,4 +96,13 @@ fun EventFileDto.toEntity() = EventFile(
     fullUrl = fullUrl,
     fileUuid = fileUuid,
     extension = extension
+)
+
+fun PreviousEventDto.toEntity() = PreviousEvent(
+    id = id,
+    title = title,
+    date = date.orEmpty(),
+    photo = photo?.toEntity(),
+    type = type?.title,
+    address = address?.toEntity()
 )

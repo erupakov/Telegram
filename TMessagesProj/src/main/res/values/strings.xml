@@ -84,14 +84,14 @@
     </string-array>
 
     <!--edit my profile screen-->
-    <string name="FirstNameEditProfileScreen">First name</string>
-    <string name="LastNameEditProfileScreen">Last name</string>
+    <string name="FullNameEditProfileScreen">Full name</string>
     <string name="BiographyPlaceholder">France\'s Top Model…</string>
     <string name="Biography">Biography</string>
     <string name="SaveEditProfileScreen">Save</string>
     <string name="TabBiography">BIOGRAPHY</string>
     <string name="TabAppearance">APPEARANCE</string>
     <string name="TabExperience">EXPERIENCE</string>
+    <string name="MyAgencyProfile">My Agency Profile</string>
 
     <!--work experience screen-->
     <string name="CreateExperience">CREATE EXPERIENCE</string>
@@ -133,6 +133,9 @@
     <string name="ParametersForApplying">Parameters for Applying</string>
     <string name="AgeRange">%1$d-%2$d</string>
     <string name="PreviousEvents">Previous events</string>
+    <string name="CountdownFormat">%1$dd : %2$dh : %3$dm</string>
+    <string name="CountdownStarted">Started</string>
+    <string name="CountdownFinished">Finished</string>
     <plurals name="ParticipantsCount">
         <item quantity="one">%d participant</item>
         <item quantity="other">%d participants</item>

@@ -24,6 +24,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -58,6 +59,7 @@ fun ToolBar(
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     Box(
         modifier = modifier
@@ -113,6 +115,7 @@ fun ToolBar(
                 onClick = {
                     DivoSharingHelper.share(
                         context = context,
+                        scope = scope,
                         type = DivoShareType.PROFILE,
                         id = uiState.userInfo.id,
                         customMessage = "${uiState.userInfo.fullName} - ${uiState.userInfo.roleLabel}",
@@ -120,7 +123,7 @@ fun ToolBar(
                     )
                 }
             ) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Menu", tint = Color.White)
+                Icon(Icons.Default.MoreVert, contentDescription = null, tint = Color.White)
             }
         }
     }

@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,14 +42,17 @@ import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.entity.Event
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
 
 @Composable
 fun EventsColumn(
     events: List<Event>,
+    isOwnProfile: Boolean,
+    isModel: Boolean,
     isLoading: Boolean,
     isLoadingMore: Boolean,
     onLoadMore: () -> Unit,
-    onClicked: (Int) -> Unit,
+    onEventClicked: (Int) -> Unit,
 ) {
     val lazyListState = rememberLazyListState()
     val shouldLoadMore by remember {
@@ -82,7 +86,9 @@ fun EventsColumn(
         ) {
             EventItem(
                 item = it,
-                onClicked = onClicked
+                isOwnProfile = isOwnProfile,
+                isModel = isModel,
+                onEventClicked = onEventClicked
             )
         }
         if (isLoadingMore) {
@@ -101,7 +107,9 @@ fun EventsColumn(
 @Composable
 private fun EventItem(
     item: Event,
-    onClicked: (Int) -> Unit,
+    isOwnProfile: Boolean,
+    isModel: Boolean,
+    onEventClicked: (Int) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -111,7 +119,7 @@ private fun EventItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.weight(1f).clickableWithoutRipple { onClicked(item.id) },
+            modifier = Modifier.weight(1f).clickableWithoutRipple { onEventClicked(item.id) },
             verticalAlignment = Alignment.CenterVertically,
         ) {
             DivoAsyncImage(
@@ -141,15 +149,28 @@ private fun EventItem(
             }
         }
 
-        UIButtonNew(
-            modifier = Modifier
-                .height(32.dp),
-            text = "Apply",
-            textStyle = AppTheme.typography.textButton.copy(
-                fontSize = 14.sp
-            ),
-            shape = RoundedCornerShape(6.dp),
-            onClick = {}
-        )
+        if (isOwnProfile) {
+            UIButtonNew(
+                modifier = Modifier
+                    .height(32.dp),
+                text = stringResource(R.string.ButtonEdit),
+                textStyle = AppTheme.typography.textButton.copy(
+                    fontSize = 14.sp
+                ),
+                onClick = {}
+            )
+        }
+
+        if (isModel && !isOwnProfile) {
+            UIButtonNew(
+                modifier = Modifier
+                    .height(32.dp),
+                text = stringResource(R.string.ButtonApply),
+                textStyle = AppTheme.typography.textButton.copy(
+                    fontSize = 14.sp
+                ),
+                onClick = {}
+            )
+        }
     }
 }
