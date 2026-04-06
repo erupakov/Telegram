@@ -15,7 +15,6 @@ data class EventListViewState(
     val userFull: UserInfo? = null,
     val isLoading: Boolean = true,
     val isSaved: Boolean = false,
-    val errorMessage: String? = null,
 ) : ViewState
 
 sealed class EditMyProfileIntent : ViewIntent {
@@ -38,4 +37,5 @@ sealed class EditMyProfileIntent : ViewIntent {
 sealed class Effect : ViewEffect {
     data object NavigateBack : Effect()
     data object SaveSuccess : Effect()
+    data class ShowError(val message: String) : Effect()
 }

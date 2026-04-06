@@ -17,17 +17,13 @@ class EventListViewModel :
     private val eventPaginator = GetEventListUseCase(limit = 10).paginator
 
     init {
-        observeEvents()
-        loadRoleInfo()
         setIntent(EventListIntent.OnLoad)
     }
 
     override fun handleIntent(intent: EventListIntent) {
         when (intent) {
             EventListIntent.OnLoad -> {
-                viewModelScope.launch {
-                    eventPaginator.loadInitial()
-                }
+                loadData()
             }
             EventListIntent.OnLoadMore -> {
                  viewModelScope.launch {
@@ -42,6 +38,14 @@ class EventListViewModel :
                 EventListEffect.NavigateToEventDetails(intent.eventId)
             )
             EventListIntent.OnSearchClicked -> sendEffect(EventListEffect.NavigateToSearch)
+        }
+    }
+
+    fun loadData() {
+        viewModelScope.launch {
+            observeEvents()
+            loadRoleInfo()
+            eventPaginator.loadInitial()
         }
     }
 

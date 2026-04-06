@@ -23,16 +23,12 @@ import org.telegram.divo.screen.models.ModelsViewIntent.OnSearchClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnAddStoryClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnBookmarkClick
 import org.telegram.divo.screen.models.ModelsViewIntent.LoadMoreAllUsers
-import org.telegram.messenger.UserConfig
-import org.telegram.tgnet.TLRPC
 
 class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
 
     companion object {
         private const val PAGE_SIZE = 5
     }
-
-    private val currentAccount = UserConfig.selectedAccount
 
     override fun createInitialState(): ModelsViewState = ModelsViewState()
 
@@ -127,26 +123,6 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                 currentPaginator().loadInitial()
             }
         }
-    }
-
-    private fun mapUserProfileToModel(profile: TLRPC.TL_userProfile): Model {
-        val user = profile.user
-        val firstName = user?.first_name.orEmpty()
-        val lastName = user?.last_name.orEmpty()
-        val roleLabel = when (profile.role) {
-            is TLRPC.TL_agencyRoleAgent -> "Agent"
-            is TLRPC.TL_agencyRoleBooker -> "Booker"
-            is TLRPC.TL_agencyRoleScout -> "Scout"
-            is TLRPC.TL_agencyRoleOwner -> "Owner"
-            is TLRPC.TL_agencyRoleAll -> "All"
-            else -> ""
-        }
-        return Model(
-            id = profile.user_id.toString(),
-            name = "$firstName $lastName".trim(),
-            roleLabel = roleLabel,
-            userProfile = profile
-        )
     }
 
     private fun reactToModel(modelId: String, emotion: Emotions) {

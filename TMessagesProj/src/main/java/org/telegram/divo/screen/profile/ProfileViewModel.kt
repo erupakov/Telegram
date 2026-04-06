@@ -36,27 +36,29 @@ class ProfileViewModel(
 
     private val eventPaginator = GetEventListUseCase().paginator
 
-    private val portfolioPaginator = GetUserGalleryUseCase(
-        userId = userId
-    ).paginator
+    private val portfolioPaginator by lazy {
+        GetUserGalleryUseCase(userId = state.value.userId).paginator
+    }
 
-    private val videoPaginator = GetUserVideosUseCase(
-        userId = userId
-    ).paginator
+    private val videoPaginator by lazy {
+        GetUserVideosUseCase(userId = state.value.userId).paginator
+    }
 
-    private val engagement = EngagementInteractor(
-        userId = userId,
-        limit = PAGE_SIZE,
-        onFollowersCount = { count ->
-            setState { copy(statistic = statistic.copy(followers = count)) }
-        },
-        onViewsCount = { count ->
-            setState { copy(statistic = statistic.copy(views = count)) }
-        },
-        onFollowingCount = { count ->
-            setState { copy(statistic = statistic.copy(following = count)) }
-        },
-    )
+    private val engagement by lazy {
+        EngagementInteractor(
+            userId = state.value.userId,
+            limit = PAGE_SIZE,
+            onFollowersCount = { count ->
+                setState { copy(statistic = statistic.copy(followers = count)) }
+            },
+            onViewsCount = { count ->
+                setState { copy(statistic = statistic.copy(views = count)) }
+            },
+            onFollowingCount = { count ->
+                setState { copy(statistic = statistic.copy(following = count)) }
+            },
+        )
+    }
 
     override fun createInitialState(): ProfileViewState {
         return ProfileViewState(
@@ -82,10 +84,6 @@ class ProfileViewModel(
 //        }
 //    }
 
-    init {
-        loadEngagement()
-    }
-
     override fun handleIntent(intent: ProfileIntent) {
         when (intent) {
             is ProfileIntent.OnLoad -> loadData()
@@ -105,7 +103,11 @@ class ProfileViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            launch { loadUserProfile(isOwnProfile = isOwnProfile) }
+            loadUserProfile(isOwnProfile = isOwnProfile)
+            val validUserId = state.first { it.userId > 0 && !it.isLoading }.userId
+            if (validUserId <= 0) return@launch
+
+            launch { loadEngagement() }
             launch { portfolioPaginator.loadInitial() }
             launch { loadSimilarProfiles() }
             launch { videoPaginator.loadInitial() }
@@ -284,6 +286,7 @@ class ProfileViewModel(
                         copy(
                             isLoading = false,
                             userInfo = userData,
+                            userId = userData.id,
                             physicalParams = params,
                         )
                     }
@@ -295,7 +298,7 @@ class ProfileViewModel(
                 val result = DivoApi.userRepository.getCurrentUserInfo()
                 if (result !is DivoResult.Success) {
                     val errorMsg = result.getErrorMessage()
-                    setState { copy(isLoading = false) }
+                    setState { copy(isLoading = false, errorMessage = errorMsg) }
                     sendEffect(ProfileEffect.ShowError(errorMsg))
                 }
             }
@@ -338,6 +341,7 @@ class ProfileViewModel(
                     copy(
                         isLoading = false,
                         userInfo = userData,
+                        userId = userData.id,
                         physicalParams = mapPhysicalParams(userData),
                     )
                 }
@@ -402,7 +406,7 @@ class ProfileViewModel(
                 }
                 else -> {
                     setState {
-                        copy(mediaUploading = false, errorMessage = result.getErrorMessage())
+                        copy(mediaUploading = false)
                     }
                     sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
                 }
@@ -432,7 +436,7 @@ class ProfileViewModel(
             when (result) {
                 is DivoResult.Success -> setState { copy(mediaUploading = false) }
                 else -> {
-                    setState { copy(mediaUploading = false, errorMessage = result.getErrorMessage()) }
+                    setState { copy(mediaUploading = false) }
                     sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
                 }
             }
@@ -465,7 +469,7 @@ class ProfileViewModel(
                 }
                 else -> {
                     setState {
-                        copy(backgroundChanging = false, errorMessage = result.getErrorMessage())
+                        copy(backgroundChanging = false)
                     }
                     sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
                 }

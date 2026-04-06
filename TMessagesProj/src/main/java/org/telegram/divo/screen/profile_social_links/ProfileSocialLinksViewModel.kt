@@ -5,19 +5,12 @@ import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.SocialNetworkType
 
 class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>() {
 
     override fun createInitialState(): UiViewState = UiViewState()
-
-    init {
-        setState {
-            copy(
-                errorMessage = null
-            )
-        }
-    }
 
     override fun handleIntent(intent: Intent) {
         when (intent) {
@@ -44,10 +37,11 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
                         tiktokUrl = result.value.model?.tiktokUrl.orEmpty(),
                         youtubeUrl = result.value.model?.youtubeUrl.orEmpty(),
                         websiteUrl = result.value.model?.websiteUrl.orEmpty(),
+                        errorMessage = null
                     )
                 }
             } else {
-                setState { copy(isLoading = false) }
+                setState { copy(isLoading = false, errorMessage = result.getErrorMessage()) }
             }
         }
     }
@@ -90,7 +84,7 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
                     setState {
                         copy(
                             isUploading = false,
-                            errorMessage = "Не удалось обновить соцсети"
+                            errorMessage = result.getErrorMessage()
                         )
                     }
                 }

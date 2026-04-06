@@ -1,25 +1,30 @@
 package org.telegram.divo.screen.event_details
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.SnackbarEvent
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.StatusBarIconColorEffect
 import org.telegram.divo.screen.event_details.components.AboutCard
@@ -30,6 +35,7 @@ import org.telegram.divo.screen.event_details.components.PreviousEvents
 import org.telegram.divo.screen.event_details.components.ThumbnailRow
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
 
 @Composable
 fun EventDetailsScreen(
@@ -44,7 +50,8 @@ fun EventDetailsScreen(
     onBack: () -> Unit,
 ) {
     val uiState = viewModel.state.collectAsState().value
-    val context = LocalContext.current
+    val snackbarState = remember { AppSnackbarHostState() }
+    val retryText = stringResource(R.string.RetryLabel)
 
     StatusBarIconColorEffect(false)
 
@@ -52,7 +59,13 @@ fun EventDetailsScreen(
         viewModel.effect.collect { action ->
             when (action) {
                 EventDetailsEffect.Back -> onBack()
-                is EventDetailsEffect.ShowError -> Toast.makeText(context, action.message, Toast.LENGTH_SHORT).show()
+                is EventDetailsEffect.ShowError -> {
+                    snackbarState.show(
+                        SnackbarEvent.ErrorWithRetry(action.message, retryText) {
+                            viewModel.setIntent(EventDetailsIntent.OnLoad)
+                        }
+                    )
+                }
                 is EventDetailsEffect.NavigateToGallery -> { onPhotoClicked(action.items, action.id) }
                 EventDetailsEffect.NavigateToParams -> { onParamsClicked() }
                 is EventDetailsEffect.NavigateToPrevEvent -> { onPrevEventClicked(action.id) }
@@ -72,6 +85,7 @@ fun EventDetailsScreen(
     } else {
         EventDetailsContent(
             uiState = uiState,
+            snackbarHostState = snackbarState,
             onIntent = { viewModel.setIntent(it) }
         )
     }
@@ -80,13 +94,20 @@ fun EventDetailsScreen(
 @Composable
 private fun EventDetailsContent(
     uiState: EventDetailsViewState,
+    snackbarHostState: AppSnackbarHostState,
     onIntent: (EventDetailsIntent) -> Unit = {},
 ) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
         contentWindowInsets = WindowInsets(top = 0),
-        containerColor = AppTheme.colors.backgroundLight
+        containerColor = AppTheme.colors.backgroundLight,
+        snackbarHost = {
+            AppSnackbarHost(
+                state = snackbarHostState,
+                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 8.dp
+            )
+        }
     ) { padding ->
         LazyColumn(
             modifier = Modifier

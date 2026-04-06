@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.models
 
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,21 +30,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.android.exoplayer2.util.Log
-import kotlinx.coroutines.flow.distinctUntilChanged
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.LaunchedEffectOnce
 import org.telegram.divo.common.LockScreenOrientation
+import org.telegram.divo.common.SnackbarEvent
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.rememberIsOnline
 import org.telegram.divo.screen.gallery.GalleryItem
@@ -64,7 +63,6 @@ fun ModelsHomeScreen(
     onClick: (Int) -> Unit = {},
     onPhotoClicked: (List<GalleryItem>, Int) -> Unit = { _, _ -> },
 ) {
-    val context = LocalContext.current
     val state by viewModel.state.collectAsState()
     val currentRestModels = state.feedItems
 
@@ -77,6 +75,9 @@ fun ModelsHomeScreen(
         screenHeight - statusBarHeight - bottomInset - 284.dp
     }
     var titleWidthPx by remember { mutableFloatStateOf(0f) }
+
+    val snackbarState = remember { AppSnackbarHostState() }
+    val retryText = stringResource(R.string.RetryLabel)
 
     val isOnline = rememberIsOnline()
     if (!isOnline) {
@@ -93,7 +94,11 @@ fun ModelsHomeScreen(
 
     LaunchedEffect(state.error) {
         if (!state.error.isNullOrBlank()) {
-            Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
+            snackbarState.show(
+                SnackbarEvent.ErrorWithRetry(state.error.orEmpty(), retryText) {
+                    viewModel.setIntent(ModelsViewIntent.LoadInitialData)
+                }
+            )
         }
     }
 
@@ -130,28 +135,18 @@ fun ModelsHomeScreen(
 
     val storiesForAnimation = ModelsViewState.preview.stories
 
-    LaunchedEffect(
-        listState,
-        currentRestModels.size,
-        state.feedHasMore,
-        state.isLoadingAllUsers,
-        state.isLoadingMoreFeed,
-        state.selectedTab
-    ) {
-        snapshotFlow {
-            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val totalItems = listState.layoutInfo.totalItemsCount
+            lastVisibleIndex >= totalItems - 3 && totalItems > 0
         }
-            .distinctUntilChanged()
-            .collect { lastVisibleIndex ->
-                if (currentRestModels.isNotEmpty() &&
-                    lastVisibleIndex >= currentRestModels.size - 3 &&
-                    state.feedHasMore &&
-                    !state.isLoadingAllUsers &&
-                    !state.isLoadingMoreFeed
-                ) {
-                    viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
-                }
-            }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) {
+            viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -165,6 +160,13 @@ fun ModelsHomeScreen(
                     stories = storiesForAnimation,
                     onSearch = onSearch,
                     onTitleMeasured = { measuredWidth -> titleWidthPx = measuredWidth }
+                )
+            },
+            snackbarHost = {
+                AppSnackbarHost(
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                    state = snackbarState,
+                    bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
                 )
             }
         ) { paddingValues ->

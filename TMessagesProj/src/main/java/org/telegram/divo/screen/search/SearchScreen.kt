@@ -1,12 +1,13 @@
 package org.telegram.divo.screen.search
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -37,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -48,7 +49,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.LottieProgressIndicator
@@ -66,21 +70,29 @@ fun SearchScreen(
     onBack: () -> Unit
 ) {
     val state = viewModel.state.collectAsState().value
-    val context = LocalContext.current
+    val snackbarState = remember { AppSnackbarHostState() }
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
                 Effect.NavigateBack -> onBack()
-                is Effect.ShowError -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                is Effect.ShowError -> snackbarState.show(Error(it.message))
             }
         }
     }
 
-    SearchContent(
-        state = state,
-        onIntent = { viewModel.setIntent(it) }
-    )
+    Box(Modifier.fillMaxSize()) {
+        SearchContent(
+            state = state,
+            onIntent = { viewModel.setIntent(it) }
+        )
+
+        AppSnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            state = snackbarState,
+            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
+        )
+    }
 }
 
 @Composable

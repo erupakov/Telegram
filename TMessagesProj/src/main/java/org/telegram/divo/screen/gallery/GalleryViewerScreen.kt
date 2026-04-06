@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.gallery
 
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -11,15 +10,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -49,13 +50,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.LaunchedEffectOnce
+import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.LottieProgressIndicator
@@ -74,17 +77,16 @@ fun GalleryViewerScreen(
     LaunchedEffectOnce {
         viewModel.setIntent(GalleryIntent.OnLoad(source))
     }
-    val context = LocalContext.current
+
     val uiState by viewModel.state.collectAsState()
+
+    val snackbarState = remember { AppSnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                GalleryEffect.Deleted -> {
-                    onBack()
-                    Toast.makeText(context, "deleted", Toast.LENGTH_SHORT).show()
-                }
-                is GalleryEffect.ShowError -> Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                GalleryEffect.Deleted -> onBack()
+                is GalleryEffect.ShowError -> snackbarState.show(Error(effect.message))
             }
         }
     }
@@ -104,13 +106,21 @@ fun GalleryViewerScreen(
         return
     }
 
-    GalleryPagerContent(
-        uiState = uiState,
-        isOwnProfile = isOwnProfile,
-        onLoadMore = { viewModel.setIntent(GalleryIntent.OnLoadMore) },
-        onBack = onBack,
-        onDelete = { viewModel.setIntent(GalleryIntent.OnDelete(it)) }
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        GalleryPagerContent(
+            uiState = uiState,
+            isOwnProfile = isOwnProfile,
+            onLoadMore = { viewModel.setIntent(GalleryIntent.OnLoadMore) },
+            onBack = onBack,
+            onDelete = { viewModel.setIntent(GalleryIntent.OnDelete(it)) }
+        )
+
+        AppSnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            state = snackbarState,
+            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 8.dp
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)

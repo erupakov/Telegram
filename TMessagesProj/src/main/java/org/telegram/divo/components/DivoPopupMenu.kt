@@ -1,30 +1,37 @@
 package org.telegram.divo.components
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
 
 data class PopupMenuItem(
-    @StringRes val titleRes: Int,
+    @field:StringRes val titleRes: Int,
     val onClick: () -> Unit,
+    @field:DrawableRes val iconRes: Int? = null,
 )
 
 @Composable
@@ -53,13 +60,21 @@ fun DivoPopupMenu(
         ) {
             Column {
                 items.forEachIndexed { index, item ->
+                    val color = if (item.titleRes == R.string.BlockProfile) {
+                        Color.Red
+                    } else {
+                        AppTheme.colors.textPrimary
+                    }
+
                     DropdownMenuItem(
                         text = {
                             Text(
                                 text = stringResource(item.titleRes),
                                 style = AppTheme.typography.manropeRegular,
-                                fontSize = 17.sp,
-                                color = Color.Black
+                                fontSize = 16.sp,
+                                color = color,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         },
                         onClick = {
@@ -70,12 +85,27 @@ fun DivoPopupMenu(
                         contentPadding = PaddingValues(
                             horizontal = 16.dp,
                             vertical = 11.dp
-                        )
+                        ),
+                        trailingIcon = item.iconRes?.let {
+                            {
+                                Icon(
+                                    modifier = Modifier.size(20.dp),
+                                    painter = painterResource(it),
+                                    contentDescription = null,
+                                    tint = color
+                                )
+                            }
+                        }
                     )
 
-                    if (index < items.lastIndex) {
+                    if (index == 0 && items.size > 1 && item.iconRes != null) {
                         HorizontalDivider(
-                            color = Color(0xFFE0E0E0),
+                            color = Color.LightGray,
+                            thickness = 7.dp
+                        )
+                    } else if (index < items.lastIndex) {
+                        HorizontalDivider(
+                            color = Color.LightGray,
                             thickness = 0.5.dp
                         )
                     }

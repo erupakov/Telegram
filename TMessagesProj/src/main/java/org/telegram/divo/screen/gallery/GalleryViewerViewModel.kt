@@ -55,7 +55,6 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                 copy(source = source, initialIndex = initialIndex)
             }
 
-            // Показываем кеш сразу если есть
             val cachedItems = getCachedItems(source)
             val cachedHasMore = getCachedHasMore(source)
 

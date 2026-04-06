@@ -35,8 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.telegram.divo.common.utils.DivoShareType
-import org.telegram.divo.common.utils.DivoSharingHelper
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoPopupMenu
@@ -56,8 +54,13 @@ fun ToolBar(
     onEditBackgroundClicked: () -> Unit,
     onEditSocialLinksClicked: () -> Unit,
     onManageWorkExperienceClicked: () -> Unit,
+    onFindSimilarProfiles: () -> Unit = {},
+    onReportProfile: () -> Unit = {},
+    onBlockProfile: () -> Unit = {}
 ) {
-    var showDropdownMenu by remember { mutableStateOf(false) }
+    var showEditMenu by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(false) }
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -90,15 +93,15 @@ fun ToolBar(
         if (isOwnProfile) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterEnd).padding(end = 50.dp),
-                onClick = { showDropdownMenu = true }
+                onClick = { showEditMenu = true }
             ) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.White)
+                Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White)
             }
         }
 
         DivoPopupMenu(
-            visible = showDropdownMenu,
-            onDismiss = { showDropdownMenu = false },
+            visible = showEditMenu,
+            onDismiss = { showEditMenu = false },
             items = listOf(
                 PopupMenuItem(R.string.EditProfile, onEditProfileClicked),
                 PopupMenuItem(R.string.ChangeProfileBackground, onEditBackgroundClicked),
@@ -110,21 +113,27 @@ fun ToolBar(
         Box(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
-            //TODO пока не понятно назначение кнопки
+            val options = if (isOwnProfile) {
+                listOf(PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec))
+            } else {
+                listOf(
+                    PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec),
+                    PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report),
+                    PopupMenuItem(R.string.BlockProfile, onBlockProfile, R.drawable.ic_divo_block),
+                )
+            }
+
             IconButton(
-                onClick = {
-                    DivoSharingHelper.share(
-                        context = context,
-                        scope = scope,
-                        type = DivoShareType.PROFILE,
-                        id = uiState.userInfo.id,
-                        customMessage = "${uiState.userInfo.fullName} - ${uiState.userInfo.roleLabel}",
-                        imageUrl = uiState.userInfo.avatarUrl
-                    )
-                }
+                onClick = { showMenu = true }
             ) {
                 Icon(Icons.Default.MoreVert, contentDescription = null, tint = Color.White)
             }
+
+            DivoPopupMenu(
+                visible = showMenu,
+                onDismiss = { showMenu = false },
+                items = options
+            )
         }
     }
 }

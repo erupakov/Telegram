@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.event_list
 
-import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,12 +32,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.SnackbarEvent
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.screen.event_list.components.EventItemView
 import org.telegram.divo.screen.event_list.components.EventListTopBar
@@ -57,7 +59,8 @@ fun EventListScreen(
     onNavigateToSearch: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
-    val context = LocalContext.current
+    val snackbarState = remember { AppSnackbarHostState() }
+    val retryText = stringResource(R.string.RetryLabel)
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect { action ->
@@ -68,13 +71,18 @@ fun EventListScreen(
                     action.eventId
                 )
                 is EventListEffect.ShowError -> {
-                    Toast.makeText(context, action.message, Toast.LENGTH_SHORT).show()
+                    snackbarState.show(
+                        SnackbarEvent.ErrorWithRetry(action.message, retryText) {
+                            viewModel.setIntent(EventListIntent.OnLoad)
+                        }
+                    )
                 }
             }
         }
     }
     EventListContent(
         state = state,
+        snackbarState = snackbarState,
         onEventClick = {
             EventIntentData.eventId = it
             onNavigateToEventDetails(it)
@@ -95,6 +103,7 @@ fun EventListScreen(
 @Composable
 private fun EventListContent(
     state: EventListViewState,
+    snackbarState: AppSnackbarHostState,
     onEventClick: (Int) -> Unit,
     onCtaClick: (Int) -> Unit,
     onSearchClick: () -> Unit,
@@ -128,6 +137,12 @@ private fun EventListContent(
                 onAddEventClick = onAddEventClick,
             )
         },
+        snackbarHost = {
+            AppSnackbarHost(
+                state = snackbarState,
+                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
+            )
+        }
     ) { innerPadding ->
         when {
             state.isLoading || state.isRoleLoading -> {

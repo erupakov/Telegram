@@ -43,8 +43,8 @@ class EditMyProfileViewModel(
                     )
                 }
             } else {
-                val errorMsg = result.getErrorMessage()
-                setState { copy(isLoading = false, errorMessage = errorMsg) }
+                setState { copy(isLoading = false) }
+                sendEffect(Effect.ShowError(result.getErrorMessage()))
             }
         }
     }
@@ -61,7 +61,8 @@ class EditMyProfileViewModel(
                         onFailure = { DivoResult.UnknownError(it) }
                     )
                     if (uploadResult !is DivoResult.Success) {
-                        setState { copy(isSaved = false, errorMessage = uploadResult.getErrorMessage()) }
+                        setState { copy(isSaved = false) }
+                        sendEffect(Effect.ShowError(uploadResult.getErrorMessage()))
                         return@launch
                     }
                     uploadResult.value.uuid
@@ -84,7 +85,8 @@ class EditMyProfileViewModel(
                         sendEffect(Effect.SaveSuccess)
                     }
                     else -> {
-                        setState { copy(isSaved = false, errorMessage = result.getErrorMessage()) }
+                        setState { copy(isSaved = false) }
+                        sendEffect(Effect.ShowError(result.getErrorMessage()))
                     }
                 }
             }
@@ -151,7 +153,7 @@ class EditMyProfileViewModel(
             return
         }
 
-        setState { copy(isLoading = true, errorMessage = null) }
+        setState { copy(isLoading = true) }
 
         val req = TLRPC.TL_photos_uploadProfilePhoto()
         var flags = 0
@@ -185,7 +187,6 @@ class EditMyProfileViewModel(
                         setState {
                             copy(
                                 isLoading = false,
-                                errorMessage = error.text ?: "Upload failed"
                             )
                         }
                         return@runOnUIThread
