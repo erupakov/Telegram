@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,9 +48,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -57,7 +57,6 @@ import kotlinx.coroutines.launch
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.LaunchedEffectOnce
 import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.PopupMenuItem
@@ -196,7 +195,10 @@ private fun GalleryPagerContent(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
             beyondViewportPageCount = 2,
-            key = { page -> "${uiState.items[page].url}$page" }
+            key = { page ->
+                if (page < uiState.items.size) "${uiState.items[page].url}$page"
+                else "loading_page_$page"
+            }
         ) { page ->
             if (page >= uiState.items.size) {
                 Box(
@@ -294,9 +296,8 @@ private fun ThumbnailStrip(
     onThumbnailClick: (Int) -> Unit,
 ) {
     val itemSize = 64.dp
-
-    val density = LocalDensity.current
-    var horizontalPadding by remember { mutableStateOf(0.dp) }
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val horizontalPadding = (screenWidth - itemSize) / 2
 
     Box(
         modifier = Modifier
@@ -311,11 +312,7 @@ private fun ThumbnailStrip(
         LazyRow(
             state = listState,
             contentPadding = PaddingValues(horizontal = horizontalPadding),
-            modifier = Modifier.onSizeChanged { size ->
-                horizontalPadding = with(density) {
-                    ((size.width - itemSize.toPx()) / 2).toDp().coerceAtLeast(0.dp)
-                }
-            }
+            modifier = Modifier.fillMaxWidth()
         ) {
             itemsIndexed(
                 items = items,

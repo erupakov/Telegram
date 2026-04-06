@@ -22,7 +22,6 @@ import org.telegram.divo.screen.work_history.WorkHistoryScreen
 import org.telegram.divo.screen.your_parameters.YourParametersScreen
 
 sealed class ProfileRoute(val route: String) {
-    data object Edit : ProfileRoute("profile_edit")
     data object YourParameters : ProfileRoute("profile_your_parameters")
     data object Search : ProfileRoute("profile_search")
     data object EditLinks : ProfileRoute("profile_edit_links")
@@ -38,6 +37,10 @@ sealed class ProfileRoute(val route: String) {
 
     data object Event : ProfileRoute("event/{eventId}") {
         fun createRoute(eventId: Int) = "event/$eventId"
+    }
+
+    data object Edit : ProfileRoute("profile_edit/{isModel}") {
+        fun createRoute(isModel: Boolean) = "profile_edit/$isModel"
     }
 
     object Gallery : ProfileRoute("gallery/{sourceType}/{userId}/{initialIndex}") {
@@ -85,7 +88,7 @@ fun ProfileNavGraph(
                 viewModel = profileViewModel,
                 userId = currentUserId,
                 isOwnProfile = isOwnProfile,
-                onEditClicked = { nav.navigate(ProfileRoute.Edit.route) },
+                onEditClicked = { nav.navigate(ProfileRoute.Edit.createRoute(it)) },
                 onEditLinksClicked = { nav.navigate(ProfileRoute.EditLinks.route) },
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() },
                 showWorkHistory = { nav.navigate(ProfileRoute.WorkHistory.route) },
@@ -115,7 +118,10 @@ fun ProfileNavGraph(
         }
 
         composable(ProfileRoute.Edit.route) {
+            val isModel = it.arguments?.getString("isModel")?.toBoolean() ?: false
+
             EditMyProfileScreen(
+                isModel = isModel,
                 onCreateWorkHistoryClicked = { nav.navigate(ProfileRoute.CreateWorkHistory.create(it)) },
                 onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
             )

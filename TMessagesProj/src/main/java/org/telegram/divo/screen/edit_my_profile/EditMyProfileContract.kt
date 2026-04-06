@@ -8,11 +8,11 @@ import org.telegram.tgnet.TLRPC
 import java.io.File
 
 data class EventListViewState(
+    val isModel: Boolean,
     val fName: String = "",
     val bio: String = "",
     val avatarUrl: String = "",
     val userFull: UserInfo? = null,
-    val isModel: Boolean = false,
     val isLoading: Boolean = true,
     val isSaved: Boolean = false,
     val errorMessage: String? = null,

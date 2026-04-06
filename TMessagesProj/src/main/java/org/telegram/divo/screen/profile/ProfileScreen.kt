@@ -2,6 +2,7 @@ package org.telegram.divo.screen.profile
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
@@ -78,7 +79,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(
         factory = ProfileViewModel.factory(userId, isOwnProfile)
     ),
-    onEditClicked: () -> Unit = {},
+    onEditClicked: (Boolean) -> Unit = {},
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: (Boolean) -> Unit = {},
@@ -129,7 +130,7 @@ fun ProfileScreen(
         ProfileScreenContent(
             uiState = uiState,
             onEditClicked = {
-                onEditClicked()
+                onEditClicked(uiState.isModel)
             },
             onEditLinksClicked = {
                 onEditLinksClicked()
@@ -155,7 +156,7 @@ fun ProfileScreen(
             onLoadMoreVideos = { viewModel.setIntent(ProfileIntent.OnLoadMoreVideos) },
             onAddModelClicked = onAddModelClicked,
             onLoadMoreEvents = { viewModel.setIntent(ProfileIntent.OnLoadMoreEvents) },
-            onEventClicked = onEventClicked
+            onEventClicked = onEventClicked,
         )
     }
 }

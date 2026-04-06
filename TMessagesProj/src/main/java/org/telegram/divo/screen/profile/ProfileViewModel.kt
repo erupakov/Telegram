@@ -16,6 +16,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.profile.components.StatsType
@@ -108,12 +109,11 @@ class ProfileViewModel(
             launch { portfolioPaginator.loadInitial() }
             launch { loadSimilarProfiles() }
             launch { videoPaginator.loadInitial() }
-            launch { eventPaginator.loadInitial() }
+            observeEvents()
             observeEngagementPaginators()
             //observeSearchPaginator()
             observeGalleryListPaginator()
             observeVideoPaginator()
-            observeEvents()
         }
     }
 
@@ -304,6 +304,12 @@ class ProfileViewModel(
 
     private fun observeEvents() {
         viewModelScope.launch {
+            state.first { it.userInfo.role != RoleType.UNKNOWN && !it.isLoading }
+
+            if (!state.value.isModel) {
+                eventPaginator.loadInitial()
+            }
+
             eventPaginator.state.collect { paginatorState ->
                 setState {
                     copy(

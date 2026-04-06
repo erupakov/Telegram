@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -95,7 +96,7 @@ fun DivoTabSelector(
     val animatedWidth by animateDpAsState(
         targetValue = targetWidth,
         animationSpec = animationSpec,
-        label = "tab_width"
+        label = "tab_width",
     )
 
     Box(
@@ -157,7 +158,7 @@ fun DivoTabSelector(
                                 painter = painterResource(id = resId),
                                 contentDescription = tab.contentDescription,
                                 modifier = Modifier.size(16.dp),
-                                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(
+                                colorFilter = ColorFilter.tint(
                                     if (isSelected) selectedContentColor else unselectedContentColor
                                 )
                             )

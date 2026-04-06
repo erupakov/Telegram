@@ -1,5 +1,7 @@
 package org.telegram.divo.screen.edit_my_profile
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
@@ -16,10 +18,12 @@ import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLRPC
 import java.io.File
 
-class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIntent, Effect>() {
+class EditMyProfileViewModel(
+    private val isModel: Boolean
+) : BaseViewModel<EventListViewState, EditMyProfileIntent, Effect>() {
 
     override fun createInitialState(): EventListViewState {
-        return EventListViewState()
+        return EventListViewState(isModel = isModel)
     }
 
     fun getData() {
@@ -31,7 +35,6 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
                 val user = result.value
                 setState {
                     copy(
-                        isModel = user.role.isModel(),
                         fName = user.fullName,
                         bio = user.model?.description.orEmpty(),
                         userFull = user,
@@ -340,4 +343,13 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
 //            },
 //        )
 //    }
+
+    companion object {
+        fun factory(isModel: Boolean) = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return EditMyProfileViewModel(isModel) as T
+            }
+        }
+    }
 }
