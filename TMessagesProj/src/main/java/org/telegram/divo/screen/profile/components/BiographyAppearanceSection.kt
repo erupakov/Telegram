@@ -55,13 +55,13 @@ fun BiographyAppearanceSection(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             TabButton(
-                text = "BIOGRAPHY",
+                text = stringResource(R.string.TabBiography),
                 isSelected = selectedTab == 0,
                 onClick = { onTabSelected(0) },
                 modifier = Modifier.weight(1f)
             )
             TabButton(
-                text = "APPEARANCE",
+                text = stringResource(R.string.TabAppearance),
                 isSelected = selectedTab == 1,
                 onClick = { onTabSelected(1) },
                 modifier = Modifier.weight(1f)
@@ -125,7 +125,7 @@ private fun BiographyContent(bio: String) {
             .padding(16.dp)
     ) {
         Text(
-            text = bio.ifEmpty { "No biography available" },
+            text = bio.ifEmpty { stringResource(R.string.NoBiographyAvailable) },
             style = AppTheme.typography.helveticaNeueRegular,
             color = Color.White,
             fontSize = 12.sp,
@@ -168,23 +168,23 @@ private fun AppearanceContent(params: PhysicalParams) {
                 // Left column
                 Column(modifier = Modifier.weight(1f)) {
                     if (params.gender.isNotEmpty()) {
-                        AppearanceRow("Gender", params.gender)
+                        AppearanceRow(stringResource(R.string.LabelGender), params.gender)
                     }
                     if (params.height > 0) {
-                        AppearanceRow("Height (cm)", params.height.toString())
+                        AppearanceRow(stringResource(R.string.LabelHeight), params.height.toString())
                     }
                     if (expanded) {
                         if (params.hips > 0) {
-                            AppearanceRow("Hips (cm)", params.hips.toString())
+                            AppearanceRow(stringResource(R.string.LabelHips), params.hips.toString())
                         }
                         if (params.hairLength > "0") {
-                            AppearanceRow("Hair length (cm)", params.hairLength)
+                            AppearanceRow(stringResource(R.string.LabelHairLength), params.hairLength)
                         }
                         if (params.eyeColor.isNotEmpty()) {
-                            AppearanceRow("Eye color", params.eyeColor)
+                            AppearanceRow(stringResource(R.string.LabelEyeColor), params.eyeColor)
                         }
-                        if (params.breastSize.isNotEmpty() && params.gender == "Female") {
-                            AppearanceRow("Breast size", params.breastSize)
+                        if (params.breastSize.isNotEmpty() && params.gender == stringResource(R.string.Female)) {
+                            AppearanceRow(stringResource(R.string.LabelBreastSize), params.breastSize)
                         }
                     }
                 }
@@ -192,27 +192,27 @@ private fun AppearanceContent(params: PhysicalParams) {
                 // Right column
                 Column(modifier = Modifier.weight(1f)) {
                     if (params.age.isNotEmpty()) {
-                        AppearanceRow("Age (y.o)", params.age.toString())
+                        AppearanceRow(stringResource(R.string.LabelAge), params.age)
                     }
                     if (params.waist > 0) {
-                        AppearanceRow("Waist (cm)", params.waist.toString())
+                        AppearanceRow(stringResource(R.string.LabelWaist), params.waist.toString())
                     }
                     if (expanded) {
                         if (params.shoeSize > 0) {
-                            AppearanceRow("Shoe size (EU)", params.shoeSize.toString())
+                            AppearanceRow(stringResource(R.string.LabelShoeSize), params.shoeSize.toString())
                         }
                         if (params.hairColor.isNotEmpty()) {
-                            AppearanceRow("Hair color", params.hairColor)
+                            AppearanceRow(stringResource(R.string.LabelHairColor), params.hairColor)
                         }
                         if (params.skinColor.isNotEmpty()) {
-                            AppearanceRow("Skin color", params.skinColor)
+                            AppearanceRow(stringResource(R.string.LabelSkinColor), params.skinColor)
                         }
                     }
                 }
             }
 
             Text(
-                text =  if (expanded) "SEE LESS" else "SEE MORE",
+                text =  stringResource(if (expanded) R.string.SeeLess else R.string.SeeMore),
                 style = AppTheme.typography.helveticaNeueLtCom,
                 color = Color.White,
                 fontSize = 10.sp,

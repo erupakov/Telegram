@@ -71,6 +71,7 @@
     <string name="ChooseSkinColor">Choose your skin color</string>
     <string name="ChooseBreastSize">Choose your breast size</string>
     <string name="Female">Female</string>
+    <string name="NoBiographyAvailable">No biography available</string>
 
     <string-array name="GenderItems">
         <item>Male</item>
@@ -113,6 +114,8 @@
     <string name="WorkHistoryEmptySubtitle">Click the button below\nto add your work\nexperience</string>
     <string name="SaveChanges">Save Changes</string>
     <string name="WorkExperienceSaved">Work experience added successfully</string>
+    <string name="PresentLabel">Present</string>
+    <string name="EndDateCannotBeEarly">End date cannot be earlier than start date</string>
 
     <plurals name="work_years">
         <item quantity="one">%d year</item>
@@ -141,6 +144,7 @@
     <string name="CountdownFormat">%1$dd : %2$dh : %3$dm</string>
     <string name="CountdownStarted">Started</string>
     <string name="CountdownFinished">Finished</string>
+    <string name="NoEventsYet">No events yet</string>
     <plurals name="ParticipantsCount">
         <item quantity="one">%d participant</item>
         <item quantity="other">%d participants</item>
@@ -148,6 +152,9 @@
 
     <!--models screen-->
     <string name="Models">Models</string>
+    <string name="SubscribedModels">Subscribed Models</string>
+    <string name="AllUsers">All Users</string>
+    <string name="AgenciesAndProMembers">Agencies &amp; Pro Members</string>
 
     <!--divo view end-->
 

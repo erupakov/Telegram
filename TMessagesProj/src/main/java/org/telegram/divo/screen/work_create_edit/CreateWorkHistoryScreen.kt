@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -83,6 +84,7 @@ fun CreateWorkHistoryScreen(
 ) {
     val snackbarState = remember { AppSnackbarHostState() }
     val parametersSavedText = stringResource(R.string.WorkExperienceSaved)
+    val context = LocalContext.current
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
@@ -98,7 +100,11 @@ fun CreateWorkHistoryScreen(
                     onBack()
                 }
                 is Effect.ShowError -> {
-                    snackbarState.show(Error(it.message))
+                    if (it.message.isEmpty()) {
+                        snackbarState.show(Error(context.getString(R.string.EndDateCannotBeEarly)))
+                    } else {
+                        snackbarState.show(Error(it.message))
+                    }
                 }
             }
         }

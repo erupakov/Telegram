@@ -321,7 +321,7 @@ private fun buildWorkSubtitle(
     isCurrent: Boolean
 ): String {
     val start = formatMonthYear(startDate)
-    val end = if (isCurrent || endDate == null) "Present" else formatMonthYear(endDate)
+    val end = if (isCurrent || endDate == null) stringResource(R.string.PresentLabel) else formatMonthYear(endDate)
     val duration = computeDurationLabel(startDate, if (isCurrent) null else endDate)
     return "$start - $end · $duration"
 }

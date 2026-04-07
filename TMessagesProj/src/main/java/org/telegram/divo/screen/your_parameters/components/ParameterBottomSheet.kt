@@ -164,7 +164,7 @@ fun ParameterBottomSheet(
                         },
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(Icons.Default.Check, contentDescription = "Save", tint = Color.White)
+                    Icon(Icons.Default.Check, contentDescription = null, tint = Color.White)
                 }
             }
             Text(

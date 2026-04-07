@@ -4,6 +4,7 @@ import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.entity.FeedItem
+import org.telegram.messenger.R
 import org.telegram.tgnet.TLRPC
 
 data class Story(
@@ -24,10 +25,10 @@ data class Model(
     val userProfile: TLRPC.TL_userProfile? = null
 )
 
-enum class Tab(val displayName: String) {
-    SUBSCRIBED(displayName = "Subscribed Models"),
-    ALL_USERS(displayName = "All Users"),
-    AGENCIES_PRO(displayName = "Agencies & Pro Members")
+enum class Tab(val displayResId: Int) {
+    SUBSCRIBED(displayResId = R.string.SubscribedModels),
+    ALL_USERS(displayResId = R.string.AllUsers),
+    AGENCIES_PRO(displayResId = R.string.AgenciesAndProMembers)
 }
 
 sealed class Emotions(
@@ -72,12 +73,6 @@ data class ModelsViewState(
     val isLoadingAllUsers get() = tabLoadingStates[selectedTab] ?: false
     val isLoadingMoreFeed get() = tabLoadingMoreStates[selectedTab] ?: false
     val feedHasMore get() = tabHasMore[selectedTab] ?: true
-
-    val emptyText = when (selectedTab) {
-        Tab.SUBSCRIBED -> "You have no subscriptions yet"
-        Tab.ALL_USERS -> "No models found"
-        Tab.AGENCIES_PRO -> "No agencies yet"
-    }
 
     companion object {
         val preview = ModelsViewState(

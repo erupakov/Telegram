@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -30,7 +31,7 @@ import org.telegram.divo.style.DivoFont.HelveticaNeue
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun TabsRow(
-    tabs: List<String>,
+    tabIds: List<Int>,
     selectedIndex: Int,
     onTabSelected: (Int) -> Unit,
     modifier: Modifier = Modifier,
@@ -43,6 +44,7 @@ fun TabsRow(
         fontWeight = FontWeight.Black,
         letterSpacing = 1.sp,
     )
+    val tabs = tabIds.map { stringResource(it).uppercase() }
 
     val tabWidths = remember(tabs) {
         tabs.map {

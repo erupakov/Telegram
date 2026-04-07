@@ -164,7 +164,7 @@ private fun EventListContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     Text(
-                        text = "No events yet",
+                        text = stringResource(R.string.NoEventsYet),
                         color = Color(0xFF000000),
                         fontSize = 16.sp,
                     )

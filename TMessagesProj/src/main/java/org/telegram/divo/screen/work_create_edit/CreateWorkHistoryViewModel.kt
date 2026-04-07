@@ -10,6 +10,7 @@ import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.messenger.R
 import java.time.LocalDate
 import java.time.ZoneOffset
 
@@ -98,7 +99,7 @@ class CreateWorkHistoryViewModel(
             val endDate = if (s.isCurrent) null else s.endDate
 
             if (endDate != null && endDate < startDate) {
-                sendEffect(Effect.ShowError("End date cannot be earlier than start date"))
+                sendEffect(Effect.ShowError(""))
                 return@launch
             }
 
@@ -124,7 +125,7 @@ class CreateWorkHistoryViewModel(
             val endDate = if (s.isCurrent) null else s.endDate
 
             if (endDate != null && endDate < startDate) {
-                sendEffect(Effect.ShowError("End date cannot be earlier than start date"))
+                sendEffect(Effect.ShowError(""))
                 return@launch
             }
 

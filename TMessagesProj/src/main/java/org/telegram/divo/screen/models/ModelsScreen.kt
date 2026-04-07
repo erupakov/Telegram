@@ -184,7 +184,7 @@ fun ModelsHomeScreen(
 
                 stickyHeader {
                     TabsRow(
-                        tabs = Tab.entries.map { it.displayName.uppercase() },
+                        tabIds = Tab.entries.map { it.displayResId },
                         selectedIndex = state.selectedTab.ordinal,
                         onTabSelected = { viewModel.setIntent(ModelsViewIntent.OnTabSelected(Tab.entries[it])) }
                     )
