@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.models
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -10,18 +11,30 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
+import org.telegram.divo.screen.face_search.FaceSearchScreen
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GallerySourceHolder
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
 import org.telegram.divo.screen.profile.ProfileNavGraph
+import org.telegram.divo.screen.search.SearchScreen
+import org.telegram.divo.screen.similar_profiles.SimilarProfilesScreen
 
 sealed class ModelsRoute(val route: String) {
     data object Models : ModelsRoute("models")
+    data object Search : ModelsRoute("feed_search")
 
     data object Profile : ModelsRoute("profile/{userId}") {
         const val ROUTE = "profile/{userId}"
         fun createRoute(userId: Int) = "profile/$userId"
+    }
+
+    data object FaceSearch : ModelsRoute("face_search/{uri}") {
+        fun createRoute(uri: String) = "face_search/${Uri.encode(uri)}"
+    }
+
+    data object SimilarProfiles : ModelsRoute("similar_profiles/{uri}") {
+        fun createRoute(uri: String) = "similar_profiles/${Uri.encode(uri)}"
     }
 
     object GalleryViewer : ModelsRoute("gallery/{sourceType}") {
@@ -59,7 +72,9 @@ fun ModelsNavGraph(
     ) {
         composable(ModelsRoute.Models.route) {
             ModelsHomeScreen(
-                onSearch = {},
+                onSearch = {
+                    nav.navigate(ModelsRoute.Search.route)
+                },
                 onClick = { userId ->
                     nav.navigate(ModelsRoute.Profile.createRoute(userId))
                 },
@@ -105,6 +120,43 @@ fun ModelsNavGraph(
             GalleryViewerScreen(
                 source = source,
                 onBack = { nav.popBackStack() },
+            )
+        }
+
+        composable(
+            route = ModelsRoute.Search.route,
+        ) {
+            SearchScreen(
+                onPhotoSelected = { nav.navigate(ModelsRoute.FaceSearch.createRoute(it)) },
+                onBack = { nav.popBackStack() }
+            )
+        }
+
+        composable(
+            route = ModelsRoute.FaceSearch.route,
+            arguments = listOf(
+                navArgument("uri") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val uri: String = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
+            FaceSearchScreen(
+                uri = uri,
+                onNavigateSimilarProfiles = { nav.navigate(ModelsRoute.SimilarProfiles.createRoute(it)) },
+                onBack = { nav.popBackStack() }
+            )
+        }
+
+        composable(
+            route = ModelsRoute.SimilarProfiles.route,
+            arguments = listOf(
+                navArgument("uri") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val uri: String = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
+            SimilarProfilesScreen(
+                url = uri,
+                onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },
+                onBack = { nav.popBackStack() }
             )
         }
     }

@@ -1,4 +1,4 @@
-package org.telegram.divo.screen.search.components
+package org.telegram.divo.screen.search_agency.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

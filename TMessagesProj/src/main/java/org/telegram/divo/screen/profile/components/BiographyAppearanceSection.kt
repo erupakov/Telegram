@@ -22,12 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.screen.profile.PhysicalParams
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
@@ -151,6 +153,7 @@ private fun BiographyContent(bio: String) {
 @Composable
 private fun AppearanceContent(params: PhysicalParams) {
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -192,7 +195,7 @@ private fun AppearanceContent(params: PhysicalParams) {
                 // Right column
                 Column(modifier = Modifier.weight(1f)) {
                     if (params.age.isNotEmpty()) {
-                        AppearanceRow(stringResource(R.string.LabelAge), params.age)
+                        AppearanceRow(stringResource(R.string.LabelAge), params.age.formattedAge(context))
                     }
                     if (params.waist > 0) {
                         AppearanceRow(stringResource(R.string.LabelWaist), params.waist.toString())

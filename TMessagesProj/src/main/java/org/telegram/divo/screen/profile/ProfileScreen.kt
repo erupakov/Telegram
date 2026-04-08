@@ -77,6 +77,7 @@ import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.screen.profile.components.AgencyDescriptionSection
 import org.telegram.divo.screen.profile.components.AgencyModels
 import org.telegram.divo.screen.profile.components.EventsColumn
+import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
 @Composable
@@ -94,6 +95,7 @@ fun ProfileScreen(
     onProfileClicked: (Int) -> Unit = {},
     onAddModelClicked: () -> Unit,
     onEventClicked: (Int) -> Unit,
+    onFindSimilarProfiles: (String) -> Unit,
 ) {
     val context = LocalContext.current
     val snackbarState = remember { AppSnackbarHostState() }
@@ -140,6 +142,8 @@ fun ProfileScreen(
                     .size(32.dp)
                     .align(Alignment.Center),
             )
+        } else if (uiState.errorMessage != null) {
+            Box(modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundLight))
         } else {
             ProfileScreenContent(
                 uiState = uiState,
@@ -171,6 +175,9 @@ fun ProfileScreen(
                 onAddModelClicked = onAddModelClicked,
                 onLoadMoreEvents = { viewModel.setIntent(ProfileIntent.OnLoadMoreEvents) },
                 onEventClicked = onEventClicked,
+                onFindSimilarProfiles = {
+                    onFindSimilarProfiles(uiState.userInfo.photoUrl)
+                }
             )
         }
 
@@ -207,6 +214,7 @@ private fun ProfileScreenContent(
     onAddModelClicked: () -> Unit,
     onLoadMoreEvents: () -> Unit,
     onEventClicked: (Int) -> Unit,
+    onFindSimilarProfiles: () -> Unit,
 ) {
     val pageCount = uiState.pageCount
     val pagerState = rememberPagerState(pageCount = { pageCount })
@@ -299,6 +307,7 @@ private fun ProfileScreenContent(
                 },
                 onManageWorkExperienceClicked = showWorkHistory,
                 onNavigateBack = onNavigateBack,
+                onFindSimilarProfiles = onFindSimilarProfiles
             )
 
             Box(

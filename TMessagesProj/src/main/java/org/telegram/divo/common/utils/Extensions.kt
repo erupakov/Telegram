@@ -2,6 +2,7 @@ package org.telegram.divo.common.utils
 
 import android.content.Context
 import android.net.Uri
+import org.telegram.messenger.R
 import java.io.File
 import java.time.Instant
 import java.time.LocalDate
@@ -16,12 +17,12 @@ fun String.toCountryFlagEmoji() =
         .map { char -> Character.toCodePoint('\uD83C', '\uDDE6' + (char - 'A')) }
         .joinToString("") { String(Character.toChars(it)) }
 
-fun String.formattedAge(locale: Locale = Locale.getDefault()): String {
+fun String.formattedAge(context: Context, locale: Locale = Locale.getDefault()): String {
     try {
         val birthDate = LocalDate.parse(this)
         val age = Period.between(birthDate, LocalDate.now()).years
 
-        return "$age y.o."
+        return "$age ${context.getString(R.string.YearsOld)}"
     } catch (_: Exception) {
         return ""
     }

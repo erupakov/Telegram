@@ -1,73 +1,47 @@
 package org.telegram.divo.screen.search
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.PlaceholderAvatar
+import org.telegram.divo.common.rememberCameraCapture
+import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.components.PhotoSourceBottomSheet
 import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.entity.Agency
-import org.telegram.divo.screen.search.components.SearchSuggestionsLoadingContent
+import org.telegram.divo.components.SearchImageAction
+import org.telegram.divo.screen.search.components.SearchRow
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
 @Composable
 fun SearchScreen(
     viewModel: SearchViewModel = viewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onPhotoSelected: (String) -> Unit = {},
 ) {
     val state = viewModel.state.collectAsState().value
     val snackbarState = remember { AppSnackbarHostState() }
@@ -77,6 +51,7 @@ fun SearchScreen(
             when (it) {
                 Effect.NavigateBack -> onBack()
                 is Effect.ShowError -> snackbarState.show(Error(it.message))
+                is Effect.NavigateToFaceSearch -> onPhotoSelected(it.uri)
             }
         }
     }
@@ -95,11 +70,23 @@ fun SearchScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchContent(
+private fun SearchContent(
     state: State,
     onIntent: (Intent) -> Unit,
 ) {
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    val camera = rememberCameraCapture { uri ->
+        onIntent(Intent.OnPhotoSelected(uri))
+    }
+
+    val openGallery = rememberGalleryLauncher { uri ->
+        onIntent(Intent.OnPhotoSelected(uri))
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -108,173 +95,56 @@ fun SearchContent(
             .navigationBarsPadding()
             .imePadding()
     ) {
+        camera.rationaleDialog()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(bottom = 80.dp)
         ) {
             SearchRow(
                 value = state.query,
                 onValueChanged = { onIntent(Intent.OnQueryChanged(it)) },
                 onBack = { onIntent(Intent.OnBackClicked) }
             )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (state.isLoadingAgencies) {
-                SearchSuggestionsLoadingContent()
-            } else if (state.items.isNotEmpty()) {
-                SearchSuggestions(
-                    items = state.items,
-                    isLoadingMore = state.isLoadingMoreAgencies,
-                    hasMore = state.hasMoreAgencies,
-                    onClicked = { onIntent(Intent.OnSearchSelected(it)) },
-                    onLoadMore = { onIntent(Intent.OnLoadMore) }
-                )
-            }
-        }
-        UIButtonNew(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-            enabled = state.query.isNotBlank() || state.agencyName.isNotBlank(),
-            onClick = { onIntent(Intent.OnSearchSelected(state.query)) }
-        )
-    }
-}
-
-@OptIn(FlowPreview::class)
-@Composable
-private fun SearchSuggestions(
-    items: List<Agency>,
-    isLoadingMore: Boolean,
-    hasMore: Boolean,
-    onClicked: (String) -> Unit,
-    onLoadMore: () -> Unit,
-) {
-    val listState = rememberLazyListState()
-
-    val shouldLoadMore by remember {
-        derivedStateOf {
-            val layoutInfo = listState.layoutInfo
-            val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: return@derivedStateOf false
-            val total = layoutInfo.totalItemsCount
-
-            lastVisible >= total - 1 && hasMore && !isLoadingMore
-        }
-    }
-
-    LaunchedEffect(listState) {
-        snapshotFlow { shouldLoadMore }
-            .distinctUntilChanged()
-            .filter { it }
-            .collect { onLoadMore() }
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(Color.White)
-            .padding(vertical = 20.dp),
-        state = listState,
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        items(
-            items = items,
-            key = { it.id }
-        ) {
-            SuggestionItem(
-                avatarUrl = it.photo?.fullUrl.orEmpty(),
-                agencyName = it.title,
-                onClicked = { onClicked(it.title) }
-            )
-        }
-        if (isLoadingMore) {
-            item {
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LottieProgressIndicator(modifier = Modifier.size(24.dp))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SuggestionItem(
-    avatarUrl: String,
-    agencyName: String,
-    onClicked: () -> Unit
-) {
-    Row(
-        modifier = Modifier.padding(horizontal = 16.dp).clickableWithoutRipple { onClicked() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (avatarUrl.isBlank()) {
-            PlaceholderAvatar(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(AppTheme.colors.accentOrange),
-                name = agencyName,
-            )
-        } else {
-            DivoAsyncImage(
-                modifier = Modifier.size(48.dp).clip(CircleShape),
-                model = avatarUrl
-            )
         }
 
-        Spacer(Modifier.width(10.dp))
-        Text(
-            modifier = Modifier.weight(1f),
-            text = agencyName,
-            style = AppTheme.typography.helveticaNeueRegular,
-            color = Color.Black,
-            fontSize = 16.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Icon(
-            painter = painterResource(R.drawable.ic_divo_arrow_insert),
-            contentDescription = null
-        )
-    }
-}
-
-@Composable
-private fun SearchRow(
-    value: String,
-    onValueChanged: (String) -> Unit,
-    onBack: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-    ) {
-        DivoTextField(
-            modifier = Modifier.weight(1f),
-            value = value,
-            onValueChange = onValueChanged,
-            cornerRadius = 99.dp,
-            trailingIcon = if (value.isNotBlank()) Icons.Default.Close else null,
-            onTrailingIconClick = { onValueChanged("") },
-            backgroundColor = Color.White,
-            horizontalContentPadding = 16.dp,
-            textStyle = TextStyle(fontSize = 14.sp),
-            placeholder = stringResource(R.string.EnterAgencyName),
-        )
-        Spacer(Modifier.width(10.dp))
         RoundedButton(
-            resId = R.drawable.ic_divo_close,
+            modifier = Modifier
+                .padding(bottom = 32.dp, end = 16.dp)
+                .size(52.dp)
+                .align(Alignment.BottomEnd),
+            resId = R.drawable.ic_divo_face_rec,
+            iconSize = 26.dp,
             paddingEnd = 0.dp,
-            onClick = onBack
+            background = AppTheme.colors.accentOrange,
+            iconTint = AppTheme.colors.onBackground,
+            onClick = { showBottomSheet = true },
         )
+
+        if (showBottomSheet) {
+            PhotoSourceBottomSheet(
+                sheetState = sheetState,
+                onDismiss = { showBottomSheet = false },
+                onActionSelected = { action ->
+                    showBottomSheet = false
+                    when (action) {
+                        SearchImageAction.CAMERA -> camera.launch()
+                        SearchImageAction.GALLERY -> openGallery()
+                        SearchImageAction.DIVO_PHOTO -> {
+                            //TODO пока не понятно какое фото юзать
+//                            val photoUrl = state.profilePhotoUrl ?: return@MainSearchBottomSheet
+//                            scope.launch {
+//                                val uri = ImageCacheHelper.getLocalUri(context, photoUrl)
+//                                if (uri != null) {
+//                                    Log.d("VideoGrid", uri.toString())
+//                                    //onIntent(Intent.OnPhotoSelected(uri))
+//                                }
+//                            }
+                        }
+                    }
+                }
+            )
+        }
     }
 }
+

@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.profile
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,14 +17,14 @@ import org.telegram.divo.screen.event_details.EventDetailsNavGraph
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
 import org.telegram.divo.screen.profile_social_links.ProfileSocialLinksScreen
-import org.telegram.divo.screen.search.SearchScreen
+import org.telegram.divo.screen.search_agency.SearchAgencyScreen
+import org.telegram.divo.screen.similar_profiles.SimilarProfilesScreen
 import org.telegram.divo.screen.work_create_edit.CreateWorkHistoryScreen
 import org.telegram.divo.screen.work_history.WorkHistoryScreen
 import org.telegram.divo.screen.your_parameters.YourParametersScreen
 
 sealed class ProfileRoute(val route: String) {
     data object YourParameters : ProfileRoute("profile_your_parameters")
-    data object Search : ProfileRoute("profile_search")
     data object EditLinks : ProfileRoute("profile_edit_links")
     data object WorkHistory : ProfileRoute("profile_work_history")
     data object AddModel : ProfileRoute("profile_add_model")
@@ -43,6 +44,8 @@ sealed class ProfileRoute(val route: String) {
         fun createRoute(isModel: Boolean) = "profile_edit/$isModel"
     }
 
+    data object Search : ProfileRoute("search_agency")
+
     object Gallery : ProfileRoute("gallery/{sourceType}/{userId}/{initialIndex}") {
         const val ROUTE = "gallery/{sourceType}/{userId}/{initialIndex}"
 
@@ -51,6 +54,10 @@ sealed class ProfileRoute(val route: String) {
 
         fun video(userId: Int, initialIndex: Int) =
             "gallery/video/$userId/$initialIndex"
+    }
+
+    data object SimilarProfiles : ProfileRoute("similar_profiles/{url}") {
+        fun createRoute(url: String) = "similar_profiles/${Uri.encode(url)}"
     }
 }
 
@@ -113,6 +120,9 @@ fun ProfileNavGraph(
                 },
                 onEventClicked = {
                     nav.navigate(ProfileRoute.Event.createRoute(it))
+                },
+                onFindSimilarProfiles = {
+                    nav.navigate(ProfileRoute.SimilarProfiles.createRoute(it))
                 }
             )
         }
@@ -181,8 +191,10 @@ fun ProfileNavGraph(
             )
         }
 
-        composable(ProfileRoute.Search.route) {
-            SearchScreen(
+        composable(
+            route = ProfileRoute.Search.route,
+        ) {
+            SearchAgencyScreen(
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
@@ -218,6 +230,19 @@ fun ProfileNavGraph(
                 eventId = eventId,
                 isOwnProfile = isOwnProfile,
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
+        composable(
+            route = ProfileRoute.SimilarProfiles.route,
+            arguments = listOf(
+                navArgument("url") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val url: String = Uri.decode(backStackEntry.arguments?.getString("url")).orEmpty()
+            SimilarProfilesScreen(
+                url = url,
+                onProfileClicked = { nav.navigate(ProfileRoute.Profile.createRoute(it)) },
+                onBack = { nav.popBackStack() },
             )
         }
     }

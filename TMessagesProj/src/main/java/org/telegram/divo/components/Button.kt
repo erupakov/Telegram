@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont
@@ -114,9 +115,14 @@ fun UIButtonNew(
     modifier: Modifier = Modifier,
     text: String = stringResource(R.string.ButtonSave),
     height: Dp = 56.dp,
-    textStyle: TextStyle = AppTheme.typography.textButton,
+    textStyle: TextStyle = AppTheme.typography.textButton.copy(
+        color = AppTheme.colors.buttonTextColor,
+        fontFamily = DivoFont.HelveticaNeueLtCom77,
+        fontWeight = FontWeight.Bold,
+    ),
     shape: Shape = RoundedCornerShape(99.dp),
     background: Color = AppTheme.colors.accentOrange,
+    paddingTop: Dp = 3.dp,
     enabled: Boolean = true,
     onClick: () -> Unit = {},
 ) {
@@ -131,12 +137,9 @@ fun UIButtonNew(
         ),
     ) {
         Text(
-            modifier = Modifier.padding(top = 3.dp),
+            modifier = Modifier.padding(top = paddingTop),
             text = text,
             style = textStyle,
-            color = AppTheme.colors.buttonTextColor,
-            fontFamily = DivoFont.HelveticaNeueLtCom77,
-            fontWeight = FontWeight.Bold
         )
     }
 }

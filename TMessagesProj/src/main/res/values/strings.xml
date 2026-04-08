@@ -43,9 +43,10 @@
     <string name="AgencyModelsEmpty">There are no models from your agency yet.</string>
     <string name="AgencyModelsEmptyHint">Click the button below \n to add your model</string>
     <string name="PremiumLabel">Premium</string>
-    <string name="FindSimilarProfiles">Find similar profiles</string>
     <string name="ReportThisProfile">Report this profile</string>
     <string name="BlockProfile">Block user</string>
+    <string name="SearchByName">Search by name or @handle</string>
+    <string name="YearsOld">y.o.</string>
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>
@@ -156,6 +157,43 @@
     <string name="AllUsers">All Users</string>
     <string name="AgenciesAndProMembers">Agencies &amp; Pro Members</string>
 
+    <!--search screen-->
+    <string name="FindSimilarProfiles">Find similar profiles</string>
+    <string name="UploadPhoto">Upload a photo to find models with a similar appearance</string>
+    <string name="TakePhoto">Take a photo</string>
+    <string name="ChooseFromLibrary">Choose from library</string>
+    <string name="UseDivoPhoto">Use a DIVO profile photo</string>
+    <string name="FaceSearchTitle">How face search works</string>
+    <string name="FaceSearchDescriptionFirst">We analyse your photo to find DIVO profiles with a similar appearance. Your photo is used for this search only and is not stored or shared.</string>
+    <string name="FaceSearchDescriptionSecond">Results are ranked by visual similarity. Use the filters to narrow down by location, role, and other criteria.</string>
+    <string name="FaceSearchConfirm">Got it, let’s search</string>
+    <string name="CameraPermissionTitle">Camera access needed</string>
+    <string name="CameraPermissionDescription">To take a photo for face search, please allow camera access. You can enable it in the app settings.</string>
+    <string name="OpenSettings">Open Settings</string>
+    <string name="FaceSearch">Face search</string>
+    <string name="ChangePhoto">Change photo</string>
+    <string name="SimilarityScore">Results are sorted by visual similarity score</string>
+    <string name="NoFaceDetected">No face detected</string>
+    <string name="PleaseUsePhotoClearly">Please use a photo where a face is clearly visible — front-facing, well-lit, and unobstructed.</string>
+    <string name="MultipleFacesDetected">Multiple faces detected - we\'ll search\nfor all of them.</string>
+    <string name="AvoidSunglasses">Avoid sunglasses, masks, or heavy cropping.</string>
+    <string name="FullFacePhotos">Full-face photos work best — not side profiles.</string>
+    <string name="AnalysingFacialFeatures">Analysing facial features..</string>
+
+    <!--similar profiles screen-->
+    <string name="SimilarProfilesTitle">Similar profiles</string>
+    <string name="ResultsWithSimilarity">%1$s · Similarity %2$d%%+</string>
+    <string name="SortedBy">Sorted by: </string>
+    <string name="SimilarityFormat">%1$d%% match</string>
+    <plurals name="ProfilesFound">
+        <item quantity="one">%d profile found</item>
+        <item quantity="other">%d profiles found</item>
+    </plurals>
+
+    <plurals name="ResultsCount">
+        <item quantity="one">%d result</item>
+        <item quantity="other">%d results</item>
+    </plurals>
     <!--divo view end-->
 
 

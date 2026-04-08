@@ -24,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -32,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -60,9 +60,6 @@ fun ToolBar(
 ) {
     var showEditMenu by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
-
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     Box(
         modifier = modifier
@@ -107,7 +104,8 @@ fun ToolBar(
                 PopupMenuItem(R.string.ChangeProfileBackground, onEditBackgroundClicked),
                 PopupMenuItem(R.string.EditSocialLinks, onEditSocialLinksClicked),
                 PopupMenuItem(R.string.ManageWorkExperience, onManageWorkExperienceClicked),
-            )
+            ),
+            offset = IntOffset(x = -32, y = 35)
         )
 
         Box(
@@ -132,7 +130,8 @@ fun ToolBar(
             DivoPopupMenu(
                 visible = showMenu,
                 onDismiss = { showMenu = false },
-                items = options
+                items = options,
+                offset = IntOffset(x = -32, y = 35)
             )
         }
     }
@@ -146,6 +145,7 @@ private fun TitleContent(
 ) {
     val animatable = remember { Animatable(0f) }
     val previousVisible = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(lazyListState) {
         snapshotFlow {
@@ -191,7 +191,7 @@ private fun TitleContent(
                 )
                 if (userInfo.birthday.isNotEmpty()) {
                     Text(
-                        text = " · ${userInfo.birthday.formattedAge()} · ",
+                        text = " · ${userInfo.birthday.formattedAge(context)} · ",
                         style = AppTheme.typography.helveticaNeueRegular,
                         color = AppTheme.colors.textColor,
                         fontSize = 10.sp,

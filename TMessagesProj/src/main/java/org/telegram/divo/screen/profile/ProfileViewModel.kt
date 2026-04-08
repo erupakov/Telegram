@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
@@ -482,7 +481,7 @@ class ProfileViewModel(
 
         return PhysicalParams(
             gender = user.gender?.title.orEmpty(),
-            age = user.birthday.formattedAge(),
+            age = user.birthday,
             height = appearance?.height ?: 0f,
             waist = appearance?.waist?.toInt() ?: 0,
             hips = appearance?.hips?.toInt() ?: 0,

@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +41,8 @@ fun ParametersBlock(
     items: List<ProfileParameter>,
     onClick: (ProfileParameter) -> Unit,
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -80,7 +83,7 @@ fun ParametersBlock(
                             .weight(1f)
                             .padding(top = 2.dp),
                         text = if (item.type == ParametersType.AGE) {
-                            item.value.formattedAge().substringBefore(" ")
+                            item.value.formattedAge(context).substringBefore(" ")
                         } else {
                             item.value.formatWeird()
                         },

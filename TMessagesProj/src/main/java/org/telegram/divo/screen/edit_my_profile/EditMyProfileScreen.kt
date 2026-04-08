@@ -268,7 +268,7 @@ fun EditMyProfileScreenView(
                 value = fName,
                 onValueChange = { fName = it },
                 placeholder = stringResource(R.string.FullNameEditProfileScreen),
-                trailingIcon = if (fName.isNotBlank()) Icons.Default.Close else null,
+                trailingIcon = if (fName.isNotBlank()) R.drawable.ic_divo_clear else null,
                 onTrailingIconClick = { fName = "" },
                 backgroundColor = AppTheme.colors.onBackground,
                 cornerRadius = 41.dp,

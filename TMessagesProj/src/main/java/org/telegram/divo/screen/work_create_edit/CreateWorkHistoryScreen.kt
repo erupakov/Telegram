@@ -372,7 +372,7 @@ private fun DateField(
                     color = if (enabled) Color(0x993C3C43) else Color(0x403C3C43)
                 ),
                 readOnly = true,
-                trailingIcon = Icons.Default.DateRange
+                trailingIcon = R.drawable.ic_divo_calendar_20
             )
 
             Box(
