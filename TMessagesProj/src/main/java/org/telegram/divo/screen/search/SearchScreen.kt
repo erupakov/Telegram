@@ -103,6 +103,7 @@ private fun SearchContent(
         ) {
             SearchRow(
                 value = state.query,
+                onSearchFaceClicked = { showBottomSheet = true },
                 onValueChanged = { onIntent(Intent.OnQueryChanged(it)) },
                 onBack = { onIntent(Intent.OnBackClicked) }
             )
@@ -113,12 +114,12 @@ private fun SearchContent(
                 .padding(bottom = 32.dp, end = 16.dp)
                 .size(52.dp)
                 .align(Alignment.BottomEnd),
-            resId = R.drawable.ic_divo_face_rec,
+            resId = R.drawable.ic_divo_ai,
             iconSize = 26.dp,
             paddingEnd = 0.dp,
-            background = AppTheme.colors.accentOrange,
-            iconTint = AppTheme.colors.onBackground,
-            onClick = { showBottomSheet = true },
+            background = AppTheme.colors.onBackground,
+            iconTint = AppTheme.colors.accentOrange,
+            onClick = { },
         )
 
         if (showBottomSheet) {

@@ -74,7 +74,6 @@ private fun SimilarProfilesContent(
     onIntent: (Intent) -> Unit = {},
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val density = LocalDensity.current
     val statusBars = WindowInsets.statusBars
@@ -127,15 +126,19 @@ private fun SimilarProfilesContent(
     ) { paddingValues ->
         if (showBottomSheet) {
             SimilarFilterBottomSheet(
-                sheetState = sheetState,
-                onDismiss = { showBottomSheet = false }
+                uiState = uiState,
+                onApply = { countries, percent, role, availability, blockParams ->
+                    onIntent(Intent.OnApplyFilters(countries, percent, role, availability, blockParams))
+                },
+                onReset = { onIntent(Intent.OnParamsReset) },
+                onDismiss = { showBottomSheet = false },
             )
         }
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
                 .padding(horizontal = 16.dp)
         ) {
             ProfilesSearchGrid(
@@ -149,7 +152,9 @@ private fun SimilarProfilesContent(
                     topMatchesCount = uiState.topMatches,
                     totalProfilesCount = uiState.profiles.size,
                     similarityPercent = HIGH_PERCENT,
-                    sortedType = "match" //TODO
+                    hasActiveFilters = uiState.hasActiveFilters,
+                    activeFiltersCount = uiState.activeFiltersCount,
+                    onReset = { onIntent(Intent.OnParamsReset) }
                 )
             }
         }

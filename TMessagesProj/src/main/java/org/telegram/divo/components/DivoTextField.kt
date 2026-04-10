@@ -6,11 +6,15 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
@@ -140,15 +144,37 @@ fun DivoTextField(
             )
 
             if (trailingIcon != null) {
-                Spacer(modifier = Modifier.width(8.dp))
-                Icon(
-                    painter = painterResource(trailingIcon),
-                    contentDescription = null,
-                    tint = trailingIconColor,
-                    modifier = Modifier
-                        .size(18.dp)
-                        .clickableWithoutRipple { onTrailingIconClick() }
-                )
+                if (trailingIcon == R.drawable.ic_divo_face_rec) {
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .aspectRatio(1f)
+                            .padding(2.dp)
+                            .offset(x = 12.dp)
+                            .clip(CircleShape)
+                            .background(AppTheme.colors.accentOrange),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(trailingIcon),
+                            contentDescription = null,
+                            tint = trailingIconColor,
+                            modifier = Modifier
+                                .size(18.dp)
+                                .clickableWithoutRipple { onTrailingIconClick() }
+                        )
+                    }
+                } else {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Icon(
+                        painter = painterResource(trailingIcon),
+                        contentDescription = null,
+                        tint = trailingIconColor,
+                        modifier = Modifier
+                            .size(18.dp)
+                            .clickableWithoutRipple { onTrailingIconClick() }
+                    )
+                }
             }
         }
     }

@@ -21,6 +21,7 @@ import org.telegram.messenger.R
 @Composable
 fun SearchRow(
     value: String,
+    onSearchFaceClicked: () -> Unit,
     onValueChanged: (String) -> Unit,
     onBack: () -> Unit,
 ) {
@@ -38,9 +39,9 @@ fun SearchRow(
             onValueChange = onValueChanged,
             cornerRadius = 99.dp,
             leadingIcon = R.drawable.ic_divo_search_24,
-            trailingIcon = R.drawable.ic_divo_ai,
-            trailingIconColor = AppTheme.colors.accentOrange,
-            onTrailingIconClick = { },
+            trailingIcon = R.drawable.ic_divo_face_rec,
+            trailingIconColor = AppTheme.colors.onBackground,
+            onTrailingIconClick = onSearchFaceClicked,
             backgroundColor = AppTheme.colors.onBackground,
             horizontalContentPadding = 12.dp,
             textStyle = TextStyle(fontSize = 14.sp),

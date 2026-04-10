@@ -1,7 +1,6 @@
 package org.telegram.divo.screen.add_model
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,18 +16,18 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -37,7 +36,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -48,7 +49,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -60,6 +60,7 @@ import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.TelegramUserAvatarEditable
 import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.items.DivoBottomSheet
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -188,9 +189,10 @@ private fun AddModelScreenContent(
         if (showCountrySheet) {
             CountryPickerSheet(
                 list = uiState.countries,
+                selectedCountries = uiState.country?.let { listOf(it) } ?: emptyList(),
                 onDismiss = { showCountrySheet = false },
                 onPick = {
-                    onIntent(Intent.OnCountrySelected(it))
+                    onIntent(Intent.OnCountrySelected(it.first()))
                     showCountrySheet = false
                 }
             )
@@ -253,46 +255,121 @@ private fun TextField(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CountryPickerSheet(
+fun CountryPickerSheet(
     list: List<LocalCountry>,
+    selectedCountries: List<LocalCountry> = emptyList(),
+    isMultiSelection: Boolean = false,
     onDismiss: () -> Unit,
-    onPick: (LocalCountry) -> Unit
+    onPick: (List<LocalCountry>) -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    ModalBottomSheet(
-        modifier = Modifier.statusBarsPadding(),
-        onDismissRequest = onDismiss,
+    val currentSelection = remember {
+        mutableStateListOf<LocalCountry>().apply { addAll(selectedCountries) }
+    }
+
+    var searchQuery by remember { mutableStateOf("") }
+
+    var sortSnapshot by remember { mutableStateOf(selectedCountries.toList()) }
+    val filteredList = remember(searchQuery, list, sortSnapshot) {
+        val searchResult = if (searchQuery.isBlank()) {
+            list
+        } else {
+            list.filter { it.name.contains(searchQuery, ignoreCase = true) }
+        }
+
+        searchResult.sortedWith(
+            compareByDescending<LocalCountry> { sortSnapshot.contains(it) }
+                .thenBy { it.name }
+        )
+    }
+
+    DivoBottomSheet(
         sheetState = sheetState,
-        containerColor = Color.White,
-        tonalElevation = 16.dp
+        title = stringResource(R.string.CountryLabel),
+        contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp),
+        onDismiss = onDismiss,
+        iconClose = R.drawable.ic_divo_back,
+        onSave = { onPick(currentSelection) }
     ) {
-        Column(Modifier.fillMaxSize()) {
-            Text(
-                text = stringResource(R.string.ChooseCountry),
-                modifier = Modifier.padding(16.dp),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            LazyColumn(Modifier.fillMaxWidth(), contentPadding = PaddingValues(bottom = 16.dp)) {
-                items(list) { item ->
+        Spacer(Modifier.height(20.dp))
+        DivoTextField(
+            value = searchQuery,
+            onValueChange = { newText ->
+                if (searchQuery.isNotEmpty() && newText.isEmpty()) {
+                    sortSnapshot = currentSelection.toList()
+                }
+                searchQuery = newText
+            },
+            height = 40.dp,
+            cornerRadius = 99.dp,
+            leadingIcon = R.drawable.ic_divo_search,
+            trailingIcon = if (searchQuery.isNotBlank()) R.drawable.ic_divo_clear else null,
+            onTrailingIconClick = {
+                sortSnapshot = currentSelection.toList()
+                searchQuery = ""
+            },
+            backgroundColor = AppTheme.colors.onBackground,
+            horizontalContentPadding = 16.dp
+        )
+        Spacer(Modifier.height(16.dp))
+        Box(Modifier.fillMaxSize()) {
+            LazyColumn(
+                Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(AppTheme.colors.onBackground),
+                contentPadding = PaddingValues(bottom = 8.dp)
+            ) {
+                itemsIndexed(filteredList, key = { i, c -> c.code }) { index, item ->
+                    val isSelected = currentSelection.contains(item)
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                scope.launch { sheetState.hide(); onPick(item) }
+                            .height(46.dp)
+                            .clickableWithoutRipple {
+                                if (isMultiSelection) {
+                                    if (isSelected) currentSelection.remove(item)
+                                    else currentSelection.add(item)
+                                } else {
+                                    scope.launch {
+                                        sheetState.hide()
+                                        onPick(listOf(item))
+                                    }
+                                }
                             }
-                            .padding(horizontal = 16.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                        verticalAlignment = Alignment.Bottom
                     ) {
                         if (item.flag != null) {
-                            Text(text = item.flag, fontSize = 20.sp)
+                            Text(text = item.flag, fontSize = 14.sp)
                             Spacer(Modifier.width(8.dp))
                         }
-                        Text(item.name)
+                        Text(
+                            text = item.name,
+                            style = AppTheme.typography.bodyLarge,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        if (isSelected) {
+                            Icon(
+                                modifier = Modifier.size(20.dp),
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = AppTheme.colors.accentOrange
+                            )
+                        }
                     }
-                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+
+                    if (index != filteredList.size -1) {
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            thickness = 0.5.dp,
+                            color = Color.LightGray
+                        )
+                    }
                 }
             }
         }

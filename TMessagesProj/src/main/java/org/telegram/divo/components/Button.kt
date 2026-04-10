@@ -39,7 +39,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont
@@ -158,7 +157,7 @@ fun UIButtonBack(
             .defaultMinSize(92.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(6.dp),
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.backButton)
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.buttonSecondary)
     ) {
         Box(Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center){
             Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
@@ -208,7 +207,7 @@ fun RoundedButton(
     modifier: Modifier = Modifier,
     @DrawableRes resId: Int = R.drawable.ic_divo_back,
     iconSize: Dp = 16.dp,
-    paddingEnd: Dp = 2.dp,
+    paddingEnd: Dp = 0.dp,
     shadowEnabled: Boolean = true,
     borderColor: Color = Color.Unspecified,
     background: Color = AppTheme.colors.onBackground,

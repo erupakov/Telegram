@@ -3,10 +3,10 @@ package org.telegram.divo.screen.your_parameters
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
+import org.telegram.divo.components.items.ParametersType
+import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.entity.AppearanceItem
 import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.screen.your_parameters.components.ParametersType
-import org.telegram.divo.screen.your_parameters.components.ProfileParameter
 
 data class YourParametersViewState(
     val user: UserInfo = UserInfo(),

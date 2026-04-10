@@ -39,11 +39,11 @@ import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.common.SnackbarEvent.Success
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.screen.your_parameters.components.ParameterBottomSheet
-import org.telegram.divo.screen.your_parameters.components.ParameterItem
-import org.telegram.divo.screen.your_parameters.components.ParametersBlock
+import org.telegram.divo.components.items.ParameterBottomSheet
+import org.telegram.divo.components.items.ParameterItem
+import org.telegram.divo.components.items.ParametersBlock
+import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.screen.your_parameters.components.ParametersTopBar
-import org.telegram.divo.screen.your_parameters.components.ParametersType
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -60,7 +60,6 @@ fun YourParametersScreen(
     val parametersSavedText = stringResource(R.string.ParametersSaved)
 
     var showBottomSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var currentParam by remember { mutableStateOf<ParametersType?>(null) }
     var currentParamOptions by remember { mutableStateOf<List<String>?>(null) }
@@ -98,7 +97,6 @@ fun YourParametersScreen(
 
     if (showBottomSheet) {
         ParameterBottomSheet(
-            sheetState = sheetState,
             paramType = currentParam,
             options = currentParamOptions,
             initialValue = currentValue,

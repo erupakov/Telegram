@@ -51,7 +51,7 @@
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>
     <string name="YourParameters">Your parameters</string>
-    <string name="DeleteParameter">Delete parameter</string>
+    <string name="ResetParameter">Reset parameter</string>
     <string name="SelectGender">Select a Gender</string>
     <string name="LabelGender">Gender</string>
     <string name="LabelAge">Age (y.o)</string>
@@ -185,6 +185,19 @@
     <string name="ResultsWithSimilarity">%1$s · Similarity %2$d%%+</string>
     <string name="SortedBy">Sorted by: </string>
     <string name="SimilarityFormat">%1$d%% match</string>
+    <string name="FilterResults">Filter results</string>
+    <string name="ButtonReset">Reset</string>
+    <string name="MinimumSimilarity">Minimum similarity</string>
+    <string name="HigherValuesShow">Higher values show fewer but closer matches</string>
+    <string name="AvailabilityLabel">Availability</string>
+    <string name="AnyLabel">Any</string>
+    <string name="RoleLabel">Role</string>
+    <string name="AllLabel">All</string>
+    <string name="CountriesValue">All countries</string>
+    <string name="MoreParameters">More parameters</string>
+    <string name="ApplyFilter">Apply filter</string>
+    <string name="SortedByMatch">match</string>
+    <string name="SortedByFilters">Filter by:</string>
     <plurals name="ProfilesFound">
         <item quantity="one">%d profile found</item>
         <item quantity="other">%d profiles found</item>
@@ -194,6 +207,12 @@
         <item quantity="one">%d result</item>
         <item quantity="other">%d results</item>
     </plurals>
+
+    <string-array name="ModelFunNewTalent">
+        <item>Model</item>
+        <item>Fun</item>
+        <item>New talent</item>
+    </string-array>
     <!--divo view end-->
 
 
