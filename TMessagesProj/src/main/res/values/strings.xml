@@ -179,6 +179,9 @@
     <string name="AvoidSunglasses">Avoid sunglasses, masks, or heavy cropping.</string>
     <string name="FullFacePhotos">Full-face photos work best — not side profiles.</string>
     <string name="AnalysingFacialFeatures">Analysing facial features..</string>
+    <string name="ResultFor">result for</string>
+    <string name="NoResultsFound">No Results Found</string>
+    <string name="TryAdjustingYourFilters">Try adjusting your filters</string>
 
     <!--similar profiles screen-->
     <string name="SimilarProfilesTitle">Similar profiles</string>

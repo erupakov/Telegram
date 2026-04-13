@@ -13,12 +13,13 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.screen.add_model.LocalCountry
-import org.telegram.divo.screen.similar_profiles.Effect.*
+import org.telegram.divo.screen.similar_profiles.Effect.NavigateBack
+import org.telegram.divo.screen.similar_profiles.Effect.NavigateToProfile
+import org.telegram.divo.screen.similar_profiles.Effect.ShowError
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.util.Calendar
 
 class SimilarProfilesViewModel(
     val imageUrl: String,
@@ -112,7 +113,7 @@ class SimilarProfilesViewModel(
                 val minAge = parts.getOrNull(0)?.toIntOrNull() ?: 14
                 val maxAge = parts.getOrNull(1)?.toIntOrNull() ?: 45
 
-                val profileAge = calculateAgeFromDate(profile.age)
+                val profileAge = profile.age
                 profileAge in minAge..maxAge
             }
 
@@ -121,12 +122,12 @@ class SimilarProfilesViewModel(
     }
 
 
-    private fun calculateAgeFromDate(birthDateString: String?): Int {
-        if (birthDateString.isNullOrEmpty()) return 0
-        val birthYear = birthDateString.substringBefore("-").toIntOrNull() ?: return 0
-        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-        return currentYear - birthYear
-    }
+//    private fun calculateAgeFromDate(birthDateString: String?): Int {
+//        if (birthDateString.isNullOrEmpty()) return 0
+//        val birthYear = birthDateString.substringBefore("-").toIntOrNull() ?: return 0
+//        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
+//        return currentYear - birthYear
+//    }
 
     private fun onLikeChange(id: Int) {
         val oldProfile = state.value.profiles.find { it.id == id } ?: return
@@ -255,7 +256,7 @@ class SimilarProfilesViewModel(
             SearchedProfile(
                 id = 1,
                 name = "Emma Johnson",
-                age = "1994-11-03",
+                age = 25,
                 country = "USA",
                 countryCode = "US",
                 isMarked = false,
@@ -268,7 +269,7 @@ class SimilarProfilesViewModel(
             SearchedProfile(
                 id = 2,
                 name = "Olivia Smith",
-                age = "1996-07-15",
+                age = 36,
                 country = "United Kingdom",
                 countryCode = "GB",
                 isMarked = true,
@@ -281,7 +282,7 @@ class SimilarProfilesViewModel(
             SearchedProfile(
                 id = 3,
                 name = "Liam Brown",
-                age = "1992-02-21",
+                age = 18,
                 country = "Germany",
                 countryCode = "DE",
                 isMarked = false,
@@ -294,7 +295,7 @@ class SimilarProfilesViewModel(
             SearchedProfile(
                 id = 4,
                 name = "Noah Davis",
-                age = "1990-09-10",
+                age = 21,
                 country = "France",
                 countryCode = "FR",
                 isMarked = false,
@@ -307,7 +308,7 @@ class SimilarProfilesViewModel(
             SearchedProfile(
                 id = 5,
                 name = "Liam Brown",
-                age = "1992-02-21",
+                age = 31,
                 country = "Germany",
                 countryCode = "DE",
                 isMarked = false,
@@ -320,7 +321,7 @@ class SimilarProfilesViewModel(
             SearchedProfile(
                 id = 6,
                 name = "Noah Davis",
-                age = "1990-09-10",
+                age = 19,
                 country = "France",
                 countryCode = "FR",
                 isMarked = false,

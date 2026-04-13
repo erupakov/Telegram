@@ -1,18 +1,24 @@
 package org.telegram.divo.screen.search
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,7 +29,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
@@ -31,16 +41,27 @@ import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.common.rememberCameraCapture
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.components.PhotoSourceBottomSheet
+import org.telegram.divo.components.ProfilesSearchGrid
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.SearchImageAction
 import org.telegram.divo.screen.search.components.SearchRow
+import org.telegram.divo.screen.search.components.SearchSuggestionContent
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
+enum class SearchScreenType {
+    SEARCH,
+    FR
+}
+
 @Composable
 fun SearchScreen(
+    searchType: SearchScreenType,
     viewModel: SearchViewModel = viewModel(),
     onBack: () -> Unit,
+    onProfileClicked: (Int) -> Unit,
+    onSimilarProfilesClicked: (String) -> Unit,
+    onNewSearch: () -> Unit,
     onPhotoSelected: (String) -> Unit = {},
 ) {
     val state = viewModel.state.collectAsState().value
@@ -52,6 +73,14 @@ fun SearchScreen(
                 Effect.NavigateBack -> onBack()
                 is Effect.ShowError -> snackbarState.show(Error(it.message))
                 is Effect.NavigateToFaceSearch -> onPhotoSelected(it.uri)
+                is Effect.NavigateToProfile -> {
+                    if (searchType == SearchScreenType.SEARCH) {
+                        onProfileClicked(it.user.id)
+                    } else {
+                        onSimilarProfilesClicked(it.user.photo)
+                    }
+                }
+                Effect.NavigateToSearchSimilarity -> onNewSearch()
             }
         }
     }
@@ -105,8 +134,46 @@ private fun SearchContent(
                 value = state.query,
                 onSearchFaceClicked = { showBottomSheet = true },
                 onValueChanged = { onIntent(Intent.OnQueryChanged(it)) },
+                onSearchConfirmed = { onIntent(Intent.OnSearchConfirmed) },
                 onBack = { onIntent(Intent.OnBackClicked) }
             )
+
+            Spacer(Modifier.height(16.dp))
+
+            if (state.isSearchConfirmed) {
+                ProfilesSearchGrid(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    profiles = state.searchResults,
+                    isLoading = state.isLoading,
+                    isLoadingMore = state.isLoadingMore,
+                    hasMore = state.hasMore,
+                    onMarkClicked = {  }, //TODO
+                    onLikeClicked = {  }, //TODO
+                    onLoadMore = { onIntent(Intent.OnLoadMore) },
+                    onProfileClicked = { onIntent(Intent.OnItemClicked(it)) }
+                ) {
+                    Text(
+                        text = "${state.totalProfiles} ${stringResource(R.string.ResultFor)} \"${state.query}\"",
+                        style = AppTheme.typography.helveticaNeueLtCom,
+                        fontSize = 16.sp,
+                        color = AppTheme.colors.textPrimary
+                    )
+                }
+            } else {
+                val isEmpty = state.hasSearched && state.searchResults.isEmpty() && !state.isLoading
+                if (isEmpty) {
+                    EmptyContent()
+                } else {
+                    SearchSuggestionContent(
+                        searchResults = state.searchResults,
+                        isLoading = state.isLoading,
+                        isLoadingMore = state.isLoadingMore,
+                        hasMore = state.hasMore,
+                        onClicked = { onIntent(Intent.OnItemClicked(it)) },
+                        onLoadMore = { onIntent(Intent.OnLoadMore) }
+                    )
+                }
+            }
         }
 
         RoundedButton(
@@ -131,21 +198,49 @@ private fun SearchContent(
                     when (action) {
                         SearchImageAction.CAMERA -> camera.launch()
                         SearchImageAction.GALLERY -> openGallery()
-                        SearchImageAction.DIVO_PHOTO -> {
-                            //TODO пока не понятно какое фото юзать
-//                            val photoUrl = state.profilePhotoUrl ?: return@MainSearchBottomSheet
-//                            scope.launch {
-//                                val uri = ImageCacheHelper.getLocalUri(context, photoUrl)
-//                                if (uri != null) {
-//                                    Log.d("VideoGrid", uri.toString())
-//                                    //onIntent(Intent.OnPhotoSelected(uri))
-//                                }
-//                            }
-                        }
+                        SearchImageAction.DIVO_PHOTO -> onIntent(Intent.OnDivoProfilesClicked)
                     }
                 }
             )
         }
+    }
+}
+
+@Composable
+private fun EmptyContent() {
+    Column(
+        modifier = Modifier.fillMaxSize().padding(bottom = 100.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(68.dp)
+                .clip(CircleShape)
+                .background(AppTheme.colors.onBackground),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(R.drawable.ic_divo_search),
+                contentDescription = null,
+                tint = AppTheme.colors.textPrimary
+            )
+        }
+        Spacer(Modifier.height(20.dp))
+        Text(
+            text = stringResource(R.string.NoResultsFound).uppercase(),
+            style = AppTheme.typography.helveticaNeueLtCom,
+            fontSize = 26.sp,
+            color = AppTheme.colors.textPrimary
+        )
+        Spacer(Modifier.height(14.dp))
+        Text(
+            text = stringResource(R.string.TryAdjustingYourFilters),
+            style = AppTheme.typography.helveticaNeueRegular,
+            fontSize = 16.sp,
+            color = AppTheme.colors.textPrimary
+        )
     }
 }
 

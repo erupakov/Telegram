@@ -18,11 +18,14 @@ import org.telegram.divo.screen.gallery.GallerySourceHolder
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
 import org.telegram.divo.screen.profile.ProfileNavGraph
 import org.telegram.divo.screen.search.SearchScreen
+import org.telegram.divo.screen.search.SearchScreenType
 import org.telegram.divo.screen.similar_profiles.SimilarProfilesScreen
 
 sealed class ModelsRoute(val route: String) {
     data object Models : ModelsRoute("models")
-    data object Search : ModelsRoute("feed_search")
+    data object Search : ModelsRoute("feed_search/{type}") {
+        fun createRoute(type: SearchScreenType) = "feed_search/$type"
+    }
 
     data object Profile : ModelsRoute("profile/{userId}") {
         const val ROUTE = "profile/{userId}"
@@ -73,7 +76,7 @@ fun ModelsNavGraph(
         composable(ModelsRoute.Models.route) {
             ModelsHomeScreen(
                 onSearch = {
-                    nav.navigate(ModelsRoute.Search.route)
+                    nav.navigate(ModelsRoute.Search.createRoute(SearchScreenType.SEARCH))
                 },
                 onClick = { userId ->
                     nav.navigate(ModelsRoute.Profile.createRoute(userId))
@@ -125,9 +128,19 @@ fun ModelsNavGraph(
 
         composable(
             route = ModelsRoute.Search.route,
-        ) {
+            arguments = listOf(navArgument("type") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val searchType = backStackEntry.arguments
+                ?.getString("type")
+                ?.let { SearchScreenType.valueOf(it) }
+                ?: SearchScreenType.SEARCH
+
             SearchScreen(
+                searchType = searchType,
                 onPhotoSelected = { nav.navigate(ModelsRoute.FaceSearch.createRoute(it)) },
+                onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },
+                onNewSearch = { nav.navigate(ModelsRoute.Search.createRoute(SearchScreenType.FR)) },
+                onSimilarProfilesClicked = { nav.navigate(ModelsRoute.SimilarProfiles.createRoute(it)) },
                 onBack = { nav.popBackStack() }
             )
         }

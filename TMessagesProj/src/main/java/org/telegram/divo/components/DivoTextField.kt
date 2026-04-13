@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.Icon
@@ -33,8 +35,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,6 +54,7 @@ fun DivoTextField(
     modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit = {},
+    onSearchConfirmed: () -> Unit = {},
     placeholder: String = "Search",
     @DrawableRes leadingIcon: Int? = null,
     trailingIcon: Int? = null,
@@ -70,6 +75,7 @@ fun DivoTextField(
     readOnly: Boolean = false,
 ) {
     var isFocused by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val customTextSelectionColors = TextSelectionColors(
         handleColor = AppTheme.colors.accentOrange,
@@ -124,6 +130,13 @@ fun DivoTextField(
                 minLines = minLines,
                 textStyle = resolvedTextStyle,
                 cursorBrush = SolidColor(cursorColor),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        keyboardController?.hide()
+                        onSearchConfirmed()
+                    }
+                ),
                 decorationBox = { innerTextField ->
                     Box(
                         modifier = Modifier.padding(vertical = verticalContentPadding),

@@ -24,6 +24,7 @@ fun SearchRow(
     onSearchFaceClicked: () -> Unit,
     onValueChanged: (String) -> Unit,
     onBack: () -> Unit,
+    onSearchConfirmed: () -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -37,6 +38,7 @@ fun SearchRow(
                 .height(40.dp),
             value = value,
             onValueChange = onValueChanged,
+            onSearchConfirmed = onSearchConfirmed,
             cornerRadius = 99.dp,
             leadingIcon = R.drawable.ic_divo_search_24,
             trailingIcon = R.drawable.ic_divo_face_rec,

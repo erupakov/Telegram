@@ -143,9 +143,13 @@ private fun SimilarProfilesContent(
         ) {
             ProfilesSearchGrid(
                 profiles = uiState.profiles,
+                isLoading = false, //TODO
+                isLoadingMore = false, //TODO
+                hasMore = false, //TODO
                 onMarkClicked = { onIntent(Intent.OnMarkChanged(it)) },
                 onLikeClicked = { onIntent(Intent.OnLikeChanged(it)) },
-                onProfileClicked = { onIntent(Intent.OnProfileClicked(it)) }
+                onProfileClicked = { onIntent(Intent.OnProfileClicked(it.id)) },
+                onLoadMore = {} //TODO
             ) {
                 SearchResultSection(
                     imageUrl = uiState.imageUrl,

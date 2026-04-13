@@ -28,11 +28,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +46,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeProgressive
@@ -52,30 +54,53 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.DivoShareType
 import org.telegram.divo.common.utils.DivoSharingHelper
-import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.common.utils.toShortString
 import org.telegram.divo.entity.SearchedProfile
-import org.telegram.divo.screen.similar_profiles.SimilarProfilesViewModel.Companion.mockProfiles
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
 @Composable
 fun ProfilesSearchGrid(
+    modifier: Modifier = Modifier,
     profiles: List<SearchedProfile>,
+    isLoading: Boolean,
+    isLoadingMore: Boolean,
+    hasMore: Boolean,
     onMarkClicked: (Int) -> Unit,
     onLikeClicked: (Int) -> Unit,
-    onProfileClicked: (Int) -> Unit,
+    onProfileClicked: (SearchedProfile) -> Unit,
+    onLoadMore: () -> Unit,
     header: @Composable () -> Unit,
 ) {
     val lazyGridState = rememberLazyGridState()
     val bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 8.dp
 
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val layoutInfo = lazyGridState.layoutInfo
+            val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: return@derivedStateOf false
+            val total = layoutInfo.totalItemsCount
+
+            lastVisible >= total - 1 && hasMore && !isLoadingMore
+        }
+    }
+
+    LaunchedEffect(lazyGridState) {
+        snapshotFlow { shouldLoadMore }
+            .distinctUntilChanged()
+            .filter { it }
+            .collect { onLoadMore() }
+    }
+
     LazyVerticalGrid(
+        modifier = modifier,
         columns = GridCells.Fixed(2),
         state = lazyGridState,
         contentPadding = PaddingValues(top = 8.dp, bottom = bottomPadding),
@@ -96,8 +121,19 @@ fun ProfilesSearchGrid(
                 profile = it,
                 onMarkClicked = { onMarkClicked(it.id) },
                 onLikeClicked = { onLikeClicked(it.id) },
-                onProfileClicked = { onProfileClicked(it.id) },
+                onProfileClicked = { onProfileClicked(it) },
             )
+        }
+
+        if (isLoadingMore) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LottieProgressIndicator(modifier = Modifier.size(24.dp))
+                }
+            }
         }
     }
 }
@@ -166,22 +202,26 @@ private fun ProfileItem(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(
-                    modifier = Modifier
-                        .height(22.dp)
-                        .clip(CircleShape)
-                        .border(1.dp, AppTheme.colors.accentOrange, CircleShape)
-                        .background(AppTheme.colors.onBackground)
-                        .padding(horizontal = 8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.SimilarityFormat, profile.similarity ?: 0),
-                        color = AppTheme.colors.accentOrange,
-                        style = AppTheme.typography.helveticaNeueRegular,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 11.sp
-                    )
+                if (profile.similarity != null) {
+                    Box(
+                        modifier = Modifier
+                            .height(22.dp)
+                            .clip(CircleShape)
+                            .border(1.dp, AppTheme.colors.accentOrange, CircleShape)
+                            .background(AppTheme.colors.onBackground)
+                            .padding(horizontal = 8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.SimilarityFormat, profile.similarity),
+                            color = AppTheme.colors.accentOrange,
+                            style = AppTheme.typography.helveticaNeueRegular,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 11.sp
+                        )
+                    }
+                } else {
+                    Spacer(Modifier)
                 }
 
                 RoundedGlassContainer(
@@ -270,8 +310,9 @@ private fun ProfileItem(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(Modifier.height(2.dp))
+            val age = profile.age?.let { "${profile.age} ${context.getString(R.string.YearsOld)} · " } ?: ""
             Text(
-                text = "${profile.age.formattedAge(context)} · ${profile.countryCode.toCountryFlagEmoji()} ${profile.country}",
+                text = "$age${profile.countryCode?.toCountryFlagEmoji()} ${profile.country}",
                 style = AppTheme.typography.helveticaNeueRegular,
                 fontSize = 10.sp,
                 color = AppTheme.colors.onBackground,
@@ -281,15 +322,4 @@ private fun ProfileItem(
             Spacer(Modifier.height(10.dp))
         }
     }
-}
-
-@Preview
-@Composable
-private fun ProfilesSearchGrid() {
-    ProfilesSearchGrid(
-        profiles = mockProfiles,
-        onMarkClicked = {},
-        onLikeClicked = {},
-        onProfileClicked = {}
-    ) { }
 }
