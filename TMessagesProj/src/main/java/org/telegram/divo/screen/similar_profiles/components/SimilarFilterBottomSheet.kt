@@ -56,7 +56,6 @@ fun SimilarFilterBottomSheet(
         countries: List<LocalCountry>,
         percent: Int,
         role: ProfileParameter,
-        availability: ProfileParameter,
         blockParams: List<ProfileParameter>
     ) -> Unit,
     onReset: () -> Unit,
@@ -67,7 +66,6 @@ fun SimilarFilterBottomSheet(
     var draftCountries by remember { mutableStateOf(uiState.selectedCountries) }
     var draftPercent by remember { mutableIntStateOf(uiState.similarityPercent) }
     var draftRole by remember { mutableStateOf(uiState.role) }
-    var draftAvailability by remember { mutableStateOf(uiState.availability) }
     var draftBlockParams by remember {
         mutableStateOf(uiState.blockParams.ifEmpty { uiState.getDefaultBlockParams() })
     }
@@ -105,6 +103,7 @@ fun SimilarFilterBottomSheet(
         ParameterBottomSheet(
             paramType = currentParam,
             options = currentParamOptions,
+            isMultiSelect = true,
             initialValue = currentValue,
             iconClose = R.drawable.ic_divo_back,
             onDismiss = { showParametersSheet = false },
@@ -112,7 +111,6 @@ fun SimilarFilterBottomSheet(
                 currentParam?.let { paramType ->
                     when (paramType) {
                         ParametersType.ROLE -> draftRole = uiState.role.copy(value = selectedValue)
-                        ParametersType.AVAILABILITY -> draftAvailability = draftAvailability.copy(value = selectedValue)
                         else -> {
                             draftBlockParams = draftBlockParams.map { item ->
                                 if (item.type == paramType) item.copy(value = selectedValue) else item
@@ -126,7 +124,6 @@ fun SimilarFilterBottomSheet(
                 currentParam?.let { paramType ->
                     when (paramType) {
                         ParametersType.ROLE -> draftRole = draftRole.copy(value = "")
-                        ParametersType.AVAILABILITY -> draftAvailability = draftAvailability.copy(value = "")
 
                         else -> {
                             draftBlockParams = draftBlockParams.map { item ->
@@ -149,7 +146,6 @@ fun SimilarFilterBottomSheet(
             draftCountries = emptyList()
             draftPercent = MIN_SIMILARITY
             draftRole = ProfileParameter(ParametersType.ROLE, "")
-            draftAvailability = ProfileParameter(ParametersType.AVAILABILITY, "")
             draftBlockParams = draftBlockParams.map { it.copy(value = "") }
 
             onReset()
@@ -181,13 +177,8 @@ fun SimilarFilterBottomSheet(
                 )
                 Spacer(Modifier.height(16.dp))
                 ParameterItem(
-                    param = draftRole.copy(value = draftRole.value.ifEmpty { stringResource(R.string.AllLabel) }),
+                    param = draftRole.copy(value = if (draftRole.value.isEmpty()) stringResource(R.string.AllLabel) else uiState.getFormatedRoles(draftRole)),
                     onClick = { openBottomSheet(draftRole.type, context.resources.getStringArray(R.array.ModelFunNewTalent).toList(), draftRole.value) }
-                )
-                Spacer(Modifier.height(16.dp))
-                ParameterItem(
-                    param = draftAvailability.copy(value = draftAvailability.value.ifEmpty { stringResource(R.string.AnyLabel) }),
-                    onClick = { openBottomSheet(draftAvailability.type, listOf("Placeholder1", "Placeholder2", "Placeholder3"), draftAvailability.value) }
                 )
                 Spacer(Modifier.height(16.dp))
 
@@ -208,7 +199,20 @@ fun SimilarFilterBottomSheet(
                         items = draftBlockParams,
                         onClick = { param -> openBottomSheet(param.type, null, param.value) }
                     )
-                    Spacer(Modifier.height(16.dp))
+                }
+
+                if (showMoreParameters) {
+                    Spacer(Modifier.height(20.dp))
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            modifier = Modifier.clickableWithoutRipple { showMoreParameters = false },
+                            text = stringResource(R.string.LessParameters),
+                            style = AppTheme.typography.helveticaNeueRegular,
+                            fontSize = 15.sp,
+                            color = AppTheme.colors.accentOrange
+                        )
+                    }
+                    Spacer(Modifier.height(20.dp))
                 }
             }
 
@@ -219,7 +223,7 @@ fun SimilarFilterBottomSheet(
                     .padding(bottom = 16.dp),
                 text = stringResource(R.string.ApplyFilter),
                 onClick = {
-                    onApply(draftCountries, draftPercent, draftRole, draftAvailability, draftBlockParams)
+                    onApply(draftCountries, draftPercent, draftRole, draftBlockParams)
                     onDismiss()
                 }
             )

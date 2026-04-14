@@ -14,10 +14,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -35,8 +36,21 @@ fun SearchResultSection(
     similarityPercent: Int,
     hasActiveFilters: Boolean,
     activeFiltersCount: Int,
+    fx: Float? = null,
+    fy: Float? = null,
     onReset: () -> Unit
 ) {
+    val imageAlignment = remember(fx, fy) {
+        if (fx != null && fy != null) {
+            BiasAlignment(
+                horizontalBias = fx * 2f - 1f,
+                verticalBias = fy * 2f - 1f
+            )
+        } else {
+            Alignment.Center
+        }
+    }
+
     Column {
         val countText = pluralStringResource(
             id = R.plurals.ResultsCount,
@@ -52,7 +66,8 @@ fun SearchResultSection(
 
         ResultRow(
             imageUrl = imageUrl,
-            result = text
+            result = text,
+            alignment = imageAlignment
         )
         Spacer(Modifier.height(16.dp))
         Row(

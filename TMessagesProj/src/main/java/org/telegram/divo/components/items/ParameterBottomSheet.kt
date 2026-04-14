@@ -12,15 +12,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.RangeSlider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -36,13 +37,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoRangeSlider
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.style.AppTheme
@@ -57,6 +62,7 @@ fun ParameterBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
     paramType: ParametersType?,
     options: List<String>? = null,
+    isMultiSelect: Boolean = false,
     initialValue: String = "",
     iconClose: Int = R.drawable.ic_divo_back,
     onDismiss: () -> Unit,
@@ -104,19 +110,24 @@ fun ParameterBottomSheet(
     }
     val decimalParts = remember { (0..9).map { it.toString() } }
 
-    val initialOptionIndex = remember(options, initialValue) {
-        options?.indexOf(initialValue)?.takeIf { it >= 0 } ?: 0
-    }
-    var selectedSingleOption by remember {
-        mutableStateOf(options?.getOrNull(initialOptionIndex) ?: "")
-    }
-
     var selectedIntPart by remember(initialValue, integerParts) {
         val parsed = initialValue.substringBefore(".").takeIf { it.isNotEmpty() }
         mutableStateOf(parsed.takeIf { integerParts.contains(it) } ?: integerParts[integerParts.size / 2])
     }
     var selectedDecPart by remember(initialValue) {
         mutableStateOf(if (initialValue.contains(".")) initialValue.substringAfter(".") else "0")
+    }
+
+    var selectedOptions by remember(initialValue, options) {
+        mutableStateOf(
+            if (initialValue.isNotBlank()) {
+                initialValue.split(", ").toSet()
+            } else if (!options.isNullOrEmpty()) {
+                setOf(options.first())
+            } else {
+                emptySet()
+            }
+        )
     }
 
     DivoBottomSheet(
@@ -133,7 +144,12 @@ fun ParameterBottomSheet(
             } else if (options.isNullOrEmpty()) {
                 onSave("$selectedIntPart.$selectedDecPart")
             } else {
-                onSave(selectedSingleOption)
+                val defaultOption = options.firstOrNull()
+                if (isMultiSelect && selectedOptions == setOf(defaultOption)) {
+                    onSave("")
+                } else {
+                    onSave(selectedOptions.joinToString(", "))
+                }
             }
         }
     ) {
@@ -203,12 +219,33 @@ fun ParameterBottomSheet(
                             )
                         }
                     } else if (!options.isNullOrEmpty()) {
-                        DivoWheelPicker(
+                        OptionsBlock(
                             items = options,
-                            initialIndex = initialOptionIndex,
-                            isCyclic = true,
-                            modifier = Modifier.fillMaxWidth(0.8f),
-                            onItemSelected = { _, item -> selectedSingleOption = item }
+                            selectedItems = selectedOptions,
+                            onClick = { clickedItem ->
+                                if (isMultiSelect) {
+                                    val defaultOption = options.first() // Наш пункт "Все" (первый в списке)
+
+                                    if (clickedItem == defaultOption) {
+                                        // 1. Если выбрали "Все" -> убираем остальные галочки
+                                        selectedOptions = setOf(defaultOption)
+                                    } else {
+                                        // 2. Если кликают по другим пунктам
+                                        val newSelection = if (selectedOptions.contains(clickedItem)) {
+                                            selectedOptions - clickedItem // Снимаем галочку
+                                        } else {
+                                            // Ставим галочку + заодно убираем галочку с "Все"
+                                            (selectedOptions - defaultOption) + clickedItem
+                                        }
+
+                                        // 3. Если после клика не осталось ни одной галочки -> возвращаем на "Все"
+                                        selectedOptions = newSelection.ifEmpty { setOf(defaultOption) }
+                                    }
+                                } else {
+                                    // Логика одиночного выбора остается простой
+                                    selectedOptions = setOf(clickedItem)
+                                }
+                            }
                         )
                     } else {
                         Row(
@@ -331,6 +368,60 @@ fun AgeRangeSelector(
                 onAgeChange(newMin.roundToInt(), newMax.roundToInt())
             }
         )
+    }
+}
+
+@Composable
+private fun OptionsBlock(
+    items: List<String>,
+    selectedItems: Set<String>,
+    onClick: (String) -> Unit,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(20.dp))
+            .background(AppTheme.colors.onBackground)
+    ) {
+        items.forEachIndexed { index, item ->
+            val isSelected = selectedItems.contains(item)
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(30.dp)
+                    .clickableWithoutRipple { onClick(item) },
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Text(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(top = 2.dp),
+                    text = item,
+                    style = AppTheme.typography.bodyLarge,
+                    color = AppTheme.colors.textPrimary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                // Показываем галочку только если элемент выбран
+                if (isSelected) {
+                    Icon(
+                        modifier = Modifier.size(20.dp),
+                        painter = painterResource(R.drawable.ic_divo_apply),
+                        tint = AppTheme.colors.accentOrange,
+                        contentDescription = null
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(10.dp))
+            if (index != items.size - 1) {
+                Divider()
+            } else {
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
     }
 }
 

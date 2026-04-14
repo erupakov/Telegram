@@ -32,11 +32,30 @@ class FaceSearchViewModel(
                 viewModelScope.launch {
                     setState { copy(isSearching = true) }
                     delay(3000)
-                    sendEffect(Effect.NavigateToSimilarProfiles)
+
+                    val currentState = state.value
+                    var fx: Float? = null
+                    var fy: Float? = null
+
+                    if (currentState.detectionResult is FaceDetectionResult.Success) {
+                        val index = currentState.selectedFaceIndex ?: 0
+                        if (index < currentState.detectionResult.faces.size) {
+                            val rect = currentState.detectionResult.faces[index].boundingBox
+                            val imgW = currentState.detectionResult.imageWidth.toFloat()
+                            val imgH = currentState.detectionResult.imageHeight.toFloat()
+
+                            fx = (rect.centerX() / imgW).coerceIn(0f, 1f)
+                            fy = (rect.centerY() / imgH).coerceIn(0f, 1f)
+                        }
+                    }
+
+                    sendEffect(Effect.NavigateToSimilarProfiles(currentState.imageUri.toString(), fx, fy))
+                    delay(100)
                     setState { copy(isSearching = false) }
                 }
-
             }
+            Intent.OnFindProfilesClicked -> sendEffect(Effect.NavigateToSearch)
+            is Intent.OnFaceSelected -> setState { copy(selectedFaceIndex = intent.index) }
         }
     }
 
@@ -46,17 +65,20 @@ class FaceSearchViewModel(
 
     private fun analyzeImage(uri: Uri) {
         viewModelScope.launch {
-            setState { copy(imageUri = uri, detectionResult = FaceDetectionResult.Loading) }
+            setState { copy(imageUri = uri, detectionResult = FaceDetectionResult.Loading, selectedFaceIndex = null) }
 
             val result = FaceDetectionHelper.detect(appContext, uri)
 
             setState {
+                val facesCount = result?.faces?.size ?: 0
                 copy(
-                    detectionResult = if (result == null || result.faces.isEmpty()) {
+                    detectionResult = if (result == null || facesCount == 0) {
                         FaceDetectionResult.NoFace
                     } else {
                         FaceDetectionResult.Success(result.faces, result.imageWidth, result.imageHeight)
-                    }
+                    },
+                    facesCount = facesCount,
+                    selectedFaceIndex = if (facesCount == 1) 0 else null
                 )
             }
         }

@@ -23,7 +23,6 @@ data class State(
     val similarityPercent: Int = MIN_SIMILARITY,
 
     val role: ProfileParameter = ProfileParameter(ParametersType.ROLE, ""),
-    val availability: ProfileParameter = ProfileParameter(ParametersType.AVAILABILITY, ""),
     val blockParams: List<ProfileParameter> = listOf(),
 ) : ViewState {
 
@@ -47,13 +46,20 @@ data class State(
             if (countries.size == 1) "$flag ${first.name}" else "$flag ${first.name} +${countries.size - 1}"
         }
 
+    fun getFormatedRoles(role: ProfileParameter): String =
+        if (role.value.isEmpty()) ""
+        else {
+            val list = role.value.split(", ")
+            val first = list.first()
+            if (list.size == 1) first else "$first +${list.size - 1}"
+        }
+
     val activeFiltersCount: Int
         get() {
             var count = 0
             if (selectedCountries.isNotEmpty()) count++
             if (similarityPercent > 35) count++
             if (role.value.isNotEmpty()) count++
-            if (availability.value.isNotEmpty()) count++
             count += blockParams.count { it.value.isNotEmpty() }
 
             return count
@@ -72,7 +78,6 @@ sealed interface Intent : ViewIntent {
         val countries: List<LocalCountry>,
         val similarityPercent: Int,
         val role: ProfileParameter,
-        val availability: ProfileParameter,
         val blockParams: List<ProfileParameter>
     ) : Intent
     data class OnParamValueChanged(val type: ParametersType, val value: String) : Intent

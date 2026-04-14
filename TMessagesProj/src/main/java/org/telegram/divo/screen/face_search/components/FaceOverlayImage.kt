@@ -8,41 +8,55 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.components.shimmer
 import org.telegram.divo.screen.face_search.FaceDetectionResult
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
 
 @Composable
 fun FaceOverlayImage(
     modifier: Modifier = Modifier,
     imageUri: String,
     detectionResult: FaceDetectionResult,
-    isSearching: Boolean = false
+    isSearching: Boolean = false,
+    selectedFaceIndex: Int? = null,
+    onFaceClick: (Int) -> Unit = {}
 ) {
     var viewSize by remember { mutableStateOf(IntSize.Zero) }
 
@@ -74,30 +88,84 @@ fun FaceOverlayImage(
         verticalBias = fractionY * 2f - 1f
     )
 
-    Box(modifier = modifier) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(32.dp))
+            .aspectRatio(1f)
+            .onSizeChanged { viewSize = it }
+            .alpha(if (detectionResult is FaceDetectionResult.Loading) 0f else 1f)
+            .pointerInput(detectionResult, viewSize, isSearching) {
+                detectTapGestures { tapOffset ->
+                    // Кликать можно только если лиц больше 1 и нет активного поиска
+                    if (detectionResult is FaceDetectionResult.Success && !isSearching && viewSize != IntSize.Zero && detectionResult.faces.size > 1) {
+                        val imageW = detectionResult.imageWidth.toFloat()
+                        val imageH = detectionResult.imageHeight.toFloat()
+                        val vW = viewSize.width.toFloat()
+                        val vH = viewSize.height.toFloat()
+
+                        val scale = maxOf(vW / imageW, vH / imageH)
+                        val scaledW = imageW * scale
+                        val scaledH = imageH * scale
+                        val offsetX = (vW - scaledW) * fractionX
+                        val offsetY = (vH - scaledH) * fractionY
+
+                        val clickedIndex = detectionResult.faces.indexOfFirst { face ->
+                            val rect = face.boundingBox
+                            val left = (rect.left * scale) + offsetX
+                            val top = (rect.top * scale) + offsetY
+                            val right = left + rect.width() * scale
+                            val bottom = top + rect.height() * scale
+
+                            val touchRect = androidx.compose.ui.geometry.Rect(left, top, right, bottom).inflate(40f)
+                            touchRect.contains(tapOffset)
+                        }
+
+                        if (clickedIndex != -1) {
+                            onFaceClick(clickedIndex)
+                        }
+                    }
+                }
+            },
+    ) {
         DivoAsyncImage(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(32.dp))
-                .aspectRatio(1f)
-                .onSizeChanged { viewSize = it }
-                .alpha(if (detectionResult is FaceDetectionResult.Loading) 0f else 1f),
+            modifier = Modifier.fillMaxSize(),
             model = imageUri,
             contentScale = ContentScale.Crop,
             alignment = faceAlignment // Центрируем по лицу
         )
 
         if (detectionResult is FaceDetectionResult.Success && viewSize != IntSize.Zero && !isSearching) {
+            if (detectionResult.faces.size > 1) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .zIndex(1f)
+                        .background(if (selectedFaceIndex != null) AppTheme.colors.onBackground else Color(0xFFFF9500))
+                        .align(Alignment.BottomCenter),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = if (selectedFaceIndex != null) stringResource(R.string.ReadyToSearchFace) else stringResource(
+                            R.string.MultipleFacesDetected,
+                            detectionResult.faces.size
+                        ),
+                        textAlign = TextAlign.Center,
+                        style = AppTheme.typography.bodyMedium,
+                        color = if (selectedFaceIndex != null) AppTheme.colors.textPrimary else AppTheme.colors.textColor
+                    )
+                }
+            }
+
             Canvas(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
+                    .fillMaxSize()
                     .clip(RoundedCornerShape(32.dp))
             ) {
                 val imageWidth = detectionResult.imageWidth.toFloat()
                 val imageHeight = detectionResult.imageHeight.toFloat()
-                val viewWidth = viewSize.width.toFloat()
-                val viewHeight = viewSize.height.toFloat()
+                val viewWidth = size.width
+                val viewHeight = size.height
 
                 val scale = maxOf(viewWidth / imageWidth, viewHeight / imageHeight)
                 val scaledImageWidth = imageWidth * scale
@@ -106,9 +174,14 @@ fun FaceOverlayImage(
                 val offsetX = (viewWidth - scaledImageWidth) * fractionX
                 val offsetY = (viewHeight - scaledImageHeight) * fractionY
 
-                detectionResult.faces.forEach { face ->
-                    val rect = face.boundingBox
+                // Класс для хранения координат рамки
+                data class FaceDrawData(
+                    val sqLeft: Float, val sqTop: Float, val sideLength: Float, val rect: androidx.compose.ui.geometry.Rect
+                )
 
+                // Считаем геометрию рамок
+                val faceDataList = detectionResult.faces.map { face ->
+                    val rect = face.boundingBox
                     val left = (rect.left * scale) + offsetX
                     val top = (rect.top * scale) + offsetY
                     val width = rect.width() * scale
@@ -116,50 +189,99 @@ fun FaceOverlayImage(
 
                     val centerX = left + width / 2f
                     val centerY = top + height / 2f
-
                     val sideLength = maxOf(width, height) * 0.85f
-
-                    // Вычисляем смещение вниз
                     val verticalShift = height * 0.06f
 
                     val sqLeft = centerX - sideLength / 2f
                     val sqTop = (centerY - sideLength / 2f) + verticalShift
 
-                    val cornerRadius = 16.dp.toPx()
-                    val cornerLength = sideLength * 0.20f
-
-                    val path = Path().apply {
-                        moveTo(sqLeft, sqTop + cornerLength)
-                        lineTo(sqLeft, sqTop + cornerRadius)
-                        quadraticTo(sqLeft, sqTop, sqLeft + cornerRadius, sqTop)
-                        lineTo(sqLeft + cornerLength, sqTop)
-
-                        moveTo(sqLeft + sideLength - cornerLength, sqTop)
-                        lineTo(sqLeft + sideLength - cornerRadius, sqTop)
-                        quadraticTo(sqLeft + sideLength, sqTop, sqLeft + sideLength, sqTop + cornerRadius)
-                        lineTo(sqLeft + sideLength, sqTop + cornerLength)
-
-                        moveTo(sqLeft + sideLength, sqTop + sideLength - cornerLength)
-                        lineTo(sqLeft + sideLength, sqTop + sideLength - cornerRadius)
-                        quadraticTo(sqLeft + sideLength, sqTop + sideLength, sqLeft + sideLength - cornerRadius, sqTop + sideLength)
-                        lineTo(sqLeft + sideLength - cornerLength, sqTop + sideLength)
-
-                        moveTo(sqLeft + cornerLength, sqTop + sideLength)
-                        lineTo(sqLeft + cornerRadius, sqTop + sideLength)
-                        quadraticTo(sqLeft, sqTop + sideLength, sqLeft, sqTop + sideLength - cornerRadius)
-                        lineTo(sqLeft, sqTop + sideLength - cornerLength)
-                    }
-
-                    drawPath(
-                        path = path,
-                        color = boxColor,
-                        style = Stroke(
-                            width = 3.dp.toPx(),
-                            cap = StrokeCap.Round
-                        )
+                    FaceDrawData(
+                        sqLeft = sqLeft,
+                        sqTop = sqTop,
+                        sideLength = sideLength,
+                        rect = androidx.compose.ui.geometry.Rect(sqLeft, sqTop, sqLeft + sideLength, sqTop + sideLength)
                     )
                 }
-            }
+
+                val isMultipleFaces = detectionResult.faces.size > 1
+                val hasSelection = selectedFaceIndex != null
+
+                // 1. Отрисовка затемнения фона (Только если >1 лица и есть выбор)
+                if (isMultipleFaces && hasSelection && selectedFaceIndex in faceDataList.indices) {
+                    val selectedRect = faceDataList[selectedFaceIndex].rect
+                    val darkOverlayPath = Path().apply {
+                        addRect(androidx.compose.ui.geometry.Rect(0f, 0f, viewWidth, viewHeight))
+                        addRoundRect(
+                            androidx.compose.ui.geometry.RoundRect(
+                                rect = selectedRect,
+                                cornerRadius = CornerRadius(16.dp.toPx())
+                            )
+                        )
+                        fillType = PathFillType.EvenOdd
+                    }
+                    drawPath(path = darkOverlayPath, color = Color.Black.copy(alpha = 0.65f))
+                }
+
+                // 2. Отрисовка рамок
+                faceDataList.forEachIndexed { index, data ->
+                    val isSelected = index == selectedFaceIndex
+
+                    val cornerRadius = 16.dp.toPx()
+                    val cornerLength = data.sideLength * 0.20f
+
+                    // Функция для создания оригинального пунктирного пути
+                    val buildBrokenPath = {
+                        Path().apply {
+                            moveTo(data.sqLeft, data.sqTop + cornerLength)
+                            lineTo(data.sqLeft, data.sqTop + cornerRadius)
+                            quadraticTo(data.sqLeft, data.sqTop, data.sqLeft + cornerRadius, data.sqTop)
+                            lineTo(data.sqLeft + cornerLength, data.sqTop)
+
+                            moveTo(data.sqLeft + data.sideLength - cornerLength, data.sqTop)
+                            lineTo(data.sqLeft + data.sideLength - cornerRadius, data.sqTop)
+                            quadraticTo(data.sqLeft + data.sideLength, data.sqTop, data.sqLeft + data.sideLength, data.sqTop + cornerRadius)
+                            lineTo(data.sqLeft + data.sideLength, data.sqTop + cornerLength)
+
+                            moveTo(data.sqLeft + data.sideLength, data.sqTop + data.sideLength - cornerLength)
+                            lineTo(data.sqLeft + data.sideLength, data.sqTop + data.sideLength - cornerRadius)
+                            quadraticTo(data.sqLeft + data.sideLength, data.sqTop + data.sideLength, data.sqLeft + data.sideLength - cornerRadius, data.sqTop + data.sideLength)
+                            lineTo(data.sqLeft + data.sideLength - cornerLength, data.sqTop + data.sideLength)
+
+                            moveTo(data.sqLeft + cornerLength, data.sqTop + data.sideLength)
+                            lineTo(data.sqLeft + cornerRadius, data.sqTop + data.sideLength)
+                            quadraticTo(data.sqLeft, data.sqTop + data.sideLength, data.sqLeft, data.sqTop + data.sideLength - cornerRadius)
+                            lineTo(data.sqLeft, data.sqTop + data.sideLength - cornerLength)
+                        }
+                    }
+
+                    if (isMultipleFaces && hasSelection) {
+                        if (isSelected) {
+                            // ВЫБРАННОЕ лицо среди нескольких: Сплошная оранжевая рамка
+                            drawRoundRect(
+                                color = boxColor,
+                                topLeft = data.rect.topLeft,
+                                size = data.rect.size,
+                                cornerRadius = CornerRadius(16.dp.toPx()),
+                                style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+                            )
+                        } else {
+                            // ПРОЧИЕ лица среди нескольких (при наличии выбора): Старая пунктирная БЕЛАЯ рамка
+                            drawPath(
+                                path = buildBrokenPath(),
+                                color = Color.White,
+                                style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+                            )
+                        }
+                    } else {
+                        // ОДНО лицо ИЛИ несколько лиц без выбора (исходное состояние): Старая пунктирная ОРАНЖЕВАЯ рамка
+                        drawPath(
+                            path = buildBrokenPath(),
+                            color = boxColor,
+                            style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+                        )
+                    }
+                }
+                }
         }
 
         if (detectionResult is FaceDetectionResult.Loading) {

@@ -4,10 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,8 +47,11 @@ import org.telegram.divo.components.PhotoSourceBottomSheet
 import org.telegram.divo.components.ProfilesSearchGrid
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.SearchImageAction
+import org.telegram.divo.screen.search.components.SearchFilterBottomSheet
 import org.telegram.divo.screen.search.components.SearchRow
 import org.telegram.divo.screen.search.components.SearchSuggestionContent
+import org.telegram.divo.screen.similar_profiles.components.ActiveFiltersChip
+import org.telegram.divo.screen.similar_profiles.components.SimilarFilterBottomSheet
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -106,6 +112,7 @@ private fun SearchContent(
     onIntent: (Intent) -> Unit,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
+    var showFiltersBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val camera = rememberCameraCapture { uri ->
@@ -114,6 +121,17 @@ private fun SearchContent(
 
     val openGallery = rememberGalleryLauncher { uri ->
         onIntent(Intent.OnPhotoSelected(uri))
+    }
+
+    if (showFiltersBottomSheet) {
+        SearchFilterBottomSheet(
+            uiState = state,
+            onApply = { countries, city, role, draftGender, hairLength, hairColor, eyeColor, skinColor, blockParams ->
+                onIntent(Intent.OnApplyFilters(countries, city, role, draftGender, hairLength, hairColor, eyeColor, skinColor, blockParams))
+            },
+            onReset = { onIntent(Intent.OnResetFilters) },
+            onDismiss = { showFiltersBottomSheet = false },
+        )
     }
 
     Box(
@@ -133,6 +151,7 @@ private fun SearchContent(
             SearchRow(
                 value = state.query,
                 onSearchFaceClicked = { showBottomSheet = true },
+                onFilterClicked = { showFiltersBottomSheet = true },
                 onValueChanged = { onIntent(Intent.OnQueryChanged(it)) },
                 onSearchConfirmed = { onIntent(Intent.OnSearchConfirmed) },
                 onBack = { onIntent(Intent.OnBackClicked) }
@@ -152,11 +171,12 @@ private fun SearchContent(
                     onLoadMore = { onIntent(Intent.OnLoadMore) },
                     onProfileClicked = { onIntent(Intent.OnItemClicked(it)) }
                 ) {
-                    Text(
-                        text = "${state.totalProfiles} ${stringResource(R.string.ResultFor)} \"${state.query}\"",
-                        style = AppTheme.typography.helveticaNeueLtCom,
-                        fontSize = 16.sp,
-                        color = AppTheme.colors.textPrimary
+                    SearchResultRow(
+                        query = state.query,
+                        totalProfiles = state.totalProfiles,
+                        hasActiveFilters = state.hasActiveFilters,
+                        activeFiltersCount = state.activeFiltersCount,
+                        onReset = { onIntent(Intent.OnResetFilters) }
                     )
                 }
             } else {
@@ -209,7 +229,9 @@ private fun SearchContent(
 @Composable
 private fun EmptyContent() {
     Column(
-        modifier = Modifier.fillMaxSize().padding(bottom = 100.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 100.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -241,6 +263,41 @@ private fun EmptyContent() {
             fontSize = 16.sp,
             color = AppTheme.colors.textPrimary
         )
+    }
+}
+
+@Composable
+private fun SearchResultRow(
+    query: String,
+    totalProfiles: Int,
+    hasActiveFilters: Boolean,
+    activeFiltersCount: Int,
+    onReset: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        val text = if (query.isBlank()) {
+            "$totalProfiles ${pluralStringResource(R.plurals.ResultFor, totalProfiles)}"
+        } else {
+            "$totalProfiles ${pluralStringResource(R.plurals.ResultFor, totalProfiles)} ${stringResource(R.string.ForLabel)} \"${query}\""
+        }
+
+        Text(
+            text = text,
+            style = AppTheme.typography.helveticaNeueLtCom,
+            fontSize = 16.sp,
+            color = AppTheme.colors.textPrimary
+        )
+
+        if (hasActiveFilters) {
+            ActiveFiltersChip(
+                activeFiltersCount = activeFiltersCount,
+                onReset = onReset
+            )
+        }
     }
 }
 

@@ -12,19 +12,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -99,39 +103,45 @@ fun ProfilesSearchGrid(
             .collect { onLoadMore() }
     }
 
-    LazyVerticalGrid(
-        modifier = modifier,
-        columns = GridCells.Fixed(2),
-        state = lazyGridState,
-        contentPadding = PaddingValues(top = 8.dp, bottom = bottomPadding),
-        verticalArrangement = Arrangement.spacedBy(10.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        item(
-            span = { GridItemSpan(maxLineSpan) }
+    if (isLoading) {
+        EmptyContent()
+    } else {
+        LazyVerticalGrid(
+            modifier = modifier,
+            columns = GridCells.Fixed(2),
+            state = lazyGridState,
+            contentPadding = PaddingValues(top = 8.dp, bottom = bottomPadding),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            header()
-        }
+            item(
+                span = { GridItemSpan(maxLineSpan) }
+            ) {
+                header()
+            }
 
-        items(
-            items = profiles,
-            key = { it.id }
-        ) {
-            ProfileItem(
-                profile = it,
-                onMarkClicked = { onMarkClicked(it.id) },
-                onLikeClicked = { onLikeClicked(it.id) },
-                onProfileClicked = { onProfileClicked(it) },
-            )
-        }
+            items(
+                items = profiles,
+                key = { it.id }
+            ) {
+                ProfileItem(
+                    profile = it,
+                    onMarkClicked = { onMarkClicked(it.id) },
+                    onLikeClicked = { onLikeClicked(it.id) },
+                    onProfileClicked = { onProfileClicked(it) },
+                )
+            }
 
-        if (isLoadingMore) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                Box(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LottieProgressIndicator(modifier = Modifier.size(24.dp))
+            if (isLoadingMore) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        LottieProgressIndicator(modifier = Modifier.size(24.dp))
+                    }
                 }
             }
         }
@@ -310,15 +320,75 @@ private fun ProfileItem(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(Modifier.height(2.dp))
-            val age = profile.age?.let { "${profile.age} ${context.getString(R.string.YearsOld)} · " } ?: ""
-            Text(
-                text = "$age${profile.countryCode?.toCountryFlagEmoji()} ${profile.country}",
-                style = AppTheme.typography.helveticaNeueRegular,
-                fontSize = 10.sp,
-                color = AppTheme.colors.onBackground,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+            val age = profile.age?.let { "${profile.age} ${context.getString(R.string.YearsOld)} · " }
+            val countryCode = profile.countryCode?.toCountryFlagEmoji()
+            val county = profile.country
+            if (age != null || (countryCode != null && county != null)) {
+                Text(
+                    text = "${age.orEmpty()}${countryCode.orEmpty()} ${county.orEmpty()}",
+                    style = AppTheme.typography.helveticaNeueRegular,
+                    fontSize = 10.sp,
+                    color = AppTheme.colors.onBackground,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(Modifier.height(10.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun EmptyContent() {
+    Column(
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(135.dp)
+                    .height(19.dp)
+                    .clip(CircleShape)
+                    .shimmer()
             )
+
+            Box(
+                modifier = Modifier
+                    .width(104.dp)
+                    .height(36.dp)
+                    .clip(CircleShape)
+                    .shimmer()
+            )
+        }
+        Spacer(Modifier.height(16.dp))
+        repeat(5) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(3f / 4f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .shimmer()
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .aspectRatio(3f / 4f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .shimmer()
+                )
+            }
             Spacer(Modifier.height(10.dp))
         }
     }

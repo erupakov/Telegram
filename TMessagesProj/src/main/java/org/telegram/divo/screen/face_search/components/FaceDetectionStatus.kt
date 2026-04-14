@@ -18,19 +18,6 @@ import org.telegram.messenger.R
 @Composable
 fun FaceDetectionStatus(result: FaceDetectionResult) {
     when (result) {
-        is FaceDetectionResult.Success -> {
-            if (result.faces.size > 1) {
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.MultipleFacesDetected),
-                    textAlign = TextAlign.Center,
-                    style = AppTheme.typography.helveticaNeueRegular,
-                    fontSize = 14.sp,
-                    lineHeight = 18.sp,
-                    color = AppTheme.colors.textPrimary.copy(0.7f)
-                )
-            }
-        }
         is FaceDetectionResult.NoFace -> {
             Spacer(Modifier.height(16.dp))
             Text(

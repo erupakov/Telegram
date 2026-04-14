@@ -36,8 +36,11 @@ sealed class ModelsRoute(val route: String) {
         fun createRoute(uri: String) = "face_search/${Uri.encode(uri)}"
     }
 
-    data object SimilarProfiles : ModelsRoute("similar_profiles/{uri}") {
-        fun createRoute(uri: String) = "similar_profiles/${Uri.encode(uri)}"
+    data object SimilarProfiles : ModelsRoute("similar_profiles/{uri}?fx={fx}&fy={fy}") {
+        fun createRoute(uri: String, fx: Float? = null, fy: Float? = null): String {
+            val base = "similar_profiles/${Uri.encode(uri)}"
+            return if (fx != null && fy != null) "$base?fx=$fx&fy=$fy" else base
+        }
     }
 
     object GalleryViewer : ModelsRoute("gallery/{sourceType}") {
@@ -147,14 +150,15 @@ fun ModelsNavGraph(
 
         composable(
             route = ModelsRoute.FaceSearch.route,
-            arguments = listOf(
-                navArgument("uri") { type = NavType.StringType },
-            )
+            arguments = listOf(navArgument("uri") { type = NavType.StringType })
         ) { backStackEntry ->
-            val uri: String = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
+            val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
             FaceSearchScreen(
                 uri = uri,
-                onNavigateSimilarProfiles = { nav.navigate(ModelsRoute.SimilarProfiles.createRoute(it)) },
+                onNavigateSimilarProfiles = { url, fx, fy ->
+                    nav.navigate(ModelsRoute.SimilarProfiles.createRoute(url, fx, fy))
+                },
+                onNavigateToSearch = { nav.navigate(ModelsRoute.Search.createRoute(SearchScreenType.FR)) },
                 onBack = { nav.popBackStack() }
             )
         }
@@ -163,11 +167,18 @@ fun ModelsNavGraph(
             route = ModelsRoute.SimilarProfiles.route,
             arguments = listOf(
                 navArgument("uri") { type = NavType.StringType },
+                navArgument("fx") { type = NavType.StringType; nullable = true },
+                navArgument("fy") { type = NavType.StringType; nullable = true }
             )
         ) { backStackEntry ->
-            val uri: String = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
+            val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
+            val fx = backStackEntry.arguments?.getString("fx")?.toFloatOrNull()
+            val fy = backStackEntry.arguments?.getString("fy")?.toFloatOrNull()
+
             SimilarProfilesScreen(
                 url = uri,
+                fx = fx,
+                fy = fy,
                 onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },
                 onBack = { nav.popBackStack() }
             )

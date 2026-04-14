@@ -9,19 +9,24 @@ import org.telegram.divo.common.ViewState
 data class State(
     val imageUri: Uri,
     val isSearching: Boolean = false,
+    val facesCount: Int = 0,
     val detectionResult: FaceDetectionResult = FaceDetectionResult.Loading,
+    val selectedFaceIndex: Int? = null
 ) : ViewState
 
 sealed interface Intent : ViewIntent {
     data object OnBackClicked : Intent
     data class OnChangePhoto(val uri: Uri) : Intent
     data object OnFindClicked : Intent
+    data object OnFindProfilesClicked : Intent
+    data class OnFaceSelected(val index: Int) : Intent
 }
 
 sealed interface Effect : ViewEffect {
     data object NavigateBack : Effect
-    data object NavigateToSimilarProfiles : Effect
+    data class NavigateToSimilarProfiles(val uri: String, val fx: Float?, val fy: Float?) : Effect
     data class ShowError(val message: String) : Effect
+    data object NavigateToSearch : Effect
 }
 
 sealed class FaceDetectionResult {

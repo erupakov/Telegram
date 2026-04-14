@@ -22,6 +22,7 @@ import org.telegram.messenger.R
 fun SearchRow(
     value: String,
     onSearchFaceClicked: () -> Unit,
+    onFilterClicked: () -> Unit,
     onValueChanged: (String) -> Unit,
     onBack: () -> Unit,
     onSearchConfirmed: () -> Unit,
@@ -55,7 +56,7 @@ fun SearchRow(
             iconSize = 24.dp,
             paddingEnd = 0.dp,
             iconTint = AppTheme.colors.textPrimary,
-            onClick = { }
+            onClick = onFilterClicked
         )
         Spacer(Modifier.width(10.dp))
         RoundedButton(

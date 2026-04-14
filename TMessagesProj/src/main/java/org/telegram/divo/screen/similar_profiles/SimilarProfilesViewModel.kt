@@ -39,7 +39,6 @@ class SimilarProfilesViewModel(
                     selectedCountries = emptyList(),
                     similarityPercent = MIN_SIMILARITY,
                     role = ProfileParameter(ParametersType.ROLE, ""),
-                    availability = ProfileParameter(ParametersType.AVAILABILITY, ""),
                     blockParams = state.value.getDefaultBlockParams()
                 )
 
@@ -51,7 +50,6 @@ class SimilarProfilesViewModel(
                     selectedCountries = intent.countries,
                     similarityPercent = intent.similarityPercent,
                     role = intent.role,
-                    availability = intent.availability,
                     blockParams = intent.blockParams
                 )
 
@@ -102,8 +100,14 @@ class SimilarProfilesViewModel(
             val roleMatch = if (currentState.role.value.isEmpty()) {
                 true
             } else {
-                profile.roleLabel.equals(currentState.role.value, ignoreCase = true)
+                // Разбиваем строку на список выбранных ролей
+                val selectedRoles = currentState.role.value.split(", ")
+                // Проверяем, есть ли роль профиля в списке выбранных (Игнорируя регистр)
+                selectedRoles.any { selectedRole ->
+                    profile.roleLabel.equals(selectedRole, ignoreCase = true)
+                }
             }
+
 
             val ageParam = currentState.blockParams.find { it.type == ParametersType.AGE }?.value
             val ageMatch = if (ageParam.isNullOrEmpty()) {

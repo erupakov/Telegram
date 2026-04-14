@@ -112,6 +112,7 @@ fun ParameterItem(
     param: ProfileParameter?,
     weightLabel: Float = 0.6f,
     weightValue: Float = 0.4f,
+    hasPrefix: Boolean = false,
     onClick: (ParametersType) -> Unit,
 ) {
     param?.let {
@@ -127,8 +128,10 @@ fun ParameterItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                modifier = Modifier.weight(weightLabel).padding(top = 1.dp),
-                text = stringResource(param.type.titleRes),
+                modifier = Modifier
+                    .weight(weightLabel)
+                    .padding(top = 1.dp),
+                text = if (hasPrefix) "${stringResource(R.string.ChoosePrefix)} ${stringResource(param.type.titleRes).lowercase()}" else stringResource(param.type.titleRes),
                 style = AppTheme.typography.bodyLarge,
                 color = AppTheme.colors.textPrimary,
                 maxLines = 1,
@@ -139,7 +142,9 @@ fun ParameterItem(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    modifier = Modifier.weight(1f).padding(top = 2.dp),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(top = 2.dp),
                     text = it.value,
                     style = AppTheme.typography.bodyMedium,
                     color = AppTheme.colors.textPrimary.copy(0.6f),
@@ -162,10 +167,11 @@ data class ProfileParameter(
     val type: ParametersType,
     val value: String,
     val id: Int? = null,
+    val ids: List<Int> = emptyList(),
 )
 
 enum class ParametersType(
-    @field:StringRes val titleRes: Int
+    @field:StringRes val titleRes: Int,
 ) {
     GENDER(R.string.LabelGender),
     BIRTHDAY(R.string.LabelAge),
@@ -181,7 +187,6 @@ enum class ParametersType(
     BREAST_SIZE(R.string.ChooseBreastSize),
     COUNTRY(R.string.CountryLabel),
     ROLE(R.string.RoleLabel),
-    AVAILABILITY(R.string.AvailabilityLabel)
 }
 
 @Preview

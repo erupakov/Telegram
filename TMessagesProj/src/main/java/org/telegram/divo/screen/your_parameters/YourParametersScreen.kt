@@ -16,7 +16,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -186,21 +185,25 @@ fun YourParametersScreen(
                             Spacer(Modifier.height(16.dp))
                             ParameterItem(
                                 param = state.hairLength,
+                                hasPrefix = true,
                                 onClick = { openBottomSheet(ParametersType.HAIR_LENGTH, state.hairLengthOptions.map { it.title.orEmpty() }, state.hairLength?.value.orEmpty()) }
                             )
                             Spacer(Modifier.height(16.dp))
                             ParameterItem(
                                 param = state.hairColor,
+                                hasPrefix = true,
                                 onClick = { openBottomSheet(ParametersType.HAIR_COLOR, state.hairColorOptions.map { it.title.orEmpty() }, state.hairColor?.value.orEmpty()) }
                             )
                             Spacer(Modifier.height(16.dp))
                             ParameterItem(
                                 param = state.eyeColor,
+                                hasPrefix = true,
                                 onClick = { openBottomSheet(ParametersType.EYE_COLOR, state.eyeColorOptions.map { it.title.orEmpty() }, state.eyeColor?.value.orEmpty()) }
                             )
                             Spacer(Modifier.height(16.dp))
                             ParameterItem(
                                 param = state.skinColor,
+                                hasPrefix = true,
                                 onClick = { openBottomSheet(ParametersType.SKIN_COLOR, state.skinColorOptions.map { it.title.orEmpty() }, state.skinColor?.value.orEmpty()) }
                             )
 
@@ -209,6 +212,7 @@ fun YourParametersScreen(
                                 Spacer(Modifier.height(16.dp))
                                 ParameterItem(
                                     param = state.breastSize,
+                                    hasPrefix = true,
                                     onClick = { openBottomSheet(ParametersType.BREAST_SIZE, breastSizes, state.breastSize?.value.orEmpty()) }
                                 )
                             }

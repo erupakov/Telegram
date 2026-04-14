@@ -50,7 +50,8 @@ import org.telegram.messenger.R
 @Composable
 fun FaceSearchScreen(
     uri: String,
-    onNavigateSimilarProfiles: (String) -> Unit,
+    onNavigateSimilarProfiles: (String, Float?, Float?) -> Unit,
+    onNavigateToSearch: () -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -70,7 +71,8 @@ fun FaceSearchScreen(
             when (it) {
                 Effect.NavigateBack -> onBack()
                 is Effect.ShowError -> snackbarState.show(Error(it.message))
-                Effect.NavigateToSimilarProfiles -> onNavigateSimilarProfiles(state.imageUri.toString())
+                is Effect.NavigateToSimilarProfiles -> onNavigateSimilarProfiles(it.uri, it.fx, it.fy)
+                Effect.NavigateToSearch -> onNavigateToSearch()
             }
         }
     }
@@ -138,7 +140,7 @@ private fun FaceSearchContent(
                     when (action) {
                         SearchImageAction.CAMERA -> camera.launch()
                         SearchImageAction.GALLERY -> openGallery()
-                        SearchImageAction.DIVO_PHOTO -> {}
+                        SearchImageAction.DIVO_PHOTO -> { onIntent(Intent.OnFindProfilesClicked) }
                     }
                 }
             )
@@ -181,7 +183,9 @@ private fun FaceSearchContent(
                     FaceOverlayImage(
                         imageUri = uiState.imageUri.toString(),
                         detectionResult = uiState.detectionResult,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        selectedFaceIndex = uiState.selectedFaceIndex,
+                        onFaceClick = { onIntent(Intent.OnFaceSelected(it)) }
                     )
 
                     FaceDetectionStatus(uiState.detectionResult)
@@ -204,7 +208,7 @@ private fun FaceSearchContent(
                 ) {
                     UIButtonNew(
                         modifier = Modifier.fillMaxWidth(),
-                        enabled = uiState.detectionResult != FaceDetectionResult.Loading && uiState.detectionResult != FaceDetectionResult.NoFace,
+                        enabled = uiState.detectionResult != FaceDetectionResult.Loading && uiState.detectionResult != FaceDetectionResult.NoFace && uiState.selectedFaceIndex != null,
                         text = stringResource(R.string.FindSimilarProfiles),
                         onClick = { onIntent(Intent.OnFindClicked) }
                     )

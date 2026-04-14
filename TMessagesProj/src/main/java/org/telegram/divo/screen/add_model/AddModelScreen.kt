@@ -61,6 +61,7 @@ import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.TelegramUserAvatarEditable
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.components.items.DivoBottomSheet
+import org.telegram.divo.screen.search.components.EmptyPlaceContent
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -315,60 +316,67 @@ fun CountryPickerSheet(
         )
         Spacer(Modifier.height(16.dp))
         Box(Modifier.fillMaxSize()) {
-            LazyColumn(
-                Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(AppTheme.colors.onBackground),
-                contentPadding = PaddingValues(bottom = 8.dp)
-            ) {
-                itemsIndexed(filteredList, key = { i, c -> c.code }) { index, item ->
-                    val isSelected = currentSelection.contains(item)
+            if (filteredList.isEmpty() && searchQuery.isNotBlank()) {
+                EmptyPlaceContent(
+                    title = stringResource(R.string.CountriesLabel),
+                    body = stringResource(R.string.CountryLabel)
+                )
+            } else {
+                LazyColumn(
+                    Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(AppTheme.colors.onBackground),
+                    contentPadding = PaddingValues(bottom = 8.dp)
+                ) {
+                    itemsIndexed(filteredList, key = { i, c -> c.code }) { index, item ->
+                        val isSelected = currentSelection.contains(item)
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(46.dp)
-                            .clickableWithoutRipple {
-                                if (isMultiSelection) {
-                                    if (isSelected) currentSelection.remove(item)
-                                    else currentSelection.add(item)
-                                } else {
-                                    scope.launch {
-                                        sheetState.hide()
-                                        onPick(listOf(item))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(46.dp)
+                                .clickableWithoutRipple {
+                                    if (isMultiSelection) {
+                                        if (isSelected) currentSelection.remove(item)
+                                        else currentSelection.add(item)
+                                    } else {
+                                        scope.launch {
+                                            sheetState.hide()
+                                            onPick(listOf(item))
+                                        }
                                     }
                                 }
+                                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            if (item.flag != null) {
+                                Text(text = item.flag, fontSize = 14.sp)
+                                Spacer(Modifier.width(8.dp))
                             }
-                            .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        if (item.flag != null) {
-                            Text(text = item.flag, fontSize = 14.sp)
-                            Spacer(Modifier.width(8.dp))
-                        }
-                        Text(
-                            text = item.name,
-                            style = AppTheme.typography.bodyLarge,
-                            modifier = Modifier.weight(1f)
-                        )
+                            Text(
+                                text = item.name,
+                                style = AppTheme.typography.bodyLarge,
+                                modifier = Modifier.weight(1f)
+                            )
 
-                        if (isSelected) {
-                            Icon(
-                                modifier = Modifier.size(20.dp),
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                tint = AppTheme.colors.accentOrange
+                            if (isSelected) {
+                                Icon(
+                                    modifier = Modifier.size(20.dp),
+                                    imageVector = Icons.Default.Check,
+                                    contentDescription = null,
+                                    tint = AppTheme.colors.accentOrange
+                                )
+                            }
+                        }
+
+                        if (index != filteredList.size -1) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                thickness = 0.5.dp,
+                                color = Color.LightGray
                             )
                         }
-                    }
-
-                    if (index != filteredList.size -1) {
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            thickness = 0.5.dp,
-                            color = Color.LightGray
-                        )
                     }
                 }
             }

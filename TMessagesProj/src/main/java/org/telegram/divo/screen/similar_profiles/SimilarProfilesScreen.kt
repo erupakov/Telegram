@@ -12,7 +12,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -42,6 +41,8 @@ fun SimilarProfilesScreen(
     viewModel: SimilarProfilesViewModel = viewModel(
         factory = SimilarProfilesViewModel.factory(url)
     ),
+    fx: Float? = null,
+    fy: Float? = null,
     onProfileClicked: (Int) -> Unit,
     onBack: () -> Unit
 ) {
@@ -62,6 +63,8 @@ fun SimilarProfilesScreen(
     SimilarProfilesContent(
         uiState = state,
         snackbarHostState = snackbarState,
+        fx = fx,
+        fy = fy,
         onIntent = { viewModel.setIntent(it) }
     )
 }
@@ -70,6 +73,8 @@ fun SimilarProfilesScreen(
 @Composable
 private fun SimilarProfilesContent(
     uiState: State,
+    fx: Float? = null,
+    fy: Float? = null,
     snackbarHostState: AppSnackbarHostState,
     onIntent: (Intent) -> Unit = {},
 ) {
@@ -127,8 +132,8 @@ private fun SimilarProfilesContent(
         if (showBottomSheet) {
             SimilarFilterBottomSheet(
                 uiState = uiState,
-                onApply = { countries, percent, role, availability, blockParams ->
-                    onIntent(Intent.OnApplyFilters(countries, percent, role, availability, blockParams))
+                onApply = { countries, percent, role, blockParams ->
+                    onIntent(Intent.OnApplyFilters(countries, percent, role, blockParams))
                 },
                 onReset = { onIntent(Intent.OnParamsReset) },
                 onDismiss = { showBottomSheet = false },
@@ -158,6 +163,8 @@ private fun SimilarProfilesContent(
                     similarityPercent = HIGH_PERCENT,
                     hasActiveFilters = uiState.hasActiveFilters,
                     activeFiltersCount = uiState.activeFiltersCount,
+                    fx = fx,
+                    fy = fy,
                     onReset = { onIntent(Intent.OnParamsReset) }
                 )
             }
