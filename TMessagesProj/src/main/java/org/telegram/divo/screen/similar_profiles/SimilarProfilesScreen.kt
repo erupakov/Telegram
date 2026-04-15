@@ -38,8 +38,9 @@ import org.telegram.messenger.R
 @Composable
 fun SimilarProfilesScreen(
     url: String,
+    initialFiltersJson: String? = null,
     viewModel: SimilarProfilesViewModel = viewModel(
-        factory = SimilarProfilesViewModel.factory(url)
+        factory = SimilarProfilesViewModel.factory(url, initialFiltersJson)
     ),
     fx: Float? = null,
     fy: Float? = null,

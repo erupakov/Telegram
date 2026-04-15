@@ -26,7 +26,6 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
-
     private var searchJob: Job? = null
 
     private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
@@ -117,6 +116,8 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
+
+            Intent.OnFaceSearchHistoryClicked -> { sendEffect(NavigateToFaceSearchHistory) }
         }
     }
 
@@ -130,6 +131,16 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             launch { loadCountries() }
             launch { loadCities() }
             launch { loadUserProfile() }
+            launch { loadFrHistory() }
+        }
+    }
+
+    private suspend fun loadFrHistory() {
+        val userInfoResult = DivoApi.userRepository.getCurrentUserInfo()
+        val userId = (userInfoResult as? DivoResult.Success)?.value?.id ?: return
+        
+        DivoApi.faceRecognitionRepository.getRecent(10, userId).collect { history ->
+            setState { copy(frSearchHistory = history) }
         }
     }
 

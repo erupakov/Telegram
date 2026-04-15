@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
+import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -23,7 +24,10 @@ import java.io.InputStreamReader
 
 class SimilarProfilesViewModel(
     val imageUrl: String,
+    private val initialFiltersJson: String? = null,
 ) : BaseViewModel<State, Intent, Effect>() {
+    private var currentUserId: Int? = null
+    private var pendingCountryShortNames: List<String> = emptyList()
 
     override fun createInitialState(): State = State(imageUrl = imageUrl)
 
@@ -41,8 +45,10 @@ class SimilarProfilesViewModel(
                     role = ProfileParameter(ParametersType.ROLE, ""),
                     blockParams = state.value.getDefaultBlockParams()
                 )
-
-                setState { newState.copy(profiles = filterMockProfiles(newState)) }
+                val filtered = filterMockProfiles(newState)
+                val updatedState = newState.copy(profiles = filtered)
+                setState { updatedState }
+                saveHistory(updatedState)
             }
 
             is Intent.OnApplyFilters -> {
@@ -52,8 +58,10 @@ class SimilarProfilesViewModel(
                     role = intent.role,
                     blockParams = intent.blockParams
                 )
-
-                setState { newState.copy(profiles = filterMockProfiles(newState)) }
+                val filtered = filterMockProfiles(newState)
+                val updatedState = newState.copy(profiles = filtered)
+                setState { updatedState }
+                saveHistory(updatedState)
             }
         }
     }
@@ -75,12 +83,14 @@ class SimilarProfilesViewModel(
         setState { copy(isLoading = true) }
 
         //if (result is DivoResult.Success) {
-            setState {
-                copy(
-                    profiles = mockProfiles,
-                    isLoading = false
-                )
-            }
+        val filtered = filterMockProfiles(state.value.copy(profiles = mockProfiles))
+        setState {
+            copy(
+                profiles = filtered,
+                isLoading = false
+            )
+        }
+        saveHistory(state.value.copy(profiles = filtered))
 //        } else {
 //            setState { copy(isLoading = false) }
 //            sendEffect(Effect.ShowError(result.getErrorMessage()))
@@ -222,6 +232,16 @@ class SimilarProfilesViewModel(
                 list.sortBy { it.name }
 
                 setState { copy(allCountries = list) }
+                if (pendingCountryShortNames.isNotEmpty()) {
+                    val selected = list.filter { it.shortName in pendingCountryShortNames }
+                    if (selected.isNotEmpty()) {
+                        val newState = state.value.copy(selectedCountries = selected)
+                        val filtered = filterMockProfiles(newState)
+                        setState { newState.copy(profiles = filtered) }
+                        saveHistory(newState.copy(profiles = filtered))
+                    }
+                    pendingCountryShortNames = emptyList()
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -231,9 +251,10 @@ class SimilarProfilesViewModel(
     private fun loadUserProfile() {
         viewModelScope.launch {
             setState { copy(isUserLoading = true) }
-            val result =DivoApi.userRepository.getCurrentUserInfo()
+            val result = DivoApi.userRepository.getCurrentUserInfo()
 
             if (result is DivoResult.Success) {
+                currentUserId = result.value.id
                 setState {
                     copy(
                         isUserLoading = false,
@@ -241,6 +262,7 @@ class SimilarProfilesViewModel(
                         blockParams = getDefaultBlockParams(),
                     )
                 }
+                applyInitialFiltersIfNeeded()
             } else {
                 setState { copy(isUserLoading = false) }
                 sendEffect(ShowError(result.getErrorMessage()))
@@ -248,11 +270,67 @@ class SimilarProfilesViewModel(
         }
     }
 
+    private fun applyInitialFiltersIfNeeded() {
+        val payload = SimilarFiltersSerializer.deserialize(initialFiltersJson) ?: return
+        val stateWithCoreFilters = state.value.copy(
+            similarityPercent = payload.similarityPercent,
+            role = ProfileParameter(ParametersType.ROLE, payload.roleValue),
+            blockParams = mergeBlockParams(state.value.getDefaultBlockParams(), payload.blockParams)
+        )
+        val filteredByCore = filterMockProfiles(stateWithCoreFilters)
+        setState { stateWithCoreFilters.copy(profiles = filteredByCore) }
+        saveHistory(stateWithCoreFilters.copy(profiles = filteredByCore))
+
+        if (payload.countryShortNames.isNotEmpty()) {
+            if (state.value.allCountries.isNotEmpty()) {
+                val selected = state.value.allCountries.filter { it.shortName in payload.countryShortNames }
+                if (selected.isNotEmpty()) {
+                    val withCountries = state.value.copy(selectedCountries = selected)
+                    val filtered = filterMockProfiles(withCountries)
+                    setState { withCountries.copy(profiles = filtered) }
+                    saveHistory(withCountries.copy(profiles = filtered))
+                }
+            } else {
+                pendingCountryShortNames = payload.countryShortNames
+            }
+        }
+    }
+
+    private fun mergeBlockParams(
+        defaults: List<ProfileParameter>,
+        restored: List<ProfileParameter>
+    ): List<ProfileParameter> {
+        val restoredByType = restored.associateBy { it.type }
+        return defaults.map { default ->
+            restoredByType[default.type]?.let {
+                default.copy(value = it.value)
+            } ?: default
+        }
+    }
+
+    private fun saveHistory(currentState: State) {
+        val userId = currentUserId ?: return
+        viewModelScope.launch {
+            val filtersJson = SimilarFiltersSerializer.serialize(currentState)
+            val existing = DivoApi.faceRecognitionRepository.getByImageUri(currentState.imageUrl, userId)
+            DivoApi.faceRecognitionRepository.save(
+                FaceRecognitionEntity(
+                    id = existing?.id ?: java.util.UUID.randomUUID().toString(),
+                    imageUri = currentState.imageUrl,
+                    userId = userId,
+                    resultsCount = currentState.profiles.size,
+                    filtersJson = filtersJson,
+                    createdAt = System.currentTimeMillis()
+                )
+            )
+        }
+    }
+
     companion object {
-        fun factory(uri: String) = object : ViewModelProvider.Factory {
+        fun factory(uri: String, filtersJson: String? = null) = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return SimilarProfilesViewModel(uri) as T
+                return SimilarProfilesViewModel(uri, filtersJson) as T
             }
         }
 

@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.screen.face_search.FaceSearchScreen
+import org.telegram.divo.screen.face_search_history.FaceSearchHistoryScreen
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GallerySourceHolder
@@ -36,10 +37,26 @@ sealed class ModelsRoute(val route: String) {
         fun createRoute(uri: String) = "face_search/${Uri.encode(uri)}"
     }
 
-    data object SimilarProfiles : ModelsRoute("similar_profiles/{uri}?fx={fx}&fy={fy}") {
-        fun createRoute(uri: String, fx: Float? = null, fy: Float? = null): String {
+    data object FaceSearchHistory : ModelsRoute("face_search_history")
+
+    data object SimilarProfiles : ModelsRoute("similar_profiles/{uri}?fx={fx}&fy={fy}&filters={filters}") {
+        fun createRoute(
+            uri: String,
+            fx: Float? = null,
+            fy: Float? = null,
+            filtersJson: String? = null
+        ): String {
             val base = "similar_profiles/${Uri.encode(uri)}"
-            return if (fx != null && fy != null) "$base?fx=$fx&fy=$fy" else base
+            val query = buildList {
+                if (fx != null && fy != null) {
+                    add("fx=$fx")
+                    add("fy=$fy")
+                }
+                if (!filtersJson.isNullOrBlank()) {
+                    add("filters=${Uri.encode(filtersJson)}")
+                }
+            }
+            return if (query.isEmpty()) base else "$base?${query.joinToString("&")}"
         }
     }
 
@@ -143,7 +160,10 @@ fun ModelsNavGraph(
                 onPhotoSelected = { nav.navigate(ModelsRoute.FaceSearch.createRoute(it)) },
                 onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },
                 onNewSearch = { nav.navigate(ModelsRoute.Search.createRoute(SearchScreenType.FR)) },
-                onSimilarProfilesClicked = { nav.navigate(ModelsRoute.SimilarProfiles.createRoute(it)) },
+                onSimilarProfilesClicked = { uri, filtersJson ->
+                    nav.navigate(ModelsRoute.SimilarProfiles.createRoute(uri, filtersJson = filtersJson))
+                },
+                onNavigateToFaceSearchHistory = { nav.navigate(ModelsRoute.FaceSearchHistory.route) },
                 onBack = { nav.popBackStack() }
             )
         }
@@ -168,18 +188,32 @@ fun ModelsNavGraph(
             arguments = listOf(
                 navArgument("uri") { type = NavType.StringType },
                 navArgument("fx") { type = NavType.StringType; nullable = true },
-                navArgument("fy") { type = NavType.StringType; nullable = true }
+                navArgument("fy") { type = NavType.StringType; nullable = true },
+                navArgument("filters") { type = NavType.StringType; nullable = true }
             )
         ) { backStackEntry ->
             val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
             val fx = backStackEntry.arguments?.getString("fx")?.toFloatOrNull()
             val fy = backStackEntry.arguments?.getString("fy")?.toFloatOrNull()
+            val filtersJson = backStackEntry.arguments?.getString("filters")?.let { Uri.decode(it) }
 
             SimilarProfilesScreen(
                 url = uri,
+                initialFiltersJson = filtersJson,
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },
+                onBack = { nav.popBackStack() }
+            )
+        }
+
+        composable(
+            route = ModelsRoute.FaceSearchHistory.route
+        ) {
+            FaceSearchHistoryScreen(
+                onSimilarityProfileClicked = { uri, filtersJson ->
+                    nav.navigate(ModelsRoute.SimilarProfiles.createRoute(uri, filtersJson = filtersJson))
+                },
                 onBack = { nav.popBackStack() }
             )
         }

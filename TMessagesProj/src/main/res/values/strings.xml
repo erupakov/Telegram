@@ -194,6 +194,10 @@
     <string name="AllColorsLabel">All colors</string>
     <string name="AllLengthsLabel">All lengths</string>
     <string name="ForLabel">For</string>
+    <string name="RecentFaceSearches">Recent face searches</string>
+    <string name="Found">found</string>
+    <string name="NoFilters">No filters</string>
+    <string name="SeeAll">See all</string>
     <plurals name="ResultFor">
         <item quantity="one">result</item>
         <item quantity="other">results</item>
@@ -201,6 +205,8 @@
 
     <!--similar profiles screen-->
     <string name="SimilarProfilesTitle">Similar profiles</string>
+    <string name="FaceSearchHistoryTitle">Face search history</string>
+    <string name="ClearAll">Clear All</string>
     <string name="ResultsWithSimilarity">%1$s · Similarity %2$d%%+</string>
     <string name="SortedBy">Sorted by: </string>
     <string name="SimilarityFormat">%1$d%% match</string>

@@ -9,8 +9,10 @@ import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.entity.AppearanceItem
 import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
 
 data class State(
+    val frSearchHistory: List<FaceRecognitionEntity> = emptyList(),
     val isModel: Boolean = true,
     val isUserLoading: Boolean = false,
 
@@ -97,6 +99,7 @@ sealed interface Intent : ViewIntent {
     data object OnSearchConfirmed : Intent
     data object OnDivoProfilesClicked : Intent
     data object OnResetFilters : Intent
+    data object OnFaceSearchHistoryClicked : Intent
 
     data class OnApplyFilters(
         val countries: List<LocalCountry>,
@@ -117,6 +120,7 @@ sealed interface Effect : ViewEffect {
     data class NavigateToFaceSearch(val uri: String) : Effect
     data class NavigateToProfile(val user: SearchedProfile) : Effect
     data object NavigateToSearchSimilarity : Effect
+    data object NavigateToFaceSearchHistory : Effect
 }
 
 data class LocalCity(

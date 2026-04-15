@@ -114,7 +114,9 @@ private fun SearchSuggestions(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .height(height)
+            .then(
+                if (items.size < 10) Modifier else Modifier.height(height)
+            )
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(AppTheme.colors.onBackground),

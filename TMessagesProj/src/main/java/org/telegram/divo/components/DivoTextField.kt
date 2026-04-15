@@ -158,24 +158,40 @@ fun DivoTextField(
 
             if (trailingIcon != null) {
                 if (trailingIcon == R.drawable.ic_divo_face_rec) {
-                    Box(
-                        Modifier
-                            .fillMaxHeight()
-                            .aspectRatio(1f)
-                            .padding(2.dp)
-                            .offset(x = 12.dp)
-                            .clip(CircleShape)
-                            .background(AppTheme.colors.accentOrange),
-                        contentAlignment = Alignment.Center
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            painter = painterResource(trailingIcon),
-                            contentDescription = null,
-                            tint = trailingIconColor,
-                            modifier = Modifier
-                                .size(18.dp)
-                                .clickableWithoutRipple { onTrailingIconClick() }
-                        )
+                        if (value.isNotBlank()) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_divo_clear),
+                                contentDescription = null,
+                                tint = AppTheme.colors.textPrimary,
+                                modifier = Modifier
+                                    .size(14.dp)
+                                    .offset(x = 6.dp)
+                                    .clickableWithoutRipple { onValueChange("") }
+                            )
+                        }
+
+                        Box(
+                            Modifier
+                                .fillMaxHeight()
+                                .aspectRatio(1f)
+                                .padding(2.dp)
+                                .offset(x = 12.dp)
+                                .clip(CircleShape)
+                                .background(AppTheme.colors.accentOrange),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(trailingIcon),
+                                contentDescription = null,
+                                tint = trailingIconColor,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickableWithoutRipple { onTrailingIconClick() }
+                            )
+                        }
                     }
                 } else {
                     Spacer(modifier = Modifier.width(8.dp))

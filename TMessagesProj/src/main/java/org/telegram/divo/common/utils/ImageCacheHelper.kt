@@ -31,4 +31,28 @@ object ImageCacheHelper {
             }
         }
     }
+
+    suspend fun cacheUri(context: Context, sourceUri: Uri): String? {
+        return withContext(Dispatchers.IO) {
+            try {
+                if (sourceUri.scheme == "file" || sourceUri.scheme?.startsWith("http") == true) {
+                    return@withContext sourceUri.toString()
+                }
+                
+                val fileName = "fr_history_${System.currentTimeMillis()}_${sourceUri.hashCode()}.jpg"
+                val file = File(context.cacheDir, fileName)
+
+                context.contentResolver.openInputStream(sourceUri)?.use { input ->
+                    FileOutputStream(file).use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                file.absolutePath
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
 }

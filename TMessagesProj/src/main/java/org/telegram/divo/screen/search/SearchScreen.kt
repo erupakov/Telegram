@@ -47,11 +47,11 @@ import org.telegram.divo.components.PhotoSourceBottomSheet
 import org.telegram.divo.components.ProfilesSearchGrid
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.SearchImageAction
+import org.telegram.divo.screen.search.components.FRSearchHistoryContent
 import org.telegram.divo.screen.search.components.SearchFilterBottomSheet
 import org.telegram.divo.screen.search.components.SearchRow
 import org.telegram.divo.screen.search.components.SearchSuggestionContent
 import org.telegram.divo.screen.similar_profiles.components.ActiveFiltersChip
-import org.telegram.divo.screen.similar_profiles.components.SimilarFilterBottomSheet
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -66,7 +66,8 @@ fun SearchScreen(
     viewModel: SearchViewModel = viewModel(),
     onBack: () -> Unit,
     onProfileClicked: (Int) -> Unit,
-    onSimilarProfilesClicked: (String) -> Unit,
+    onNavigateToFaceSearchHistory: () -> Unit,
+    onSimilarProfilesClicked: (String, String?) -> Unit,
     onNewSearch: () -> Unit,
     onPhotoSelected: (String) -> Unit = {},
 ) {
@@ -83,24 +84,28 @@ fun SearchScreen(
                     if (searchType == SearchScreenType.SEARCH) {
                         onProfileClicked(it.user.id)
                     } else {
-                        onSimilarProfilesClicked(it.user.photo)
+                        onSimilarProfilesClicked(it.user.photo, null)
                     }
                 }
+
                 Effect.NavigateToSearchSimilarity -> onNewSearch()
+                Effect.NavigateToFaceSearchHistory -> onNavigateToFaceSearchHistory()
             }
         }
     }
 
     Box(Modifier.fillMaxSize()) {
         SearchContent(
+            searchType = searchType,
             state = state,
+            onSimilarProfilesClicked = onSimilarProfilesClicked,
             onIntent = { viewModel.setIntent(it) }
         )
 
         AppSnackbarHost(
             modifier = Modifier.align(Alignment.BottomCenter),
             state = snackbarState,
-            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
+            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 16.dp
         )
     }
 }
@@ -108,7 +113,9 @@ fun SearchScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchContent(
+    searchType: SearchScreenType,
     state: State,
+    onSimilarProfilesClicked: (String, String?) -> Unit,
     onIntent: (Intent) -> Unit,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -181,17 +188,28 @@ private fun SearchContent(
                 }
             } else {
                 val isEmpty = state.hasSearched && state.searchResults.isEmpty() && !state.isLoading
-                if (isEmpty) {
-                    EmptyContent()
-                } else {
-                    SearchSuggestionContent(
-                        searchResults = state.searchResults,
-                        isLoading = state.isLoading,
-                        isLoadingMore = state.isLoadingMore,
-                        hasMore = state.hasMore,
-                        onClicked = { onIntent(Intent.OnItemClicked(it)) },
-                        onLoadMore = { onIntent(Intent.OnLoadMore) }
+
+                if (searchType == SearchScreenType.FR && state.frSearchHistory.isNotEmpty() && state.query.isBlank()) {
+                    FRSearchHistoryContent(
+                        history = state.frSearchHistory,
+                        onSeeAllClicked = { onIntent(Intent.OnFaceSearchHistoryClicked) },
+                        onHistoryItemClicked = { item ->
+                            onSimilarProfilesClicked(item.imageUri, item.filtersJson.ifBlank { null })
+                        }
                     )
+                } else {
+                    if (isEmpty) {
+                        EmptyContent()
+                    } else {
+                        SearchSuggestionContent(
+                            searchResults = state.searchResults,
+                            isLoading = state.isLoading,
+                            isLoadingMore = state.isLoadingMore,
+                            hasMore = state.hasMore,
+                            onClicked = { onIntent(Intent.OnItemClicked(it)) },
+                            onLoadMore = { onIntent(Intent.OnLoadMore) }
+                        )
+                    }
                 }
             }
         }

@@ -238,7 +238,9 @@ fun RoundedButton(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            modifier = Modifier.size(iconSize).padding(end = paddingEnd),
+            modifier = Modifier
+                .size(iconSize)
+                .padding(end = if (resId == R.drawable.ic_divo_back) 2.dp else paddingEnd),
             painter = painterResource(resId),
             contentDescription = null,
             tint = iconTint
