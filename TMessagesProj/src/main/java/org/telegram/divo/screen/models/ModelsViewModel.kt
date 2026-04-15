@@ -8,21 +8,19 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.OffsetPaginator
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.FeedItem
-import org.telegram.divo.usecase.GetFeedUseCase
-import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToAddStory
-import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToDirectMessage
-import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToSearch
-import org.telegram.divo.screen.models.ModelsViewEffect.NavigateToStory
 import org.telegram.divo.screen.models.ModelsViewIntent.LoadInitialData
-import org.telegram.divo.screen.models.ModelsViewIntent.OnTabSelected
-import org.telegram.divo.screen.models.ModelsViewIntent.OnStoryClick
-import org.telegram.divo.screen.models.ModelsViewIntent.OnEmotionClick
-import org.telegram.divo.screen.models.ModelsViewIntent.OnSendDmClick
-import org.telegram.divo.screen.models.ModelsViewIntent.OnSearchClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnAddStoryClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnBookmarkClick
-import org.telegram.divo.screen.models.ModelsViewIntent.LoadMoreAllUsers
+import org.telegram.divo.screen.models.ModelsViewIntent.OnLikeClick
+import org.telegram.divo.screen.models.ModelsViewIntent.OnSearchClick
+import org.telegram.divo.screen.models.ModelsViewIntent.OnStoryClick
+import org.telegram.divo.screen.models.ModelsViewIntent.OnTabSelected
+import org.telegram.divo.usecase.GetFeedUseCase
+import org.telegram.messenger.R
 
 class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
 
@@ -32,25 +30,25 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
 
     override fun createInitialState(): ModelsViewState = ModelsViewState()
 
-    private val subscribedPaginator = GetFeedUseCase(
-        limit = PAGE_SIZE, subscribedOnly = true
+    private val modelsPaginator = GetFeedUseCase(
+        limit = PAGE_SIZE, modelsOnly = true
     ).paginator
 
-    private val allUsersPaginator = GetFeedUseCase(
+    private val newTalentsPaginator = GetFeedUseCase(
         limit = PAGE_SIZE
     ).paginator
 
     private val agenciesPaginator = GetFeedUseCase(
-        limit = PAGE_SIZE, modelsOnly = true
+        limit = PAGE_SIZE, subscribedOnly = true
     ).paginator
 
     init {
         setIntent(LoadInitialData)
         viewModelScope.launch {
             merge(
-                subscribedPaginator.state.map { it to Tab.SUBSCRIBED },
-                allUsersPaginator.state.map { it to Tab.ALL_USERS },
-                agenciesPaginator.state.map { it to Tab.AGENCIES_PRO }
+                modelsPaginator.state.map { it to Tab.MODELS },
+                newTalentsPaginator.state.map { it to Tab.NEW_TALENTS },
+                agenciesPaginator.state.map { it to Tab.AGENCIES }
             ).collect { (paginatorState, tab) ->
                 setState {
                     copy(
@@ -66,22 +64,21 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     private fun currentPaginator(): OffsetPaginator<FeedItem> = when (state.value.selectedTab) {
-        Tab.ALL_USERS -> allUsersPaginator
-        Tab.SUBSCRIBED -> subscribedPaginator
-        Tab.AGENCIES_PRO -> agenciesPaginator
+        Tab.NEW_TALENTS -> newTalentsPaginator
+        Tab.MODELS -> modelsPaginator
+        Tab.AGENCIES -> agenciesPaginator
     }
 
     override fun handleIntent(intent: ModelsViewIntent) {
         when (intent) {
             is LoadInitialData -> loadInitialData()
             is OnTabSelected -> onTabSelected(intent.tab)
-            is OnStoryClick -> sendEffect(NavigateToStory(intent.storyId))
-            is OnEmotionClick -> reactToModel(intent.modelId, intent.emotion)
-            is OnSendDmClick -> sendEffect(NavigateToDirectMessage(intent.modelId))
-            is OnSearchClick -> sendEffect(NavigateToSearch)
-            is OnAddStoryClick -> sendEffect(NavigateToAddStory)
+            is OnStoryClick -> {}
+            is OnSearchClick -> {}
+            is OnAddStoryClick -> {}
             is OnBookmarkClick -> bookmarkModel(intent.modelId)
-            is LoadMoreAllUsers -> loadFeed(loadMore = true)
+            is OnLikeClick -> onLikeClick(intent.tab, intent.feedId, intent.isLiked)
+            is ModelsViewIntent.LoadMore -> loadMoreFeed(intent.tab)
         }
     }
 
@@ -98,8 +95,8 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         }
         viewModelScope.launch {
             listOf(
-                subscribedPaginator,
-                allUsersPaginator,
+                modelsPaginator,
+                newTalentsPaginator,
                 agenciesPaginator
             ).map { paginator ->
                 async { paginator.loadInitial() }
@@ -125,43 +122,63 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         }
     }
 
-    private fun reactToModel(modelId: String, emotion: Emotions) {
-        // TODO: Call repository to react to the model
-        // Optimistically update the UI
-        setState {
-            copy(models = models.map { model ->
-                if (model.id == modelId) {
-                    model.copy(emotions = model.emotions.map {
-                        if (it::class == emotion::class) {
-                            when (it) {
-                                is Emotions.Like -> it.copy(
-                                    selected = !it.selected,
-                                    count = if (it.selected) it.count - 1 else it.count + 1
-                                )
-
-                                is Emotions.Fire -> it.copy(
-                                    selected = !it.selected,
-                                    count = if (it.selected) it.count - 1 else it.count + 1
-                                )
-
-                                is Emotions.Hearth -> it.copy(
-                                    selected = !it.selected,
-                                    count = if (it.selected) it.count - 1 else it.count + 1
-                                )
-                            }
-                        } else {
-                            it
-                        }
-                    })
-                } else {
-                    model
-                }
-            })
+    private fun loadMoreFeed(tab: Tab) {
+        viewModelScope.launch {
+            val paginator = when (tab) {
+                Tab.NEW_TALENTS -> newTalentsPaginator
+                Tab.MODELS -> modelsPaginator
+                Tab.AGENCIES -> agenciesPaginator
+            }
+            paginator.loadMore()
         }
     }
 
     private fun bookmarkModel(modelId: String) {
         // TODO: Call repository to bookmark the model
         // Optimistically update the UI
+    }
+
+    private fun onLikeClick(tab: Tab, feedId: Int, isLiked: Boolean) {
+        val oldState = state.value.tabFeeds
+
+        fun updateItemInAllTabs(targetFeedId: Int, newLiked: Boolean, newCount: Int): Map<Tab, List<FeedItem>> {
+            return state.value.tabFeeds.mapValues { (_, items) ->
+                items.map { item ->
+                    if (item.feedId == targetFeedId) {
+                        item.copy(isLiked = newLiked, likesCount = newCount)
+                    } else item
+                }
+            }
+        }
+
+        val targetItem = state.value.tabFeeds[tab]?.find { it.feedId == feedId } ?: return
+        val newLiked = !isLiked
+        val newCount = if (isLiked) (targetItem.likesCount - 1).coerceAtLeast(0) else targetItem.likesCount + 1
+
+        setState {
+            copy(tabFeeds = updateItemInAllTabs(feedId, newLiked, newCount))
+        }
+
+        viewModelScope.launch {
+            val repository = DivoApi.publicationRepository
+
+            val result = if (newLiked) {
+                repository.likePost(feedId)
+            } else {
+                repository.unlikePost(feedId)
+            }
+
+            if (result is DivoResult.Success) {
+                sendEffect(
+                    ModelsViewEffect.ActionChanged(
+                        R.drawable.ic_divo_favorite_selected,
+                        if (newLiked) R.string.Liked else R.string.Unliked
+                    )
+                )
+            } else {
+                setState { copy(tabFeeds = oldState) }
+                sendEffect(ModelsViewEffect.ShowError(result.getErrorMessage()))
+            }
+        }
     }
 }

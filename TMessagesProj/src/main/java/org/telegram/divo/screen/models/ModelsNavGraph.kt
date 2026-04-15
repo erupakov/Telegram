@@ -95,9 +95,6 @@ fun ModelsNavGraph(
     ) {
         composable(ModelsRoute.Models.route) {
             ModelsHomeScreen(
-                onSearch = {
-                    nav.navigate(ModelsRoute.Search.createRoute(SearchScreenType.SEARCH))
-                },
                 onClick = { userId ->
                     nav.navigate(ModelsRoute.Profile.createRoute(userId))
                 },

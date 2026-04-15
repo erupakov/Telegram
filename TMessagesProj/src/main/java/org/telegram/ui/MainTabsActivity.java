@@ -2,22 +2,20 @@ package org.telegram.ui;
 
 import static org.telegram.messenger.AndroidUtilities.dp;
 import static org.telegram.messenger.AndroidUtilities.lerp;
-import static org.telegram.messenger.LocaleController.getString;
 
 import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.drawable.ShapeDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -81,6 +79,12 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     private MainTabsLayout tabsView;
     private BlurredBackgroundDrawable tabsViewBackground;
     private View fadeView;
+
+    //DIVO--START
+    private LinearLayout bottomBarContainer;
+    private FrameLayout modelsSearchButton;
+    private boolean isModelsSearchVisible;
+    //DIVO--END
 
     public MainTabsActivity() {
         super();
@@ -263,8 +267,44 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         fadeDrawable.setFadeHeight(dp(60), true);
         fadeView.setBackground(fadeDrawable);
 
+        //DIVO--START
+        modelsSearchButton = new FrameLayout(context);
+        BlurredBackgroundDrawable searchButtonBackground = iBlur3FactoryGlass.create(modelsSearchButton, BlurredBackgroundProviderImpl.mainTabs(resourceProvider));
+        searchButtonBackground.setRadius(dp(28));
+        searchButtonBackground.setPadding(dp(DialogsActivity.MAIN_TABS_MARGIN - 0.334f));
+        modelsSearchButton.setBackground(searchButtonBackground);
+        modelsSearchButton.setOnClickListener(v -> {
+            BaseFragment fragment = getCurrentVisibleFragment();
+            if (fragment instanceof FragmentModels) {
+                ((FragmentModels) fragment).openSearchFromBottomBar();
+            }
+        });
+        modelsSearchButton.setVisibility(View.GONE);
+        modelsSearchButton.setAlpha(0f);
+
+        ImageView searchIcon = new ImageView(context);
+        searchIcon.setScaleType(ImageView.ScaleType.CENTER);
+        searchIcon.setImageResource(R.drawable.ic_divo_search_24);
+        modelsSearchButton.addView(searchIcon, LayoutHelper.createFrame(24, 24, Gravity.CENTER));
+
+        bottomBarContainer = new LinearLayout(context);
+        bottomBarContainer.setOrientation(LinearLayout.HORIZONTAL);
+        bottomBarContainer.setGravity(Gravity.CENTER_HORIZONTAL | Gravity.CENTER_VERTICAL);
+        bottomBarContainer.setClipChildren(false);
+
+        bottomBarContainer.addView(tabsView, LayoutHelper.createLinear(
+                LayoutHelper.WRAP_CONTENT, DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS));
+        bottomBarContainer.addView(modelsSearchButton, LayoutHelper.createLinear(
+                DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS,
+                DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS,
+                0, -4, 0, 0, 0));
+
         contentView.addView(fadeView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 0, Gravity.BOTTOM));
-        contentView.addView(tabsView, LayoutHelper.createFrame(328 + DialogsActivity.MAIN_TABS_MARGIN * 2, DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
+        contentView.addView(bottomBarContainer, LayoutHelper.createFrame(
+                LayoutHelper.MATCH_PARENT,   // ← БЫЛО WRAP_CONTENT, СТАЛО MATCH_PARENT
+                LayoutHelper.WRAP_CONTENT,
+                Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL));
+        //DIVO--END
 
         updateLayoutWrapper = new UpdateLayoutWrapper(context);
         contentView.addView(updateLayoutWrapper, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM));
@@ -599,6 +639,23 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         fadeView.setAlpha(alpha);
         fadeView.setTranslationY(0);
         fadeView.setVisibility(alpha > 0 ? View.VISIBLE : View.GONE);
+        //DIVO--START
+        if (modelsSearchButton != null && bottomBarContainer != null) {
+            final boolean canShow = viewPager.getCurrentPosition() == POSITION_MODELS
+                    && (isModelsSearchVisible || getCurrentVisibleFragment() instanceof FragmentModels);
+
+            final float searchAlpha = canShow ? alpha : 0f;
+            modelsSearchButton.setAlpha(searchAlpha);
+            modelsSearchButton.setVisibility(searchAlpha > 0 ? View.VISIBLE : View.GONE);
+            modelsSearchButton.setTranslationY(lerp(dp(28), 0, searchAlpha));
+            modelsSearchButton.setClickable(searchAlpha >= 1f);
+        }
+
+        checkUi_bottomBarLayout();
+        if (bottomBarContainer != null) {
+            bottomBarContainer.requestLayout();
+        }
+        //DIVO--END
     }
 
     private void checkUi_tabsPosition() {
@@ -610,13 +667,57 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         final float factor = animatorTabsVisible.getFloatValue();
         final float scale = lerp(0.85f, 1f, factor);
 
-        tabsView.setTranslationY(lerp(hiddenY, normalY, factor));
-        tabsView.setScaleX(scale);
-        tabsView.setScaleY(scale);
-        tabsView.setClickable(factor > 1);
-        tabsView.setEnabled(factor > 1);
-        tabsView.setAlpha(factor);
-        tabsView.setVisibility(factor > 0 ? View.VISIBLE : View.GONE);
+        //DIVO--START
+        bottomBarContainer.setTranslationY(lerp(hiddenY, normalY, factor));
+        bottomBarContainer.setScaleX(scale);
+        bottomBarContainer.setScaleY(scale);
+        bottomBarContainer.setClickable(factor > 1);
+        bottomBarContainer.setEnabled(factor > 1);
+        bottomBarContainer.setAlpha(factor);
+        bottomBarContainer.setVisibility(factor > 0 ? View.VISIBLE : View.GONE);
+
+        checkUi_bottomBarLayout();
+    }
+
+    private void checkUi_bottomBarLayout() {
+        if (bottomBarContainer == null || tabsView == null || modelsSearchButton == null || contentView == null) {
+            return;
+        }
+
+        final int contentWidth = contentView.getMeasuredWidth();
+        if (contentWidth == 0) return;
+
+        final float searchAlpha = modelsSearchButton.getAlpha();
+        final boolean isSearchVisible = searchAlpha > 0f;
+
+        final int minMargin = dp(12);
+        final int availableWidth = contentWidth - 2 * minMargin;
+
+        int preferredTabsW = isSearchVisible
+                ? dp(256) + (int) dp(DialogsActivity.MAIN_TABS_MARGIN * 2)
+                : dp(328) + (int) dp(DialogsActivity.MAIN_TABS_MARGIN * 2);
+
+        int currentTabsW = preferredTabsW;
+
+        if (preferredTabsW > availableWidth) {
+            currentTabsW = availableWidth;
+            currentTabsW = Math.max(currentTabsW, dp(220));
+        }
+
+        tabsView.setMaxWidth(currentTabsW);
+
+        if (isSearchVisible) {
+            tabsView.setMinWidth(currentTabsW);
+        } else {
+            tabsView.setMinWidth(-1);
+        }
+
+        final int tabsPadding = dp(DialogsActivity.MAIN_TABS_MARGIN + 4);
+        tabsView.setPadding(tabsPadding, tabsPadding, tabsPadding, tabsPadding);
+
+        tabsView.requestLayout();
+        bottomBarContainer.requestLayout();
+        //DIVO--END
     }
 
 
@@ -640,6 +741,13 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         public void setTabsVisible(boolean visible) {
             animatorTabsVisible.setValue(visible, true);
         }
+        //DIVO--START
+        @Override
+        public void setModelsSearchVisible(boolean visible) {
+            isModelsSearchVisible = visible;
+            checkUi_fadeView();
+        }
+        //DIVO--END
     }
 
 

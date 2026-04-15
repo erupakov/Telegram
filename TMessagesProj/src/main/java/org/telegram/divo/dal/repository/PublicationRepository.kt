@@ -9,6 +9,7 @@ import org.telegram.divo.common.utils.ThumbnailProcessor
 import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.dto.publication.CreatePublicationFileRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
+import org.telegram.divo.dal.dto.publication.LikeRequest
 import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
 import org.telegram.divo.dal.dto.publication.ModelParametersDto
@@ -96,6 +97,14 @@ class PublicationRepository(
 
     suspend fun unlike(payload: Map<String, Any?>): DivoResult<ResponseBody> {
         return resultOf { service.unlike(payload) }
+    }
+
+    suspend fun likePost(id: Int): DivoResult<Unit> = resultOf {
+        service.likePost(LikeRequest(id))
+    }
+
+    suspend fun unlikePost(id: Int): DivoResult<Unit> = resultOf {
+        service.unlikePost(LikeRequest(id))
     }
 
     suspend fun createPublication(

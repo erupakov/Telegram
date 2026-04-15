@@ -138,6 +138,9 @@
     <string name="CountryLabel">Country</string>
     <string name="ProfileLink">Link on profile in Divo</string>
     <string name="NextStep">Next Step</string>
+    <string name="AddStoryLabel">Add Story</string>
+    <string name="Liked">Liked</string>
+    <string name="Unliked">Unliked</string>
 
     <!--events screen-->
     <string name="EventList">Events</string>
@@ -156,9 +159,8 @@
 
     <!--models screen-->
     <string name="Models">Models</string>
-    <string name="SubscribedModels">Subscribed Models</string>
-    <string name="AllUsers">All Users</string>
-    <string name="AgenciesAndProMembers">Agencies &amp; Pro Members</string>
+    <string name="NewTalents">New talents</string>
+    <string name="Agencies">Agencies</string>
 
     <!--search screen-->
     <string name="FindSimilarProfiles">Find similar profiles</string>

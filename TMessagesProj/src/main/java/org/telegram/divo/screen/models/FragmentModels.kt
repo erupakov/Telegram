@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
+import org.telegram.divo.screen.search.SearchScreenType
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.MainTabsActivity
 import org.telegram.ui.MainTabsActivityController
@@ -35,6 +36,7 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
                         navController.addOnDestinationChangedListener { _, destination, _ ->
                             isOnHomeScreen.value = destination.route == ModelsRoute.Models.route
                             mainTabsController?.setTabsVisible(isOnHomeScreen.value)
+                            mainTabsController?.setModelsSearchVisible(isOnHomeScreen.value)
                         }
                     },
                     onInnerNavControllerReady = { navController ->
@@ -72,5 +74,9 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
         }
 
         return super.onBackPressed(invoked)
+    }
+
+    fun openSearchFromBottomBar() {
+        modelsNavController?.navigate(ModelsRoute.Search.createRoute(SearchScreenType.SEARCH))
     }
 }

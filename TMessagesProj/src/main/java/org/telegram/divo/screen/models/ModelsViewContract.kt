@@ -19,43 +19,17 @@ data class Model(
     val name: String,
     val imageUrl: String = "",
     val avatarUrl: String = "",
-    val emotions: List<Emotions> = emptyList(),
     val photos: List<String> = emptyList(),
     val roleLabel: String = "",
     val userProfile: TLRPC.TL_userProfile? = null
 )
 
 enum class Tab(val displayResId: Int) {
-    SUBSCRIBED(displayResId = R.string.SubscribedModels),
-    ALL_USERS(displayResId = R.string.AllUsers),
-    AGENCIES_PRO(displayResId = R.string.AgenciesAndProMembers)
+    MODELS(displayResId = R.string.Models),
+    NEW_TALENTS(displayResId = R.string.NewTalents),
+    AGENCIES(displayResId = R.string.Agencies)
 }
 
-sealed class Emotions(
-    open val selected: Boolean,
-    open val emoji: String,
-    open val count: Int
-) {
-    data class Like(
-        override val selected: Boolean,
-        override val emoji: String,
-        override val count: Int,
-    ) : Emotions(selected, emoji, count)
-
-    data class Fire(
-        override val selected: Boolean,
-        override val emoji: String,
-        override val count: Int,
-    ) : Emotions(selected, emoji, count)
-
-    data class Hearth(
-        override val selected: Boolean,
-        override val emoji: String,
-        override val count: Int,
-    ) : Emotions(selected, emoji, count)
-}
-
-// State
 data class ModelsViewState(
     val tabFeeds: Map<Tab, List<FeedItem>> = emptyMap(),
     val tabLoadingStates: Map<Tab, Boolean> = emptyMap(),
@@ -63,16 +37,11 @@ data class ModelsViewState(
     val tabHasMore: Map<Tab, Boolean> = Tab.entries.associateWith { true },
     val stories: List<Story> = emptyList(),
     val models: List<Model> = emptyList(),
-    val selectedTab: Tab = Tab.ALL_USERS,
+    val selectedTab: Tab = Tab.MODELS,
     val isLoading: Boolean = false,
     val error: String? = null,
     val allUserModels: List<Model> = emptyList(),
 ) : ViewState {
-
-    val feedItems get() = tabFeeds[selectedTab] ?: emptyList()
-    val isLoadingAllUsers get() = tabLoadingStates[selectedTab] ?: false
-    val isLoadingMoreFeed get() = tabLoadingMoreStates[selectedTab] ?: false
-    val feedHasMore get() = tabHasMore[selectedTab] ?: true
 
     companion object {
         val preview = ModelsViewState(
@@ -84,53 +53,32 @@ data class ModelsViewState(
                     watched = false
                 )
             },
-            models = List(10) { index ->
-                Model(
-                    id = "model_$index",
-                    name = "Model $index",
-                    imageUrl = "https://randomuser.me/api/portraits/women/46.jpg",
-                    avatarUrl = "https://randomuser.me/api/portraits/women/42.jpg",
-                    emotions = listOf(
-                        Emotions.Like(selected = true, emoji = "👍", count = 10),
-                        Emotions.Fire(selected = false, emoji = "🔥", count = 5),
-                        Emotions.Hearth(selected = false, emoji = "❤️", count = 2)
-                    ),
-                    photos = List(5) { photoIndex -> "https://randomuser.me/api/portraits/women/4$photoIndex.jpg" },
-                    roleLabel = "Model"
-                )
-            },
-            selectedTab = Tab.SUBSCRIBED,
+            selectedTab = Tab.MODELS,
             isLoading = false,
             error = null
         )
         val default = ModelsViewState(
             stories = emptyList(),
             models = emptyList(),
-            selectedTab = Tab.SUBSCRIBED,
+            selectedTab = Tab.MODELS,
             isLoading = false,
             error = null
         )
     }
 }
 
-// Intent
 sealed class ModelsViewIntent : ViewIntent {
     data object LoadInitialData : ModelsViewIntent()
     data class OnTabSelected(val tab: Tab) : ModelsViewIntent()
     data class OnStoryClick(val storyId: String) : ModelsViewIntent()
-    data class OnEmotionClick(val modelId: String, val emotion: Emotions) : ModelsViewIntent()
-    data class OnSendDmClick(val modelId: String) : ModelsViewIntent()
     data class OnBookmarkClick(val modelId: String) : ModelsViewIntent()
+    data class OnLikeClick(val tab: Tab, val feedId: Int, val isLiked: Boolean) : ModelsViewIntent()
     data object OnSearchClick : ModelsViewIntent()
     data object OnAddStoryClick : ModelsViewIntent()
-    data object LoadMoreAllUsers : ModelsViewIntent()
+    data class LoadMore(val tab: Tab) : ModelsViewIntent()
 }
 
-// Action
 sealed class ModelsViewEffect : ViewEffect {
-    data class NavigateToStory(val storyId: String) : ModelsViewEffect()
-    data class NavigateToDirectMessage(val modelId: String) : ModelsViewEffect()
-    data object NavigateToSearch : ModelsViewEffect()
-    data object NavigateToAddStory : ModelsViewEffect()
     data class ShowError(val message: String) : ModelsViewEffect()
+    data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : ModelsViewEffect()
 }
