@@ -237,7 +237,7 @@ private fun ProfileItem(
                 RoundedGlassContainer(
                     space = 10.dp,
                     height = 22.dp,
-                    background = AppTheme.colors.onBackground.copy(alpha = 0.2f),
+                    background = if (profile.isMarked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.2f),
                     contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
                     Icon(
@@ -255,15 +255,15 @@ private fun ProfileItem(
                             },
                         painter = painterResource(R.drawable.ic_divo_share_model),
                         contentDescription = null,
-                        tint = AppTheme.colors.onBackground
+                        tint = if (profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
                     )
                     Icon(
                         modifier = Modifier
                             .size(16.dp)
                             .clickableWithoutRipple { onMarkClicked() },
-                        painter = painterResource(R.drawable.ic_divo_bookmark_glass),
+                        painter = painterResource(if (profile.isMarked) R.drawable.ic_divo_bookmark_glass_selected else R.drawable.ic_divo_bookmark_glass),
                         contentDescription = null,
-                        tint = if (profile.isMarked) AppTheme.colors.accentOrange else AppTheme.colors.onBackground
+                        tint = if (profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
                     )
                 }
             }
@@ -277,20 +277,20 @@ private fun ProfileItem(
                         .clickableWithoutRipple { onLikeClicked() },
                     height = 22.dp,
                     space = 4.dp,
-                    background = AppTheme.colors.onBackground.copy(alpha = 0.2f),
+                    background = if (profile.isLiked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.2f),
                     contentPadding = PaddingValues(horizontal = 6.dp)
                 ) {
                     Icon(
                         modifier = Modifier.size(12.dp),
-                        painter = painterResource(R.drawable.ic_divo_favorite),
+                        painter = painterResource(if (profile.isLiked) R.drawable.ic_divo_favorite_selected else R.drawable.ic_divo_favorite),
                         contentDescription = null,
-                        tint = if (profile.isLiked) AppTheme.colors.accentOrange else AppTheme.colors.onBackground
+                        tint = if (profile.isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
                     )
                     Text(
                         modifier = Modifier.offset(y = 0.5.dp),
                         text = profile.likes.toShortString(),
                         style = AppTheme.typography.helveticaNeueRegular,
-                        color = AppTheme.colors.onBackground,
+                        color = if (profile.isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
                         fontSize = 10.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

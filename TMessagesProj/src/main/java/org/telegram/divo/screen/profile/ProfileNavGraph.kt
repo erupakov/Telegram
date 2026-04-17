@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import org.telegram.divo.screen.add_model.AddModelScreen
 import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
 import org.telegram.divo.screen.event_details.EventDetailsNavGraph
+import org.telegram.divo.screen.face_search.FaceSearchScreen
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
 import org.telegram.divo.screen.profile_social_links.ProfileSocialLinksScreen
@@ -56,8 +57,29 @@ sealed class ProfileRoute(val route: String) {
             "gallery/video/$userId/$initialIndex"
     }
 
-    data object SimilarProfiles : ProfileRoute("similar_profiles/{url}") {
-        fun createRoute(url: String) = "similar_profiles/${Uri.encode(url)}"
+    data object SimilarProfiles : ProfileRoute("similar_profiles/{uri}?fx={fx}&fy={fy}&filters={filters}") {
+        fun createRoute(
+            uri: String,
+            fx: Float? = null,
+            fy: Float? = null,
+            filtersJson: String? = null
+        ): String {
+            val base = "similar_profiles/${Uri.encode(uri)}"
+            val query = buildList {
+                if (fx != null && fy != null) {
+                    add("fx=$fx")
+                    add("fy=$fy")
+                }
+                if (!filtersJson.isNullOrBlank()) {
+                    add("filters=${Uri.encode(filtersJson)}")
+                }
+            }
+            return if (query.isEmpty()) base else "$base?${query.joinToString("&")}"
+        }
+    }
+
+    data object FaceSearch : ProfileRoute("face_search/{uri}") {
+        fun createRoute(uri: String) = "face_search/${Uri.encode(uri)}"
     }
 }
 
@@ -102,7 +124,7 @@ fun ProfileNavGraph(
                 onGalleryClicked = { url, isVideo ->
                     if (isVideo) {
                         val index = uiState.videoItems
-                            .indexOfFirst { it.files.any { f -> f.isVideo && f.fullUrl == url } }
+                            .indexOfFirst { it.files.any { f -> f.fullUrl == url } }
                             .coerceAtLeast(0)
                         nav.navigate(ProfileRoute.Gallery.video(currentUserId, index))
                     } else {
@@ -122,7 +144,7 @@ fun ProfileNavGraph(
                     nav.navigate(ProfileRoute.Event.createRoute(it))
                 },
                 onFindSimilarProfiles = {
-                    nav.navigate(ProfileRoute.SimilarProfiles.createRoute(it))
+                    nav.navigate(ProfileRoute.FaceSearch.createRoute(it))
                 }
             )
         }
@@ -235,14 +257,38 @@ fun ProfileNavGraph(
         composable(
             route = ProfileRoute.SimilarProfiles.route,
             arguments = listOf(
-                navArgument("url") { type = NavType.StringType },
+                navArgument("uri") { type = NavType.StringType },
+                navArgument("fx") { type = NavType.StringType; nullable = true },
+                navArgument("fy") { type = NavType.StringType; nullable = true },
+                navArgument("filters") { type = NavType.StringType; nullable = true }
             )
         ) { backStackEntry ->
-            val url: String = Uri.decode(backStackEntry.arguments?.getString("url")).orEmpty()
+            val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
+            val fx = backStackEntry.arguments?.getString("fx")?.toFloatOrNull()
+            val fy = backStackEntry.arguments?.getString("fy")?.toFloatOrNull()
+            val filtersJson = backStackEntry.arguments?.getString("filters")?.let { Uri.decode(it) }
+
             SimilarProfilesScreen(
-                url = url,
+                url = uri,
+                initialFiltersJson = filtersJson,
+                fx = fx,
+                fy = fy,
                 onProfileClicked = { nav.navigate(ProfileRoute.Profile.createRoute(it)) },
-                onBack = { nav.popBackStack() },
+                onBack = { nav.popBackStack() }
+            )
+        }
+        composable(
+            route = ProfileRoute.FaceSearch.route,
+            arguments = listOf(navArgument("uri") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
+            FaceSearchScreen(
+                uri = uri,
+                onNavigateSimilarProfiles = { url, fx, fy ->
+                    nav.navigate(ProfileRoute.SimilarProfiles.createRoute(url, fx, fy))
+                },
+                onNavigateToSearch = {  },
+                onBack = { nav.popBackStack() }
             )
         }
     }

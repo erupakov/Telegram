@@ -81,6 +81,7 @@ fun UserDataDto.toEntity(): UserInfo {
         photoUuid = source?.fileUuid.orEmpty(),
         avatarUrl = avatar?.fullUrl.orEmpty(),
         avatarUuid = avatar?.fileUuid.orEmpty(),
+        avatarId = avatar?.photoId ?: 0,
         role = role,
         subrole = subrole.orEmpty(),
         roleLabel = roleLabel.orEmpty(),

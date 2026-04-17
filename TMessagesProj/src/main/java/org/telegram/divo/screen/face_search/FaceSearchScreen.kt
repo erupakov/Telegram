@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,11 +34,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.common.rememberCameraCapture
 import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.common.utils.ImageCacheHelper
 import org.telegram.divo.components.PhotoSourceBottomSheet
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.SearchImageAction
@@ -91,6 +94,9 @@ private fun FaceSearchContent(
     snackbarHostState: AppSnackbarHostState,
     onIntent: (Intent) -> Unit = {},
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         containerColor = AppTheme.colors.backgroundLight,
         topBar = {
@@ -133,14 +139,29 @@ private fun FaceSearchContent(
 
         if (showBottomSheet) {
             PhotoSourceBottomSheet(
+                value = uiState.query,
                 sheetState = sheetState,
-                onDismiss = { showBottomSheet = false },
+                searchResults = uiState.searchResults,
+                isLoading = uiState.isLoading,
+                isLoadingMore = uiState.isLoadingMore,
+                hasMore = uiState.hasMore,
+                onValueChanged = { onIntent(Intent.OnQueryChanged(it)) },
+                onClicked = {
+                    scope.launch {
+                        onIntent(Intent.OnChangePhoto(ImageCacheHelper.getLocalUri(context, it.photo)))
+                        showBottomSheet = false
+                    }
+                },
+                onLoadMore = { onIntent(Intent.OnLoadMore) },
+                onDismiss = {
+                    onIntent(Intent.OnQueryChanged(""))
+                    showBottomSheet = false
+                },
                 onActionSelected = { action ->
                     showBottomSheet = false
                     when (action) {
                         SearchImageAction.CAMERA -> camera.launch()
                         SearchImageAction.GALLERY -> openGallery()
-                        SearchImageAction.DIVO_PHOTO -> { onIntent(Intent.OnFindProfilesClicked) }
                     }
                 }
             )

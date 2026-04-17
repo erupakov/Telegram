@@ -2,10 +2,11 @@ package org.telegram.divo.common.utils
 
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
+import android.os.Build
 import androidx.core.graphics.scale
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -31,28 +32,27 @@ class ThumbnailProcessor(
                 async {
                     pub.copy(
                         files = pub.files.map { file ->
-                            file.copy(thumbnailBitmap = getThumbnail(file))
-                        }
+                            async {
+                                file.copy(thumbnailBitmap = getThumbnail(file))
+                            }
+                        }.awaitAll()
                     )
                 }
             }.awaitAll()
         }
 
-    private suspend fun getThumbnail(file: PublicationFile): Bitmap? {
-        if (!file.isVideo) return null
-
-        val deferred = coroutineScope {
-            inFlight.computeIfAbsent(file.fullUrl) {
-                async(dispatcher) {
-                    try {
-                        extractThumbnail(file)
-                    } finally {
-                        inFlight.remove(file.fullUrl)
-                    }
+    private suspend fun getThumbnail(file: PublicationFile): Bitmap? = coroutineScope {
+        val deferred = inFlight.computeIfAbsent(file.fullUrl) {
+            async(dispatcher) {
+                try {
+                    extractThumbnail(file)
+                } finally {
+                    inFlight.remove(file.fullUrl)
                 }
             }
         }
-        return deferred.await()
+
+        deferred.await()
     }
 
     private fun extractThumbnail(file: PublicationFile): Bitmap? {
@@ -60,16 +60,29 @@ class ThumbnailProcessor(
         return try {
             retriever.setDataSource(file.fullUrl, emptyHeaders)
 
-            val original = retriever.getFrameAtTime(
-                0L,
-                MediaMetadataRetriever.OPTION_NEXT_SYNC
-            ) ?: return null
+            val widthStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)
+            val heightStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)
+            val originalW = widthStr?.toIntOrNull() ?: 0
+            val originalH = heightStr?.toIntOrNull() ?: 0
 
-            val (targetW, targetH) = scaledDimensions(original.width, original.height)
+            if (originalW > 0 && originalH > 0) {
+                val (targetW, targetH) = scaledDimensions(originalW, originalH)
 
-            if (targetW == original.width && targetH == original.height) original
-            else original.scale(targetW, targetH).also {
-                if (it !== original) original.recycle()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+                    retriever.getScaledFrameAtTime(
+                        0L,
+                        MediaMetadataRetriever.OPTION_NEXT_SYNC,
+                        targetW,
+                        targetH
+                    )
+                } else {
+                    val original = retriever.getFrameAtTime(0L, MediaMetadataRetriever.OPTION_NEXT_SYNC) ?: return null
+                    original.scale(targetW, targetH).also {
+                        if (it !== original) original.recycle()
+                    }
+                }
+            } else {
+                retriever.getFrameAtTime(0L, MediaMetadataRetriever.OPTION_NEXT_SYNC)
             }
         } catch (e: Exception) {
             null

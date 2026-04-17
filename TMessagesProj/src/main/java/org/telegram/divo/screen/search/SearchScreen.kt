@@ -45,7 +45,6 @@ import org.telegram.divo.common.rememberCameraCapture
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.components.PhotoSourceBottomSheet
 import org.telegram.divo.components.ProfilesSearchGrid
-import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.SearchImageAction
 import org.telegram.divo.screen.search.components.FRSearchHistoryContent
 import org.telegram.divo.screen.search.components.SearchFilterBottomSheet
@@ -55,20 +54,13 @@ import org.telegram.divo.screen.similar_profiles.components.ActiveFiltersChip
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
-enum class SearchScreenType {
-    SEARCH,
-    FR
-}
-
 @Composable
 fun SearchScreen(
-    searchType: SearchScreenType,
     viewModel: SearchViewModel = viewModel(),
     onBack: () -> Unit,
     onProfileClicked: (Int) -> Unit,
     onNavigateToFaceSearchHistory: () -> Unit,
-    onSimilarProfilesClicked: (String, String?) -> Unit,
-    onNewSearch: () -> Unit,
+    onNavigateToSimilarProfiles: (String, String?) -> Unit,
     onPhotoSelected: (String) -> Unit = {},
 ) {
     val state = viewModel.state.collectAsState().value
@@ -80,25 +72,16 @@ fun SearchScreen(
                 Effect.NavigateBack -> onBack()
                 is Effect.ShowError -> snackbarState.show(Error(it.message))
                 is Effect.NavigateToFaceSearch -> onPhotoSelected(it.uri)
-                is Effect.NavigateToProfile -> {
-                    if (searchType == SearchScreenType.SEARCH) {
-                        onProfileClicked(it.user.id)
-                    } else {
-                        onSimilarProfilesClicked(it.user.photo, null)
-                    }
-                }
-
-                Effect.NavigateToSearchSimilarity -> onNewSearch()
+                is Effect.NavigateToProfile -> onProfileClicked(it.user.id)
                 Effect.NavigateToFaceSearchHistory -> onNavigateToFaceSearchHistory()
+                is Effect.NavigateToSimilarProfiles -> { onNavigateToSimilarProfiles(it.photo, it.filters) }
             }
         }
     }
 
     Box(Modifier.fillMaxSize()) {
         SearchContent(
-            searchType = searchType,
             state = state,
-            onSimilarProfilesClicked = onSimilarProfilesClicked,
             onIntent = { viewModel.setIntent(it) }
         )
 
@@ -113,9 +96,7 @@ fun SearchScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SearchContent(
-    searchType: SearchScreenType,
     state: State,
-    onSimilarProfilesClicked: (String, String?) -> Unit,
     onIntent: (Intent) -> Unit,
 ) {
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -176,7 +157,7 @@ private fun SearchContent(
                     onMarkClicked = {  }, //TODO
                     onLikeClicked = {  }, //TODO
                     onLoadMore = { onIntent(Intent.OnLoadMore) },
-                    onProfileClicked = { onIntent(Intent.OnItemClicked(it)) }
+                    onProfileClicked = { onIntent(Intent.OnItemClicked(it, true)) }
                 ) {
                     SearchResultRow(
                         query = state.query,
@@ -189,12 +170,12 @@ private fun SearchContent(
             } else {
                 val isEmpty = state.hasSearched && state.searchResults.isEmpty() && !state.isLoading
 
-                if (searchType == SearchScreenType.FR && state.frSearchHistory.isNotEmpty() && state.query.isBlank()) {
+                if (state.frSearchHistory.isNotEmpty() && state.query.isBlank()) {
                     FRSearchHistoryContent(
                         history = state.frSearchHistory,
                         onSeeAllClicked = { onIntent(Intent.OnFaceSearchHistoryClicked) },
                         onHistoryItemClicked = { item ->
-                            onSimilarProfilesClicked(item.imageUri, item.filtersJson.ifBlank { null })
+                            onIntent(Intent.OnSimilarProfilesClicked(item.imageUri, item.filtersJson.ifBlank { null }))
                         }
                     )
                 } else {
@@ -206,7 +187,7 @@ private fun SearchContent(
                             isLoading = state.isLoading,
                             isLoadingMore = state.isLoadingMore,
                             hasMore = state.hasMore,
-                            onClicked = { onIntent(Intent.OnItemClicked(it)) },
+                            onClicked = { onIntent(Intent.OnItemClicked(it, true)) },
                             onLoadMore = { onIntent(Intent.OnLoadMore) }
                         )
                     }
@@ -214,29 +195,40 @@ private fun SearchContent(
             }
         }
 
-        RoundedButton(
-            modifier = Modifier
-                .padding(bottom = 32.dp, end = 16.dp)
-                .size(52.dp)
-                .align(Alignment.BottomEnd),
-            resId = R.drawable.ic_divo_ai,
-            iconSize = 26.dp,
-            paddingEnd = 0.dp,
-            background = AppTheme.colors.onBackground,
-            iconTint = AppTheme.colors.accentOrange,
-            onClick = { },
-        )
+// AI Assistant
+//        RoundedButton(
+//            modifier = Modifier
+//                .padding(bottom = 32.dp, end = 16.dp)
+//                .size(52.dp)
+//                .align(Alignment.BottomEnd),
+//            resId = R.drawable.ic_divo_ai,
+//            iconSize = 26.dp,
+//            paddingEnd = 0.dp,
+//            background = AppTheme.colors.onBackground,
+//            iconTint = AppTheme.colors.accentOrange,
+//            onClick = { },
+//        )
 
         if (showBottomSheet) {
             PhotoSourceBottomSheet(
+                value = state.queryFR,
                 sheetState = sheetState,
-                onDismiss = { showBottomSheet = false },
+                searchResults = state.searchResultsFR,
+                isLoading = state.isLoadingFR,
+                isLoadingMore = state.isLoadingMoreFR,
+                hasMore = state.hasMoreFR,
+                onValueChanged = { onIntent(Intent.OnQueryFRChanged(it)) },
+                onClicked = { onIntent(Intent.OnItemClicked(it, false)) },
+                onLoadMore = { onIntent(Intent.OnLoadMoreFR) },
+                onDismiss = {
+                    onIntent(Intent.OnQueryFRChanged(""))
+                    showBottomSheet = false
+                },
                 onActionSelected = { action ->
                     showBottomSheet = false
                     when (action) {
                         SearchImageAction.CAMERA -> camera.launch()
                         SearchImageAction.GALLERY -> openGallery()
-                        SearchImageAction.DIVO_PHOTO -> onIntent(Intent.OnDivoProfilesClicked)
                     }
                 }
             )

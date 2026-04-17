@@ -17,6 +17,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.AppearanceItem
+import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.search.Effect.*
@@ -26,7 +27,24 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
+    private var searchFRJob: Job? = null
     private var searchJob: Job? = null
+
+    private val searchFRPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        when (val result = DivoApi.publicationRepository.searchFeeds(
+            offset = offset,
+            limit = limit,
+            query = state.value.queryFR,
+        )) {
+            is DivoResult.Success -> {
+                PaginatedResult(
+                    items = result.value.items,
+                    totalCount = result.value.pagination?.totalCount ?: result.value.items.size
+                )
+            }
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
 
     private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
         val s = state.value
@@ -64,10 +82,14 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             is Intent.OnQueryChanged -> onQueryChanged(intent.value)
             is Intent.OnPhotoSelected -> sendEffect(NavigateToFaceSearch(intent.uri.toString()))
             Intent.OnLoadMore -> loadMore()
-            is Intent.OnItemClicked -> sendEffect(NavigateToProfile(intent.user))
+            is Intent.OnItemClicked -> {
+                if (intent.isSearchMode)
+                    sendEffect(NavigateToProfile(intent.user))
+                else {
+                    sendEffect(NavigateToFaceSearch(intent.user.photo))
+                }
+            }
             is Intent.OnSearchConfirmed -> setState { copy(isSearchConfirmed = true) }
-            Intent.OnDivoProfilesClicked -> sendEffect(NavigateToSearchSimilarity)
-
             is Intent.OnApplyFilters -> {
                 setState {
                     copy(
@@ -116,8 +138,10 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
-
             Intent.OnFaceSearchHistoryClicked -> { sendEffect(NavigateToFaceSearchHistory) }
+            is Intent.OnSimilarProfilesClicked -> sendEffect(NavigateToSimilarProfiles(intent.photo, intent.filters))
+            Intent.OnLoadMoreFR -> loadMoreFR()
+            is Intent.OnQueryFRChanged -> onQueryFRChanged(intent.value)
         }
     }
 
@@ -145,36 +169,34 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     }
 
     private fun observePaginator() {
+        // Подписка на основной поиск
         viewModelScope.launch {
             searchPaginator.state.collect { pState ->
                 setState {
                     copy(
-                        searchResults = pState.items.map {
-                            SearchedProfile(
-                                id = it.id,
-                                name = it.user?.fullName.orEmpty(),
-                                age = it.user?.age,
-                                country = it.user?.city?.countryName,
-                                countryCode = it.user?.city?.countryCode,
-                                isMarked = it.isFavoriteByUser,
-                                likes = it.likesCount,
-                                isLiked = it.isLikedByUser,
-                                photo = it.searchImageUrl.orEmpty(),
-                                roleLabel = it.user?.roleLabel.orEmpty(),
-                                similarity = null
-                            )
-                        },
+                        searchResults = pState.items.map { it.toSearchedProfile() },
                         isLoadingMore = pState.isLoadingMore,
                         hasMore = pState.hasMore,
                     )
                 }
+                pState.error?.let { sendEffect(ShowError(it)) }
+            }
+        }
 
-                pState.error?.let {
-                    sendEffect(Effect.ShowError(it))
+        viewModelScope.launch {
+            searchFRPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        searchResultsFR = pState.items.map { it.toSearchedProfile() },
+                        isLoadingMoreFR = pState.isLoadingMore,
+                        hasMoreFR = pState.hasMore,
+                    )
                 }
+                pState.error?.let { sendEffect(ShowError(it)) }
             }
         }
     }
+
 
     private fun onQueryChanged(query: String) {
         searchJob?.cancel()
@@ -195,9 +217,34 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         }
     }
 
+    private fun onQueryFRChanged(query: String) {
+        searchFRJob?.cancel()
+        setState { copy(queryFR = query) }
+
+        if (query.isBlank()) {
+            searchFRPaginator.reset()
+            setState { copy(isLoadingFR = false, searchResultsFR = emptyList()) }
+            return
+        }
+
+        searchFRJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MS)
+            setState { copy(isLoadingFR = true) }
+            searchFRPaginator.reset()
+            searchFRPaginator.loadInitial()
+            setState { copy(isLoadingFR = false) }
+        }
+    }
+
     private fun loadMore() {
         viewModelScope.launch {
             searchPaginator.loadMore()
+        }
+    }
+
+    private fun loadMoreFR() {
+        viewModelScope.launch {
+            searchFRPaginator.loadMore()
         }
     }
 
@@ -359,6 +406,20 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             skinColor = skinColorIds,
         )
     }
+
+    private fun FeedlineItem.toSearchedProfile() = SearchedProfile(
+        id = this.id,
+        name = this.user?.fullName.orEmpty(),
+        age = this.user?.age,
+        country = this.user?.city?.countryName,
+        countryCode = this.user?.city?.countryCode,
+        isMarked = this.isFavoriteByUser,
+        likes = this.likesCount,
+        isLiked = this.isLikedByUser,
+        photo = this.searchImageUrl.orEmpty(),
+        roleLabel = this.user?.roleLabel.orEmpty(),
+        similarity = null
+    )
 
     companion object {
         private const val PAGE_SIZE = 10

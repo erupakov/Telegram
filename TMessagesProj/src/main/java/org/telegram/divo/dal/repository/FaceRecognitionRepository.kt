@@ -1,11 +1,18 @@
 package org.telegram.divo.dal.repository
 
 import kotlinx.coroutines.flow.Flow
+import org.telegram.divo.dal.api.FaceRecognitionService
 import org.telegram.divo.dal.db.dao.FaceRecognitionDao
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
+import org.telegram.divo.dal.dto.face.SearchSimilarRequest
+import org.telegram.divo.dal.dto.face.toEntity
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.resultOf
+import org.telegram.divo.entity.SimilarFace
 
 class FaceRecognitionRepository(
-    private val dao: FaceRecognitionDao
+    private val dao: FaceRecognitionDao,
+    private val service: FaceRecognitionService
 ) {
     fun getAll(): Flow<List<FaceRecognitionEntity>> {
         return dao.getAll()
@@ -33,5 +40,12 @@ class FaceRecognitionRepository(
 
     suspend fun clearHistory(userId: Int) {
         dao.deleteAll(userId)
+    }
+
+    suspend fun searchSimilar(photoId: Long, topK: Int = 6): DivoResult<List<SimilarFace>> {
+        return resultOf {
+            val response = service.searchSimilar(SearchSimilarRequest(photoId, topK))
+            response.results?.map { it.toEntity() } ?: emptyList()
+        }
     }
 }

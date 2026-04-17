@@ -7,14 +7,42 @@ import androidx.lifecycle.ViewModelProvider
 import org.telegram.divo.common.BaseViewModel
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.telegram.divo.common.OffsetPaginator
+import org.telegram.divo.common.PaginatedResult
 import org.telegram.divo.common.utils.FaceDetectionHelper
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.FeedlineItem
+import org.telegram.divo.entity.SearchedProfile
+import org.telegram.divo.screen.face_search.Effect.*
+import org.telegram.divo.screen.search.Effect.ShowError
 
 class FaceSearchViewModel(
     private val uri: String,
     private val appContext: Context,
 )  : BaseViewModel<State, Intent, Effect>() {
+
+    private var searchJob: Job? = null
+
+    private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        when (val result = DivoApi.publicationRepository.searchFeeds(
+            offset = offset,
+            limit = limit,
+            query = state.value.query,
+        )) {
+            is DivoResult.Success -> {
+                PaginatedResult(
+                    items = result.value.items,
+                    totalCount = result.value.pagination?.totalCount ?: result.value.items.size
+                )
+            }
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
 
     override fun createInitialState(): State = State(imageUri = uri.toUri())
 
@@ -24,7 +52,7 @@ class FaceSearchViewModel(
                 if (state.value.isSearching) {
                     setState { copy(isSearching = false) }
                 } else {
-                    sendEffect(Effect.NavigateBack)
+                    sendEffect(NavigateBack)
                 }
             }
             is Intent.OnChangePhoto -> analyzeImage(intent.uri)
@@ -49,21 +77,25 @@ class FaceSearchViewModel(
                         }
                     }
 
-                    sendEffect(Effect.NavigateToSimilarProfiles(currentState.imageUri.toString(), fx, fy))
+                    sendEffect(NavigateToSimilarProfiles(currentState.imageUri.toString(), fx, fy))
                     delay(100)
                     setState { copy(isSearching = false) }
                 }
             }
-            Intent.OnFindProfilesClicked -> sendEffect(Effect.NavigateToSearch)
+            Intent.OnFindProfilesClicked -> sendEffect(NavigateToSearch)
             is Intent.OnFaceSelected -> setState { copy(selectedFaceIndex = intent.index) }
+            Intent.OnLoadMore -> loadMore()
+            is Intent.OnQueryChanged -> onQueryChanged(intent.value)
         }
     }
 
     init {
         analyzeImage(uri.toUri())
+        observePaginator()
     }
 
-    private fun analyzeImage(uri: Uri) {
+    private fun analyzeImage(uri: Uri?) {
+        if (uri == null) return
         viewModelScope.launch {
             setState { copy(imageUri = uri, detectionResult = FaceDetectionResult.Loading, selectedFaceIndex = null) }
 
@@ -84,7 +116,64 @@ class FaceSearchViewModel(
         }
     }
 
+    private fun onQueryChanged(query: String) {
+        searchJob?.cancel()
+        setState { copy(query = query) }
+
+        if (query.isBlank()) {
+            searchPaginator.reset()
+            setState { copy(isLoading = false, searchResults = emptyList()) }
+            return
+        }
+
+        searchJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MS)
+            setState { copy(isLoading = true) }
+            searchPaginator.reset()
+            searchPaginator.loadInitial()
+            setState { copy(isLoading = false) }
+        }
+    }
+
+    private fun loadMore() {
+        viewModelScope.launch {
+            searchPaginator.loadMore()
+        }
+    }
+
+    private fun observePaginator() {
+        viewModelScope.launch {
+            searchPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        searchResults = pState.items.map { it.toSearchedProfile() },
+                        isLoadingMore = pState.isLoadingMore,
+                        hasMore = pState.hasMore,
+                    )
+                }
+                pState.error?.let { sendEffect(Effect.ShowError(it)) }
+            }
+        }
+    }
+
+    private fun FeedlineItem.toSearchedProfile() = SearchedProfile(
+        id = this.id,
+        name = this.user?.fullName.orEmpty(),
+        age = this.user?.age,
+        country = this.user?.city?.countryName,
+        countryCode = this.user?.city?.countryCode,
+        isMarked = this.isFavoriteByUser,
+        likes = this.likesCount,
+        isLiked = this.isLikedByUser,
+        photo = this.searchImageUrl.orEmpty(),
+        roleLabel = this.user?.roleLabel.orEmpty(),
+        similarity = null
+    )
+
     companion object {
+        private const val PAGE_SIZE = 10
+        private const val SEARCH_DEBOUNCE_MS = 400L
+
         fun factory(uri: String, context: Context) = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")

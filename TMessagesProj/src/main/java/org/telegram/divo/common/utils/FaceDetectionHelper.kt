@@ -51,17 +51,17 @@ object FaceDetectionHelper {
     private suspend fun loadBitmap(context: Context, uri: Uri): Bitmap? {
         return withContext(Dispatchers.IO) {
             try {
-                val stream = if (uri.scheme == "http" || uri.scheme == "https") {
-                    val cachedUri = ImageCacheHelper.getLocalUri(context, uri.toString())
+                val localUri = if (uri.scheme == "http" || uri.scheme == "https") {
+                    ImageCacheHelper.getLocalUri(context, uri.toString())
                         ?: return@withContext null
-                    context.contentResolver.openInputStream(cachedUri)
                 } else {
-                    context.contentResolver.openInputStream(uri)
+                    uri
                 }
 
+                val stream = context.contentResolver.openInputStream(localUri)
                 val bitmap = stream?.use { BitmapFactory.decodeStream(it) } ?: return@withContext null
 
-                val rotation = context.contentResolver.openInputStream(uri)?.use { input ->
+                val rotation = context.contentResolver.openInputStream(localUri)?.use { input ->
                     ExifInterface(input).getAttributeInt(
                         ExifInterface.TAG_ORIENTATION,
                         ExifInterface.ORIENTATION_NORMAL
@@ -78,7 +78,11 @@ object FaceDetectionHelper {
                 if (degrees == 0f) bitmap
                 else {
                     val matrix = Matrix().apply { postRotate(degrees) }
-                    Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+                    val rotatedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+                    if (rotatedBitmap != bitmap) {
+                        bitmap.recycle()
+                    }
+                    rotatedBitmap
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

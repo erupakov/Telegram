@@ -352,7 +352,7 @@ private fun ProfileScreenContent(
                                 when (page) {
                                     0 -> PortfolioGrid(
                                         portfolioItems = uiState.userGalleryItems,
-                                        similarItems = uiState.agencyModels,
+                                        similarItems = uiState.similarProfiles,
                                         isUploading = uiState.mediaUploading,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isLoadingMore = uiState.isLoadingMoreImages,
@@ -383,7 +383,7 @@ private fun ProfileScreenContent(
                                         DivoColumnContent("Vogue Inside")
                                     } else {
                                         AgencyModels(
-                                            models = uiState.agencyModels,
+                                            models = emptyList(), //TODO
                                             isOwnProfile = uiState.isOwnProfile,
                                             isLoadingMoreModels = false, //TODO
                                             onAddModelClicked = onAddModelClicked,

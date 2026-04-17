@@ -128,11 +128,20 @@ fun ModelsHomeScreen(
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
-            when (effect) {
-                is ModelsViewEffect.ShowError -> snackbarState.show(Error(effect.message))
-                is ModelsViewEffect.ActionChanged -> snackbarState.show(
-                    SuccessWithIcon(effect.resDrawableId, context.getString(effect.resStringId))
-                )
+            launch {
+                when (effect) {
+                    is ModelsViewEffect.ShowError -> {
+                        snackbarState.show(Error(effect.message))
+                    }
+                    is ModelsViewEffect.ActionChanged -> {
+                        snackbarState.show(
+                            SuccessWithIcon(
+                                effect.resDrawableId,
+                                context.getString(effect.resStringId)
+                            )
+                        )
+                    }
+                }
             }
         }
     }

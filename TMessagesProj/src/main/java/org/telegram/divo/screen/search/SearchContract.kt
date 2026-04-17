@@ -25,6 +25,12 @@ data class State(
     val hasSearched: Boolean = false,
     val hasMore: Boolean = false,
 
+    val queryFR: String = "",
+    val searchResultsFR: List<SearchedProfile> = emptyList(),
+    val isLoadingFR: Boolean = false,
+    val isLoadingMoreFR: Boolean = false,
+    val hasMoreFR: Boolean = false,
+
     val allCities: List<LocalCity> = emptyList(),
     val selectedCity: LocalCity? = null,
 
@@ -93,13 +99,15 @@ data class State(
 sealed interface Intent : ViewIntent {
     data object OnBackClicked : Intent
     data class OnQueryChanged(val value: String) : Intent
+    data class OnQueryFRChanged(val value: String) : Intent
     data class OnPhotoSelected(val uri: Uri) : Intent
     data object OnLoadMore : Intent
-    data class OnItemClicked(val user: SearchedProfile) : Intent
+    data object OnLoadMoreFR : Intent
+    data class OnItemClicked(val user: SearchedProfile, val isSearchMode: Boolean) : Intent
     data object OnSearchConfirmed : Intent
-    data object OnDivoProfilesClicked : Intent
     data object OnResetFilters : Intent
     data object OnFaceSearchHistoryClicked : Intent
+    data class OnSimilarProfilesClicked(val photo: String, val filters: String?) : Intent
 
     data class OnApplyFilters(
         val countries: List<LocalCountry>,
@@ -119,8 +127,8 @@ sealed interface Effect : ViewEffect {
     data class ShowError(val message: String) : Effect
     data class NavigateToFaceSearch(val uri: String) : Effect
     data class NavigateToProfile(val user: SearchedProfile) : Effect
-    data object NavigateToSearchSimilarity : Effect
     data object NavigateToFaceSearchHistory : Effect
+    data class NavigateToSimilarProfiles(val photo: String, val filters: String?) : Effect
 }
 
 data class LocalCity(

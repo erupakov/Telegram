@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
-import org.telegram.divo.screen.search.SearchScreenType
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.MainTabsActivity
 import org.telegram.ui.MainTabsActivityController
@@ -77,6 +76,6 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
     }
 
     fun openSearchFromBottomBar() {
-        modelsNavController?.navigate(ModelsRoute.Search.createRoute(SearchScreenType.SEARCH))
+        modelsNavController?.navigate(ModelsRoute.Search.route)
     }
 }

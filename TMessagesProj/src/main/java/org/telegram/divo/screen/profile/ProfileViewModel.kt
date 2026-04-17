@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.filterNotNull
@@ -24,14 +23,13 @@ import org.telegram.divo.usecase.GetEventListUseCase
 import org.telegram.divo.usecase.GetUserGalleryUseCase
 import org.telegram.divo.usecase.GetUserVideosUseCase
 import java.io.File
-import kotlin.random.Random
 
 class ProfileViewModel(
     private val userId: Int,
     private val isOwnProfile: Boolean,
 ) : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
 
-    private var searchJob: Job? = null
+    //private var searchJob: Job? = null
 
     private val eventPaginator = GetEventListUseCase().paginator
 
@@ -108,7 +106,6 @@ class ProfileViewModel(
 
             launch { loadEngagement() }
             launch { portfolioPaginator.loadInitial() }
-            launch { loadSimilarProfiles() }
             launch { videoPaginator.loadInitial() }
             observeEvents()
             observeEngagementPaginators()
@@ -154,7 +151,7 @@ class ProfileViewModel(
         }
     }
 
-    //TODO пока нет ручки для поиска
+    //TODO пока нет ручки для поиска Engagement
 //    private fun observeSearchPaginator() {
 //        viewModelScope.launch {
 //            searchPaginator.state.collect { pState ->
@@ -214,10 +211,7 @@ class ProfileViewModel(
                 .collect { data ->
                     setState {
                         copy(
-                            videoItems = data.items
-                                .filter { it.files.any { f -> f.isVideo } }
-                                .distinctBy { it.id }
-                                .toPersistentList()
+                            videoItems = data.items.toPersistentList()
                         )
                     }
                 }
@@ -333,21 +327,35 @@ class ProfileViewModel(
             setState { copy(isLoading = true, errorMessage = null) }
 
             val result = DivoApi.userRepository.getUserById(state.value.userId)
-
-            if (result is DivoResult.Success) {
-                val userData = result.value
-                setState {
-                    copy(
-                        isLoading = false,
-                        userInfo = userData,
-                        userId = userData.id,
-                        physicalParams = mapPhysicalParams(userData),
-                    )
+                .flatMap { userData ->
+                    setState {
+                        copy(
+                            userInfo = userData,
+                            userId = userData.id,
+                            physicalParams = mapPhysicalParams(userData),
+                        )
+                    }
+                    if (userData.avatarId != 0L) {
+                        DivoApi.faceRecognitionRepository.searchSimilar(118880) //userData.avatarId
+                    } else {
+                        DivoResult.Success(emptyList())
+                    }
                 }
-            } else {
-                val errorMsg = result.getErrorMessage()
-                setState { copy(isLoading = false, errorMessage = errorMsg) }
-                sendEffect(ProfileEffect.ShowError(errorMsg))
+
+            when (result) {
+                is DivoResult.Success -> {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            similarProfiles = result.value
+                        )
+                    }
+                }
+                else -> {
+                    val errorMsg = result.getErrorMessage()
+                    setState { copy(isLoading = false, errorMessage = errorMsg) }
+                    sendEffect(ProfileEffect.ShowError(errorMsg))
+                }
             }
         }
     }
@@ -372,21 +380,6 @@ class ProfileViewModel(
         }
     }
 
-    //TODO временно
-    private suspend fun loadSimilarProfiles() {
-        val limit = Random.nextInt(4, 7)
-
-        val result = DivoApi.userRepository.getAgencyModels(limit = limit)
-        if (result is DivoResult.Success) {
-            setState {
-                copy(
-                    agencyModels = result.value.items,
-                )
-            }
-        } else {
-            sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
-        }
-    }
 
     private fun uploadPhoto(file: Result<File>) {
         viewModelScope.launch {

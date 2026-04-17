@@ -82,19 +82,17 @@ class SimilarProfilesViewModel(
     private suspend fun loadSimilarProfiles() {
         setState { copy(isLoading = true) }
 
-        //if (result is DivoResult.Success) {
+        // Имитация загрузки
         val filtered = filterMockProfiles(state.value.copy(profiles = mockProfiles))
-        setState {
-            copy(
-                profiles = filtered,
-                isLoading = false
-            )
-        }
-        saveHistory(state.value.copy(profiles = filtered))
-//        } else {
-//            setState { copy(isLoading = false) }
-//            sendEffect(Effect.ShowError(result.getErrorMessage()))
-//        }
+        val newState = state.value.copy(
+            profiles = filtered,
+            isLoading = false
+        )
+        setState { newState }
+
+        // Пытаемся сохранить. Если currentUserId еще null,
+        // история сохранится чуть позже в loadUserProfile
+        saveHistory(newState)
     }
 
     private fun filterMockProfiles(currentState: State): List<SearchedProfile> {
@@ -262,7 +260,11 @@ class SimilarProfilesViewModel(
                         blockParams = getDefaultBlockParams(),
                     )
                 }
-                applyInitialFiltersIfNeeded()
+                if (initialFiltersJson != null) {
+                    applyInitialFiltersIfNeeded()
+                } else {
+                    saveHistory(state.value)
+                }
             } else {
                 setState { copy(isUserLoading = false) }
                 sendEffect(ShowError(result.getErrorMessage()))
@@ -271,28 +273,41 @@ class SimilarProfilesViewModel(
     }
 
     private fun applyInitialFiltersIfNeeded() {
-        val payload = SimilarFiltersSerializer.deserialize(initialFiltersJson) ?: return
+        val payload = SimilarFiltersSerializer.deserialize(initialFiltersJson)
+
+        if (payload == null) {
+            saveHistory(state.value)
+            return
+        }
+
         val stateWithCoreFilters = state.value.copy(
             similarityPercent = payload.similarityPercent,
             role = ProfileParameter(ParametersType.ROLE, payload.roleValue),
             blockParams = mergeBlockParams(state.value.getDefaultBlockParams(), payload.blockParams)
         )
         val filteredByCore = filterMockProfiles(stateWithCoreFilters)
-        setState { stateWithCoreFilters.copy(profiles = filteredByCore) }
-        saveHistory(stateWithCoreFilters.copy(profiles = filteredByCore))
+        val finalInitialState = stateWithCoreFilters.copy(profiles = filteredByCore)
 
+        setState { finalInitialState }
+
+        // Обработка стран
         if (payload.countryShortNames.isNotEmpty()) {
             if (state.value.allCountries.isNotEmpty()) {
                 val selected = state.value.allCountries.filter { it.shortName in payload.countryShortNames }
                 if (selected.isNotEmpty()) {
-                    val withCountries = state.value.copy(selectedCountries = selected)
+                    val withCountries = finalInitialState.copy(selectedCountries = selected)
                     val filtered = filterMockProfiles(withCountries)
                     setState { withCountries.copy(profiles = filtered) }
                     saveHistory(withCountries.copy(profiles = filtered))
+                } else {
+                    saveHistory(finalInitialState)
                 }
             } else {
                 pendingCountryShortNames = payload.countryShortNames
+                saveHistory(finalInitialState) // Сохраняем пока без стран, потом loadCountries обновит
             }
+        } else {
+            saveHistory(finalInitialState)
         }
     }
 
@@ -310,9 +325,12 @@ class SimilarProfilesViewModel(
 
     private fun saveHistory(currentState: State) {
         val userId = currentUserId ?: return
-        viewModelScope.launch {
+
+        viewModelScope.launch(Dispatchers.IO) {
             val filtersJson = SimilarFiltersSerializer.serialize(currentState)
+
             val existing = DivoApi.faceRecognitionRepository.getByImageUri(currentState.imageUrl, userId)
+
             DivoApi.faceRecognitionRepository.save(
                 FaceRecognitionEntity(
                     id = existing?.id ?: java.util.UUID.randomUUID().toString(),

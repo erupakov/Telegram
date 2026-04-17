@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.SnackbarResult
@@ -45,15 +46,24 @@ class AppSnackbarHostState {
         private set
 
     suspend fun show(event: SnackbarEvent) {
+        hostState.currentSnackbarData?.dismiss()
         currentEvent = event
-        val result = hostState.showSnackbar(
-            message = event.message,
-            actionLabel = if (event is SnackbarEvent.ErrorWithRetry) event.actionLabel else null,
-        )
-        if (result == SnackbarResult.ActionPerformed && event is SnackbarEvent.ErrorWithRetry) {
-            event.onRetry()
+
+        try {
+            val result = hostState.showSnackbar(
+                message = event.message,
+                actionLabel = if (event is SnackbarEvent.ErrorWithRetry) event.actionLabel else null,
+                duration = SnackbarDuration.Short
+            )
+
+            if (result == SnackbarResult.ActionPerformed && event is SnackbarEvent.ErrorWithRetry) {
+                event.onRetry()
+            }
+        } finally {
+            if (currentEvent == event) {
+                currentEvent = null
+            }
         }
-        currentEvent = null
     }
 }
 

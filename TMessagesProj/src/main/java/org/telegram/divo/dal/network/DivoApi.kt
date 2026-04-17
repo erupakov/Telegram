@@ -1,6 +1,7 @@
 package org.telegram.divo.dal.network
 
 import org.telegram.divo.common.utils.ThumbnailProcessor
+import org.telegram.divo.dal.api.FaceRecognitionService
 import org.telegram.divo.dal.api.AuthService
 import org.telegram.divo.dal.api.DictionaryService
 import org.telegram.divo.dal.api.EventService
@@ -73,7 +74,8 @@ object DivoApi {
     }
 
     val faceRecognitionRepository by lazy {
-        FaceRecognitionRepository(faceRecognitionDao)
+        val service = retrofit.create(FaceRecognitionService::class.java)
+        FaceRecognitionRepository(faceRecognitionDao, service)
     }
 
     val walletRepository: WalletRepository by lazy {

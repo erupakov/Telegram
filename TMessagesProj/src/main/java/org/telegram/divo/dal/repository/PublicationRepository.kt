@@ -85,7 +85,7 @@ class PublicationRepository(
         }
 
         service.getPublicationList(
-            PublicationListRequest(offset = offset, limit = limit, userId = userId)
+            PublicationListRequest(offset = offset, limit = limit, userId = userId, type = "video")
         ).toEntities()
             .let { page -> page.copy(items = thumbnailProcessor.withThumbnails(page.items)) }
             .also { newPage -> updatePublicationCache(userId, newPage, offset) }

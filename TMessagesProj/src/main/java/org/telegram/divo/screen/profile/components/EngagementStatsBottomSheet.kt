@@ -145,6 +145,9 @@ fun EngagementStatsBottomSheet(
                     value = searchQuery,
                     onValueChange = onQueryChanged,
                     leadingIcon = R.drawable.ic_divo_search,
+                    placeholder = "Ждем бэк",
+                    placeholderColor = Color.Red,
+                    readOnly = true,
                     height = 40.dp,
                     trailingIcon = if (searchQuery.isNotBlank()) R.drawable.ic_divo_clear else null,
                     onTrailingIconClick = { onQueryChanged("") }

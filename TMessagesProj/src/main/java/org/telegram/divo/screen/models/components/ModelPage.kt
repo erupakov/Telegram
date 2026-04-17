@@ -215,19 +215,24 @@ private fun CardBlurredBackground(
                     drawContent()
 
                     val h = size.height
-                    val topBlurHeight = 90.dp.toPx()    // Высота размытия сверху
-                    val bottomBlurHeight = 210.dp.toPx() // Высота размытия снизу
+                    val topBlurHeight = 94.dp.toPx()    // Высота размытия сверху
+                    val bottomBlurHeight = 160.dp.toPx() // Высота размытия снизу
 
                     drawRect(
                         brush = Brush.verticalGradient(
-                            // Маска для верхней части
+                            // Маска для верхней части (сглаженная)
                             0.0f to Color.Black,
-                            (topBlurHeight / h) * 0.6f to Color.Black,  // Точка, до которой блюр 100% плотный
-                            (topBlurHeight / h) to Color.Transparent,   // Точка, где блюр исчезает
+                            (topBlurHeight / h) * 0.5f to Color.Black,
+                            (topBlurHeight / h) * 0.8f to Color.Black.copy(alpha = 0.5f), // Промежуточная точка
+                            (topBlurHeight / h) to Color.Transparent,
 
-                            // Маска для нижней части
-                            (1f - bottomBlurHeight / h) to Color.Transparent, // Точка начала появления блюра
-                            (1f - (bottomBlurHeight / h) * 0.7f) to Color.Black, // Точка перехода в 100% плотность
+                            // Маска для нижней части (сглаженная)
+                            // Начинаем проявлять блюр гораздо раньше
+                            (1f - bottomBlurHeight / h) to Color.Transparent,
+                            (1f - (bottomBlurHeight / h) * 0.95f) to Color.Black.copy(alpha = 0.3f),
+                            (1f - (bottomBlurHeight / h) * 0.9f) to Color.Black.copy(alpha = 0.6f),
+                            (1f - (bottomBlurHeight / h) * 0.80f) to Color.Black.copy(alpha = 0.9f),
+                            (1f - (bottomBlurHeight / h) * 0.2f) to Color.Black,
                             1.0f to Color.Black
                         ),
                         blendMode = BlendMode.DstIn

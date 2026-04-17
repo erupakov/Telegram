@@ -5,14 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,10 +29,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.FlowPreview
@@ -58,22 +54,12 @@ fun SearchSuggestionContent(
     onClicked: (SearchedProfile) -> Unit,
     onLoadMore: () -> Unit,
 ) {
-    val insets = WindowInsets.systemBars.asPaddingValues()
-    val imeBottom = WindowInsets.ime.asPaddingValues().calculateBottomPadding()
-    val navBarBottom = insets.calculateBottomPadding()
-
-    val height = LocalConfiguration.current.screenHeightDp.dp -
-            insets.calculateTopPadding() -
-            navBarBottom -
-            180.dp -
-            maxOf(imeBottom - navBarBottom, 0.dp)
 
     if (isLoading) {
         SearchSuggestionsLoadingContent()
     } else if (searchResults.isNotEmpty()) {
         SearchSuggestions(
             items = searchResults,
-            height = height,
             isLoadingMore = isLoadingMore,
             hasMore = hasMore,
             onClicked = onClicked,
@@ -86,7 +72,6 @@ fun SearchSuggestionContent(
 @Composable
 private fun SearchSuggestions(
     items: List<SearchedProfile>,
-    height: Dp,
     isLoadingMore: Boolean,
     hasMore: Boolean,
     onClicked: (SearchedProfile) -> Unit,
@@ -114,9 +99,9 @@ private fun SearchSuggestions(
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
-            .then(
-                if (items.size < 10) Modifier else Modifier.height(height)
-            )
+            .fillMaxHeight()
+            .navigationBarsPadding()
+            .padding(bottom = 16.dp)
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(AppTheme.colors.onBackground),
