@@ -22,12 +22,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.screen.profile.PhysicalParams
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
@@ -55,13 +57,13 @@ fun BiographyAppearanceSection(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             TabButton(
-                text = "BIOGRAPHY",
+                text = stringResource(R.string.TabBiography),
                 isSelected = selectedTab == 0,
                 onClick = { onTabSelected(0) },
                 modifier = Modifier.weight(1f)
             )
             TabButton(
-                text = "APPEARANCE",
+                text = stringResource(R.string.TabAppearance),
                 isSelected = selectedTab == 1,
                 onClick = { onTabSelected(1) },
                 modifier = Modifier.weight(1f)
@@ -125,7 +127,7 @@ private fun BiographyContent(bio: String) {
             .padding(16.dp)
     ) {
         Text(
-            text = bio.ifEmpty { "No biography available" },
+            text = bio.ifEmpty { stringResource(R.string.NoBiographyAvailable) },
             style = AppTheme.typography.helveticaNeueRegular,
             color = Color.White,
             fontSize = 12.sp,
@@ -151,6 +153,7 @@ private fun BiographyContent(bio: String) {
 @Composable
 private fun AppearanceContent(params: PhysicalParams) {
     var expanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -168,23 +171,23 @@ private fun AppearanceContent(params: PhysicalParams) {
                 // Left column
                 Column(modifier = Modifier.weight(1f)) {
                     if (params.gender.isNotEmpty()) {
-                        AppearanceRow("Gender", params.gender)
+                        AppearanceRow(stringResource(R.string.LabelGender), params.gender)
                     }
                     if (params.height > 0) {
-                        AppearanceRow("Height (cm)", params.height.toString())
+                        AppearanceRow(stringResource(R.string.LabelHeight), params.height.toString())
                     }
                     if (expanded) {
                         if (params.hips > 0) {
-                            AppearanceRow("Hips (cm)", params.hips.toString())
+                            AppearanceRow(stringResource(R.string.LabelHips), params.hips.toString())
                         }
                         if (params.hairLength > "0") {
-                            AppearanceRow("Hair length (cm)", params.hairLength)
+                            AppearanceRow(stringResource(R.string.LabelHairLength), params.hairLength)
                         }
                         if (params.eyeColor.isNotEmpty()) {
-                            AppearanceRow("Eye color", params.eyeColor)
+                            AppearanceRow(stringResource(R.string.LabelEyeColor), params.eyeColor)
                         }
-                        if (params.breastSize.isNotEmpty() && params.gender == "Female") {
-                            AppearanceRow("Breast size", params.breastSize)
+                        if (params.breastSize.isNotEmpty() && params.gender == stringResource(R.string.Female)) {
+                            AppearanceRow(stringResource(R.string.LabelBreastSize), params.breastSize)
                         }
                     }
                 }
@@ -192,27 +195,27 @@ private fun AppearanceContent(params: PhysicalParams) {
                 // Right column
                 Column(modifier = Modifier.weight(1f)) {
                     if (params.age.isNotEmpty()) {
-                        AppearanceRow("Age (y.o)", params.age.toString())
+                        AppearanceRow(stringResource(R.string.LabelAge), params.age.formattedAge(context))
                     }
                     if (params.waist > 0) {
-                        AppearanceRow("Waist (cm)", params.waist.toString())
+                        AppearanceRow(stringResource(R.string.LabelWaist), params.waist.toString())
                     }
                     if (expanded) {
                         if (params.shoeSize > 0) {
-                            AppearanceRow("Shoe size (EU)", params.shoeSize.toString())
+                            AppearanceRow(stringResource(R.string.LabelShoeSize), params.shoeSize.toString())
                         }
                         if (params.hairColor.isNotEmpty()) {
-                            AppearanceRow("Hair color", params.hairColor)
+                            AppearanceRow(stringResource(R.string.LabelHairColor), params.hairColor)
                         }
                         if (params.skinColor.isNotEmpty()) {
-                            AppearanceRow("Skin color", params.skinColor)
+                            AppearanceRow(stringResource(R.string.LabelSkinColor), params.skinColor)
                         }
                     }
                 }
             }
 
             Text(
-                text =  if (expanded) "SEE LESS" else "SEE MORE",
+                text =  stringResource(if (expanded) R.string.SeeLess else R.string.SeeMore),
                 style = AppTheme.typography.helveticaNeueLtCom,
                 color = Color.White,
                 fontSize = 10.sp,

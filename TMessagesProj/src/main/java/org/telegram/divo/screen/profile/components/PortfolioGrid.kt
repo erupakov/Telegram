@@ -29,13 +29,14 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.entity.AgencyModel
+import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.UserGalleryItem
 
 @Composable
 fun PortfolioGrid(
     modifier: Modifier = Modifier,
     portfolioItems: List<UserGalleryItem>,
-    similarItems: List<AgencyModel>,
+    similarItems: List<SimilarFace>,
     isOwnProfile: Boolean,
     isUploading: Boolean,
     isLoadingMore: Boolean,
@@ -131,7 +132,7 @@ fun PortfolioGrid(
             }
         }
 
-        if (!isOwnProfile) {
+        if (!isOwnProfile && similarItems.isNotEmpty()) {
             item(span = { GridItemSpan(maxLineSpan) }) {
                 SimilarProfilesRow(
                     similarItems = similarItems,

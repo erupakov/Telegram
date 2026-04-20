@@ -4,18 +4,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.toPersistentList
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.profile.components.StatsType
@@ -24,38 +23,39 @@ import org.telegram.divo.usecase.GetEventListUseCase
 import org.telegram.divo.usecase.GetUserGalleryUseCase
 import org.telegram.divo.usecase.GetUserVideosUseCase
 import java.io.File
-import kotlin.random.Random
 
 class ProfileViewModel(
     private val userId: Int,
     private val isOwnProfile: Boolean,
 ) : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
 
-    private var searchJob: Job? = null
+    //private var searchJob: Job? = null
 
     private val eventPaginator = GetEventListUseCase().paginator
 
-    private val portfolioPaginator = GetUserGalleryUseCase(
-        userId = userId
-    ).paginator
+    private val portfolioPaginator by lazy {
+        GetUserGalleryUseCase(userId = state.value.userId).paginator
+    }
 
-    private val videoPaginator = GetUserVideosUseCase(
-        userId = userId
-    ).paginator
+    private val videoPaginator by lazy {
+        GetUserVideosUseCase(userId = state.value.userId).paginator
+    }
 
-    private val engagement = EngagementInteractor(
-        userId = userId,
-        limit = PAGE_SIZE,
-        onFollowersCount = { count ->
-            setState { copy(statistic = statistic.copy(followers = count)) }
-        },
-        onViewsCount = { count ->
-            setState { copy(statistic = statistic.copy(views = count)) }
-        },
-        onFollowingCount = { count ->
-            setState { copy(statistic = statistic.copy(following = count)) }
-        },
-    )
+    private val engagement by lazy {
+        EngagementInteractor(
+            userId = state.value.userId,
+            limit = PAGE_SIZE,
+            onFollowersCount = { count ->
+                setState { copy(statistic = statistic.copy(followers = count)) }
+            },
+            onViewsCount = { count ->
+                setState { copy(statistic = statistic.copy(views = count)) }
+            },
+            onFollowingCount = { count ->
+                setState { copy(statistic = statistic.copy(following = count)) }
+            },
+        )
+    }
 
     override fun createInitialState(): ProfileViewState {
         return ProfileViewState(
@@ -81,10 +81,6 @@ class ProfileViewModel(
 //        }
 //    }
 
-    init {
-        loadEngagement()
-    }
-
     override fun handleIntent(intent: ProfileIntent) {
         when (intent) {
             is ProfileIntent.OnLoad -> loadData()
@@ -104,16 +100,18 @@ class ProfileViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            launch { loadUserProfile(isOwnProfile = isOwnProfile) }
+            loadUserProfile(isOwnProfile = isOwnProfile)
+            val validUserId = state.first { it.userId > 0 && !it.isLoading }.userId
+            if (validUserId <= 0) return@launch
+
+            launch { loadEngagement() }
             launch { portfolioPaginator.loadInitial() }
-            launch { loadSimilarProfiles() }
             launch { videoPaginator.loadInitial() }
-            launch { eventPaginator.loadInitial() }
+            observeEvents()
             observeEngagementPaginators()
             //observeSearchPaginator()
             observeGalleryListPaginator()
             observeVideoPaginator()
-            observeEvents()
         }
     }
 
@@ -153,7 +151,7 @@ class ProfileViewModel(
         }
     }
 
-    //TODO пока нет ручки для поиска
+    //TODO пока нет ручки для поиска Engagement
 //    private fun observeSearchPaginator() {
 //        viewModelScope.launch {
 //            searchPaginator.state.collect { pState ->
@@ -213,10 +211,7 @@ class ProfileViewModel(
                 .collect { data ->
                     setState {
                         copy(
-                            videoItems = data.items
-                                .filter { it.files.any { f -> f.isVideo } }
-                                .distinctBy { it.id }
-                                .toPersistentList()
+                            videoItems = data.items.toPersistentList()
                         )
                     }
                 }
@@ -284,6 +279,7 @@ class ProfileViewModel(
                         copy(
                             isLoading = false,
                             userInfo = userData,
+                            userId = userData.id,
                             physicalParams = params,
                         )
                     }
@@ -295,7 +291,7 @@ class ProfileViewModel(
                 val result = DivoApi.userRepository.getCurrentUserInfo()
                 if (result !is DivoResult.Success) {
                     val errorMsg = result.getErrorMessage()
-                    setState { copy(isLoading = false) }
+                    setState { copy(isLoading = false, errorMessage = errorMsg) }
                     sendEffect(ProfileEffect.ShowError(errorMsg))
                 }
             }
@@ -304,6 +300,12 @@ class ProfileViewModel(
 
     private fun observeEvents() {
         viewModelScope.launch {
+            state.first { it.userInfo.role != RoleType.UNKNOWN && !it.isLoading }
+
+            if (!state.value.isModel) {
+                eventPaginator.loadInitial()
+            }
+
             eventPaginator.state.collect { paginatorState ->
                 setState {
                     copy(
@@ -325,20 +327,35 @@ class ProfileViewModel(
             setState { copy(isLoading = true, errorMessage = null) }
 
             val result = DivoApi.userRepository.getUserById(state.value.userId)
-
-            if (result is DivoResult.Success) {
-                val userData = result.value
-                setState {
-                    copy(
-                        isLoading = false,
-                        userInfo = userData,
-                        physicalParams = mapPhysicalParams(userData),
-                    )
+                .flatMap { userData ->
+                    setState {
+                        copy(
+                            userInfo = userData,
+                            userId = userData.id,
+                            physicalParams = mapPhysicalParams(userData),
+                        )
+                    }
+                    if (userData.avatarId != 0L) {
+                        DivoApi.faceRecognitionRepository.searchSimilar(118880) //userData.avatarId
+                    } else {
+                        DivoResult.Success(emptyList())
+                    }
                 }
-            } else {
-                val errorMsg = result.getErrorMessage()
-                setState { copy(isLoading = false, errorMessage = errorMsg) }
-                sendEffect(ProfileEffect.ShowError(errorMsg))
+
+            when (result) {
+                is DivoResult.Success -> {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            similarProfiles = result.value
+                        )
+                    }
+                }
+                else -> {
+                    val errorMsg = result.getErrorMessage()
+                    setState { copy(isLoading = false, errorMessage = errorMsg) }
+                    sendEffect(ProfileEffect.ShowError(errorMsg))
+                }
             }
         }
     }
@@ -363,21 +380,6 @@ class ProfileViewModel(
         }
     }
 
-    //TODO временно
-    private suspend fun loadSimilarProfiles() {
-        val limit = Random.nextInt(4, 7)
-
-        val result = DivoApi.userRepository.getAgencyModels(limit = limit)
-        if (result is DivoResult.Success) {
-            setState {
-                copy(
-                    agencyModels = result.value.items,
-                )
-            }
-        } else {
-            sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
-        }
-    }
 
     private fun uploadPhoto(file: Result<File>) {
         viewModelScope.launch {
@@ -396,7 +398,7 @@ class ProfileViewModel(
                 }
                 else -> {
                     setState {
-                        copy(mediaUploading = false, errorMessage = result.getErrorMessage())
+                        copy(mediaUploading = false)
                     }
                     sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
                 }
@@ -426,7 +428,7 @@ class ProfileViewModel(
             when (result) {
                 is DivoResult.Success -> setState { copy(mediaUploading = false) }
                 else -> {
-                    setState { copy(mediaUploading = false, errorMessage = result.getErrorMessage()) }
+                    setState { copy(mediaUploading = false) }
                     sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
                 }
             }
@@ -459,7 +461,7 @@ class ProfileViewModel(
                 }
                 else -> {
                     setState {
-                        copy(backgroundChanging = false, errorMessage = result.getErrorMessage())
+                        copy(backgroundChanging = false)
                     }
                     sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
                 }
@@ -472,7 +474,7 @@ class ProfileViewModel(
 
         return PhysicalParams(
             gender = user.gender?.title.orEmpty(),
-            age = user.birthday.formattedAge(),
+            age = user.birthday,
             height = appearance?.height ?: 0f,
             waist = appearance?.waist?.toInt() ?: 0,
             hips = appearance?.hips?.toInt() ?: 0,

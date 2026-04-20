@@ -29,12 +29,17 @@ class EventDetailsViewModel(
             is EventDetailsIntent.OnPhotoClick -> sendEffect(NavigateToGallery(intent.items, intent.id))
             EventDetailsIntent.OnParamsClick -> sendEffect(NavigateToParams)
             is EventDetailsIntent.OnPrevEventClicked -> sendEffect(NavigateToPrevEvent(intent.eventId))
+            EventDetailsIntent.OnLoad -> loadData()
         }
     }
 
     private val eventPaginator = GetEventListUseCase(limit = 10).paginator
 
     init {
+        setIntent(EventDetailsIntent.OnLoad)
+    }
+
+    fun loadData() {
         observeEvents()
         loadEvent()
         loadRoleInfo()

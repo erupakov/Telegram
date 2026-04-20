@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,9 +13,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -23,19 +26,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.boundsInParent
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -65,37 +64,15 @@ fun DivoTabSelector(
     cornerRadius: Dp = 99.dp,
     innerPadding: Dp = 2.dp,
     horizontalPadding: Dp = 16.dp,
-    animationSpec: AnimationSpec<Dp> = spring(
+    animationSpec: AnimationSpec<Float> = spring(
         stiffness = Spring.StiffnessMediumLow,
     ),
     onTabSelected: (Int) -> Unit,
 ) {
-    val density = LocalDensity.current
-    val tabPositions = remember { mutableStateListOf<Rect>() }
-
-    LaunchedEffect(tabs.size) {
-        tabPositions.clear()
-        repeat(tabs.size) { tabPositions.add(Rect.Zero) }
-    }
-
-    val targetOffset = if (selectedIndex in tabPositions.indices) {
-        with(density) { tabPositions[selectedIndex].left.toDp() }
-    } else 0.dp
-
-    val targetWidth = if (selectedIndex in tabPositions.indices) {
-        with(density) { tabPositions[selectedIndex].width.toDp() }
-    } else 0.dp
-
-    val animatedOffset by animateDpAsState(
-        targetValue = targetOffset,
+    val animatedFraction by animateFloatAsState(
+        targetValue = selectedIndex.toFloat(),
         animationSpec = animationSpec,
-        label = "tab_offset"
-    )
-
-    val animatedWidth by animateDpAsState(
-        targetValue = targetWidth,
-        animationSpec = animationSpec,
-        label = "tab_width"
+        label = "tab_fraction"
     )
 
     Box(
@@ -106,19 +83,22 @@ fun DivoTabSelector(
             .background(containerColor)
             .padding(innerPadding)
     ) {
+
         Box(
             modifier = Modifier
-                .offset(x = animatedOffset)
-                .width(animatedWidth)
                 .fillMaxHeight()
-                .clip(RoundedCornerShape(cornerRadius - innerPadding))
-                .background(activeTabColor)
+                .fillMaxWidth(if (tabs.isNotEmpty()) 1f / tabs.size else 1f)
+                .graphicsLayer {
+                    translationX = size.width * animatedFraction
+                }
                 .shadow(
                     elevation = 4.dp,
                     shape = RoundedCornerShape(cornerRadius - innerPadding),
                     ambientColor = Color.Black.copy(alpha = 0.1f),
                     spotColor = Color.Black.copy(alpha = 0.1f)
                 )
+                .clip(RoundedCornerShape(cornerRadius - innerPadding))
+                .background(activeTabColor)
         )
 
         Row(
@@ -139,11 +119,6 @@ fun DivoTabSelector(
                             indication = null
                         ) {
                             onTabSelected(index)
-                        }
-                        .onGloballyPositioned { coordinates ->
-                            if (index < tabPositions.size) {
-                                tabPositions[index] = coordinates.boundsInParent()
-                            }
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -151,13 +126,12 @@ fun DivoTabSelector(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
                         tab.iconResId?.let { resId ->
                             Image(
                                 painter = painterResource(id = resId),
                                 contentDescription = tab.contentDescription,
                                 modifier = Modifier.size(16.dp),
-                                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(
+                                colorFilter = ColorFilter.tint(
                                     if (isSelected) selectedContentColor else unselectedContentColor
                                 )
                             )
@@ -166,7 +140,7 @@ fun DivoTabSelector(
                         tab.textResId?.let { resId ->
                             Text(
                                 modifier = Modifier.padding(top = 2.dp),
-                                text = stringResource(id = resId),
+                                text = stringResource(id = resId).uppercase(),
                                 color = if (isSelected) selectedContentColor else unselectedContentColor,
                                 fontSize = 10.sp,
                                 style = AppTheme.typography.helveticaNeueLtCom,

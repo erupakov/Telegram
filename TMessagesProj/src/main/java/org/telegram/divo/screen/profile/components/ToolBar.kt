@@ -24,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -32,11 +31,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.telegram.divo.common.utils.DivoShareType
-import org.telegram.divo.common.utils.DivoSharingHelper
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoPopupMenu
@@ -56,10 +54,12 @@ fun ToolBar(
     onEditBackgroundClicked: () -> Unit,
     onEditSocialLinksClicked: () -> Unit,
     onManageWorkExperienceClicked: () -> Unit,
+    onFindSimilarProfiles: () -> Unit = {},
+    onReportProfile: () -> Unit = {},
+    onBlockProfile: () -> Unit = {}
 ) {
-    var showDropdownMenu by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+    var showEditMenu by remember { mutableStateOf(false) }
+    var showMenu by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier
@@ -90,41 +90,49 @@ fun ToolBar(
         if (isOwnProfile) {
             IconButton(
                 modifier = Modifier.align(Alignment.CenterEnd).padding(end = 50.dp),
-                onClick = { showDropdownMenu = true }
+                onClick = { showEditMenu = true }
             ) {
-                Icon(Icons.Default.Edit, contentDescription = "Edit", tint = Color.White)
+                Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White)
             }
         }
 
         DivoPopupMenu(
-            visible = showDropdownMenu,
-            onDismiss = { showDropdownMenu = false },
+            visible = showEditMenu,
+            onDismiss = { showEditMenu = false },
             items = listOf(
                 PopupMenuItem(R.string.EditProfile, onEditProfileClicked),
                 PopupMenuItem(R.string.ChangeProfileBackground, onEditBackgroundClicked),
                 PopupMenuItem(R.string.EditSocialLinks, onEditSocialLinksClicked),
                 PopupMenuItem(R.string.ManageWorkExperience, onManageWorkExperienceClicked),
-            )
+            ),
+            offset = IntOffset(x = -32, y = 35)
         )
 
         Box(
             modifier = Modifier.align(Alignment.CenterEnd)
         ) {
-            //TODO пока не понятно назначение кнопки
+            val options = if (isOwnProfile) {
+                listOf(PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec))
+            } else {
+                listOf(
+                    PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec),
+                    PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report),
+                    PopupMenuItem(R.string.BlockProfile, onBlockProfile, R.drawable.ic_divo_block),
+                )
+            }
+
             IconButton(
-                onClick = {
-                    DivoSharingHelper.share(
-                        context = context,
-                        scope = scope,
-                        type = DivoShareType.PROFILE,
-                        id = uiState.userInfo.id,
-                        customMessage = "${uiState.userInfo.fullName} - ${uiState.userInfo.roleLabel}",
-                        imageUrl = uiState.userInfo.avatarUrl
-                    )
-                }
+                onClick = { showMenu = true }
             ) {
                 Icon(Icons.Default.MoreVert, contentDescription = null, tint = Color.White)
             }
+
+            DivoPopupMenu(
+                visible = showMenu,
+                onDismiss = { showMenu = false },
+                items = options,
+                offset = IntOffset(x = -32, y = 35)
+            )
         }
     }
 }
@@ -137,6 +145,7 @@ private fun TitleContent(
 ) {
     val animatable = remember { Animatable(0f) }
     val previousVisible = remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     LaunchedEffect(lazyListState) {
         snapshotFlow {
@@ -182,7 +191,7 @@ private fun TitleContent(
                 )
                 if (userInfo.birthday.isNotEmpty()) {
                     Text(
-                        text = " · ${userInfo.birthday.formattedAge()} · ",
+                        text = " · ${userInfo.birthday.formattedAge(context)} · ",
                         style = AppTheme.typography.helveticaNeueRegular,
                         color = AppTheme.colors.textColor,
                         fontSize = 10.sp,

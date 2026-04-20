@@ -1,7 +1,6 @@
 package org.telegram.divo.screen.work_create_edit
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,10 +51,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.SnackbarEvent.Error
+import org.telegram.divo.common.SnackbarEvent.Success
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.utils.toFormattedDate
@@ -80,7 +82,8 @@ fun CreateWorkHistoryScreen(
     onPickDate: () -> Unit = {},
     onPickTime: () -> Unit = {},
 ) {
-
+    val snackbarState = remember { AppSnackbarHostState() }
+    val parametersSavedText = stringResource(R.string.WorkExperienceSaved)
     val context = LocalContext.current
 
     LaunchedEffect(viewModel.effect) {
@@ -93,11 +96,15 @@ fun CreateWorkHistoryScreen(
                     onNavigateToSearch()
                 }
                 is Effect.ShowSuccess -> {
-                    Toast.makeText(context, "Work experience added successfully", Toast.LENGTH_SHORT).show()
+                    snackbarState.show(Success(parametersSavedText))
                     onBack()
                 }
                 is Effect.ShowError -> {
-                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                    if (it.message.isEmpty()) {
+                        snackbarState.show(Error(context.getString(R.string.EndDateCannotBeEarly)))
+                    } else {
+                        snackbarState.show(Error(it.message))
+                    }
                 }
             }
         }
@@ -106,6 +113,7 @@ fun CreateWorkHistoryScreen(
 
     CreateWorkHistoryScreenView(
         state = state,
+        snackbarState = snackbarState,
         onIntent = {
             viewModel.setIntent(it)
         }
@@ -113,11 +121,11 @@ fun CreateWorkHistoryScreen(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun CreateWorkHistoryScreenView(
-    state: State = State(),
-    onIntent: (Intent) -> Unit = {},
+    state: State,
+    snackbarState: AppSnackbarHostState,
+    onIntent: (Intent) -> Unit,
 ) {
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
@@ -155,6 +163,12 @@ fun CreateWorkHistoryScreenView(
                     onIntent(Intent.OnCreateExperience)
                 },
                 createEnabled = state.createEnabled
+            )
+        },
+        snackbarHost = {
+            AppSnackbarHost(
+                state = snackbarState,
+                bottomPadding = 56.dp
             )
         },
         containerColor = Color.White
@@ -358,7 +372,7 @@ private fun DateField(
                     color = if (enabled) Color(0x993C3C43) else Color(0x403C3C43)
                 ),
                 readOnly = true,
-                trailingIcon = Icons.Default.DateRange
+                trailingIcon = R.drawable.ic_divo_calendar_20
             )
 
             Box(

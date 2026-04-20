@@ -48,7 +48,8 @@ object DivoSharingHelper {
             openShareSheet(context, textBody, null)
         } else {
             scope.launch(Dispatchers.IO) {
-                val downloadedFile = downloadImageToCache(context, imageUrl)
+                val downloadedFile = ImageCacheHelper.getLocalUri(context, imageUrl)
+                    ?.let { File(context.cacheDir, "share_preview_temp.jpg") }
                 withContext(Dispatchers.Main) {
                     openShareSheet(context, textBody, downloadedFile)
                 }
@@ -79,20 +80,5 @@ object DivoSharingHelper {
 
         val shareIntent = Intent.createChooser(sendIntent, "Поделиться...")
         context.startActivity(shareIntent)
-    }
-
-    private fun downloadImageToCache(context: Context, url: String): File? {
-        return try {
-            val file = File(context.cacheDir, "share_preview_temp.jpg")
-            URL(url).openStream().use { input ->
-                FileOutputStream(file).use { output ->
-                    input.copyTo(output)
-                }
-            }
-            file
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
     }
 }

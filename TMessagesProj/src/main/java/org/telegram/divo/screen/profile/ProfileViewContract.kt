@@ -5,11 +5,11 @@ import kotlinx.collections.immutable.persistentListOf
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
-import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.Publication
+import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
@@ -62,7 +62,7 @@ data class ProfileViewState(
     val hasMoreViewed: Boolean = true,
     val hasMoreFollowed: Boolean = true,
 
-    val agencyModels: List<AgencyModel> = emptyList(),
+    val similarProfiles: List<SimilarFace> = emptyList(),
     val socialLinks: SocialLinks = SocialLinks(),
     val physicalParams: PhysicalParams = PhysicalParams(),
     val statistic: UserStatistic = UserStatistic()

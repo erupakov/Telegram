@@ -1,10 +1,11 @@
 package org.telegram.divo.screen.your_parameters
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.components.items.ParametersType
+import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -14,8 +15,6 @@ import org.telegram.divo.entity.HairColor
 import org.telegram.divo.entity.HairLength
 import org.telegram.divo.entity.SkinColor
 import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.screen.your_parameters.components.ParametersType
-import org.telegram.divo.screen.your_parameters.components.ProfileParameter
 
 class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParametersIntent, YourParametersEffect>() {
 
@@ -128,7 +127,7 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
 
     private fun UserInfo.mapToBlockParams(): List<ProfileParameter> =
         listOf(
-            ProfileParameter(ParametersType.AGE, birthday),
+            ProfileParameter(ParametersType.BIRTHDAY, birthday),
             ProfileParameter(ParametersType.HEIGHT, model?.appearance?.height?.let { "$it" }.orEmpty()),
             ProfileParameter(ParametersType.WAIST, model?.appearance?.waist?.let { "$it" }.orEmpty()),
             ProfileParameter(ParametersType.HIPS, model?.appearance?.hips?.let { "$it" }.orEmpty()),
@@ -138,7 +137,7 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
     private fun YourParametersViewState.toUserInfo(): UserInfo {
         val appearance = user.model?.appearance
 
-        val ageStr = blockParams.getValue(ParametersType.AGE)
+        val BIRTHDAYStr = blockParams.getValue(ParametersType.BIRTHDAY)
         val heightStr = blockParams.getValue(ParametersType.HEIGHT)
         val waistStr = blockParams.getValue(ParametersType.WAIST)
         val hipsStr = blockParams.getValue(ParametersType.HIPS)
@@ -151,7 +150,7 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
 
         val updatedUserInfo = user.copy(
             gender = gender?.let { Gender(id = it.value.lowercase(), title = it.value) },
-            birthday = ageStr.orEmpty(),
+            birthday = BIRTHDAYStr.orEmpty(),
             model = user.model?.copy(
                 appearance = appearance?.copy(
                     height = parsedHeight,

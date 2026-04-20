@@ -71,7 +71,7 @@ fun UserDataDto.toEntity(): UserInfo {
 
     return UserInfo(
         id = id,
-        fullName = if (role.isModel()) fullName.orEmpty() else agency?.title.orEmpty(),
+        fullName = if (role.isModel()) fullName.orEmpty() else fullName ?: agency?.title.orEmpty(),
         gender = gender?.toEntity(),
         birthday = birthday.orEmpty(),
         city = city?.toEntity(),
@@ -81,6 +81,7 @@ fun UserDataDto.toEntity(): UserInfo {
         photoUuid = source?.fileUuid.orEmpty(),
         avatarUrl = avatar?.fullUrl.orEmpty(),
         avatarUuid = avatar?.fileUuid.orEmpty(),
+        avatarId = avatar?.photoId ?: 0,
         role = role,
         subrole = subrole.orEmpty(),
         roleLabel = roleLabel.orEmpty(),

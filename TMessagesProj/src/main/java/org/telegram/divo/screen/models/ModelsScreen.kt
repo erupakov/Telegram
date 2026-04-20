@@ -1,10 +1,9 @@
 package org.telegram.divo.screen.models
 
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -13,269 +12,351 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Text
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
-import com.google.android.exoplayer2.util.Log
-import kotlinx.coroutines.flow.distinctUntilChanged
-import org.telegram.divo.common.LaunchedEffectOnce
-import org.telegram.divo.common.LockScreenOrientation
+import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
+import kotlinx.coroutines.launch
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.SnackbarEvent.Error
+import org.telegram.divo.common.SnackbarEvent.ErrorWithRetry
+import org.telegram.divo.common.SnackbarEvent.SuccessWithIcon
+import org.telegram.divo.components.DivoTabSelector
 import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.rememberIsOnline
+import org.telegram.divo.components.TabConfig
 import org.telegram.divo.screen.gallery.GalleryItem
-import org.telegram.divo.screen.models.components.AnimatedCollapsingTopBar
 import org.telegram.divo.screen.models.components.AnimatedLargeStoriesOverlay
 import org.telegram.divo.screen.models.components.ModelPage
-import org.telegram.divo.screen.models.components.TabsRow
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
+import kotlin.math.roundToInt
+
+private val HeaderExpandedHeight = 114.dp
+private val HeaderCollapsedHeight = 50.dp
+private val HeaderSpacerAdditional = 34.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ModelsHomeScreen(
-    viewModel: ModelsViewModel = androidx.lifecycle.viewmodel.compose.viewModel<ModelsViewModel>(),
-    onSearch: () -> Unit = {},
+    viewModel: ModelsViewModel = viewModel(),
     onClick: (Int) -> Unit = {},
     onPhotoClicked: (List<GalleryItem>, Int) -> Unit = { _, _ -> },
 ) {
-    val context = LocalContext.current
     val state by viewModel.state.collectAsState()
-    val currentRestModels = state.feedItems
+    val density = LocalDensity.current
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    val listState = rememberLazyListState()
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { Tab.entries.size })
 
-    val bottomInset = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
+    val modelsListState = rememberLazyListState()
+    val newTalentsListState = rememberLazyListState()
+    val agenciesListState = rememberLazyListState()
+
+    val listStates = remember(modelsListState, newTalentsListState, agenciesListState) {
+        mapOf(
+            Tab.MODELS to modelsListState,
+            Tab.NEW_TALENTS to newTalentsListState,
+            Tab.AGENCIES to agenciesListState
+        )
+    }
+
+    val hazeState = remember { HazeState() }
+    val snackbarState = remember { AppSnackbarHostState() }
+
+    val maxScrollOffsetPx = remember {
+        with(density) { (HeaderExpandedHeight - HeaderCollapsedHeight).toPx() }
+    }
+
+    val headerScrollOffset by remember {
+        derivedStateOf {
+            val page = pagerState.currentPage
+            val offsetFraction = pagerState.currentPageOffsetFraction
+
+            fun getScrollForPage(index: Int): Float {
+                val list = listStates[Tab.entries.getOrNull(index)] ?: return 0f
+                return if (list.firstVisibleItemIndex > 0) maxScrollOffsetPx
+                else list.firstVisibleItemScrollOffset.toFloat().coerceAtMost(maxScrollOffsetPx)
+            }
+
+            val currentScroll = getScrollForPage(page)
+            if (offsetFraction == 0f) return@derivedStateOf currentScroll
+
+            val targetPage = if (offsetFraction > 0) page + 1 else page - 1
+            val targetScroll = getScrollForPage(targetPage)
+
+            currentScroll + (targetScroll - currentScroll) * kotlin.math.abs(offsetFraction)
+        }
+    }
+
+    val collapseFraction = headerScrollOffset / maxScrollOffsetPx
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-    val cardHeight = remember(bottomInset, statusBarHeight) {
-        screenHeight - statusBarHeight - bottomInset - 284.dp
-    }
-    var titleWidthPx by remember { mutableFloatStateOf(0f) }
+    val bottomInset = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
 
-    val isOnline = rememberIsOnline()
-    if (!isOnline) {
-        Log.d("MyTag", "Ожидание сети...")
-    } else {
-        Log.d("MyTag", "Связь установлена!")
-    }
-
-    LockScreenOrientation()
-
-    LaunchedEffectOnce {
-        viewModel.setIntent(ModelsViewIntent.LoadInitialData)
-    }
+    val nestedScrollConnection = rememberHeaderSnapNestedScroll(listStates, pagerState, maxScrollOffsetPx)
 
     LaunchedEffect(state.error) {
-        if (!state.error.isNullOrBlank()) {
-            Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
+        state.error?.let {
+            snackbarState.show(ErrorWithRetry(it, context.getString(R.string.RetryLabel)) {
+                viewModel.setIntent(ModelsViewIntent.LoadInitialData)
+            })
         }
     }
 
-
-    val density = LocalDensity.current
-    val maxScrollOffsetPx = remember { with(density) { 104.dp.toPx() } }
-
-    val collapseFraction by remember {
-        derivedStateOf {
-            if (listState.firstVisibleItemIndex > 0) {
-                1f
-            } else {
-                val offset = listState.firstVisibleItemScrollOffset.toFloat()
-                (offset / maxScrollOffsetPx).coerceIn(0f, 1f)
-            }
-        }
-    }
-
-    LaunchedEffect(listState.isScrollInProgress) {
-        if (!listState.isScrollInProgress) {
-            if (listState.firstVisibleItemIndex == 0) {
-                val currentOffset = listState.firstVisibleItemScrollOffset
-                if (currentOffset > 0 && currentOffset < maxScrollOffsetPx) {
-                    val triggerPoint = maxScrollOffsetPx / 2
-                    if (currentOffset > triggerPoint) {
-                        listState.animateScrollToItem(1)
-                    } else {
-                        listState.animateScrollToItem(0)
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            launch {
+                when (effect) {
+                    is ModelsViewEffect.ShowError -> {
+                        snackbarState.show(Error(effect.message))
                     }
-                }
-            }
-        }
-    }
-
-    val storiesForAnimation = ModelsViewState.preview.stories
-
-    LaunchedEffect(
-        listState,
-        currentRestModels.size,
-        state.feedHasMore,
-        state.isLoadingAllUsers,
-        state.isLoadingMoreFeed,
-        state.selectedTab
-    ) {
-        snapshotFlow {
-            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1
-        }
-            .distinctUntilChanged()
-            .collect { lastVisibleIndex ->
-                if (currentRestModels.isNotEmpty() &&
-                    lastVisibleIndex >= currentRestModels.size - 3 &&
-                    state.feedHasMore &&
-                    !state.isLoadingAllUsers &&
-                    !state.isLoadingMoreFeed
-                ) {
-                    viewModel.setIntent(ModelsViewIntent.LoadMoreAllUsers)
-                }
-            }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = AppTheme.colors.backgroundLight,
-            contentColor = AppTheme.colors.backgroundLight,
-            topBar = {
-                AnimatedCollapsingTopBar(
-                    collapseFraction = collapseFraction,
-                    stories = storiesForAnimation,
-                    onSearch = onSearch,
-                    onTitleMeasured = { measuredWidth -> titleWidthPx = measuredWidth }
-                )
-            }
-        ) { paddingValues ->
-            LazyColumn(
-                state = listState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = paddingValues.calculateTopPadding())
-                    .background(AppTheme.colors.backgroundLight),
-                contentPadding = PaddingValues(bottom = bottomInset + 66.dp)
-            ) {
-                item {
-                    Spacer(modifier = Modifier.height(104.dp))
-                }
-
-                stickyHeader {
-                    TabsRow(
-                        tabs = Tab.entries.map { it.displayName.uppercase() },
-                        selectedIndex = state.selectedTab.ordinal,
-                        onTabSelected = { viewModel.setIntent(ModelsViewIntent.OnTabSelected(Tab.entries[it])) }
-                    )
-                }
-
-            when {
-                currentRestModels.isEmpty() && state.isLoadingAllUsers -> {
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .fillMaxWidth()
-                                    .height(cardHeight)
-                                    .padding(top = 18.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                LottieProgressIndicator(modifier = Modifier.size(32.dp))
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Text(
-                                    text = stringResource(R.string.LoadingModelsList).uppercase(),
-                                    style = AppTheme.typography.helveticaNeueLtCom,
-                                    fontSize = 12.sp,
-                                    color = Color.Black
-                                )
-                            }
-                        }
-                    }
-                }
-
-                else -> {
-                    itemsIndexed(
-                        items = currentRestModels,
-                        key = { i, d -> d.id }
-                    ) { i, feedItem ->
-                        ModelPage(
-                            feed = feedItem,
-                            cardHeight = cardHeight,
-                            models = state.models,
-                            onClick = onClick,
-                            onPhotoClicked = onPhotoClicked
+                    is ModelsViewEffect.ActionChanged -> {
+                        snackbarState.show(
+                            SuccessWithIcon(
+                                effect.resDrawableId,
+                                context.getString(effect.resStringId)
+                            )
                         )
                     }
                 }
             }
+        }
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        val currentTab = Tab.entries[pagerState.currentPage]
+        val activeList = listStates[currentTab] ?: return@LaunchedEffect
+
+        snapshotFlow {
+            if (activeList.firstVisibleItemIndex > 0) maxScrollOffsetPx.toInt()
+            else activeList.firstVisibleItemScrollOffset
+        }.collect { offset ->
+            listStates.forEach { (tab, listState) ->
+                if (tab != currentTab && listState.firstVisibleItemIndex == 0) {
+                    val targetOffset = offset.coerceAtMost(maxScrollOffsetPx.toInt())
+                    listState.scrollToItem(0, targetOffset)
+                }
             }
+        }
+    }
+
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppTheme.colors.backgroundLight)
+            .nestedScroll(nestedScrollConnection)
+    ) {
+        val cardHeight = remember(this.maxHeight, statusBarHeight, bottomInset) {
+            this.maxHeight - statusBarHeight - bottomInset - 272.dp
+        }
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize().hazeSource(hazeState),
+            beyondViewportPageCount = 1,
+            key = { id -> id }
+        ) { page ->
+            val tab = Tab.entries[page]
+            ModelsList(
+                tab = tab,
+                state = state,
+                listState = listStates[tab]!!,
+                statusBarHeight = statusBarHeight,
+                cardHeight = cardHeight,
+                bottomInset = bottomInset,
+                onLoadMore = { viewModel.setIntent(ModelsViewIntent.LoadMore(tab)) },
+                onLikeClick = { id, liked -> viewModel.setIntent(ModelsViewIntent.OnLikeClick(tab, id, liked)) },
+                onClick = onClick,
+                onPhotoClicked = onPhotoClicked
+            )
         }
 
         AnimatedLargeStoriesOverlay(
             collapseFraction = collapseFraction,
-            stories = storiesForAnimation,
-            titleWidthPx = titleWidthPx
+            stories = ModelsViewState.preview.stories,
+            hazeState = hazeState
+        )
+
+        val currentHeaderHeight = lerp(HeaderExpandedHeight, HeaderCollapsedHeight, collapseFraction)
+        val tabsTopOffsetPx = with(density) { (statusBarHeight + currentHeaderHeight).toPx() }
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset { IntOffset(0, tabsTopOffsetPx.roundToInt()) }
+                .zIndex(2f)
+        ) {
+            DivoTabSelector(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                tabs = remember { Tab.entries.map { TabConfig(it.name, it.displayResId) } },
+                selectedIndex = pagerState.currentPage,
+                onTabSelected = { index ->
+                    scope.launch {
+                        val targetTab = Tab.entries[index]
+                        val targetListState = listStates[targetTab]
+
+                        if (targetListState?.firstVisibleItemIndex == 0) {
+                            val currentPx = headerScrollOffset.roundToInt()
+                            targetListState.scrollToItem(0, currentPx)
+                        }
+
+                        pagerState.animateScrollToPage(index)
+                    }
+                },
+                horizontalPadding = 16.dp,
+            )
+        }
+
+        AppSnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter).zIndex(3f),
+            state = snackbarState,
+            bottomPadding = bottomInset + 74.dp
         )
     }
 }
 
-//@Composable
-//private fun TelegramPhotoCover(
-//    photo: TLRPC.Photo,
-//    modifier: Modifier = Modifier
-//) {
-//    AndroidView(
-//        modifier = modifier,
-//        factory = { context ->
-//            BackupImageView(context).apply {
-//            }
-//        },
-//        update = { view ->
-//            val fullSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640)
-//                ?: return@AndroidView
-//            if (photo.dc_id != 0) {
-//                fullSize.location.dc_id = photo.dc_id
-//                fullSize.location.file_reference = photo.file_reference
-//            }
-//            val fullLoc = ImageLocation.getForPhoto(fullSize, photo) ?: return@AndroidView
-//            var thumbSize: TLRPC.PhotoSize? = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 50)
-//            for (i in 0 until photo.sizes.size) {
-//                val ps = photo.sizes[i]
-//                if (ps is TLRPC.TL_photoStrippedSize) {
-//                    thumbSize = ps
-//                    break
-//                }
-//            }
-//            val thumbLoc = thumbSize?.let { ImageLocation.getForPhoto(it, photo) }
-//            val thumbFilter = if (thumbSize is TLRPC.TL_photoStrippedSize) "b" else null
-//            view.setImage(fullLoc, "640_640", thumbLoc, thumbFilter, null, 0, 1, photo)
-//        }
-//    )
-//}
+@Composable
+private fun ModelsList(
+    tab: Tab,
+    state: ModelsViewState,
+    listState: LazyListState,
+    statusBarHeight: androidx.compose.ui.unit.Dp,
+    cardHeight: androidx.compose.ui.unit.Dp,
+    bottomInset: androidx.compose.ui.unit.Dp,
+    onLoadMore: () -> Unit,
+    onLikeClick: (Int, Boolean) -> Unit,
+    onClick: (Int) -> Unit,
+    onPhotoClicked: (List<GalleryItem>, Int) -> Unit
+) {
+    val pageFeedItems = state.tabFeeds[tab] ?: emptyList()
+    val isLoading = state.tabLoadingStates[tab] ?: false
+    val isLoadingMore = state.tabLoadingMoreStates[tab] ?: false
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val layoutInfo = listState.layoutInfo
+            val total = layoutInfo.totalItemsCount
+            val lastVisible = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            total > 1 && lastVisible >= total - 3
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore && !isLoadingMore && (state.tabHasMore[tab] != false)) {
+            onLoadMore()
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = listState,
+        contentPadding = PaddingValues(bottom = bottomInset + 70.dp)
+    ) {
+        item {
+            Spacer(modifier = Modifier.height(statusBarHeight + HeaderExpandedHeight + HeaderSpacerAdditional))
+        }
+
+        if (pageFeedItems.isEmpty() && isLoading) {
+            item {
+                LoadingPlaceholder(cardHeight)
+            }
+        } else {
+            items(
+                count = pageFeedItems.size,
+                key = { i -> "${tab.name}_${pageFeedItems[i].id}" }
+            ) { i ->
+                ModelPage(
+                    feed = pageFeedItems[i],
+                    cardHeight = cardHeight,
+                    onClick = onClick,
+                    onPhotoClicked = onPhotoClicked,
+                    onLikeClick = { id, liked -> onLikeClick(id, liked) }
+                )
+            }
+
+            if (isLoadingMore) {
+                item {
+                    Box(Modifier.fillMaxWidth().padding(16.dp), Alignment.Center) {
+                        LottieProgressIndicator(Modifier.size(24.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun rememberHeaderSnapNestedScroll(
+    listStates: Map<Tab, LazyListState>,
+    pagerState: PagerState,
+    maxScrollOffsetPx: Float
+): NestedScrollConnection = remember(pagerState.currentPage) {
+    object : NestedScrollConnection {
+        override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
+            val activeList = listStates[Tab.entries[pagerState.currentPage]] ?: return super.onPostFling(consumed, available)
+            if (activeList.firstVisibleItemIndex == 0) {
+                val offset = activeList.firstVisibleItemScrollOffset.toFloat()
+                if (offset > 0f && offset < maxScrollOffsetPx) {
+                    val target = if (offset > maxScrollOffsetPx / 2f) maxScrollOffsetPx else 0f
+                    activeList.animateScrollToItem(0, target.roundToInt())
+                }
+            }
+            return super.onPostFling(consumed, available)
+        }
+    }
+}
+
+@Composable
+private fun LoadingPlaceholder(cardHeight: androidx.compose.ui.unit.Dp) {
+    Box(Modifier.fillMaxWidth().height(cardHeight), Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            LottieProgressIndicator(Modifier.size(32.dp))
+            Spacer(Modifier.height(16.dp))
+            Text(
+                text = stringResource(R.string.LoadingModelsList).uppercase(),
+                style = AppTheme.typography.helveticaNeueLtCom,
+                fontSize = 12.sp,
+                color = Color.Black
+            )
+        }
+    }
+}
 
 @Preview(showBackground = true, backgroundColor = 0xFF121922)
 @Composable

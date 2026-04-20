@@ -9,8 +9,10 @@ import org.telegram.divo.common.utils.ThumbnailProcessor
 import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.dto.publication.CreatePublicationFileRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
+import org.telegram.divo.dal.dto.publication.LikeRequest
 import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
+import org.telegram.divo.dal.dto.publication.ModelParametersDto
 import org.telegram.divo.dal.dto.publication.PublicationListRequest
 import org.telegram.divo.dal.dto.publication.toEntities
 import org.telegram.divo.dal.dto.publication.toEntity
@@ -39,12 +41,30 @@ class PublicationRepository(
         offset: Int = 0,
         limit: Int = 5,
         query: String,
+        role: List<String>? = null,
+        isSkills: Boolean? = null,
+        isEvents: Boolean? = null,
+        isProfiles: Boolean? = null,
+        isPosts: Boolean? = null,
+        withoutNfts: Boolean? = null,
+        subscribedOnly: Boolean? = null,
+        modelsOnly: Boolean? = null,
+        modelParameters: ModelParametersDto? = null,
     ): DivoResult<FeedlineSearchResult> = resultOf {
         service.searchFeedline(
             FeedlineSearchRequest(
                 offset = offset,
                 limit = limit,
                 query = query,
+                role = role,
+                isSkills = isSkills,
+                isEvents = isEvents,
+                isProfiles = isProfiles,
+                isPosts = isPosts,
+                withoutNfts = withoutNfts,
+                subscribedOnly = subscribedOnly,
+                modelsOnly = modelsOnly,
+                modelParameters = modelParameters,
             )
         ).toEntities()
     }
@@ -65,7 +85,7 @@ class PublicationRepository(
         }
 
         service.getPublicationList(
-            PublicationListRequest(offset = offset, limit = limit, userId = userId)
+            PublicationListRequest(offset = offset, limit = limit, userId = userId, type = "video")
         ).toEntities()
             .let { page -> page.copy(items = thumbnailProcessor.withThumbnails(page.items)) }
             .also { newPage -> updatePublicationCache(userId, newPage, offset) }
@@ -77,6 +97,14 @@ class PublicationRepository(
 
     suspend fun unlike(payload: Map<String, Any?>): DivoResult<ResponseBody> {
         return resultOf { service.unlike(payload) }
+    }
+
+    suspend fun likePost(id: Int): DivoResult<Unit> = resultOf {
+        service.likePost(LikeRequest(id))
+    }
+
+    suspend fun unlikePost(id: Int): DivoResult<Unit> = resultOf {
+        service.unlikePost(LikeRequest(id))
     }
 
     suspend fun createPublication(

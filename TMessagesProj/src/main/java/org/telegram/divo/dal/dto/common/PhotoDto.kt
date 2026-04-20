@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 import org.telegram.divo.entity.Photo
 
 class PhotoDto(
+    @SerializedName("photo_id") val photoId: Long?,
     @SerializedName("fileName") val fileName: String,
     @SerializedName("fullUrl") val fullUrl: String,
     @SerializedName("extension") val extension: String,
@@ -12,14 +13,7 @@ class PhotoDto(
 
 fun PhotoDto.toEntity(): Photo =
     Photo(
-        fileName = fileName,
-        fullUrl = fullUrl,
-        extension = extension,
-        fileUuid = fileUuid
-    )
-
-fun Photo.toDto(): PhotoDto =
-    PhotoDto(
+        photoId = photoId ?: 0L,
         fileName = fileName,
         fullUrl = fullUrl,
         extension = extension,

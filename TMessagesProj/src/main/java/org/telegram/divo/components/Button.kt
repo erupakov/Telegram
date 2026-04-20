@@ -114,9 +114,14 @@ fun UIButtonNew(
     modifier: Modifier = Modifier,
     text: String = stringResource(R.string.ButtonSave),
     height: Dp = 56.dp,
-    textStyle: TextStyle = AppTheme.typography.textButton,
+    textStyle: TextStyle = AppTheme.typography.textButton.copy(
+        color = AppTheme.colors.buttonTextColor,
+        fontFamily = DivoFont.HelveticaNeueLtCom77,
+        fontWeight = FontWeight.Bold,
+    ),
     shape: Shape = RoundedCornerShape(99.dp),
     background: Color = AppTheme.colors.accentOrange,
+    paddingTop: Dp = 3.dp,
     enabled: Boolean = true,
     onClick: () -> Unit = {},
 ) {
@@ -131,12 +136,9 @@ fun UIButtonNew(
         ),
     ) {
         Text(
-            modifier = Modifier.padding(top = 3.dp),
+            modifier = Modifier.padding(top = paddingTop),
             text = text,
             style = textStyle,
-            color = AppTheme.colors.buttonTextColor,
-            fontFamily = DivoFont.HelveticaNeueLtCom77,
-            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -155,7 +157,7 @@ fun UIButtonBack(
             .defaultMinSize(92.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(6.dp),
-        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.backButton)
+        colors = CardDefaults.cardColors(containerColor = AppTheme.colors.buttonSecondary)
     ) {
         Box(Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center){
             Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
@@ -205,7 +207,7 @@ fun RoundedButton(
     modifier: Modifier = Modifier,
     @DrawableRes resId: Int = R.drawable.ic_divo_back,
     iconSize: Dp = 16.dp,
-    paddingEnd: Dp = 2.dp,
+    paddingEnd: Dp = 0.dp,
     shadowEnabled: Boolean = true,
     borderColor: Color = Color.Unspecified,
     background: Color = AppTheme.colors.onBackground,
@@ -236,7 +238,9 @@ fun RoundedButton(
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            modifier = Modifier.size(iconSize).padding(end = paddingEnd),
+            modifier = Modifier
+                .size(iconSize)
+                .padding(end = if (resId == R.drawable.ic_divo_back) 2.dp else paddingEnd),
             painter = painterResource(resId),
             contentDescription = null,
             tint = iconTint

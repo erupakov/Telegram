@@ -23,6 +23,7 @@ data class EventDetailsViewState(
 ) : ViewState
 
 sealed class EventDetailsIntent : ViewIntent {
+    data object OnLoad : EventDetailsIntent()
     data object OnSearchClicked : EventDetailsIntent()
     data object OnAddEventClicked : EventDetailsIntent()
     data object OnBackClicked : EventDetailsIntent()

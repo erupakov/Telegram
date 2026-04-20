@@ -43,7 +43,9 @@ class WorkHistoryViewModel : BaseViewModel<State, Intent, Effect>() {
 
     private fun deleteWorkExperience(id: Int) {
         viewModelScope.launch {
+            setState { copy(deletingId = id) }
             val result = DivoApi.workHistory.deleteWorkExperience(id)
+            setState { copy(deletingId = null) }
             if (result !is DivoResult.Success) {
                 sendEffect(Effect.ShowError(result.getErrorMessage()))
             }

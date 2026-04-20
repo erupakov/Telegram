@@ -1,5 +1,7 @@
 package org.telegram.divo.screen.edit_my_profile
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
@@ -16,10 +18,12 @@ import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLRPC
 import java.io.File
 
-class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIntent, Effect>() {
+class EditMyProfileViewModel(
+    private val isModel: Boolean
+) : BaseViewModel<EventListViewState, EditMyProfileIntent, Effect>() {
 
     override fun createInitialState(): EventListViewState {
-        return EventListViewState()
+        return EventListViewState(isModel = isModel)
     }
 
     fun getData() {
@@ -31,7 +35,6 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
                 val user = result.value
                 setState {
                     copy(
-                        isModel = user.role.isModel(),
                         fName = user.fullName,
                         bio = user.model?.description.orEmpty(),
                         userFull = user,
@@ -40,8 +43,8 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
                     )
                 }
             } else {
-                val errorMsg = result.getErrorMessage()
-                setState { copy(isLoading = false, errorMessage = errorMsg) }
+                setState { copy(isLoading = false) }
+                sendEffect(Effect.ShowError(result.getErrorMessage()))
             }
         }
     }
@@ -58,7 +61,8 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
                         onFailure = { DivoResult.UnknownError(it) }
                     )
                     if (uploadResult !is DivoResult.Success) {
-                        setState { copy(isSaved = false, errorMessage = uploadResult.getErrorMessage()) }
+                        setState { copy(isSaved = false) }
+                        sendEffect(Effect.ShowError(uploadResult.getErrorMessage()))
                         return@launch
                     }
                     uploadResult.value.uuid
@@ -81,7 +85,8 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
                         sendEffect(Effect.SaveSuccess)
                     }
                     else -> {
-                        setState { copy(isSaved = false, errorMessage = result.getErrorMessage()) }
+                        setState { copy(isSaved = false) }
+                        sendEffect(Effect.ShowError(result.getErrorMessage()))
                     }
                 }
             }
@@ -148,7 +153,7 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
             return
         }
 
-        setState { copy(isLoading = true, errorMessage = null) }
+        setState { copy(isLoading = true) }
 
         val req = TLRPC.TL_photos_uploadProfilePhoto()
         var flags = 0
@@ -182,7 +187,6 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
                         setState {
                             copy(
                                 isLoading = false,
-                                errorMessage = error.text ?: "Upload failed"
                             )
                         }
                         return@runOnUIThread
@@ -340,4 +344,13 @@ class EditMyProfileViewModel : BaseViewModel<EventListViewState, EditMyProfileIn
 //            },
 //        )
 //    }
+
+    companion object {
+        fun factory(isModel: Boolean) = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return EditMyProfileViewModel(isModel) as T
+            }
+        }
+    }
 }

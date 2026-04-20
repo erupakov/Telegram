@@ -55,7 +55,6 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                 copy(source = source, initialIndex = initialIndex)
             }
 
-            // Показываем кеш сразу если есть
             val cachedItems = getCachedItems(source)
             val cachedHasMore = getCachedHasMore(source)
 
@@ -105,9 +104,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                             setState {
                                 copy(
                                     items = data.items.flatMap { publication ->
-                                        publication.files
-                                            .filter { it.isVideo }
-                                            .map { GalleryItem(publication.id, it.fullUrl, isVideo = true) }
+                                        publication.files.map { GalleryItem(publication.id, it.fullUrl, isVideo = true) }
                                     },
                                     hasMore = data.hasMore(),
                                 )
@@ -167,9 +164,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                 .getPublicationCache(source.userId)
                 ?.items
                 ?.flatMap { publication ->
-                    publication.files
-                        .filter { it.isVideo }
-                        .map { GalleryItem(publication.id, it.fullUrl, isVideo = true) }
+                    publication.files.map { GalleryItem(publication.id, it.fullUrl, isVideo = true) }
                 }
                 ?.takeIf { it.isNotEmpty() }
             is GallerySource.Feed -> null

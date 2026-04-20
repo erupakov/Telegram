@@ -7,6 +7,7 @@ import org.telegram.divo.entity.WorkExperience
 
 data class State(
     val isLoading: Boolean = false,
+    val deletingId: Int? = null,
     val experiences: List<WorkExperience> = emptyList(),
 ) : ViewState
 

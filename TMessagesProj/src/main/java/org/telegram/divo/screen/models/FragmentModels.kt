@@ -35,6 +35,7 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
                         navController.addOnDestinationChangedListener { _, destination, _ ->
                             isOnHomeScreen.value = destination.route == ModelsRoute.Models.route
                             mainTabsController?.setTabsVisible(isOnHomeScreen.value)
+                            mainTabsController?.setModelsSearchVisible(isOnHomeScreen.value)
                         }
                     },
                     onInnerNavControllerReady = { navController ->
@@ -72,5 +73,9 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
         }
 
         return super.onBackPressed(invoked)
+    }
+
+    fun openSearchFromBottomBar() {
+        modelsNavController?.navigate(ModelsRoute.Search.route)
     }
 }

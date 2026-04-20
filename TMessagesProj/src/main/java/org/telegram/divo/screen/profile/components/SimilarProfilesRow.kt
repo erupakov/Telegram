@@ -27,18 +27,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.utils.formattedAge
-import org.telegram.divo.common.utils.toCountryFlagEmoji
-import org.telegram.divo.entity.AgencyModel
+import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
 @Composable
 fun SimilarProfilesRow(
     modifier: Modifier = Modifier,
-    similarItems: List<AgencyModel>,
+    similarItems: List<SimilarFace>,
     onClicked: (Int) -> Unit,
 ) {
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -61,8 +60,8 @@ fun SimilarProfilesRow(
                 items = similarItems,
                 key = { it.userId }
             ) { model ->
-                val age = model.birthday
-                val city = model.city
+                //val age = model.birthday
+                //val city = model.city
 
                 Column(
                     modifier = Modifier
@@ -83,7 +82,7 @@ fun SimilarProfilesRow(
                             .size(158.dp)
                             .padding(4.dp)
                             .clip(RoundedCornerShape(4.dp)),
-                        model = model.photoUrl,
+                        model = model.image,
                     )
                     Column(
                         modifier = Modifier
@@ -93,41 +92,41 @@ fun SimilarProfilesRow(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = model.name.uppercase(),
+                            text = model.fullName.uppercase(),
                             style = AppTheme.typography.helveticaNeueLtCom,
                             fontSize = 14.sp,
                             color = Color.Black
                         )
                         Spacer(modifier = Modifier.height(2.dp))
-                        if (age != null || city != null) {
+                        //if (age != null || city != null) {
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .fillMaxHeight(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                age?.let {
+                                //age?.let {
                                     Text(
-                                        text = "${it.formattedAge()} · ",
+                                        text = "No data · ", //"${it.formattedAge(context)} · "
                                         style = AppTheme.typography.helveticaNeueRegular,
                                         fontSize = 12.sp,
-                                        color = Color.Black,
+                                        color = Color.Red,
                                     )
-                                }
-                                city?.let {
-                                    Text(
-                                        text = it.countryCode.toCountryFlagEmoji(),
-                                    )
+                                //}
+                                //city?.let {
+//                                    Text(
+//                                        text = it.countryCode.toCountryFlagEmoji(),
+//                                    )
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Text(
-                                        text = it.name,
+                                        text = "No data", //it.name
                                         style = AppTheme.typography.helveticaNeueRegular,
                                         fontSize = 12.sp,
-                                        color = Color.Black,
+                                        color = Color.Red,
                                     )
-                                }
+                                //}
                             }
-                        }
+                       // }
                     }
                 }
             }

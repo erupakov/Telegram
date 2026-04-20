@@ -12,6 +12,7 @@ data class UserInfo(
     val photoUuid: String = "",
     val avatarUrl: String = "",
     val avatarUuid: String = "",
+    val avatarId: Long = 0,
     val role: RoleType = RoleType.UNKNOWN,
     val subrole: String = "",
     val roleLabel: String = "",

@@ -43,13 +43,13 @@ fun ThumbsRow(
     }
 
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
         itemsIndexed(items = images, key = { _, it -> it.uuid }) { index, thumb ->
             DivoAsyncImage(
                 modifier = Modifier
-                    .size(width = 126.dp, height = 136.dp)
+                    .size(width = 100.dp, height = 100.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .clickableWithoutRipple { onPhotoClicked(index) },
                 model = thumb.url,

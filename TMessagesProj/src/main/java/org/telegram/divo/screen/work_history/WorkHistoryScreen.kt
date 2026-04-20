@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.work_history
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,12 +9,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -39,7 +41,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -50,9 +51,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoPopupMenu
+import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.PlaceholderAvatar
 import org.telegram.divo.components.PopupMenuItem
 import org.telegram.divo.components.RoundedButton
@@ -75,27 +80,35 @@ fun WorkHistoryScreen(
     onBack: () -> Unit = {},
     onCreateClicked: (Int?) -> Unit = {},
 ) {
-    val context = LocalContext.current
     val state = viewModel.state.collectAsState().value
+    val snackbarState = remember { AppSnackbarHostState() }
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
                 Effect.NavigateBack -> onBack()
-                is Effect.ShowError -> Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                is Effect.ShowError -> snackbarState.show(Error(it.message))
                 is Effect.NavigateToCreate -> onCreateClicked(it.id)
             }
         }
     }
 
-    WorkHistoryScreenView(
-        state = state,
-        isOwnProfile = isOwnProfile,
-        isFromEditScreen = isFromEditScreen,
-        onIntent = {
-            viewModel.setIntent(it)
-        },
-    )
+    Box(Modifier.fillMaxSize()) {
+        WorkHistoryScreenView(
+            state = state,
+            isOwnProfile = isOwnProfile,
+            isFromEditScreen = isFromEditScreen,
+            onIntent = {
+                viewModel.setIntent(it)
+            },
+        )
+
+        AppSnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            state = snackbarState,
+            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -149,6 +162,7 @@ private fun WorkHistoryScreenView(
                     ) { item ->
                         WorkExperienceRow(
                             item = item,
+                            isDeleting = state.deletingId == item.id,
                             onEdit = { onIntent(Intent.OnEditClicked(item.id)) },
                             onDelete = { onIntent(Intent.OnDeleteClicked(item.id)) }
                         )
@@ -225,6 +239,7 @@ private fun WorkHistoryEmpty(
 @Composable
 private fun WorkExperienceRow(
     item: WorkExperience,
+    isDeleting: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -243,11 +258,15 @@ private fun WorkExperienceRow(
             .padding(start = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AgencyAvatar(
-            agencyName = agencyName,
-            avatarUrl = "",
-            modifier = Modifier.size(60.dp)
-        )
+        Box(modifier = Modifier.size(60.dp), contentAlignment = Alignment.Center) {
+            AgencyAvatar(
+                agencyName = agencyName,
+                avatarUrl = "",
+                modifier = Modifier.size(60.dp)
+            )
+
+            if (isDeleting) LottieProgressIndicator(Modifier.size(24.dp))
+        }
 
         Column(
             modifier = Modifier
@@ -302,7 +321,7 @@ private fun buildWorkSubtitle(
     isCurrent: Boolean
 ): String {
     val start = formatMonthYear(startDate)
-    val end = if (isCurrent || endDate == null) "Present" else formatMonthYear(endDate)
+    val end = if (isCurrent || endDate == null) stringResource(R.string.PresentLabel) else formatMonthYear(endDate)
     val duration = computeDurationLabel(startDate, if (isCurrent) null else endDate)
     return "$start - $end · $duration"
 }

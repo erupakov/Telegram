@@ -1,7 +1,6 @@
 package org.telegram.divo.screen.edit_my_profile
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -44,6 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.SnackbarEvent.*
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
 import org.telegram.divo.components.DivoTabSelector
@@ -66,11 +68,13 @@ enum class ProfileDestination {
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun EditMyProfileScreen(
-    viewModel: EditMyProfileViewModel = viewModel(),
+    isModel: Boolean,
+    viewModel: EditMyProfileViewModel = viewModel(
+        factory = EditMyProfileViewModel.factory(isModel)
+    ),
     onCreateWorkHistoryClicked: (Int?) -> Unit,
     onCloseScreen: () -> Unit = {},
 ) {
-    val context = LocalContext.current
     val parametersSavedText = stringResource(R.string.ParametersSaved)
 
     val uiState = viewModel.state.collectAsState().value
@@ -92,12 +96,13 @@ fun EditMyProfileScreen(
         )
     }
 
+    val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { if (uiState.isModel) ProfileDestination.entries.size else 1 }
     )
 
-    val scope = rememberCoroutineScope()
+    val snackbarState = remember { AppSnackbarHostState() }
 
     LifecycleResumeEffect(Unit) {
         viewModel.getData()
@@ -109,12 +114,16 @@ fun EditMyProfileScreen(
             when (action) {
                 Effect.NavigateBack -> onCloseScreen()
                 Effect.SaveSuccess -> {
-                    Toast.makeText(context, parametersSavedText, Toast.LENGTH_SHORT).show()
+                    snackbarState.show(Success(parametersSavedText))
+
                     val page = tabs.indexOfFirst {
                         it.id == ProfileDestination.APPEARANCE.name
                     }.coerceAtLeast(0)
 
                     pagerState.scrollToPage(page)
+                }
+                is Effect.ShowError -> {
+                    snackbarState.show(Error(action.message))
                 }
             }
         }
@@ -144,7 +153,10 @@ fun EditMyProfileScreen(
                     containerColor = AppTheme.colors.backgroundLight
                 )
             )
-        }
+        },
+        snackbarHost = {
+            AppSnackbarHost(state = snackbarState)
+        },
     ) { paddingValues ->
 
         Column(
@@ -256,7 +268,7 @@ fun EditMyProfileScreenView(
                 value = fName,
                 onValueChange = { fName = it },
                 placeholder = stringResource(R.string.FullNameEditProfileScreen),
-                trailingIcon = if (fName.isNotBlank()) Icons.Default.Close else null,
+                trailingIcon = if (fName.isNotBlank()) R.drawable.ic_divo_clear else null,
                 onTrailingIconClick = { fName = "" },
                 backgroundColor = AppTheme.colors.onBackground,
                 cornerRadius = 41.dp,

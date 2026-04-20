@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.models.components
 
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyRow
@@ -30,179 +29,128 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.TileMode
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.zIndex
 import coil.compose.rememberAsyncImagePainter
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.TextTitle
+import dev.chrisbanes.haze.HazeProgressive
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
+import dev.chrisbanes.haze.hazeEffect
 import org.telegram.divo.screen.models.ModelsViewState
 import org.telegram.divo.screen.models.Story
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.AndroidUtilities.lerp
 import org.telegram.messenger.R
-
-@Composable
-fun AnimatedCollapsingTopBar(
-    collapseFraction: Float,
-    stories: List<Story>,
-    onTitleMeasured: (Float) -> Unit,
-    onSearch: () -> Unit,
-) {
-    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val topBarHeight = 56.dp
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(statusBarHeight + topBarHeight)
-            .background(AppTheme.colors.backgroundLight)
-            .padding(top = statusBarHeight),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .height(40.dp)
-                        .onGloballyPositioned { coordinates ->
-                            onTitleMeasured(coordinates.size.width.toFloat())
-                        },
-                    contentAlignment = Alignment.BottomStart
-                ) {
-                    Text(
-                        modifier = Modifier.offset(y = 4.dp),
-                        text = stringResource(R.string.Models).uppercase(),
-                        color = AppTheme.colors.textPrimary,
-                        style = AppTheme.typography.displayLarge
-                    )
-                }
-
-                val topBarItemsAlpha = if (collapseFraction >= 1f) 1f else 0f
-
-                Row(
-                    modifier = Modifier
-                        .padding(start = 12.dp)
-                        .alpha(topBarItemsAlpha),
-                    horizontalArrangement = Arrangement.spacedBy((-12).dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    val displayStories = stories.filter { it.id != "0" }.take(3)
-
-                    displayStories.forEachIndexed { index, story ->
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .zIndex((3 - index).toFloat())
-                                .clip(CircleShape)
-                                .border(
-                                    width = 1.5.dp,
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(Color(0xFF990000), Color(0xFF000000)),
-                                        tileMode = TileMode.Repeated
-                                    ),
-                                    shape = CircleShape
-                                )
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(1.5.dp)
-                                    .clip(CircleShape)
-                                    .background(AppTheme.colors.backgroundLight)
-                            ) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(story.imageUrl),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            RoundedButton(
-                modifier = Modifier,
-                resId = R.drawable.ic_divo_search_24,
-                iconSize = 24.dp,
-                paddingEnd = 0.dp,
-                onClick = onSearch
-            )
-        }
-    }
-}
 
 @Composable
 fun AnimatedLargeStoriesOverlay(
     collapseFraction: Float,
     stories: List<Story> = ModelsViewState.preview.stories,
-    titleWidthPx: Float
+    hazeState: HazeState
 ) {
-    if (collapseFraction >= 1f) return
-
     val density = LocalDensity.current
-    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 8.dp
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
 
-    val startYDp = statusBarHeight + 56.dp + 8.dp
+    val expandedHeight = 104.dp
+    val collapsedHeight = 56.dp
+    val currentHeight = lerp(expandedHeight, collapsedHeight, collapseFraction)
 
-    val currentYDp = startYDp - (68.dp * collapseFraction)
-    val titleWidthDp = with(density) { titleWidthPx.toDp() }
+    val lift = lerp(0.dp, (-10).dp, collapseFraction)
+    val overlayHeight = statusBarHeight + currentHeight + 16.dp + 60.dp
+
+    val startYPx = with(density) { (overlayHeight * 0.15f).toPx() }
+    val endYPx = with(density) { overlayHeight.toPx() }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(overlayHeight)
+            .hazeEffect(
+                state = hazeState,
+                style = HazeStyle(
+                    backgroundColor = AppTheme.colors.backgroundLight,
+                    blurRadius = 40.dp,
+                    tints = listOf(
+                        HazeTint(AppTheme.colors.backgroundLight.copy(alpha = 0.75f))
+                    )
+                )
+            ) {
+                progressive = HazeProgressive.verticalGradient(
+                    startY = startYPx,
+                    startIntensity = 1f,
+                    endY = endYPx,
+                    endIntensity = 0f,
+                    easing = FastOutSlowInEasing,
+                )
+            }
+    )
+
+    val baseY = statusBarHeight + 8.dp
+
+    val visibleStories = stories.filter { it.id != "0" }.take(3)
+    val collapsedItemSize = 32.dp
+    val collapsedOverlap = 12.dp
+
+    val collapsedGroupWidth = visibleStories.size * collapsedItemSize -
+            (visibleStories.size - 1) * collapsedOverlap
+    val collapsedGroupStartX = (screenWidth - collapsedGroupWidth) / 2
 
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
-            .offset(y = currentYDp),
+            .offset(y = baseY + lift),
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         itemsIndexed(stories) { index, story ->
-            val itemScale = 1f - (collapseFraction * 0.5f)
 
-            val originalCenterXDp = 16.dp + (index * 80.dp) + 32.dp
-            val firstTargetCenterDp = 16.dp + titleWidthDp + 12.dp + 16.dp
+            val itemScale = lerp(1f, collapsedItemSize / 64.dp, collapseFraction)
 
-            val targetCenterXDp = when (index) {
-                0 -> 80.dp
-                1 -> firstTargetCenterDp
-                2 -> firstTargetCenterDp + 20.dp
-                3 -> firstTargetCenterDp + 40.dp
-                else -> firstTargetCenterDp + 40.dp
+            val expandedCenterX = 16.dp + (index * 80.dp) + 32.dp
+
+            val collapsedStories = stories.filter { it.id != "0" }.take(3)
+            val collapsedIndex = collapsedStories.indexOfFirst { it.id == story.id }
+            val isInCollapsedGroup = collapsedIndex != -1
+
+            val collapsedCenterX = if (isInCollapsedGroup) {
+                collapsedGroupStartX +
+                        collapsedIndex * (collapsedItemSize - collapsedOverlap) +
+                        collapsedItemSize / 2
+            } else {
+                expandedCenterX
             }
-
-            val deltaXDp = targetCenterXDp - originalCenterXDp
-            val shiftXDp = deltaXDp * collapseFraction
+            val shiftXDp = if (isInCollapsedGroup) {
+                (collapsedCenterX - expandedCenterX) * collapseFraction
+            } else {
+                0.dp
+            }
             val shiftXPx = with(density) { shiftXDp.toPx() }
 
-            val isTarget = index in 1..3
-            val circleAlpha = if (isTarget) {
-                1f
-            } else {
-                (1f - (collapseFraction * 2.5f)).coerceIn(0f, 1f)
+
+
+            val circleAlpha = when {
+                story.id == "0" -> (1f - collapseFraction * 2f).coerceIn(0f, 1f)
+                isInCollapsedGroup -> 1f
+                else -> (1f - collapseFraction * 2f).coerceIn(0f, 1f)
             }
-            val textAlpha = (1f - (collapseFraction * 3f)).coerceIn(0f, 1f)
-            val circleCenter = 32.dp
-            val columnCenter = 42.dp
-            val centerCorrection = columnCenter - circleCenter  // = 10.dp
+
+            val textAlpha = (1f - collapseFraction * 2.5f).coerceIn(0f, 1f)
 
             Column(
                 modifier = Modifier
@@ -211,51 +159,72 @@ fun AnimatedLargeStoriesOverlay(
                         scaleX = itemScale
                         scaleY = itemScale
                         translationX = shiftXPx
-                        translationY = -with(density) { (centerCorrection * (1f - itemScale)).toPx() }
+                        alpha = circleAlpha
+                        transformOrigin = TransformOrigin(0.5f, 0f)
                     },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
                     Modifier
                         .size(64.dp)
-                        .graphicsLayer { alpha = circleAlpha }
                         .clip(CircleShape)
-                        .clickable {  }
+                        .clickable { }
                         .then(
-                            if (story.id == "0") Modifier.background(Color.White)
+                            if (story.id == "0") Modifier.background(AppTheme.colors.onBackground)
                             else Modifier.border(
-                                width = 3.dp, brush = Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFF990000), Color(0xFF000000)),
-                                    tileMode = TileMode.Repeated
-                                ), shape = CircleShape
+                                width = 3.dp,
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(Color(0xFF990000), Color(0xFF000000))
+                                ),
+                                shape = CircleShape
                             )
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Card(modifier = Modifier.size(54.dp).background(Color.White), shape = CircleShape) {
-                        Box(modifier = Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
+                    Card(
+                        modifier = Modifier
+                            .size(54.dp)
+                            .background(Color.White),
+                        shape = CircleShape
+                    ) {
+                        Box(
+                            modifier = Modifier.fillMaxSize().background(AppTheme.colors.onBackground),
+                            contentAlignment = Alignment.Center
+                        ) {
                             if (story.id == "0") {
                                 Icon(
-                                    painter = rememberVectorPainter(Icons.Default.Add), contentDescription = null,
-                                    tint = Color.Black, modifier = Modifier.size(24.dp).background(Color.White)
+                                    modifier = Modifier.size(24.dp),
+                                    painter = rememberVectorPainter(Icons.Default.Add),
+                                    contentDescription = null,
+                                    tint = Color.Black,
                                 )
                             } else {
                                 Image(
-                                    modifier = Modifier.size(54.dp).background(Color(0xFFE7E7E8)),
-                                    painter = rememberAsyncImagePainter(story.imageUrl), contentDescription = null, contentScale = ContentScale.Crop
+                                    modifier = Modifier
+                                        .size(54.dp)
+                                        .background(Color(0xFFE7E7E8)),
+                                    painter = rememberAsyncImagePainter(story.imageUrl),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop
                                 )
                             }
                         }
                     }
                 }
+
                 Spacer(Modifier.height(6.dp))
+
                 Text(
-                    text = if (story.id == "0") "Add Story" else story.userName,
+                    text = if (story.id == "0") stringResource(R.string.AddStoryLabel) else story.userName,
+                    fontSize = 11.5.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     color = if (story.id == "0") Color(0xFFB0B4BA) else Color.Black,
-                    maxLines = 1, overflow = TextOverflow.Ellipsis, fontSize = 11.5.sp,
                     modifier = Modifier.graphicsLayer { alpha = textAlpha }
                 )
             }
         }
     }
 }
+
+private fun lerp(start: Dp, end: Dp, fraction: Float): Dp = start + (end - start) * fraction

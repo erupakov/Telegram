@@ -59,7 +59,7 @@ import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoSlider
 import org.telegram.divo.components.LottieProgressIndicator
 
-private const val CONTROLS_HIDE_DELAY_MS = 4000L
+private const val CONTROLS_HIDE_DELAY_MS = 3000L
 
 @androidx.annotation.OptIn(UnstableApi::class)
 @Composable
@@ -90,18 +90,9 @@ fun VideoPlayer(
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_PAUSE, Lifecycle.Event.ON_STOP -> {
-                    player.pause()
-                }
-
-                Lifecycle.Event.ON_RESUME -> {
-                    if (isPlaying) player.play()
-                }
-
-                Lifecycle.Event.ON_DESTROY -> {
-                    player.release()
-                }
-
+                Lifecycle.Event.ON_PAUSE, Lifecycle.Event.ON_STOP -> player.pause()
+                Lifecycle.Event.ON_RESUME -> if (isPlaying) player.play()
+                Lifecycle.Event.ON_DESTROY -> player.release()
                 else -> {}
             }
         }
@@ -124,7 +115,8 @@ fun VideoPlayer(
 
     var isReady by remember { mutableStateOf(false) }
     var isBuffering by remember { mutableStateOf(false) }
-    var isPlaying by remember { mutableStateOf(true) }
+
+    var isMediaPlaying by remember { mutableStateOf(true) }
     var duration by remember { mutableLongStateOf(0L) }
     var currentPosition by remember { mutableLongStateOf(0L) }
     var videoAspectRatio by remember { mutableFloatStateOf(16f / 9f) }
@@ -134,16 +126,18 @@ fun VideoPlayer(
 
     var autoHideTick by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(autoHideTick) {
-        delay(CONTROLS_HIDE_DELAY_MS)
-        onChangeControlsVisible(false)
+    LaunchedEffect(controlsVisible, autoHideTick, isPlaying) {
+        if (controlsVisible && isPlaying) {
+            delay(CONTROLS_HIDE_DELAY_MS)
+            onChangeControlsVisible(false)
+        }
     }
 
     DisposableEffect(player) {
         val listener = object : Player.Listener {
             override fun onRenderedFirstFrame() { isReady = true }
             override fun onIsPlayingChanged(playing: Boolean) {
-                if (!isDragging) isPlaying = playing
+                if (!isDragging) isMediaPlaying = playing
             }
             override fun onPlaybackStateChanged(state: Int) {
                 if (state == Player.STATE_READY) {
@@ -164,8 +158,8 @@ fun VideoPlayer(
         onDispose { player.removeListener(listener) }
     }
 
-    LaunchedEffect(isPlaying, isDragging) {
-        while (isPlaying && !isDragging) {
+    LaunchedEffect(isMediaPlaying, isDragging) {
+        while (isMediaPlaying && !isDragging) {
             currentPosition = player.currentPosition
             delay(100)
         }
@@ -185,7 +179,7 @@ fun VideoPlayer(
 
     val animatedSliderValue by animateFloatAsState(
         targetValue = sliderValue,
-        animationSpec = tween(durationMillis = 100, easing = LinearEasing), // ← добавить
+        animationSpec = tween(durationMillis = 100, easing = LinearEasing),
         label = "sliderProgress",
     )
 
@@ -245,7 +239,7 @@ fun VideoPlayer(
                         modifier = Modifier.size(32.dp),
                         color = Color.White,
                     )
-                } else if (isPlaying) {
+                } else if (isMediaPlaying) {
                     Canvas(modifier = Modifier.size(28.dp)) {
                         val barWidth = size.width * 0.22f
                         val barHeight = size.height * 0.75f

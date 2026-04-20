@@ -2,7 +2,6 @@ package org.telegram.divo.screen.profile
 
 import android.content.Intent
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
@@ -15,6 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -43,6 +45,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -66,10 +69,16 @@ import org.telegram.divo.screen.profile.components.ToolBar
 import org.telegram.divo.screen.profile.components.VideoGrid
 import androidx.core.net.toUri
 import androidx.media3.common.util.UnstableApi
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.SnackbarEvent
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.screen.profile.components.AgencyDescriptionSection
 import org.telegram.divo.screen.profile.components.AgencyModels
 import org.telegram.divo.screen.profile.components.EventsColumn
+import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
 
 @Composable
 fun ProfileScreen(
@@ -78,7 +87,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(
         factory = ProfileViewModel.factory(userId, isOwnProfile)
     ),
-    onEditClicked: () -> Unit = {},
+    onEditClicked: (Boolean) -> Unit = {},
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: (Boolean) -> Unit = {},
@@ -86,8 +95,11 @@ fun ProfileScreen(
     onProfileClicked: (Int) -> Unit = {},
     onAddModelClicked: () -> Unit,
     onEventClicked: (Int) -> Unit,
+    onFindSimilarProfiles: (String) -> Unit,
 ) {
     val context = LocalContext.current
+    val snackbarState = remember { AppSnackbarHostState() }
+    val retryText = stringResource(R.string.RetryLabel)
 
     LaunchedEffectOnce {
         viewModel.setIntent(ProfileIntent.OnLoad)
@@ -101,11 +113,17 @@ fun ProfileScreen(
                         val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
                         context.startActivity(intent)
                     } catch (e: Exception) {
-                        Toast.makeText(context, e.message, Toast.LENGTH_SHORT).show()
+                        snackbarState.show(SnackbarEvent.Error(e.message.orEmpty()))
                     }
                 }
                 is ProfileEffect.ShowError -> {
-                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                    snackbarState.show(
+                        SnackbarEvent.ErrorWithRetry(effect.message, retryText) {
+                            viewModel.setIntent(
+                                ProfileIntent.OnLoad
+                            )
+                        }
+                    )
                 }
                 else -> {}
             }
@@ -114,48 +132,59 @@ fun ProfileScreen(
 
     val uiState = viewModel.state.collectAsState().value
 
-    if (uiState.isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        if (uiState.isLoading) {
             LottieProgressIndicator(
                 modifier = Modifier
                     .size(32.dp)
                     .align(Alignment.Center),
             )
+        } else if (uiState.errorMessage != null) {
+            Box(modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundLight))
+        } else {
+            ProfileScreenContent(
+                uiState = uiState,
+                onEditClicked = {
+                    onEditClicked(uiState.isModel)
+                },
+                onEditLinksClicked = {
+                    onEditLinksClicked()
+                },
+                onNavigateBack = onNavigateBack,
+                showWorkHistory = { showWorkHistory(isOwnProfile) },
+                onProfileClicked = onProfileClicked,
+                onEditBackgroundClicked = {
+                    viewModel.setIntent(ProfileIntent.OnBackgroundPhotoSelected(context.uriToFile(it)))
+                },
+                onGalleryClicked = { url, isVideo -> onGalleryClicked(url, isVideo) },
+                onSocialLinkClicked = { viewModel.setIntent(ProfileIntent.OpenSocialLink(it)) },
+                onLoadMore = { viewModel.setIntent(ProfileIntent.OnLoadMoreEngagementStats(it)) },
+                onQueryChanged = { viewModel.setIntent(ProfileIntent.OnSearchQueryChanged(it)) },
+                onLoadMoreSearch = { viewModel.setIntent(ProfileIntent.OnLoadMoreSearchResults) },
+                onLoadMoreImages = { viewModel.setIntent(ProfileIntent.OnLoadMorePortfolio) },
+                onImageSelected = {
+                    viewModel.setIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(it)))
+                },
+                onVideoSelected = {
+                    viewModel.setIntent(ProfileIntent.OnVideoSelected(context.uriToFile(it)))
+                },
+                onLoadMoreVideos = { viewModel.setIntent(ProfileIntent.OnLoadMoreVideos) },
+                onAddModelClicked = onAddModelClicked,
+                onLoadMoreEvents = { viewModel.setIntent(ProfileIntent.OnLoadMoreEvents) },
+                onEventClicked = onEventClicked,
+                onFindSimilarProfiles = {
+                    onFindSimilarProfiles(uiState.userInfo.photoUrl)
+                }
+            )
         }
-    } else {
-        ProfileScreenContent(
-            uiState = uiState,
-            onEditClicked = {
-                onEditClicked()
-            },
-            onEditLinksClicked = {
-                onEditLinksClicked()
-            },
-            onNavigateBack = onNavigateBack,
-            showWorkHistory = { showWorkHistory(isOwnProfile) },
-            onProfileClicked = onProfileClicked,
-            onEditBackgroundClicked = {
-                viewModel.setIntent(ProfileIntent.OnBackgroundPhotoSelected(context.uriToFile(it)))
-            },
-            onGalleryClicked = { url, isVideo -> onGalleryClicked(url, isVideo) },
-            onSocialLinkClicked = { viewModel.setIntent(ProfileIntent.OpenSocialLink(it)) },
-            onLoadMore = { viewModel.setIntent(ProfileIntent.OnLoadMoreEngagementStats(it)) },
-            onQueryChanged = { viewModel.setIntent(ProfileIntent.OnSearchQueryChanged(it)) },
-            onLoadMoreSearch = { viewModel.setIntent(ProfileIntent.OnLoadMoreSearchResults) },
-            onLoadMoreImages = { viewModel.setIntent(ProfileIntent.OnLoadMorePortfolio) },
-            onImageSelected = {
-                viewModel.setIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(it)))
-            },
-            onVideoSelected = {
-                viewModel.setIntent(ProfileIntent.OnVideoSelected(context.uriToFile(it)))
-            },
-            onLoadMoreVideos = { viewModel.setIntent(ProfileIntent.OnLoadMoreVideos) },
-            onAddModelClicked = onAddModelClicked,
-            onLoadMoreEvents = { viewModel.setIntent(ProfileIntent.OnLoadMoreEvents) },
-            onEventClicked = onEventClicked
+
+        AppSnackbarHost(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            state = snackbarState,
+            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 8.dp
         )
     }
 }
@@ -185,6 +214,7 @@ private fun ProfileScreenContent(
     onAddModelClicked: () -> Unit,
     onLoadMoreEvents: () -> Unit,
     onEventClicked: (Int) -> Unit,
+    onFindSimilarProfiles: () -> Unit,
 ) {
     val pageCount = uiState.pageCount
     val pagerState = rememberPagerState(pageCount = { pageCount })
@@ -277,6 +307,7 @@ private fun ProfileScreenContent(
                 },
                 onManageWorkExperienceClicked = showWorkHistory,
                 onNavigateBack = onNavigateBack,
+                onFindSimilarProfiles = onFindSimilarProfiles
             )
 
             Box(
@@ -321,7 +352,7 @@ private fun ProfileScreenContent(
                                 when (page) {
                                     0 -> PortfolioGrid(
                                         portfolioItems = uiState.userGalleryItems,
-                                        similarItems = uiState.agencyModels,
+                                        similarItems = uiState.similarProfiles,
                                         isUploading = uiState.mediaUploading,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isLoadingMore = uiState.isLoadingMoreImages,
@@ -352,7 +383,7 @@ private fun ProfileScreenContent(
                                         DivoColumnContent("Vogue Inside")
                                     } else {
                                         AgencyModels(
-                                            models = uiState.agencyModels,
+                                            models = emptyList(), //TODO
                                             isOwnProfile = uiState.isOwnProfile,
                                             isLoadingMoreModels = false, //TODO
                                             onAddModelClicked = onAddModelClicked,
@@ -376,18 +407,20 @@ private fun ProfileScreenContent(
                     }
                 }
 
-                TabContainer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(tabBarHeightDp)
-                        .graphicsLayer {
-                            translationY = tabBarOffsetY
-                        }
-                        .zIndex(1f),
-                    lazyListState = lazyListState,
-                    pagerState = pagerState,
-                    destinations = uiState.destinationTabs
-                )
+                if (uiState.userInfo.role != RoleType.UNKNOWN) {
+                    TabContainer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(tabBarHeightDp)
+                            .graphicsLayer {
+                                translationY = tabBarOffsetY
+                            }
+                            .zIndex(1f),
+                        lazyListState = lazyListState,
+                        pagerState = pagerState,
+                        destinations = uiState.destinationTabs
+                    )
+                }
             }
         }
     }

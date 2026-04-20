@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -290,6 +291,8 @@ fun ProfileNameItem(
     modifier: Modifier = Modifier,
     uiState: ProfileViewState
 ) {
+    val context = LocalContext.current
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier.padding(horizontal = 16.dp)
@@ -369,7 +372,7 @@ fun ProfileNameItem(
                 Spacer(modifier = Modifier.width(10.dp))
                 if (age.isNotEmpty()) {
                     Text(
-                        text = "${age.formattedAge()} · ",
+                        text = "${age.formattedAge(context)} · ",
                         style = AppTheme.typography.helveticaNeueRegular,
                         fontSize = 14.sp,
                         color = AppTheme.colors.textColor,

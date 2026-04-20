@@ -1,13 +1,15 @@
 package org.telegram.divo.screen.profile_social_links
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -20,15 +22,17 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.components.shimmer
@@ -42,7 +46,7 @@ fun ProfileSocialLinksScreen(
     viewModel: ProfileSocialLinksViewModel = viewModel(),
     onCloseScreen: () -> Unit = {}
 ) {
-    val context = LocalContext.current
+    val snackbarState = remember { AppSnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.setIntent(Intent.OnLoad)
@@ -52,7 +56,6 @@ fun ProfileSocialLinksScreen(
         viewModel.effect.collect { action ->
             when (action) {
                 Effect.NavigateBack -> {
-                    Toast.makeText(context, "Данные успешно обновлены", Toast.LENGTH_SHORT).show()
                     onCloseScreen()
                 }
             }
@@ -63,16 +66,17 @@ fun ProfileSocialLinksScreen(
 
     ProfileSocialLinksScreenView(
         uiState = uiState,
+        snackbarHostState = snackbarState,
         onIntent = { viewModel.setIntent(it) },
         onCloseScreen = onCloseScreen
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun ProfileSocialLinksScreenView(
     uiState: UiViewState = UiViewState(),
+    snackbarHostState: AppSnackbarHostState,
     onIntent: (Intent) -> Unit = {},
     onCloseScreen: () -> Unit = {}
 ) {
@@ -97,14 +101,17 @@ fun ProfileSocialLinksScreenView(
                     containerColor = AppTheme.colors.backgroundLight
                 )
             )
+        },
+        snackbarHost = {
+            AppSnackbarHost(
+                state = snackbarHostState,
+                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 8.dp
+            )
         }
     ) { paddingValues ->
-        val context = LocalContext.current
-
-        // Show error toast
         LaunchedEffect(uiState.errorMessage) {
             uiState.errorMessage?.let { message ->
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+                snackbarHostState.show(Error(message))
             }
         }
 
