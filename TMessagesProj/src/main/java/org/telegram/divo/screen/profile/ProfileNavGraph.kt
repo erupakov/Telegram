@@ -285,7 +285,9 @@ fun ProfileNavGraph(
             FaceSearchScreen(
                 uri = uri,
                 onNavigateSimilarProfiles = { url, fx, fy ->
-                    nav.navigate(ProfileRoute.SimilarProfiles.createRoute(url, fx, fy))
+                    nav.navigate(ProfileRoute.SimilarProfiles.createRoute(url, fx, fy)) {
+                        popUpTo(ProfileRoute.FaceSearch.route) { inclusive = true }
+                    }
                 },
                 onNavigateToSearch = {  },
                 onBack = { nav.popBackStack() }

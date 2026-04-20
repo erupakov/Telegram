@@ -101,7 +101,7 @@ fun DivoSlider(
 
             // Thumb outer circle
             drawCircle(
-                color = Color(0xFFD9D9D9),
+                color = Color.White,
                 radius = thumbRadiusPx,
                 center = Offset(thumbX, trackY)
             )

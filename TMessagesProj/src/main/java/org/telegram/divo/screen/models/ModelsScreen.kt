@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
@@ -83,7 +84,19 @@ fun ModelsHomeScreen(
     val context = LocalContext.current
 
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { Tab.entries.size })
-    val listStates = remember { Tab.entries.associateWith { LazyListState() } }
+
+    val modelsListState = rememberLazyListState()
+    val newTalentsListState = rememberLazyListState()
+    val agenciesListState = rememberLazyListState()
+
+    val listStates = remember(modelsListState, newTalentsListState, agenciesListState) {
+        mapOf(
+            Tab.MODELS to modelsListState,
+            Tab.NEW_TALENTS to newTalentsListState,
+            Tab.AGENCIES to agenciesListState
+        )
+    }
+
     val hazeState = remember { HazeState() }
     val snackbarState = remember { AppSnackbarHostState() }
 

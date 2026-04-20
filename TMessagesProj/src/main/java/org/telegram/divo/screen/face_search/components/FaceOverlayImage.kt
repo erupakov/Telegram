@@ -88,261 +88,311 @@ fun FaceOverlayImage(
         verticalBias = fractionY * 2f - 1f
     )
 
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(32.dp))
-            .aspectRatio(1f)
-            .onSizeChanged { viewSize = it }
-            .alpha(if (detectionResult is FaceDetectionResult.Loading) 0f else 1f)
-            .pointerInput(detectionResult, viewSize, isSearching) {
-                detectTapGestures { tapOffset ->
-                    // Кликать можно только если лиц больше 1 и нет активного поиска
-                    if (detectionResult is FaceDetectionResult.Success && !isSearching && viewSize != IntSize.Zero && detectionResult.faces.size > 1) {
-                        val imageW = detectionResult.imageWidth.toFloat()
-                        val imageH = detectionResult.imageHeight.toFloat()
-                        val vW = viewSize.width.toFloat()
-                        val vH = viewSize.height.toFloat()
+    if (detectionResult is FaceDetectionResult.Loading) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(32.dp))
+                .aspectRatio(1f)
+                .background(AppTheme.colors.onBackground)
+                .shimmer()
+        )
+    } else {
+        Box(
+            modifier = modifier
+                .clip(RoundedCornerShape(32.dp))
+                .aspectRatio(1f)
+                .onSizeChanged { viewSize = it }
+                .alpha(if (detectionResult is FaceDetectionResult.Loading) 0f else 1f)
+                .pointerInput(detectionResult, viewSize, isSearching) {
+                    detectTapGestures { tapOffset ->
+                        // Кликать можно только если лиц больше 1 и нет активного поиска
+                        if (detectionResult is FaceDetectionResult.Success && !isSearching && viewSize != IntSize.Zero && detectionResult.faces.size > 1) {
+                            val imageW = detectionResult.imageWidth.toFloat()
+                            val imageH = detectionResult.imageHeight.toFloat()
+                            val vW = viewSize.width.toFloat()
+                            val vH = viewSize.height.toFloat()
 
-                        val scale = maxOf(vW / imageW, vH / imageH)
-                        val scaledW = imageW * scale
-                        val scaledH = imageH * scale
-                        val offsetX = (vW - scaledW) * fractionX
-                        val offsetY = (vH - scaledH) * fractionY
+                            val scale = maxOf(vW / imageW, vH / imageH)
+                            val scaledW = imageW * scale
+                            val scaledH = imageH * scale
+                            val offsetX = (vW - scaledW) * fractionX
+                            val offsetY = (vH - scaledH) * fractionY
 
-                        val clickedIndex = detectionResult.faces.indexOfFirst { face ->
-                            val rect = face.boundingBox
-                            val left = (rect.left * scale) + offsetX
-                            val top = (rect.top * scale) + offsetY
-                            val right = left + rect.width() * scale
-                            val bottom = top + rect.height() * scale
+                            val clickedIndex = detectionResult.faces.indexOfFirst { face ->
+                                val rect = face.boundingBox
+                                val left = (rect.left * scale) + offsetX
+                                val top = (rect.top * scale) + offsetY
+                                val right = left + rect.width() * scale
+                                val bottom = top + rect.height() * scale
 
-                            val touchRect = androidx.compose.ui.geometry.Rect(left, top, right, bottom).inflate(40f)
-                            touchRect.contains(tapOffset)
-                        }
+                                val touchRect =
+                                    androidx.compose.ui.geometry.Rect(left, top, right, bottom)
+                                        .inflate(40f)
+                                touchRect.contains(tapOffset)
+                            }
 
-                        if (clickedIndex != -1) {
-                            onFaceClick(clickedIndex)
+                            if (clickedIndex != -1) {
+                                onFaceClick(clickedIndex)
+                            }
                         }
                     }
-                }
-            },
-    ) {
-        DivoAsyncImage(
-            modifier = Modifier.fillMaxSize(),
-            model = imageUri,
-            contentScale = ContentScale.Crop,
-            alignment = faceAlignment // Центрируем по лицу
-        )
+                },
+        ) {
+            DivoAsyncImage(
+                modifier = Modifier.fillMaxSize(),
+                model = imageUri,
+                contentScale = ContentScale.Crop,
+                alignment = faceAlignment // Центрируем по лицу
+            )
 
-        if (detectionResult is FaceDetectionResult.Success && viewSize != IntSize.Zero && !isSearching) {
-            if (detectionResult.faces.size > 1) {
-                Box(
+            if (detectionResult is FaceDetectionResult.Success && viewSize != IntSize.Zero && !isSearching) {
+                if (detectionResult.faces.size > 1) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .zIndex(1f)
+                            .background(
+                                if (selectedFaceIndex != null) AppTheme.colors.onBackground else Color(
+                                    0xFFFF9500
+                                )
+                            )
+                            .align(Alignment.BottomCenter),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = if (selectedFaceIndex != null) stringResource(R.string.ReadyToSearchFace) else stringResource(
+                                R.string.MultipleFacesDetected,
+                                detectionResult.faces.size
+                            ),
+                            textAlign = TextAlign.Center,
+                            style = AppTheme.typography.bodyMedium,
+                            color = if (selectedFaceIndex != null) AppTheme.colors.textPrimary else AppTheme.colors.textColor
+                        )
+                    }
+                }
+
+                Canvas(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .zIndex(1f)
-                        .background(if (selectedFaceIndex != null) AppTheme.colors.onBackground else Color(0xFFFF9500))
-                        .align(Alignment.BottomCenter),
-                    contentAlignment = Alignment.Center
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(32.dp))
                 ) {
-                    Text(
-                        text = if (selectedFaceIndex != null) stringResource(R.string.ReadyToSearchFace) else stringResource(
-                            R.string.MultipleFacesDetected,
-                            detectionResult.faces.size
-                        ),
-                        textAlign = TextAlign.Center,
-                        style = AppTheme.typography.bodyMedium,
-                        color = if (selectedFaceIndex != null) AppTheme.colors.textPrimary else AppTheme.colors.textColor
+                    val imageWidth = detectionResult.imageWidth.toFloat()
+                    val imageHeight = detectionResult.imageHeight.toFloat()
+                    val viewWidth = size.width
+                    val viewHeight = size.height
+
+                    val scale = maxOf(viewWidth / imageWidth, viewHeight / imageHeight)
+                    val scaledImageWidth = imageWidth * scale
+                    val scaledImageHeight = imageHeight * scale
+
+                    val offsetX = (viewWidth - scaledImageWidth) * fractionX
+                    val offsetY = (viewHeight - scaledImageHeight) * fractionY
+
+                    // Класс для хранения координат рамки
+                    data class FaceDrawData(
+                        val sqLeft: Float,
+                        val sqTop: Float,
+                        val sideLength: Float,
+                        val rect: androidx.compose.ui.geometry.Rect
                     )
+
+                    // Считаем геометрию рамок
+                    val faceDataList = detectionResult.faces.map { face ->
+                        val rect = face.boundingBox
+                        val left = (rect.left * scale) + offsetX
+                        val top = (rect.top * scale) + offsetY
+                        val width = rect.width() * scale
+                        val height = rect.height() * scale
+
+                        val centerX = left + width / 2f
+                        val centerY = top + height / 2f
+                        val sideLength = maxOf(width, height) * 0.85f
+                        val verticalShift = height * 0.06f
+
+                        val sqLeft = centerX - sideLength / 2f
+                        val sqTop = (centerY - sideLength / 2f) + verticalShift
+
+                        FaceDrawData(
+                            sqLeft = sqLeft,
+                            sqTop = sqTop,
+                            sideLength = sideLength,
+                            rect = androidx.compose.ui.geometry.Rect(
+                                sqLeft,
+                                sqTop,
+                                sqLeft + sideLength,
+                                sqTop + sideLength
+                            )
+                        )
+                    }
+
+                    val isMultipleFaces = detectionResult.faces.size > 1
+                    val hasSelection = selectedFaceIndex != null
+
+                    // 1. Отрисовка затемнения фона (Только если >1 лица и есть выбор)
+                    if (isMultipleFaces && hasSelection && selectedFaceIndex in faceDataList.indices) {
+                        val selectedRect = faceDataList[selectedFaceIndex].rect
+                        val darkOverlayPath = Path().apply {
+                            addRect(
+                                androidx.compose.ui.geometry.Rect(
+                                    0f,
+                                    0f,
+                                    viewWidth,
+                                    viewHeight
+                                )
+                            )
+                            addRoundRect(
+                                androidx.compose.ui.geometry.RoundRect(
+                                    rect = selectedRect,
+                                    cornerRadius = CornerRadius(16.dp.toPx())
+                                )
+                            )
+                            fillType = PathFillType.EvenOdd
+                        }
+                        drawPath(path = darkOverlayPath, color = Color.Black.copy(alpha = 0.65f))
+                    }
+
+                    // 2. Отрисовка рамок
+                    faceDataList.forEachIndexed { index, data ->
+                        val isSelected = index == selectedFaceIndex
+
+                        val cornerRadius = 16.dp.toPx()
+                        val cornerLength = data.sideLength * 0.20f
+
+                        // Функция для создания оригинального пунктирного пути
+                        val buildBrokenPath = {
+                            Path().apply {
+                                moveTo(data.sqLeft, data.sqTop + cornerLength)
+                                lineTo(data.sqLeft, data.sqTop + cornerRadius)
+                                quadraticTo(
+                                    data.sqLeft,
+                                    data.sqTop,
+                                    data.sqLeft + cornerRadius,
+                                    data.sqTop
+                                )
+                                lineTo(data.sqLeft + cornerLength, data.sqTop)
+
+                                moveTo(data.sqLeft + data.sideLength - cornerLength, data.sqTop)
+                                lineTo(data.sqLeft + data.sideLength - cornerRadius, data.sqTop)
+                                quadraticTo(
+                                    data.sqLeft + data.sideLength,
+                                    data.sqTop,
+                                    data.sqLeft + data.sideLength,
+                                    data.sqTop + cornerRadius
+                                )
+                                lineTo(data.sqLeft + data.sideLength, data.sqTop + cornerLength)
+
+                                moveTo(
+                                    data.sqLeft + data.sideLength,
+                                    data.sqTop + data.sideLength - cornerLength
+                                )
+                                lineTo(
+                                    data.sqLeft + data.sideLength,
+                                    data.sqTop + data.sideLength - cornerRadius
+                                )
+                                quadraticTo(
+                                    data.sqLeft + data.sideLength,
+                                    data.sqTop + data.sideLength,
+                                    data.sqLeft + data.sideLength - cornerRadius,
+                                    data.sqTop + data.sideLength
+                                )
+                                lineTo(
+                                    data.sqLeft + data.sideLength - cornerLength,
+                                    data.sqTop + data.sideLength
+                                )
+
+                                moveTo(data.sqLeft + cornerLength, data.sqTop + data.sideLength)
+                                lineTo(data.sqLeft + cornerRadius, data.sqTop + data.sideLength)
+                                quadraticTo(
+                                    data.sqLeft,
+                                    data.sqTop + data.sideLength,
+                                    data.sqLeft,
+                                    data.sqTop + data.sideLength - cornerRadius
+                                )
+                                lineTo(data.sqLeft, data.sqTop + data.sideLength - cornerLength)
+                            }
+                        }
+
+                        if (isMultipleFaces && hasSelection) {
+                            if (isSelected) {
+                                // ВЫБРАННОЕ лицо среди нескольких: Сплошная оранжевая рамка
+                                drawRoundRect(
+                                    color = boxColor,
+                                    topLeft = data.rect.topLeft,
+                                    size = data.rect.size,
+                                    cornerRadius = CornerRadius(16.dp.toPx()),
+                                    style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+                                )
+                            } else {
+                                // ПРОЧИЕ лица среди нескольких (при наличии выбора): Старая пунктирная БЕЛАЯ рамка
+                                drawPath(
+                                    path = buildBrokenPath(),
+                                    color = Color.White,
+                                    style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+                                )
+                            }
+                        } else {
+                            // ОДНО лицо ИЛИ несколько лиц без выбора (исходное состояние): Старая пунктирная ОРАНЖЕВАЯ рамка
+                            drawPath(
+                                path = buildBrokenPath(),
+                                color = boxColor,
+                                style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
+                            )
+                        }
+                    }
                 }
             }
 
-            Canvas(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(32.dp))
-            ) {
-                val imageWidth = detectionResult.imageWidth.toFloat()
-                val imageHeight = detectionResult.imageHeight.toFloat()
-                val viewWidth = size.width
-                val viewHeight = size.height
-
-                val scale = maxOf(viewWidth / imageWidth, viewHeight / imageHeight)
-                val scaledImageWidth = imageWidth * scale
-                val scaledImageHeight = imageHeight * scale
-
-                val offsetX = (viewWidth - scaledImageWidth) * fractionX
-                val offsetY = (viewHeight - scaledImageHeight) * fractionY
-
-                // Класс для хранения координат рамки
-                data class FaceDrawData(
-                    val sqLeft: Float, val sqTop: Float, val sideLength: Float, val rect: androidx.compose.ui.geometry.Rect
+            if (isSearching) {
+                val infiniteTransition = rememberInfiniteTransition(label = "scanner_transition")
+                val scanFraction by infiniteTransition.animateFloat(
+                    initialValue = 0f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(durationMillis = 2000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Restart // Начинаем заново сверху
+                    ),
+                    label = "scanner_animation"
                 )
 
-                // Считаем геометрию рамок
-                val faceDataList = detectionResult.faces.map { face ->
-                    val rect = face.boundingBox
-                    val left = (rect.left * scale) + offsetX
-                    val top = (rect.top * scale) + offsetY
-                    val width = rect.width() * scale
-                    val height = rect.height() * scale
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(32.dp)) // Обрезаем по краям картинки
+                ) {
+                    val canvasWidth = size.width
+                    val canvasHeight = size.height
+                    val glowHeight = 60.dp.toPx() // Высота градиентного "хвоста" сканера
 
-                    val centerX = left + width / 2f
-                    val centerY = top + height / 2f
-                    val sideLength = maxOf(width, height) * 0.85f
-                    val verticalShift = height * 0.06f
+                    // Высчитываем Y так, чтобы сканер плавно заходил и полностью выходил за экран
+                    val lineY = scanFraction * (canvasHeight + glowHeight)
 
-                    val sqLeft = centerX - sideLength / 2f
-                    val sqTop = (centerY - sideLength / 2f) + verticalShift
+                    // 1. Рисуем полупрозрачный градиентный шлейф
+                    drawRect(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color(0xFFFF6B00).copy(alpha = 0.2f),
+                                Color(0xFFFF6B00).copy(alpha = 0.6f)
+                            ),
+                            startY = lineY - glowHeight,
+                            endY = lineY
+                        ),
+                        topLeft = Offset(x = 0f, y = lineY - glowHeight),
+                        size = Size(width = canvasWidth, height = glowHeight)
+                    )
 
-                    FaceDrawData(
-                        sqLeft = sqLeft,
-                        sqTop = sqTop,
-                        sideLength = sideLength,
-                        rect = androidx.compose.ui.geometry.Rect(sqLeft, sqTop, sqLeft + sideLength, sqTop + sideLength)
+                    // 2. Рисуем яркую горизонтальную линию
+                    drawLine(
+                        color = Color(0xFFFF6B00), // Оранжевый цвет (как у рамки лица)
+                        start = Offset(x = 0f, y = lineY),
+                        end = Offset(x = canvasWidth, y = lineY),
+                        strokeWidth = 3.dp.toPx(),
+                        cap = StrokeCap.Round
                     )
                 }
-
-                val isMultipleFaces = detectionResult.faces.size > 1
-                val hasSelection = selectedFaceIndex != null
-
-                // 1. Отрисовка затемнения фона (Только если >1 лица и есть выбор)
-                if (isMultipleFaces && hasSelection && selectedFaceIndex in faceDataList.indices) {
-                    val selectedRect = faceDataList[selectedFaceIndex].rect
-                    val darkOverlayPath = Path().apply {
-                        addRect(androidx.compose.ui.geometry.Rect(0f, 0f, viewWidth, viewHeight))
-                        addRoundRect(
-                            androidx.compose.ui.geometry.RoundRect(
-                                rect = selectedRect,
-                                cornerRadius = CornerRadius(16.dp.toPx())
-                            )
-                        )
-                        fillType = PathFillType.EvenOdd
-                    }
-                    drawPath(path = darkOverlayPath, color = Color.Black.copy(alpha = 0.65f))
-                }
-
-                // 2. Отрисовка рамок
-                faceDataList.forEachIndexed { index, data ->
-                    val isSelected = index == selectedFaceIndex
-
-                    val cornerRadius = 16.dp.toPx()
-                    val cornerLength = data.sideLength * 0.20f
-
-                    // Функция для создания оригинального пунктирного пути
-                    val buildBrokenPath = {
-                        Path().apply {
-                            moveTo(data.sqLeft, data.sqTop + cornerLength)
-                            lineTo(data.sqLeft, data.sqTop + cornerRadius)
-                            quadraticTo(data.sqLeft, data.sqTop, data.sqLeft + cornerRadius, data.sqTop)
-                            lineTo(data.sqLeft + cornerLength, data.sqTop)
-
-                            moveTo(data.sqLeft + data.sideLength - cornerLength, data.sqTop)
-                            lineTo(data.sqLeft + data.sideLength - cornerRadius, data.sqTop)
-                            quadraticTo(data.sqLeft + data.sideLength, data.sqTop, data.sqLeft + data.sideLength, data.sqTop + cornerRadius)
-                            lineTo(data.sqLeft + data.sideLength, data.sqTop + cornerLength)
-
-                            moveTo(data.sqLeft + data.sideLength, data.sqTop + data.sideLength - cornerLength)
-                            lineTo(data.sqLeft + data.sideLength, data.sqTop + data.sideLength - cornerRadius)
-                            quadraticTo(data.sqLeft + data.sideLength, data.sqTop + data.sideLength, data.sqLeft + data.sideLength - cornerRadius, data.sqTop + data.sideLength)
-                            lineTo(data.sqLeft + data.sideLength - cornerLength, data.sqTop + data.sideLength)
-
-                            moveTo(data.sqLeft + cornerLength, data.sqTop + data.sideLength)
-                            lineTo(data.sqLeft + cornerRadius, data.sqTop + data.sideLength)
-                            quadraticTo(data.sqLeft, data.sqTop + data.sideLength, data.sqLeft, data.sqTop + data.sideLength - cornerRadius)
-                            lineTo(data.sqLeft, data.sqTop + data.sideLength - cornerLength)
-                        }
-                    }
-
-                    if (isMultipleFaces && hasSelection) {
-                        if (isSelected) {
-                            // ВЫБРАННОЕ лицо среди нескольких: Сплошная оранжевая рамка
-                            drawRoundRect(
-                                color = boxColor,
-                                topLeft = data.rect.topLeft,
-                                size = data.rect.size,
-                                cornerRadius = CornerRadius(16.dp.toPx()),
-                                style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
-                            )
-                        } else {
-                            // ПРОЧИЕ лица среди нескольких (при наличии выбора): Старая пунктирная БЕЛАЯ рамка
-                            drawPath(
-                                path = buildBrokenPath(),
-                                color = Color.White,
-                                style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
-                            )
-                        }
-                    } else {
-                        // ОДНО лицо ИЛИ несколько лиц без выбора (исходное состояние): Старая пунктирная ОРАНЖЕВАЯ рамка
-                        drawPath(
-                            path = buildBrokenPath(),
-                            color = boxColor,
-                            style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round)
-                        )
-                    }
-                }
-                }
-        }
-
-        if (detectionResult is FaceDetectionResult.Loading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(32.dp))
-                    .aspectRatio(1f)
-                    .background(AppTheme.colors.onBackground)
-                    .shimmer()
-            )
-        }
-
-        if (isSearching) {
-            val infiniteTransition = rememberInfiniteTransition(label = "scanner_transition")
-            val scanFraction by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 1f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween(durationMillis = 2000, easing = LinearEasing),
-                    repeatMode = RepeatMode.Restart // Начинаем заново сверху
-                ),
-                label = "scanner_animation"
-            )
-
-            Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(32.dp)) // Обрезаем по краям картинки
-            ) {
-                val canvasWidth = size.width
-                val canvasHeight = size.height
-                val glowHeight = 60.dp.toPx() // Высота градиентного "хвоста" сканера
-
-                // Высчитываем Y так, чтобы сканер плавно заходил и полностью выходил за экран
-                val lineY = scanFraction * (canvasHeight + glowHeight)
-
-                // 1. Рисуем полупрозрачный градиентный шлейф
-                drawRect(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color(0xFFFF6B00).copy(alpha = 0.2f),
-                            Color(0xFFFF6B00).copy(alpha = 0.6f)
-                        ),
-                        startY = lineY - glowHeight,
-                        endY = lineY
-                    ),
-                    topLeft = Offset(x = 0f, y = lineY - glowHeight),
-                    size = Size(width = canvasWidth, height = glowHeight)
-                )
-
-                // 2. Рисуем яркую горизонтальную линию
-                drawLine(
-                    color = Color(0xFFFF6B00), // Оранжевый цвет (как у рамки лица)
-                    start = Offset(x = 0f, y = lineY),
-                    end = Offset(x = canvasWidth, y = lineY),
-                    strokeWidth = 3.dp.toPx(),
-                    cap = StrokeCap.Round
-                )
             }
         }
     }

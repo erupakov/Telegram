@@ -162,7 +162,9 @@ fun ModelsNavGraph(
             FaceSearchScreen(
                 uri = uri,
                 onNavigateSimilarProfiles = { url, fx, fy ->
-                    nav.navigate(ModelsRoute.SimilarProfiles.createRoute(url, fx, fy))
+                    nav.navigate(ModelsRoute.SimilarProfiles.createRoute(url, fx, fy)) {
+                        popUpTo(ModelsRoute.FaceSearch.route) { inclusive = true }
+                    }
                 },
                 onNavigateToSearch = {  },
                 onBack = { nav.popBackStack() }
