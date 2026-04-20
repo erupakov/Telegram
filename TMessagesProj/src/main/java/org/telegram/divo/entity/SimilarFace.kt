@@ -7,6 +7,7 @@ data class SimilarFace(
     val image: String,
     val index: Int,
     val photoId: Int,
+    val rank: Int,
     val rating: String,
     val score: Double,
     val userId: Int

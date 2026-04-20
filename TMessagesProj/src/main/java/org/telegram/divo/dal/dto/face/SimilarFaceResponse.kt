@@ -15,6 +15,7 @@ class SimilarFaceDto(
     @SerializedName("image") val image: String?,
     @SerializedName("index") val index: Int?,
     @SerializedName("photo_id") val photoId: Int?,
+    @SerializedName("rank") val rank: Int?,
     @SerializedName("rating") val rating: String?,
     @SerializedName("score") val score: Double?,
     @SerializedName("user_id") val userId: Int?
@@ -27,6 +28,7 @@ fun SimilarFaceDto.toEntity() = SimilarFace(
     image = image.orEmpty(),
     index = index ?: 0,
     photoId = photoId ?: 0,
+    rank = rank ?: 0,
     rating = rating.orEmpty(),
     score = score ?: 0.0,
     userId = userId ?: 0

@@ -11,5 +11,6 @@ data class FaceRecognitionEntity(
     val resultsCount: Int = 0,
     val userId: Int,
     val filtersJson: String = "",
+    val resultsJson: String? = null,
     val createdAt: Long = System.currentTimeMillis()
 )

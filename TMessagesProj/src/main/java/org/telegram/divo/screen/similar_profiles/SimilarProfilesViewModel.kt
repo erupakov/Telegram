@@ -3,16 +3,20 @@ package org.telegram.divo.screen.similar_profiles
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
+import org.telegram.divo.dal.dto.face.SimilarFaceDto
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.SearchedProfile
+import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.similar_profiles.Effect.NavigateBack
 import org.telegram.divo.screen.similar_profiles.Effect.NavigateToProfile
@@ -25,9 +29,11 @@ import java.io.InputStreamReader
 class SimilarProfilesViewModel(
     val imageUrl: String,
     private val initialFiltersJson: String? = null,
+    private val resultsJson: String? = null,
 ) : BaseViewModel<State, Intent, Effect>() {
     private var currentUserId: Int? = null
     private var pendingCountryShortNames: List<String> = emptyList()
+    private var allProfiles: List<SearchedProfile> = emptyList()
 
     override fun createInitialState(): State = State(imageUrl = imageUrl)
 
@@ -45,7 +51,7 @@ class SimilarProfilesViewModel(
                     role = ProfileParameter(ParametersType.ROLE, ""),
                     blockParams = state.value.getDefaultBlockParams()
                 )
-                val filtered = filterMockProfiles(newState)
+                val filtered = filterProfiles(newState)
                 val updatedState = newState.copy(profiles = filtered)
                 setState { updatedState }
                 saveHistory(updatedState)
@@ -58,7 +64,7 @@ class SimilarProfilesViewModel(
                     role = intent.role,
                     blockParams = intent.blockParams
                 )
-                val filtered = filterMockProfiles(newState)
+                val filtered = filterProfiles(newState)
                 val updatedState = newState.copy(profiles = filtered)
                 setState { updatedState }
                 saveHistory(updatedState)
@@ -72,18 +78,32 @@ class SimilarProfilesViewModel(
 
     private fun loadData() {
         viewModelScope.launch {
-            launch { loadSimilarProfiles() }
+            setState { copy(isUserLoading = true) }
+            val result = DivoApi.userRepository.getCurrentUserInfo()
+            val userId = (result as? DivoResult.Success)?.value?.id
+
             launch { loadCountries() }
-            launch { loadUserProfile() }
+            launch { loadUserProfile(result) }
+            launch { loadSimilarProfiles(userId) }
         }
     }
 
-    //TODO временно
-    private suspend fun loadSimilarProfiles() {
+    private suspend fun loadSimilarProfiles(userId: Int?) {
         setState { copy(isLoading = true) }
 
-        // Имитация загрузки
-        val filtered = filterMockProfiles(state.value.copy(profiles = mockProfiles))
+        var effectiveResultsJson = resultsJson
+
+        if (effectiveResultsJson.isNullOrBlank() && userId != null) {
+            // Пытаемся восстановить результаты из истории, если они не были переданы (например, переход из экрана истории)
+            val existing = DivoApi.faceRecognitionRepository.getByImageUri(imageUrl, userId)
+            effectiveResultsJson = existing?.resultsJson
+        }
+
+        // Десериализуем результаты поиска из JSON
+        val profiles = parseResultsJson(effectiveResultsJson)
+
+        allProfiles = profiles
+        val filtered = filterProfiles(state.value.copy(profiles = profiles))
         val newState = state.value.copy(
             profiles = filtered,
             isLoading = false
@@ -95,8 +115,36 @@ class SimilarProfilesViewModel(
         saveHistory(newState)
     }
 
-    private fun filterMockProfiles(currentState: State): List<SearchedProfile> {
-        return mockProfiles.filter { profile ->
+    private fun parseResultsJson(jsonToParse: String?): List<SearchedProfile> {
+        if (jsonToParse.isNullOrBlank()) return emptyList()
+
+        return try {
+            val type = object : TypeToken<List<SimilarFaceDto>>() {}.type
+            val dtos: List<SimilarFaceDto> = Gson().fromJson(jsonToParse, type)
+
+            dtos.mapIndexed { idx, dto ->
+                SearchedProfile(
+                    id = dto.index ?: (idx + 1),
+                    name = dto.fullName?.ifBlank { null } ?: "Profile #${dto.rank ?: (idx + 1)}",
+                    age = null,
+                    country = null,
+                    countryCode = null,
+                    isMarked = false,
+                    likes = 0,
+                    isLiked = false,
+                    photo = dto.image.orEmpty(),
+                    roleLabel = "",
+                    similarity = ((dto.score ?: 0.0) * 100).toInt()
+                )
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    private fun filterProfiles(currentState: State): List<SearchedProfile> {
+        return allProfiles.filter { profile ->
             val countryMatch = if (currentState.selectedCountries.isEmpty()) {
                 true
             } else {
@@ -126,20 +174,12 @@ class SimilarProfilesViewModel(
                 val maxAge = parts.getOrNull(1)?.toIntOrNull() ?: 45
 
                 val profileAge = profile.age
-                profileAge in minAge..maxAge
+                profileAge != null && profileAge in minAge..maxAge
             }
 
             countryMatch && similarityMatch && roleMatch && ageMatch
         }
     }
-
-
-//    private fun calculateAgeFromDate(birthDateString: String?): Int {
-//        if (birthDateString.isNullOrEmpty()) return 0
-//        val birthYear = birthDateString.substringBefore("-").toIntOrNull() ?: return 0
-//        val currentYear = Calendar.getInstance().get(Calendar.YEAR)
-//        return currentYear - birthYear
-//    }
 
     private fun onLikeChange(id: Int) {
         val oldProfile = state.value.profiles.find { it.id == id } ?: return
@@ -234,7 +274,7 @@ class SimilarProfilesViewModel(
                     val selected = list.filter { it.shortName in pendingCountryShortNames }
                     if (selected.isNotEmpty()) {
                         val newState = state.value.copy(selectedCountries = selected)
-                        val filtered = filterMockProfiles(newState)
+                        val filtered = filterProfiles(newState)
                         setState { newState.copy(profiles = filtered) }
                         saveHistory(newState.copy(profiles = filtered))
                     }
@@ -246,10 +286,8 @@ class SimilarProfilesViewModel(
         }
     }
 
-    private fun loadUserProfile() {
+    private fun loadUserProfile(result: DivoResult<UserInfo>) {
         viewModelScope.launch {
-            setState { copy(isUserLoading = true) }
-            val result = DivoApi.userRepository.getCurrentUserInfo()
 
             if (result is DivoResult.Success) {
                 currentUserId = result.value.id
@@ -285,7 +323,7 @@ class SimilarProfilesViewModel(
             role = ProfileParameter(ParametersType.ROLE, payload.roleValue),
             blockParams = mergeBlockParams(state.value.getDefaultBlockParams(), payload.blockParams)
         )
-        val filteredByCore = filterMockProfiles(stateWithCoreFilters)
+        val filteredByCore = filterProfiles(stateWithCoreFilters)
         val finalInitialState = stateWithCoreFilters.copy(profiles = filteredByCore)
 
         setState { finalInitialState }
@@ -296,7 +334,7 @@ class SimilarProfilesViewModel(
                 val selected = state.value.allCountries.filter { it.shortName in payload.countryShortNames }
                 if (selected.isNotEmpty()) {
                     val withCountries = finalInitialState.copy(selectedCountries = selected)
-                    val filtered = filterMockProfiles(withCountries)
+                    val filtered = filterProfiles(withCountries)
                     setState { withCountries.copy(profiles = filtered) }
                     saveHistory(withCountries.copy(profiles = filtered))
                 } else {
@@ -338,6 +376,7 @@ class SimilarProfilesViewModel(
                     userId = userId,
                     resultsCount = currentState.profiles.size,
                     filtersJson = filtersJson,
+                    resultsJson = resultsJson,
                     createdAt = System.currentTimeMillis()
                 )
             )
@@ -345,92 +384,15 @@ class SimilarProfilesViewModel(
     }
 
     companion object {
-        fun factory(uri: String, filtersJson: String? = null) = object : ViewModelProvider.Factory {
+        fun factory(
+            uri: String,
+            filtersJson: String? = null,
+            resultsJson: String? = null
+        ) = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return SimilarProfilesViewModel(uri, filtersJson) as T
+                return SimilarProfilesViewModel(uri, filtersJson, resultsJson) as T
             }
         }
-
-        val mockProfiles = listOf(
-            SearchedProfile(
-                id = 1,
-                name = "Emma Johnson",
-                age = 25,
-                country = "USA",
-                countryCode = "US",
-                isMarked = false,
-                likes = 120,
-                isLiked = false,
-                photo = "https://randomuser.me/api/portraits/women/1.jpg",
-                roleLabel = "Model",
-                similarity = 92
-            ),
-            SearchedProfile(
-                id = 2,
-                name = "Olivia Smith",
-                age = 36,
-                country = "United Kingdom",
-                countryCode = "GB",
-                isMarked = true,
-                likes = 340,
-                isLiked = true,
-                photo = "https://randomuser.me/api/portraits/women/2.jpg",
-                roleLabel = "Fun",
-                similarity = 87
-            ),
-            SearchedProfile(
-                id = 3,
-                name = "Liam Brown",
-                age = 18,
-                country = "Germany",
-                countryCode = "DE",
-                isMarked = false,
-                likes = 210,
-                isLiked = false,
-                photo = "https://randomuser.me/api/portraits/men/3.jpg",
-                roleLabel = "New talent",
-                similarity = 56
-            ),
-            SearchedProfile(
-                id = 4,
-                name = "Noah Davis",
-                age = 21,
-                country = "France",
-                countryCode = "FR",
-                isMarked = false,
-                likes = 560,
-                isLiked = true,
-                photo = "https://randomuser.me/api/portraits/men/4.jpg",
-                roleLabel = "Model",
-                similarity = 35
-            ),
-            SearchedProfile(
-                id = 5,
-                name = "Liam Brown",
-                age = 31,
-                country = "Germany",
-                countryCode = "DE",
-                isMarked = false,
-                likes = 210,
-                isLiked = false,
-                photo = "https://randomuser.me/api/portraits/men/3.jpg",
-                roleLabel = "New talent",
-                similarity = 56
-            ),
-            SearchedProfile(
-                id = 6,
-                name = "Noah Davis",
-                age = 19,
-                country = "France",
-                countryCode = "FR",
-                isMarked = false,
-                likes = 560,
-                isLiked = true,
-                photo = "https://randomuser.me/api/portraits/men/4.jpg",
-                roleLabel = "Model",
-                similarity = 47
-            )
-        )
     }
 }

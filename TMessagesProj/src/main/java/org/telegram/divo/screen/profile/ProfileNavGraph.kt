@@ -57,12 +57,13 @@ sealed class ProfileRoute(val route: String) {
             "gallery/video/$userId/$initialIndex"
     }
 
-    data object SimilarProfiles : ProfileRoute("similar_profiles/{uri}?fx={fx}&fy={fy}&filters={filters}") {
+    data object SimilarProfiles : ProfileRoute("similar_profiles/{uri}?fx={fx}&fy={fy}&filters={filters}&results={results}") {
         fun createRoute(
             uri: String,
             fx: Float? = null,
             fy: Float? = null,
-            filtersJson: String? = null
+            filtersJson: String? = null,
+            resultsJson: String? = null
         ): String {
             val base = "similar_profiles/${Uri.encode(uri)}"
             val query = buildList {
@@ -72,6 +73,9 @@ sealed class ProfileRoute(val route: String) {
                 }
                 if (!filtersJson.isNullOrBlank()) {
                     add("filters=${Uri.encode(filtersJson)}")
+                }
+                if (!resultsJson.isNullOrBlank()) {
+                    add("results=${Uri.encode(resultsJson)}")
                 }
             }
             return if (query.isEmpty()) base else "$base?${query.joinToString("&")}"
@@ -260,17 +264,20 @@ fun ProfileNavGraph(
                 navArgument("uri") { type = NavType.StringType },
                 navArgument("fx") { type = NavType.StringType; nullable = true },
                 navArgument("fy") { type = NavType.StringType; nullable = true },
-                navArgument("filters") { type = NavType.StringType; nullable = true }
+                navArgument("filters") { type = NavType.StringType; nullable = true },
+                navArgument("results") { type = NavType.StringType; nullable = true }
             )
         ) { backStackEntry ->
             val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
             val fx = backStackEntry.arguments?.getString("fx")?.toFloatOrNull()
             val fy = backStackEntry.arguments?.getString("fy")?.toFloatOrNull()
             val filtersJson = backStackEntry.arguments?.getString("filters")?.let { Uri.decode(it) }
+            val resultsJson = backStackEntry.arguments?.getString("results")?.let { Uri.decode(it) }
 
             SimilarProfilesScreen(
                 url = uri,
                 initialFiltersJson = filtersJson,
+                resultsJson = resultsJson,
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ProfileRoute.Profile.createRoute(it)) },
@@ -284,8 +291,8 @@ fun ProfileNavGraph(
             val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
             FaceSearchScreen(
                 uri = uri,
-                onNavigateSimilarProfiles = { url, fx, fy ->
-                    nav.navigate(ProfileRoute.SimilarProfiles.createRoute(url, fx, fy)) {
+                onNavigateSimilarProfiles = { url, fx, fy, resultsJson ->
+                    nav.navigate(ProfileRoute.SimilarProfiles.createRoute(url, fx, fy, resultsJson = resultsJson)) {
                         popUpTo(ProfileRoute.FaceSearch.route) { inclusive = true }
                     }
                 },

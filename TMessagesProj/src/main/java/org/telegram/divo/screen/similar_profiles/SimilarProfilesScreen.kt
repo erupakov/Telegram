@@ -39,14 +39,16 @@ import org.telegram.messenger.R
 fun SimilarProfilesScreen(
     url: String,
     initialFiltersJson: String? = null,
+    resultsJson: String? = null,
     viewModel: SimilarProfilesViewModel = viewModel(
-        factory = SimilarProfilesViewModel.factory(url, initialFiltersJson)
+        factory = SimilarProfilesViewModel.factory(url, initialFiltersJson, resultsJson)
     ),
     fx: Float? = null,
     fy: Float? = null,
     onProfileClicked: (Int) -> Unit,
     onBack: () -> Unit
 ) {
+
 
     val state = viewModel.state.collectAsState().value
     val snackbarState = remember { AppSnackbarHostState() }

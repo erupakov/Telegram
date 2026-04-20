@@ -77,22 +77,29 @@ fun rememberCameraCapture(
     val context = LocalContext.current
     val activity = context as Activity
     var showRationale by remember { mutableStateOf(false) }
-
-    val imageUri = remember {
-        val file = File(context.cacheDir, "face_search_${System.currentTimeMillis()}.jpg")
-        FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-    }
+    var currentPhotoPath by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.TakePicture()
     ) { success ->
-        if (success) onPhotoCaptured(imageUri)
+        if (success) {
+            currentPhotoPath?.let { path ->
+                onPhotoCaptured(Uri.parse(path))
+            }
+        }
+    }
+
+    fun createNewUri(): Uri {
+        val file = File(context.cacheDir, "face_search_${System.currentTimeMillis()}.jpg")
+        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
+        currentPhotoPath = uri.toString()
+        return uri
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
-        if (isGranted) cameraLauncher.launch(imageUri)
+        if (isGranted) cameraLauncher.launch(createNewUri())
         else showRationale = true
     }
 
@@ -100,7 +107,7 @@ fun rememberCameraCapture(
         when {
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED -> {
-                cameraLauncher.launch(imageUri)
+                cameraLauncher.launch(createNewUri())
             }
             ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA) -> {
                 showRationale = true

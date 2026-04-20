@@ -53,7 +53,7 @@ import org.telegram.messenger.R
 @Composable
 fun FaceSearchScreen(
     uri: String,
-    onNavigateSimilarProfiles: (String, Float?, Float?) -> Unit,
+    onNavigateSimilarProfiles: (String, Float?, Float?, String) -> Unit,
     onNavigateToSearch: () -> Unit,
     onBack: () -> Unit
 ) {
@@ -74,7 +74,7 @@ fun FaceSearchScreen(
             when (it) {
                 Effect.NavigateBack -> onBack()
                 is Effect.ShowError -> snackbarState.show(Error(it.message))
-                is Effect.NavigateToSimilarProfiles -> onNavigateSimilarProfiles(it.uri, it.fx, it.fy)
+                is Effect.NavigateToSimilarProfiles -> onNavigateSimilarProfiles(it.uri, it.fx, it.fy, it.resultsJson)
                 Effect.NavigateToSearch -> onNavigateToSearch()
             }
         }

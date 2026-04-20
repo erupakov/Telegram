@@ -36,12 +36,13 @@ sealed class ModelsRoute(val route: String) {
 
     data object FaceSearchHistory : ModelsRoute("face_search_history")
 
-    data object SimilarProfiles : ModelsRoute("similar_profiles/{uri}?fx={fx}&fy={fy}&filters={filters}") {
+    data object SimilarProfiles : ModelsRoute("similar_profiles/{uri}?fx={fx}&fy={fy}&filters={filters}&results={results}") {
         fun createRoute(
             uri: String,
             fx: Float? = null,
             fy: Float? = null,
-            filtersJson: String? = null
+            filtersJson: String? = null,
+            resultsJson: String? = null
         ): String {
             val base = "similar_profiles/${Uri.encode(uri)}"
             val query = buildList {
@@ -51,6 +52,9 @@ sealed class ModelsRoute(val route: String) {
                 }
                 if (!filtersJson.isNullOrBlank()) {
                     add("filters=${Uri.encode(filtersJson)}")
+                }
+                if (!resultsJson.isNullOrBlank()) {
+                    add("results=${Uri.encode(resultsJson)}")
                 }
             }
             return if (query.isEmpty()) base else "$base?${query.joinToString("&")}"
@@ -161,8 +165,8 @@ fun ModelsNavGraph(
             val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
             FaceSearchScreen(
                 uri = uri,
-                onNavigateSimilarProfiles = { url, fx, fy ->
-                    nav.navigate(ModelsRoute.SimilarProfiles.createRoute(url, fx, fy)) {
+                onNavigateSimilarProfiles = { url, fx, fy, resultsJson ->
+                    nav.navigate(ModelsRoute.SimilarProfiles.createRoute(url, fx, fy, resultsJson = resultsJson)) {
                         popUpTo(ModelsRoute.FaceSearch.route) { inclusive = true }
                     }
                 },
@@ -177,17 +181,20 @@ fun ModelsNavGraph(
                 navArgument("uri") { type = NavType.StringType },
                 navArgument("fx") { type = NavType.StringType; nullable = true },
                 navArgument("fy") { type = NavType.StringType; nullable = true },
-                navArgument("filters") { type = NavType.StringType; nullable = true }
+                navArgument("filters") { type = NavType.StringType; nullable = true },
+                navArgument("results") { type = NavType.StringType; nullable = true }
             )
         ) { backStackEntry ->
             val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
             val fx = backStackEntry.arguments?.getString("fx")?.toFloatOrNull()
             val fy = backStackEntry.arguments?.getString("fy")?.toFloatOrNull()
             val filtersJson = backStackEntry.arguments?.getString("filters")?.let { Uri.decode(it) }
+            val resultsJson = backStackEntry.arguments?.getString("results")?.let { Uri.decode(it) }
 
             SimilarProfilesScreen(
                 url = uri,
                 initialFiltersJson = filtersJson,
+                resultsJson = resultsJson,
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },

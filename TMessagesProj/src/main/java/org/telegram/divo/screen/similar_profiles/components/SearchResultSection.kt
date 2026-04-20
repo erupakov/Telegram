@@ -42,10 +42,24 @@ fun SearchResultSection(
 ) {
     val imageAlignment = remember(fx, fy) {
         if (fx != null && fy != null) {
-            BiasAlignment(
-                horizontalBias = fx * 2f - 1f,
-                verticalBias = fy * 2f - 1f
-            )
+            object : Alignment {
+                override fun align(
+                    size: androidx.compose.ui.unit.IntSize,
+                    space: androidx.compose.ui.unit.IntSize,
+                    layoutDirection: androidx.compose.ui.unit.LayoutDirection
+                ): androidx.compose.ui.unit.IntOffset {
+                    var offsetX = space.width / 2f - fx * size.width.toFloat()
+                    var offsetY = space.height / 2f - fy * size.height.toFloat()
+
+                    val minOffsetX = space.width.toFloat() - size.width.toFloat()
+                    val minOffsetY = space.height.toFloat() - size.height.toFloat()
+
+                    offsetX = offsetX.coerceIn(minOffsetX, 0f)
+                    offsetY = offsetY.coerceIn(minOffsetY, 0f)
+
+                    return androidx.compose.ui.unit.IntOffset(offsetX.toInt(), offsetY.toInt())
+                }
+            }
         } else {
             Alignment.Center
         }

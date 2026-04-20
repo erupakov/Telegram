@@ -22,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
@@ -66,27 +65,41 @@ fun FaceOverlayImage(
         else -> Color.Transparent
     }
 
-    // Считаем доли смещения (0.0 - лево/верх, 0.5 - центр, 1.0 - право/низ)
     val (fractionX, fractionY) = remember(detectionResult) {
         if (detectionResult is FaceDetectionResult.Success && detectionResult.faces.isNotEmpty()) {
-            val mainFace = detectionResult.faces.first().boundingBox
+            val mainFace = detectionResult.faces.first()
             val imageW = detectionResult.imageWidth.toFloat()
             val imageH = detectionResult.imageHeight.toFloat()
 
-            val fX = (mainFace.centerX() / imageW).coerceIn(0f, 1f)
-            val fY = (mainFace.centerY() / imageH).coerceIn(0f, 1f)
+            val fX = (mainFace.centerX / imageW).coerceIn(0f, 1f)
+            val fY = (mainFace.centerY / imageH).coerceIn(0f, 1f)
 
             fX to fY
         } else {
-            0.5f to 0.5f // Если лиц нет - берем ровно центр
+            0.5f to 0.5f
         }
     }
 
-    // Alignment для картинки (он требует значения от -1.0 до 1.0)
-    val faceAlignment = BiasAlignment(
-        horizontalBias = fractionX * 2f - 1f,
-        verticalBias = fractionY * 2f - 1f
-    )
+    val faceAlignment = remember(fractionX, fractionY) {
+        object : Alignment {
+            override fun align(
+                size: IntSize,
+                space: IntSize,
+                layoutDirection: androidx.compose.ui.unit.LayoutDirection
+            ): androidx.compose.ui.unit.IntOffset {
+                var offsetX = space.width / 2f - fractionX * size.width.toFloat()
+                var offsetY = space.height / 2f - fractionY * size.height.toFloat()
+
+                val minOffsetX = space.width.toFloat() - size.width.toFloat()
+                val minOffsetY = space.height.toFloat() - size.height.toFloat()
+
+                offsetX = offsetX.coerceIn(minOffsetX, 0f)
+                offsetY = offsetY.coerceIn(minOffsetY, 0f)
+
+                return androidx.compose.ui.unit.IntOffset(offsetX.toInt(), offsetY.toInt())
+            }
+        }
+    }
 
     if (detectionResult is FaceDetectionResult.Loading) {
         Box(
@@ -116,15 +129,21 @@ fun FaceOverlayImage(
                             val scale = maxOf(vW / imageW, vH / imageH)
                             val scaledW = imageW * scale
                             val scaledH = imageH * scale
-                            val offsetX = (vW - scaledW) * fractionX
-                            val offsetY = (vH - scaledH) * fractionY
+                            
+                            var offsetX = vW / 2f - fractionX * scaledW
+                            var offsetY = vH / 2f - fractionY * scaledH
+                            
+                            val minOffsetX = vW - scaledW
+                            val minOffsetY = vH - scaledH
+                            
+                            offsetX = offsetX.coerceIn(minOffsetX, 0f)
+                            offsetY = offsetY.coerceIn(minOffsetY, 0f)
 
                             val clickedIndex = detectionResult.faces.indexOfFirst { face ->
-                                val rect = face.boundingBox
-                                val left = (rect.left * scale) + offsetX
-                                val top = (rect.top * scale) + offsetY
-                                val right = left + rect.width() * scale
-                                val bottom = top + rect.height() * scale
+                                val left = (face.x1 * scale) + offsetX
+                                val top = (face.y1 * scale) + offsetY
+                                val right = (face.x2 * scale) + offsetX
+                                val bottom = (face.y2 * scale) + offsetY
 
                                 val touchRect =
                                     androidx.compose.ui.geometry.Rect(left, top, right, bottom)
@@ -143,7 +162,7 @@ fun FaceOverlayImage(
                 modifier = Modifier.fillMaxSize(),
                 model = imageUri,
                 contentScale = ContentScale.Crop,
-                alignment = faceAlignment // Центрируем по лицу
+                alignment = faceAlignment
             )
 
             if (detectionResult is FaceDetectionResult.Success && viewSize != IntSize.Zero && !isSearching) {
@@ -187,8 +206,14 @@ fun FaceOverlayImage(
                     val scaledImageWidth = imageWidth * scale
                     val scaledImageHeight = imageHeight * scale
 
-                    val offsetX = (viewWidth - scaledImageWidth) * fractionX
-                    val offsetY = (viewHeight - scaledImageHeight) * fractionY
+                    var offsetX = viewWidth / 2f - fractionX * scaledImageWidth
+                    var offsetY = viewHeight / 2f - fractionY * scaledImageHeight
+
+                    val minOffsetX = viewWidth - scaledImageWidth
+                    val minOffsetY = viewHeight - scaledImageHeight
+
+                    offsetX = offsetX.coerceIn(minOffsetX, 0f)
+                    offsetY = offsetY.coerceIn(minOffsetY, 0f)
 
                     // Класс для хранения координат рамки
                     data class FaceDrawData(
@@ -200,16 +225,15 @@ fun FaceOverlayImage(
 
                     // Считаем геометрию рамок
                     val faceDataList = detectionResult.faces.map { face ->
-                        val rect = face.boundingBox
-                        val left = (rect.left * scale) + offsetX
-                        val top = (rect.top * scale) + offsetY
-                        val width = rect.width() * scale
-                        val height = rect.height() * scale
+                        val left = (face.x1 * scale) + offsetX
+                        val top = (face.y1 * scale) + offsetY
+                        val width = face.width * scale
+                        val height = face.height * scale
 
                         val centerX = left + width / 2f
                         val centerY = top + height / 2f
-                        val sideLength = maxOf(width, height) * 0.85f
-                        val verticalShift = height * 0.06f
+                        val sideLength = maxOf(width, height)// * 0.85f
+                        val verticalShift = 0f
 
                         val sqLeft = centerX - sideLength / 2f
                         val sqTop = (centerY - sideLength / 2f) + verticalShift
