@@ -3,22 +3,18 @@ package org.telegram.divo.screen.settings
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
-import org.telegram.divo.screen.your_parameters.FragmentYourParameters
-import org.telegram.messenger.MediaDataController
 import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.ChangeUsernameActivity
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.DataSettingsActivity
+import org.telegram.ui.MainTabsActivityController
 import org.telegram.ui.NotificationsSettingsActivity
 import org.telegram.ui.PrivacySettingsActivity
-import org.telegram.ui.StickersActivity
 import org.telegram.ui.ThemeActivity
-import org.telegram.ui.ChangeUsernameActivity
-import org.telegram.ui.MainTabsActivityController
 
 class FragmentSettings : BaseFragment() {
 
@@ -33,13 +29,12 @@ class FragmentSettings : BaseFragment() {
     }
 
     override fun createView(context: Context): View {
+        if (fragmentView != null) return fragmentView
         actionBar.setAddToContainer(false)
         fragmentView = ComposeView(context).apply {
             setContent {
                 SettingsNavGraph(
-                    navigateToFillParameters = { presentFragment(FragmentYourParameters()) },
                     navigateToSavedMessages = { openSavedMessages() },
-                    navigateToStickers = { presentFragment(StickersActivity(MediaDataController.TYPE_IMAGE, null)) },
                     navigateToNotifications = { presentFragment(NotificationsSettingsActivity()) },
                     navigateToPrivacy = { presentFragment(PrivacySettingsActivity()) },
                     navigateToDataStorage = { presentFragment(DataSettingsActivity()) },

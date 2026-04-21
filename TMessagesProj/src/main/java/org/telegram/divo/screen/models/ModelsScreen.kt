@@ -25,6 +25,9 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -48,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
@@ -63,6 +67,7 @@ import org.telegram.divo.components.TabConfig
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.screen.models.components.AnimatedLargeStoriesOverlay
 import org.telegram.divo.screen.models.components.ModelPage
+import org.telegram.divo.screen.models.components.ModelPageSkeleton
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 import kotlin.math.roundToInt
@@ -74,7 +79,9 @@ private val HeaderSpacerAdditional = 34.dp
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ModelsHomeScreen(
-    viewModel: ModelsViewModel = viewModel(),
+    viewModel: ModelsViewModel = viewModel(
+        viewModelStoreOwner = LocalContext.current.findActivity() as ViewModelStoreOwner
+    ),
     onClick: (Int) -> Unit = {},
     onPhotoClicked: (List<GalleryItem>, Int) -> Unit = { _, _ -> },
 ) {
@@ -129,7 +136,8 @@ fun ModelsHomeScreen(
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val bottomInset = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
 
-    val nestedScrollConnection = rememberHeaderSnapNestedScroll(listStates, pagerState, maxScrollOffsetPx)
+    val nestedScrollConnection =
+        rememberHeaderSnapNestedScroll(listStates, pagerState, maxScrollOffsetPx)
 
     LaunchedEffect(state.error) {
         state.error?.let {
@@ -176,78 +184,105 @@ fun ModelsHomeScreen(
         }
     }
 
-    BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(AppTheme.colors.backgroundLight)
-            .nestedScroll(nestedScrollConnection)
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    PullToRefreshBox(
+        state = pullToRefreshState,
+        isRefreshing = state.isRefreshing,
+        onRefresh = { viewModel.setIntent(ModelsViewIntent.Refresh) },
+        modifier = Modifier.fillMaxSize(),
+        indicator = {
+            PullToRefreshDefaults.Indicator(
+                state = pullToRefreshState,
+                isRefreshing = state.isRefreshing,
+                modifier = Modifier.align(Alignment.TopCenter),
+                containerColor = AppTheme.colors.backgroundLight,
+                color = AppTheme.colors.textPrimary
+            )
+        }
     ) {
-        val cardHeight = remember(this.maxHeight, statusBarHeight, bottomInset) {
-            this.maxHeight - statusBarHeight - bottomInset - 272.dp
-        }
-
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxSize().hazeSource(hazeState),
-            beyondViewportPageCount = 1,
-            key = { id -> id }
-        ) { page ->
-            val tab = Tab.entries[page]
-            ModelsList(
-                tab = tab,
-                state = state,
-                listState = listStates[tab]!!,
-                statusBarHeight = statusBarHeight,
-                cardHeight = cardHeight,
-                bottomInset = bottomInset,
-                onLoadMore = { viewModel.setIntent(ModelsViewIntent.LoadMore(tab)) },
-                onLikeClick = { id, liked -> viewModel.setIntent(ModelsViewIntent.OnLikeClick(tab, id, liked)) },
-                onClick = onClick,
-                onPhotoClicked = onPhotoClicked
-            )
-        }
-
-        AnimatedLargeStoriesOverlay(
-            collapseFraction = collapseFraction,
-            stories = ModelsViewState.preview.stories,
-            hazeState = hazeState
-        )
-
-        val currentHeaderHeight = lerp(HeaderExpandedHeight, HeaderCollapsedHeight, collapseFraction)
-        val tabsTopOffsetPx = with(density) { (statusBarHeight + currentHeaderHeight).toPx() }
-
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
-                .fillMaxWidth()
-                .offset { IntOffset(0, tabsTopOffsetPx.roundToInt()) }
-                .zIndex(2f)
+                .fillMaxSize()
+                .background(AppTheme.colors.backgroundLight)
+                .nestedScroll(nestedScrollConnection)
         ) {
-            DivoTabSelector(
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                tabs = remember { Tab.entries.map { TabConfig(it.name, it.displayResId) } },
-                selectedIndex = pagerState.currentPage,
-                onTabSelected = { index ->
-                    scope.launch {
-                        val targetTab = Tab.entries[index]
-                        val targetListState = listStates[targetTab]
+            val cardHeight = remember(this.maxHeight, statusBarHeight, bottomInset) {
+                this.maxHeight - statusBarHeight - bottomInset - 272.dp
+            }
 
-                        if (targetListState?.firstVisibleItemIndex == 0) {
-                            val currentPx = headerScrollOffset.roundToInt()
-                            targetListState.scrollToItem(0, currentPx)
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier.fillMaxSize().hazeSource(hazeState),
+                beyondViewportPageCount = 1,
+                key = { id -> id }
+            ) { page ->
+                val tab = Tab.entries[page]
+                ModelsList(
+                    tab = tab,
+                    state = state,
+                    listState = listStates[tab]!!,
+                    statusBarHeight = statusBarHeight,
+                    cardHeight = cardHeight,
+                    bottomInset = bottomInset,
+                    onLoadMore = { viewModel.setIntent(ModelsViewIntent.LoadMore(tab)) },
+                    onLikeClick = { id, liked ->
+                        viewModel.setIntent(
+                            ModelsViewIntent.OnLikeClick(
+                                tab,
+                                id,
+                                liked
+                            )
+                        )
+                    },
+                    onClick = onClick,
+                    onPhotoClicked = onPhotoClicked
+                )
+            }
+
+            AnimatedLargeStoriesOverlay(
+                collapseFraction = collapseFraction,
+                stories = ModelsViewState.preview.stories,
+                hazeState = hazeState
+            )
+
+            val currentHeaderHeight =
+                lerp(HeaderExpandedHeight, HeaderCollapsedHeight, collapseFraction)
+            val tabsTopOffsetPx = with(density) { (statusBarHeight + currentHeaderHeight).toPx() }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .offset { IntOffset(0, tabsTopOffsetPx.roundToInt()) }
+                    .zIndex(2f)
+            ) {
+                DivoTabSelector(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    tabs = remember { Tab.entries.map { TabConfig(it.name, it.displayResId) } },
+                    selectedIndex = pagerState.currentPage,
+                    onTabSelected = { index ->
+                        scope.launch {
+                            val targetTab = Tab.entries[index]
+                            val targetListState = listStates[targetTab]
+
+                            if (targetListState?.firstVisibleItemIndex == 0) {
+                                val currentPx = headerScrollOffset.roundToInt()
+                                targetListState.scrollToItem(0, currentPx)
+                            }
+
+                            pagerState.animateScrollToPage(index)
                         }
+                    },
+                    horizontalPadding = 16.dp,
+                )
+            }
 
-                        pagerState.animateScrollToPage(index)
-                    }
-                },
-                horizontalPadding = 16.dp,
+            AppSnackbarHost(
+                modifier = Modifier.align(Alignment.BottomCenter).zIndex(3f),
+                state = snackbarState,
+                bottomPadding = bottomInset + 74.dp
             )
         }
-
-        AppSnackbarHost(
-            modifier = Modifier.align(Alignment.BottomCenter).zIndex(3f),
-            state = snackbarState,
-            bottomPadding = bottomInset + 74.dp
-        )
     }
 }
 
@@ -292,7 +327,13 @@ private fun ModelsList(
             Spacer(modifier = Modifier.height(statusBarHeight + HeaderExpandedHeight + HeaderSpacerAdditional))
         }
 
-        if (pageFeedItems.isEmpty() && isLoading) {
+        if (state.isRefreshing) {
+            item {
+                ModelPageSkeleton(
+                    cardHeight = cardHeight,
+                )
+            }
+        } else if (pageFeedItems.isEmpty() && isLoading) {
             item {
                 LoadingPlaceholder(cardHeight)
             }
@@ -342,6 +383,7 @@ private fun rememberHeaderSnapNestedScroll(
     }
 }
 
+
 @Composable
 private fun LoadingPlaceholder(cardHeight: androidx.compose.ui.unit.Dp) {
     Box(Modifier.fillMaxWidth().height(cardHeight), Alignment.Center) {
@@ -356,6 +398,15 @@ private fun LoadingPlaceholder(cardHeight: androidx.compose.ui.unit.Dp) {
             )
         }
     }
+}
+
+private fun android.content.Context.findActivity(): android.app.Activity? {
+    var context = this
+    while (context is android.content.ContextWrapper) {
+        if (context is android.app.Activity) return context
+        context = context.baseContext
+    }
+    return null
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFF121922)

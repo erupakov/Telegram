@@ -35,9 +35,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent
@@ -53,7 +55,9 @@ object EventIntentData {
 
 @Composable
 fun EventListScreen(
-    viewModel: EventListViewModel = viewModel(),
+    viewModel: EventListViewModel = viewModel(
+        viewModelStoreOwner = LocalContext.current.findActivity() as ViewModelStoreOwner
+    ),
     onNavigateToEventDetails: (Int) -> Unit = {},
     onNavigateToCreateEvent: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
@@ -215,6 +219,15 @@ private fun EventListContent(
             }
         }
     }
+}
+
+private fun android.content.Context.findActivity(): android.app.Activity? {
+    var context = this
+    while (context is android.content.ContextWrapper) {
+        if (context is android.app.Activity) return context
+        context = context.baseContext
+    }
+    return null
 }
 
 @Preview

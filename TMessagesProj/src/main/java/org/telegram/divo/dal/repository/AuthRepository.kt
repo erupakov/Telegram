@@ -2,6 +2,7 @@ package org.telegram.divo.dal.repository
 
 import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.dal.network.AccessTokenProvider
+import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.dal.api.AuthService
@@ -36,6 +37,7 @@ class AuthRepository(
         val result = resultOf { service.logout() }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(null)
+            DivoApi.userRepository.clearCache()
         }
         return result
     }

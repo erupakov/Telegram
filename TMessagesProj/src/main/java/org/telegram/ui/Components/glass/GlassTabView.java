@@ -453,6 +453,14 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
         backupImageView.setForUserOrChat(user, avatarDrawable);
     }
 
+    // DIVO
+    public void setAvatarUrl(String url) {
+        if (backupImageView != null) {
+            backupImageView.setImage(url, "50_50", null);
+        }
+    }
+
+
     public static GlassTabView createAttachTab(Context context, Theme.ResourcesProvider resourcesProvider) {
         GlassTabView tab = new GlassTabView(context);
         tab.resourcesProvider = resourcesProvider;

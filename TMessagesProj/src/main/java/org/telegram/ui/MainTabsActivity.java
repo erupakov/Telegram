@@ -243,6 +243,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         }
 
         selectTab(viewPager.getCurrentPosition(), false);
+        updateSettingsAvatar(); // DIVO
 
         iBlur3SourceColor.setColor(0xFFFFFFFF); // Force White
 
@@ -569,6 +570,8 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             }
         } else if (id == NotificationCenter.needSetDayNightTheme) {
             clearAllHiddenFragments();
+        } else if (id == NotificationCenter.divo_userInfoUpdated) { // DIVO
+            updateSettingsAvatar();
         }
     }
 
@@ -595,6 +598,8 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.appUpdateAvailable);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.appUpdateLoading);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.needSetDayNightTheme);
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.divo_userInfoUpdated); // DIVO
+        org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().fetchUserInfoInBackground(); // DIVO
 
         return super.onFragmentCreate();
     }
@@ -609,6 +614,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.appUpdateAvailable);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.appUpdateLoading);
         NotificationCenter.getGlobalInstance().removeObserver(this, NotificationCenter.needSetDayNightTheme);
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.divo_userInfoUpdated); // DIVO
 
         super.onFragmentDestroy();
     }
@@ -818,6 +824,20 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         tabsView.invalidate();
         for (GlassTabView tabView : tabs) {
             tabView.updateColorsLottie();
+        }
+    }
+
+    // DIVO
+    private void updateSettingsAvatar() {
+        org.telegram.divo.entity.UserInfo info = org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().getCurrentUserFlow().getValue();
+        if (info != null && !info.getAvatarUrl().isEmpty()) {
+            if (tabs != null && tabs[INDEX_SETTINGS] != null) {
+                tabs[INDEX_SETTINGS].setAvatarUrl(info.getAvatarUrl());
+            }
+        } else if (info != null && !info.getPhotoUrl().isEmpty()) {
+            if (tabs != null && tabs[INDEX_SETTINGS] != null) {
+                tabs[INDEX_SETTINGS].setAvatarUrl(info.getPhotoUrl());
+            }
         }
     }
 }

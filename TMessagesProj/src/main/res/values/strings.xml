@@ -241,6 +241,20 @@
         <item>Fun</item>
         <item>New face</item>
     </string-array>
+
+    <!--settings screen end-->
+    <string name="SettingsTitle">Settings</string>
+    <string name="EditBtn">Edit</string>
+    <string name="PromoCardHeadline">GET DISCOVERED IN THE FASHION WORLD</string>
+    <string name="PromoCardBody">Publish your profile as a model, join castings or add events as agency — be part of the global fashion network.</string>
+    <string name="PromoCardBtn">Learn More</string>
+    <string name="SetUsernameLabel">Set Username</string>
+    <string name="FillYourParametersLabel">Fill your parameters</string>
+    <string name="SavedMessagesLabel">Saved Messages</string>
+    <string name="NotificationsAndSoundsLabel">Notifications and Sounds</string>
+    <string name="PrivacyAndSecurityLabel">Privacy and Security</string>
+    <string name="DataAndStorageLabel">Data and Storage</string>
+    <string name="AppearanceLabel">Appearance</string>
     <!--divo view end-->
 
 

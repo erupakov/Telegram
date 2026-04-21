@@ -19,6 +19,7 @@ import org.telegram.divo.screen.models.ModelsViewIntent.OnLikeClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnSearchClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnStoryClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnTabSelected
+import org.telegram.divo.screen.models.ModelsViewIntent.Refresh
 import org.telegram.divo.usecase.GetFeedUseCase
 import org.telegram.messenger.R
 
@@ -79,6 +80,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             is OnBookmarkClick -> bookmarkModel(intent.modelId)
             is OnLikeClick -> onLikeClick(intent.tab, intent.feedId, intent.isLiked)
             is ModelsViewIntent.LoadMore -> loadMoreFeed(intent.tab)
+            is Refresh -> refresh()
         }
     }
 
@@ -179,6 +181,20 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                 setState { copy(tabFeeds = oldState) }
                 sendEffect(ModelsViewEffect.ShowError(result.getErrorMessage()))
             }
+        }
+    }
+
+    private fun refresh() {
+        setState { copy(isRefreshing = true, error = null) }
+        viewModelScope.launch {
+            listOf(
+                modelsPaginator,
+                newTalentsPaginator,
+                agenciesPaginator
+            ).map { paginator ->
+                async { paginator.loadInitial() }
+            }.awaitAll()
+            setState { copy(isRefreshing = false) }
         }
     }
 }
