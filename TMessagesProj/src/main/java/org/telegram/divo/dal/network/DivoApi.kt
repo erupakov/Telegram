@@ -20,6 +20,7 @@ import org.telegram.divo.dal.repository.UserRepository
 import org.telegram.divo.dal.repository.WalletRepository
 import org.telegram.divo.dal.repository.WorkHistoryRepository
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.UserConfig
 import retrofit2.Retrofit
 
 /**
@@ -57,10 +58,16 @@ object DivoApi {
         WorkHistoryRepository(service)
     }
 
-    val userRepository: UserRepository by lazy {
-        val service = retrofit.create(UserService::class.java)
-        UserRepository(service)
+    private val userRepositoryInstances: Array<UserRepository> by lazy {
+        Array(UserConfig.MAX_ACCOUNT_COUNT) { i ->
+            val service = retrofit.create(UserService::class.java)
+            val prefs = applicationContext.getSharedPreferences("divo_user_cache_$i", android.content.Context.MODE_PRIVATE)
+            UserRepository(service, prefs, i)
+        }
     }
+
+    val userRepository: UserRepository
+        get() = userRepositoryInstances[UserConfig.selectedAccount]
 
     val publicationRepository: PublicationRepository by lazy {
         val service = retrofit.create(PublicationService::class.java)

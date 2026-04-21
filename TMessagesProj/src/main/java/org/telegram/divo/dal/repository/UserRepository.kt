@@ -1,5 +1,9 @@
 package org.telegram.divo.dal.repository
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +28,7 @@ import org.telegram.divo.dal.dto.user.toEntities
 import org.telegram.divo.dal.dto.user.toEntity
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
+import org.telegram.messenger.NotificationCenter
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyModels
 import org.telegram.divo.entity.Appearances
@@ -35,22 +40,42 @@ import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.entity.UserSocialNetwork
 import java.io.File
 import java.util.TimeZone
+import androidx.core.content.edit
 
 private const val MAX_CACHED_USERS = 5
 
 class UserRepository(
-    private val service: UserService
+    private val service: UserService,
+    private val prefs: android.content.SharedPreferences,
+    private val accountIndex: Int
 ) {
+    private companion object {
+        const val KEY_AVATAR_URL = "cached_avatar_url"
+        const val KEY_USER_ID = "cached_user_id"
+    }
+
     private val _currentUserCache = MutableStateFlow<UserInfo?>(null)
     val currentUserFlow: StateFlow<UserInfo?> = _currentUserCache.asStateFlow()
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    init {
+        val savedId = prefs.getInt(KEY_USER_ID, 0)
+        val savedUrl = prefs.getString(KEY_AVATAR_URL, null)
+        if (savedId != 0 && savedUrl != null) {
+            _currentUserCache.value = UserInfo(id = savedId, avatarUrl = savedUrl)
+        }
+    }
 
     private val _galleryCache = MutableStateFlow<Map<Int, UserGalleryList>>(emptyMap())
 
     suspend fun getCurrentUserInfo(forceRefresh: Boolean = false): DivoResult<UserInfo> = resultOf {
         if (!forceRefresh) {
-            _currentUserCache.value?.let { return@resultOf it }
+            _currentUserCache.value?.let { 
+                if (it.fullName.isNotEmpty()) return@resultOf it
+            }
         }
-        service.getCurrentUserInfo().toEntity().also { _currentUserCache.value = it }
+        service.getCurrentUserInfo().toEntity().also { updateCacheAndPersist(it) }
     }
 
     suspend fun getUserById(userId: Int): DivoResult<UserInfo> = resultOf {
@@ -78,9 +103,24 @@ class UserRepository(
                 agency = userInfo.agency?.toDto(),
                 customer = userInfo.customer?.toDto()
             )
-        )
-            .toEntity()
-            .also { _currentUserCache.value = it }
+        ).toEntity()
+            .also { updateCacheAndPersist(it) }
+    }
+
+    private fun updateCacheAndPersist(info: UserInfo) {
+        _currentUserCache.value = info
+        prefs.edit().apply {
+            putInt(KEY_USER_ID, info.id)
+            putString(KEY_AVATAR_URL, info.avatarUrl)
+            apply()
+        }
+        NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
+    }
+
+    fun clearCache() {
+        _currentUserCache.value = null
+        prefs.edit { clear() }
+        NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
     }
 
     suspend fun updateAgency(
@@ -90,7 +130,7 @@ class UserRepository(
             agency.toDto()
         )
 
-        _currentUserCache.value = service.getCurrentUserInfo().toEntity()
+        service.getCurrentUserInfo().toEntity().also { updateCacheAndPersist(it) }
     }
 
     suspend fun getAgencyModels(
@@ -108,7 +148,13 @@ class UserRepository(
         service.upsertSocialNetwork(
             UpsertSocialNetworkRequest(socialNetworkId, nickname)
         )
-        _currentUserCache.value = service.getCurrentUserInfo().toEntity()
+        service.getCurrentUserInfo().toEntity().also { updateCacheAndPersist(it) }
+    }
+
+    fun fetchUserInfoInBackground() {
+        scope.launch {
+            getCurrentUserInfo(forceRefresh = false)
+        }
     }
 
     fun galleryFlow(userId: Int): Flow<UserGalleryList?> =

@@ -245,7 +245,6 @@ private fun ProfileScreenContent(
     val openGallery = rememberGalleryLauncher { uri ->
         onEditBackgroundClicked(uri)
     }
-    LockScreenOrientation()
 
     val (items, isLoadingMore)  = when (selectedStat) {
         StatsType.LIKES -> uiState.likedItems to uiState.isLoadingLiked

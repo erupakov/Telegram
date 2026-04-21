@@ -39,6 +39,7 @@ data class ModelsViewState(
     val models: List<Model> = emptyList(),
     val selectedTab: Tab = Tab.MODELS,
     val isLoading: Boolean = false,
+    val isRefreshing: Boolean = false,
     val error: String? = null,
     val allUserModels: List<Model> = emptyList(),
 ) : ViewState {
@@ -76,6 +77,7 @@ sealed class ModelsViewIntent : ViewIntent {
     data object OnSearchClick : ModelsViewIntent()
     data object OnAddStoryClick : ModelsViewIntent()
     data class LoadMore(val tab: Tab) : ModelsViewIntent()
+    data object Refresh : ModelsViewIntent()
 }
 
 sealed class ModelsViewEffect : ViewEffect {

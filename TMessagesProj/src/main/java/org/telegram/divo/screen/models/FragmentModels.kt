@@ -24,6 +24,7 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
     }
 
     override fun createView(context: Context): View {
+        if (fragmentView != null) return fragmentView
         actionBar.setAddToContainer(false)
 
         fragmentView = ComposeView(context).apply {

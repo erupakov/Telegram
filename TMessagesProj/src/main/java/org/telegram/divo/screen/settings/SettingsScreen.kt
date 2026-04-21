@@ -3,29 +3,31 @@ package org.telegram.divo.screen.settings
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -33,26 +35,31 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.lifecycle.compose.LifecycleResumeEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.SnackbarEvent
 import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.TelegramUserAvatar
-import org.telegram.divo.components.TextTitle
-import org.telegram.divo.style.DivoFont.HelveticaNeue
+import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 import org.telegram.tgnet.TLRPC
 
@@ -62,7 +69,6 @@ fun SettingsScreen(
     navigateToFillParameters: () -> Unit = {},
     navigateToProfile: (Int) -> Unit = {},
     navigateToSavedMessages: () -> Unit = {},
-    navigateToStickers: () -> Unit = {},
     navigateToNotifications: () -> Unit = {},
     navigateToPrivacy: () -> Unit = {},
     navigateToDataStorage: () -> Unit = {},
@@ -70,264 +76,280 @@ fun SettingsScreen(
     navigateToSetUsername: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarState = remember { AppSnackbarHostState() }
+    val context = LocalContext.current
 
-    val ctaColor = Color(0xFFBE7852)
     val dividerColor = Color(0x1A000000)
     val scrollState = rememberScrollState()
 
     // Refresh user data when screen becomes visible
     LifecycleResumeEffect(Unit) {
-        viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnRefresh)
         onPauseOrDispose { }
     }
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {
             when (it) {
-                SettingsViewModel.SettingsViewEffect.NavigateToAppearance -> {
+                SettingsViewEffect.NavigateToAppearance -> {
                     navigateToAppearance()
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToDataStorage -> {
+                SettingsViewEffect.NavigateToDataStorage -> {
                     navigateToDataStorage()
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToEditProfile -> {
+                SettingsViewEffect.NavigateToEditProfile -> {
                     navigateToProfile(state.userId)
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToFillParameters -> {
+                SettingsViewEffect.NavigateToFillParameters -> {
                     navigateToFillParameters()
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToNotifications -> {
+                SettingsViewEffect.NavigateToNotifications -> {
                     navigateToNotifications()
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToPrivacy -> {
+                SettingsViewEffect.NavigateToPrivacy -> {
                     navigateToPrivacy()
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToProfile -> {
+                SettingsViewEffect.NavigateToProfile -> {
                     navigateToProfile(state.userId)
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToPromo -> {
+                SettingsViewEffect.NavigateToPromo -> {
                     // TODO: Implement promo screen
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToSavedMessages -> {
+                SettingsViewEffect.NavigateToSavedMessages -> {
                     navigateToSavedMessages()
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToSetUsername -> {
+                SettingsViewEffect.NavigateToSetUsername -> {
                     navigateToSetUsername()
                 }
 
-                SettingsViewModel.SettingsViewEffect.NavigateToStickers -> {
-                    navigateToStickers()
+                SettingsViewEffect.ShowQrCode -> {
+                    // TODO: Implement QR code screen
                 }
 
-                SettingsViewModel.SettingsViewEffect.ShowQrCode -> {
-                    // TODO: Implement QR code screen
+                is SettingsViewEffect.ShowError -> {
+                    snackbarState.show(
+                        SnackbarEvent.ErrorWithRetry(
+                            message = it.message,
+                            actionLabel = context.getString(R.string.RetryLabel),
+                            onRetry = { viewModel.setIntent(SettingsViewIntent.OnRefresh) }
+                        )
+                    )
                 }
             }
         }
     }
 
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+        containerColor = AppTheme.colors.backgroundLight,
         topBar = {
             SettingsTopBar(
-                title = "SETTINGS",
-                actionText = "Edit",
-                onAction = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnEditProfileClicked) },
-                onQrCode = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnQrCodeClicked) }
+                onAction = { viewModel.setIntent(SettingsViewIntent.OnEditProfileClicked) },
+                onQrCode = { viewModel.setIntent(SettingsViewIntent.OnQrCodeClicked) }
+            )
+        },
+        snackbarHost = {
+            AppSnackbarHost(
+                state = snackbarState,
+                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 74.dp
             )
         }
     ) { padding ->
-        Column(
-            Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(scrollState)
-        ) {
-            ProfileRow(
-                userFull = state.userFull,
-                onClick = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnOpenProfileClicked) }
-            )
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                LottieProgressIndicator(Modifier.size(32.dp))
+            }
+        } else {
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(scrollState)
+            ) {
+                Spacer(Modifier.height(24.dp))
 
-            HorizontalDivider(color = dividerColor)
+                ProfileRow(
+                    name = state.userName,
+                    avatar = state.avatarUrl
+                )
 
-            SettingsItemRow(
-                item = SettingsViewModel.SettingsItem(
-                    title = "Set Username",
-                    iconResId = R.drawable.ic_divo_settings_username,
-                    intent = SettingsViewModel.SettingsViewIntent.OnSetUsernameClicked
-                ),
-                viewModel = viewModel
-            )
+                Spacer(Modifier.height(24.dp))
 
-            HorizontalDivider(color = dividerColor)
+                ContainerItems {
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.SetUsernameLabel),
+                            iconResId = R.drawable.ic_divo_settings_username,
+                            intent = SettingsViewIntent.OnSetUsernameClicked
+                        ),
+                        viewModel = viewModel
+                    )
+                    if (state.isModel) {
+                        HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
+                        SettingsItemRow(
+                            item = SettingsItem(
+                                title = stringResource(R.string.FillYourParametersLabel),
+                                iconResId = R.drawable.ic_divo_settings_parameters,
+                                intent = SettingsViewIntent.OnFillParametersClicked
+                            ),
+                            viewModel = viewModel
+                        )
+                    }
+                }
 
-            Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(16.dp))
 
-            PrimaryWideButton(
-                text = "Fill your parameters",
-                background = ctaColor,
-                onClick = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnFillParametersClicked) }
-            )
+                PromoCard(
+                    headline = stringResource(R.string.PromoCardHeadline),
+                    body = stringResource(R.string.PromoCardBody),
+                    buttonText = stringResource(R.string.PromoCardBtn),
+                    onClick = { viewModel.setIntent(SettingsViewIntent.OnPromoClicked) }
+                )
 
-            Spacer(Modifier.height(12.dp))
+                Spacer(Modifier.height(16.dp))
 
-            PromoCard(
-                headline = "GET DISCOVERED IN THE FASHION WORLD",
-                body = "Publish your profile as a model, join castings or add events as agency — be part of the global fashion network.",
-                buttonText = "LEARN MORE",
-                onClick = { viewModel.setIntent(SettingsViewModel.SettingsViewIntent.OnPromoClicked) }
-            )
 
-            Spacer(Modifier.height(16.dp))
+                ContainerItems {
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.SavedMessagesLabel),
+                            iconResId = R.drawable.ic_divo_saved_message_icon,
+                            intent = SettingsViewIntent.OnSavedMessagesClicked
+                        ),
+                        viewModel = viewModel
+                    )
+                }
 
-            HorizontalDivider(color = dividerColor)
+                Spacer(Modifier.height(16.dp))
 
-            SettingsGroup(
-                dividerColor = dividerColor,
-                items = state.settingsItems,
-                viewModel = viewModel
-            )
+                ContainerItems {
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.NotificationsAndSoundsLabel),
+                            iconResId = R.drawable.ic_divo_settings_notification,
+                            intent = SettingsViewIntent.OnNotificationsClicked
+                        ),
+                        viewModel = viewModel
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.PrivacyAndSecurityLabel),
+                            iconResId = R.drawable.ic_divo_settings_privacy_and_security,
+                            intent = SettingsViewIntent.OnPrivacyClicked
+                        ),
+                        viewModel = viewModel
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.DataAndStorageLabel),
+                            iconResId = R.drawable.ic_divo_settings_data_and_storage,
+                            intent = SettingsViewIntent.OnDataStorageClicked
+                        ),
+                        viewModel = viewModel
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.AppearanceLabel),
+                            iconResId = R.drawable.ic_divo_apperance,
+                            intent = SettingsViewIntent.OnAppearanceClicked
+                        ),
+                        viewModel = viewModel
+                    )
+                }
 
-            Spacer(Modifier.height(56.dp))
+                Spacer(Modifier.height(76.dp))
+            }
         }
     }
 }
 
 @Composable
 private fun SettingsTopBar(
-    title: String,
-    actionText: String,
     onAction: () -> Unit,
     onQrCode: () -> Unit
 ) {
-    Row(
-        Modifier
+    val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    val topBarHeight = 56.dp
+
+    Box(
+        modifier = Modifier
+            .height(statusBarHeight + topBarHeight)
             .fillMaxWidth()
-            .padding(top = 34.dp, bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(top = statusBarHeight),
+        contentAlignment = Alignment.CenterStart
     ) {
-        IconButton(
-            modifier = Modifier.weight(0.2f),
+        RoundedButton(
+            modifier = Modifier.padding(start = 16.dp).align(Alignment.CenterStart),
+            resId = R.drawable.ic_qr_code,
+            iconSize = 24.dp,
+            iconTint = Color.Red,
             onClick = onQrCode
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_qr_code),
-                contentDescription = "QR Code",
-                tint = Color(0xFFBE7852)
-            )
-        }
-        TextTitle(
-            text = title,
-            modifier = Modifier.weight(1f),
-            fontFamily = HelveticaNeue,
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center
         )
         Text(
-            text = actionText,
-            style = MaterialTheme.typography.labelLarge.copy(
-                color = Color(0xFFBE7852),
-                fontWeight = FontWeight.SemiBold
-            ),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .weight(0.2f)
-                .clickableWithoutRipple(onClick = onAction)
+            modifier = Modifier.align(Alignment.Center),
+            text = stringResource(R.string.SettingsTitle).uppercase(),
+            style = AppTheme.typography.appBar
+        )
+        Text(
+            modifier = Modifier.padding(end = 16.dp).align(Alignment.CenterEnd).clickableWithoutRipple { onAction() },
+            text = stringResource(R.string.EditBtn),
+            style = AppTheme.typography.helveticaNeueRegular,
+            fontSize = 15.sp,
+            color = AppTheme.colors.accentOrange
         )
     }
 }
 
 @Composable
 private fun ProfileRow(
-    userFull: TLRPC.UserFull?,
-    onClick: () -> Unit
+    name: String,
+    avatar: String,
 ) {
-    val user = userFull?.user
-
-    Row(
+    Column(
         Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
-            Modifier
-                .size(56.dp)
+        DivoAsyncImage(
+            modifier = Modifier
+                .size(94.dp)
                 .clip(CircleShape)
-                .background(Color(0xFFE6E6E6)),
-            contentAlignment = Alignment.Center
-        ) {
-            TelegramUserAvatar(
-                modifier  = Modifier
-                    .size(54.dp)
-                    .clip(CircleShape),
-                photoUrl = "uiState.userInfo?.avatarUrl",
-                sizeDp = 68
-            )
-        }
-
-        Spacer(Modifier.width(12.dp))
-
-        Column(Modifier.weight(1f)) {
-            Text(
-                text = ((user?.first_name ?: "") + " " + (user?.last_name ?: "")).trim(),
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 19.sp
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-
-                )
-            Text(
-                text = if (user?.phone != null) "+${user.phone}" else "",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color(0xFF7A7A7A),
-                    fontSize = 15.sp
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        Icon(
-            painter = painterResource(R.drawable.ic_divo_arrow_right),
-            contentDescription = null,
-            tint = Color(0xff3C3C43)
+                .background(AppTheme.colors.onBackground),
+            model = avatar,
         )
-    }
-}
 
-@Composable
-private fun PrimaryWideButton(
-    text: String,
-    background: Color,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        shape = RoundedCornerShape(10.dp),
-        contentPadding = PaddingValues(vertical = 14.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = background),
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxWidth()
-    ) {
+        Spacer(Modifier.height(16.dp))
+
         Text(
-            text = text,
-            style = MaterialTheme.typography.titleSmall.copy(
-                color = Color.White,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 16.sp
+            text = name,
+            style = AppTheme.typography.helveticaNeueRegular,
+            color = AppTheme.colors.textPrimary,
+            fontSize = 18.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+
             )
+        Spacer(Modifier.height(10.dp))
+        Text(
+            text = "+7 999 999 99 99",
+            style = AppTheme.typography.helveticaNeueRegular,
+            color = Color.Red, //AppTheme.colors.textPrimary.copy(0.6f)
+            fontSize = 14.sp,
         )
     }
 }
@@ -341,7 +363,7 @@ private fun PromoCard(
 ) {
     Card(
         onClick = onClick,
-        shape = RoundedCornerShape(10.dp),
+        shape = RoundedCornerShape(20.dp),
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .fillMaxWidth()
@@ -371,41 +393,51 @@ private fun PromoCard(
                     .align(Alignment.BottomStart)
                     .padding(16.dp)
             ) {
+                Spacer(Modifier.height(4.dp))
                 Image(
                     painter = painterResource(R.drawable.divo_logo_onboarding),
                     contentDescription = null,
-                    modifier = Modifier.height(40.dp),
+                    modifier = Modifier.height(30.dp),
                     contentScale = ContentScale.Crop
                 )
+                Spacer(Modifier.height(20.dp))
                 Text(
                     text = headline,
-                    style = MaterialTheme.typography.titleMedium.copy(
+                    style = AppTheme.typography.helveticaNeueLtCom.copy(
                         color = Color.White,
                         fontWeight = FontWeight.Black,
                         letterSpacing = 0.5.sp,
-                        fontSize = 14.sp
-                    )
+                        fontSize = 18.sp
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
                     text = body,
-                    style = MaterialTheme.typography.bodyMedium.copy(
+                    style = AppTheme.typography.helveticaNeueLtCom.copy(
                         color = Color(0xFFEDEDED)
                     ),
                     maxLines = 2,
+                    lineHeight = 14.sp,
                     fontSize = 12.sp,
                     overflow = TextOverflow.Ellipsis
                 )
                 Spacer(Modifier.height(10.dp))
                 TextButton(
                     onClick = onClick,
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(99.dp),
                     colors = ButtonDefaults.textButtonColors(
-                        containerColor = Color(0xFFBE7852),
-                        contentColor = Color.White
+                        containerColor = Color.Red,
                     )
                 ) {
-                    Text(buttonText, style = MaterialTheme.typography.labelLarge)
+                    Text(
+                        modifier = Modifier.offset(y = 1.dp),
+                        text = buttonText,
+                        style = AppTheme.typography.helveticaNeueLtCom,
+                        fontSize = 16.sp,
+                        color = AppTheme.colors.buttonTextColor
+                    )
                 }
             }
         }
@@ -413,51 +445,55 @@ private fun PromoCard(
 }
 
 @Composable
-private fun SettingsGroup(
-    items: List<SettingsViewModel.SettingsItem>,
-    dividerColor: Color,
-    rowPaddingH: Dp = 16.dp,
-    viewModel: SettingsViewModel
-) {
-    Column(Modifier.fillMaxWidth()) {
-        items.forEachIndexed { idx, it ->
-            SettingsItemRow(
-                item = it,
-                viewModel = viewModel,
-                rowPaddingH = rowPaddingH
-            )
-            if (idx != items.lastIndex) HorizontalDivider(color = dividerColor)
-        }
-    }
-}
-
-@Composable
 private fun SettingsItemRow(
-    item: SettingsViewModel.SettingsItem,
+    item: SettingsItem,
     viewModel: SettingsViewModel,
-    rowPaddingH: Dp = 16.dp
+
 ) {
     Row(
         Modifier
             .fillMaxWidth()
-            .clickable(onClick = { viewModel.setIntent(item.intent) })
-            .padding(horizontal = rowPaddingH, vertical = 14.dp),
+            .background(AppTheme.colors.onBackground)
+            .clickableWithoutRipple(onClick = { viewModel.setIntent(item.intent) }),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconWithBox(
             iconResId = item.iconResId
         )
-        Spacer(Modifier.width(16.dp))
+        Spacer(Modifier.width(10.dp))
         Text(
             text = item.title,
-            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 17.sp),
+            style = AppTheme.typography.bodyLarge,
+            color = AppTheme.colors.textPrimary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Spacer(Modifier.weight(1f))
         Icon(
-            painter = painterResource(R.drawable.ic_divo_arrow_right),
+            painter = painterResource(R.drawable.ic_divo_arrow_right_20),
             contentDescription = null,
-            tint = Color(0xff3C3C43)
+            tint = AppTheme.colors.backgroundDark
         )
+    }
+}
+
+@Composable
+private fun ContainerItems(
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(AppTheme.colors.onBackground)
+            .padding(start = 20.dp, end = 16.dp, top = 20.dp, bottom = 20.dp)
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(9.dp)
+        ) {
+            content()
+        }
     }
 }
 
@@ -470,14 +506,14 @@ fun IconWithBox(
         Modifier
             .size(29.dp)
             .clip(RoundedCornerShape(6.dp))
-            .background(Color(0xFFF2E4DD)),
+            .background(AppTheme.colors.backgroundLight),
         contentAlignment = Alignment.Center
     ) {
         Icon(
             modifier = Modifier.size(16.dp),
             painter = painterResource(iconResId),
             contentDescription = null,
-            tint = Color(0xFFBF7A54)
+            tint = AppTheme.colors.textPrimary.copy(0.8f)
         )
     }
 }

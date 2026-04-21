@@ -51,7 +51,7 @@ import org.telegram.messenger.R
 fun YourParametersScreen(
     viewModel: YourParametersViewModel = viewModel(),
     showTitle: Boolean = true,
-    isFromAgency: Boolean = false,
+    showTopBar: Boolean = false,
     onSaved: () -> Unit = {},
     onBack: () -> Unit = {}
 ) {
@@ -118,9 +118,9 @@ fun YourParametersScreen(
     Column(
         modifier = Modifier.background(AppTheme.colors.backgroundLight)
     ) {
-        if (isFromAgency) {
+        if (showTopBar) {
             ParametersTopBar(
-                onSaveClicked = { viewModel.setIntent(YourParametersIntent.OnSaveClicked(isFromAgency)) },
+                onSaveClicked = { viewModel.setIntent(YourParametersIntent.OnSaveClicked(showTopBar)) },
                 onBack = { viewModel.setIntent(YourParametersIntent.OnBackClicked) }
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -225,7 +225,7 @@ fun YourParametersScreen(
                                 .fillMaxWidth()
                                 .align(Alignment.BottomCenter)
                                 .then(
-                                    if (isFromAgency) Modifier.navigationBarsPadding() else Modifier
+                                    if (showTopBar) Modifier.navigationBarsPadding() else Modifier
                                 )
                                 .padding(bottom = 8.dp, start = 16.dp, end = 16.dp),
                             enabled = !state.isSaving,
@@ -238,7 +238,7 @@ fun YourParametersScreen(
             AppSnackbarHost(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 state = snackbarState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
+                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 74.dp
             )
         }
     }

@@ -374,6 +374,8 @@ public class NotificationCenter {
     public static final int botForumDraftDelete = totalEvents++;
     public static final int tlSchemeParseException = totalEvents++;
     public static final int callTabsVisibleToggled = totalEvents++;
+    public static final int divo_userInfoUpdated = totalEvents++; //DIVO
+
 
     public static boolean alreadyLogged;
 

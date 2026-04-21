@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.settings
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
@@ -10,9 +9,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.telegram.divo.screen.profile.ProfileNavGraph
+import org.telegram.divo.screen.your_parameters.YourParametersScreen
 
 sealed class SettingsRoute(val route: String) {
     data object Settings : SettingsRoute("settings")
+
+    data object Parameters : SettingsRoute("parameters")
 
     data object Profile : SettingsRoute("profile/{userId}") {
         const val ROUTE = "profile/{userId}"
@@ -22,9 +24,7 @@ sealed class SettingsRoute(val route: String) {
 
 @Composable
 fun SettingsNavGraph(
-    navigateToFillParameters: () -> Unit,
     navigateToSavedMessages: () -> Unit,
-    navigateToStickers: () -> Unit,
     navigateToNotifications: () -> Unit,
     navigateToPrivacy: () -> Unit,
     navigateToDataStorage: () -> Unit,
@@ -43,10 +43,9 @@ fun SettingsNavGraph(
     ) {
         composable(SettingsRoute.Settings.route) {
             SettingsScreen(
-                navigateToFillParameters = navigateToFillParameters,
+                navigateToFillParameters = { nav.navigate(SettingsRoute.Parameters.route) },
                 navigateToProfile = { nav.navigate(SettingsRoute.Profile.createRoute(it)) },
                 navigateToSavedMessages = navigateToSavedMessages,
-                navigateToStickers = navigateToStickers,
                 navigateToNotifications = navigateToNotifications,
                 navigateToPrivacy = navigateToPrivacy,
                 navigateToDataStorage = navigateToDataStorage,
@@ -66,6 +65,21 @@ fun SettingsNavGraph(
                 isOwnProfile = true,
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateBack = { nav.popBackStack() }
+            )
+        }
+
+        composable(
+            route = SettingsRoute.Parameters.route
+        ) {
+            YourParametersScreen(
+                showTopBar = true,
+                showTitle = false,
+                onSaved = {
+                    nav.popBackStack()
+                },
+                onBack = {
+                    nav.popBackStack()
+                }
             )
         }
     }
