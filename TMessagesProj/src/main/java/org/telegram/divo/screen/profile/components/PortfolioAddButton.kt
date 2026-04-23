@@ -3,22 +3,21 @@ package org.telegram.divo.screen.profile.components
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -42,43 +41,44 @@ fun PortfolioAddButton(
 
     Box(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 65.dp),
+            .fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        Column(
+        Row(
             modifier = Modifier
-                .width(140.dp)
-                .height(68.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(AppTheme.colors.blackAlpha12)
+                .height(40.dp)
+                .clip(CircleShape)
+                .background(AppTheme.colors.accentOrange)
+                .padding(horizontal = 16.dp)
                 .clickableWithoutRipple { openGallery() },
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             if (isUploading) {
                 LottieProgressIndicator(
-                    modifier = Modifier.size(32.dp),
-                    color = Color.White
+                    modifier = Modifier.size(20.dp),
+                    color = AppTheme.colors.onBackground
                 )
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
+                    modifier = Modifier.offset(y = 1.dp),
                     text = if (isVideo) stringResource(R.string.UploadingVideos) else stringResource(R.string.UploadingPhotos),
-                    style = AppTheme.typography.helveticaNeueRegular,
-                    fontSize = 10.sp,
-                    color = Color.White
+                    style = AppTheme.typography.helveticaNeueLtCom,
+                    fontSize = 16.sp,
+                    color = AppTheme.colors.onBackground
                 )
             } else {
                 Image(
+                    modifier = Modifier.size(24.dp),
                     painter = painterResource(R.drawable.ic_divo_add_a_photo),
                     contentDescription = null,
                 )
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
+                    modifier = Modifier.offset(y = 1.dp),
                     text = if (isVideo) stringResource(R.string.UploadVideos) else stringResource(R.string.UploadPhotos),
-                    style = AppTheme.typography.helveticaNeueRegular,
-                    fontSize = 10.sp,
-                    color = Color.White
+                    style = AppTheme.typography.helveticaNeueLtCom,
+                    fontSize = 16.sp,
+                    color = AppTheme.colors.onBackground
                 )
             }
         }

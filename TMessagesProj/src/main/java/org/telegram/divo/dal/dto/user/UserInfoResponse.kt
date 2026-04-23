@@ -40,6 +40,7 @@ class UserDataDto(
     @SerializedName("statistic") val statistic: StatisticDto,
     @SerializedName("isFavorite") val isFavorite: Boolean,
     @SerializedName("isFollowed") val isFollowed: Boolean,
+    @SerializedName("is_premium") val isPremium: Boolean,
     @SerializedName("userRatingStatus") val userRatingStatus: String?,
     @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>,
     @SerializedName("customer") val customer: CustomerDto?,
@@ -95,6 +96,7 @@ fun UserDataDto.toEntity(): UserInfo {
         statistic = statistic.toEntity(),
         isFavorite = isFavorite,
         isFollowed = isFollowed,
+        isPremium = isPremium,
         userRatingStatus = userRatingStatus.orEmpty(),
         userSocialNetworks = userSocialNetworks.toEntities()
     )

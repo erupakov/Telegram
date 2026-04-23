@@ -25,6 +25,7 @@ data class UserInfo(
     val statistic: Statistic = Statistic(),
     val isFavorite: Boolean = false,
     val isFollowed: Boolean = false,
+    val isPremium: Boolean = false,
     val userRatingStatus: String = "",
     val userSocialNetworks: List<UserSocialNetwork> = emptyList()
 )

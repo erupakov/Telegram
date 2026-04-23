@@ -328,21 +328,21 @@ private fun GalleryPage(
     onChangeControlsVisible: (Boolean) -> Unit,
     onZoomChanged: (Boolean) -> Unit
 ) {
-    ZoomableBox(
-        modifier = Modifier.fillMaxSize(),
-        isActive = isActive,
-        onTap = { onChangeControlsVisible(!controlsVisible) },
-        onZoomChanged = onZoomChanged
-    ) {
-        if (item.isVideo) {
-            VideoPlayer(
-                modifier = Modifier.fillMaxSize(),
-                url = item.url,
-                isPlaying = isActive,
-                controlsVisible = controlsVisible,
-                onChangeControlsVisible = onChangeControlsVisible
-            )
-        } else {
+    if (item.isVideo) {
+        VideoPlayer(
+            modifier = Modifier.fillMaxSize(),
+            url = item.url,
+            isPlaying = isActive,
+            controlsVisible = controlsVisible,
+            onChangeControlsVisible = onChangeControlsVisible
+        )
+    } else {
+        ZoomableBox(
+            modifier = Modifier.fillMaxSize(),
+            isActive = isActive,
+            onTap = { onChangeControlsVisible(!controlsVisible) },
+            onZoomChanged = onZoomChanged
+        ) {
             DivoAsyncImage(
                 modifier = Modifier.fillMaxSize(),
                 model = item.url,

@@ -21,7 +21,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
@@ -51,6 +51,7 @@ fun EventsColumn(
     isModel: Boolean,
     isLoading: Boolean,
     isLoadingMore: Boolean,
+    topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onEventClicked: (Int) -> Unit,
 ) {
@@ -70,10 +71,10 @@ fun EventsColumn(
     }
 
     LazyColumn(
-        modifier = Modifier.fillMaxSize().background(Color.White),
+        modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundLight),
         state = lazyListState,
         contentPadding = PaddingValues(
-            top = 16.dp,
+            top = topPadding,
             bottom = WindowInsets.navigationBars
                 .asPaddingValues()
                 .calculateBottomPadding() + 16.dp

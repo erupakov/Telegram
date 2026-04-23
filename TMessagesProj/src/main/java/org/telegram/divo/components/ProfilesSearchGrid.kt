@@ -122,7 +122,7 @@ fun ProfilesSearchGrid(
 
             items(
                 items = profiles,
-                key = { it.id }
+                key = { "${it.id}${it.similarity}" }
             ) {
                 ProfileItem(
                     profile = it,
@@ -320,12 +320,13 @@ private fun ProfileItem(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(Modifier.height(2.dp))
-            val age = profile.age?.let { "${profile.age} ${context.getString(R.string.YearsOld)} · " }
+            val age = profile.age?.let { "${profile.age} ${context.getString(R.string.YearsOld)}" }
             val countryCode = profile.countryCode?.toCountryFlagEmoji()
             val county = profile.country
+            val sep = if (age != null && countryCode != null) " · " else ""
             if (age != null || (countryCode != null && county != null)) {
                 Text(
-                    text = "${age.orEmpty()}${countryCode.orEmpty()} ${county.orEmpty()}",
+                    text = "${age.orEmpty()}$sep${countryCode.orEmpty()} ${county.orEmpty()}",
                     style = AppTheme.typography.helveticaNeueRegular,
                     fontSize = 10.sp,
                     color = AppTheme.colors.onBackground,

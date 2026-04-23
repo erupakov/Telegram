@@ -2,7 +2,6 @@ package org.telegram.divo.components
 
 import android.net.Uri
 import androidx.annotation.DrawableRes
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,104 +12,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Brush.Companion.verticalGradient
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import dev.chrisbanes.haze.HazeProgressive
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.HazeTint
-import dev.chrisbanes.haze.hazeEffect
-import dev.chrisbanes.haze.hazeSource
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.FileLoader
 import org.telegram.messenger.ImageLocation
 import org.telegram.messenger.R
-import org.telegram.tgnet.TLRPC
 import org.telegram.ui.Components.BackupImageView
-
-@Composable
-fun TelegramUserAvatar(
-    modifier: Modifier = Modifier,
-    photoUrl: String?,
-    sizeDp: Int = 56
-) {
-    DivoAsyncImage(
-        modifier = modifier.size(sizeDp.dp),
-        model = photoUrl,
-    )
-}
-
-@Composable
-fun TelegramPhoto(
-    photo: TLRPC.Photo?,
-    dialogId: Long = 0L,
-    modifier: Modifier = Modifier,
-) {
-    if (photo == null || photo is TLRPC.TL_photoEmpty || photo.sizes == null) return
-
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            BackupImageView(context)
-        },
-        update = { view ->
-            // thumb ~50px, full ~640px (как в ProfileGalleryView)
-            var thumbSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 50)
-            for (i in 0 until photo.sizes.size) {
-                val ps = photo.sizes[i]
-                if (ps is TLRPC.TL_photoStrippedSize) {
-                    thumbSize = ps
-                    break
-                }
-            }
-            val fullSize =
-                FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 640) ?: return@AndroidView
-
-            // важно: прокинуть dc_id и file_reference (как в ProfileGalleryView)
-            if (photo.dc_id != 0) {
-                fullSize.location.dc_id = photo.dc_id
-                fullSize.location.file_reference = photo.file_reference
-            }
-
-            val fullLoc = ImageLocation.getForPhoto(fullSize, photo) ?: return@AndroidView
-            val thumbLoc = thumbSize?.let { ImageLocation.getForPhoto(it, photo) }
-
-            val parentKey = "avatar_$dialogId"
-            val thumbFilter = if (thumbSize is TLRPC.TL_photoStrippedSize) "b" else null
-
-            // setImageMedia = более “родной” путь (см. ProfileGalleryView) :contentReference[oaicite:1]{index=1}
-            view.setImageMedia(
-                null,           // vector avatar
-                null,           // video location
-                null,           // filter
-                fullLoc,        // full
-                null,           // ext
-                thumbLoc,       // thumb
-                thumbFilter,    // thumb filter
-                null,           // cache
-                fullSize.size,  // size
-                1,              // priority
-                parentKey
-            )
-        }
-    )
-}
-
 
 @Composable
 fun LocalImageView(
@@ -140,15 +61,11 @@ fun LocalImageView(
 fun TelegramPhotoBackground(
     photo: String?,
     modifier: Modifier = Modifier,
+    isBlurSupported: Boolean = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
 ) {
-    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-    val startYPx = with(LocalDensity.current) { (screenHeight * 0.23f).toPx() } // 20% без блюра
-    val endYPx = with(LocalDensity.current) { (screenHeight * 0.5f).toPx() }   // переход 10%
-
-    val hazeState = remember { HazeState() }
 
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier,
         contentAlignment = Alignment.TopCenter
     ) {
 
@@ -157,9 +74,7 @@ fun TelegramPhotoBackground(
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
             alignment = Alignment.TopCenter,
-            modifier = Modifier
-                .matchParentSize()
-                .hazeSource(state = hazeState),
+            modifier = Modifier.fillMaxSize(),
             loadingContent = {
                 Box(
                     modifier = Modifier
@@ -169,26 +84,48 @@ fun TelegramPhotoBackground(
             }
         )
 
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .hazeEffect(
-                    state = hazeState,
-                    style = HazeStyle(
-                        backgroundColor = Color.White,
-                        blurRadius = 30.dp,
-                        tints = listOf(HazeTint(Color.Black.copy(alpha = 0.1f)))
+        if (isBlurSupported) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer { compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
+                    .drawWithContent {
+                        drawContent()
+
+                        drawRect(
+                            brush = verticalGradient(
+                                0.0f to Color.Transparent,
+                                0.6f to Color.Transparent,
+                                0.75f to Color.Black,
+                                1.0f to Color.Black
+                            ),
+                            blendMode = androidx.compose.ui.graphics.BlendMode.DstIn
+                        )
+                    }
+            ) {
+                DivoAsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(35.dp),
+                    alignment = Alignment.TopCenter,
+                    model = photo,
+                    contentScale = ContentScale.FillWidth
+                )
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        verticalGradient(
+                            0.0f to Color.Transparent,
+                            0.6f to Color.Transparent,
+                            0.75f to Color.Black.copy(alpha = 0.3f),
+                            1.0f to Color.Black.copy(alpha = 0.6f)
+                        )
                     )
-                ) {
-                    progressive = HazeProgressive.verticalGradient(
-                        startY = startYPx,
-                        startIntensity = 0f,
-                        endY = endYPx,
-                        endIntensity = 1f,
-                        easing = LinearEasing
-                    )
-                }
-        )
+            )
+        }
     }
 }
 

@@ -100,6 +100,7 @@ fun VideoPlayer(
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
+            player.stop()
             player.release()
         }
     }

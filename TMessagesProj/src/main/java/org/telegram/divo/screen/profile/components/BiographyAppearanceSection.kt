@@ -1,17 +1,23 @@
 package org.telegram.divo.screen.profile.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,96 +27,81 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.screen.profile.PhysicalParams
-import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
 @Composable
-fun BiographyAppearanceSection(
-    selectedTab: Int,
-    onTabSelected: (Int) -> Unit,
-    uiState: ProfileViewState
-) {
+fun BiographyContent(bio: String) {
+    var expanded by remember { mutableStateOf(false) }
+    var isOverflowing by remember { mutableStateOf(false) }
+    var isFirstLayout by remember { mutableStateOf(true) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(AppTheme.colors.blackAlpha12)
-    ) {
-        // Tab buttons
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black.copy(alpha = 0.12f)),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            TabButton(
-                text = stringResource(R.string.TabBiography),
-                isSelected = selectedTab == 0,
-                onClick = { onTabSelected(0) },
-                modifier = Modifier.weight(1f)
+            .then(
+                if (isFirstLayout) Modifier
+                else Modifier.animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    )
+                )
             )
-            TabButton(
-                text = stringResource(R.string.TabAppearance),
-                isSelected = selectedTab == 1,
-                onClick = { onTabSelected(1) },
-                modifier = Modifier.weight(1f)
+            .clip(RoundedCornerShape(16.dp))
+            .background(AppTheme.colors.onBackground)
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 20.dp,
+                bottom = if (bio.isEmpty()) 20.dp else 10.dp
             )
-        }
-
-        // Tab content
-        when (selectedTab) {
-            0 -> BiographyContent(bio = uiState.userInfo.model?.description.orEmpty())
-            1 -> AppearanceContent(params = uiState.physicalParams)
-        }
-    }
-}
-
-@Composable
-private fun TabButton(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(6.dp, 6.dp))
-            .clickableWithoutRipple { onClick() }
-            .padding(top = 12.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(
-            modifier = Modifier.width(IntrinsicSize.Min),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        if (bio.isEmpty()) {
+            ProfileInfoEmptyContent(
+                R.drawable.ic_divo_bio_bage,
+                stringResource(R.string.NotBio),
+            )
+        } else {
             Text(
-                modifier = Modifier.padding(bottom = 7.dp),
-                text = text,
-                style = AppTheme.typography.helveticaNeueLtCom,
-                color = Color.White.copy(if (isSelected) 1f else 0.6f),
-                fontSize = 10.sp,
+                modifier = Modifier.fillMaxWidth(),
+                text = bio,
+                style = AppTheme.typography.helveticaNeueRegular,
+                color = AppTheme.colors.textPrimary,
+                fontSize = if (bio.isEmpty()) 16.sp else 14.sp,
+                lineHeight = 20.sp,
+                letterSpacing = 0.4.sp,
+                maxLines = if (expanded) Int.MAX_VALUE else 3,
+                overflow = TextOverflow.Ellipsis,
+                onTextLayout = { result ->
+                    if (!expanded) {
+                        isOverflowing = result.hasVisualOverflow
+                        isFirstLayout = false
+                    }
+                },
+                textAlign = if (bio.isEmpty()) TextAlign.Center else TextAlign.Start
             )
 
-            if (isSelected) {
-                Box(
+            if (isOverflowing || expanded) {
+                Text(
+                    text = stringResource(if (expanded) R.string.SeeLess else R.string.SeeMore),
+                    color = AppTheme.colors.textPrimary,
+                    fontSize = 11.sp,
+                    style = AppTheme.typography.helveticaNeueLtCom,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(2.dp)
-                        .clip(RoundedCornerShape(4.dp, 4.dp))
-                        .background(Color.White)
+                        .align(Alignment.End)
+                        .clickableWithoutRipple { expanded = !expanded }
+                        .padding(top = 6.dp)
                 )
             }
         }
@@ -118,46 +109,46 @@ private fun TabButton(
 }
 
 @Composable
-private fun BiographyContent(bio: String) {
+fun AppearanceContent(
+    params: PhysicalParams,
+    onClick: () -> Unit
+) {
+    val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = bio.ifEmpty { stringResource(R.string.NoBiographyAvailable) },
-            style = AppTheme.typography.helveticaNeueRegular,
-            color = Color.White,
-            fontSize = 12.sp,
-            lineHeight = 14.sp,
-            maxLines = if (expanded) Int.MAX_VALUE else 3,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        if (bio.length > 100) {
-            Text(
-                text = stringResource(if (expanded) R.string.SeeLess else R.string.SeeMore),
-                color = Color.White,
-                fontSize = 10.sp,
-                modifier = Modifier
-                    .align(Alignment.End)
-                    .clickableWithoutRipple { expanded = !expanded }
-                    .padding(top = 4.dp)
-            )
+    val allAvailableItems = buildList {
+        if (params.gender.isNotEmpty()) add(stringResource(R.string.LabelGender) to params.gender)
+        if (params.age.isNotEmpty()) add(stringResource(R.string.LabelAge) to params.age.formattedAge(context))
+        if (params.height > 0) add(stringResource(R.string.LabelHeight) to params.height.toString())
+        if (params.waist > 0) add(stringResource(R.string.LabelWaist) to params.waist.toString())
+        if (params.hips > 0) add(stringResource(R.string.LabelHips) to params.hips.toString())
+        if (params.shoeSize > 0) add(stringResource(R.string.LabelShoeSize) to params.shoeSize.toString())
+        if (params.hairLength.isNotEmpty() && params.hairLength != "0") add(stringResource(R.string.LabelHairLength) to params.hairLength)
+        if (params.hairColor.isNotEmpty()) add(stringResource(R.string.LabelHairColor) to params.hairColor)
+        if (params.eyeColor.isNotEmpty()) add(stringResource(R.string.LabelEyeColor) to params.eyeColor)
+        if (params.skinColor.isNotEmpty()) add(stringResource(R.string.LabelSkinColor) to params.skinColor)
+        if (params.breastSize.isNotEmpty() && params.gender == stringResource(R.string.Female)) {
+            add(stringResource(R.string.LabelBreastSize) to params.breastSize)
         }
     }
-}
 
-@Composable
-private fun AppearanceContent(params: PhysicalParams) {
-    var expanded by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    val visibleItems = if (expanded) allAvailableItems else allAvailableItems.take(4)
+
+    val leftItems = visibleItems.filterIndexed { index, _ -> index % 2 == 0 }
+    val rightItems = visibleItems.filterIndexed { index, _ -> index % 2 != 0 }
 
     Box(
         modifier = Modifier
-        .fillMaxWidth()
+            .fillMaxWidth()
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessMediumLow
+                )
+            )
+            .clip(RoundedCornerShape(16.dp))
+            .background(AppTheme.colors.onBackground)
+            .padding(start = 16.dp, end = 16.dp, top = 10.dp)
     ) {
         Column(
             horizontalAlignment = Alignment.End
@@ -165,65 +156,35 @@ private fun AppearanceContent(params: PhysicalParams) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
+                    .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                // Left column
                 Column(modifier = Modifier.weight(1f)) {
-                    if (params.gender.isNotEmpty()) {
-                        AppearanceRow(stringResource(R.string.LabelGender), params.gender)
-                    }
-                    if (params.height > 0) {
-                        AppearanceRow(stringResource(R.string.LabelHeight), params.height.toString())
-                    }
-                    if (expanded) {
-                        if (params.hips > 0) {
-                            AppearanceRow(stringResource(R.string.LabelHips), params.hips.toString())
-                        }
-                        if (params.hairLength > "0") {
-                            AppearanceRow(stringResource(R.string.LabelHairLength), params.hairLength)
-                        }
-                        if (params.eyeColor.isNotEmpty()) {
-                            AppearanceRow(stringResource(R.string.LabelEyeColor), params.eyeColor)
-                        }
-                        if (params.breastSize.isNotEmpty() && params.gender == stringResource(R.string.Female)) {
-                            AppearanceRow(stringResource(R.string.LabelBreastSize), params.breastSize)
-                        }
+                    leftItems.forEach { (label, value) ->
+                        AppearanceRow(label, value)
                     }
                 }
-                Spacer(modifier = Modifier.width(32.dp))
-                // Right column
+
+                Spacer(modifier = Modifier.width(22.dp))
+
                 Column(modifier = Modifier.weight(1f)) {
-                    if (params.age.isNotEmpty()) {
-                        AppearanceRow(stringResource(R.string.LabelAge), params.age.formattedAge(context))
-                    }
-                    if (params.waist > 0) {
-                        AppearanceRow(stringResource(R.string.LabelWaist), params.waist.toString())
-                    }
-                    if (expanded) {
-                        if (params.shoeSize > 0) {
-                            AppearanceRow(stringResource(R.string.LabelShoeSize), params.shoeSize.toString())
-                        }
-                        if (params.hairColor.isNotEmpty()) {
-                            AppearanceRow(stringResource(R.string.LabelHairColor), params.hairColor)
-                        }
-                        if (params.skinColor.isNotEmpty()) {
-                            AppearanceRow(stringResource(R.string.LabelSkinColor), params.skinColor)
-                        }
+                    rightItems.forEach { (label, value) ->
+                        AppearanceRow(label, value)
                     }
                 }
             }
 
-            Text(
-                text =  stringResource(if (expanded) R.string.SeeLess else R.string.SeeMore),
-                style = AppTheme.typography.helveticaNeueLtCom,
-                color = Color.White,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .clickableWithoutRipple { expanded = !expanded }
-                    .padding(top = 4.dp, end = 16.dp, bottom = 12.dp)
-            )
+            if (allAvailableItems.size > 4) {
+                Text(
+                    text = stringResource(if (expanded) R.string.SeeLess else R.string.SeeMore),
+                    style = AppTheme.typography.helveticaNeueLtCom,
+                    color = AppTheme.colors.textPrimary,
+                    fontSize = 11.sp,
+                    modifier = Modifier
+                        .clickableWithoutRipple { expanded = !expanded }
+                        .padding(top = 1.dp, bottom = 10.dp)
+                )
+            }
         }
     }
 }
@@ -239,14 +200,14 @@ private fun AppearanceRow(label: String, value: String) {
         Text(
             text = label,
             style = AppTheme.typography.helveticaNeueRegular,
-            color = Color.White.copy(alpha = 0.6f),
+            color = AppTheme.colors.textPrimary.copy(alpha = 0.6f),
             fontSize = 12.sp
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(
             text = value,
             style = AppTheme.typography.helveticaNeueRegular,
-            color = Color.White,
+            color = AppTheme.colors.textPrimary,
             fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -256,6 +217,39 @@ private fun AppearanceRow(label: String, value: String) {
         modifier = Modifier
             .fillMaxWidth()
             .height(1.dp)
-            .background(Color.White.copy(alpha = 0.6f))
+            .background(AppTheme.colors.textPrimary.copy(alpha = 0.2f))
     )
+}
+
+@Composable
+fun ProfileInfoEmptyContent(
+    iconResId: Int,
+    text: String
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier.size(40.dp).clip(CircleShape).background(AppTheme.colors.backgroundLight),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(iconResId),
+                contentDescription = null,
+                tint = AppTheme.colors.textPrimary.copy(0.8f)
+            )
+        }
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = text.uppercase(),
+            color = AppTheme.colors.textPrimary,
+            style = AppTheme.typography.helveticaNeueLtCom,
+            fontSize = 16.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }

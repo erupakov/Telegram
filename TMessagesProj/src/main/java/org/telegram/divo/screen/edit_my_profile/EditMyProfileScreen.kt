@@ -185,6 +185,7 @@ fun EditMyProfileScreen(
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxWidth(),
+                beyondViewportPageCount = 1,
                 userScrollEnabled = true
             ) { page ->
                 when (ProfileDestination.valueOf(tabs[page].id)) {

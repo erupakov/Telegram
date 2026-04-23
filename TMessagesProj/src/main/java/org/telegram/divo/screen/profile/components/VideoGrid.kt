@@ -51,6 +51,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -83,6 +84,7 @@ fun VideoGrid(
     isUploading: Boolean,
     hasMore: Boolean,
     isActive: Boolean = true,
+    topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onVideoClicked: (String) -> Unit,
     onVideoSelected: (Uri) -> Unit,
@@ -263,14 +265,14 @@ fun VideoGrid(
     }
 
     Box(modifier = modifier.fillMaxSize().clipToBounds()) {
+        val bottomPadding = if (isOwnProfile) 72.dp else 16.dp
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             state = gridState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                bottom = WindowInsets.navigationBars
-                    .asPaddingValues()
-                    .calculateBottomPadding() + 16.dp,
+                top = topPadding,
+                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + bottomPadding,
             ),
         ) {
             itemsIndexed(
@@ -309,16 +311,15 @@ fun VideoGrid(
                     }
                 }
             }
+        }
 
-            if (isOwnProfile && !isFirstLoading) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    PortfolioAddButton(
-                        isUploading = isUploading,
-                        isVideo = true,
-                        onMediaSelected = onVideoSelected,
-                    )
-                }
-            }
+        if (isOwnProfile && !isFirstLoading && videoItems.isNotEmpty()) {
+            PortfolioAddButton(
+                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
+                isUploading = isUploading,
+                isVideo = true,
+                onMediaSelected = onVideoSelected,
+            )
         }
 
         playerPool.forEachIndexed { slot, player ->
@@ -416,27 +417,27 @@ private fun PlayerOverlaySlot(
         modifier = Modifier
             .layout { measurable, _ ->
                 val idx = targetIndex
+                val layoutInfo = gridState.layoutInfo
                 val info = if (idx != null) {
-                    gridState.layoutInfo.visibleItemsInfo
-                        .firstOrNull { it.index == idx }
+                    layoutInfo.visibleItemsInfo.firstOrNull { it.index == idx }
                 } else null
 
                 if (info != null) {
                     val placeable = measurable.measure(
                         Constraints.fixed(info.size.width, info.size.height)
                     )
+
+                    val screenY = info.offset.y + layoutInfo.beforeContentPadding
                     layout(info.size.width, info.size.height) {
                         if (isReady) {
-                            placeable.place(info.offset.x, info.offset.y)
+                            placeable.place(info.offset.x, screenY)
                         } else {
-                            placeable.place(info.offset.x + 10000, info.offset.y)
+                            placeable.place(info.offset.x + 10000, screenY)
                         }
                     }
                 } else {
                     val placeable = measurable.measure(Constraints.fixed(1, 1))
-                    layout(0, 0) {
-                        placeable.place(-10000, -10000)
-                    }
+                    layout(0, 0) { placeable.place(-10000, -10000) }
                 }
             }
             .clip(RectangleShape),

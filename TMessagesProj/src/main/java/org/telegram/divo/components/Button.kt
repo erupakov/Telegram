@@ -188,6 +188,7 @@ fun RoundedGlassButton(
     borderColor: Color = AppTheme.colors.onBackground.copy(alpha = 0.4f),
     background: Color = AppTheme.colors.onBackground.copy(alpha = 0.2f),
     iconTint: Color = AppTheme.colors.onBackground,
+    iconSize: Dp = 16.dp,
     onClick: () -> Unit = {},
 ) {
     RoundedButton(
@@ -197,6 +198,7 @@ fun RoundedGlassButton(
         borderColor = borderColor,
         background = background,
         iconTint = iconTint,
+        iconSize = iconSize,
         onClick = onClick
     )
 }

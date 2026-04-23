@@ -2,8 +2,8 @@ package org.telegram.divo.screen.profile
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -17,6 +17,7 @@ import org.telegram.divo.screen.event_details.EventDetailsNavGraph
 import org.telegram.divo.screen.face_search.FaceSearchScreen
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
+import org.telegram.divo.screen.profile.components.AppearanceScreen
 import org.telegram.divo.screen.profile_social_links.ProfileSocialLinksScreen
 import org.telegram.divo.screen.search_agency.SearchAgencyScreen
 import org.telegram.divo.screen.similar_profiles.SimilarProfilesScreen
@@ -24,11 +25,16 @@ import org.telegram.divo.screen.work_create_edit.CreateWorkHistoryScreen
 import org.telegram.divo.screen.work_history.WorkHistoryScreen
 import org.telegram.divo.screen.your_parameters.YourParametersScreen
 
+object ParamsHolder {
+    var params: PhysicalParams? = null
+}
+
 sealed class ProfileRoute(val route: String) {
     data object YourParameters : ProfileRoute("profile_your_parameters")
     data object EditLinks : ProfileRoute("profile_edit_links")
     data object WorkHistory : ProfileRoute("profile_work_history")
     data object AddModel : ProfileRoute("profile_add_model")
+    data object Appearance : ProfileRoute("profile_appearance")
     data object CreateWorkHistory : ProfileRoute("create_work_history?id={id}") {
         fun create(id: Int? = null) = if (id != null) "create_work_history?id=$id" else "create_work_history?id=-1"
     }
@@ -115,7 +121,6 @@ fun ProfileNavGraph(
                 key = "profile_$currentUserId",
                 factory = ProfileViewModel.factory(currentUserId, isOwnProfile)
             )
-            val uiState = profileViewModel.state.collectAsState().value
 
             ProfileScreen(
                 viewModel = profileViewModel,
@@ -125,16 +130,10 @@ fun ProfileNavGraph(
                 onEditLinksClicked = { nav.navigate(ProfileRoute.EditLinks.route) },
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() },
                 showWorkHistory = { nav.navigate(ProfileRoute.WorkHistory.route) },
-                onGalleryClicked = { url, isVideo ->
+                onGalleryClicked = { index, isVideo ->
                     if (isVideo) {
-                        val index = uiState.videoItems
-                            .indexOfFirst { it.files.any { f -> f.fullUrl == url } }
-                            .coerceAtLeast(0)
                         nav.navigate(ProfileRoute.Gallery.video(currentUserId, index))
                     } else {
-                        val index = uiState.userGalleryItems
-                            .indexOfFirst { it.photoUrl == url }
-                            .coerceAtLeast(0)
                         nav.navigate(ProfileRoute.Gallery.portfolio(currentUserId, index))
                     }
                 },
@@ -149,6 +148,10 @@ fun ProfileNavGraph(
                 },
                 onFindSimilarProfiles = {
                     nav.navigate(ProfileRoute.FaceSearch.createRoute(it))
+                },
+                onNavigateToAppearances = {
+                    ParamsHolder.params = it
+                    nav.navigate(ProfileRoute.Appearance.route)
                 }
             )
         }
@@ -298,6 +301,20 @@ fun ProfileNavGraph(
                 },
                 onNavigateToSearch = {  },
                 onBack = { nav.popBackStack() }
+            )
+        }
+        composable(
+            route = ProfileRoute.Appearance.route
+        ) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    ParamsHolder.params = null
+                }
+            }
+
+            AppearanceScreen(
+                params = ParamsHolder.params,
+                onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
     }

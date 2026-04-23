@@ -53,6 +53,7 @@ fun AgencyModels(
     models: List<AgencyModel>,
     isOwnProfile: Boolean,
     isLoadingMoreModels: Boolean,
+    topPadding: Dp = 0.dp,
     onAddModelClicked: () -> Unit,
     onModelClicked: (Int) -> Unit,
     onLoadMoreAgencyModels: () -> Unit,
@@ -89,10 +90,10 @@ fun AgencyModels(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White),
+                    .background(AppTheme.colors.backgroundLight),
                 state = lazyListState,
                 contentPadding = PaddingValues(
-                    top = 16.dp,
+                    top = topPadding,
                     start = 16.dp,
                     end = 16.dp,
                     bottom = WindowInsets.navigationBars
@@ -168,7 +169,7 @@ private fun ModelItem(
             }
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = RoleType.MODEL.name.lowercase(), //TODO возможно здесь следует получать роли, но пока их нет
+                text = RoleType.MODEL.name.lowercase(), 
                 style = AppTheme.typography.helveticaNeueRegular,
                 fontSize = 14.sp,
                 color = Color.Black.copy(0.6f),

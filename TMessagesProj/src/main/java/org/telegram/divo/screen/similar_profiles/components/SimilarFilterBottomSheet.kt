@@ -236,7 +236,7 @@ private fun FilterSliderSection(
     selectedPercent: Int,
     onPercentChange: (Int) -> Unit
 ) {
-    val steps = listOf(35, 55, 75, 100)
+    val steps = listOf(30, 45, 60, 75, 85, 100)
     val tailLength = 40.dp
 
     Column(

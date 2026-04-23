@@ -5,6 +5,7 @@ import kotlinx.collections.immutable.persistentListOf
 import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
+import org.telegram.divo.components.TabConfig
 import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.FeedlineItem
@@ -13,8 +14,10 @@ import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.screen.profile.components.Destination
+import org.telegram.divo.screen.profile.components.ProfileDestination
+import org.telegram.divo.screen.profile.components.ProfileInfoDestination
 import org.telegram.divo.screen.profile.components.StatsType
+import org.telegram.messenger.R
 import java.io.File
 
 data class ProfileViewState(
@@ -78,30 +81,49 @@ data class ProfileViewState(
             else -> 3
         }
 
-    val destinationTabs: List<Destination>
+    val destinationTabs: List<TabConfig>
         get() = when (pageCount) {
-            2 -> buildList {
-                add(Destination.SONGS)
-                add(Destination.ALBUM)
-            }
-            3 -> buildList {
-                add(Destination.SONGS)
-                add(Destination.ALBUM)
-                add(Destination.PLAYLISTS)
-            }
-            else -> buildList {
-                add(Destination.SONGS)
-                add(Destination.ALBUM)
-                add(Destination.AGENCY)
-                add(Destination.PLAYLISTS)
-                add(Destination.EVENT)
-            }
+            2 -> listOf(
+                TabConfig(id = ProfileDestination.SONGS.name, iconResId = R.drawable.divo_profile_tab_1),
+                TabConfig(id = ProfileDestination.ALBUM.name, iconResId = R.drawable.divo_profile_tab_2)
+            )
+            3 -> listOf(
+                TabConfig(id = ProfileDestination.SONGS.name, iconResId = R.drawable.divo_profile_tab_1),
+                TabConfig(id = ProfileDestination.ALBUM.name, iconResId = R.drawable.divo_profile_tab_2),
+                TabConfig(id = ProfileDestination.PLAYLISTS.name, iconResId = R.drawable.divo_profile_tab_3)
+            )
+            else -> listOf(
+                TabConfig(id = ProfileDestination.SONGS.name, iconResId = R.drawable.divo_profile_tab_1),
+                TabConfig(id = ProfileDestination.ALBUM.name, iconResId = R.drawable.divo_profile_tab_2),
+                TabConfig(id = ProfileDestination.AGENCY.name, iconResId = R.drawable.ic_divo_tab_agency),
+                TabConfig(id = ProfileDestination.PLAYLISTS.name, iconResId = R.drawable.divo_profile_tab_3),
+                TabConfig(id = ProfileDestination.EVENT.name, iconResId = R.drawable.ic_divo_event)
+            )
         }
+
+    val destinationInfoTabs: List<TabConfig>
+        get() = listOf(
+            TabConfig(
+                id = ProfileInfoDestination.BIOGRAPHY.name,
+                textResId = R.string.TabBiography,
+            ),
+            TabConfig(
+                id = ProfileInfoDestination.APPEARANCE.name,
+                textResId = R.string.TabAppearance
+            ),
+            TabConfig(
+                id = ProfileInfoDestination.EXPERIENCE.name,
+                textResId = R.string.TabExperience
+            )
+        )
 
     val instagramUser get() = userInfo.model?.instagramUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
     val tiktokUser get() = userInfo.model?.tiktokUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
     val youtubeUser get() = userInfo.model?.youtubeUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
     val website get() = userInfo.model?.websiteUrl?.removePrefix("https://")?.removePrefix("http://").orEmpty()
+
+    val isVisibleSocialLinks: Boolean
+        get() = instagramUser.isEmpty() && tiktokUser.isEmpty() && youtubeUser.isEmpty() && website.isEmpty()
 }
 
 data class SocialLinks(
@@ -156,10 +178,31 @@ sealed class ProfileIntent : ViewIntent {
     object OnLoadMorePortfolio : ProfileIntent()
     object OnLoadMoreVideos : ProfileIntent()
     object OnLoadMoreEvents : ProfileIntent()
+    object OnEditClicked : ProfileIntent()
+    object OnEditLinksClicked : ProfileIntent()
+
+    object OnNavigateBack : ProfileIntent()
+    object OnShowWorkHistory : ProfileIntent()
+    object OnShowAppearances : ProfileIntent()
+    class OnGalleryClicked(val url: String, val isVideo: Boolean) : ProfileIntent()
+    class OnProfileClicked(val profileId: Int) : ProfileIntent()
+    object OnAddModelClicked : ProfileIntent()
+    class OnEventClicked(val eventId: Int) : ProfileIntent()
+    object OnFindSimilarProfiles : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
     class OpenUrl(val url: String) : ProfileEffect()
     class ShowError(val message: String) : ProfileEffect()
-    object NavigateToSearch : ProfileEffect()
+    object NavigateToEdit : ProfileEffect()
+    
+    object NavigateBack : ProfileEffect()
+    class ShowWorkHistory(val isOwnProfile: Boolean) : ProfileEffect()
+    object ShowAppearances : ProfileEffect()
+    class NavigateToGallery(val index: Int, val isVideo: Boolean) : ProfileEffect()
+    class NavigateToProfile(val profileId: Int) : ProfileEffect()
+    object NavigateToAddModel : ProfileEffect()
+    class NavigateToEvent(val eventId: Int) : ProfileEffect()
+    class NavigateToFindSimilarProfiles(val photoUrl: String) : ProfileEffect()
+    object NavigateToEditLinks : ProfileEffect()
 }

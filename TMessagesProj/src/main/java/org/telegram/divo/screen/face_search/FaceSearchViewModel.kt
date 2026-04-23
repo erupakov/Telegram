@@ -180,8 +180,8 @@ class FaceSearchViewModel(
 
                 val result = DivoApi.faceRecognitionRepository.search(
                     file = file,
-                    kRatio = 0.35,
-                    topK = 30,
+                    kRatio = 0.3,
+                    topK = 100,
                     faceIndex = faceIndex
                 )
 

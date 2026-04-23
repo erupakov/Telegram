@@ -17,6 +17,7 @@ import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.screen.profile.ProfileEffect.*
 import org.telegram.divo.screen.profile.components.StatsType
 import org.telegram.divo.usecase.EngagementInteractor
 import org.telegram.divo.usecase.GetEventListUseCase
@@ -64,6 +65,10 @@ class ProfileViewModel(
         )
     }
 
+    init {
+        loadData()
+    }
+
 //    private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
 //        when (val result = DivoApi.publicationRepository.searchFeeds(
 //            offset = offset,
@@ -95,6 +100,20 @@ class ProfileViewModel(
             is ProfileIntent.OnLoadMorePortfolio -> loadMorePortfolio()
             is ProfileIntent.OnLoadMoreVideos -> viewModelScope.launch { videoPaginator.loadMore() }
             ProfileIntent.OnLoadMoreEvents -> viewModelScope.launch { eventPaginator.loadMore() }
+            ProfileIntent.OnEditClicked -> sendEffect(ProfileEffect.NavigateToEdit)
+            is ProfileIntent.OnEditLinksClicked -> sendEffect(ProfileEffect.NavigateToEditLinks)
+
+            is ProfileIntent.OnNavigateBack -> sendEffect(ProfileEffect.NavigateBack)
+            is ProfileIntent.OnShowWorkHistory -> sendEffect(ShowWorkHistory(state.value.isOwnProfile))
+            is ProfileIntent.OnGalleryClicked -> {
+                val index = getGalleryItemIndex(intent.url, intent.isVideo)
+                sendEffect(NavigateToGallery(index, intent.isVideo))
+            }
+            is ProfileIntent.OnProfileClicked -> sendEffect(NavigateToProfile(intent.profileId))
+            is ProfileIntent.OnAddModelClicked -> sendEffect(ProfileEffect.NavigateToAddModel)
+            is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
+            is ProfileIntent.OnFindSimilarProfiles -> sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
+            ProfileIntent.OnShowAppearances -> sendEffect(ProfileEffect.ShowAppearances)
         }
     }
 
@@ -273,21 +292,26 @@ class ProfileViewModel(
             DivoApi.userRepository.currentUserFlow
                 .filterNotNull()
                 .collect { userData ->
-                    val params = mapPhysicalParams(userData)
+                    if (userData.fullName.isNotEmpty()) {
+                        val params = mapPhysicalParams(userData)
 
-                    setState {
-                        copy(
-                            isLoading = false,
-                            userInfo = userData,
-                            userId = userData.id,
-                            physicalParams = params,
-                        )
+                        setState {
+                            copy(
+                                isLoading = false,
+                                userInfo = userData,
+                                userId = userData.id,
+                                physicalParams = params,
+                            )
+                        }
+                    } else {
+                        // User exists in basic cache but lack details, UI stays in loading state
                     }
                 }
         }
 
         viewModelScope.launch {
-            if (DivoApi.userRepository.currentUserFlow.value == null) {
+            val currUser = DivoApi.userRepository.currentUserFlow.value
+            if (currUser == null || currUser.fullName.isEmpty()) {
                 val result = DivoApi.userRepository.getCurrentUserInfo()
                 if (result !is DivoResult.Success) {
                     val errorMsg = result.getErrorMessage()
@@ -326,36 +350,38 @@ class ProfileViewModel(
         viewModelScope.launch {
             setState { copy(isLoading = true, errorMessage = null) }
 
-            val result = DivoApi.userRepository.getUserById(state.value.userId)
-                .flatMap { userData ->
-                    setState {
-                        copy(
-                            userInfo = userData,
-                            userId = userData.id,
-                            physicalParams = mapPhysicalParams(userData),
-                        )
-                    }
-                    if (userData.avatarId != 0L) {
-                        DivoApi.faceRecognitionRepository.searchSimilar(118880) //userData.avatarId
-                    } else {
-                        DivoResult.Success(emptyList())
-                    }
-                }
+            val userResult = DivoApi.userRepository.getUserById(state.value.userId)
 
-            when (result) {
-                is DivoResult.Success -> {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            similarProfiles = result.value
-                        )
+            if (userResult !is DivoResult.Success) {
+                val errorMsg = userResult.getErrorMessage()
+                setState { copy(isLoading = false, errorMessage = errorMsg) }
+                sendEffect(ProfileEffect.ShowError(errorMsg))
+                return@launch
+            }
+
+            val userData = userResult.value
+            setState {
+                copy(
+                    userInfo = userData,
+                    userId = userData.id,
+                    physicalParams = mapPhysicalParams(userData),
+                )
+            }
+
+            // Загружаем похожие профили
+            if (userData.avatarId != 0L) {
+                val similarResult = DivoApi.faceRecognitionRepository.searchSimilar(userData.avatarId)
+
+                when (similarResult) {
+                    is DivoResult.Success -> setState {
+                        copy(isLoading = false, similarProfiles = similarResult.value)
+                    }
+                    else -> {
+                        setState { copy(isLoading = false, similarProfiles = emptyList()) }
                     }
                 }
-                else -> {
-                    val errorMsg = result.getErrorMessage()
-                    setState { copy(isLoading = false, errorMessage = errorMsg) }
-                    sendEffect(ProfileEffect.ShowError(errorMsg))
-                }
+            } else {
+                setState { copy(isLoading = false) }
             }
         }
     }
@@ -497,6 +523,18 @@ class ProfileViewModel(
         }
 
         sendEffect(ProfileEffect.OpenUrl(url))
+    }
+
+    private fun getGalleryItemIndex(url: String, isVideo: Boolean): Int {
+        return if (isVideo) {
+            state.value.videoItems
+                .indexOfFirst { it.files.any { f -> f.fullUrl == url } }
+                .coerceAtLeast(0)
+        } else {
+            state.value.userGalleryItems
+                .indexOfFirst { it.photoUrl == url }
+                .coerceAtLeast(0)
+        }
     }
 
     companion object {

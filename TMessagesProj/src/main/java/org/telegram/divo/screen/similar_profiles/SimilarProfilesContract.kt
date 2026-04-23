@@ -9,7 +9,7 @@ import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.screen.add_model.LocalCountry
 
 const val HIGH_PERCENT = 85
-const val MIN_SIMILARITY = 35
+const val MIN_SIMILARITY = 30
 
 data class State(
     val imageUrl: String,
@@ -58,7 +58,7 @@ data class State(
         get() {
             var count = 0
             if (selectedCountries.isNotEmpty()) count++
-            if (similarityPercent > 35) count++
+            if (similarityPercent > MIN_SIMILARITY) count++
             if (role.value.isNotEmpty()) count++
             count += blockParams.count { it.value.isNotEmpty() }
 

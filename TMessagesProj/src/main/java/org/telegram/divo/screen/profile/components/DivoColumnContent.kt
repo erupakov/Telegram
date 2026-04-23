@@ -30,7 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
@@ -71,13 +71,14 @@ val mockData = listOf(
 @Composable
 fun DivoColumnContent(
     title: String,
-    isEvent: Boolean = false
+    isEvent: Boolean = false,
+    topPadding: Dp = 0.dp
 ) {
     val mock = mockData.map { it.copy(followers = title) }
     LazyColumn(
-        modifier = Modifier.fillMaxSize().background(Color.White),
+        modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundLight),
         contentPadding = PaddingValues(
-            top = 16.dp,
+            top = topPadding,
             bottom = WindowInsets.navigationBars
                 .asPaddingValues()
                 .calculateBottomPadding() + 16.dp
