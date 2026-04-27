@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -61,8 +65,19 @@ fun LocalImageView(
 fun TelegramPhotoBackground(
     photo: String?,
     modifier: Modifier = Modifier,
-    isBlurSupported: Boolean = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
+    isBlurSupported: Boolean = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S,
+    onReady: () -> Unit = {},
 ) {
+    val mainReady = remember { mutableStateOf(false) }
+    val blurReady = remember { mutableStateOf(!isBlurSupported) }
+
+    val onReadyCallback = rememberUpdatedState(onReady)
+
+    LaunchedEffect(mainReady.value, blurReady.value) {
+        if (mainReady.value && blurReady.value) {
+            onReadyCallback.value()
+        }
+    }
 
     Box(
         modifier = modifier,
@@ -75,6 +90,7 @@ fun TelegramPhotoBackground(
             contentScale = ContentScale.FillWidth,
             alignment = Alignment.TopCenter,
             modifier = Modifier.fillMaxSize(),
+            onReady = { mainReady.value = true },
             loadingContent = {
                 Box(
                     modifier = Modifier
@@ -109,7 +125,15 @@ fun TelegramPhotoBackground(
                         .blur(35.dp),
                     alignment = Alignment.TopCenter,
                     model = photo,
-                    contentScale = ContentScale.FillWidth
+                    contentScale = ContentScale.FillWidth,
+                    onReady = { blurReady.value = true },
+                    loadingContent = {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(AppTheme.colors.backgroundLight.copy(0.6f))
+                        )
+                    }
                 )
             }
         } else {
@@ -126,6 +150,19 @@ fun TelegramPhotoBackground(
                     )
             )
         }
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    verticalGradient(
+                        0.0f to Color.Black.copy(alpha = 0.4f),
+                        0.2f to Color.Black.copy(alpha = 0.2f),
+                        0.75f to Color.Transparent,
+                        1.0f to Color.Transparent
+                    )
+                )
+        )
     }
 }
 

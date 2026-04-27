@@ -20,12 +20,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.utils.getInitials
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -33,7 +34,9 @@ import org.telegram.messenger.R
 @Composable
 fun AgencyInfoSection(
     agency: Agency?,
+    isOwnProfile: Boolean,
     onClicked: () -> Unit,
+    onEditClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -50,8 +53,11 @@ fun AgencyInfoSection(
     ) {
         if (agency == null) {
             ProfileInfoEmptyContent(
-                R.drawable.ic_divo_experience_bage,
-                stringResource(R.string.NotExperience),
+                iconResId = R.drawable.ic_divo_experience_bage,
+                isOwnProfile = isOwnProfile,
+                text = if (isOwnProfile) stringResource(R.string.ThereAreNoWorkExperienceYet) else stringResource(R.string.NotExperience),
+                textButton = stringResource(R.string.AddWorkHistory),
+                onEditClick = onEditClick
             )
         } else {
             Text(
@@ -70,14 +76,33 @@ fun AgencyInfoSection(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    DivoAsyncImage(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .border(1.dp, AppTheme.colors.textPrimary.copy(0.6f), CircleShape)
-                            .clip(CircleShape),
-                        model = agency.photo?.fullUrl,
-                        contentDescription = null,
-                    )
+                    if (agency.photo?.fullUrl.isNullOrBlank()) {
+                        val initials = agency.title.getInitials()
+                        Box(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .border(1.dp, AppTheme.colors.textPrimary.copy(0.6f), CircleShape)
+                                .clip(CircleShape)
+                                .background(AppTheme.colors.onBackground),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = initials,
+                                fontWeight = FontWeight.SemiBold,
+                                color = AppTheme.colors.textPrimary,
+                                fontSize = 18.sp
+                            )
+                        }
+                    } else {
+                        DivoAsyncImage(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .border(1.dp, AppTheme.colors.textPrimary.copy(0.6f), CircleShape)
+                                .clip(CircleShape),
+                            model = agency.photo.fullUrl,
+                            contentDescription = null,
+                        )
+                    }
                     Spacer(Modifier.width(16.dp))
                     Text(
                         text = agency.title,

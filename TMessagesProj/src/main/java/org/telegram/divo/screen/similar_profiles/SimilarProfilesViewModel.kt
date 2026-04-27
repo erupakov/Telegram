@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
@@ -26,9 +27,6 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import java.time.LocalDate
-import java.time.Period
-import java.time.format.DateTimeFormatter
 
 class SimilarProfilesViewModel(
     val imageUrl: String,
@@ -379,15 +377,6 @@ class SimilarProfilesViewModel(
                     createdAt = System.currentTimeMillis()
                 )
             )
-        }
-    }
-
-    private fun String.toAge(): Int? {
-        return try {
-            val birthDate = LocalDate.parse(this, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-            Period.between(birthDate, LocalDate.now()).years
-        } catch (e: Exception) {
-            null
         }
     }
 

@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.profile.components
 
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -18,21 +17,17 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import kotlinx.coroutines.flow.distinctUntilChanged
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
@@ -53,7 +48,6 @@ fun PortfolioGrid(
     onLoadMore: () -> Unit,
     onPhotoClicked: (String) -> Unit,
     onSimilarClicked: (Int) -> Unit,
-    onImageSelected: (Uri) -> Unit,
 ) {
     val gridState = rememberLazyGridState()
     val context = LocalContext.current
@@ -63,22 +57,21 @@ fun PortfolioGrid(
         (displayMetrics.widthPixels / 3)
     }
 
-    val currentHasMore by rememberUpdatedState(hasMore)
-    val currentLoading by rememberUpdatedState(isLoadingMore)
+    val currentItems = rememberUpdatedState(portfolioItems)
+    val currentHasMore = rememberUpdatedState(hasMore)
+    val currentLoading = rememberUpdatedState(isLoadingMore)
 
-    LaunchedEffect(gridState) {
-        snapshotFlow { 
-            val layoutInfo = gridState.layoutInfo
-            val lastVisibleItemIndex = layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            val totalItemsCount = layoutInfo.totalItemsCount
-
-            lastVisibleItemIndex >= (totalItemsCount - 3).coerceAtLeast(0)
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val last = gridState.layoutInfo.visibleItemsInfo
+                .lastOrNull()?.index ?: return@derivedStateOf false
+            last >= currentItems.value.size - 3
         }
-        .distinctUntilChanged()
-        .collect { reachedEnd ->
-            if (reachedEnd && currentHasMore && !currentLoading) {
-                onLoadMore()
-            }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore && currentHasMore.value && !currentLoading.value) {
+            onLoadMore()
         }
     }
 
@@ -153,12 +146,5 @@ fun PortfolioGrid(
             }
         }
 
-        if (portfolioItems.isNotEmpty() && isOwnProfile) {
-            PortfolioAddButton(
-                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
-                isUploading = isUploading,
-                onMediaSelected = onImageSelected
-            )
-        }
     }
 }

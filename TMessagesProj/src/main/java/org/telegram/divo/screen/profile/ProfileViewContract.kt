@@ -24,6 +24,7 @@ data class ProfileViewState(
     val userId: Int = -1,
     val isOwnProfile: Boolean = false,
     val userInfo: UserInfo = UserInfo(),
+    val hasBackgroundReady: Boolean = false,
 
     val userGalleryItems: List<UserGalleryItem> = listOf(),
     val isLoadingMoreImages: Boolean = false,
@@ -178,11 +179,12 @@ sealed class ProfileIntent : ViewIntent {
     object OnLoadMorePortfolio : ProfileIntent()
     object OnLoadMoreVideos : ProfileIntent()
     object OnLoadMoreEvents : ProfileIntent()
-    object OnEditClicked : ProfileIntent()
+    class OnEditClicked(val initialPage: Int) : ProfileIntent()
     object OnEditLinksClicked : ProfileIntent()
 
     object OnNavigateBack : ProfileIntent()
     object OnShowWorkHistory : ProfileIntent()
+    object OnBackgroundReady : ProfileIntent()
     object OnShowAppearances : ProfileIntent()
     class OnGalleryClicked(val url: String, val isVideo: Boolean) : ProfileIntent()
     class OnProfileClicked(val profileId: Int) : ProfileIntent()
@@ -193,8 +195,8 @@ sealed class ProfileIntent : ViewIntent {
 
 sealed class ProfileEffect : ViewEffect {
     class OpenUrl(val url: String) : ProfileEffect()
-    class ShowError(val message: String) : ProfileEffect()
-    object NavigateToEdit : ProfileEffect()
+    class ShowError(val message: String, val hasRetry: Boolean = false) : ProfileEffect()
+    class NavigateToEdit(val isOwnProfile: Boolean, val initialPage: Int) : ProfileEffect()
     
     object NavigateBack : ProfileEffect()
     class ShowWorkHistory(val isOwnProfile: Boolean) : ProfileEffect()

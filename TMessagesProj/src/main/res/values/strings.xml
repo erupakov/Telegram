@@ -50,6 +50,13 @@
     <string name="NotBio">This model hasn\'t filled in their bio</string>
     <string name="NotAppearance">Model parameters are not filled in</string>
     <string name="NotExperience">No work experience added yet</string>
+    <string name="FillInBio">Fill in bio</string>
+    <string name="ThereAreNoBioAddedYet">There are no bio added yet</string>
+    <string name="ThereAreNoYourParametersYet">There are no your parameters yet</string>
+    <string name="AddYourParameters">Add your parameters</string>
+    <string name="AddWorkHistory">Add work history</string>
+    <string name="ThereAreNoWorkExperienceYet">There are no work experience yet</string>
+
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>
@@ -117,8 +124,8 @@
     <string name="StartDate">Start date</string>
     <string name="EndDate">End date</string>
     <string name="AddWorkExperience">Add Work Experience</string>
-    <string name="WorkHistoryEmptyTitle">There are no work\nexperience yet.</string>
-    <string name="WorkHistoryEmptySubtitle">Click the button below\nto add your work\nexperience</string>
+    <string name="WorkHistoryEmptyTitle">There are no work\nexperience yet</string>
+    <string name="WorkHistoryEmptySubtitle">Click the button below\nto add your work experience</string>
     <string name="SaveChanges">Save Changes</string>
     <string name="WorkExperienceSaved">Work experience added successfully</string>
     <string name="PresentLabel">Present</string>

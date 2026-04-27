@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -47,6 +48,7 @@ fun PortfolioAddButton(
         Row(
             modifier = Modifier
                 .height(40.dp)
+                .shadow(elevation = 8.dp, shape = CircleShape)
                 .clip(CircleShape)
                 .background(AppTheme.colors.accentOrange)
                 .padding(horizontal = 16.dp)

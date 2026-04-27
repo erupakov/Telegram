@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
@@ -55,7 +55,6 @@ import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.PlaceholderAvatar
@@ -140,13 +139,17 @@ private fun WorkHistoryScreenView(
                 Spacer(Modifier.height(8.dp))
             }
 
-            if (state.experiences.isEmpty()) {
+            if (state.experiences.isEmpty() && !state.isLoading) {
                 WorkHistoryEmpty(
                     modifier = Modifier,
                     isOwnProfile = isOwnProfile,
                     isFromEditScreen = isFromEditScreen,
                     onCreateClicked = { onIntent(Intent.OnCreateClicked) }
                 )
+            } else if (state.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    LottieProgressIndicator(color = AppTheme.colors.backgroundDark)
+                }
             } else {
                 LazyColumn(
                     modifier = Modifier
@@ -164,7 +167,8 @@ private fun WorkHistoryScreenView(
                             item = item,
                             isDeleting = state.deletingId == item.id,
                             onEdit = { onIntent(Intent.OnEditClicked(item.id)) },
-                            onDelete = { onIntent(Intent.OnDeleteClicked(item.id)) }
+                            onDelete = { onIntent(Intent.OnDeleteClicked(item.id)) },
+                            isOwnProfile = isOwnProfile
                         )
                     }
 
@@ -194,38 +198,49 @@ private fun WorkHistoryEmpty(
     onCreateClicked:()-> Unit
 ) {
     Box(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
     ) {
         Column(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
+                .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 56.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                painterResource(R.drawable.divo_work_history_empty),
-                contentDescription = null,
-                modifier = Modifier.size(68.dp)
-            )
+            Box(
+                modifier = Modifier.size(68.dp).clip(CircleShape).background(AppTheme.colors.onBackground),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    modifier = Modifier.size(28.dp),
+                    painter = painterResource(R.drawable.ic_divo_experience_bage),
+                    contentDescription = null,
+                )
+            }
+            Spacer(Modifier.height(16.dp))
             TextTitle(
-                text = stringResource(R.string.WorkHistoryEmptyTitle),
-                modifier = Modifier.fillMaxWidth().padding(top = 14.dp),
+                text = stringResource(R.string.WorkHistoryEmptyTitle).uppercase(),
+                modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
             )
             if (isOwnProfile) {
+                Spacer(Modifier.height(2.dp))
                 Text(
                     text = stringResource(R.string.WorkHistoryEmptySubtitle),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    color = AppTheme.colors.textPrimary.copy(0.8f)
                 )
             }
         }
 
-        if (isOwnProfile) {
+        if (isOwnProfile && !isFromEditScreen) {
             UIButtonNew(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .then(if (isFromEditScreen) Modifier else Modifier.navigationBarsPadding())
                     .padding(bottom = 8.dp, start = 16.dp, end = 16.dp),
                 text = stringResource(R.string.AddWorkExperience),
                 onClick = {
@@ -239,6 +254,7 @@ private fun WorkHistoryEmpty(
 @Composable
 private fun WorkExperienceRow(
     item: WorkExperience,
+    isOwnProfile: Boolean,
     isDeleting: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
@@ -292,24 +308,26 @@ private fun WorkExperienceRow(
             )
         }
 
-        Box {
-            IconButton(onClick = { menuExpanded = true }) {
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = null,
-                    tint = Color.Black.copy(0.6f)
+        if (isOwnProfile) {
+            Box {
+                IconButton(onClick = { menuExpanded = true }) {
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = null,
+                        tint = Color.Black.copy(0.6f)
+                    )
+                }
+
+                DivoPopupMenu(
+                    visible = menuExpanded,
+                    onDismiss = { menuExpanded = false },
+                    offset = IntOffset(x = -34, y = -63),
+                    items = listOf(
+                        PopupMenuItem(R.string.ButtonEdit, onEdit),
+                        PopupMenuItem(R.string.ButtonDelete, onDelete),
+                    )
                 )
             }
-
-            DivoPopupMenu(
-                visible = menuExpanded,
-                onDismiss = { menuExpanded = false },
-                offset = IntOffset(x = -34, y = -63),
-                items = listOf(
-                    PopupMenuItem(R.string.ButtonEdit, onEdit),
-                    PopupMenuItem(R.string.ButtonDelete, onDelete),
-                )
-            )
         }
     }
 }
@@ -403,14 +421,12 @@ private fun TopBar(
         },
         actions = {
             if (createEnabled) {
-                Icon(
-                    modifier = Modifier
-                        .padding(end = 14.dp, bottom = 7.dp)
-                        .size(17.dp)
-                        .clickableWithoutRipple { onCreate() },
-                    painter = painterResource(R.drawable.ic_divo_plus),
-                    contentDescription = null,
-                    tint = AppTheme.colors.textPrimary
+                RoundedButton(
+                    modifier = Modifier.padding(end = 14.dp, bottom = 7.dp),
+                    resId = R.drawable.ic_divo_plus,
+                    iconTint = AppTheme.colors.textPrimary,
+                    iconSize = 17.dp,
+                    onClick = onCreate
                 )
             }
         },

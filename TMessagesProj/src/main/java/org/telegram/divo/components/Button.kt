@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -123,6 +124,7 @@ fun UIButtonNew(
     background: Color = AppTheme.colors.accentOrange,
     paddingTop: Dp = 3.dp,
     enabled: Boolean = true,
+    leadingIcon: Int? = null,
     onClick: () -> Unit = {},
 ) {
     Button(
@@ -135,6 +137,15 @@ fun UIButtonNew(
             containerColor = background
         ),
     ) {
+        leadingIcon?.let {
+            Icon(
+                modifier = Modifier.size(12.dp),
+                painter = painterResource(leadingIcon),
+                tint = AppTheme.colors.onBackground,
+                contentDescription = null,
+            )
+            Spacer(Modifier.width(6.dp))
+        }
         Text(
             modifier = Modifier.padding(top = paddingTop),
             text = text,

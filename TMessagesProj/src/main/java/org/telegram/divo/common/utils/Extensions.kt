@@ -28,6 +28,15 @@ fun String.formattedAge(context: Context, locale: Locale = Locale.getDefault()):
     }
 }
 
+fun String.toAge(): Int? {
+    return try {
+        val birthDate = LocalDate.parse(this, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        Period.between(birthDate, LocalDate.now()).years
+    } catch (e: Exception) {
+        null
+    }
+}
+
 fun String?.toDateFloat(): Float? {
     try {
         val birthDate = LocalDate.parse(this)
@@ -117,6 +126,15 @@ fun String.toEventDisplayDate(
 } catch (_: Exception) {
     this
 }
+
+fun String.getInitials(): String = this
+    .trim()
+    .split(" ")
+    .filter { it.isNotBlank() }
+    .take(2)
+    .mapNotNull { it.firstOrNull()?.uppercaseChar()?.toString() }
+    .joinToString("")
+    .ifBlank { "A" }
 
 private fun Context.getExtension(uri: Uri): String {
     return contentResolver.getType(uri)

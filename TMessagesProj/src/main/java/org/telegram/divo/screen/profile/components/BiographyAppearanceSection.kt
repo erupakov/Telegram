@@ -36,12 +36,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.formattedAge
+import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.screen.profile.PhysicalParams
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
 @Composable
-fun BiographyContent(bio: String) {
+fun BiographyContent(
+    isOwnProfile: Boolean,
+    bio: String,
+    onEditClick: () -> Unit
+) {
     var expanded by remember { mutableStateOf(false) }
     var isOverflowing by remember { mutableStateOf(false) }
     var isFirstLayout by remember { mutableStateOf(true) }
@@ -69,8 +74,11 @@ fun BiographyContent(bio: String) {
     ) {
         if (bio.isEmpty()) {
             ProfileInfoEmptyContent(
-                R.drawable.ic_divo_bio_bage,
-                stringResource(R.string.NotBio),
+                iconResId = R.drawable.ic_divo_bio_bage,
+                isOwnProfile = isOwnProfile,
+                text = if (isOwnProfile) stringResource(R.string.ThereAreNoBioAddedYet) else stringResource(R.string.NotBio),
+                textButton = stringResource(R.string.FillInBio),
+                onEditClick = onEditClick
             )
         } else {
             Text(
@@ -111,7 +119,8 @@ fun BiographyContent(bio: String) {
 @Composable
 fun AppearanceContent(
     params: PhysicalParams,
-    onClick: () -> Unit
+    isOwnProfile: Boolean,
+    onEditClick: () -> Unit
 ) {
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
@@ -148,42 +157,57 @@ fun AppearanceContent(
             )
             .clip(RoundedCornerShape(16.dp))
             .background(AppTheme.colors.onBackground)
-            .padding(start = 16.dp, end = 16.dp, top = 10.dp)
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = if (allAvailableItems.isEmpty()) 16.dp else 10.dp,
+                bottom = if (allAvailableItems.isEmpty()) 16.dp else 0.dp
+            )
     ) {
-        Column(
-            horizontalAlignment = Alignment.End
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+        if (allAvailableItems.isEmpty()) {
+            ProfileInfoEmptyContent(
+                iconResId = R.drawable.ic_divo_appearance_bage,
+                isOwnProfile = isOwnProfile,
+                text = if (isOwnProfile) stringResource(R.string.ThereAreNoYourParametersYet) else stringResource(R.string.NotAppearance),
+                textButton = stringResource(R.string.AddYourParameters),
+                onEditClick = onEditClick
+            )
+        } else {
+            Column(
+                horizontalAlignment = Alignment.End
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    leftItems.forEach { (label, value) ->
-                        AppearanceRow(label, value)
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(22.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    rightItems.forEach { (label, value) ->
-                        AppearanceRow(label, value)
-                    }
-                }
-            }
-
-            if (allAvailableItems.size > 4) {
-                Text(
-                    text = stringResource(if (expanded) R.string.SeeLess else R.string.SeeMore),
-                    style = AppTheme.typography.helveticaNeueLtCom,
-                    color = AppTheme.colors.textPrimary,
-                    fontSize = 11.sp,
+                Row(
                     modifier = Modifier
-                        .clickableWithoutRipple { expanded = !expanded }
-                        .padding(top = 1.dp, bottom = 10.dp)
-                )
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        leftItems.forEach { (label, value) ->
+                            AppearanceRow(label, value)
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(22.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        rightItems.forEach { (label, value) ->
+                            AppearanceRow(label, value)
+                        }
+                    }
+                }
+
+                if (allAvailableItems.size > 4) {
+                    Text(
+                        text = stringResource(if (expanded) R.string.SeeLess else R.string.SeeMore),
+                        style = AppTheme.typography.helveticaNeueLtCom,
+                        color = AppTheme.colors.textPrimary,
+                        fontSize = 11.sp,
+                        modifier = Modifier
+                            .clickableWithoutRipple { expanded = !expanded }
+                            .padding(top = 1.dp, bottom = 10.dp)
+                    )
+                }
             }
         }
     }
@@ -224,25 +248,31 @@ private fun AppearanceRow(label: String, value: String) {
 @Composable
 fun ProfileInfoEmptyContent(
     iconResId: Int,
-    text: String
+    isOwnProfile: Boolean,
+    text: String,
+    textButton: String,
+    onEditClick: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier.size(40.dp).clip(CircleShape).background(AppTheme.colors.backgroundLight),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                modifier = Modifier.size(20.dp),
-                painter = painterResource(iconResId),
-                contentDescription = null,
-                tint = AppTheme.colors.textPrimary.copy(0.8f)
-            )
+        if (!isOwnProfile) {
+            Box(
+                modifier = Modifier.size(40.dp).clip(CircleShape).background(AppTheme.colors.backgroundLight),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    painter = painterResource(iconResId),
+                    contentDescription = null,
+                    tint = AppTheme.colors.textPrimary.copy(0.8f)
+                )
+            }
+            Spacer(Modifier.height(16.dp))
         }
-        Spacer(Modifier.height(16.dp))
+
         Text(
             text = text.uppercase(),
             color = AppTheme.colors.textPrimary,
@@ -251,5 +281,20 @@ fun ProfileInfoEmptyContent(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+
+        if (isOwnProfile) {
+            Spacer(Modifier.height(10.dp))
+            UIButtonNew(
+                text = textButton,
+                height = 36.dp,
+                paddingTop = 4.dp,
+                leadingIcon = R.drawable.ic_divo_plus,
+                textStyle = AppTheme.typography.helveticaNeueLtCom.copy(
+                    fontSize = 14.sp,
+                    color = AppTheme.colors.onBackground
+                ),
+                onClick = onEditClick
+            )
+        }
     }
 }

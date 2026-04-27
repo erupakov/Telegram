@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -23,10 +22,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.utils.toAge
+import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -37,7 +39,6 @@ fun SimilarProfilesRow(
     similarItems: List<SimilarFace>,
     onClicked: (Int) -> Unit,
 ) {
-
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -50,7 +51,7 @@ fun SimilarProfilesRow(
             fontSize = 18.sp,
             color = Color.Black,
         )
-        Spacer(modifier = Modifier.height(18.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -60,14 +61,12 @@ fun SimilarProfilesRow(
                 items = similarItems,
                 key = { it.userId }
             ) { model ->
-                //val age = model.birthday
-                //val city = model.city
-
                 Column(
                     modifier = Modifier
+                        .width(147.dp)
                         .shadow(
                             elevation = 6.dp,
-                            shape = RoundedCornerShape(4.dp),
+                            shape = RoundedCornerShape(18.dp),
                             ambientColor = Color(0x17000000),
                             spotColor = Color(0x17000000)
                         )
@@ -79,16 +78,17 @@ fun SimilarProfilesRow(
                 ) {
                     DivoAsyncImage(
                         modifier = Modifier
-                            .size(158.dp)
-                            .padding(4.dp)
-                            .clip(RoundedCornerShape(4.dp)),
+                            .fillMaxWidth()
+                            .height(124.dp)
+                            .padding(3.dp)
+                            .clip(RoundedCornerShape(16.dp)),
                         model = model.image,
                     )
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(46.dp)
-                            .padding(start = 16.dp, top = 8.dp, bottom = 8.dp),
+                            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
@@ -98,35 +98,42 @@ fun SimilarProfilesRow(
                             color = Color.Black
                         )
                         Spacer(modifier = Modifier.height(2.dp))
-                        //if (age != null || city != null) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight(),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                //age?.let {
-                                    Text(
-                                        text = "No data · ", //"${it.formattedAge(context)} · "
-                                        style = AppTheme.typography.helveticaNeueRegular,
-                                        fontSize = 12.sp,
-                                        color = Color.Red,
-                                    )
-                                //}
-                                //city?.let {
-//                                    Text(
-//                                        text = it.countryCode.toCountryFlagEmoji(),
-//                                    )
-                                    Spacer(modifier = Modifier.width(4.dp))
-                                    Text(
-                                        text = "No data", //it.name
-                                        style = AppTheme.typography.helveticaNeueRegular,
-                                        fontSize = 12.sp,
-                                        color = Color.Red,
-                                    )
-                                //}
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val age = model.birthday.toAge()
+
+                            age?.let {
+                                Text(
+                                    text = "$it ${stringResource(R.string.YearsOld)}",
+                                    style = AppTheme.typography.helveticaNeueRegular,
+                                    fontSize = 12.sp,
+                                    color = AppTheme.colors.textPrimary,
+                                )
                             }
-                       // }
+
+                            if (age != null && model.countryCode.isNotBlank()) {
+                                Text(
+                                   text = " · ",
+                                )
+                            }
+                            Text(
+                                text = model.countryCode.toCountryFlagEmoji(),
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = model.countryName,
+                                style = AppTheme.typography.helveticaNeueRegular,
+                                fontSize = 12.sp,
+                                color = AppTheme.colors.textPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
             }

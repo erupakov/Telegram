@@ -100,20 +100,21 @@ class ProfileViewModel(
             is ProfileIntent.OnLoadMorePortfolio -> loadMorePortfolio()
             is ProfileIntent.OnLoadMoreVideos -> viewModelScope.launch { videoPaginator.loadMore() }
             ProfileIntent.OnLoadMoreEvents -> viewModelScope.launch { eventPaginator.loadMore() }
-            ProfileIntent.OnEditClicked -> sendEffect(ProfileEffect.NavigateToEdit)
-            is ProfileIntent.OnEditLinksClicked -> sendEffect(ProfileEffect.NavigateToEditLinks)
+            is ProfileIntent.OnEditClicked -> sendEffect(NavigateToEdit(state.value.isOwnProfile, intent.initialPage))
+            is ProfileIntent.OnEditLinksClicked -> sendEffect(NavigateToEditLinks)
 
-            is ProfileIntent.OnNavigateBack -> sendEffect(ProfileEffect.NavigateBack)
+            is ProfileIntent.OnNavigateBack -> sendEffect(NavigateBack)
             is ProfileIntent.OnShowWorkHistory -> sendEffect(ShowWorkHistory(state.value.isOwnProfile))
             is ProfileIntent.OnGalleryClicked -> {
                 val index = getGalleryItemIndex(intent.url, intent.isVideo)
                 sendEffect(NavigateToGallery(index, intent.isVideo))
             }
             is ProfileIntent.OnProfileClicked -> sendEffect(NavigateToProfile(intent.profileId))
-            is ProfileIntent.OnAddModelClicked -> sendEffect(ProfileEffect.NavigateToAddModel)
+            is ProfileIntent.OnAddModelClicked -> sendEffect(NavigateToAddModel)
             is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
             is ProfileIntent.OnFindSimilarProfiles -> sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
-            ProfileIntent.OnShowAppearances -> sendEffect(ProfileEffect.ShowAppearances)
+            ProfileIntent.OnShowAppearances -> sendEffect(ShowAppearances)
+            ProfileIntent.OnBackgroundReady -> setState { copy(hasBackgroundReady = true) }
         }
     }
 
@@ -195,6 +196,7 @@ class ProfileViewModel(
                         isLoadingImages = pState.isLoading
                     )
                 }
+                pState.error?.let { sendEffect(ShowError(it)) }
             }
         }
 
@@ -219,6 +221,7 @@ class ProfileViewModel(
                         isLoadingVideos = pState.isLoading
                     )
                 }
+                pState.error?.let { sendEffect(ShowError(it)) }
             }
         }
 
@@ -292,19 +295,15 @@ class ProfileViewModel(
             DivoApi.userRepository.currentUserFlow
                 .filterNotNull()
                 .collect { userData ->
-                    if (userData.fullName.isNotEmpty()) {
-                        val params = mapPhysicalParams(userData)
+                    val params = mapPhysicalParams(userData)
 
-                        setState {
-                            copy(
-                                isLoading = false,
-                                userInfo = userData,
-                                userId = userData.id,
-                                physicalParams = params,
-                            )
-                        }
-                    } else {
-                        // User exists in basic cache but lack details, UI stays in loading state
+                    setState {
+                        copy(
+                            isLoading = false,
+                            userInfo = userData,
+                            userId = userData.id,
+                            physicalParams = params,
+                        )
                     }
                 }
         }
@@ -316,7 +315,7 @@ class ProfileViewModel(
                 if (result !is DivoResult.Success) {
                     val errorMsg = result.getErrorMessage()
                     setState { copy(isLoading = false, errorMessage = errorMsg) }
-                    sendEffect(ProfileEffect.ShowError(errorMsg))
+                    sendEffect(ProfileEffect.ShowError(errorMsg, true))
                 }
             }
         }
@@ -355,7 +354,7 @@ class ProfileViewModel(
             if (userResult !is DivoResult.Success) {
                 val errorMsg = userResult.getErrorMessage()
                 setState { copy(isLoading = false, errorMessage = errorMsg) }
-                sendEffect(ProfileEffect.ShowError(errorMsg))
+                sendEffect(ProfileEffect.ShowError(errorMsg, true))
                 return@launch
             }
 

@@ -22,14 +22,22 @@ class SimilarFaceDto(
 )
 
 fun SimilarFaceDto.toEntity() = SimilarFace(
-    birthday = birthday.orEmpty(),
-    countryCode = countryCode.orEmpty(),
-    countryName = countryName.orEmpty(),
-    fullName = fullName.orEmpty(),
-    image = image.orEmpty(),
+    birthday = birthday.orEmptyIfNullString(),
+    countryCode = countryCode.orEmptyIfNullString(),
+    countryName = countryName.orEmptyIfNullString(),
+    fullName = fullName.orEmptyIfNullString(),
+    image = image.orEmptyIfNullString(),
     index = index ?: 0,
     rank = rank ?: 0,
-    role = role.orEmpty(),
+    role = role.orEmptyIfNullString(),
     score = score ?: 0.0,
     userId = userId ?: 0
 )
+
+private fun String?.orEmptyIfNullString(): String {
+    return if (this == null || this.equals("null", ignoreCase = true)) {
+        ""
+    } else {
+        this
+    }
+}

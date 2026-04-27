@@ -50,6 +50,7 @@ fun ProfileHeadlineContent(
     onStatsClicked: (StatsType) -> Unit,
     onSocialLinkClicked: (SocialNetworkType) -> Unit = {},
     onSendDMClicked: () -> Unit,
+    onReady: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -61,6 +62,7 @@ fun ProfileHeadlineContent(
         TelegramPhotoBackground(
             modifier = Modifier.fillMaxSize(),
             photo = uiState.userInfo.photoUrl,
+            onReady = onReady
         )
 
         if (uiState.backgroundChanging) {

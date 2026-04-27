@@ -1,6 +1,13 @@
 package org.telegram.divo.screen.profile
 
 import android.content.Intent
+import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
@@ -14,7 +21,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -22,6 +29,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -30,6 +38,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -44,7 +53,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
@@ -58,7 +66,6 @@ import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.common.SnackbarEvent.ErrorWithRetry
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
-import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.profile.components.AgencyModels
 import org.telegram.divo.screen.profile.components.DivoColumnContent
@@ -70,6 +77,8 @@ import org.telegram.divo.screen.profile.components.ProfileInfoPager
 import org.telegram.divo.screen.profile.components.ProfileInfoTabs
 import org.telegram.divo.screen.profile.components.SocialLinksSection
 import org.telegram.divo.screen.profile.components.StatsType
+import org.telegram.divo.screen.profile.components.PortfolioAddButton
+import org.telegram.divo.screen.profile.components.ProfileLoadingContent
 import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBarBackground
 import org.telegram.divo.screen.profile.components.ToolBarContent
@@ -77,6 +86,7 @@ import org.telegram.divo.screen.profile.components.VideoGrid
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     userId: Int,
@@ -84,7 +94,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = viewModel(
         factory = ProfileViewModel.factory(userId, isOwnProfile)
     ),
-    onEditClicked: (Boolean) -> Unit = {},
+    onEditClicked: (Boolean, Int) -> Unit,
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: (Boolean) -> Unit = {},
@@ -98,7 +108,12 @@ fun ProfileScreen(
     val context = LocalContext.current
     val uiState = viewModel.state.collectAsState().value
     val snackbarState = remember { AppSnackbarHostState() }
-    val retryText = stringResource(R.string.RetryLabel)
+
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.isLoading) {
+        if (!uiState.isLoading) isRefreshing = false
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -112,13 +127,17 @@ fun ProfileScreen(
                     }
                 }
                 is ProfileEffect.ShowError -> {
-                    snackbarState.show(
-                        ErrorWithRetry(effect.message, retryText) {
-                            viewModel.setIntent(ProfileIntent.OnLoad)
-                        }
-                    )
+                    if (effect.hasRetry) {
+                        snackbarState.show(
+                            ErrorWithRetry(effect.message, context.getString(R.string.RetryLabel)) {
+                                viewModel.setIntent(ProfileIntent.OnLoad)
+                            }
+                        )
+                    } else {
+                        snackbarState.show(Error(effect.message))
+                    }
                 }
-                ProfileEffect.NavigateToEdit -> { onEditClicked(viewModel.state.value.isModel) }
+                is ProfileEffect.NavigateToEdit -> { onEditClicked(effect.isOwnProfile, effect.initialPage) }
                 is ProfileEffect.NavigateBack -> onNavigateBack()
                 is ProfileEffect.ShowWorkHistory -> showWorkHistory(effect.isOwnProfile)
                 is ProfileEffect.NavigateToGallery -> onGalleryClicked(effect.index, effect.isVideo)
@@ -136,21 +155,34 @@ fun ProfileScreen(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        if (uiState.isLoading) {
-            LottieProgressIndicator(
-                modifier = Modifier
-                    .size(32.dp)
-                    .align(Alignment.Center),
-            )
-        } else if (uiState.errorMessage != null) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(AppTheme.colors.backgroundLight))
-        } else {
-            ProfileScreenContent(
-                uiState = uiState,
-                onIntent = { viewModel.setIntent(it) }
-            )
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+                viewModel.setIntent(ProfileIntent.OnLoad)
+            },
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            val showSkeleton = uiState.isLoading || (!uiState.hasBackgroundReady || uiState.errorMessage != null)
+
+            Box(modifier = Modifier.fillMaxSize()) {
+                if (uiState.errorMessage == null) {
+                    ProfileScreenContent(
+                        uiState = uiState,
+                        onIntent = { intent ->
+                            viewModel.setIntent(intent)
+                        }
+                    )
+                }
+
+                AnimatedVisibility(
+                    visible = showSkeleton,
+                    enter = fadeIn(),
+                    exit = fadeOut(animationSpec = tween(500))
+                ) {
+                    ProfileLoadingContent()
+                }
+            }
         }
 
         AppSnackbarHost(
@@ -200,12 +232,13 @@ private fun ProfileScreenContent(
         }
     }
 
+    val currentHasTabs by rememberUpdatedState(hasTabs)
     val haptic = LocalHapticFeedback.current
     LaunchedEffect(Unit) {
         snapshotFlow { isTabsPinned }
             .drop(1)
             .collect {
-                if (hasTabs) {
+                if (currentHasTabs) {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 }
             }
@@ -283,6 +316,19 @@ private fun ProfileScreenContent(
         }
     }
 
+    val isPagerSectionVisible by remember {
+        derivedStateOf {
+            lazyListState.layoutInfo.visibleItemsInfo.any { it.key == "pager_section" }
+        }
+    }
+
+    val currentPage = pagerState.currentPage
+    val showAddButton = uiState.isOwnProfile && isPagerSectionVisible && when (currentPage) {
+        0 -> uiState.userGalleryItems.isNotEmpty()
+        1 -> uiState.videoItems.isNotEmpty()
+        else -> false
+    }
+
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val viewportHeight = this.maxHeight
 
@@ -307,7 +353,8 @@ private fun ProfileScreenContent(
                             showStatsSheet = true
                         },
                         onSocialLinkClicked = { onIntent(ProfileIntent.OpenSocialLink(it)) },
-                        onSendDMClicked = { },
+                        onSendDMClicked = { }, //TODO
+                        onReady = { onIntent(ProfileIntent.OnBackgroundReady) }
                     )
                 }
 
@@ -327,8 +374,10 @@ private fun ProfileScreenContent(
                         bio = uiState.userInfo.model?.description.orEmpty(),
                         physicalParams = uiState.physicalParams,
                         agency = uiState.userInfo.model?.agency,
+                        isOwnProfile = uiState.isOwnProfile,
                         onWorkHistoryClicked = { onIntent(ProfileIntent.OnShowWorkHistory) },
-                        onAppearanceClicked = { onIntent(ProfileIntent.OnShowAppearances) }
+                        onAppearanceClicked = { onIntent(ProfileIntent.OnShowAppearances) },
+                        onEditClicked = { onIntent(ProfileIntent.OnEditClicked(it)) }
                     )
                 }
 
@@ -371,7 +420,6 @@ private fun ProfileScreenContent(
                                     onLoadMore = { onIntent(ProfileIntent.OnLoadMorePortfolio) },
                                     onPhotoClicked = { onIntent(ProfileIntent.OnGalleryClicked(it, false)) },
                                     onSimilarClicked = { onIntent(ProfileIntent.OnProfileClicked(it)) },
-                                    onImageSelected = { onIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(it))) }
                                 )
                                 1 -> {
                                     val isPageActive = pagerState.currentPage == 1
@@ -387,7 +435,6 @@ private fun ProfileScreenContent(
                                         isUploading = uiState.mediaUploading,
                                         onLoadMore = { onIntent(ProfileIntent.OnLoadMoreVideos) },
                                         onVideoClicked = { onIntent(ProfileIntent.OnGalleryClicked(it, true)) },
-                                        onVideoSelected = { onIntent(ProfileIntent.OnVideoSelected(context.uriToFile(it))) }
                                     )
                                 }
                                 2 -> if (uiState.isModel) {
@@ -462,7 +509,7 @@ private fun ProfileScreenContent(
             isSolid = isToolbarSolid,
             isOwnProfile = uiState.isOwnProfile,
             onEditSocialLinksClicked = { onIntent(ProfileIntent.OnEditLinksClicked) },
-            onEditProfileClicked = { onIntent(ProfileIntent.OnEditClicked) },
+            onEditProfileClicked = { onIntent(ProfileIntent.OnEditClicked(0)) },
             onEditBackgroundClicked = { openGalleryForBg() },
             onManageWorkExperienceClicked = { onIntent(ProfileIntent.OnShowWorkHistory) },
             onNavigateBack = { onIntent(ProfileIntent.OnNavigateBack) },
@@ -483,6 +530,33 @@ private fun ProfileScreenContent(
                 destinations = uiState.destinationTabs,
                 tabWidth = 60.dp,
             )
+        }
+
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .zIndex(4f)
+                .padding(
+                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 12.dp
+                )
+        ) {
+            AnimatedVisibility(
+                visible = showAddButton,
+                enter = slideInVertically { it } + fadeIn(),
+                exit = slideOutVertically { it } + fadeOut(),
+            ) {
+                PortfolioAddButton(
+                    isUploading = uiState.mediaUploading,
+                    isVideo = pagerState.currentPage == 1,
+                    onMediaSelected = { uri: Uri ->
+                        if (pagerState.currentPage == 1) {
+                            onIntent(ProfileIntent.OnVideoSelected(context.uriToFile(uri)))
+                        } else {
+                            onIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(uri)))
+                        }
+                    }
+                )
+            }
         }
     }
 }

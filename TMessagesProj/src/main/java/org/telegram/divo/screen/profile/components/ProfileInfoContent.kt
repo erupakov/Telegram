@@ -3,9 +3,7 @@ package org.telegram.divo.screen.profile.components
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -56,8 +53,10 @@ fun ProfileInfoPager(
     bio: String,
     physicalParams: PhysicalParams,
     agency: Agency?,
+    isOwnProfile: Boolean,
     onWorkHistoryClicked: () -> Unit,
-    onAppearanceClicked: () -> Unit
+    onAppearanceClicked: () -> Unit,
+    onEditClicked: (Int) ->Unit,
 ) {
     if (isModel) {
         Spacer(Modifier.height(10.dp))
@@ -126,9 +125,9 @@ fun ProfileInfoPager(
                         }
                 ) {
                     when (page) {
-                        0 -> BiographyContent(bio = bio)
-                        1 -> AppearanceContent(params = physicalParams, onClick = onAppearanceClicked)
-                        else -> AgencyInfoSection(agency = agency, onClicked = onWorkHistoryClicked)
+                        0 -> BiographyContent(isOwnProfile = isOwnProfile, bio = bio, onEditClick = { onEditClicked(0) })
+                        1 -> AppearanceContent(isOwnProfile = isOwnProfile, params = physicalParams, onEditClick = { onEditClicked(1) })
+                        else -> AgencyInfoSection(isOwnProfile = isOwnProfile, agency = agency, onClicked = onWorkHistoryClicked, onEditClick = { onEditClicked(2) })
                     }
                 }
             }

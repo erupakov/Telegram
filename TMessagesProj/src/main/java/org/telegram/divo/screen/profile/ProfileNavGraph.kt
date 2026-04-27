@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.screen.add_model.AddModelScreen
 import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
 import org.telegram.divo.screen.event_details.EventDetailsNavGraph
@@ -47,8 +48,11 @@ sealed class ProfileRoute(val route: String) {
         fun createRoute(eventId: Int) = "event/$eventId"
     }
 
-    data object Edit : ProfileRoute("profile_edit/{isModel}") {
-        fun createRoute(isModel: Boolean) = "profile_edit/$isModel"
+    data object Edit : ProfileRoute("profile_edit?isModel={isModel}&initialPage={initialPage}") {
+
+        fun createRoute(isModel: Boolean, initialPage: Int): String {
+            return "profile_edit?isModel=$isModel&initialPage=$initialPage"
+        }
     }
 
     data object Search : ProfileRoute("search_agency")
@@ -126,7 +130,8 @@ fun ProfileNavGraph(
                 viewModel = profileViewModel,
                 userId = currentUserId,
                 isOwnProfile = isOwnProfile,
-                onEditClicked = { nav.navigate(ProfileRoute.Edit.createRoute(it)) },
+                onEditClicked = { isOwnProfile, initialPage ->
+                    nav.navigate(ProfileRoute.Edit.createRoute(isOwnProfile, initialPage)) },
                 onEditLinksClicked = { nav.navigate(ProfileRoute.EditLinks.route) },
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() },
                 showWorkHistory = { nav.navigate(ProfileRoute.WorkHistory.route) },
@@ -156,11 +161,19 @@ fun ProfileNavGraph(
             )
         }
 
-        composable(ProfileRoute.Edit.route) {
-            val isModel = it.arguments?.getString("isModel")?.toBoolean() ?: false
-
+        composable(
+            route = ProfileRoute.Edit.route,
+            arguments = listOf(
+                navArgument("isModel") { type = NavType.BoolType },
+                navArgument("initialPage") { type = NavType.IntType }
+            )
+        ) {
+            val isModel = it.arguments?.getBoolean("isModel") ?: false
+            val initialPage = it.arguments?.getInt("initialPage") ?: 0
+            Log.d("VideoGrid", initialPage.toString())
             EditMyProfileScreen(
                 isModel = isModel,
+                initialPage = initialPage,
                 onCreateWorkHistoryClicked = { nav.navigate(ProfileRoute.CreateWorkHistory.create(it)) },
                 onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
             )

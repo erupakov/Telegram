@@ -29,10 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -113,19 +113,15 @@ fun ToolBarContent(
     var showEditMenu by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
 
-    val buttonBgColor = androidx.compose.ui.graphics.lerp(AppTheme.colors.onBackground.copy(alpha = 0.2f), Color.White, transitionProgress)
-    val buttonIconColor = androidx.compose.ui.graphics.lerp(Color.White, Color.Black, transitionProgress)
-    val buttonBorderColor = androidx.compose.ui.graphics.lerp(AppTheme.colors.onBackground.copy(alpha = 0.4f), Color.Transparent, transitionProgress)
+    val buttonBgColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.2f), Color.White, transitionProgress)
+    val buttonIconColor = lerp(Color.White, Color.Black, transitionProgress)
+    val buttonBorderColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.4f), Color.Transparent, transitionProgress)
 
-    val options = if (isOwnProfile) {
-        listOf(PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec))
-    } else {
-        listOf(
-            PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec),
-            PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report),
-            PopupMenuItem(R.string.BlockProfile, onBlockProfile, R.drawable.ic_divo_block),
-        )
-    }
+    val options = listOf(
+        PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec),
+        PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report),
+        PopupMenuItem(R.string.BlockProfile, onBlockProfile, R.drawable.ic_divo_block),
+    )
 
     val statusBarPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
     val menuOffset = IntOffset(x = -32, y = 0)
@@ -175,24 +171,24 @@ fun ToolBarContent(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 16.dp),
-                contentPadding = PaddingValues(start = 16.dp, end = 10.dp),
+                contentPadding = PaddingValues(start = 10.dp, end = 14.dp),
                 background = buttonBgColor,
                 borderColor = buttonBorderColor
             ) {
                 Icon(
                     modifier = Modifier
-                        .size(16.dp)
-                        .clickableWithoutRipple { showEditMenu = true },
-                    painter = painterResource(R.drawable.ic_divo_edit_24),
+                        .size(22.dp)
+                        .clickableWithoutRipple {  }, //TODO
+                    painter = painterResource(R.drawable.ic_divo_rounded_plus),
                     contentDescription = null,
                     tint = buttonIconColor
                 )
-                Spacer(Modifier.width(16.dp))
+                Spacer(Modifier.width(18.dp))
                 Icon(
                     modifier = Modifier
-                        .size(24.dp)
-                        .clickableWithoutRipple { showMenu = true },
-                    painter = painterResource(R.drawable.ic_divo_menu_24),
+                        .size(16.dp)
+                        .clickableWithoutRipple { showEditMenu = true },
+                    painter = painterResource(R.drawable.ic_divo_edit_24),
                     contentDescription = null,
                     tint = buttonIconColor
                 )
@@ -255,7 +251,9 @@ private fun TitleContent(
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(6.dp))
-        Row {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             uiState.userInfo.let { userInfo ->
                 Text(
                     text = userInfo.roleLabel.lowercase(),

@@ -2,7 +2,7 @@
 
 package org.telegram.divo.screen.profile.components
 
-import android.net.Uri
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
@@ -87,7 +87,6 @@ fun VideoGrid(
     topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onVideoClicked: (String) -> Unit,
-    onVideoSelected: (Uri) -> Unit,
 ) {
     val context = LocalContext.current
     val gridState = rememberLazyGridState()
@@ -313,14 +312,6 @@ fun VideoGrid(
             }
         }
 
-        if (isOwnProfile && !isFirstLoading && videoItems.isNotEmpty()) {
-            PortfolioAddButton(
-                modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
-                isUploading = isUploading,
-                isVideo = true,
-                onMediaSelected = onVideoSelected,
-            )
-        }
 
         playerPool.forEachIndexed { slot, player ->
             key(slot) {
