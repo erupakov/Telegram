@@ -60,6 +60,7 @@ class StatisticDto(
     @SerializedName("followersCount") val followersCount: Int,
     @SerializedName("followingCount") val followingCount: Int,
     @SerializedName("viewsCount") val viewsCount: Int,
+    @SerializedName("likesCount") val likesCount: Int,
     @SerializedName("sentToAgenciesCount") val sentToAgenciesCount: Int,
     @SerializedName("modelsCount") val modelsCount: Int
 )
@@ -110,8 +111,8 @@ private fun GenderDto.toEntity(): Gender =
 
 private fun StatisticDto.toEntity(): Statistic =
     Statistic(
+        likesCount = likesCount,
         followersCount = followersCount,
-        followingCount = followingCount,
         viewsCount = viewsCount,
         sentToAgenciesCount = sentToAgenciesCount,
         modelsCount = modelsCount

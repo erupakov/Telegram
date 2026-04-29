@@ -21,5 +21,9 @@ class EventRepository(
     }.map {
         requireNotNull(it.toEntity()) { it.message ?: "Event data is null" }
     }
+
+    suspend fun applyEvent(id: Int): DivoResult<Unit> = resultOf {
+        service.applyEvent(id)
+    }
 }
 

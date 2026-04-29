@@ -11,6 +11,7 @@
     <string name="ButtonCreate">Create</string>
     <string name="ButtonSave">Save</string>
     <string name="ButtonApply">Apply</string>
+    <string name="ButtonApplied">Applied</string>
     <string name="ButtonOk">Ok</string>
     <string name="ButtonCancel">Cancel</string>
     <string name="ButtonEdit">Edit</string>
@@ -23,6 +24,7 @@
     <string name="UploadVideos">Upload your video</string>
     <string name="UploadingPhotos">Upload your photo…</string>
     <string name="UploadingVideos">Upload your video…</string>
+    <string name="AddEvent">Add Event</string>
     <string name="MyLinks">My Links</string>
     <string name="EditLinks">Edit Links</string>
     <string name="SendDM">Send DM</string>
@@ -62,6 +64,10 @@
     <string name="ThisAgencyHasNotCreatedChannels">This agency hasn\'t created any channels yet</string>
     <string name="ThisModelHasNotCreatedChannels">This model hasn\'t created any channels yet</string>
     <string name="CreateNewChannel">Create new channel</string>
+    <string name="SearchModels">Search models</string>
+    <string name="NoLikesYet">No likes yet.</string>
+    <string name="NothingSavedYet">Nothing saved yet.</string>
+    <string name="NoProfileViewedYet">No profile\nviewed yet.</string>
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>

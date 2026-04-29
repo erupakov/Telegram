@@ -70,10 +70,12 @@ import java.time.Period
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-
 @Composable
 fun WorkHistoryScreen(
-    viewModel: WorkHistoryViewModel = viewModel(),
+    userId: Int,
+    viewModel: WorkHistoryViewModel = viewModel(
+        factory = WorkHistoryViewModel.factory(userId)
+    ),
     isOwnProfile: Boolean,
     isFromEditScreen: Boolean = false,
     onBack: () -> Unit = {},

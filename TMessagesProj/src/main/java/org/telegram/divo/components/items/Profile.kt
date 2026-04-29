@@ -1,13 +1,13 @@
 package org.telegram.divo.components.items
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -278,16 +277,12 @@ fun ProfileNameItem(
                 overflow = TextOverflow.Ellipsis,
             )
             if (uiState.userInfo.isPremium) {
-                Spacer(Modifier.width(6.dp))
-                DivoChip(
-                    modifier = Modifier,
-                    text = stringResource(R.string.PremiumLabel),
-                    resId = R.drawable.ic_divo_premium_11,
-                    background = AppTheme.colors.onBackground,
-                    textColor = AppTheme.colors.accentOrange,
-                    iconSize = 11.dp,
-                    border = 1.dp,
-                    contentPadding = PaddingValues(start = 6.dp, end = 8.dp, top = 6.dp, bottom = 6.dp)
+                Spacer(Modifier.width(8.dp))
+                Image(
+                    modifier = Modifier
+                        .size(20.dp),
+                    painter = painterResource(R.drawable.divo_premium_bage),
+                    contentDescription = null,
                 )
             }
         }

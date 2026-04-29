@@ -56,15 +56,19 @@ fun ToolBarBackground(
     lowerTabsOffsetPx: Float = Float.MAX_VALUE,
     isTabsPinned: Boolean = false
 ) {
-    val statusBarPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
+    val statusBarPadding = remember { mutableStateOf(0.dp) }
+    val statusBarInsetsRaw = WindowInsets.systemBars.asPaddingValues()
+    LaunchedEffect(Unit) {
+        statusBarPadding.value = statusBarInsetsRaw.calculateTopPadding()
+    }
     val extendedHeight = 48.dp
     val density = androidx.compose.ui.platform.LocalDensity.current
-    val fullHeightPx = with(density) { (statusBarPadding + 56.dp + extendedHeight).toPx() }
+    val fullHeightPx = with(density) { (statusBarPadding.value + 56.dp + extendedHeight).toPx() }
 
     val currentBlurHeightPx = if (isTabsPinned) fullHeightPx else minOf(fullHeightPx, lowerTabsOffsetPx)
 
-    val endYPx = with(density) { (statusBarPadding + 56.dp + extendedHeight).toPx() }
-    val startYPx = with(density) { (statusBarPadding + 46.dp).toPx() }
+    val endYPx = with(density) { (statusBarPadding.value + 56.dp + extendedHeight).toPx() }
+    val startYPx = with(density) { (statusBarPadding.value + 46.dp).toPx() }
 
     if (hazeState != null && transitionProgress > 0f) {
         Box(
@@ -132,13 +136,17 @@ fun ToolBarContent(
         }
     }
 
-    val statusBarPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
+    val statusBarPadding = remember { mutableStateOf(0.dp) }
+    val statusBarInsetsRaw = WindowInsets.systemBars.asPaddingValues()
+    LaunchedEffect(Unit) {
+        statusBarPadding.value = statusBarInsetsRaw.calculateTopPadding()
+    }
     val menuOffset = IntOffset(x = -32, y = 0)
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = statusBarPadding + 8.dp, bottom = 8.dp),
+            .padding(top = statusBarPadding.value + 8.dp, bottom = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         RoundedGlassButton(

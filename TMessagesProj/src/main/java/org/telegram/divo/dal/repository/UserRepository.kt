@@ -218,8 +218,8 @@ class UserRepository(
         service.getUserSocialNetworks().toEntities()
     }
 
-    suspend fun getEngagement(userId: Int, offset: Int, limit: Int): DivoResult<Engagement> = resultOf {
-        service.getEngagement(userId = userId, offset = offset, limit = limit).toEntity()
+    suspend fun getEngagement(userId: Int, offset: Int, limit: Int, search: String = ""): DivoResult<Engagement> = resultOf {
+        service.getEngagement(userId = userId, offset = offset, limit = limit, search = search).toEntity()
     }
 
     private fun File.toMultipart(): MultipartBody.Part {

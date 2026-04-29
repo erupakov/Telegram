@@ -87,7 +87,8 @@ interface UserService {
     suspend fun getEngagement(
         @Query("userId") userId: Int,
         @Query("offset") offset: Int,
-        @Query("limit") limit: Int
+        @Query("limit") limit: Int,
+        @Query("search") search: String,
     ): EngagementResponse
 
     @GET("dictionary/appearances")

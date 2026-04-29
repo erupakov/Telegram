@@ -34,12 +34,14 @@ object ParamsHolder {
 sealed class ProfileRoute(val route: String) {
     data object YourParameters : ProfileRoute("profile_your_parameters")
     data object EditLinks : ProfileRoute("profile_edit_links")
-    data object WorkHistory : ProfileRoute("profile_work_history")
     data object AddModel : ProfileRoute("profile_add_model")
     data object Appearance : ProfileRoute("profile_appearance")
     data object CreateEvent : ProfileRoute("create_event")
     data object CreateWorkHistory : ProfileRoute("create_work_history?id={id}") {
         fun create(id: Int? = null) = if (id != null) "create_work_history?id=$id" else "create_work_history?id=-1"
+    }
+    data object WorkHistory : ProfileRoute("profile_work_history/{userId}") {
+        fun create(userId: Int) = "profile_work_history/$userId"
     }
 
     data object Profile : ProfileRoute("profile/{userId}") {
@@ -129,7 +131,7 @@ fun ProfileNavGraph(
                 key = "profile_$currentUserId",
                 factory = ProfileViewModel.factory(currentUserId, currentIsOwnProfile)
             )
-            android.util.Log.d("VideoGrid", "inp $currentUserId")
+
             ProfileScreen(
                 viewModel = profileViewModel,
                 userId = currentUserId,
@@ -138,7 +140,7 @@ fun ProfileNavGraph(
                     nav.navigate(ProfileRoute.Edit.createRoute(isModel, initialPage)) },
                 onEditLinksClicked = { nav.navigate(ProfileRoute.EditLinks.route) },
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() },
-                showWorkHistory = { nav.navigate(ProfileRoute.WorkHistory.route) },
+                showWorkHistory = { nav.navigate(ProfileRoute.WorkHistory.create(it)) },
                 onGalleryClicked = { index, isVideo ->
                     if (isVideo) {
                         nav.navigate(ProfileRoute.Gallery.video(currentUserId, index))
@@ -147,7 +149,6 @@ fun ProfileNavGraph(
                     }
                 },
                 onProfileClicked = { anotherUserId ->
-                    android.util.Log.d("VideoGrid", "alee $anotherUserId")
                     nav.navigate(ProfileRoute.Profile.createRoute(anotherUserId))
                 },
                 onAddModelClicked = {
@@ -193,8 +194,14 @@ fun ProfileNavGraph(
             )
         }
 
-        composable(ProfileRoute.WorkHistory.route) {
+        composable(
+            route = ProfileRoute.WorkHistory.route,
+            arguments = listOf(navArgument("userId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val workUserId = backStackEntry.arguments?.getInt("userId") ?: userId
+
             WorkHistoryScreen(
+                userId = workUserId,
                 isOwnProfile = isOwnProfile,
                 onCreateClicked = { id ->
                     nav.navigate(ProfileRoute.CreateWorkHistory.create(id))

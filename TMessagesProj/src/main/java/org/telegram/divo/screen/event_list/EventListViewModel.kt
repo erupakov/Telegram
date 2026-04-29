@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.event_list
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel

@@ -13,12 +13,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.utils.toShortString
 import org.telegram.divo.components.RoundedGlassContainer
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
@@ -28,43 +28,49 @@ import org.telegram.messenger.R.drawable
 fun EngagementsColumn(
     modifier: Modifier = Modifier,
     uiState: ProfileViewState,
-    onLikesClick: (Int, Boolean) -> Unit,
-    onViewsClick: () -> Unit,
-    onMarkClick: () -> Unit,
+    onLikeClick: () -> Unit,
+    onBookmarkClick: () -> Unit,
     onStatsClicked: (StatsType) -> Unit,
 ) {
     Column(modifier = modifier) {
-        val user = uiState.statistic
-        val backgroundColor = AppTheme.colors.onBackground.copy(alpha = 0.3f)//if (feed.isLiked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f)
-        val contentColor = AppTheme.colors.onBackground//if (feed.isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+        val backgroundColor = AppTheme.colors.onBackground.copy(alpha = 0.3f)
+        val contentColor = AppTheme.colors.onBackground
+        val isFavorite = uiState.userInfo.isFavorite
 
+        // LIKES
         RoundedGlassContainer(
-            modifier = Modifier
-                .width(63.dp),
+            modifier = Modifier.width(63.dp),
             height = 30.dp,
-            background = Color.Red,
+            background = if (uiState.userInfo.isFollowed) AppTheme.colors.onBackground else backgroundColor,
             contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                modifier = if (uiState.isOwnProfile) {
+                    Modifier.clickableWithoutRipple { onStatsClicked(StatsType.LIKES) }
+                } else Modifier
             ) {
                 Icon(
                     modifier = Modifier
                         .size(16.dp)
-                        .clickableWithoutRipple {
-                            if (uiState.isOwnProfile) onStatsClicked(StatsType.LIKES) else onLikesClick(uiState.userInfo.statistic.followersCount, uiState.userInfo.isFavorite)
-                        },
-                    painter = painterResource(drawable.ic_divo_favorite),//if (feed.isLiked) painterResource(drawable.ic_divo_favorite_selected) else painterResource(drawable.ic_divo_favorite),
+                        .then(
+                            if (!uiState.isOwnProfile) Modifier.clickableWithoutRipple { onLikeClick() }
+                            else Modifier
+                        ),
+                    painter = painterResource(drawable.ic_divo_favorite),
                     contentDescription = null,
                     tint = contentColor,
                 )
-                Spacer(Modifier.width(3.dp))
+                Spacer(Modifier.width(4.dp))
                 Text(
                     modifier = Modifier
                         .offset(y = 1.dp)
                         .weight(1f)
-                        .clickableWithoutRipple { onStatsClicked(StatsType.LIKES) },
-                    text = "----",//feed.likesCount.toShortString(),
+                        .then(
+                            if (!uiState.isOwnProfile) Modifier.clickableWithoutRipple { onStatsClicked(StatsType.LIKES) }
+                            else Modifier
+                        ),
+                    text = uiState.userInfo.statistic.likesCount.toShortString(),
                     style = AppTheme.typography.helveticaNeueRegular,
                     color = contentColor,
                     fontSize = 12.sp,
@@ -73,53 +79,87 @@ fun EngagementsColumn(
                 )
             }
         }
+
         Spacer(Modifier.height(10.dp))
+
+        // VIEWS — всегда открывает stats
         RoundedGlassContainer(
             modifier = Modifier.width(63.dp),
             height = 30.dp,
-            background = Color.Red,
+            background = backgroundColor,
             contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
-            Icon(
-                modifier = Modifier.size(16.dp),
-                painter = painterResource(drawable.ic_divo_visibility),
-                contentDescription = null,
-                tint = AppTheme.colors.onBackground
-            )
-            Spacer(Modifier.width(3.dp))
-            Text(
-                modifier = Modifier.offset(y = 1.dp),
-                text = "----",
-                style = AppTheme.typography.helveticaNeueRegular,
-                color = AppTheme.colors.onBackground,
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickableWithoutRipple { onStatsClicked(StatsType.VIEWS) }
+            ) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(drawable.ic_divo_visibility),
+                    contentDescription = null,
+                    tint = AppTheme.colors.onBackground
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    modifier = Modifier
+                        .offset(y = 1.dp)
+                        .weight(1f),
+                    text = uiState.userInfo.statistic.viewsCount.toShortString(),
+                    style = AppTheme.typography.helveticaNeueRegular,
+                    color = AppTheme.colors.onBackground,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
+
         Spacer(Modifier.height(10.dp))
+
+        // SAVES
+        val bookmarkIconRes = if (isFavorite) drawable.ic_divo_bookmark_glass_selected else drawable.ic_divo_bookmark_glass
+        val bookmarkColor = if (isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+
         RoundedGlassContainer(
             modifier = Modifier.width(63.dp),
             height = 30.dp,
-            background = Color.Red,
+            background = if (isFavorite) AppTheme.colors.onBackground else backgroundColor,
             contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
-            Icon(
-                modifier = Modifier.size(16.dp),
-                painter = painterResource(drawable.ic_divo_bookmark_glass),
-                contentDescription = null,
-                tint = AppTheme.colors.onBackground
-            )
-            Spacer(Modifier.width(3.dp))
-            Text(
-                modifier = Modifier.offset(y = 1.dp),
-                text = "----",
-                style = AppTheme.typography.helveticaNeueRegular,
-                color = AppTheme.colors.onBackground,
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = if (uiState.isOwnProfile) {
+                    Modifier.clickableWithoutRipple { onStatsClicked(StatsType.SAVES) }
+                } else Modifier
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .size(16.dp)
+                        .then(
+                            if (!uiState.isOwnProfile) Modifier.clickableWithoutRipple { onBookmarkClick() }
+                            else Modifier
+                        ),
+                    painter = painterResource(bookmarkIconRes),
+                    contentDescription = null,
+                    tint = bookmarkColor
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    modifier = Modifier
+                        .offset(y = 1.dp)
+                        .weight(1f)
+                        .then(
+                            if (!uiState.isOwnProfile) Modifier.clickableWithoutRipple { onStatsClicked(StatsType.SAVES) }
+                            else Modifier
+                        ),
+                    text = uiState.userInfo.statistic.followersCount.toShortString(),
+                    style = AppTheme.typography.helveticaNeueRegular,
+                    color = bookmarkColor,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

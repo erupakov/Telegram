@@ -1,13 +1,10 @@
 package org.telegram.divo.screen.profile
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
@@ -21,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -60,14 +56,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.common.SnackbarEvent.ErrorWithRetry
+import org.telegram.divo.common.SnackbarEvent.Success
+import org.telegram.divo.common.SnackbarEvent.SuccessWithIcon
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.profile.components.AgencyModels
+import org.telegram.divo.screen.profile.components.AnimatedPortfolioAddButton
 import org.telegram.divo.screen.profile.components.ChannelsContent
 import org.telegram.divo.screen.profile.components.EngagementStatsBottomSheet
 import org.telegram.divo.screen.profile.components.EventsColumn
@@ -75,10 +75,9 @@ import org.telegram.divo.screen.profile.components.PortfolioGrid
 import org.telegram.divo.screen.profile.components.ProfileHeadlineContent
 import org.telegram.divo.screen.profile.components.ProfileInfoPager
 import org.telegram.divo.screen.profile.components.ProfileInfoTabs
+import org.telegram.divo.screen.profile.components.ProfileLoadingContent
 import org.telegram.divo.screen.profile.components.SocialLinksSection
 import org.telegram.divo.screen.profile.components.StatsType
-import org.telegram.divo.screen.profile.components.PortfolioAddButton
-import org.telegram.divo.screen.profile.components.ProfileLoadingContent
 import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBarBackground
 import org.telegram.divo.screen.profile.components.ToolBarContent
@@ -97,7 +96,7 @@ fun ProfileScreen(
     onEditClicked: (Boolean, Int) -> Unit,
     onEditLinksClicked: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
-    showWorkHistory: (Boolean) -> Unit = {},
+    showWorkHistory: (Int) -> Unit = {},
     onGalleryClicked: (Int, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
     onAddModelClicked: () -> Unit,
@@ -109,7 +108,7 @@ fun ProfileScreen(
     val context = LocalContext.current
     val uiState = viewModel.state.collectAsState().value
     val snackbarState = remember { AppSnackbarHostState() }
-    android.util.Log.d("VideoGrid", "ллл $userId")
+
     var isRefreshing by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.isLoading) {
@@ -118,39 +117,52 @@ fun ProfileScreen(
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
-            when (effect) {
-                is ProfileEffect.OpenUrl -> {
-                    try {
-                        val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
-                        context.startActivity(intent)
-                    } catch (e: Exception) {
-                        snackbarState.show(Error(e.message.orEmpty()))
+            launch {
+                when (effect) {
+                    is ProfileEffect.OpenUrl -> {
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW, effect.url.toUri())
+                            context.startActivity(intent)
+                        } catch (e: Exception) {
+                            snackbarState.show(Error(e.message.orEmpty()))
+                        }
                     }
-                }
-                is ProfileEffect.ShowError -> {
-                    if (effect.hasRetry) {
+                    is ProfileEffect.ShowError -> {
+                        if (effect.hasRetry) {
+                            snackbarState.show(
+                                ErrorWithRetry(effect.message, context.getString(R.string.RetryLabel)) {
+                                    viewModel.setIntent(ProfileIntent.OnLoad)
+                                }
+                            )
+                        } else {
+                            snackbarState.show(Error(effect.message))
+                        }
+                    }
+                    is ProfileEffect.NavigateToEdit -> { onEditClicked(effect.isModel, effect.initialPage) }
+                    is ProfileEffect.NavigateBack -> onNavigateBack()
+                    is ProfileEffect.ShowWorkHistory -> showWorkHistory(effect.userId)
+                    is ProfileEffect.NavigateToGallery -> onGalleryClicked(effect.index, effect.isVideo)
+                    is ProfileEffect.NavigateToProfile -> {
+                        onProfileClicked(effect.profileId)
+                    }
+                    is ProfileEffect.NavigateToAddModel -> onAddModelClicked()
+                    is ProfileEffect.NavigateToEvent -> onEventClicked(effect.eventId)
+                    is ProfileEffect.NavigateToFindSimilarProfiles -> onFindSimilarProfiles(effect.photoUrl)
+                    is ProfileEffect.NavigateToEditLinks -> onEditLinksClicked()
+                    ProfileEffect.ShowAppearances -> onNavigateToAppearances(viewModel.state.value.physicalParams)
+                    ProfileEffect.NavigateToCreateEvent -> onEventCreateClicked()
+                    is ProfileEffect.ActionChanged -> {
                         snackbarState.show(
-                            ErrorWithRetry(effect.message, context.getString(R.string.RetryLabel)) {
-                                viewModel.setIntent(ProfileIntent.OnLoad)
-                            }
+                            SuccessWithIcon(
+                                effect.resDrawableId,
+                                context.getString(effect.resStringId)
+                            )
                         )
-                    } else {
-                        snackbarState.show(Error(effect.message))
+                    }
+                    is ProfileEffect.SaveSuccess -> {
+                        snackbarState.show(Success(context.getString(effect.stringId)))
                     }
                 }
-                is ProfileEffect.NavigateToEdit -> { onEditClicked(effect.isModel, effect.initialPage) }
-                is ProfileEffect.NavigateBack -> onNavigateBack()
-                is ProfileEffect.ShowWorkHistory -> showWorkHistory(effect.isOwnProfile)
-                is ProfileEffect.NavigateToGallery -> onGalleryClicked(effect.index, effect.isVideo)
-                is ProfileEffect.NavigateToProfile -> {
-                    onProfileClicked(effect.profileId)
-                }
-                is ProfileEffect.NavigateToAddModel -> onAddModelClicked()
-                is ProfileEffect.NavigateToEvent -> onEventClicked(effect.eventId)
-                is ProfileEffect.NavigateToFindSimilarProfiles -> onFindSimilarProfiles(effect.photoUrl)
-                is ProfileEffect.NavigateToEditLinks -> onEditLinksClicked()
-                ProfileEffect.ShowAppearances -> onNavigateToAppearances(viewModel.state.value.physicalParams)
-                ProfileEffect.NavigateToCreateEvent -> onEventCreateClicked()
             }
         }
     }
@@ -273,15 +285,16 @@ private fun ProfileScreenContent(
         else -> uiState.followedItems to uiState.isLoadingFollowed
     }
 
-    if (showStatsSheet && selectedStat != null && items.isNotEmpty()) {
+    val stats = selectedStat
+    if (showStatsSheet && stats != null && !uiState.isLoadingStats) {
         EngagementStatsBottomSheet(
-            stats = selectedStat,
+            stats = stats,
             items = items,
             isLoadingMoreFeed = isLoadingMore,
+            isLoadingSearch = uiState.isLoadingSearch,
             searchQuery = uiState.searchQuery,
             searchResults = uiState.searchResults,
             isSearchMode = uiState.isSearchMode,
-            isLoadingStats = uiState.isLoadingStats,
             isLoadingMoreSearch = uiState.isLoadingMoreSearch,
             onQueryChanged = { onIntent(ProfileIntent.OnSearchQueryChanged(it)) },
             onLoadMoreSearch = { onIntent(ProfileIntent.OnLoadMoreSearchResults) },
@@ -291,7 +304,19 @@ private fun ProfileScreenContent(
         )
     }
 
-    val fadeRangePx = with(density) { 30.dp.toPx() }
+    val fadeRangePx = with(density) { 90.dp.toPx() }
+
+    val engagementsFadeRangePx = with(density) { 20.dp.toPx() }
+    val engagementsAlpha by remember {
+        derivedStateOf {
+            if (lazyListState.firstVisibleItemIndex > 0) {
+                0f
+            } else {
+                val scrollOffset = lazyListState.firstVisibleItemScrollOffset.toFloat()
+                (1f - scrollOffset / engagementsFadeRangePx).coerceIn(0f, 1f)
+            }
+        }
+    }
 
     val transitionProgress by remember {
         derivedStateOf {
@@ -301,7 +326,7 @@ private fun ProfileScreenContent(
             if (firstVisibleIndex > 0) {
                 1f
             } else {
-                val tabsItem = layoutInfo.visibleItemsInfo.find { it.key == "info_tabs" }
+                val tabsItem = layoutInfo.visibleItemsInfo.find { it.key == "empty_item" }
                 if (tabsItem != null) {
                     val distance = tabsItem.offset - toolbarHeightPx
                     when {
@@ -315,6 +340,17 @@ private fun ProfileScreenContent(
             }
         }
     }
+
+//    val transitionProgress by remember {
+//        derivedStateOf {
+//            if (lazyListState.firstVisibleItemIndex > 0) {
+//                1f
+//            } else {
+//                val offset = lazyListState.firstVisibleItemScrollOffset.toFloat()
+//                (offset / fadeRangePx).coerceIn(0f, 1f)
+//            }
+//        }
+//    }
 
     val isToolbarSolid by remember {
         derivedStateOf {
@@ -332,6 +368,7 @@ private fun ProfileScreenContent(
     val showAddButton = uiState.isOwnProfile && isPagerSectionVisible && when (currentPage) {
         0 -> uiState.userGalleryItems.isNotEmpty()
         1 -> uiState.videoItems.isNotEmpty()
+        4 -> uiState.events.isNotEmpty()
         else -> false
     }
 
@@ -352,17 +389,23 @@ private fun ProfileScreenContent(
                     ProfileHeadlineContent(
                         modifier = Modifier.height(screenHeight * 0.5f),
                         uiState = uiState,
+                        engagementsAlpha = engagementsAlpha,
                         onEditLinksClicked = { onIntent(ProfileIntent.OnEditLinksClicked) },
                         showWorkHistory = { onIntent(ProfileIntent.OnShowWorkHistory) },
+                        onLikeClick = { /* TODO: like the profile post */ },
+                        onBookmarkClick = { onIntent(ProfileIntent.OnBookmarkClick) },
                         onStatsClicked = { stat ->
                             selectedStat = stat
                             showStatsSheet = true
+                            onIntent(ProfileIntent.OnStatsTabOpened(stat))
                         },
                         onSocialLinkClicked = { onIntent(ProfileIntent.OpenSocialLink(it)) },
                         onSendDMClicked = { }, //TODO
                         onReady = { onIntent(ProfileIntent.OnBackgroundReady) }
                     )
                 }
+
+                item(key = "empty_item") {  }
 
                 if (uiState.isModel) {
                     item(key = "info_tabs") {
@@ -474,7 +517,8 @@ private fun ProfileScreenContent(
                                     isLoadingMore = uiState.isLoadingMoreEvents,
                                     onLoadMore = { onIntent(ProfileIntent.OnLoadMoreEvents) },
                                     onEventClicked = { onIntent(ProfileIntent.OnEventClicked(it)) },
-                                    onEventCreate = { onIntent(ProfileIntent.OnEventCreate) }
+                                    onEventCreate = { onIntent(ProfileIntent.OnEventCreate) },
+                                    onEventApplied = { onIntent(ProfileIntent.OnEventApplied(it)) }
                                 )
                             }
                         }
@@ -531,49 +575,34 @@ private fun ProfileScreenContent(
             onFindSimilarProfiles = { onIntent(ProfileIntent.OnFindSimilarProfiles) }
         )
 
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = toolbarHeight)
-                .zIndex(3f)
-                .graphicsLayer {
-                    alpha = if (isTabsPinned && hasTabs) 1f else 0f
-                }
-        ) {
-            TabContainer(
-                pagerState = pagerState,
-                destinations = uiState.destinationTabs,
-                tabWidth = 60.dp,
-            )
-        }
-
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .zIndex(4f)
-                .padding(
-                    bottom = WindowInsets.navigationBars.asPaddingValues()
-                        .calculateBottomPadding() + 12.dp
-                )
-        ) {
-            AnimatedVisibility(
-                visible = showAddButton,
-                enter = slideInVertically { it } + fadeIn(),
-                exit = slideOutVertically { it } + fadeOut(),
+        if (isTabsPinned && hasTabs) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = toolbarHeight)
+                    .zIndex(3f)
             ) {
-                PortfolioAddButton(
-                    isUploading = uiState.mediaUploading,
-                    isVideo = pagerState.currentPage == 1,
-                    onMediaSelected = { uri: Uri ->
-                        if (pagerState.currentPage == 1) {
-                            onIntent(ProfileIntent.OnVideoSelected(context.uriToFile(uri)))
-                        } else {
-                            onIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(uri)))
-                        }
-                    }
+                TabContainer(
+                    pagerState = pagerState,
+                    destinations = uiState.destinationTabs,
+                    tabWidth = 60.dp,
                 )
             }
         }
+
+        AnimatedPortfolioAddButton(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            pagerState = pagerState,
+            showAddButton = showAddButton,
+            isUploading = uiState.mediaUploading,
+            onMediaSelected = { uri ->
+                when (pagerState.currentPage) {
+                    1 -> onIntent(ProfileIntent.OnVideoSelected(context.uriToFile(uri)))
+                    else -> onIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(uri)))
+                }
+            },
+            onEventCreate = { onIntent(ProfileIntent.OnEventCreate) }
+        )
     }
 }
 

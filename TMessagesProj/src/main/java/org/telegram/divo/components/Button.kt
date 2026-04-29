@@ -125,6 +125,7 @@ fun UIButtonNew(
     paddingTop: Dp = 3.dp,
     enabled: Boolean = true,
     leadingIcon: Int? = null,
+    leadingIconTint: Color = AppTheme.colors.onBackground,
     onClick: () -> Unit = {},
 ) {
     Button(
@@ -141,7 +142,7 @@ fun UIButtonNew(
             Icon(
                 modifier = Modifier.size(12.dp),
                 painter = painterResource(leadingIcon),
-                tint = AppTheme.colors.onBackground,
+                tint = leadingIconTint,
                 contentDescription = null,
             )
             Spacer(Modifier.width(6.dp))

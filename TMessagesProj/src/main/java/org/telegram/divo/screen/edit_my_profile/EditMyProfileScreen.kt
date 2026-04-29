@@ -207,6 +207,7 @@ fun EditMyProfileScreen(
                     }
                     ProfileDestination.EXPERIENCE -> {
                         WorkHistoryScreen(
+                            userId = uiState.userFull?.id ?: -1,
                             isOwnProfile = true,
                             isFromEditScreen = true,
                             onCreateClicked = onCreateWorkHistoryClicked

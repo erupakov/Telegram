@@ -3,7 +3,6 @@ package org.telegram.divo.screen.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.android.exoplayer2.util.Log
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -41,6 +40,8 @@ import org.telegram.divo.usecase.EngagementInteractor
 import org.telegram.divo.usecase.GetEventListUseCase
 import org.telegram.divo.usecase.GetUserGalleryUseCase
 import org.telegram.divo.usecase.GetUserVideosUseCase
+import org.telegram.divo.usecase.ToggleBookmarkUseCase
+import org.telegram.messenger.R
 import java.io.File
 
 class ProfileViewModel(
@@ -49,6 +50,9 @@ class ProfileViewModel(
 ) : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
 
     private var searchModelsJob: Job? = null
+    private var engagementLoaded = false
+
+    private val toggleBookmarkUseCase = ToggleBookmarkUseCase()
 
     private val eventPaginator = GetEventListUseCase().paginator
 
@@ -131,8 +135,29 @@ class ProfileViewModel(
             is ProfileIntent.OnVideoSelected -> uploadVideo(intent.file)
             is ProfileIntent.OnClearPortfolioUpload -> {}
             is ProfileIntent.OnLoadMoreEngagementStats -> loadMoreEngagement(intent.type)
-            is ProfileIntent.OnSearchQueryChanged -> {}//onSearchQueryChanged(intent.query)
-            is ProfileIntent.OnLoadMoreSearchResults -> {}//loadMoreSearchResults()
+            is ProfileIntent.OnStatsTabOpened -> {
+                setState {
+                    copy(
+                        activeStatsType = intent.type,
+                        searchQuery = "",
+                        searchResults = emptyList(),
+                        isSearchMode = false,
+                        isLoadingSearch = false
+                    )
+                }
+                engagement.currentStatsType = when (intent.type) {
+                    StatsType.VIEWS -> "viewed"
+                    StatsType.SAVES -> "followed"
+                    else -> "liked"
+                }
+                engagement.searchPaginator.reset()
+                if (!engagementLoaded) {
+                    engagementLoaded = true
+                    viewModelScope.launch { loadEngagement() }
+                }
+            }
+            is ProfileIntent.OnSearchQueryChanged -> onSearchQueryChanged(intent.query)
+            is ProfileIntent.OnLoadMoreSearchResults -> loadMoreSearchResults()
             is ProfileIntent.OnLoadMorePortfolio -> loadMorePortfolio()
             is ProfileIntent.OnLoadMoreVideos -> viewModelScope.launch { videoPaginator.loadMore() }
             ProfileIntent.OnLoadMoreEvents -> viewModelScope.launch { eventPaginator.loadMore() }
@@ -140,7 +165,7 @@ class ProfileViewModel(
             is ProfileIntent.OnEditLinksClicked -> sendEffect(NavigateToEditLinks)
 
             is ProfileIntent.OnNavigateBack -> sendEffect(NavigateBack)
-            is ProfileIntent.OnShowWorkHistory -> sendEffect(ShowWorkHistory(state.value.isOwnProfile))
+            is ProfileIntent.OnShowWorkHistory -> sendEffect(ShowWorkHistory(state.value.userId))
             is ProfileIntent.OnGalleryClicked -> {
                 val index = getGalleryItemIndex(intent.url, intent.isVideo)
                 sendEffect(NavigateToGallery(index, intent.isVideo))
@@ -155,6 +180,8 @@ class ProfileViewModel(
 //            ProfileIntent.OnLoadMoreSearchModels -> loadMoreSearchModels()
 //            is ProfileIntent.OnSearchModelsQueryChanged -> onSearchModelsQueryChanged(intent.query)
             ProfileIntent.OnLoadMoreAgencyModels -> viewModelScope.launch { agencyModelsPaginator.loadMore() }
+            ProfileIntent.OnBookmarkClick -> toggleBookmark()
+            is ProfileIntent.OnEventApplied -> applyEvent(intent.eventId)
         }
     }
 
@@ -164,17 +191,15 @@ class ProfileViewModel(
             val validState = state.first { it.userId > 0 && !it.isLoading && it.userInfo.role != RoleType.UNKNOWN }
             if (validState.userId <= 0) return@launch
 
-            launch { loadEngagement() }
             launch { portfolioPaginator.loadInitial() }
             launch { videoPaginator.loadInitial() }
 
             observeEngagementPaginators()
-            //observeSearchPaginator()
+            observeSearchPaginator()
             observeGalleryListPaginator()
             observeVideoPaginator()
 
             if (!state.value.isModel) {
-                Log.d("VideoGrid", "ayy ${state.value.isModel}")
                 launch { eventPaginator.loadInitial() }
                 launch { agencyModelsPaginator.loadInitial() }
                 observeEvents()
@@ -189,6 +214,7 @@ class ProfileViewModel(
                 setState {
                     copy(
                         likedItems = pState.items,
+                        isLoadingStats = pState.isLoading,
                         isLoadingLiked = pState.isLoading || pState.isLoadingMore,
                         hasMoreLiked = pState.hasMore
                     )
@@ -200,6 +226,7 @@ class ProfileViewModel(
                 setState {
                     copy(
                         viewedItems = pState.items,
+                        isLoadingStats = pState.isLoading,
                         isLoadingViewed = pState.isLoading || pState.isLoadingMore,
                         hasMoreViewed = pState.hasMore
                     )
@@ -211,6 +238,7 @@ class ProfileViewModel(
                 setState {
                     copy(
                         followedItems = pState.items,
+                        isLoadingStats = pState.isLoading,
                         isLoadingFollowed = pState.isLoading || pState.isLoadingMore,
                         hasMoreFollowed = pState.hasMore
                     )
@@ -219,21 +247,47 @@ class ProfileViewModel(
         }
     }
 
-//    private fun observeSearchPaginator() {
-//        viewModelScope.launch {
-//            searchPaginator.state.collect { pState ->
-//                setState {
-//                    copy(
-//                        searchModels = pState.items.map { it.toSearchedProfile() },
-//                        isLoadingSearchModels = pState.isLoading,
-//                        isLoadingMoreSearchModels = pState.isLoadingMore,
-//                        hasMoreSearchModels = pState.hasMore,
-//                    )
-//                }
-//                pState.error?.let { sendEffect(ShowError(it)) }
-//            }
-//        }
-//    }
+    private fun observeSearchPaginator() {
+        viewModelScope.launch {
+            engagement.searchPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        searchResults = pState.items,
+                        isLoadingSearch = pState.isLoading,
+                        isLoadingMoreSearch = pState.isLoadingMore,
+                        searchHasMore = pState.hasMore,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun onSearchQueryChanged(query: String) {
+        searchModelsJob?.cancel()
+        setState { copy(searchQuery = query, isSearchMode = query.isNotBlank()) }
+
+        if (query.isBlank()) {
+            engagement.searchPaginator.reset()
+            setState { copy(searchResults = emptyList(), isLoadingSearch = false) }
+            return
+        }
+
+        setState { copy(isLoadingSearch = true) } // ← добавить
+
+        searchModelsJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MS)
+            engagement.currentSearchQuery = query
+            engagement.searchPaginator.reset()
+            engagement.searchPaginator.loadInitial()
+        }
+    }
+
+    private fun loadMoreSearchResults() {
+        viewModelScope.launch {
+            engagement.searchPaginator.loadMore()
+        }
+    }
+
 
     private fun observeAgencyModelsPaginator() {
         viewModelScope.launch {
@@ -464,6 +518,36 @@ class ProfileViewModel(
         }
     }
 
+    private fun toggleBookmark() {
+        val info = state.value.userInfo
+
+        viewModelScope.launch {
+            toggleBookmarkUseCase.execute(
+                userId = info.id,
+                entity = info.role.value,
+                isFavorite = info.isFavorite,
+                currentFollowersCount = info.statistic.followersCount,
+                onUpdate = { newFavorite, newCount ->
+                    setState {
+                        copy(
+                            userInfo = userInfo.copy(
+                                isFavorite = newFavorite,
+                                statistic = userInfo.statistic.copy(followersCount = newCount)
+                            )
+                        )
+                    }
+                },
+                onRollback = { setState { copy(userInfo = info) } },
+                onSuccess = { newFavorite ->
+                    sendEffect(ProfileEffect.ActionChanged(
+                        resDrawableId = R.drawable.ic_divo_bookmark_glass_selected,
+                        resStringId = if (newFavorite) R.string.BookmarkSaved else R.string.BookmarkUnsaved
+                    ))
+                },
+                onError = { sendEffect(ShowError(it)) }
+            )
+        }
+    }
 
     private fun uploadPhoto(file: Result<File>) {
         viewModelScope.launch {
@@ -592,6 +676,31 @@ class ProfileViewModel(
             state.value.userGalleryItems
                 .indexOfFirst { it.photoUrl == url }
                 .coerceAtLeast(0)
+        }
+    }
+
+    private fun applyEvent(id: Int) {
+        val savedEvents = state.value.events
+
+        setState {
+            copy(
+                events = events.map { event ->
+                    if (event.id == id)
+                        event.copy(isApplied = true, appliesCount = event.appliesCount + 1)
+                    else event
+                }
+            )
+        }
+
+        viewModelScope.launch {
+            val result = DivoApi.eventRepository.applyEvent(id)
+
+            if (result is DivoResult.Success) {
+                //sendEffect(ProfileEffect.SaveSuccess())
+            } else {
+                setState { copy(events = savedEvents) }
+                sendEffect(ShowError(result.getErrorMessage()))
+            }
         }
     }
 

@@ -1,5 +1,7 @@
 package org.telegram.divo.screen.work_history
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
@@ -7,7 +9,9 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 
-class WorkHistoryViewModel : BaseViewModel<State, Intent, Effect>() {
+class WorkHistoryViewModel(
+    private val userId: Int
+) : BaseViewModel<State, Intent, Effect>() {
 
     init {
         viewModelScope.launch {
@@ -15,6 +19,7 @@ class WorkHistoryViewModel : BaseViewModel<State, Intent, Effect>() {
                 cached?.let { setState { copy(experiences = it) } }
             }
         }
+
         loadWorkExperience()
     }
 
@@ -33,7 +38,7 @@ class WorkHistoryViewModel : BaseViewModel<State, Intent, Effect>() {
     private fun loadWorkExperience() {
         viewModelScope.launch {
             setState { copy(isLoading = true) }
-            val result = DivoApi.workHistory.getWorkHistory()
+            val result = DivoApi.workHistory.getWorkHistory(userId)
             setState { copy(isLoading = false) }
             if (result !is DivoResult.Success) {
                 sendEffect(Effect.ShowError(result.getErrorMessage()))
@@ -48,6 +53,15 @@ class WorkHistoryViewModel : BaseViewModel<State, Intent, Effect>() {
             setState { copy(deletingId = null) }
             if (result !is DivoResult.Success) {
                 sendEffect(Effect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
+    companion object {
+        fun factory(userId: Int) = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                @Suppress("UNCHECKED_CAST")
+                return WorkHistoryViewModel(userId) as T
             }
         }
     }

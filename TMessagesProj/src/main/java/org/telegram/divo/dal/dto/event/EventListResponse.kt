@@ -1,6 +1,7 @@
 package org.telegram.divo.dal.dto.event
 
 import com.google.gson.annotations.SerializedName
+import org.telegram.divo.dal.dto.common.AgencyAddressDto
 import org.telegram.divo.dal.dto.common.PaginationDto
 import org.telegram.divo.dal.dto.common.PhotoDto
 import org.telegram.divo.dal.dto.common.toEntity
@@ -25,16 +26,16 @@ class EventDto(
     @SerializedName("id") val id: Int,
     @SerializedName("title") val title: String?,
     @SerializedName("description") val description: String?,
-    @SerializedName("type") val type: String?,
+    @SerializedName("type") val type: EventTypeDto?,
     @SerializedName("likesCount") val likesCount: Int,
+    @SerializedName("isApplied") val isApplied: Boolean,
     @SerializedName("appliesCount") val appliesCount: Int,
     @SerializedName("date") val date: String?,
     @SerializedName("dateTo") val dateTo: String?,
-    @SerializedName("city") val city: String?,
-    //@SerializedName("countryCode") val countryCode: String?,
     @SerializedName("isLikedByUser") val isLikedByUser: Boolean,
     @SerializedName("creator") val creator: EventCreatorDto?,
     @SerializedName("files") val files: List<EventFileDto>?,
+    @SerializedName("address") val address: AgencyAddressDto?
 )
 
 class EventCreatorDto(
@@ -71,12 +72,14 @@ fun EventDto.toEntity() = Event(
     id = id,
     title = title,
     description = description,
-    type = type,
+    type = type?.title,
     likesCount = likesCount,
     appliesCount = appliesCount,
+    isApplied = isApplied,
     date = date.orEmpty(),
     dateTo = dateTo.orEmpty(),
-    city = city.orEmpty(),
+    city = address?.city?.name.orEmpty(),
+    countryCode = address?.city?.countryCode.orEmpty(),
     isLikedByUser = isLikedByUser,
     creator = creator?.toEntity(),
     files = files?.map { it.toEntity() } ?: emptyList(),

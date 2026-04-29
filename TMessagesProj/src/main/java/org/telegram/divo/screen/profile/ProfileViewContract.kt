@@ -9,13 +9,12 @@ import org.telegram.divo.components.TabConfig
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.Event
-import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.Publication
-import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.screen.models.ModelsViewEffect
 import org.telegram.divo.screen.profile.components.ProfileDestination
 import org.telegram.divo.screen.profile.components.ProfileInfoDestination
 import org.telegram.divo.screen.profile.components.StatsType
@@ -64,8 +63,9 @@ data class ProfileViewState(
     val backgroundChanging: Boolean = false,
 
     val searchQuery: String = "",
-    val searchResults: List<FeedlineItem> = emptyList(),
+    val searchResults: List<EngagementUser> = emptyList(),
     val isSearchMode: Boolean = false,
+    val isLoadingSearch: Boolean = false,
     val searchHasMore: Boolean = true,
     val isLoadingMoreSearch: Boolean = false,
 
@@ -78,6 +78,7 @@ data class ProfileViewState(
     val hasMoreLiked: Boolean = true,
     val hasMoreViewed: Boolean = true,
     val hasMoreFollowed: Boolean = true,
+    val activeStatsType: StatsType = StatsType.LIKES,
 
     val similarProfiles: List<SimilarFace> = emptyList(),
     val socialLinks: SocialLinks = SocialLinks(),
@@ -173,6 +174,8 @@ sealed class ProfileIntent : ViewIntent {
     class OnLoadMoreEngagementStats(
         val type: StatsType
     ) : ProfileIntent()
+    class OnStatsTabOpened(val type: StatsType) : ProfileIntent()
+    object OnBookmarkClick : ProfileIntent()
 
     class OnPortfolioPhotoSelected(
         val file: Result<File>
@@ -205,6 +208,7 @@ sealed class ProfileIntent : ViewIntent {
     class OnProfileClicked(val profileId: Int) : ProfileIntent()
     object OnAddModelClicked : ProfileIntent()
     class OnEventClicked(val eventId: Int) : ProfileIntent()
+    class OnEventApplied(val eventId: Int) : ProfileIntent()
     object OnFindSimilarProfiles : ProfileIntent()
     object OnEventCreate : ProfileIntent()
     object OnLoadMoreAgencyModels : ProfileIntent()
@@ -214,9 +218,10 @@ sealed class ProfileEffect : ViewEffect {
     class OpenUrl(val url: String) : ProfileEffect()
     class ShowError(val message: String, val hasRetry: Boolean = false) : ProfileEffect()
     class NavigateToEdit(val isModel: Boolean, val initialPage: Int) : ProfileEffect()
+    class SaveSuccess(val stringId: Int) : ProfileEffect()
     
     object NavigateBack : ProfileEffect()
-    class ShowWorkHistory(val isOwnProfile: Boolean) : ProfileEffect()
+    class ShowWorkHistory(val userId: Int) : ProfileEffect()
     object ShowAppearances : ProfileEffect()
     class NavigateToGallery(val index: Int, val isVideo: Boolean) : ProfileEffect()
     class NavigateToProfile(val profileId: Int) : ProfileEffect()
@@ -225,4 +230,5 @@ sealed class ProfileEffect : ViewEffect {
     class NavigateToFindSimilarProfiles(val photoUrl: String) : ProfileEffect()
     object NavigateToEditLinks : ProfileEffect()
     object NavigateToCreateEvent : ProfileEffect()
+    data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : ProfileEffect()
 }

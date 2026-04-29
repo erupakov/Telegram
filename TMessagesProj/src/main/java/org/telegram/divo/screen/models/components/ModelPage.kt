@@ -80,7 +80,6 @@ fun ModelPage(
             .clickableWithoutRipple { onClick(feed.id) }
     ) {
 
-        // Слой фона: невидимый пока обе картинки не загрузятся, потом плавно появляется
         val bgAlpha by animateFloatAsState(
             targetValue = if (allImagesReady) 1f else 0f,
             animationSpec = tween(durationMillis = 300),
@@ -157,6 +156,7 @@ fun ModelPage(
                         if (feed.user.age != null && feed.user.countryCode != null) {
                             Text(
                                 text = " ·",
+                                color = AppTheme.colors.onBackground
                             )
                         }
                         feed.user.countryCode?.let {
