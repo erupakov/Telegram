@@ -37,7 +37,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -101,6 +100,7 @@ fun ParameterBottomSheet(
     val integerParts = remember(paramType) {
         val range = when (paramType) {
             ParametersType.HEIGHT -> 120..220
+            ParametersType.WEIGHT -> 30..200
             ParametersType.WAIST -> 40..130
             ParametersType.HIPS -> 60..150
             ParametersType.SHOE_SIZE -> 30..50

@@ -2,7 +2,7 @@ package org.telegram.divo.entity
 
 data class AgencyModels(
     val items: List<AgencyModel>,
-    //val pagination: Pagination
+    val pagination: Pagination?
 )
 
 data class AgencyModel(

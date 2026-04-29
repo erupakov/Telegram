@@ -1,9 +1,9 @@
 package org.telegram.divo.dal.api
 
-import okhttp3.ResponseBody
 import org.telegram.divo.dal.dto.common.EmptyResponse
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationResponse
+import org.telegram.divo.dal.dto.publication.FavoriteRequest
 import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedResponse
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
@@ -46,17 +46,17 @@ interface PublicationService {
         @Path("id") id: Int
     ): EmptyResponse
 
-    @POST("publication/like")
-    suspend fun like(@Body body: Map<String, Any?>): ResponseBody
-
-    @POST("publication/unlike")
-    suspend fun unlike(@Body body: Map<String, Any?>): ResponseBody
-
     @POST("feedline/like")
     suspend fun likePost(@Body request: LikeRequest): EmptyResponse
 
     @POST("feedline/unlike")
     suspend fun unlikePost(@Body request: LikeRequest): EmptyResponse
+
+    @POST("favorite/mark")
+    suspend fun markFavorite(@Body request: FavoriteRequest): EmptyResponse
+
+    @POST("favorite/unmark")
+    suspend fun unmarkFavorite(@Body request: FavoriteRequest): EmptyResponse
 }
 
 

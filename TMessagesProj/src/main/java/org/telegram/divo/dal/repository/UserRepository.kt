@@ -1,15 +1,16 @@
 package org.telegram.divo.dal.repository
 
+import androidx.core.content.edit
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -28,7 +29,6 @@ import org.telegram.divo.dal.dto.user.toEntities
 import org.telegram.divo.dal.dto.user.toEntity
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
-import org.telegram.messenger.NotificationCenter
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyModels
 import org.telegram.divo.entity.Appearances
@@ -38,9 +38,9 @@ import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserGalleryList
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.entity.UserSocialNetwork
+import org.telegram.messenger.NotificationCenter
 import java.io.File
 import java.util.TimeZone
-import androidx.core.content.edit
 
 private const val MAX_CACHED_USERS = 5
 
@@ -134,7 +134,7 @@ class UserRepository(
     }
 
     suspend fun getAgencyModels(
-        agencyId: Int = 1,
+        agencyId: Int,
         offset: Int = 0,
         limit: Int = 10,
     ): DivoResult<AgencyModels> = resultOf {

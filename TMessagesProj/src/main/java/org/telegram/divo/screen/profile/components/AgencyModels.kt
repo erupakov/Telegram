@@ -21,13 +21,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,11 +40,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoChip
+import org.telegram.divo.components.DivoPopupMenu
+import org.telegram.divo.components.PopupMenuItem
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.RoleType
@@ -51,13 +57,18 @@ import org.telegram.messenger.R
 @Composable
 fun AgencyModels(
     models: List<AgencyModel>,
+    //searchModels: List<SearchedProfile>,
+    //query: String,
+    //onQueryChanged: (String) -> Unit,
     isOwnProfile: Boolean,
-    isLoadingMoreModels: Boolean,
     topPadding: Dp = 0.dp,
+    //isLoadingMore: Boolean,
+    //hasMore: Boolean,
+    onLoadMoreAgencyModels: () -> Unit,
     onAddModelClicked: () -> Unit,
     onModelClicked: (Int) -> Unit,
-    onLoadMoreAgencyModels: () -> Unit,
 ) {
+    var showBottomSheet by remember { mutableStateOf(false) }
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 8.dp
 
     if (models.isEmpty()) {
@@ -108,7 +119,10 @@ fun AgencyModels(
                 ) {
                     ModelItem(
                         item = it,
-                        onClicked = onModelClicked
+                        isOwnProfile = isOwnProfile,
+                        onClicked = onModelClicked,
+                        onEdit = {}, //TODO
+                        onDelete = {} //TODO
                     )
                 }
             }
@@ -125,13 +139,32 @@ fun AgencyModels(
             }
         }
     }
+
+    if (showBottomSheet) {
+//        AgencyModelsBottomSheet(
+//            query = query,
+//            searchModels = searchModels,
+//            onValueChanged = onQueryChanged,
+//            isLoadingMore = isLoadingMore,
+//            hasMore = hasMore,
+//            onLoadMore = onLoadMoreAgencyModels,
+//            onClicked = {},//TODO
+//            onDismiss = { showBottomSheet = false }
+//        )
+    }
 }
 
 @Composable
 private fun ModelItem(
     item: AgencyModel,
+    isOwnProfile: Boolean,
     onClicked: (Int) -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
+    Spacer(Modifier.height(4.dp))
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -143,12 +176,14 @@ private fun ModelItem(
             model = item.photoUrl,
         )
         Spacer(modifier = Modifier.width(10.dp))
-        Column {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    modifier = Modifier,
+                    modifier = Modifier.weight(1f, fill = false),
                     text = item.name,
                     style = AppTheme.typography.helveticaNeueRegular,
                     fontSize = 16.sp,
@@ -161,10 +196,11 @@ private fun ModelItem(
                     modifier = Modifier.offset(y = (-2).dp),
                     text = stringResource(R.string.PremiumLabel),
                     resId = R.drawable.ic_divo_premium_11,
-                    background = Color.White,
+                    background = Color.Red,
                     textColor = AppTheme.colors.accentOrange,
                     iconSize = 11.dp,
-                    border = 1.dp
+                    border = 1.dp,
+                    contentPadding= PaddingValues(start = 6.dp, end = 8.dp, top = 6.dp, bottom = 6.dp)
                 )
             }
             Spacer(modifier = Modifier.height(4.dp))
@@ -177,7 +213,26 @@ private fun ModelItem(
                 overflow = TextOverflow.Ellipsis
             )
         }
+        if (isOwnProfile) {
+            Icon(
+                modifier = Modifier.clickableWithoutRipple { menuExpanded = true },
+                painter = painterResource(R.drawable.ic_divo_menu_24),
+                contentDescription = null
+            )
+
+            DivoPopupMenu(
+                visible = menuExpanded,
+                onDismiss = { menuExpanded = false },
+                offset = IntOffset(x = 0, y = -63),
+                items = listOf(
+                    PopupMenuItem(R.string.ButtonEdit, onEdit),
+                    PopupMenuItem(R.string.ButtonDelete, onDelete),
+                )
+            )
+        }
     }
+    Spacer(Modifier.height(10.dp))
+    Divider(color = Color.LightGray, thickness = 0.5.dp)
 }
 
 @Composable
@@ -203,7 +258,7 @@ private fun EmptyModels(
                 modifier = Modifier
                     .size(68.dp)
                     .clip(CircleShape)
-                    .background(AppTheme.colors.backgroundLight)
+                    .background(AppTheme.colors.textPrimary.copy(0.1f))
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp).align(Alignment.Center),

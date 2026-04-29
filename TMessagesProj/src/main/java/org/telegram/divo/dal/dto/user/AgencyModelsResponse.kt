@@ -2,7 +2,7 @@ package org.telegram.divo.dal.dto.user
 
 import com.google.gson.annotations.SerializedName
 import org.telegram.divo.dal.dto.common.CityDto
-import org.telegram.divo.dal.dto.common.PaginationDto
+import org.telegram.divo.dal.dto.common.PaginationMetaDto
 import org.telegram.divo.dal.dto.common.PhotoDto
 import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.entity.AgencyModel
@@ -14,14 +14,14 @@ class AgencyModelsResponse(
 
 class AgencyModelsDataDto(
     @SerializedName("items") val items: List<ModelItemDto>,
-    @SerializedName("pagination") val pagination: PaginationDto
+    @SerializedName("pagination") val pagination: PaginationMetaDto?
 )
 
 class ModelItemDto(
     @SerializedName("id") val id: Int,
     @SerializedName("name") val name: String,
     @SerializedName("birthday") val birthday: String? = null,
-    @SerializedName("photo") val photo: PhotoDto,
+    @SerializedName("photo") val photo: PhotoDto?,
     @SerializedName("city") val city: CityDto? = null,
     @SerializedName("userId") val userId: Int
 )
@@ -29,6 +29,7 @@ class ModelItemDto(
 fun AgencyModelsResponse.toEntities(): AgencyModels =
     AgencyModels(
         items = data.items.map { it.toEntity() },
+        pagination = data.pagination?.toEntity()
     )
 
 fun ModelItemDto.toEntity(): AgencyModel =
@@ -36,7 +37,7 @@ fun ModelItemDto.toEntity(): AgencyModel =
         id = id,
         name = name,
         birthday = birthday,
-        photoUrl = photo.fullUrl,
+        photoUrl = photo?.fullUrl.orEmpty(),
         city = city?.toEntity(),
         userId = userId
     )

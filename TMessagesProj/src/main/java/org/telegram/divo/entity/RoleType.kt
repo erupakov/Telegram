@@ -4,6 +4,12 @@ enum class RoleType(val value: String) {
     MODEL("model"),
     NEW_FACE("new_face"),
     AGENCY("agency_employee"),
+    PHOTOGRAPHER("photographer"),
+    MEDIA("media"),
+    BRAND("brand"),
+    STYLIST("stylist"),
+    PLACE("place"),
+    CUSTOMER("customer"),
     UNKNOWN("");
 
     fun isModel(): Boolean = this == NEW_FACE || this == MODEL

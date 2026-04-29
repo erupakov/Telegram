@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.profile.components
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -40,6 +41,7 @@ fun PortfolioGrid(
     portfolioItems: List<UserGalleryItem>,
     similarItems: List<SimilarFace>,
     isOwnProfile: Boolean,
+    isModel: Boolean,
     isUploading: Boolean,
     isLoadingMore: Boolean,
     isFirstLoading: Boolean,
@@ -48,6 +50,7 @@ fun PortfolioGrid(
     onLoadMore: () -> Unit,
     onPhotoClicked: (String) -> Unit,
     onSimilarClicked: (Int) -> Unit,
+    onImageSelected: (Uri) -> Unit,
 ) {
     val gridState = rememberLazyGridState()
     val context = LocalContext.current
@@ -75,7 +78,7 @@ fun PortfolioGrid(
         }
     }
 
-    Box() {
+    Box {
         val bottomPadding = if (isOwnProfile) 72.dp else 16.dp
 
         LazyVerticalGrid(
@@ -89,12 +92,20 @@ fun PortfolioGrid(
                     .calculateBottomPadding() + bottomPadding
             )
         ) {
+            if (portfolioItems.isEmpty() && !isFirstLoading && isOwnProfile) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    PortfolioEmptyAddButton(
+                        isUploading = isUploading,
+                        onMediaSelected = onImageSelected
+                    )
+                }
+            }
+
             items(
                 items = portfolioItems,
                 key = { it.id },
                 contentType = { "photo" }
             ) { item ->
-
                 val imageRequest = remember(item.previewUrl) {
                     ImageRequest.Builder(context)
                         .data(item.previewUrl)
@@ -136,7 +147,7 @@ fun PortfolioGrid(
                 }
             }
 
-            if (!isOwnProfile && similarItems.isNotEmpty()) {
+            if (!isOwnProfile && similarItems.isNotEmpty() && isModel) {
                 item(span = { GridItemSpan(maxLineSpan) }) {
                     SimilarProfilesRow(
                         similarItems = similarItems,

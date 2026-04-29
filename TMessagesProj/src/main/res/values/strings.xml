@@ -48,6 +48,7 @@
     <string name="SearchByName">Search by name or @handle</string>
     <string name="YearsOld">y.o.</string>
     <string name="NotBio">This model hasn\'t filled in their bio</string>
+    <string name="NotAgencyBio">This agency hasn\'t filled in their bio</string>
     <string name="NotAppearance">Model parameters are not filled in</string>
     <string name="NotExperience">No work experience added yet</string>
     <string name="FillInBio">Fill in bio</string>
@@ -56,7 +57,11 @@
     <string name="AddYourParameters">Add your parameters</string>
     <string name="AddWorkHistory">Add work history</string>
     <string name="ThereAreNoWorkExperienceYet">There are no work experience yet</string>
-
+    <string name="ThereAreNoChannels">THERE ARE NO CHANNELS AT THE MOMENT</string>
+    <string name="YouHaveNotCreatedChannels">You haven\'t created any channels yet</string>
+    <string name="ThisAgencyHasNotCreatedChannels">This agency hasn\'t created any channels yet</string>
+    <string name="ThisModelHasNotCreatedChannels">This model hasn\'t created any channels yet</string>
+    <string name="CreateNewChannel">Create new channel</string>
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>
@@ -151,6 +156,10 @@
     <string name="AddStoryLabel">Add Story</string>
     <string name="Liked">Liked</string>
     <string name="Unliked">Unliked</string>
+    <string name="BookmarkSaved">Saved</string>
+    <string name="BookmarkUnsaved">Unsaved</string>
+    <string name="AddModelToYourRoster">Add a model to your roster</string>
+    <string name="StartTypingToSearchForModel">Start typing to search\nfor a model</string>
 
     <!--events screen-->
     <string name="EventList">Events</string>
@@ -162,6 +171,9 @@
     <string name="CountdownStarted">Started</string>
     <string name="CountdownFinished">Finished</string>
     <string name="NoEventsYet">No events yet</string>
+    <string name="CreateEvent">Create Event</string>
+    <string name="ThereAreNoUpcomingEvents">There are no upcoming events at the moment</string>
+    <string name="CheckBackLaterOrCreateEvents">Check back later or create\na new one</string>
     <plurals name="ParticipantsCount">
         <item quantity="one">%d participant</item>
         <item quantity="other">%d participants</item>

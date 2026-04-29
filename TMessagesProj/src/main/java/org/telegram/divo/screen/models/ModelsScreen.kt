@@ -59,7 +59,6 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
-import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
@@ -140,7 +139,6 @@ fun ModelsHomeScreen(
     val haptic = LocalHapticFeedback.current
     var isInitialized by remember { mutableStateOf(false) }
 
-    // Состояние "на границе": либо полностью раскрыто, либо полностью схлопнуто
     val isAtBoundary by remember {
         derivedStateOf { headerScrollOffset <= 0.5f || headerScrollOffset >= maxScrollOffsetPx - 0.5f }
     }
@@ -150,7 +148,7 @@ fun ModelsHomeScreen(
             isInitialized = true
             return@LaunchedEffect
         }
-        // Вибрируем только при входе в граничное состояние (когда сторисы "ударились" о край)
+
         if (isAtBoundary) {
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         }
@@ -252,15 +250,12 @@ fun ModelsHomeScreen(
                     onLoadMore = { viewModel.setIntent(ModelsViewIntent.LoadMore(tab)) },
                     onLikeClick = { id, liked ->
                         viewModel.setIntent(
-                            ModelsViewIntent.OnLikeClick(
-                                tab,
-                                id,
-                                liked
-                            )
+                            ModelsViewIntent.OnLikeClick(tab, id, liked)
                         )
                     },
                     onClick = onClick,
-                    onPhotoClicked = onPhotoClicked
+                    onPhotoClicked = onPhotoClicked,
+                    onBookmarkClick = { viewModel.setIntent(ModelsViewIntent.OnBookmarkClick(it)) }
                 )
             }
 
@@ -320,6 +315,7 @@ private fun ModelsList(
     bottomInset: androidx.compose.ui.unit.Dp,
     onLoadMore: () -> Unit,
     onLikeClick: (Int, Boolean) -> Unit,
+    onBookmarkClick: (Int) -> Unit,
     onClick: (Int) -> Unit,
     onPhotoClicked: (List<GalleryItem>, Int) -> Unit
 ) {
@@ -371,7 +367,8 @@ private fun ModelsList(
                     cardHeight = cardHeight,
                     onClick = onClick,
                     onPhotoClicked = onPhotoClicked,
-                    onLikeClick = { id, liked -> onLikeClick(id, liked) }
+                    onLikeClick = { id, liked -> onLikeClick(id, liked) },
+                    onBookmarkClick = onBookmarkClick
                 )
             }
 

@@ -75,7 +75,6 @@ fun EditMyProfileScreen(
     onCloseScreen: () -> Unit = {},
 ) {
     val parametersSavedText = stringResource(R.string.ParametersSaved)
-
     val uiState = viewModel.state.collectAsState().value
 
     val tabs = remember {

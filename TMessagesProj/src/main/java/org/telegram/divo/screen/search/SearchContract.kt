@@ -70,6 +70,7 @@ data class State(
         listOf(
             ProfileParameter(ParametersType.AGE, ""),
             ProfileParameter(ParametersType.HEIGHT, ""),
+            ProfileParameter(ParametersType.WEIGHT, ""),
             ProfileParameter(ParametersType.WAIST, ""),
             ProfileParameter(ParametersType.HIPS, ""),
             ProfileParameter(ParametersType.SHOE_SIZE, ""),

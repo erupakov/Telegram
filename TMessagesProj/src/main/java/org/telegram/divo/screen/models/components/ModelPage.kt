@@ -1,6 +1,10 @@
 package org.telegram.divo.screen.models.components
 
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -31,15 +39,18 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.common.utils.toShortString
 import org.telegram.divo.components.DivoChip
 import org.telegram.divo.components.RoundedGlassContainer
+import org.telegram.divo.components.shimmer
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.style.AppTheme
@@ -53,7 +64,13 @@ fun ModelPage(
     onClick: (Int) -> Unit,
     onPhotoClicked: (List<GalleryItem>, Int) -> Unit,
     onLikeClick: (Int, Boolean) -> Unit,
+    onBookmarkClick: (Int) -> Unit,
 ) {
+    val isBlurSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val totalImages = if (isBlurSupported) 2 else 1
+    var readyCount by remember(feed.id) { mutableIntStateOf(0) }
+    val allImagesReady = readyCount >= totalImages
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -63,11 +80,47 @@ fun ModelPage(
             .clickableWithoutRipple { onClick(feed.id) }
     ) {
 
-        CardBlurredBackground(
-            imageUrl = feed.files.first().url,
-            isBlurSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        // Слой фона: невидимый пока обе картинки не загрузятся, потом плавно появляется
+        val bgAlpha by animateFloatAsState(
+            targetValue = if (allImagesReady) 1f else 0f,
+            animationSpec = tween(durationMillis = 300),
+            label = "bgAlpha"
         )
 
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer { alpha = bgAlpha }
+        ) {
+            CardBlurredBackground(
+                imageUrl = feed.files.first().url,
+                isBlurSupported = isBlurSupported,
+                onMainImageReady = { readyCount++ },
+                onBlurImageReady = { readyCount++ }
+            )
+
+            // Лёгкое затемнение, чтобы элементы не сливались с фоном
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.1f))
+            )
+        }
+
+        // Шиммер-плейсхолдер: ПОД контентом, исчезает когда фон готов
+        AnimatedVisibility(
+            visible = !allImagesReady,
+            exit = fadeOut(animationSpec = tween(durationMillis = 300))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .shimmer()
+                    .background(Color.LightGray.copy(alpha = 0.2f))
+            )
+        }
+
+        // Контент карточки: всегда поверх шиммера
         Box(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier
@@ -93,13 +146,33 @@ fun ModelPage(
                             textColor = Color.White
                         )
                         Spacer(Modifier.width(6.dp))
-                        Text(
-                            text = "Не хватает полей в ответе сервера",
-                            style = AppTheme.typography.bodyMedium,
-                            color = Color.Red,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+
+                        feed.user.age?.let {
+                            Text(
+                                text = "$it ${stringResource(R.string.YearsOld)}",
+                                style = AppTheme.typography.bodyMedium,
+                                color = AppTheme.colors.onBackground,
+                            )
+                        }
+                        if (feed.user.age != null && feed.user.countryCode != null) {
+                            Text(
+                                text = " ·",
+                            )
+                        }
+                        feed.user.countryCode?.let {
+                            Text(
+                                text = " ${it.toCountryFlagEmoji()}",
+                            )
+                        }
+                        feed.user.countryName?.let {
+                            Text(
+                                text = " $it",
+                                style = AppTheme.typography.bodyMedium,
+                                color = AppTheme.colors.onBackground,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
 
@@ -123,7 +196,7 @@ fun ModelPage(
                             Spacer(Modifier.width(3.dp))
                             Text(
                                 modifier = Modifier.offset(y = 1.dp),
-                                text = feed.likesCount.toShortString(),
+                                text = feed.user.likesCount.toShortString(),
                                 style = AppTheme.typography.helveticaNeueRegular,
                                 color = if (feed.isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
                                 fontSize = 12.sp
@@ -134,7 +207,7 @@ fun ModelPage(
                     RoundedGlassContainer(
                         modifier = Modifier.width(65.dp),
                         height = 30.dp,
-                        background = Color.Red,
+                        background = AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Icon(
@@ -146,7 +219,7 @@ fun ModelPage(
                         Spacer(Modifier.width(3.dp))
                         Text(
                             modifier = Modifier.offset(y = 1.dp),
-                            text = "----",
+                            text = feed.user.viewsCount.toShortString(),
                             style = AppTheme.typography.helveticaNeueRegular,
                             color = AppTheme.colors.onBackground,
                             fontSize = 12.sp
@@ -154,23 +227,23 @@ fun ModelPage(
                     }
                     Spacer(Modifier.height(10.dp))
                     RoundedGlassContainer(
-                        modifier = Modifier.width(65.dp),
+                        modifier = Modifier.width(65.dp).clickableWithoutRipple { onBookmarkClick(feed.id) },
                         height = 30.dp,
-                        background = Color.Red,
+                        background = if (feed.isFavorite) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Icon(
                             modifier = Modifier.size(16.dp),
-                            painter = painterResource(R.drawable.ic_divo_bookmark_glass),
+                            painter = if (feed.isFavorite) painterResource(R.drawable.ic_divo_bookmark_glass_selected) else painterResource(R.drawable.ic_divo_bookmark_glass),
                             contentDescription = null,
-                            tint = AppTheme.colors.onBackground
+                            tint = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
                         )
                         Spacer(Modifier.width(3.dp))
                         Text(
                             modifier = Modifier.offset(y = 1.dp),
-                            text = "----",
+                            text = feed.user.followersCount.toShortString(),
                             style = AppTheme.typography.helveticaNeueRegular,
-                            color = AppTheme.colors.onBackground,
+                            color = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
                             fontSize = 12.sp
                         )
                     }
@@ -198,12 +271,15 @@ fun ModelPage(
 @Composable
 private fun CardBlurredBackground(
     imageUrl: String,
-    isBlurSupported: Boolean
+    isBlurSupported: Boolean,
+    onMainImageReady: () -> Unit = {},
+    onBlurImageReady: () -> Unit = {},
 ) {
     DivoAsyncImage(
         modifier = Modifier.fillMaxSize(),
         model = imageUrl,
-        contentScale = ContentScale.Crop
+        contentScale = ContentScale.Crop,
+        onReady = onMainImageReady
     )
 
     if (isBlurSupported) {
@@ -244,7 +320,8 @@ private fun CardBlurredBackground(
                     .fillMaxSize()
                     .blur(35.dp),
                 model = imageUrl,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                onReady = onBlurImageReady
             )
 
             Box(

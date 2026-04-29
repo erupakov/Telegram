@@ -184,6 +184,7 @@ enum class ParametersType(
     HAIR_COLOR(R.string.ChooseHairColor),
     EYE_COLOR(R.string.ChooseEyeColor),
     SKIN_COLOR(R.string.ChooseSkinColor),
+    WEIGHT(R.string.LabelWeight),
     BREAST_SIZE(R.string.ChooseBreastSize),
     COUNTRY(R.string.CountryLabel),
     ROLE(R.string.RoleLabel),

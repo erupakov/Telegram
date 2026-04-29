@@ -6,10 +6,12 @@ import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.components.TabConfig
+import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.Publication
+import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
@@ -40,6 +42,17 @@ data class ProfileViewState(
     val isLoadingEvents: Boolean = false,
     val isLoadingMoreEvents: Boolean = false,
     val hasMoreEvents: Boolean = true,
+
+    val agencyModels: List<AgencyModel> = emptyList(),
+    val isLoadingAgencyModels: Boolean = false,
+    val isLoadingMoreAgencyModels: Boolean = false,
+    val hasMoreAgencyModels: Boolean = true,
+
+//    val searchModelsQuery: String = "",
+//    val searchModels: List<SearchedProfile> = emptyList(),
+//    val isLoadingSearchModels: Boolean = false,
+//    val isLoadingMoreSearchModels: Boolean = false,
+//    val hasMoreSearchModels: Boolean = false,
 
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -78,7 +91,7 @@ data class ProfileViewState(
     val pageCount: Int
         get() = when {
             !isModel -> 5
-            isModel && isOwnProfile -> 2
+            //isModel && isOwnProfile -> 2
             else -> 3
         }
 
@@ -176,6 +189,8 @@ sealed class ProfileIntent : ViewIntent {
     class OpenSocialLink(val socialNetworkType: SocialNetworkType) : ProfileIntent()
     class OnSearchQueryChanged(val query: String) : ProfileIntent()
     object OnLoadMoreSearchResults : ProfileIntent()
+//    class OnSearchModelsQueryChanged(val query: String) : ProfileIntent()
+//    object OnLoadMoreSearchModels : ProfileIntent()
     object OnLoadMorePortfolio : ProfileIntent()
     object OnLoadMoreVideos : ProfileIntent()
     object OnLoadMoreEvents : ProfileIntent()
@@ -191,12 +206,14 @@ sealed class ProfileIntent : ViewIntent {
     object OnAddModelClicked : ProfileIntent()
     class OnEventClicked(val eventId: Int) : ProfileIntent()
     object OnFindSimilarProfiles : ProfileIntent()
+    object OnEventCreate : ProfileIntent()
+    object OnLoadMoreAgencyModels : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
     class OpenUrl(val url: String) : ProfileEffect()
     class ShowError(val message: String, val hasRetry: Boolean = false) : ProfileEffect()
-    class NavigateToEdit(val isOwnProfile: Boolean, val initialPage: Int) : ProfileEffect()
+    class NavigateToEdit(val isModel: Boolean, val initialPage: Int) : ProfileEffect()
     
     object NavigateBack : ProfileEffect()
     class ShowWorkHistory(val isOwnProfile: Boolean) : ProfileEffect()
@@ -207,4 +224,5 @@ sealed class ProfileEffect : ViewEffect {
     class NavigateToEvent(val eventId: Int) : ProfileEffect()
     class NavigateToFindSimilarProfiles(val photoUrl: String) : ProfileEffect()
     object NavigateToEditLinks : ProfileEffect()
+    object NavigateToCreateEvent : ProfileEffect()
 }

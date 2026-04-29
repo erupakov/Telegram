@@ -271,6 +271,7 @@ class FaceSearchViewModel(
         likes = this.likesCount,
         isLiked = this.isLikedByUser,
         photo = this.searchImageUrl.orEmpty(),
+        index = null,
         roleLabel = this.user?.roleLabel.orEmpty(),
         similarity = null
     )

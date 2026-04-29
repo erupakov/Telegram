@@ -9,6 +9,7 @@ import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.entity.FileModel
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.User
+import kotlin.Int
 
 class FeedResponse(
     @SerializedName("data")
@@ -35,8 +36,6 @@ class FeedItemDto(
     val entity: String,
     @SerializedName("type")
     val type: String,
-    @SerializedName("likesCount")
-    val likesCount: Int,
     @SerializedName("isLikedByUser")
     val isLikedByUser: Boolean,
     @SerializedName("isFavoriteByUser")
@@ -61,7 +60,20 @@ class UserDto(
     @SerializedName("subrole")
     val subrole: String?,
     @SerializedName("roleLabel")
-    val roleLabel: String
+    val roleLabel: String,
+
+    @SerializedName("likesCount")
+    val likesCount: Int?,
+    @SerializedName("viewsCount")
+    val viewsCount: Int?,
+    @SerializedName("followersCount")
+    val followersCount: Int?,
+    @SerializedName("age")
+    val age: Int?,
+    @SerializedName("country_code")
+    val countryCode: String?,
+    @SerializedName("country_name")
+    val countryName: String?,
 )
 
 class FileDto(
@@ -93,7 +105,6 @@ private fun FeedItemDto.toEntity(): FeedItem =
         description = description.orEmpty(),
         entity = entity,
         type = type,
-        likesCount = likesCount,
         isLiked = isLikedByUser,
         isFavorite = isFavoriteByUser,
         user = user.toEntity(),
@@ -107,7 +118,13 @@ private fun UserDto.toEntity(): User =
         fullName = fullName,
         role = RoleType.from(role),
         subrole = subrole,
-        roleLabel = roleLabel
+        roleLabel = roleLabel,
+        likesCount = likesCount ?: 0,
+        viewsCount = viewsCount ?: 0,
+        followersCount = followersCount ?: 0,
+        age = age,
+        countryCode = countryCode,
+        countryName = countryName,
     )
 
 private fun FileDto.toEntity(): FileModel =

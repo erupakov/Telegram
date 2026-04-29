@@ -12,6 +12,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.FeedItem
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.models.ModelsViewIntent.LoadInitialData
 import org.telegram.divo.screen.models.ModelsViewIntent.OnAddStoryClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnBookmarkClick
@@ -32,15 +33,15 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     override fun createInitialState(): ModelsViewState = ModelsViewState()
 
     private val modelsPaginator = GetFeedUseCase(
-        limit = PAGE_SIZE, modelsOnly = true
+        limit = PAGE_SIZE, role = RoleType.MODEL.value
     ).paginator
 
     private val newTalentsPaginator = GetFeedUseCase(
-        limit = PAGE_SIZE
+        limit = PAGE_SIZE, role = RoleType.NEW_FACE.value
     ).paginator
 
     private val agenciesPaginator = GetFeedUseCase(
-        limit = PAGE_SIZE, subscribedOnly = true
+        limit = PAGE_SIZE, role = RoleType.AGENCY.value
     ).paginator
 
     init {
@@ -135,11 +136,6 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         }
     }
 
-    private fun bookmarkModel(modelId: String) {
-        // TODO: Call repository to bookmark the model
-        // Optimistically update the UI
-    }
-
     private fun onLikeClick(tab: Tab, feedId: Int, isLiked: Boolean) {
         val oldState = state.value.tabFeeds
 
@@ -147,7 +143,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             return state.value.tabFeeds.mapValues { (_, items) ->
                 items.map { item ->
                     if (item.feedId == targetFeedId) {
-                        item.copy(isLiked = newLiked, likesCount = newCount)
+                        item.copy(isLiked = newLiked, user = item.user.copy(likesCount = newCount))
                     } else item
                 }
             }
@@ -155,7 +151,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
 
         val targetItem = state.value.tabFeeds[tab]?.find { it.feedId == feedId } ?: return
         val newLiked = !isLiked
-        val newCount = if (isLiked) (targetItem.likesCount - 1).coerceAtLeast(0) else targetItem.likesCount + 1
+        val newCount = if (isLiked) (targetItem.user.likesCount - 1).coerceAtLeast(0) else targetItem.user.likesCount + 1
 
         setState {
             copy(tabFeeds = updateItemInAllTabs(feedId, newLiked, newCount))
@@ -178,6 +174,69 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                     )
                 )
             } else {
+                setState { copy(tabFeeds = oldState) }
+                sendEffect(ModelsViewEffect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
+    private fun bookmarkModel(modelId: Int) {
+        val oldState = state.value.tabFeeds
+
+        // Ищем пост этой модели во всех вкладках, чтобы узнать текущий статус
+        var targetItem: FeedItem? = null
+        for (items in oldState.values) {
+            // Предполагается, что modelId из Intent — это ID самого пользователя (модели).
+            // Если же с UI приходит ID поста, замените на `it.id.toString() == modelId`
+            targetItem = items.find { it.user.id == modelId }
+            if (targetItem != null) break
+        }
+
+        // Если модель не найдена в текущем списке, ничего не делаем
+        if (targetItem == null) return
+
+        val newFavoriteState = !targetItem.isFavorite
+
+        // БЕРЕМ ИМЕННО USER ID для отправки на сервер
+        val targetUserId = targetItem.user.id
+        val targetEntity = targetItem.user.role.value
+
+        // Функция обновляет статус isFavorite для ВСЕХ постов этого пользователя в ленте
+        fun updateItemInAllTabs(userId: Int, newFavorite: Boolean): Map<Tab, List<FeedItem>> {
+            return state.value.tabFeeds.mapValues { (_, items) ->
+                items.map { item ->
+                    // Если пост принадлежит этой модели, меняем статус закладки
+                    if (item.user.id == userId) {
+                        item.copy(isFavorite = newFavorite)
+                    } else item
+                }
+            }
+        }
+
+        // Оптимистично обновляем UI
+        setState {
+            copy(tabFeeds = updateItemInAllTabs(targetUserId, newFavoriteState))
+        }
+
+        viewModelScope.launch {
+            val repository = DivoApi.publicationRepository // или DivoApi.favoriteRepository
+
+            // Отправляем targetUserId вместо id поста
+            val result = if (newFavoriteState) {
+                repository.markFavorite(targetUserId, targetEntity)
+            } else {
+                repository.unmarkFavorite(targetUserId, targetEntity)
+            }
+
+            if (result is DivoResult.Success) {
+                sendEffect(
+                    ModelsViewEffect.ActionChanged(
+                        resDrawableId = R.drawable.ic_divo_bookmark_glass_selected,
+                        resStringId = if (newFavoriteState) R.string.BookmarkSaved else R.string.BookmarkUnsaved
+                    )
+                )
+            } else {
+                // Откат изменений при ошибке
                 setState { copy(tabFeeds = oldState) }
                 sendEffect(ModelsViewEffect.ShowError(result.getErrorMessage()))
             }

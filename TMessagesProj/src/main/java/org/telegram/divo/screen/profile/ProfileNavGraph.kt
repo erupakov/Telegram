@@ -14,6 +14,7 @@ import androidx.navigation.navArgument
 import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.screen.add_model.AddModelScreen
 import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
+import org.telegram.divo.screen.event_create.CreateEventScreen
 import org.telegram.divo.screen.event_details.EventDetailsNavGraph
 import org.telegram.divo.screen.face_search.FaceSearchScreen
 import org.telegram.divo.screen.gallery.GallerySource
@@ -36,6 +37,7 @@ sealed class ProfileRoute(val route: String) {
     data object WorkHistory : ProfileRoute("profile_work_history")
     data object AddModel : ProfileRoute("profile_add_model")
     data object Appearance : ProfileRoute("profile_appearance")
+    data object CreateEvent : ProfileRoute("create_event")
     data object CreateWorkHistory : ProfileRoute("create_work_history?id={id}") {
         fun create(id: Int? = null) = if (id != null) "create_work_history?id=$id" else "create_work_history?id=-1"
     }
@@ -121,17 +123,19 @@ fun ProfileNavGraph(
                 ?.takeIf { it != -1 }
                 ?: userId
 
+            val currentIsOwnProfile = isOwnProfile && (currentUserId == userId)
+
             val profileViewModel: ProfileViewModel = viewModel(
                 key = "profile_$currentUserId",
-                factory = ProfileViewModel.factory(currentUserId, isOwnProfile)
+                factory = ProfileViewModel.factory(currentUserId, currentIsOwnProfile)
             )
-
+            android.util.Log.d("VideoGrid", "inp $currentUserId")
             ProfileScreen(
                 viewModel = profileViewModel,
                 userId = currentUserId,
-                isOwnProfile = isOwnProfile,
-                onEditClicked = { isOwnProfile, initialPage ->
-                    nav.navigate(ProfileRoute.Edit.createRoute(isOwnProfile, initialPage)) },
+                isOwnProfile = currentIsOwnProfile,
+                onEditClicked = { isModel, initialPage ->
+                    nav.navigate(ProfileRoute.Edit.createRoute(isModel, initialPage)) },
                 onEditLinksClicked = { nav.navigate(ProfileRoute.EditLinks.route) },
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() },
                 showWorkHistory = { nav.navigate(ProfileRoute.WorkHistory.route) },
@@ -143,6 +147,7 @@ fun ProfileNavGraph(
                     }
                 },
                 onProfileClicked = { anotherUserId ->
+                    android.util.Log.d("VideoGrid", "alee $anotherUserId")
                     nav.navigate(ProfileRoute.Profile.createRoute(anotherUserId))
                 },
                 onAddModelClicked = {
@@ -150,6 +155,9 @@ fun ProfileNavGraph(
                 },
                 onEventClicked = {
                     nav.navigate(ProfileRoute.Event.createRoute(it))
+                },
+                onEventCreateClicked = {
+                    nav.navigate(ProfileRoute.CreateEvent.route)
                 },
                 onFindSimilarProfiles = {
                     nav.navigate(ProfileRoute.FaceSearch.createRoute(it))
@@ -328,6 +336,13 @@ fun ProfileNavGraph(
             AppearanceScreen(
                 params = ParamsHolder.params,
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
+        composable(
+            route = ProfileRoute.CreateEvent.route
+        ) {
+            CreateEventScreen(
+                onBack = { nav.popBackStack() }
             )
         }
     }

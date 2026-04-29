@@ -122,7 +122,7 @@ fun ProfilesSearchGrid(
 
             items(
                 items = profiles,
-                key = { "${it.id}${it.similarity}" }
+                key = { "${it.id}${it.index}" }
             ) {
                 ProfileItem(
                     profile = it,

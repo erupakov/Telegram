@@ -7,6 +7,7 @@ data class FeedRequestDto(
     val offset: Int,
     @SerializedName("limit")
     val limit: Int,
+    @SerializedName("role") val role: String,
     @SerializedName("withoutNfts") val withoutNfts: Boolean = false,
     @SerializedName("subscribedOnly") val subscribedOnly: Boolean = false,
     @SerializedName("modelsOnly") val modelsOnly: Boolean = false

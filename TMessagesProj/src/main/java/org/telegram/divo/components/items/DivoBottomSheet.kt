@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,12 +23,10 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,6 +46,7 @@ fun DivoBottomSheet(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     isSaveMode: Boolean = true,
     @DrawableRes iconClose: Int = R.drawable.ic_divo_close,
+    isApplyEnable: Boolean = true,
     onDismiss: () -> Unit,
     onSave: () -> Unit = {},
     onReset: () -> Unit = {},
@@ -79,6 +76,7 @@ fun DivoBottomSheet(
                 title = title,
                 isSaveMode = isSaveMode,
                 iconClose = iconClose,
+                isApplyEnable = isApplyEnable,
                 onDismiss = onDismiss,
                 onSave = onSave,
                 onReset = onReset
@@ -93,6 +91,7 @@ private fun HeaderSection(
     title: String,
     isSaveMode: Boolean,
     @DrawableRes iconClose: Int,
+    isApplyEnable: Boolean,
     onDismiss: () -> Unit,
     onSave: () -> Unit,
     onReset: () -> Unit
@@ -126,27 +125,29 @@ private fun HeaderSection(
             style = AppTheme.typography.bodyLarge
         )
 
-        if (isSaveMode) {
-            RoundedButton(
-                modifier = Modifier
-                    .size(40.dp)
-                    .align(Alignment.CenterEnd),
-                resId = R.drawable.ic_divo_apply,
-                iconSize = 28.dp,
-                background = AppTheme.colors.accentOrange,
-                iconTint = AppTheme.colors.onBackground,
-                onClick = onSave
-            )
-        } else {
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .clickableWithoutRipple { onReset() },
-                text = stringResource(R.string.ButtonReset),
-                fontSize = 15.sp,
-                color = AppTheme.colors.accentOrange,
-                style = AppTheme.typography.helveticaNeueRegular
-            )
+        if (isApplyEnable) {
+            if (isSaveMode) {
+                RoundedButton(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .align(Alignment.CenterEnd),
+                    resId = R.drawable.ic_divo_apply,
+                    iconSize = 28.dp,
+                    background = AppTheme.colors.accentOrange,
+                    iconTint = AppTheme.colors.onBackground,
+                    onClick = onSave
+                )
+            } else {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .clickableWithoutRipple { onReset() },
+                    text = stringResource(R.string.ButtonReset),
+                    fontSize = 15.sp,
+                    color = AppTheme.colors.accentOrange,
+                    style = AppTheme.typography.helveticaNeueRegular
+                )
+            }
         }
     }
 }

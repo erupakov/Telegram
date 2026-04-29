@@ -69,7 +69,7 @@ fun BiographyContent(
                 start = 16.dp,
                 end = 16.dp,
                 top = 20.dp,
-                bottom = if (bio.isEmpty()) 20.dp else 10.dp
+                bottom = if (bio.isEmpty() || !isOverflowing) 20.dp else 10.dp
             )
     ) {
         if (bio.isEmpty()) {

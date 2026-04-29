@@ -25,11 +25,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import org.telegram.divo.components.RoundedGlassButton
 import org.telegram.divo.components.shimmer
 import org.telegram.divo.style.AppTheme
 
 @Composable
-fun ProfileLoadingContent() {
+fun ProfileLoadingContent(
+    onNavigateBack: () -> Unit
+) {
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val statusBarHeight = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
 
@@ -127,7 +130,9 @@ fun ProfileLoadingContent() {
                     .padding(top = statusBarHeight + 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(Modifier.size(40.dp).clip(CircleShape).shimmer())
+                RoundedGlassButton(
+                    onClick = onNavigateBack
+                )
                 Box(Modifier.size(80.dp, 40.dp).clip(RoundedCornerShape(20.dp)).shimmer())
             }
             Spacer(Modifier.height(16.dp))

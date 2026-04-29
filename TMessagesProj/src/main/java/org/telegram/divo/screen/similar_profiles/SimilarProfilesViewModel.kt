@@ -131,8 +131,9 @@ class SimilarProfilesViewModel(
                     likes = 0,
                     isLiked = false,
                     photo = dto.image.orEmpty(),
+                    index = dto.index,
                     roleLabel = RoleType.from(dto.role).value,
-                    similarity = ((dto.score ?: 0.0) * 100).toInt()
+                    similarity = ((dto.score ?: 0.0) * 100).toInt(),
                 )
             }
         } catch (e: Exception) {

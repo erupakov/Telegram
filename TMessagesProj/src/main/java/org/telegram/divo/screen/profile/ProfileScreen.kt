@@ -68,7 +68,7 @@ import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.profile.components.AgencyModels
-import org.telegram.divo.screen.profile.components.DivoColumnContent
+import org.telegram.divo.screen.profile.components.ChannelsContent
 import org.telegram.divo.screen.profile.components.EngagementStatsBottomSheet
 import org.telegram.divo.screen.profile.components.EventsColumn
 import org.telegram.divo.screen.profile.components.PortfolioGrid
@@ -102,13 +102,14 @@ fun ProfileScreen(
     onProfileClicked: (Int) -> Unit = {},
     onAddModelClicked: () -> Unit,
     onEventClicked: (Int) -> Unit,
+    onEventCreateClicked: () -> Unit,
     onFindSimilarProfiles: (String) -> Unit,
     onNavigateToAppearances: (PhysicalParams) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState = viewModel.state.collectAsState().value
     val snackbarState = remember { AppSnackbarHostState() }
-
+    android.util.Log.d("VideoGrid", "ллл $userId")
     var isRefreshing by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.isLoading) {
@@ -137,16 +138,19 @@ fun ProfileScreen(
                         snackbarState.show(Error(effect.message))
                     }
                 }
-                is ProfileEffect.NavigateToEdit -> { onEditClicked(effect.isOwnProfile, effect.initialPage) }
+                is ProfileEffect.NavigateToEdit -> { onEditClicked(effect.isModel, effect.initialPage) }
                 is ProfileEffect.NavigateBack -> onNavigateBack()
                 is ProfileEffect.ShowWorkHistory -> showWorkHistory(effect.isOwnProfile)
                 is ProfileEffect.NavigateToGallery -> onGalleryClicked(effect.index, effect.isVideo)
-                is ProfileEffect.NavigateToProfile -> onProfileClicked(effect.profileId)
+                is ProfileEffect.NavigateToProfile -> {
+                    onProfileClicked(effect.profileId)
+                }
                 is ProfileEffect.NavigateToAddModel -> onAddModelClicked()
                 is ProfileEffect.NavigateToEvent -> onEventClicked(effect.eventId)
                 is ProfileEffect.NavigateToFindSimilarProfiles -> onFindSimilarProfiles(effect.photoUrl)
                 is ProfileEffect.NavigateToEditLinks -> onEditLinksClicked()
                 ProfileEffect.ShowAppearances -> onNavigateToAppearances(viewModel.state.value.physicalParams)
+                ProfileEffect.NavigateToCreateEvent -> onEventCreateClicked()
             }
         }
     }
@@ -180,7 +184,9 @@ fun ProfileScreen(
                     enter = fadeIn(),
                     exit = fadeOut(animationSpec = tween(500))
                 ) {
-                    ProfileLoadingContent()
+                    ProfileLoadingContent(
+                        onNavigateBack = onNavigateBack
+                    )
                 }
             }
         }
@@ -358,13 +364,14 @@ private fun ProfileScreenContent(
                     )
                 }
 
-                item(key = "info_tabs") {
-                    Spacer(Modifier.height(20.dp))
-                    ProfileInfoTabs(
-                        isModel = uiState.isModel,
-                        pagerInfoState = pagerInfoState,
-                        destinationInfoTabs = uiState.destinationInfoTabs,
-                    )
+                if (uiState.isModel) {
+                    item(key = "info_tabs") {
+                        Spacer(Modifier.height(20.dp))
+                        ProfileInfoTabs(
+                            pagerInfoState = pagerInfoState,
+                            destinationInfoTabs = uiState.destinationInfoTabs,
+                        )
+                    }
                 }
 
                 item(key = "info_pager") {
@@ -414,12 +421,14 @@ private fun ProfileScreenContent(
                                     similarItems = uiState.similarProfiles,
                                     isUploading = uiState.mediaUploading,
                                     isOwnProfile = uiState.isOwnProfile,
+                                    isModel = uiState.isModel,
                                     isLoadingMore = uiState.isLoadingMoreImages,
                                     isFirstLoading = uiState.isLoadingImages,
                                     hasMore = uiState.hasMoreImages,
                                     onLoadMore = { onIntent(ProfileIntent.OnLoadMorePortfolio) },
                                     onPhotoClicked = { onIntent(ProfileIntent.OnGalleryClicked(it, false)) },
                                     onSimilarClicked = { onIntent(ProfileIntent.OnProfileClicked(it)) },
+                                    onImageSelected = { onIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(it))) }
                                 )
                                 1 -> {
                                     val isPageActive = pagerState.currentPage == 1
@@ -435,22 +444,27 @@ private fun ProfileScreenContent(
                                         isUploading = uiState.mediaUploading,
                                         onLoadMore = { onIntent(ProfileIntent.OnLoadMoreVideos) },
                                         onVideoClicked = { onIntent(ProfileIntent.OnGalleryClicked(it, true)) },
+                                        onVideoSelected = { onIntent(ProfileIntent.OnVideoSelected(context.uriToFile(it))) }
                                     )
                                 }
                                 2 -> if (uiState.isModel) {
-                                    DivoColumnContent("Vogue Inside", topPadding = totalTopPaddingDp)
+                                    ChannelsContent(title = "Vogue Inside", isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp)
                                 } else {
                                     AgencyModels(
                                         topPadding = totalTopPaddingDp,
-                                        models = emptyList(),
+                                        models = uiState.agencyModels,
+                                        //query = uiState.searchModelsQuery,
+                                        //searchModels = uiState.searchModels,
                                         isOwnProfile = uiState.isOwnProfile,
-                                        isLoadingMoreModels = false,
+                                        //isLoadingMore = uiState.isLoadingMoreSearchModels,
+                                        //hasMore = uiState.hasMoreSearchModels,
+                                        //onQueryChanged = { onIntent(ProfileIntent.OnSearchModelsQueryChanged(it)) },
                                         onAddModelClicked = { onIntent(ProfileIntent.OnAddModelClicked) },
                                         onModelClicked = { onIntent(ProfileIntent.OnProfileClicked(it)) },
-                                        onLoadMoreAgencyModels = {}
+                                        onLoadMoreAgencyModels = { onIntent(ProfileIntent.OnLoadMoreAgencyModels) }
                                     )
                                 }
-                                3 -> DivoColumnContent("Vogue Inside", topPadding = totalTopPaddingDp)
+                                3 -> ChannelsContent(title = "Vogue Inside", isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp)
                                 else -> EventsColumn(
                                     topPadding = totalTopPaddingDp,
                                     events = uiState.events,
@@ -459,7 +473,8 @@ private fun ProfileScreenContent(
                                     isLoading = uiState.isLoadingEvents,
                                     isLoadingMore = uiState.isLoadingMoreEvents,
                                     onLoadMore = { onIntent(ProfileIntent.OnLoadMoreEvents) },
-                                    onEventClicked = { onIntent(ProfileIntent.OnEventClicked(it)) }
+                                    onEventClicked = { onIntent(ProfileIntent.OnEventClicked(it)) },
+                                    onEventCreate = { onIntent(ProfileIntent.OnEventCreate) }
                                 )
                             }
                         }
@@ -492,7 +507,7 @@ private fun ProfileScreenContent(
                 .zIndex(2f),
             transitionProgress = transitionProgress,
             hazeState = hazeState,
-            lowerTabsOffsetPx = lowerTabsOffsetPx.toFloat(),
+            lowerTabsOffsetPx = lowerTabsOffsetPx,
             isTabsPinned = isTabsPinned
         )
 
@@ -537,7 +552,8 @@ private fun ProfileScreenContent(
                 .align(Alignment.BottomCenter)
                 .zIndex(4f)
                 .padding(
-                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 12.dp
+                    bottom = WindowInsets.navigationBars.asPaddingValues()
+                        .calculateBottomPadding() + 12.dp
                 )
         ) {
             AnimatedVisibility(

@@ -34,16 +34,13 @@ import kotlin.math.floor
 
 @Composable
 fun ProfileInfoTabs(
-    isModel: Boolean,
     pagerInfoState: PagerState,
     destinationInfoTabs: List<TabConfig>,
 ) {
-    if (isModel) {
-        TabContainer(
-            pagerState = pagerInfoState,
-            destinations = destinationInfoTabs,
-        )
-    }
+    TabContainer(
+        pagerState = pagerInfoState,
+        destinations = destinationInfoTabs,
+    )
 }
 
 @Composable
@@ -133,8 +130,11 @@ fun ProfileInfoPager(
             }
         }
     } else {
+        Spacer(Modifier.height(20.dp))
         AgencyDescriptionSection(
-            text = agency?.description.orEmpty()
+            text = agency?.description.orEmpty(),
+            isOwnProfile = isOwnProfile,
+            onEditClick = { onEditClicked(0) }
         )
     }
 }

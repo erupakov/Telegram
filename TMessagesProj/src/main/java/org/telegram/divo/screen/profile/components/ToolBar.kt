@@ -123,6 +123,15 @@ fun ToolBarContent(
         PopupMenuItem(R.string.BlockProfile, onBlockProfile, R.drawable.ic_divo_block),
     )
 
+    val editOptions = remember {
+        buildList {
+            add(PopupMenuItem(R.string.EditProfile, onEditProfileClicked))
+            add(PopupMenuItem(R.string.ChangeProfileBackground, onEditBackgroundClicked))
+            add(PopupMenuItem(R.string.EditSocialLinks, onEditSocialLinksClicked))
+            if (uiState.isModel) add(PopupMenuItem(R.string.ManageWorkExperience, onManageWorkExperienceClicked))
+        }
+    }
+
     val statusBarPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
     val menuOffset = IntOffset(x = -32, y = 0)
 
@@ -205,12 +214,7 @@ fun ToolBarContent(
         DivoPopupMenu(
             visible = showEditMenu,
             onDismiss = { showEditMenu = false },
-            items = listOf(
-                PopupMenuItem(R.string.EditProfile, onEditProfileClicked),
-                PopupMenuItem(R.string.ChangeProfileBackground, onEditBackgroundClicked),
-                PopupMenuItem(R.string.EditSocialLinks, onEditSocialLinksClicked),
-                PopupMenuItem(R.string.ManageWorkExperience, onManageWorkExperienceClicked),
-            ),
+            items = editOptions,
             offset = menuOffset
         )
     }
@@ -228,7 +232,7 @@ private fun TitleContent(
     LaunchedEffect(isSolid) {
         animatable.animateTo(
             targetValue = if (isSolid) 1f else 0f,
-            animationSpec = tween(100)
+            animationSpec = tween(if (isSolid) 200 else 100)
         )
     }
 
@@ -245,7 +249,7 @@ private fun TitleContent(
         Text(
             text = uiState.userInfo.fullName,
             style = AppTheme.typography.helveticaNeueRegular,
-            fontSize = 16.sp,
+            fontSize = 14.sp,
             color = AppTheme.colors.textPrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

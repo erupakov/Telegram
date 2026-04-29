@@ -3,6 +3,7 @@
 package org.telegram.divo.screen.profile.components
 
 
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
@@ -64,6 +65,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
+import com.google.android.exoplayer2.util.Log
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -87,6 +89,7 @@ fun VideoGrid(
     topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onVideoClicked: (String) -> Unit,
+    onVideoSelected: (Uri) -> Unit,
 ) {
     val context = LocalContext.current
     val gridState = rememberLazyGridState()
@@ -274,6 +277,16 @@ fun VideoGrid(
                 bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + bottomPadding,
             ),
         ) {
+            if (videoItems.isEmpty() && !isFirstLoading && isOwnProfile) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    PortfolioEmptyAddButton(
+                        isUploading = isUploading,
+                        isVideo = true,
+                        onMediaSelected = onVideoSelected
+                    )
+                }
+            }
+
             itemsIndexed(
                 items = videoItems,
                 key = { _, item -> "video${item.id}" },
