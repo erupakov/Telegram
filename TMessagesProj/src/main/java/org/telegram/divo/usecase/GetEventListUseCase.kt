@@ -10,10 +10,11 @@ import org.telegram.divo.dal.repository.EventRepository
 
 class GetEventListUseCase(
     private val repository: EventRepository = DivoApi.eventRepository,
-    limit: Int = 20
+    limit: Int = 20,
+    creatorId: Int? = null
 ) {
     val paginator = OffsetPaginator(limit = limit) { offset, lim ->
-        val request = EventListRequest(offset = offset, limit = lim)
+        val request = EventListRequest(offset = offset, limit = lim, creatorId = creatorId)
         when (val result = repository.listEvents(request)) {
             is DivoResult.Success -> PaginatedResult(
                 items = result.value.items,

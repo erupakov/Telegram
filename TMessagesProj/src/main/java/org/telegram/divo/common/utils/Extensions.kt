@@ -2,6 +2,7 @@ package org.telegram.divo.common.utils
 
 import android.content.Context
 import android.net.Uri
+import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.messenger.R
 import java.io.File
 import java.time.Instant
@@ -10,6 +11,7 @@ import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Locale
 
 fun String.toCountryFlagEmoji() =
@@ -114,17 +116,29 @@ fun String.toEventDisplayDate(
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
     val localDateTime = LocalDateTime.parse(this, formatter)
 
-    val date = localDateTime.format(DateTimeFormatter.ofPattern("MMMM d", Locale.ENGLISH))
+    val date = localDateTime.format(DateTimeFormatter.ofPattern("MMMM d"))
     val flag = countryCode?.toCountryFlagEmoji().orEmpty()
 
     if (showTime) {
-        val time = localDateTime.format(DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH))
+        val time = localDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))
         "$date · $time · $flag $city"
     } else {
         "$date · $flag $city"
     }
 } catch (_: Exception) {
     this
+}
+
+fun String.toMonthDayFormat(): String {
+    return try {
+        val inputFormatter = DateTimeFormatter.ofPattern("d MMM yyyy")
+        val outputFormatter = DateTimeFormatter.ofPattern("MMM d")
+        val date = LocalDate.parse(this, inputFormatter)
+
+        date.format(outputFormatter)
+    } catch (e: Exception) {
+        this
+    }
 }
 
 fun String.getInitials(): String = this
@@ -135,6 +149,14 @@ fun String.getInitials(): String = this
     .mapNotNull { it.firstOrNull()?.uppercaseChar()?.toString() }
     .joinToString("")
     .ifBlank { "A" }
+
+fun ProfileParameter.getFormatedOptions(): String =
+    if (value.isEmpty()) ""
+    else {
+        val list = value.split(", ")
+        val first = list.first()
+        if (list.size == 1) first else "$first +${list.size - 1}"
+    }
 
 private fun Context.getExtension(uri: Uri): String {
     return contentResolver.getType(uri)

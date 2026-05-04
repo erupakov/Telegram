@@ -221,7 +221,7 @@ private fun EventListContent(
     }
 }
 
-private fun android.content.Context.findActivity(): android.app.Activity? {
+fun android.content.Context.findActivity(): android.app.Activity? {
     var context = this
     while (context is android.content.ContextWrapper) {
         if (context is android.app.Activity) return context

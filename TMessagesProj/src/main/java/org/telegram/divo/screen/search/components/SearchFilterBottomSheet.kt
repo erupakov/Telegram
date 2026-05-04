@@ -25,6 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.utils.getFormatedOptions
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.components.items.DivoBottomSheet
 import org.telegram.divo.components.items.ParameterBottomSheet
@@ -144,6 +145,7 @@ fun SearchFilterBottomSheet(
             isMultiSelect = true,
             initialValue = currentValue,
             iconClose = R.drawable.ic_divo_back,
+            useNumericRangeUi = true,
             onDismiss = { showParametersSheet = false },
             onSave = { selectedValue ->
                 currentParam?.let { paramType ->
@@ -217,13 +219,13 @@ fun SearchFilterBottomSheet(
             ) {
                 Spacer(Modifier.height(16.dp))
                 ParameterItem(
-                    param = draftRole.copy(value = if (draftRole.value.isEmpty()) stringResource(R.string.AllLabel) else uiState.getFormatedOptions(draftRole)),
+                    param = draftRole.copy(value = if (draftRole.value.isEmpty()) stringResource(R.string.AllLabel) else draftRole.getFormatedOptions()),
                     onClick = { openBottomSheet(draftRole.type, context.resources.getStringArray(R.array.ModelFunNewTalent).toList(), draftRole.value) }
                 )
 
                 Spacer(Modifier.height(16.dp))
                 ParameterItem(
-                    param = draftGender.copy(value = if (draftGender.value.isEmpty()) stringResource(R.string.AllGendersLabel) else uiState.getFormatedOptions(draftGender)),
+                    param = draftGender.copy(value = if (draftGender.value.isEmpty()) stringResource(R.string.AllGendersLabel) else draftGender.getFormatedOptions()),
                     onClick = { openBottomSheet(draftGender.type, context.resources.getStringArray(R.array.GenderItems).toList(), draftGender.value) }
                 )
 
@@ -264,22 +266,22 @@ fun SearchFilterBottomSheet(
                     )
                     Spacer(Modifier.height(16.dp))
                     ParameterItem(
-                        param = draftHairLength.copy(value = if (draftHairLength.value.isEmpty()) stringResource(R.string.AllLengthsLabel) else uiState.getFormatedOptions(draftHairLength)),
+                        param = draftHairLength.copy(value = if (draftHairLength.value.isEmpty()) stringResource(R.string.AllLengthsLabel) else draftHairLength.getFormatedOptions()),
                         onClick = { openBottomSheet(draftHairLength.type, listOf(context.getString(R.string.AllLengthsLabel)) + uiState.hairLengthOptions.map { it.title.orEmpty() }, draftHairLength.value) }
                     )
                     Spacer(Modifier.height(16.dp))
                     ParameterItem(
-                        param = draftHairColor.copy(value = if (draftHairColor.value.isEmpty()) stringResource(R.string.AllColorsLabel) else uiState.getFormatedOptions(draftHairColor)),
+                        param = draftHairColor.copy(value = if (draftHairColor.value.isEmpty()) stringResource(R.string.AllColorsLabel) else draftHairColor.getFormatedOptions()),
                         onClick = { openBottomSheet(draftHairColor.type, listOf(context.getString(R.string.AllColorsLabel)) + uiState.hairColorOptions.map { it.title.orEmpty() }, draftHairColor.value) }
                     )
                     Spacer(Modifier.height(16.dp))
                     ParameterItem(
-                        param = draftEyeColor.copy(value = if (draftEyeColor.value.isEmpty()) stringResource(R.string.AllColorsLabel) else uiState.getFormatedOptions(draftEyeColor)),
+                        param = draftEyeColor.copy(value = if (draftEyeColor.value.isEmpty()) stringResource(R.string.AllColorsLabel) else draftEyeColor.getFormatedOptions()),
                         onClick = { openBottomSheet(draftEyeColor.type, listOf(context.getString(R.string.AllColorsLabel)) + uiState.eyeColorOptions.map { it.title.orEmpty() }, draftEyeColor.value) }
                     )
                     Spacer(Modifier.height(16.dp))
                     ParameterItem(
-                        param = draftSkinColor.copy(value = if (draftSkinColor.value.isEmpty()) stringResource(R.string.AllColorsLabel) else uiState.getFormatedOptions(draftSkinColor)),
+                        param = draftSkinColor.copy(value = if (draftSkinColor.value.isEmpty()) stringResource(R.string.AllColorsLabel) else draftSkinColor.getFormatedOptions()),
                         onClick = { openBottomSheet(draftSkinColor.type, listOf(context.getString(R.string.AllColorsLabel)) + uiState.skinColorOptions.map { it.title.orEmpty() }, draftSkinColor.value) }
                     )
                 }

@@ -1,370 +1,295 @@
 package org.telegram.divo.screen.event_create
 
+import android.net.Uri
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
-import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.FileLog
-import org.telegram.messenger.UserConfig
-import org.telegram.tgnet.ConnectionsManager
-import org.telegram.tgnet.RequestDelegate
-import org.telegram.tgnet.TLObject
-import org.telegram.tgnet.TLRPC
-import org.telegram.tgnet.TLRPC.TL_error
+import org.telegram.divo.common.utils.uriToFile
+import org.telegram.divo.components.items.ParametersType
+import org.telegram.divo.components.items.ProfileParameter
+import org.telegram.divo.dal.dto.event.toCreateEventRequest
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.EventDetails
+import org.telegram.divo.entity.UploadedFile
+import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.LocaleController
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
-class CreateEventViewModel(
-) : BaseViewModel<CreateEventViewModel.State,
-        CreateEventViewModel.Intent,
-        CreateEventViewModel.Effect>() {
-
-    data class State(
-        val isLoading: Boolean = false,
-
-        val title: String = "",
-        val description: String = "",
-
-        val errorMessage: String? = null,
-        val query: String = "",
-
-        val eventTypes: List<TLRPC.TL_event_eventType> = emptyList(),
-        val selectedEventType: TLRPC.TL_event_eventType? = null,
-
-        val availableParameters: List<TLRPC.TL_event_availableParameter> = emptyList(),
-        val selectedAvailableParameters: HashSet<TLRPC.TL_event_availableParameter> = HashSet(),
-        val startDate: String? = null,
-        val endDate: String? = null,
-
-        val countries: List<TLRPC.TL_event_country> = emptyList(),
-        val selectedCountry: TLRPC.TL_event_country? = null,
-        val cities: List<TLRPC.TL_event_city> = emptyList(),
-        val selectedCity: TLRPC.TL_event_city? = null,
-
-        // Cover Photo
-        val coverPhotoId: Long? = null,
-        val coverPhotoPath: String? = null,
-        val coverPhotoUploading: Boolean = false
-
-    ) : ViewState {
-
-        val filtered: List<TLRPC.TL_event_city>
-            get() {
-                val q = query.trim()
-                if (q.isEmpty()) return cities
-                return cities.filter { it.city?.contains(q, ignoreCase = true) == true }
-            }
-    }
-
-    sealed interface Intent : ViewIntent {
-        data object Load : Intent
-        data class OnQueryChanged(val value: String) : Intent
-
-        data class OnCountrySelected(val item: TLRPC.TL_event_country) : Intent
-        data class OnCitySelected(val item: TLRPC.TL_event_city) : Intent
-
-        data object OnBackClicked : Intent
-        data class OnCreateClicked(
-            val title: String,
-            val description: String,
-            val date: String,
-            val time: String,
-        ) : Intent
-
-        // Cover Photo
-        data class OnCoverPhotoSelected(
-            val photo: TLRPC.InputFile,
-            val localPath: String?
-        ) : Intent
-
-        data object OnClearCoverPhoto : Intent
-    }
-
-    sealed interface Effect : ViewEffect {
-        data object NavigateBack : Effect
-        data class ShowError(val message: String) : Effect
-    }
+class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
 
     init {
         loadCountries()
         getEventTypes()
+        loadAppearances()
+        loadPaymentTypes()
+        loadCurrentUser()
     }
 
     override fun createInitialState(): State = State()
 
-    private fun loadCountries() {
-        val req = TLRPC.TL_event_getCountries().apply {
-            offset = 0
-            limit = 300
-        }
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TL_error? ->
-                AndroidUtilities.runOnUIThread {
-                    if (error != null) {
-                        setState { copy(isLoading = false, errorMessage = error.text ?: "Error") }
-                        return@runOnUIThread
-                    }
-                    val list = (response as? TLRPC.TL_event_countries)
-                        ?.countries
-                        .orEmpty()
-                        .sortedBy { (it.country ?: "").lowercase() }
-
-                    setState {
-                        copy(
-                            isLoading = false,
-                            countries = list,
-                            errorMessage = if (list.isEmpty()) "Empty list" else null
-                        )
-                    }
+    private fun loadAppearances() {
+        viewModelScope.launch {
+            val result = DivoApi.userRepository.getAppearances()
+            if (result is DivoResult.Success) {
+                val dict = result.value
+                setState {
+                    copy(
+                        hairLengthOptions = dict.hairLength.orEmpty(),
+                        hairColorOptions  = dict.hairColor.orEmpty(),
+                        eyeColorOptions   = dict.eyeColor.orEmpty(),
+                        skinColorOptions  = dict.skinColor.orEmpty()
+                    )
                 }
-            }
-        )
-    }
-
-    private fun loadCities(countryId: Int) {
-        val req = TLRPC.TL_event_getCities().apply {
-            country_id = countryId
-            offset = 0
-            limit = 300
-        }
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TL_error? ->
-                AndroidUtilities.runOnUIThread {
-                    if (error != null) {
-                        setState {
-                            copy(
-                                isLoading = false,
-                                errorMessage = error.text ?: "Error"
-                            )
-                        }
-                        return@runOnUIThread
-                    }
-                    val list = (response as? TLRPC.TL_event_cities)
-                        ?.cities
-                        .orEmpty()
-                        .sortedBy { (it.city ?: "").lowercase() }
-
-                    setState {
-                        copy(
-                            isLoading = false,
-                            cities = list,
-                        )
-                    }
-                }
-            }
-        )
-    }
-
-    private fun uploadPhotoToServer(
-        inputFile: TLRPC.InputFile,
-        onSuccess: (photoId: Long) -> Unit,
-        onError: (String) -> Unit
-    ) {
-        val req = TLRPC.TL_messages_uploadMedia().apply {
-            peer = TLRPC.TL_inputPeerSelf()
-            media = TLRPC.TL_inputMediaUploadedPhoto().apply {
-                file = inputFile
             }
         }
-
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TL_error? ->
-                AndroidUtilities.runOnUIThread {
-                    if (error != null) {
-                        onError(error.text ?: "Upload failed")
-                        return@runOnUIThread
-                    }
-
-                    if (response is TLRPC.TL_messageMediaPhoto) {
-                        val photoId = response.photo?.id ?: 0L
-                        if (photoId != 0L) {
-                            onSuccess(photoId)
-                        } else {
-                            onError("Failed to get photo ID")
-                        }
-                    } else {
-                        onError("Unexpected response type")
-                    }
-                }
-            }
-        )
     }
 
-     fun getEventTypes() {
-        val req = TLRPC.TL_event_getEventTypes().apply {
-            offset = 0
-            limit = 100
+    private fun getEventTypes() {
+        viewModelScope.launch {
+            val res = DivoApi.eventRepository.getEventTypes()
+            if (res is DivoResult.Success) {
+                setState { copy(eventTypes = res.value) }
+            } else {
+                sendEffect(Effect.ShowError(res.getErrorMessage()))
+            }
         }
-
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TLRPC.TL_error? ->
-                AndroidUtilities.runOnUIThread {
-                    if (error != null) {
-                        FileLog.e("getEventTypes error: ${error.text} code=${error.code}")
-                        setState { copy(errorMessage = error.text ?: "Error") }
-                        return@runOnUIThread
-                    }
-
-                    val list = (response as? TLRPC.TL_event_eventTypes)?.data.orEmpty()
-                    setState {
-                        copy(
-                            eventTypes = list,
-                            selectedEventType = list.getOrNull(0),
-                            errorMessage = null
-                        )
-                    }
-                }
-            }
-        )
     }
-
-    fun getAvailableParameters() {
-        val req = TLRPC.TL_event_getAvailableParameters()
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TL_error? ->
-                response
-                error
-                if (response is TLRPC.TL_event_availableParameters) {
-                    response.data
-
-                } else {
-                    response
-                }
-                error
-            },
-        )
-
-    }
-
-    private val currentAccount = UserConfig.selectedAccount
 
     override fun handleIntent(intent: Intent) {
         when (intent) {
             Intent.Load -> {}
-            is Intent.OnQueryChanged -> setState { copy(query = intent.value) }
-
-            is Intent.OnCountrySelected -> {
-                loadCities(intent.item.country_id)
-                setState {
-                    copy(
-                        selectedCountry = intent.item
-                    )
-                }
-            }
-
-            is Intent.OnCitySelected -> {
-                setState {
-                    copy(
-                        selectedCity = intent.item
-                    )
-                }
-            }
-
+            is Intent.OnInitEdit -> initEditMode(intent.eventId)
             Intent.OnBackClicked -> sendEffect(Effect.NavigateBack)
-            is Intent.OnCreateClicked -> {
-                createEvent(
-                    title = intent.title,
-                    description = intent.description,
-                    date = intent.date,
-                    time = intent.time
-                )
-            }
+            Intent.OnPreviewClicked -> sendEffect(Effect.NavigateToPreview)
+            Intent.OnEditFromPreviewClicked -> setState { copy(resetPagerToFirstPage = true) }
+            Intent.OnFirstPageReached -> setState { copy(resetPagerToFirstPage = false) }
+            Intent.OnPublishClicked -> publishEvent()
 
-            is Intent.OnCoverPhotoSelected -> {
-                setState {
-                    copy(
-                        coverPhotoUploading = true,
-                        coverPhotoPath = intent.localPath
-                    )
-                }
-                uploadPhotoToServer(
-                    inputFile = intent.photo,
-                    onSuccess = { photoId ->
-                        setState {
-                            copy(
-                                coverPhotoId = photoId,
-                                coverPhotoUploading = false
-                            )
-                        }
-                    },
-                    onError = { errorMsg ->
-                        setState {
-                            copy(
-                                coverPhotoUploading = false,
-                                coverPhotoPath = null
-                            )
-                        }
-                        sendEffect(Effect.ShowError(errorMsg))
-                    }
-                )
+            is Intent.OnEventTypeSelected -> setState { copy(selectedEventType = intent.eventType) }
+            is Intent.OnEventNameChanged -> setState { copy(eventName = intent.value) }
+            is Intent.OnEventDescriptionChanged -> setState { copy(eventDescription = intent.value) }
+            is Intent.OnAvatarSelected -> setState {
+                val rest = galleryUris.drop(1)
+                copy(galleryUris = listOf(intent.uri) + rest)
             }
+            is Intent.OnEventDateChanged -> setState { copy(eventDate = intent.value) }
+            is Intent.OnEventTimeChanged -> setState { copy(eventTime = intent.value) }
+            is Intent.OnCountriesChanged -> setState { copy(selectedCountries = intent.countries) }
 
-            Intent.OnClearCoverPhoto -> {
-                setState {
-                    copy(
-                        coverPhotoId = null,
-                        coverPhotoPath = null
-                    )
-                }
+            // Second page
+            is Intent.OnRoleChanged -> setState { copy(role = intent.param) }
+            is Intent.OnGenderChanged -> setState { copy(gender = intent.param) }
+            is Intent.OnHairLengthChanged -> setState { copy(hairLength = intent.param) }
+            is Intent.OnHairColorChanged -> setState { copy(hairColor = intent.param) }
+            is Intent.OnEyeColorChanged -> setState { copy(eyeColor = intent.param) }
+            is Intent.OnSkinColorChanged -> setState { copy(skinColor = intent.param) }
+            is Intent.OnBlockParamChanged -> setState {
+                val base = blockParams.ifEmpty { getDefaultBlockParams() }
+                copy(blockParams = base.map {
+                    if (it.type == intent.param.type) intent.param else it
+                })
+            }
+            is Intent.OnRequirementsChanged -> setState { copy(eventRequirements = intent.value) }
+            is Intent.OnNdaToggled -> setState { copy(isNdaRequired = intent.value) }
+            is Intent.OnMaxParticipantsChanged -> setState { copy(maxParticipants = intent.value) }
+
+            // Third page
+            is Intent.OnDeadlineDateChanged -> setState { copy(deadlineDate = intent.value) }
+            is Intent.OnDeadlineTimeChanged -> setState { copy(deadlineTime = intent.value) }
+            is Intent.OnIsPaidToggled -> setState { copy(isPaid = intent.value) }
+            is Intent.OnEventRateChanged -> setState { copy(eventRate = intent.value) }
+            is Intent.OnPaymentTypeSelected -> setState { copy(selectedPaymentType = intent.paymentType) }
+            is Intent.OnPaymentFrequencySelected -> setState { copy(selectedPaymentFrequency = intent.paymentFrequency) }
+            is Intent.OnIsPublicToggled -> setState { copy(isPublicEvent = intent.value) }
+            is Intent.OnGalleryPhotosAdded -> setState { copy(galleryUris = galleryUris + intent.uris) }
+            is Intent.OnGalleryPhotoRemoved -> setState {
+                copy(
+                    galleryUris = galleryUris - intent.uri,
+                    existingGalleryFiles = existingGalleryFiles.filterNot { it.fullUrl == intent.uri.toString() }
+                )
             }
         }
     }
 
-    // event.getEventTypes //
-    //event.getAvailableParameters#79aac9ef user_id:long = Vector<event.AvailableParameter>;
+    private fun initEditMode(eventId: Int?) {
+        if (eventId == null) return
+        if (state.value.isEditDataLoaded && state.value.editingEventId == eventId) return
+        loadEventForEdit(eventId)
+    }
 
-    private fun createEvent(
-        title: String,
-        description: String,
-        date: String,
-        time: String
-    ) {
-        val currentState = state.value
-        val req = TLRPC.TL_event_createEvent()
-
-        req.title = title
-        req.description = description
-
-        req.event_date = "2026-03-03"
-        req.event_time = "10:00:00+03:00[Europe/Kyiv]"
-
-        req.event_type = state.value.selectedEventType
-
-        currentState.coverPhotoId?.let { photoId ->
-            req.cover_photo_id = photoId
-        }
-
-        // Set location if selected
-        currentState.selectedCity?.let { city ->
-            val location = TLRPC.TL_event_location()
-            location.city = TLRPC.TL_event_city().apply {
-                city_id = city.city_id
-                this.city = city.city
-            }
-            currentState.selectedCountry?.let { country ->
-                location.country = TLRPC.TL_event_country().apply {
-                    country_id = country.country_id
-                    this.country = country.country
+    private fun loadEventForEdit(eventId: Int) {
+        viewModelScope.launch {
+            when (val result = DivoApi.eventRepository.getEvent(eventId)) {
+                is DivoResult.Success -> setState {
+                    copyFromEvent(eventId, result.value)
                 }
+                else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
             }
-            req.location = location
         }
-        ConnectionsManager.getInstance(currentAccount).sendRequest(
-            req,
-            RequestDelegate { response: TLObject?, error: TL_error? ->
-                response
-                error
-                if (response is TLRPC.TL_event_event) {
-                    sendEffect(Effect.NavigateBack)
-                } else {
-                    response
-                }
-                error
-            },
+    }
+
+    private fun State.copyFromEvent(eventId: Int, event: EventDetails): State {
+        val eventDate = event.date.orEmpty()
+        val deadlineDate = event.dateTo.orEmpty()
+        val datePart = eventDate.substringBefore(" ", eventDate)
+        val timePart = eventDate.substringAfter(" ", "")
+        val deadlineDatePart = deadlineDate.substringBefore(" ", deadlineDate)
+        val deadlineTimePart = deadlineDate.substringAfter(" ", "")
+
+        val sortedFiles = event.files.sortedBy { it.order }
+        val gallery = sortedFiles.map { Uri.parse(it.fullUrl) }
+
+        fun rangeToStr(from: Int?, to: Int?) = if (from != null && to != null) "$from-$to" else ""
+        val attrs = event.modelAttributes
+        val roleValue = attrs?.roles?.joinToString(", ") ?: ""
+        val genderValue = attrs?.genders?.joinToString(", ") ?: ""
+        val hairLengthValue = attrs?.hairLengths?.joinToString(", ") ?: ""
+        val hairColorValue = attrs?.hairColors?.joinToString(", ") ?: ""
+        val eyeColorValue = attrs?.eyeColors?.joinToString(", ") ?: ""
+        val skinColorValue = attrs?.skinColors?.joinToString(", ") ?: ""
+
+        return copy(
+            editingEventId = eventId,
+            isEditDataLoaded = true,
+            eventName = event.title.orEmpty(),
+            eventDescription = event.description.orEmpty(),
+            selectedEventType = eventTypes.find { it.title == event.type } ?: selectedEventType,
+            eventDate = datePart,
+            eventTime = timePart,
+            selectedCountries = allCountries.filter { it.name == event.address?.countryName }.ifEmpty { selectedCountries },
+            deadlineDate = deadlineDatePart,
+            deadlineTime = deadlineTimePart,
+            isPaid = event.cost?.isNotBlank() == true,
+            eventRate = event.cost.orEmpty(),
+            role = role.copy(value = roleValue),
+            gender = gender.copy(value = genderValue),
+            hairLength = hairLength.copy(value = hairLengthValue),
+            hairColor = hairColor.copy(value = hairColorValue),
+            eyeColor = eyeColor.copy(value = eyeColorValue),
+            skinColor = skinColor.copy(value = skinColorValue),
+            blockParams = listOf(
+                ProfileParameter(ParametersType.AGE, rangeToStr(attrs?.ageFrom, attrs?.ageTo)),
+                ProfileParameter(ParametersType.HEIGHT, rangeToStr(attrs?.heightFrom, attrs?.heightTo)),
+                ProfileParameter(ParametersType.WEIGHT, rangeToStr(attrs?.weightFrom, attrs?.weightTo)),
+                ProfileParameter(ParametersType.WAIST, rangeToStr(attrs?.waistFrom, attrs?.waistTo)),
+                ProfileParameter(ParametersType.HIPS, rangeToStr(attrs?.hipsFrom, attrs?.hipsTo)),
+                ProfileParameter(ParametersType.SHOE_SIZE, rangeToStr(attrs?.shoesSizeFrom, attrs?.shoesSizeTo)),
+                ProfileParameter(ParametersType.BREAST_SIZE, rangeToStr(attrs?.breastSizeFrom, attrs?.breastSizeTo))
+            ),
+            galleryUris = gallery,
+            existingGalleryFiles = sortedFiles,
+            eventRequirements = event.description.orEmpty()
         )
+    }
+
+    private fun publishEvent() {
+        viewModelScope.launch {
+            setState { copy(isUploading = true) }
+            try {
+                val uploadedFiles = mutableListOf<UploadedFile>()
+                val uris = state.value.galleryUris
+                val existingByUrl = state.value.existingGalleryFiles.associateBy { it.fullUrl }
+                
+                if (uris.isNotEmpty()) {
+                    for (uri in uris) {
+                        val existing = existingByUrl[uri.toString()]
+                        if (existing != null) {
+                            uploadedFiles.add(UploadedFile(existing.fileUuid, existing.fullUrl))
+                            continue
+                        }
+                        val fileResult = ApplicationLoader.applicationContext.uriToFile(uri)
+                        fileResult.getOrNull()?.let { file ->
+                            val uploadResult = DivoApi.userRepository.uploadPhoto(file)
+                            if (uploadResult is DivoResult.Success) {
+                                uploadedFiles.add(uploadResult.value)
+                            }
+                        }
+                    }
+                }
+                
+                val request = state.value.toCreateEventRequest(uploadedFiles)
+                val result = state.value.editingEventId?.let { eventId ->
+                    DivoApi.eventRepository.updateEvent(eventId, request)
+                } ?: DivoApi.eventRepository.createEvent(request)
+                if (result is DivoResult.Success) {
+                    sendEffect(Effect.EventPublished)
+                    setState { copy(isUploading = false) }
+                } else {
+                    sendEffect(Effect.ShowError(result.getErrorMessage()))
+                    setState { copy(isUploading = false) }
+                }
+            } catch (e: Exception) {
+                sendEffect(Effect.ShowError(e.message ?: "Unknown error"))
+                setState { copy(isUploading = false) }
+            }
+        }
+    }
+
+    private fun loadPaymentTypes() {
+        viewModelScope.launch {
+            val result = DivoApi.paymentRepository.getPayments()
+            if (result is DivoResult.Success) {
+                val payments = result.value.data
+                setState {
+                    copy(
+                        paymentTypes = payments.paymentType,
+                        paymentFrequencies = payments.paymentFrequency,
+                        selectedPaymentType = payments.paymentType.find { it.title == "Free" },
+                        selectedPaymentFrequency = payments.paymentFrequency.firstOrNull()
+                    )
+                }
+            } else {
+                sendEffect(Effect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
+    private fun loadCountries() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val list = mutableListOf<LocalCountry>()
+            try {
+                val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
+                val reader = BufferedReader(InputStreamReader(stream))
+                reader.forEachLine { line ->
+                    val args = line.split(";")
+                    if (args.size >= 3) {
+                        val code = args[0]
+                        val shortname = args[1]
+                        val name = args[2]
+                        val flag = LocaleController.getLanguageFlag(shortname)
+                        list.add(
+                            LocalCountry(
+                                code = code,
+                                shortName = shortname,
+                                name = name,
+                                flag = flag
+                            )
+                        )
+                    }
+                }
+                reader.close()
+                stream.close()
+
+                list.sortBy { it.name }
+
+                setState { copy(allCountries = list) }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun loadCurrentUser() {
+        viewModelScope.launch {
+            when (val result = DivoApi.userRepository.getCurrentUserInfo()) {
+                is DivoResult.Success -> setState { copy(currentUser = result.value) }
+                else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
+            }
+        }
     }
 }

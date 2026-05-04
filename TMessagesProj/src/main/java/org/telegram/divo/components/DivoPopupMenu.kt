@@ -60,7 +60,7 @@ fun DivoPopupMenu(
         ) {
             Column {
                 items.forEachIndexed { index, item ->
-                    val color = if (item.titleRes == R.string.BlockProfile) {
+                    val color = if (item.titleRes == R.string.BlockProfile || item.titleRes == R.string.DeleteEvent) {
                         Color.Red
                     } else {
                         AppTheme.colors.textPrimary
@@ -98,7 +98,7 @@ fun DivoPopupMenu(
                         }
                     )
 
-                    if (index == 0 && items.size > 1 && item.iconRes != null) {
+                    if (index == 0 && items.size > 1 && item.iconRes != null && item.titleRes != R.string.DeleteEvent) {
                         HorizontalDivider(
                             color = Color.LightGray,
                             thickness = 7.dp

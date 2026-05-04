@@ -82,6 +82,7 @@ import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBarBackground
 import org.telegram.divo.screen.profile.components.ToolBarContent
 import org.telegram.divo.screen.profile.components.VideoGrid
+import org.telegram.divo.components.StatusBarIconColorEffect
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -357,6 +358,8 @@ private fun ProfileScreenContent(
             transitionProgress >= 1f
         }
     }
+
+    StatusBarIconColorEffect(isToolbarSolid)
 
     val isPagerSectionVisible by remember {
         derivedStateOf {

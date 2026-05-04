@@ -54,7 +54,8 @@ fun AnimatedPortfolioAddButton(
     onEventCreate: () -> Unit,
 ) {
     var frozenPage by remember { mutableIntStateOf(pagerState.currentPage) }
-    LaunchedEffect(showAddButton) {
+
+    LaunchedEffect(showAddButton, pagerState.currentPage) {
         if (showAddButton) frozenPage = pagerState.currentPage
     }
 

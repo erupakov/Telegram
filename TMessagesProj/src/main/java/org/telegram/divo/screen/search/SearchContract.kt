@@ -85,14 +85,6 @@ data class State(
             if (countries.size == 1) "$flag ${first.name}" else "$flag ${first.name} +${countries.size - 1}"
         }
 
-    fun getFormatedOptions(item: ProfileParameter): String =
-        if (item.value.isEmpty()) ""
-        else {
-            val list = item.value.split(", ")
-            val first = list.first()
-            if (list.size == 1) first else "$first +${list.size - 1}"
-        }
-
     val hasActiveFilters: Boolean
         get() = activeFiltersCount > 0
 }

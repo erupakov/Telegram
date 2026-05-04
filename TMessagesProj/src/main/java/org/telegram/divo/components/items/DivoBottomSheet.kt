@@ -125,29 +125,27 @@ private fun HeaderSection(
             style = AppTheme.typography.bodyLarge
         )
 
-        if (isApplyEnable) {
-            if (isSaveMode) {
-                RoundedButton(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .align(Alignment.CenterEnd),
-                    resId = R.drawable.ic_divo_apply,
-                    iconSize = 28.dp,
-                    background = AppTheme.colors.accentOrange,
-                    iconTint = AppTheme.colors.onBackground,
-                    onClick = onSave
-                )
-            } else {
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clickableWithoutRipple { onReset() },
-                    text = stringResource(R.string.ButtonReset),
-                    fontSize = 15.sp,
-                    color = AppTheme.colors.accentOrange,
-                    style = AppTheme.typography.helveticaNeueRegular
-                )
-            }
+        if (isSaveMode) {
+            RoundedButton(
+                modifier = Modifier
+                    .size(40.dp)
+                    .align(Alignment.CenterEnd),
+                resId = R.drawable.ic_divo_apply,
+                iconSize = 28.dp,
+                background = if (isApplyEnable) AppTheme.colors.accentOrange else AppTheme.colors.backgroundDark.copy(alpha = 0.15f),
+                iconTint = AppTheme.colors.onBackground,
+                onClick = { if (isApplyEnable) onSave() }
+            )
+        } else if (isApplyEnable) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .clickableWithoutRipple { onReset() },
+                text = stringResource(R.string.ButtonReset),
+                fontSize = 15.sp,
+                color = AppTheme.colors.accentOrange,
+                style = AppTheme.typography.helveticaNeueRegular
+            )
         }
     }
 }

@@ -340,7 +340,6 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     }
                 }
                 stream.close()
-                // Просто сохраняем список в State. Дальше с ним будет работать CityPickerSheet.
                 setState { copy(allCities = cities) }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -349,14 +348,12 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     }
 
     private fun State.buildModelParameters(): ModelParametersDto? {
-        // Gender: value хранит строки типа "Male, Female" -> маппим в ["male", "female"]
         val genderValues = gender.value
             .split(",")
             .map { it.trim().lowercase() }
             .filter { it.isNotEmpty() }
             .ifEmpty { null }
 
-        // Appearance: маппим titles обратно в ids через options
         fun resolveIds(param: ProfileParameter, options: List<AppearanceItem>): List<Int>? {
             if (param.value.isEmpty()) return null
             val selectedTitles = param.value.split(",").map { it.trim() }.toSet()
@@ -371,18 +368,14 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         val eyeColorIds = resolveIds(eyeColor, eyeColorOptions)
         val skinColorIds = resolveIds(skinColor, skinColorOptions)
 
-        // blockParams: AGE хранится как "14-45", остальные как "170.0" (одиночное значение)
         fun ProfileParameter.toRange(): RangeParamDto? {
             if (value.isBlank()) return null
 
-            // Формат для AGE: "14-45" (через дефис)
-            if (type == ParametersType.AGE) {
+            if ("-" in value) {
                 val parts = value.split("-").mapNotNull { it.trim().toIntOrNull() }
                 return if (parts.size >= 2) RangeParamDto(from = parts[0], to = parts[1]) else null
             }
 
-            // Формат для остальных: "170.0" (одиночное decimal-значение из wheel picker)
-            // Конвертируем в int и отправляем как {from: X, to: X}
             val intValue = value.toDoubleOrNull()?.toInt() ?: value.toIntOrNull()
             return intValue?.let { RangeParamDto(from = it, to = it) }
         }

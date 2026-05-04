@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -15,6 +16,8 @@ import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.screen.add_model.AddModelScreen
 import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
 import org.telegram.divo.screen.event_create.CreateEventScreen
+import org.telegram.divo.screen.event_create.CreateEventViewModel
+import org.telegram.divo.screen.event_create.components.EventPreviewScreen
 import org.telegram.divo.screen.event_details.EventDetailsNavGraph
 import org.telegram.divo.screen.face_search.FaceSearchScreen
 import org.telegram.divo.screen.gallery.GallerySource
@@ -36,7 +39,11 @@ sealed class ProfileRoute(val route: String) {
     data object EditLinks : ProfileRoute("profile_edit_links")
     data object AddModel : ProfileRoute("profile_add_model")
     data object Appearance : ProfileRoute("profile_appearance")
-    data object CreateEvent : ProfileRoute("create_event")
+    data object CreateEvent : ProfileRoute("create_event?eventId={eventId}") {
+        const val BASE_ROUTE = "create_event"
+        fun createRoute(eventId: Int? = null): String =
+            if (eventId != null) "$BASE_ROUTE?eventId=$eventId" else BASE_ROUTE
+    }
     data object CreateWorkHistory : ProfileRoute("create_work_history?id={id}") {
         fun create(id: Int? = null) = if (id != null) "create_work_history?id=$id" else "create_work_history?id=-1"
     }
@@ -99,6 +106,7 @@ sealed class ProfileRoute(val route: String) {
     data object FaceSearch : ProfileRoute("face_search/{uri}") {
         fun createRoute(uri: String) = "face_search/${Uri.encode(uri)}"
     }
+    data object EventPreview : ProfileRoute("event_preview")
 }
 
 @Composable
@@ -286,6 +294,7 @@ fun ProfileNavGraph(
             EventDetailsNavGraph(
                 eventId = eventId,
                 isOwnProfile = isOwnProfile,
+                onNavigateToEditEvent = { nav.navigate(ProfileRoute.CreateEvent.createRoute(it)) },
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
@@ -346,9 +355,34 @@ fun ProfileNavGraph(
             )
         }
         composable(
-            route = ProfileRoute.CreateEvent.route
-        ) {
+            route = ProfileRoute.CreateEvent.route,
+            arguments = listOf(navArgument("eventId") {
+                type = NavType.IntType
+                defaultValue = -1
+            })
+        ) { backStackEntry ->
+            val editingEventId = backStackEntry.arguments?.getInt("eventId")?.takeIf { it > 0 }
             CreateEventScreen(
+                editingEventId = editingEventId,
+                onPreviewClicked = {
+                    nav.navigate(ProfileRoute.EventPreview.route)
+                },
+                onBack = { nav.popBackStack() },
+                onEventPublished = {
+                    nav.popBackStack(ProfileRoute.Profile.route, inclusive = false)
+                }
+            )
+        }
+        composable(
+            route = ProfileRoute.EventPreview.route
+        ) {
+            val createEventEntry = remember(it) {
+                nav.getBackStackEntry(ProfileRoute.CreateEvent.BASE_ROUTE)
+            }
+            val sharedViewModel: CreateEventViewModel = viewModel(createEventEntry)
+            EventPreviewScreen(
+                viewModel = sharedViewModel,
+                onPublish = {},
                 onBack = { nav.popBackStack() }
             )
         }

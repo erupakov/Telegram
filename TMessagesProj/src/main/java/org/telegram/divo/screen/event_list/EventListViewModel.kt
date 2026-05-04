@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.event_list
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
@@ -19,6 +18,12 @@ class EventListViewModel :
 
     init {
         setIntent(EventListIntent.OnLoad)
+        viewModelScope.launch {
+            DivoApi.eventRepository.eventsUpdatedFlow.collect {
+                eventPaginator.reset()
+                eventPaginator.loadInitial()
+            }
+        }
     }
 
     override fun handleIntent(intent: EventListIntent) {

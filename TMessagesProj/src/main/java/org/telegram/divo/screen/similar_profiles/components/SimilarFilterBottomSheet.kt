@@ -182,7 +182,7 @@ fun SimilarFilterBottomSheet(
                 )
                 Spacer(Modifier.height(16.dp))
 
-                if (uiState.isModel && !showMoreParameters) {
+                if (!uiState.isModel && !showMoreParameters) {
                     Box(modifier = Modifier.fillMaxWidth()) {
                         Text(
                             modifier = Modifier.clickableWithoutRipple { showMoreParameters = true},

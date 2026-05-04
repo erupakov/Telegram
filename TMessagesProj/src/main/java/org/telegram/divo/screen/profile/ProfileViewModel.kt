@@ -54,7 +54,7 @@ class ProfileViewModel(
 
     private val toggleBookmarkUseCase = ToggleBookmarkUseCase()
 
-    private val eventPaginator = GetEventListUseCase().paginator
+    private val eventPaginator = GetEventListUseCase(creatorId = userId).paginator
 
     private val portfolioPaginator by lazy {
         GetUserGalleryUseCase(userId = state.value.userId).paginator
@@ -124,6 +124,14 @@ class ProfileViewModel(
 
     init {
         loadData()
+        viewModelScope.launch {
+            DivoApi.eventRepository.eventsUpdatedFlow.collect {
+                if (!state.value.isModel) {
+                    eventPaginator.reset()
+                    eventPaginator.loadInitial()
+                }
+            }
+        }
     }
 
     override fun handleIntent(intent: ProfileIntent) {

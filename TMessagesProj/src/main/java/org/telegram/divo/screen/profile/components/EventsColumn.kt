@@ -150,7 +150,7 @@ private fun EventItem(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape),
-                model = item.creator?.avatar?.fullUrl,
+                model = item.files.firstOrNull()?.fullUrl ?: item.creator?.avatar?.fullUrl,
             )
             Spacer(modifier = Modifier.width(10.dp))
             Column {

@@ -214,6 +214,15 @@ class UserRepository(
         service.uploadFile(file.toMultipart()).toEntity()
     }
 
+    suspend fun uploadPhotos(files: List<File>): DivoResult<List<UploadedFile>> = resultOf {
+        service.uploadFiles(files.map { it.toMultipart() }).data.map { uploadedFile ->
+            UploadedFile(
+                uuid = uploadedFile.uuid,
+                fullUrl = uploadedFile.fullUrl
+            )
+        }
+    }
+
     suspend fun getUserSocialNetworks(): DivoResult<List<UserSocialNetwork>> = resultOf {
         service.getUserSocialNetworks().toEntities()
     }

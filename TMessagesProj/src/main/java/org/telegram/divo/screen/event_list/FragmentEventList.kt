@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
-import org.telegram.messenger.FileLog
-import org.telegram.divo.screen.event_create.FragmentEventCreate
 import org.telegram.divo.screen.event_filter.FragmentEventFilter
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.MainTabsActivityController
@@ -21,16 +19,11 @@ class FragmentEventList : BaseFragment() {
 
     private var mainTabsController: MainTabsActivityController? = null
 
-    init {
-        FileLog.d("DIVO: FragmentEventList.init hashCode=" + hashCode())
-    }
-
     fun setMainTabsActivityController(controller: MainTabsActivityController) {
         this.mainTabsController = controller
     }
 
     override fun createView(context: Context): View {
-        FileLog.d("DIVO: FragmentEventList.createView fragmentViewExists=" + (fragmentView != null))
         if (fragmentView != null) return fragmentView
         actionBar.setAddToContainer(false)
 
@@ -47,9 +40,6 @@ class FragmentEventList : BaseFragment() {
                     },
                     onInnerNavControllerReady = { navController ->
                         detailNavController = navController
-                    },
-                    onNavigateToCreateEvent = {
-                        presentFragment(FragmentEventCreate())
                     },
                     onNavigateToSearch = {
                         presentFragment(FragmentEventFilter())

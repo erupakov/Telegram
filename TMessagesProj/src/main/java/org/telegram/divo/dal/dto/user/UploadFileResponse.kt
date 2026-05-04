@@ -9,7 +9,11 @@ class UploadFileResponse(
 
 class UploadedFileData(
     @SerializedName("uuid") val uuid: String,
+    @SerializedName("status") val status: String? = null,
+    @SerializedName("fileName") val fileName: String? = null,
     @SerializedName("fullUrl") val fullUrl: String,
+    @SerializedName("extension") val extension: String? = null,
+    @SerializedName("type") val type: String? = null
 )
 
 fun UploadFileResponse.toEntity() = UploadedFile(

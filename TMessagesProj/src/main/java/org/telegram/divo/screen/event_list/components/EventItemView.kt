@@ -65,7 +65,7 @@ fun EventItemView(
 
         Box {
             EventItemBackground(
-                url = event.creator?.avatar?.fullUrl.orEmpty(),
+                url = event.files.firstOrNull()?.fullUrl ?: event.creator?.avatar?.fullUrl.orEmpty(),
                 hazeState = hazeState
             )
 

@@ -2,6 +2,10 @@ package org.telegram.divo.screen.event_list
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -9,10 +13,19 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
+import org.telegram.divo.screen.event_create.CreateEventScreen
+import org.telegram.divo.screen.event_create.CreateEventViewModel
+import org.telegram.divo.screen.event_create.components.EventPreviewScreen
 import org.telegram.divo.screen.event_details.EventDetailsNavGraph
 
 sealed class EventRoute(val route: String) {
     data object Events : EventRoute("events")
+    data object CreateEvent : EventRoute("create_event?eventId={eventId}") {
+        const val BASE_ROUTE = "create_event"
+        fun createRoute(eventId: Int? = null): String =
+            if (eventId != null) "$BASE_ROUTE?eventId=$eventId" else BASE_ROUTE
+    }
+    data object EventPreview : EventRoute("event_preview")
 
     data object Detail : EventRoute("detail/{eventId}") {
         fun createRoute(eventId: Int) = "detail/$eventId"
@@ -21,7 +34,6 @@ sealed class EventRoute(val route: String) {
 
 @Composable
 fun EventsNavGraph(
-    onNavigateToCreateEvent: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {},
     onNavControllerReady: (NavController) -> Unit,
     onInnerNavControllerReady: (NavController?) -> Unit,
@@ -44,11 +56,61 @@ fun EventsNavGraph(
         navController = nav,
         startDestination = EventRoute.Events.route
     ) {
-        composable(EventRoute.Events.route) {
+        composable(EventRoute.Events.route) { entry ->
+            // Observe refresh signal from CreateEvent / EditEvent
+            val needsRefresh = entry.savedStateHandle.get<Boolean>("needsRefresh") == true
+            if (needsRefresh) {
+                entry.savedStateHandle.remove<Boolean>("needsRefresh")
+            }
+            val viewModel: EventListViewModel = viewModel(
+                viewModelStoreOwner = LocalContext.current.findActivity() as ViewModelStoreOwner
+            )
+
+            LaunchedEffect(needsRefresh) {
+                if (needsRefresh) {
+                    viewModel.loadData()
+                }
+            }
+
             EventListScreen(
+                viewModel = viewModel,
                 onNavigateToEventDetails = { nav.navigate(EventRoute.Detail.createRoute(it)) },
-                onNavigateToCreateEvent = onNavigateToCreateEvent,
+                onNavigateToCreateEvent = { nav.navigate(EventRoute.CreateEvent.createRoute()) },
                 onNavigateToSearch = onNavigateToSearch
+            )
+        }
+        composable(
+            route = EventRoute.CreateEvent.route,
+            arguments = listOf(navArgument("eventId") {
+                type = NavType.IntType
+                defaultValue = -1
+            })
+        ) { entry ->
+            val editingEventId = entry.arguments?.getInt("eventId")?.takeIf { it > 0 }
+            CreateEventScreen(
+                editingEventId = editingEventId,
+                onBack = { nav.popBackStack() },
+                onPreviewClicked = {
+                    nav.navigate(EventRoute.EventPreview.route)
+                },
+                onEventPublished = {
+                    nav.getBackStackEntry(EventRoute.Events.route)
+                        .savedStateHandle["needsRefresh"] = true
+                    nav.popBackStack(EventRoute.Events.route, inclusive = false)
+                }
+            )
+        }
+        composable(
+            route = EventRoute.EventPreview.route
+        ) {
+            val createEventEntry = remember(it) {
+                nav.getBackStackEntry(EventRoute.CreateEvent.BASE_ROUTE)
+            }
+            val sharedViewModel: CreateEventViewModel = viewModel(createEventEntry)
+            EventPreviewScreen(
+                viewModel = sharedViewModel,
+                onPublish = {},
+                onBack = { nav.popBackStack() }
             )
         }
         composable(
@@ -61,6 +123,7 @@ fun EventsNavGraph(
             EventDetailsNavGraph(
                 eventId = eventId,
                 onNavControllerReady = { onInnerNavControllerReady(it) },
+                onNavigateToEditEvent = { nav.navigate(EventRoute.CreateEvent.createRoute(it)) },
                 onNavigateBack = { nav.popBackStack() },
             )
         }
