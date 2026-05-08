@@ -9,27 +9,35 @@ class SimilarFaceResponse(
 )
 
 class SimilarFaceDto(
-    @SerializedName("city") val city: String?,
+    @SerializedName("birthday") val birthday: String?,
+    @SerializedName("country_code") val countryCode: String?,
+    @SerializedName("country_name") val countryName: String?,
     @SerializedName("full_name") val fullName: String?,
-    @SerializedName("gender") val gender: String?,
     @SerializedName("image") val image: String?,
     @SerializedName("index") val index: Int?,
-    @SerializedName("photo_id") val photoId: Int?,
     @SerializedName("rank") val rank: Int?,
-    @SerializedName("rating") val rating: String?,
+    @SerializedName("role") val role: String?,
     @SerializedName("score") val score: Double?,
     @SerializedName("user_id") val userId: Int?
 )
 
 fun SimilarFaceDto.toEntity() = SimilarFace(
-    city = city.orEmpty(),
-    fullName = fullName.orEmpty(),
-    gender = gender.orEmpty(),
-    image = image.orEmpty(),
+    birthday = birthday.orEmptyIfNullString(),
+    countryCode = countryCode.orEmptyIfNullString(),
+    countryName = countryName.orEmptyIfNullString(),
+    fullName = fullName.orEmptyIfNullString(),
+    image = image.orEmptyIfNullString(),
     index = index ?: 0,
-    photoId = photoId ?: 0,
     rank = rank ?: 0,
-    rating = rating.orEmpty(),
+    role = role.orEmptyIfNullString(),
     score = score ?: 0.0,
     userId = userId ?: 0
 )
+
+private fun String?.orEmptyIfNullString(): String {
+    return if (this == null || this.equals("null", ignoreCase = true)) {
+        ""
+    } else {
+        this
+    }
+}

@@ -12,6 +12,7 @@ import org.telegram.divo.entity.FeedItem
 class GetFeedUseCase(
     private val repository: PublicationRepository = DivoApi.publicationRepository,
     limit: Int = 5,
+    role: String,
     subscribedOnly: Boolean = false,
     modelsOnly: Boolean = false,
 ) {
@@ -19,6 +20,7 @@ class GetFeedUseCase(
         val request = FeedRequestDto(
             offset = offset,
             limit = lim,
+            role = role,
             subscribedOnly = subscribedOnly,
             modelsOnly = modelsOnly,
         )

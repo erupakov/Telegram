@@ -340,7 +340,6 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     }
                 }
                 stream.close()
-                // Просто сохраняем список в State. Дальше с ним будет работать CityPickerSheet.
                 setState { copy(allCities = cities) }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -349,14 +348,12 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     }
 
     private fun State.buildModelParameters(): ModelParametersDto? {
-        // Gender: value хранит строки типа "Male, Female" -> маппим в ["male", "female"]
         val genderValues = gender.value
             .split(",")
             .map { it.trim().lowercase() }
             .filter { it.isNotEmpty() }
             .ifEmpty { null }
 
-        // Appearance: маппим titles обратно в ids через options
         fun resolveIds(param: ProfileParameter, options: List<AppearanceItem>): List<Int>? {
             if (param.value.isEmpty()) return null
             val selectedTitles = param.value.split(",").map { it.trim() }.toSet()
@@ -371,14 +368,21 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         val eyeColorIds = resolveIds(eyeColor, eyeColorOptions)
         val skinColorIds = resolveIds(skinColor, skinColorOptions)
 
-        // blockParams: value хранится как "25, 40"
         fun ProfileParameter.toRange(): RangeParamDto? {
-            val parts = value.split(",").mapNotNull { it.trim().toIntOrNull() }
-            return if (parts.size >= 2) RangeParamDto(from = parts[0], to = parts[1]) else null
+            if (value.isBlank()) return null
+
+            if ("-" in value) {
+                val parts = value.split("-").mapNotNull { it.trim().toIntOrNull() }
+                return if (parts.size >= 2) RangeParamDto(from = parts[0], to = parts[1]) else null
+            }
+
+            val intValue = value.toDoubleOrNull()?.toInt() ?: value.toIntOrNull()
+            return intValue?.let { RangeParamDto(from = it, to = it) }
         }
 
         val ageRange     = blockParams.find { it.type == ParametersType.AGE }?.toRange()
         val heightRange  = blockParams.find { it.type == ParametersType.HEIGHT }?.toRange()
+        val weightRange  = blockParams.find { it.type == ParametersType.WEIGHT }?.toRange()
         val waistRange   = blockParams.find { it.type == ParametersType.WAIST }?.toRange()
         val hipsRange    = blockParams.find { it.type == ParametersType.HIPS }?.toRange()
         val shoeRange    = blockParams.find { it.type == ParametersType.SHOE_SIZE }?.toRange()
@@ -387,7 +391,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         val hasAnyFilter = listOf(
             genderValues, hairColorIds, hairLengthIds, eyeColorIds, skinColorIds
         ).any { it != null } || listOf(
-            ageRange, heightRange, waistRange, hipsRange, shoeRange, breastRange
+            ageRange, heightRange, weightRange, waistRange, hipsRange, shoeRange, breastRange
         ).any { it != null }
 
         if (!hasAnyFilter) return null
@@ -396,6 +400,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             gender = genderValues,
             age = ageRange,
             height = heightRange,
+            weight = weightRange,
             waist = waistRange,
             hips = hipsRange,
             shoesSize = shoeRange,
@@ -417,6 +422,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         likes = this.likesCount,
         isLiked = this.isLikedByUser,
         photo = this.searchImageUrl.orEmpty(),
+        index = null,
         roleLabel = this.user?.roleLabel.orEmpty(),
         similarity = null
     )

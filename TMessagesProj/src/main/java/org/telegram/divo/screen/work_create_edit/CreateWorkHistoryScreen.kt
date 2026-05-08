@@ -11,13 +11,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Divider
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DatePicker
@@ -61,8 +59,9 @@ import org.telegram.divo.common.SnackbarEvent.Success
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.utils.toFormattedDate
-import org.telegram.divo.components.BackButton
 import org.telegram.divo.components.DivoTextField
+import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.components.TelegramUserAvatarEditable
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -171,10 +170,8 @@ fun CreateWorkHistoryScreenView(
                 bottomPadding = 56.dp
             )
         },
-        containerColor = Color.White
+        containerColor = AppTheme.colors.backgroundLight
     ) { padding ->
-        Divider(modifier = Modifier.padding(padding))
-
         Box(modifier = Modifier
             .fillMaxSize()
             .padding(padding)) {
@@ -183,22 +180,23 @@ fun CreateWorkHistoryScreenView(
                     .fillMaxSize()
                     .align(Alignment.TopCenter)
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-//                TelegramUserAvatarEditable(
-//                    avatarUrl = state.avatarUrl,
-//                    localUri = selectedAvatarUri,
-//                    background = Color.White,
-//                    borderColor = AppTheme.colors.buttonColor,
-//                    isVisibleSmallIcon = state.isEditMode,
-//                    usePlaceholder = true,
-//                    placeholderSymbols = state.agencyName,
-//                    smallIconResId = R.drawable.ic_divo_work_edit_avatar,
-//                    onEditClick = { openGallery() }
-//                )
+                Spacer(modifier = Modifier.height(12.dp))
+                TelegramUserAvatarEditable(
+                    avatarUrl = state.avatarUrl,
+                    localUri = selectedAvatarUri,
+                    background = Color.White,
+                    borderColor = AppTheme.colors.accentOrange,
+                    isVisibleSmallIcon = false,
+                    usePlaceholder = true,
+                    placeholderSymbols = state.agencyName,
+                    //smallIconResId = R.drawable.ic_divo_work_edit_avatar,
+                    onEditClick = { } //openGallery()
+                )
 
-                Spacer(modifier = Modifier.height(32.dp + 100.dp))
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Title(text = stringResource(R.string.WorkExperienceInfo))
 
@@ -206,30 +204,31 @@ fun CreateWorkHistoryScreenView(
 
                 Title(
                     text = stringResource(R.string.AgencyName),
-                    textColor = Color(0xFF3C3C43)
+                    size = 14,
+                    textColor = AppTheme.colors.textPrimary.copy(0.8f)
                 )
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(7.dp))
 
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(Color.Black.copy(alpha = 0.06f))
+                        .clip(RoundedCornerShape(100.dp))
+                        .background(AppTheme.colors.onBackground)
                         .clickableWithoutRipple { onIntent(Intent.OnSearchSelected) },
                     contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp),
                         text = state.agencyName.ifBlank { stringResource(R.string.EnterAgencyName) },
-                        color = Color(0x993C3C43),
+                        color = if (state.agencyName.isNotBlank()) AppTheme.colors.textPrimary else AppTheme.colors.textPrimary.copy(0.4f),
                         fontSize = 16.sp,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
                 // Date & Time
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -254,9 +253,10 @@ fun CreateWorkHistoryScreenView(
                     horizontalArrangement = Arrangement.Start
                 ) {
                     Checkbox(
-                        modifier = Modifier,
+                        modifier = Modifier.offset(x = (-12).dp),
                         checked = state.isCurrent,
                         colors = CheckboxDefaults.colors(
+                            disabledCheckedColor = AppTheme.colors.onBackground,
                             checkedColor = AppTheme.colors.accentOrange
                         ),
                         onCheckedChange = { checked ->
@@ -268,6 +268,7 @@ fun CreateWorkHistoryScreenView(
                         style = AppTheme.typography.manropeRegular,
                         fontSize = 14.sp,
                         modifier = Modifier
+                            .offset(x = (-14).dp)
                             .clickable(
                                 onClick = { onIntent(Intent.OnCurrentChanged(isCurrent = !state.isCurrent)) }
                             )
@@ -361,18 +362,21 @@ private fun DateField(
     onClick: () -> Unit,
 ) {
     Column(modifier) {
-        Title(text = title, textColor = Color(0xFF3C3C43))
+        Title(text = title, textColor = AppTheme.colors.textPrimary.copy(0.8f), size = 14)
         Spacer(modifier = Modifier.height(6.dp))
         Box(modifier = Modifier.fillMaxWidth()) {
             DivoTextField(
                 value = date,
                 horizontalContentPadding = 16.dp,
+                cornerRadius = 100.dp,
+                backgroundColor = AppTheme.colors.onBackground,
                 textStyle = TextStyle(
                     fontSize = 16.sp,
-                    color = if (enabled) Color(0x993C3C43) else Color(0x403C3C43)
+                    color = if (enabled) AppTheme.colors.textPrimary else AppTheme.colors.textPrimary.copy(0.4f)
                 ),
                 readOnly = true,
-                trailingIcon = R.drawable.ic_divo_calendar_20
+                trailingIcon = R.drawable.ic_divo_calendar_20,
+                trailingIconColor = AppTheme.colors.textPrimary
             )
 
             Box(
@@ -404,17 +408,15 @@ private fun TopBar(
             )
         },
         navigationIcon = {
-            BackButton(
-                modifier = Modifier
-                    .padding(start = 8.dp, bottom = 7.dp),
-                color = AppTheme.colors.accentOrange,
-                onBackClicked = onBack
+            RoundedButton(
+                modifier = Modifier.padding(start = 16.dp),
+                onClick = onBack
             )
         },
         actions = {
             Text(
                 text = actionText,
-                color = if (createEnabled) Color(0xFFBF825E) else Color(0xFFB9B9B9),
+                color = if (createEnabled) AppTheme.colors.accentOrange else Color(0xFFB9B9B9),
                 modifier = Modifier
                     .clickableWithoutRipple { if (createEnabled) onCreate() }
                     .padding(end = 8.dp, bottom = 7.dp),
@@ -423,7 +425,7 @@ private fun TopBar(
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
+            containerColor = AppTheme.colors.backgroundLight
         )
     )
 }
@@ -433,6 +435,7 @@ private fun Title(
     modifier: Modifier = Modifier,
     text: String,
     textColor: Color = Color.Black,
+    size: Int = 16,
     fontWeight: FontWeight = FontWeight.Normal
 ) {
     Text(
@@ -441,7 +444,7 @@ private fun Title(
         fontWeight = fontWeight,
         style = AppTheme.typography.helveticaNeueRegular,
         color = textColor,
-        fontSize = 16.sp,
+        fontSize = size.sp,
         textAlign = TextAlign.Start
     )
 }

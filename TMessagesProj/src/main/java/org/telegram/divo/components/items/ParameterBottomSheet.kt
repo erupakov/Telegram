@@ -37,7 +37,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -65,12 +64,17 @@ fun ParameterBottomSheet(
     isMultiSelect: Boolean = false,
     initialValue: String = "",
     iconClose: Int = R.drawable.ic_divo_back,
+    useNumericRangeUi: Boolean = false,
     onDismiss: () -> Unit,
     onSave: (String) -> Unit,
     onDelete: () -> Unit
 ) {
     val isDatePicker = paramType == ParametersType.BIRTHDAY
     val isAgePicker = paramType == ParametersType.AGE
+    val numericFilterBounds = remember(paramType, useNumericRangeUi, options) {
+        if (useNumericRangeUi && options.isNullOrEmpty()) paramType?.numericFilterRange() else null
+    }
+    val isNumericRangePicker = numericFilterBounds != null && !isDatePicker && !isAgePicker
 
     val ageParts = if (isAgePicker) initialValue.split("-") else emptyList()
     var selectedMinAge by remember { mutableIntStateOf(ageParts.getOrNull(0)?.toIntOrNull() ?: 14) }
@@ -101,9 +105,10 @@ fun ParameterBottomSheet(
     val integerParts = remember(paramType) {
         val range = when (paramType) {
             ParametersType.HEIGHT -> 120..220
+            ParametersType.WEIGHT -> 30..200
             ParametersType.WAIST -> 40..130
             ParametersType.HIPS -> 60..150
-            ParametersType.SHOE_SIZE -> 30..50
+            ParametersType.SHOE_SIZE -> 32..50
             else -> 0..250
         }
         range.map { it.toString() }
@@ -130,6 +135,17 @@ fun ParameterBottomSheet(
         )
     }
 
+    val numericRangeInitial = remember(initialValue, numericFilterBounds) {
+        if (numericFilterBounds != null) resolveNumericBlockParamBounds(initialValue, numericFilterBounds)
+        else 0 to 0
+    }
+    var selectedMinNumeric by remember(initialValue, numericFilterBounds, paramType) {
+        mutableIntStateOf(numericRangeInitial.first)
+    }
+    var selectedMaxNumeric by remember(initialValue, numericFilterBounds, paramType) {
+        mutableIntStateOf(numericRangeInitial.second)
+    }
+
     DivoBottomSheet(
         sheetState = sheetState,
         title = paramType?.titleRes?.let { stringResource(it) }.orEmpty(),
@@ -139,6 +155,8 @@ fun ParameterBottomSheet(
         onSave = {
             if (isAgePicker) {
                 onSave("$selectedMinAge-$selectedMaxAge")
+            } else if (isNumericRangePicker) {
+                onSave("$selectedMinNumeric-$selectedMaxNumeric")
             } else if (isDatePicker) {
                 onSave("$selectedYear-$selectedMonth-$selectedDay")
             } else if (options.isNullOrEmpty()) {
@@ -164,6 +182,16 @@ fun ParameterBottomSheet(
                     onAgeChange = { newMin, newMax ->
                         selectedMinAge = newMin
                         selectedMaxAge = newMax
+                    }
+                )
+            } else if (isNumericRangePicker && numericFilterBounds != null) {
+                NumericRangeSelector(
+                    bounds = numericFilterBounds,
+                    minVal = selectedMinNumeric,
+                    maxVal = selectedMaxNumeric,
+                    onValueChange = { newMin, newMax ->
+                        selectedMinNumeric = newMin
+                        selectedMaxNumeric = newMax
                     }
                 )
             } else {
@@ -293,10 +321,27 @@ fun AgeRangeSelector(
     maxAge: Int,
     onAgeChange: (Int, Int) -> Unit
 ) {
-    val ageRange = 14f..45f
+    NumericRangeSelector(
+        bounds = 14..45,
+        minVal = minAge,
+        maxVal = maxAge,
+        maxDigits = 2,
+        onValueChange = onAgeChange
+    )
+}
 
-    var minText by remember(minAge) { mutableStateOf(minAge.toString()) }
-    var maxText by remember(maxAge) { mutableStateOf(maxAge.toString()) }
+@Composable
+fun NumericRangeSelector(
+    bounds: IntRange,
+    minVal: Int,
+    maxVal: Int,
+    maxDigits: Int = 3,
+    onValueChange: (Int, Int) -> Unit,
+) {
+    val floatRange = bounds.first.toFloat()..bounds.last.toFloat()
+
+    var minText by remember(minVal) { mutableStateOf(minVal.toString()) }
+    var maxText by remember(maxVal) { mutableStateOf(maxVal.toString()) }
 
     Column(
         modifier = Modifier
@@ -314,19 +359,19 @@ fun AgeRangeSelector(
                 modifier = Modifier.weight(1f),
                 value = minText,
                 onValueChange = { newText ->
-                    if (newText.length <= 2 && newText.all { it.isDigit() }) {
+                    if (newText.length <= maxDigits && newText.all { it.isDigit() }) {
                         minText = newText
                         val parsed = newText.toIntOrNull()
-                        if (parsed != null && parsed in 14..maxAge) {
-                            onAgeChange(parsed, maxAge)
+                        if (parsed != null && parsed in bounds.first..maxVal) {
+                            onValueChange(parsed, maxVal)
                         }
                     }
                 },
                 onFocusLost = {
-                    val parsed = minText.toIntOrNull() ?: minAge
-                    val clamped = parsed.coerceIn(14, maxAge)
+                    val parsed = minText.toIntOrNull() ?: minVal
+                    val clamped = parsed.coerceIn(bounds.first, maxVal)
                     minText = clamped.toString()
-                    onAgeChange(clamped, maxAge)
+                    onValueChange(clamped, maxVal)
                 }
             )
 
@@ -341,19 +386,19 @@ fun AgeRangeSelector(
                 modifier = Modifier.weight(1f),
                 value = maxText,
                 onValueChange = { newText ->
-                    if (newText.length <= 2 && newText.all { it.isDigit() }) {
+                    if (newText.length <= maxDigits && newText.all { it.isDigit() }) {
                         maxText = newText
                         val parsed = newText.toIntOrNull()
-                        if (parsed != null && parsed in minAge..45) {
-                            onAgeChange(minAge, parsed)
+                        if (parsed != null && parsed in minVal..bounds.last) {
+                            onValueChange(minVal, parsed)
                         }
                     }
                 },
                 onFocusLost = {
-                    val parsed = maxText.toIntOrNull() ?: maxAge
-                    val clamped = parsed.coerceIn(minAge, 45)
+                    val parsed = maxText.toIntOrNull() ?: maxVal
+                    val clamped = parsed.coerceIn(minVal, bounds.last)
                     maxText = clamped.toString()
-                    onAgeChange(minAge, clamped)
+                    onValueChange(minVal, clamped)
                 }
             )
         }
@@ -361,11 +406,11 @@ fun AgeRangeSelector(
         Spacer(modifier = Modifier.height(24.dp))
 
         DivoRangeSlider(
-            range = ageRange,
-            currentMin = minAge.toFloat(),
-            currentMax = maxAge.toFloat(),
+            range = floatRange,
+            currentMin = minVal.toFloat(),
+            currentMax = maxVal.toFloat(),
             onValueChange = { newMin, newMax ->
-                onAgeChange(newMin.roundToInt(), newMax.roundToInt())
+                onValueChange(newMin.roundToInt(), newMax.roundToInt())
             }
         )
     }
@@ -405,7 +450,6 @@ private fun OptionsBlock(
                     overflow = TextOverflow.Ellipsis
                 )
 
-                // Показываем галочку только если элемент выбран
                 if (isSelected) {
                     Icon(
                         modifier = Modifier.size(20.dp),

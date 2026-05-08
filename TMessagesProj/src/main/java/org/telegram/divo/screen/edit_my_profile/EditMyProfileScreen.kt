@@ -16,8 +16,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -72,11 +70,11 @@ fun EditMyProfileScreen(
     viewModel: EditMyProfileViewModel = viewModel(
         factory = EditMyProfileViewModel.factory(isModel)
     ),
+    initialPage: Int = 0,
     onCreateWorkHistoryClicked: (Int?) -> Unit,
     onCloseScreen: () -> Unit = {},
 ) {
     val parametersSavedText = stringResource(R.string.ParametersSaved)
-
     val uiState = viewModel.state.collectAsState().value
 
     val tabs = remember {
@@ -98,7 +96,7 @@ fun EditMyProfileScreen(
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
-        initialPage = 0,
+        initialPage = initialPage,
         pageCount = { if (uiState.isModel) ProfileDestination.entries.size else 1 }
     )
 
@@ -114,13 +112,12 @@ fun EditMyProfileScreen(
             when (action) {
                 Effect.NavigateBack -> onCloseScreen()
                 Effect.SaveSuccess -> {
-                    snackbarState.show(Success(parametersSavedText))
-
                     val page = tabs.indexOfFirst {
                         it.id == ProfileDestination.APPEARANCE.name
                     }.coerceAtLeast(0)
-
                     pagerState.scrollToPage(page)
+
+                    snackbarState.show(Success(parametersSavedText))
                 }
                 is Effect.ShowError -> {
                     snackbarState.show(Error(action.message))
@@ -185,6 +182,7 @@ fun EditMyProfileScreen(
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier.fillMaxWidth(),
+                beyondViewportPageCount = 1,
                 userScrollEnabled = true
             ) { page ->
                 when (ProfileDestination.valueOf(tabs[page].id)) {
@@ -209,6 +207,7 @@ fun EditMyProfileScreen(
                     }
                     ProfileDestination.EXPERIENCE -> {
                         WorkHistoryScreen(
+                            userId = uiState.userFull?.id ?: -1,
                             isOwnProfile = true,
                             isFromEditScreen = true,
                             onCreateClicked = onCreateWorkHistoryClicked

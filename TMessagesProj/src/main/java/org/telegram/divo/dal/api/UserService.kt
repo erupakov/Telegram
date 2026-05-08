@@ -12,6 +12,7 @@ import org.telegram.divo.dal.dto.user.EngagementResponse
 import org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest
 import org.telegram.divo.dal.dto.user.UpdateProfileRequest
 import org.telegram.divo.dal.dto.user.UploadFileResponse
+import org.telegram.divo.dal.dto.user.UploadFilesResponse
 import org.telegram.divo.dal.dto.user.UpsertSocialNetworkRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListResponse
@@ -70,6 +71,12 @@ interface UserService {
         @Part file: MultipartBody.Part
     ): UploadFileResponse
 
+    @Multipart
+    @POST("file/upload-files")
+    suspend fun uploadFiles(
+        @Part files: List<MultipartBody.Part>
+    ): UploadFilesResponse
+
     @POST("user-gallery/add")
     suspend fun addToGallery(
         @Body request: AddGalleryRequest
@@ -87,7 +94,8 @@ interface UserService {
     suspend fun getEngagement(
         @Query("userId") userId: Int,
         @Query("offset") offset: Int,
-        @Query("limit") limit: Int
+        @Query("limit") limit: Int,
+        @Query("search") search: String,
     ): EngagementResponse
 
     @GET("dictionary/appearances")

@@ -65,6 +65,22 @@ fun rememberGalleryLauncher(
     }
 }
 
+@Composable
+fun rememberMultipleGalleryLauncher(
+    maxItems: Int = 9,
+    onPicked: (List<Uri>) -> Unit
+): () -> Unit {
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems)
+    ) { uris ->
+        if (uris.isNotEmpty()) onPicked(uris)
+    }
+
+    return {
+        launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+}
+
 class CameraCapture(
     val launch: () -> Unit,
     val rationaleDialog: @Composable () -> Unit,

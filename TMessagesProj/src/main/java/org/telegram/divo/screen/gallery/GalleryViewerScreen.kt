@@ -72,6 +72,7 @@ import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.PopupMenuItem
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.style.AppTheme
+import org.telegram.divo.components.StatusBarIconColorEffect
 import org.telegram.messenger.R
 import kotlin.math.abs
 
@@ -88,6 +89,8 @@ fun GalleryViewerScreen(
 
     val uiState by viewModel.state.collectAsState()
     val snackbarState = remember { AppSnackbarHostState() }
+
+    StatusBarIconColorEffect(useDarkIcons = false)
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -328,21 +331,21 @@ private fun GalleryPage(
     onChangeControlsVisible: (Boolean) -> Unit,
     onZoomChanged: (Boolean) -> Unit
 ) {
-    ZoomableBox(
-        modifier = Modifier.fillMaxSize(),
-        isActive = isActive,
-        onTap = { onChangeControlsVisible(!controlsVisible) },
-        onZoomChanged = onZoomChanged
-    ) {
-        if (item.isVideo) {
-            VideoPlayer(
-                modifier = Modifier.fillMaxSize(),
-                url = item.url,
-                isPlaying = isActive,
-                controlsVisible = controlsVisible,
-                onChangeControlsVisible = onChangeControlsVisible
-            )
-        } else {
+    if (item.isVideo) {
+        VideoPlayer(
+            modifier = Modifier.fillMaxSize(),
+            url = item.url,
+            isPlaying = isActive,
+            controlsVisible = controlsVisible,
+            onChangeControlsVisible = onChangeControlsVisible
+        )
+    } else {
+        ZoomableBox(
+            modifier = Modifier.fillMaxSize(),
+            isActive = isActive,
+            onTap = { onChangeControlsVisible(!controlsVisible) },
+            onZoomChanged = onZoomChanged
+        ) {
             DivoAsyncImage(
                 modifier = Modifier.fillMaxSize(),
                 model = item.url,

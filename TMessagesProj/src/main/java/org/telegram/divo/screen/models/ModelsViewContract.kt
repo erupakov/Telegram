@@ -72,7 +72,7 @@ sealed class ModelsViewIntent : ViewIntent {
     data object LoadInitialData : ModelsViewIntent()
     data class OnTabSelected(val tab: Tab) : ModelsViewIntent()
     data class OnStoryClick(val storyId: String) : ModelsViewIntent()
-    data class OnBookmarkClick(val modelId: String) : ModelsViewIntent()
+    data class OnBookmarkClick(val modelId: Int) : ModelsViewIntent()
     data class OnLikeClick(val tab: Tab, val feedId: Int, val isLiked: Boolean) : ModelsViewIntent()
     data object OnSearchClick : ModelsViewIntent()
     data object OnAddStoryClick : ModelsViewIntent()

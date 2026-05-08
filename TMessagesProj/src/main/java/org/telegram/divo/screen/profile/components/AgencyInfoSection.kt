@@ -1,8 +1,10 @@
 package org.telegram.divo.screen.profile.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -18,70 +20,113 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.utils.getInitials
+import org.telegram.divo.entity.Agency
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
 @Composable
 fun AgencyInfoSection(
-    title: String,
-    photoUrl: String,
+    agency: Agency?,
+    isOwnProfile: Boolean,
     onClicked: () -> Unit,
+    onEditClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 12.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(AppTheme.colors.blackAlpha12)
+            .clip(RoundedCornerShape(16.dp))
+            .background(AppTheme.colors.onBackground)
             .clickable { onClicked() }
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(
+                start = 16.dp,
+                end = 16.dp,
+                top = 16.dp,
+                bottom = if (agency == null) 16.dp else 10.dp
+            ),
     ) {
-        Text(
-            text = stringResource(R.string.CurrentAgency),
-            style = AppTheme.typography.helveticaNeueRegular,
-            color = Color.White,
-            fontSize = 12.sp,
-        )
-        Spacer(Modifier.height(6.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
+        if (agency == null) {
+            ProfileInfoEmptyContent(
+                iconResId = R.drawable.ic_divo_experience_bage,
+                isOwnProfile = isOwnProfile,
+                text = if (isOwnProfile) stringResource(R.string.ThereAreNoWorkExperienceYet) else stringResource(R.string.NotExperience),
+                textButton = stringResource(R.string.AddWorkHistory),
+                onEditClick = onEditClick
+            )
+        } else {
+            Text(
+                text = stringResource(R.string.CurrentAgency),
+                style = AppTheme.typography.helveticaNeueRegular,
+                color = AppTheme.colors.textPrimary.copy(0.6f),
+                fontSize = 12.sp,
+            )
+            Spacer(Modifier.height(8.dp))
             Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                DivoAsyncImage(
-                    modifier = Modifier.size(24.dp).clip(CircleShape),
-                    model = photoUrl,
-                    contentDescription = null,
-                )
-                Spacer(Modifier.width(8.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (agency.photo?.fullUrl.isNullOrBlank()) {
+                        val initials = agency.title.getInitials()
+                        Box(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .border(1.dp, AppTheme.colors.textPrimary.copy(0.6f), CircleShape)
+                                .clip(CircleShape)
+                                .background(AppTheme.colors.onBackground),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = initials,
+                                fontWeight = FontWeight.SemiBold,
+                                color = AppTheme.colors.textPrimary,
+                                fontSize = 18.sp
+                            )
+                        }
+                    } else {
+                        DivoAsyncImage(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .border(1.dp, AppTheme.colors.textPrimary.copy(0.6f), CircleShape)
+                                .clip(CircleShape),
+                            model = agency.photo.fullUrl,
+                            contentDescription = null,
+                        )
+                    }
+                    Spacer(Modifier.width(16.dp))
+                    Text(
+                        text = agency.title,
+                        style = AppTheme.typography.bodyLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.BottomEnd
+            ) {
                 Text(
-                    text = title.uppercase(),
+                    modifier = Modifier.padding(top = 6.dp),
+                    text = stringResource(R.string.SeeHistory).uppercase(),
                     style = AppTheme.typography.helveticaNeueLtCom,
-                    color = Color.White,
-                    fontSize = 12.sp,
+                    color = AppTheme.colors.textPrimary,
+                    fontSize = 11.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-
-            Text(
-                text = stringResource(R.string.SeeHistory).uppercase(),
-                style = AppTheme.typography.helveticaNeueLtCom,
-                color = Color.White,
-                fontSize = 10.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
         }
     }
 }

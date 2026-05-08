@@ -10,6 +10,7 @@ data class SearchedProfile(
     val likes: Int,
     val isLiked: Boolean,
     val photo: String,
+    val index: Int?,
     val roleLabel: String,
-    val similarity: Int?
+    val similarity: Int?,
 )

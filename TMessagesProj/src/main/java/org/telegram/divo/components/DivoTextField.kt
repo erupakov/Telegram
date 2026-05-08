@@ -39,6 +39,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
+import org.telegram.divo.style.DivoFont
 import org.telegram.messenger.R
 
 @Composable
@@ -72,6 +74,7 @@ fun DivoTextField(
     textStyle: TextStyle = TextStyle(fontSize = 17.sp),
     horizontalContentPadding: Dp = 8.dp,
     verticalContentPadding: Dp = 0.dp,
+    keyboardType: KeyboardType = KeyboardType.Text,
     readOnly: Boolean = false,
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -87,7 +90,8 @@ fun DivoTextField(
         lineHeightStyle = LineHeightStyle(
             alignment = LineHeightStyle.Alignment.Center,
             trim = LineHeightStyle.Trim.Both
-        )
+        ),
+        fontFamily = DivoFont.HelveticaNeue
     )
 
     val shape = RoundedCornerShape(cornerRadius)
@@ -130,7 +134,10 @@ fun DivoTextField(
                 minLines = minLines,
                 textStyle = resolvedTextStyle,
                 cursorBrush = SolidColor(cursorColor),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardOptions = KeyboardOptions(
+                    imeAction = ImeAction.Search,
+                    keyboardType = keyboardType
+                ),
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         keyboardController?.hide()

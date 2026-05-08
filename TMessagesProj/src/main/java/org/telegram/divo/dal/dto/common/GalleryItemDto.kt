@@ -14,8 +14,8 @@ class GalleryItemDto(
 fun GalleryItemDto.toEntity(): UserGalleryItem =
     UserGalleryItem(
         id = id,
-        photoUrl = photo.fullUrl,
-        previewUrl = preview.fullUrl,
+        photoUrl = photo.fullUrl.orEmpty(),
+        previewUrl = preview.fullUrl.orEmpty(),
         likesCount = likesCount,
         isLikedByUser = isLikedByUser
     )

@@ -70,6 +70,7 @@ data class State(
         listOf(
             ProfileParameter(ParametersType.AGE, ""),
             ProfileParameter(ParametersType.HEIGHT, ""),
+            ProfileParameter(ParametersType.WEIGHT, ""),
             ProfileParameter(ParametersType.WAIST, ""),
             ProfileParameter(ParametersType.HIPS, ""),
             ProfileParameter(ParametersType.SHOE_SIZE, ""),
@@ -82,14 +83,6 @@ data class State(
             val first = countries.first()
             val flag = first.flag ?: ""
             if (countries.size == 1) "$flag ${first.name}" else "$flag ${first.name} +${countries.size - 1}"
-        }
-
-    fun getFormatedOptions(item: ProfileParameter): String =
-        if (item.value.isEmpty()) ""
-        else {
-            val list = item.value.split(", ")
-            val first = list.first()
-            if (list.size == 1) first else "$first +${list.size - 1}"
         }
 
     val hasActiveFilters: Boolean

@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
@@ -15,6 +16,7 @@ import org.telegram.divo.dal.dto.face.SimilarFaceDto
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.add_model.LocalCountry
@@ -94,12 +96,10 @@ class SimilarProfilesViewModel(
         var effectiveResultsJson = resultsJson
 
         if (effectiveResultsJson.isNullOrBlank() && userId != null) {
-            // Пытаемся восстановить результаты из истории, если они не были переданы (например, переход из экрана истории)
             val existing = DivoApi.faceRecognitionRepository.getByImageUri(imageUrl, userId)
             effectiveResultsJson = existing?.resultsJson
         }
 
-        // Десериализуем результаты поиска из JSON
         val profiles = parseResultsJson(effectiveResultsJson)
 
         allProfiles = profiles
@@ -110,8 +110,6 @@ class SimilarProfilesViewModel(
         )
         setState { newState }
 
-        // Пытаемся сохранить. Если currentUserId еще null,
-        // история сохранится чуть позже в loadUserProfile
         saveHistory(newState)
     }
 
@@ -122,19 +120,20 @@ class SimilarProfilesViewModel(
             val type = object : TypeToken<List<SimilarFaceDto>>() {}.type
             val dtos: List<SimilarFaceDto> = Gson().fromJson(jsonToParse, type)
 
-            dtos.mapIndexed { idx, dto ->
+            dtos.map { dto ->
                 SearchedProfile(
-                    id = dto.index ?: (idx + 1),
-                    name = dto.fullName?.ifBlank { null } ?: "Profile #${dto.rank ?: (idx + 1)}",
-                    age = null,
-                    country = null,
-                    countryCode = null,
+                    id = dto.userId ?: -1,
+                    name = dto.fullName.orEmpty(),
+                    age = dto.birthday?.toAge(),
+                    country = dto.countryName,
+                    countryCode = dto.countryCode,
                     isMarked = false,
                     likes = 0,
                     isLiked = false,
                     photo = dto.image.orEmpty(),
-                    roleLabel = "",
-                    similarity = ((dto.score ?: 0.0) * 100).toInt()
+                    index = dto.index,
+                    roleLabel = RoleType.from(dto.role).value,
+                    similarity = ((dto.score ?: 0.0) * 100).toInt(),
                 )
             }
         } catch (e: Exception) {
@@ -156,9 +155,8 @@ class SimilarProfilesViewModel(
             val roleMatch = if (currentState.role.value.isEmpty()) {
                 true
             } else {
-                // Разбиваем строку на список выбранных ролей
                 val selectedRoles = currentState.role.value.split(", ")
-                // Проверяем, есть ли роль профиля в списке выбранных (Игнорируя регистр)
+
                 selectedRoles.any { selectedRole ->
                     profile.roleLabel.equals(selectedRole, ignoreCase = true)
                 }
@@ -376,7 +374,7 @@ class SimilarProfilesViewModel(
                     userId = userId,
                     resultsCount = currentState.profiles.size,
                     filtersJson = filtersJson,
-                    resultsJson = resultsJson,
+                    resultsJson = resultsJson ?: existing?.resultsJson,
                     createdAt = System.currentTimeMillis()
                 )
             )

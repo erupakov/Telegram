@@ -12,6 +12,7 @@ data class EventDetailsViewState(
     val isOwnProfile: Boolean,
     val isModel: Boolean = false,
     val isRoleLoading: Boolean = false,
+    val isOwnEvent: Boolean = false,
     val eventDetails: EventDetails? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -27,6 +28,8 @@ sealed class EventDetailsIntent : ViewIntent {
     data object OnSearchClicked : EventDetailsIntent()
     data object OnAddEventClicked : EventDetailsIntent()
     data object OnBackClicked : EventDetailsIntent()
+    data object OnEditEventClick : EventDetailsIntent()
+    data object OnDeleteEventConfirmed : EventDetailsIntent()
     data object OnParamsClick : EventDetailsIntent()
     data class OnEventCardClicked(val eventId: Long) : EventDetailsIntent()
     data class OnEventCtaClicked(val eventId: Long) : EventDetailsIntent()
@@ -37,6 +40,7 @@ sealed class EventDetailsIntent : ViewIntent {
 sealed class EventDetailsEffect : ViewEffect {
     data object Back : EventDetailsEffect()
     data object NavigateToParams : EventDetailsEffect()
+    data class NavigateToEditEvent(val eventId: Int) : EventDetailsEffect()
     data class NavigateToGallery(val items: List<GalleryItem>, val id: Int) : EventDetailsEffect()
     data class NavigateToPrevEvent(val id: Int) : EventDetailsEffect()
     data class ShowError(val message: String) : EventDetailsEffect()

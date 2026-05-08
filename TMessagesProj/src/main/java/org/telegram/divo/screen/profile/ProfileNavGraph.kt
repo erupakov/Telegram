@@ -2,8 +2,9 @@ package org.telegram.divo.screen.profile
 
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -11,12 +12,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.screen.add_model.AddModelScreen
 import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
+import org.telegram.divo.screen.event_create.CreateEventScreen
+import org.telegram.divo.screen.event_create.CreateEventViewModel
+import org.telegram.divo.screen.event_create.components.EventPreviewScreen
 import org.telegram.divo.screen.event_details.EventDetailsNavGraph
 import org.telegram.divo.screen.face_search.FaceSearchScreen
 import org.telegram.divo.screen.gallery.GallerySource
 import org.telegram.divo.screen.gallery.GalleryViewerScreen
+import org.telegram.divo.screen.profile.components.AppearanceScreen
 import org.telegram.divo.screen.profile_social_links.ProfileSocialLinksScreen
 import org.telegram.divo.screen.search_agency.SearchAgencyScreen
 import org.telegram.divo.screen.similar_profiles.SimilarProfilesScreen
@@ -24,13 +30,25 @@ import org.telegram.divo.screen.work_create_edit.CreateWorkHistoryScreen
 import org.telegram.divo.screen.work_history.WorkHistoryScreen
 import org.telegram.divo.screen.your_parameters.YourParametersScreen
 
+object ParamsHolder {
+    var params: PhysicalParams? = null
+}
+
 sealed class ProfileRoute(val route: String) {
     data object YourParameters : ProfileRoute("profile_your_parameters")
     data object EditLinks : ProfileRoute("profile_edit_links")
-    data object WorkHistory : ProfileRoute("profile_work_history")
     data object AddModel : ProfileRoute("profile_add_model")
+    data object Appearance : ProfileRoute("profile_appearance")
+    data object CreateEvent : ProfileRoute("create_event?eventId={eventId}") {
+        const val BASE_ROUTE = "create_event"
+        fun createRoute(eventId: Int? = null): String =
+            if (eventId != null) "$BASE_ROUTE?eventId=$eventId" else BASE_ROUTE
+    }
     data object CreateWorkHistory : ProfileRoute("create_work_history?id={id}") {
         fun create(id: Int? = null) = if (id != null) "create_work_history?id=$id" else "create_work_history?id=-1"
+    }
+    data object WorkHistory : ProfileRoute("profile_work_history/{userId}") {
+        fun create(userId: Int) = "profile_work_history/$userId"
     }
 
     data object Profile : ProfileRoute("profile/{userId}") {
@@ -41,8 +59,11 @@ sealed class ProfileRoute(val route: String) {
         fun createRoute(eventId: Int) = "event/$eventId"
     }
 
-    data object Edit : ProfileRoute("profile_edit/{isModel}") {
-        fun createRoute(isModel: Boolean) = "profile_edit/$isModel"
+    data object Edit : ProfileRoute("profile_edit?isModel={isModel}&initialPage={initialPage}") {
+
+        fun createRoute(isModel: Boolean, initialPage: Int): String {
+            return "profile_edit?isModel=$isModel&initialPage=$initialPage"
+        }
     }
 
     data object Search : ProfileRoute("search_agency")
@@ -85,6 +106,7 @@ sealed class ProfileRoute(val route: String) {
     data object FaceSearch : ProfileRoute("face_search/{uri}") {
         fun createRoute(uri: String) = "face_search/${Uri.encode(uri)}"
     }
+    data object EventPreview : ProfileRoute("event_preview")
 }
 
 @Composable
@@ -111,30 +133,26 @@ fun ProfileNavGraph(
                 ?.takeIf { it != -1 }
                 ?: userId
 
+            val currentIsOwnProfile = isOwnProfile && (currentUserId == userId)
+
             val profileViewModel: ProfileViewModel = viewModel(
                 key = "profile_$currentUserId",
-                factory = ProfileViewModel.factory(currentUserId, isOwnProfile)
+                factory = ProfileViewModel.factory(currentUserId, currentIsOwnProfile)
             )
-            val uiState = profileViewModel.state.collectAsState().value
 
             ProfileScreen(
                 viewModel = profileViewModel,
                 userId = currentUserId,
-                isOwnProfile = isOwnProfile,
-                onEditClicked = { nav.navigate(ProfileRoute.Edit.createRoute(it)) },
+                isOwnProfile = currentIsOwnProfile,
+                onEditClicked = { isModel, initialPage ->
+                    nav.navigate(ProfileRoute.Edit.createRoute(isModel, initialPage)) },
                 onEditLinksClicked = { nav.navigate(ProfileRoute.EditLinks.route) },
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() },
-                showWorkHistory = { nav.navigate(ProfileRoute.WorkHistory.route) },
-                onGalleryClicked = { url, isVideo ->
+                showWorkHistory = { nav.navigate(ProfileRoute.WorkHistory.create(it)) },
+                onGalleryClicked = { index, isVideo ->
                     if (isVideo) {
-                        val index = uiState.videoItems
-                            .indexOfFirst { it.files.any { f -> f.fullUrl == url } }
-                            .coerceAtLeast(0)
                         nav.navigate(ProfileRoute.Gallery.video(currentUserId, index))
                     } else {
-                        val index = uiState.userGalleryItems
-                            .indexOfFirst { it.photoUrl == url }
-                            .coerceAtLeast(0)
                         nav.navigate(ProfileRoute.Gallery.portfolio(currentUserId, index))
                     }
                 },
@@ -147,17 +165,32 @@ fun ProfileNavGraph(
                 onEventClicked = {
                     nav.navigate(ProfileRoute.Event.createRoute(it))
                 },
+                onEventCreateClicked = {
+                    nav.navigate(ProfileRoute.CreateEvent.route)
+                },
                 onFindSimilarProfiles = {
                     nav.navigate(ProfileRoute.FaceSearch.createRoute(it))
+                },
+                onNavigateToAppearances = {
+                    ParamsHolder.params = it
+                    nav.navigate(ProfileRoute.Appearance.route)
                 }
             )
         }
 
-        composable(ProfileRoute.Edit.route) {
-            val isModel = it.arguments?.getString("isModel")?.toBoolean() ?: false
-
+        composable(
+            route = ProfileRoute.Edit.route,
+            arguments = listOf(
+                navArgument("isModel") { type = NavType.BoolType },
+                navArgument("initialPage") { type = NavType.IntType }
+            )
+        ) {
+            val isModel = it.arguments?.getBoolean("isModel") ?: false
+            val initialPage = it.arguments?.getInt("initialPage") ?: 0
+            Log.d("VideoGrid", initialPage.toString())
             EditMyProfileScreen(
                 isModel = isModel,
+                initialPage = initialPage,
                 onCreateWorkHistoryClicked = { nav.navigate(ProfileRoute.CreateWorkHistory.create(it)) },
                 onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
             )
@@ -169,8 +202,14 @@ fun ProfileNavGraph(
             )
         }
 
-        composable(ProfileRoute.WorkHistory.route) {
+        composable(
+            route = ProfileRoute.WorkHistory.route,
+            arguments = listOf(navArgument("userId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val workUserId = backStackEntry.arguments?.getInt("userId") ?: userId
+
             WorkHistoryScreen(
+                userId = workUserId,
                 isOwnProfile = isOwnProfile,
                 onCreateClicked = { id ->
                     nav.navigate(ProfileRoute.CreateWorkHistory.create(id))
@@ -255,6 +294,7 @@ fun ProfileNavGraph(
             EventDetailsNavGraph(
                 eventId = eventId,
                 isOwnProfile = isOwnProfile,
+                onNavigateToEditEvent = { nav.navigate(ProfileRoute.CreateEvent.createRoute(it)) },
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
@@ -297,6 +337,52 @@ fun ProfileNavGraph(
                     }
                 },
                 onNavigateToSearch = {  },
+                onBack = { nav.popBackStack() }
+            )
+        }
+        composable(
+            route = ProfileRoute.Appearance.route
+        ) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    ParamsHolder.params = null
+                }
+            }
+
+            AppearanceScreen(
+                params = ParamsHolder.params,
+                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
+        composable(
+            route = ProfileRoute.CreateEvent.route,
+            arguments = listOf(navArgument("eventId") {
+                type = NavType.IntType
+                defaultValue = -1
+            })
+        ) { backStackEntry ->
+            val editingEventId = backStackEntry.arguments?.getInt("eventId")?.takeIf { it > 0 }
+            CreateEventScreen(
+                editingEventId = editingEventId,
+                onPreviewClicked = {
+                    nav.navigate(ProfileRoute.EventPreview.route)
+                },
+                onBack = { nav.popBackStack() },
+                onEventPublished = {
+                    nav.popBackStack(ProfileRoute.Profile.route, inclusive = false)
+                }
+            )
+        }
+        composable(
+            route = ProfileRoute.EventPreview.route
+        ) {
+            val createEventEntry = remember(it) {
+                nav.getBackStackEntry(ProfileRoute.CreateEvent.BASE_ROUTE)
+            }
+            val sharedViewModel: CreateEventViewModel = viewModel(createEventEntry)
+            EventPreviewScreen(
+                viewModel = sharedViewModel,
+                onPublish = {},
                 onBack = { nav.popBackStack() }
             )
         }

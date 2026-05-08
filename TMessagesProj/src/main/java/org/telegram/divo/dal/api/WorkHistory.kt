@@ -11,6 +11,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface WorkHistory {
 
@@ -20,7 +21,9 @@ interface WorkHistory {
     ): WorkExperienceResponse
 
     @GET("model-work-history")
-    suspend fun getWorkHistory(): WorkHistoryResponse
+    suspend fun getWorkHistory(
+        @Query("user_id") userId: Int
+    ): WorkHistoryResponse
 
     @DELETE("model-work-history/{id}")
     suspend fun deleteWorkExperience(

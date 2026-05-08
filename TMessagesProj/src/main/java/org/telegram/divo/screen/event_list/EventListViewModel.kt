@@ -18,6 +18,12 @@ class EventListViewModel :
 
     init {
         setIntent(EventListIntent.OnLoad)
+        viewModelScope.launch {
+            DivoApi.eventRepository.eventsUpdatedFlow.collect {
+                eventPaginator.reset()
+                eventPaginator.loadInitial()
+            }
+        }
     }
 
     override fun handleIntent(intent: EventListIntent) {

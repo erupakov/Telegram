@@ -42,6 +42,7 @@ sealed class EventDetailsRoute(val route: String) {
 fun EventDetailsNavGraph(
     eventId: Int,
     isOwnProfile: Boolean = false,
+    onNavigateToEditEvent: (Int) -> Unit = {},
     onNavigateBack: () -> Unit,
     onNavControllerReady: (NavController) -> Unit = {},
 ) {
@@ -58,7 +59,7 @@ fun EventDetailsNavGraph(
             arguments = listOf(navArgument("eventId") { type = NavType.IntType })
         ) { backStackEntry ->
             val currentEventId = backStackEntry.arguments
-                ?.getInt("userId", -1)
+                ?.getInt("eventId", -1)
                 ?.takeIf { it != -1 }
                 ?: eventId
 
@@ -78,6 +79,7 @@ fun EventDetailsNavGraph(
                     EventParamsHolder.params = eventDetailsViewModel.state.value.eventDetails?.modelAttributes
                     nav.navigate(EventDetailsRoute.Params.route)
                 },
+                onEditEvent = onNavigateToEditEvent,
                 onPrevEventClicked = {
                     nav.navigate(EventDetailsRoute.Detail.createRoute(it))
                 },

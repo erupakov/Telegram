@@ -1,14 +1,17 @@
 package org.telegram.divo.dal.repository
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import okhttp3.ResponseBody
 import org.telegram.divo.common.utils.ThumbnailProcessor
 import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.dto.publication.CreatePublicationFileRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
+import org.telegram.divo.dal.dto.publication.FavoriteRequest
 import org.telegram.divo.dal.dto.publication.LikeRequest
 import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
@@ -23,6 +26,23 @@ import org.telegram.divo.entity.FeedlineSearchResult
 import org.telegram.divo.entity.Publication
 import org.telegram.divo.entity.PublicationList
 
+/**
+ * События изменения лайков/закладок — для синхронизации состояния между экранами.
+ */
+sealed class UserActionEvent {
+    data class BookmarkChanged(
+        val userId: Int,
+        val isFavorite: Boolean,
+        val newFollowersCount: Int
+    ) : UserActionEvent()
+
+    data class LikeChanged(
+        val feedId: Int,
+        val isLiked: Boolean,
+        val newLikesCount: Int
+    ) : UserActionEvent()
+}
+
 private const val MAX_CACHED_USERS = 5
 
 class PublicationRepository(
@@ -30,6 +50,9 @@ class PublicationRepository(
     private val thumbnailProcessor: ThumbnailProcessor
 ) {
     private val _publicationCache = MutableStateFlow<Map<Int, PublicationList>>(emptyMap())
+
+    private val _events = MutableSharedFlow<UserActionEvent>(extraBufferCapacity = 8)
+    val events: SharedFlow<UserActionEvent> = _events.asSharedFlow()
 
     suspend fun getFeed(
         requestDto: FeedRequestDto
@@ -91,20 +114,25 @@ class PublicationRepository(
             .also { newPage -> updatePublicationCache(userId, newPage, offset) }
     }
 
-    suspend fun like(payload: Map<String, Any?>): DivoResult<ResponseBody> {
-        return resultOf { service.like(payload) }
-    }
-
-    suspend fun unlike(payload: Map<String, Any?>): DivoResult<ResponseBody> {
-        return resultOf { service.unlike(payload) }
-    }
-
     suspend fun likePost(id: Int): DivoResult<Unit> = resultOf {
         service.likePost(LikeRequest(id))
     }
 
     suspend fun unlikePost(id: Int): DivoResult<Unit> = resultOf {
         service.unlikePost(LikeRequest(id))
+    }
+
+    suspend fun markFavorite(id: Int, entity: String): DivoResult<Unit> = resultOf {
+        service.markFavorite(FavoriteRequest(id, entity))
+    }
+
+    suspend fun unmarkFavorite(id: Int, entity: String): DivoResult<Unit> = resultOf {
+        service.unmarkFavorite(FavoriteRequest(id, entity))
+    }
+
+    /** Вызывается из UseCase после успешного API-запроса */
+    suspend fun emitEvent(event: UserActionEvent) {
+        _events.emit(event)
     }
 
     suspend fun createPublication(

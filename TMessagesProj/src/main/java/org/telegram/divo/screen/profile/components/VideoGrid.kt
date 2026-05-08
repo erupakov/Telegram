@@ -2,6 +2,7 @@
 
 package org.telegram.divo.screen.profile.components
 
+
 import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
@@ -51,6 +52,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -63,6 +65,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
+import com.google.android.exoplayer2.util.Log
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -83,6 +86,7 @@ fun VideoGrid(
     isUploading: Boolean,
     hasMore: Boolean,
     isActive: Boolean = true,
+    topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onVideoClicked: (String) -> Unit,
     onVideoSelected: (Uri) -> Unit,
@@ -263,16 +267,26 @@ fun VideoGrid(
     }
 
     Box(modifier = modifier.fillMaxSize().clipToBounds()) {
+        val bottomPadding = if (isOwnProfile) 72.dp else 16.dp
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
             state = gridState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                bottom = WindowInsets.navigationBars
-                    .asPaddingValues()
-                    .calculateBottomPadding() + 16.dp,
+                top = topPadding,
+                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + bottomPadding,
             ),
         ) {
+            if (videoItems.isEmpty() && !isFirstLoading && isOwnProfile) {
+                item(span = { GridItemSpan(maxLineSpan) }) {
+                    PortfolioEmptyAddButton(
+                        isUploading = isUploading,
+                        isVideo = true,
+                        onMediaSelected = onVideoSelected
+                    )
+                }
+            }
+
             itemsIndexed(
                 items = videoItems,
                 key = { _, item -> "video${item.id}" },
@@ -309,17 +323,8 @@ fun VideoGrid(
                     }
                 }
             }
-
-            if (isOwnProfile && !isFirstLoading) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    PortfolioAddButton(
-                        isUploading = isUploading,
-                        isVideo = true,
-                        onMediaSelected = onVideoSelected,
-                    )
-                }
-            }
         }
+
 
         playerPool.forEachIndexed { slot, player ->
             key(slot) {
@@ -416,27 +421,27 @@ private fun PlayerOverlaySlot(
         modifier = Modifier
             .layout { measurable, _ ->
                 val idx = targetIndex
+                val layoutInfo = gridState.layoutInfo
                 val info = if (idx != null) {
-                    gridState.layoutInfo.visibleItemsInfo
-                        .firstOrNull { it.index == idx }
+                    layoutInfo.visibleItemsInfo.firstOrNull { it.index == idx }
                 } else null
 
                 if (info != null) {
                     val placeable = measurable.measure(
                         Constraints.fixed(info.size.width, info.size.height)
                     )
+
+                    val screenY = info.offset.y + layoutInfo.beforeContentPadding
                     layout(info.size.width, info.size.height) {
                         if (isReady) {
-                            placeable.place(info.offset.x, info.offset.y)
+                            placeable.place(info.offset.x, screenY)
                         } else {
-                            placeable.place(info.offset.x + 10000, info.offset.y)
+                            placeable.place(info.offset.x + 10000, screenY)
                         }
                     }
                 } else {
                     val placeable = measurable.measure(Constraints.fixed(1, 1))
-                    layout(0, 0) {
-                        placeable.place(-10000, -10000)
-                    }
+                    layout(0, 0) { placeable.place(-10000, -10000) }
                 }
             }
             .clip(RectangleShape),

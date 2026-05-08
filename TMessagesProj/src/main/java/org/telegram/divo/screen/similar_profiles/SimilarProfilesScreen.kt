@@ -30,6 +30,7 @@ import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent.Error
 import org.telegram.divo.components.ProfilesSearchGrid
 import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.similar_profiles.components.SearchResultSection
 import org.telegram.divo.screen.similar_profiles.components.SimilarFilterBottomSheet
 import org.telegram.divo.style.AppTheme
@@ -149,8 +150,19 @@ private fun SimilarProfilesContent(
                 .padding(top = paddingValues.calculateTopPadding())
                 .padding(horizontal = 16.dp)
         ) {
+            val newProfiles = uiState.profiles.map {
+                it.copy(
+                    roleLabel = when (it.roleLabel) {
+                        RoleType.NEW_FACE.value -> stringResource(R.string.NewTalent)
+                        RoleType.AGENCY.value -> stringResource(R.string.Agency)
+                        RoleType.MODEL.value -> stringResource(R.string.Model)
+                        else -> it.roleLabel
+                    }
+                )
+            }
+
             ProfilesSearchGrid(
-                profiles = uiState.profiles,
+                profiles = newProfiles,
                 isLoading = false, //TODO
                 isLoadingMore = false, //TODO
                 hasMore = false, //TODO

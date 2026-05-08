@@ -4,24 +4,44 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.OffsetPaginator
+import org.telegram.divo.common.PaginatedResult
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.RoleType
+import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.screen.profile.ProfileEffect.NavigateBack
+import org.telegram.divo.screen.profile.ProfileEffect.NavigateToAddModel
+import org.telegram.divo.screen.profile.ProfileEffect.NavigateToCreateEvent
+import org.telegram.divo.screen.profile.ProfileEffect.NavigateToEdit
+import org.telegram.divo.screen.profile.ProfileEffect.NavigateToEditLinks
+import org.telegram.divo.screen.profile.ProfileEffect.NavigateToEvent
+import org.telegram.divo.screen.profile.ProfileEffect.NavigateToFindSimilarProfiles
+import org.telegram.divo.screen.profile.ProfileEffect.NavigateToGallery
+import org.telegram.divo.screen.profile.ProfileEffect.NavigateToProfile
+import org.telegram.divo.screen.profile.ProfileEffect.ShowAppearances
+import org.telegram.divo.screen.profile.ProfileEffect.ShowError
+import org.telegram.divo.screen.profile.ProfileEffect.ShowWorkHistory
 import org.telegram.divo.screen.profile.components.StatsType
 import org.telegram.divo.usecase.EngagementInteractor
 import org.telegram.divo.usecase.GetEventListUseCase
 import org.telegram.divo.usecase.GetUserGalleryUseCase
 import org.telegram.divo.usecase.GetUserVideosUseCase
+import org.telegram.divo.usecase.ToggleBookmarkUseCase
+import org.telegram.messenger.R
 import java.io.File
 
 class ProfileViewModel(
@@ -29,9 +49,12 @@ class ProfileViewModel(
     private val isOwnProfile: Boolean,
 ) : BaseViewModel<ProfileViewState, ProfileIntent, ProfileEffect>() {
 
-    //private var searchJob: Job? = null
+    private var searchModelsJob: Job? = null
+    private var engagementLoaded = false
 
-    private val eventPaginator = GetEventListUseCase().paginator
+    private val toggleBookmarkUseCase = ToggleBookmarkUseCase()
+
+    private val eventPaginator = GetEventListUseCase(creatorId = userId).paginator
 
     private val portfolioPaginator by lazy {
         GetUserGalleryUseCase(userId = state.value.userId).paginator
@@ -57,6 +80,23 @@ class ProfileViewModel(
         )
     }
 
+    private val agencyModelsPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
+        when (val result = DivoApi.userRepository.getAgencyModels(
+            offset = offset,
+            limit = limit,
+            agencyId = state.value.userInfo.agency?.id ?: -1
+        )) {
+            is DivoResult.Success -> {
+                val data = result.value
+                PaginatedResult(
+                    items = data.items,
+                    totalCount = data.pagination?.totalCount ?: data.items.size
+                )
+            }
+            else -> { throw Exception(result.getErrorMessage()) }
+        }
+    }
+
     override fun createInitialState(): ProfileViewState {
         return ProfileViewState(
             userId = userId,
@@ -68,7 +108,8 @@ class ProfileViewModel(
 //        when (val result = DivoApi.publicationRepository.searchFeeds(
 //            offset = offset,
 //            limit = limit,
-//            query = state.value.searchQuery
+//            query = state.value.searchModelsQuery,
+//            role = listOf(RoleType.MODEL.value)
 //        )) {
 //            is DivoResult.Success -> {
 //                val data = result.value
@@ -81,6 +122,18 @@ class ProfileViewModel(
 //        }
 //    }
 
+    init {
+        loadData()
+        viewModelScope.launch {
+            DivoApi.eventRepository.eventsUpdatedFlow.collect {
+                if (!state.value.isModel) {
+                    eventPaginator.reset()
+                    eventPaginator.loadInitial()
+                }
+            }
+        }
+    }
+
     override fun handleIntent(intent: ProfileIntent) {
         when (intent) {
             is ProfileIntent.OnLoad -> loadData()
@@ -90,28 +143,76 @@ class ProfileViewModel(
             is ProfileIntent.OnVideoSelected -> uploadVideo(intent.file)
             is ProfileIntent.OnClearPortfolioUpload -> {}
             is ProfileIntent.OnLoadMoreEngagementStats -> loadMoreEngagement(intent.type)
-            is ProfileIntent.OnSearchQueryChanged -> {}//onSearchQueryChanged(intent.query)
-            is ProfileIntent.OnLoadMoreSearchResults -> {}//loadMoreSearchResults()
+            is ProfileIntent.OnStatsTabOpened -> {
+                setState {
+                    copy(
+                        activeStatsType = intent.type,
+                        searchQuery = "",
+                        searchResults = emptyList(),
+                        isSearchMode = false,
+                        isLoadingSearch = false
+                    )
+                }
+                engagement.currentStatsType = when (intent.type) {
+                    StatsType.VIEWS -> "viewed"
+                    StatsType.SAVES -> "followed"
+                    else -> "liked"
+                }
+                engagement.searchPaginator.reset()
+                if (!engagementLoaded) {
+                    engagementLoaded = true
+                    viewModelScope.launch { loadEngagement() }
+                }
+            }
+            is ProfileIntent.OnSearchQueryChanged -> onSearchQueryChanged(intent.query)
+            is ProfileIntent.OnLoadMoreSearchResults -> loadMoreSearchResults()
             is ProfileIntent.OnLoadMorePortfolio -> loadMorePortfolio()
             is ProfileIntent.OnLoadMoreVideos -> viewModelScope.launch { videoPaginator.loadMore() }
             ProfileIntent.OnLoadMoreEvents -> viewModelScope.launch { eventPaginator.loadMore() }
+            is ProfileIntent.OnEditClicked -> sendEffect(NavigateToEdit(state.value.isModel, intent.initialPage))
+            is ProfileIntent.OnEditLinksClicked -> sendEffect(NavigateToEditLinks)
+
+            is ProfileIntent.OnNavigateBack -> sendEffect(NavigateBack)
+            is ProfileIntent.OnShowWorkHistory -> sendEffect(ShowWorkHistory(state.value.userId))
+            is ProfileIntent.OnGalleryClicked -> {
+                val index = getGalleryItemIndex(intent.url, intent.isVideo)
+                sendEffect(NavigateToGallery(index, intent.isVideo))
+            }
+            is ProfileIntent.OnProfileClicked -> sendEffect(NavigateToProfile(intent.profileId))
+            is ProfileIntent.OnAddModelClicked -> sendEffect(NavigateToAddModel)
+            is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
+            is ProfileIntent.OnFindSimilarProfiles -> sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
+            ProfileIntent.OnShowAppearances -> sendEffect(ShowAppearances)
+            ProfileIntent.OnBackgroundReady -> setState { copy(hasBackgroundReady = true) }
+            ProfileIntent.OnEventCreate -> sendEffect(NavigateToCreateEvent)
+//            ProfileIntent.OnLoadMoreSearchModels -> loadMoreSearchModels()
+//            is ProfileIntent.OnSearchModelsQueryChanged -> onSearchModelsQueryChanged(intent.query)
+            ProfileIntent.OnLoadMoreAgencyModels -> viewModelScope.launch { agencyModelsPaginator.loadMore() }
+            ProfileIntent.OnBookmarkClick -> toggleBookmark()
+            is ProfileIntent.OnEventApplied -> applyEvent(intent.eventId)
         }
     }
 
     private fun loadData() {
         viewModelScope.launch {
             loadUserProfile(isOwnProfile = isOwnProfile)
-            val validUserId = state.first { it.userId > 0 && !it.isLoading }.userId
-            if (validUserId <= 0) return@launch
+            val validState = state.first { it.userId > 0 && !it.isLoading && it.userInfo.role != RoleType.UNKNOWN }
+            if (validState.userId <= 0) return@launch
 
-            launch { loadEngagement() }
             launch { portfolioPaginator.loadInitial() }
             launch { videoPaginator.loadInitial() }
-            observeEvents()
+
             observeEngagementPaginators()
-            //observeSearchPaginator()
+            observeSearchPaginator()
             observeGalleryListPaginator()
             observeVideoPaginator()
+
+            if (!state.value.isModel) {
+                launch { eventPaginator.loadInitial() }
+                launch { agencyModelsPaginator.loadInitial() }
+                observeEvents()
+                observeAgencyModelsPaginator()
+            }
         }
     }
 
@@ -121,6 +222,7 @@ class ProfileViewModel(
                 setState {
                     copy(
                         likedItems = pState.items,
+                        isLoadingStats = pState.isLoading,
                         isLoadingLiked = pState.isLoading || pState.isLoadingMore,
                         hasMoreLiked = pState.hasMore
                     )
@@ -132,6 +234,7 @@ class ProfileViewModel(
                 setState {
                     copy(
                         viewedItems = pState.items,
+                        isLoadingStats = pState.isLoading,
                         isLoadingViewed = pState.isLoading || pState.isLoadingMore,
                         hasMoreViewed = pState.hasMore
                     )
@@ -143,6 +246,7 @@ class ProfileViewModel(
                 setState {
                     copy(
                         followedItems = pState.items,
+                        isLoadingStats = pState.isLoading,
                         isLoadingFollowed = pState.isLoading || pState.isLoadingMore,
                         hasMoreFollowed = pState.hasMore
                     )
@@ -151,20 +255,63 @@ class ProfileViewModel(
         }
     }
 
-    //TODO пока нет ручки для поиска Engagement
-//    private fun observeSearchPaginator() {
-//        viewModelScope.launch {
-//            searchPaginator.state.collect { pState ->
-//                setState {
-//                    copy(
-//                        searchResults = pState.items,
-//                        isLoadingMoreSearch = pState.isLoadingMore,
-//                        searchHasMore = pState.hasMore,
-//                    )
-//                }
-//            }
-//        }
-//    }
+    private fun observeSearchPaginator() {
+        viewModelScope.launch {
+            engagement.searchPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        searchResults = pState.items,
+                        isLoadingSearch = pState.isLoading,
+                        isLoadingMoreSearch = pState.isLoadingMore,
+                        searchHasMore = pState.hasMore,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun onSearchQueryChanged(query: String) {
+        searchModelsJob?.cancel()
+        setState { copy(searchQuery = query, isSearchMode = query.isNotBlank()) }
+
+        if (query.isBlank()) {
+            engagement.searchPaginator.reset()
+            setState { copy(searchResults = emptyList(), isLoadingSearch = false) }
+            return
+        }
+
+        setState { copy(isLoadingSearch = true) } // ← добавить
+
+        searchModelsJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MS)
+            engagement.currentSearchQuery = query
+            engagement.searchPaginator.reset()
+            engagement.searchPaginator.loadInitial()
+        }
+    }
+
+    private fun loadMoreSearchResults() {
+        viewModelScope.launch {
+            engagement.searchPaginator.loadMore()
+        }
+    }
+
+
+    private fun observeAgencyModelsPaginator() {
+        viewModelScope.launch {
+            agencyModelsPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        agencyModels = pState.items,
+                        isLoadingAgencyModels = pState.isLoading,
+                        isLoadingMoreAgencyModels = pState.isLoadingMore,
+                        hasMoreAgencyModels = pState.hasMore,
+                    )
+                }
+                pState.error?.let { sendEffect(ShowError(it)) }
+            }
+        }
+    }
 
     private fun observeGalleryListPaginator() {
         viewModelScope.launch {
@@ -176,6 +323,7 @@ class ProfileViewModel(
                         isLoadingImages = pState.isLoading
                     )
                 }
+                pState.error?.let { sendEffect(ShowError(it)) }
             }
         }
 
@@ -200,6 +348,7 @@ class ProfileViewModel(
                         isLoadingVideos = pState.isLoading
                     )
                 }
+                pState.error?.let { sendEffect(ShowError(it)) }
             }
         }
 
@@ -218,35 +367,29 @@ class ProfileViewModel(
         }
     }
 
-    //TODO пока нет ручки для поиска
-//    private fun onSearchQueryChanged(query: String) {
-//        searchJob?.cancel()
-//        setState { copy(searchQuery = query) }
+//    private fun onSearchModelsQueryChanged(query: String) {
+//        searchModelsJob?.cancel()
+//        setState { copy(searchModelsQuery = query) }
 //
 //        if (query.isBlank()) {
 //            searchPaginator.reset()
-//            setState { copy(isSearchMode = false) }
 //
 //            viewModelScope.launch {
-//                if (state.value.feedItems.isEmpty()) {
-//                    setState { copy(isLoadingStats = true) }
-//                    feedPaginator.loadInitial()
-//                    setState { copy(isLoadingStats = false) }
+//                if (state.value.searchModels.isEmpty()) {
+//                    searchPaginator.loadInitial()
 //                }
 //            }
 //            return
 //        }
 //
-//        searchJob = viewModelScope.launch {
+//        searchModelsJob = viewModelScope.launch {
 //            delay(SEARCH_DEBOUNCE_MS)
-//            setState { copy(isSearchMode = true, isLoadingStats = true) }
 //            searchPaginator.reset()
 //            searchPaginator.loadInitial()
-//            setState { copy(isLoadingStats = false) }
 //        }
 //    }
 //
-//    private fun loadMoreSearchResults() {
+//    private fun loadMoreSearchModels() {
 //        viewModelScope.launch {
 //            searchPaginator.loadMore()
 //        }
@@ -287,12 +430,13 @@ class ProfileViewModel(
         }
 
         viewModelScope.launch {
-            if (DivoApi.userRepository.currentUserFlow.value == null) {
+            val currUser = DivoApi.userRepository.currentUserFlow.value
+            if (currUser == null || currUser.fullName.isEmpty()) {
                 val result = DivoApi.userRepository.getCurrentUserInfo()
                 if (result !is DivoResult.Success) {
                     val errorMsg = result.getErrorMessage()
                     setState { copy(isLoading = false, errorMessage = errorMsg) }
-                    sendEffect(ProfileEffect.ShowError(errorMsg))
+                    sendEffect(ProfileEffect.ShowError(errorMsg, true))
                 }
             }
         }
@@ -326,36 +470,38 @@ class ProfileViewModel(
         viewModelScope.launch {
             setState { copy(isLoading = true, errorMessage = null) }
 
-            val result = DivoApi.userRepository.getUserById(state.value.userId)
-                .flatMap { userData ->
-                    setState {
-                        copy(
-                            userInfo = userData,
-                            userId = userData.id,
-                            physicalParams = mapPhysicalParams(userData),
-                        )
-                    }
-                    if (userData.avatarId != 0L) {
-                        DivoApi.faceRecognitionRepository.searchSimilar(118880) //userData.avatarId
-                    } else {
-                        DivoResult.Success(emptyList())
-                    }
-                }
+            val userResult = DivoApi.userRepository.getUserById(state.value.userId)
 
-            when (result) {
-                is DivoResult.Success -> {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            similarProfiles = result.value
-                        )
+            if (userResult !is DivoResult.Success) {
+                val errorMsg = userResult.getErrorMessage()
+                setState { copy(isLoading = false, errorMessage = errorMsg) }
+                sendEffect(ProfileEffect.ShowError(errorMsg, true))
+                return@launch
+            }
+
+            val userData = userResult.value
+            setState {
+                copy(
+                    userInfo = userData,
+                    userId = userData.id,
+                    physicalParams = mapPhysicalParams(userData),
+                )
+            }
+
+            // Загружаем похожие профили
+            if (userData.avatarId != 0L) {
+                val similarResult = DivoApi.faceRecognitionRepository.searchSimilar(userData.avatarId)
+
+                when (similarResult) {
+                    is DivoResult.Success -> setState {
+                        copy(isLoading = false, similarProfiles = similarResult.value)
+                    }
+                    else -> {
+                        setState { copy(isLoading = false, similarProfiles = emptyList()) }
                     }
                 }
-                else -> {
-                    val errorMsg = result.getErrorMessage()
-                    setState { copy(isLoading = false, errorMessage = errorMsg) }
-                    sendEffect(ProfileEffect.ShowError(errorMsg))
-                }
+            } else {
+                setState { copy(isLoading = false) }
             }
         }
     }
@@ -380,6 +526,36 @@ class ProfileViewModel(
         }
     }
 
+    private fun toggleBookmark() {
+        val info = state.value.userInfo
+
+        viewModelScope.launch {
+            toggleBookmarkUseCase.execute(
+                userId = info.id,
+                entity = info.role.value,
+                isFavorite = info.isFavorite,
+                currentFollowersCount = info.statistic.followersCount,
+                onUpdate = { newFavorite, newCount ->
+                    setState {
+                        copy(
+                            userInfo = userInfo.copy(
+                                isFavorite = newFavorite,
+                                statistic = userInfo.statistic.copy(followersCount = newCount)
+                            )
+                        )
+                    }
+                },
+                onRollback = { setState { copy(userInfo = info) } },
+                onSuccess = { newFavorite ->
+                    sendEffect(ProfileEffect.ActionChanged(
+                        resDrawableId = R.drawable.ic_divo_bookmark_glass_selected,
+                        resStringId = if (newFavorite) R.string.BookmarkSaved else R.string.BookmarkUnsaved
+                    ))
+                },
+                onError = { sendEffect(ShowError(it)) }
+            )
+        }
+    }
 
     private fun uploadPhoto(file: Result<File>) {
         viewModelScope.launch {
@@ -498,6 +674,58 @@ class ProfileViewModel(
 
         sendEffect(ProfileEffect.OpenUrl(url))
     }
+
+    private fun getGalleryItemIndex(url: String, isVideo: Boolean): Int {
+        return if (isVideo) {
+            state.value.videoItems
+                .indexOfFirst { it.files.any { f -> f.fullUrl == url } }
+                .coerceAtLeast(0)
+        } else {
+            state.value.userGalleryItems
+                .indexOfFirst { it.photoUrl == url }
+                .coerceAtLeast(0)
+        }
+    }
+
+    private fun applyEvent(id: Int) {
+        val savedEvents = state.value.events
+
+        setState {
+            copy(
+                events = events.map { event ->
+                    if (event.id == id)
+                        event.copy(isApplied = true, appliesCount = event.appliesCount + 1)
+                    else event
+                }
+            )
+        }
+
+        viewModelScope.launch {
+            val result = DivoApi.eventRepository.applyEvent(id)
+
+            if (result is DivoResult.Success) {
+                //sendEffect(ProfileEffect.SaveSuccess())
+            } else {
+                setState { copy(events = savedEvents) }
+                sendEffect(ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
+    private fun FeedlineItem.toSearchedProfile() = SearchedProfile(
+        id = this.id,
+        name = this.user?.fullName.orEmpty(),
+        age = this.user?.age,
+        country = this.user?.city?.countryName,
+        countryCode = this.user?.city?.countryCode,
+        isMarked = this.isFavoriteByUser,
+        likes = this.likesCount,
+        isLiked = this.isLikedByUser,
+        photo = this.searchImageUrl.orEmpty(),
+        index = null,
+        roleLabel = this.user?.roleLabel.orEmpty(),
+        similarity = null
+    )
 
     companion object {
         private const val PAGE_SIZE = 10

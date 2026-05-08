@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -26,7 +27,7 @@ import org.telegram.messenger.R
 
 @Composable
 fun OrganizerCard(
-    avatarUrl: String?,
+    avatarModel: Any?,
     name: String,
     status: String,
 ) {
@@ -50,10 +51,9 @@ fun OrganizerCard(
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Аватар-заглушка
                 DivoAsyncImage(
                     modifier = Modifier.size(56.dp).clip(CircleShape),
-                    model = avatarUrl,
+                    model = avatarModel,
                 )
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
@@ -68,7 +68,7 @@ fun OrganizerCard(
                     Text(
                         text = status,
                         style = AppTheme.typography.bodyMedium,
-                        color = AppTheme.colors.textPrimary.copy(0.6f)
+                        color = Color.Red, //AppTheme.colors.textPrimary.copy(0.6f)
                     )
                 }
             }

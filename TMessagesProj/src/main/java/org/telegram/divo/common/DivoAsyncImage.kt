@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,6 +33,7 @@ fun DivoAsyncImage(
     colorFilter: ColorFilter? = null,
     placeholderColor: Color = Color.White,
     errorIconSize: Dp = 32.dp,
+    onReady: () -> Unit = {},
     loadingContent: (@Composable () -> Unit)? = null,
     errorContent: (@Composable () -> Unit)? = null,
 ) {
@@ -45,6 +47,7 @@ fun DivoAsyncImage(
         colorFilter = colorFilter,
         placeholderColor = placeholderColor,
         errorIconSize = errorIconSize,
+        onReady = onReady,
         loadingContent = loadingContent,
         errorContent = errorContent,
     )
@@ -61,6 +64,7 @@ private fun ImageCore(
     colorFilter: ColorFilter?,
     placeholderColor: Color,
     errorIconSize: Dp,
+    onReady: () -> Unit = {},
     loadingContent: (@Composable () -> Unit)?,
     errorContent: (@Composable () -> Unit)?,
 ) {
@@ -96,13 +100,16 @@ private fun ImageCore(
                 ) {
                     errorContent?.invoke() ?: Icon(
                         imageVector = Icons.Outlined.Person,
-                        contentDescription = "Failed to load image",
+                        contentDescription = null,
                         modifier = Modifier.size(errorIconSize),
                         tint = AppTheme.colors.accentOrange.copy(alpha = 0.4f),
                     )
                 }
             },
             success = {
+                LaunchedEffect(Unit) {
+                    onReady()
+                }
                 SubcomposeAsyncImageContent()
             }
         )

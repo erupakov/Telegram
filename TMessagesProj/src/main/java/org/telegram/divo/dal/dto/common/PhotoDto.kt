@@ -5,17 +5,17 @@ import org.telegram.divo.entity.Photo
 
 class PhotoDto(
     @SerializedName("photo_id") val photoId: Long?,
-    @SerializedName("fileName") val fileName: String,
-    @SerializedName("fullUrl") val fullUrl: String,
-    @SerializedName("extension") val extension: String,
-    @SerializedName("fileUuid") val fileUuid: String
+    @SerializedName("fileName") val fileName: String?,
+    @SerializedName("fullUrl") val fullUrl: String?,
+    @SerializedName("extension") val extension: String?,
+    @SerializedName("fileUuid") val fileUuid: String?
 )
 
 fun PhotoDto.toEntity(): Photo =
     Photo(
         photoId = photoId ?: 0L,
-        fileName = fileName,
-        fullUrl = fullUrl,
-        extension = extension,
-        fileUuid = fileUuid
+        fileName = fileName.orEmpty(),
+        fullUrl = fullUrl.orEmpty(),
+        extension = extension.orEmpty(),
+        fileUuid = fileUuid.orEmpty()
     )

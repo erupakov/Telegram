@@ -40,6 +40,7 @@ class UserDataDto(
     @SerializedName("statistic") val statistic: StatisticDto,
     @SerializedName("isFavorite") val isFavorite: Boolean,
     @SerializedName("isFollowed") val isFollowed: Boolean,
+    @SerializedName("is_premium") val isPremium: Boolean,
     @SerializedName("userRatingStatus") val userRatingStatus: String?,
     @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>,
     @SerializedName("customer") val customer: CustomerDto?,
@@ -59,6 +60,7 @@ class StatisticDto(
     @SerializedName("followersCount") val followersCount: Int,
     @SerializedName("followingCount") val followingCount: Int,
     @SerializedName("viewsCount") val viewsCount: Int,
+    @SerializedName("likesCount") val likesCount: Int,
     @SerializedName("sentToAgenciesCount") val sentToAgenciesCount: Int,
     @SerializedName("modelsCount") val modelsCount: Int
 )
@@ -95,6 +97,7 @@ fun UserDataDto.toEntity(): UserInfo {
         statistic = statistic.toEntity(),
         isFavorite = isFavorite,
         isFollowed = isFollowed,
+        isPremium = isPremium,
         userRatingStatus = userRatingStatus.orEmpty(),
         userSocialNetworks = userSocialNetworks.toEntities()
     )
@@ -108,8 +111,8 @@ private fun GenderDto.toEntity(): Gender =
 
 private fun StatisticDto.toEntity(): Statistic =
     Statistic(
+        likesCount = likesCount,
         followersCount = followersCount,
-        followingCount = followingCount,
         viewsCount = viewsCount,
         sentToAgenciesCount = sentToAgenciesCount,
         modelsCount = modelsCount

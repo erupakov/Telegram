@@ -9,9 +9,9 @@ import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.OffsetPaginator
 import org.telegram.divo.dal.network.DivoApi
-import org.telegram.divo.dal.network.DivoResult
-import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.dal.repository.UserActionEvent
 import org.telegram.divo.entity.FeedItem
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.models.ModelsViewIntent.LoadInitialData
 import org.telegram.divo.screen.models.ModelsViewIntent.OnAddStoryClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnBookmarkClick
@@ -21,6 +21,8 @@ import org.telegram.divo.screen.models.ModelsViewIntent.OnStoryClick
 import org.telegram.divo.screen.models.ModelsViewIntent.OnTabSelected
 import org.telegram.divo.screen.models.ModelsViewIntent.Refresh
 import org.telegram.divo.usecase.GetFeedUseCase
+import org.telegram.divo.usecase.ToggleBookmarkUseCase
+import org.telegram.divo.usecase.ToggleLikeUseCase
 import org.telegram.messenger.R
 
 class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
@@ -31,16 +33,19 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
 
     override fun createInitialState(): ModelsViewState = ModelsViewState()
 
+    private val toggleLikeUseCase = ToggleLikeUseCase()
+    private val toggleBookmarkUseCase = ToggleBookmarkUseCase()
+
     private val modelsPaginator = GetFeedUseCase(
-        limit = PAGE_SIZE, modelsOnly = true
+        limit = PAGE_SIZE, role = RoleType.MODEL.value
     ).paginator
 
     private val newTalentsPaginator = GetFeedUseCase(
-        limit = PAGE_SIZE
+        limit = PAGE_SIZE, role = RoleType.NEW_FACE.value
     ).paginator
 
     private val agenciesPaginator = GetFeedUseCase(
-        limit = PAGE_SIZE, subscribedOnly = true
+        limit = PAGE_SIZE, role = RoleType.AGENCY.value
     ).paginator
 
     init {
@@ -59,6 +64,36 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                         tabHasMore = tabHasMore + (tab to paginatorState.hasMore),
                         error = paginatorState.error
                     )
+                }
+            }
+        }
+        viewModelScope.launch {
+            DivoApi.publicationRepository.events.collect { event ->
+                when (event) {
+                    is UserActionEvent.BookmarkChanged -> setState {
+                        copy(tabFeeds = tabFeeds.mapValues { (_, items) ->
+                            items.map { item ->
+                                if (item.user.id == event.userId)
+                                    item.copy(
+                                        isFavorite = event.isFavorite,
+                                        user = item.user.copy(followersCount = event.newFollowersCount)
+                                    )
+                                else item
+                            }
+                        })
+                    }
+                    is UserActionEvent.LikeChanged -> setState {
+                        copy(tabFeeds = tabFeeds.mapValues { (_, items) ->
+                            items.map { item ->
+                                if (item.feedId == event.feedId)
+                                    item.copy(
+                                        isLiked = event.isLiked,
+                                        user = item.user.copy(likesCount = event.newLikesCount)
+                                    )
+                                else item
+                            }
+                        })
+                    }
                 }
             }
         }
@@ -135,52 +170,63 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         }
     }
 
-    private fun bookmarkModel(modelId: String) {
-        // TODO: Call repository to bookmark the model
-        // Optimistically update the UI
-    }
-
     private fun onLikeClick(tab: Tab, feedId: Int, isLiked: Boolean) {
-        val oldState = state.value.tabFeeds
-
-        fun updateItemInAllTabs(targetFeedId: Int, newLiked: Boolean, newCount: Int): Map<Tab, List<FeedItem>> {
-            return state.value.tabFeeds.mapValues { (_, items) ->
-                items.map { item ->
-                    if (item.feedId == targetFeedId) {
-                        item.copy(isLiked = newLiked, likesCount = newCount)
-                    } else item
-                }
-            }
-        }
-
         val targetItem = state.value.tabFeeds[tab]?.find { it.feedId == feedId } ?: return
-        val newLiked = !isLiked
-        val newCount = if (isLiked) (targetItem.likesCount - 1).coerceAtLeast(0) else targetItem.likesCount + 1
+        val savedState = state.value.tabFeeds
 
-        setState {
-            copy(tabFeeds = updateItemInAllTabs(feedId, newLiked, newCount))
-        }
+        fun updateAll(newLiked: Boolean, newCount: Int): Map<Tab, List<FeedItem>> =
+            state.value.tabFeeds.mapValues { (_, items) ->
+                items.map { if (it.feedId == feedId) it.copy(isLiked = newLiked, user = it.user.copy(likesCount = newCount)) else it }
+            }
 
         viewModelScope.launch {
-            val repository = DivoApi.publicationRepository
-
-            val result = if (newLiked) {
-                repository.likePost(feedId)
-            } else {
-                repository.unlikePost(feedId)
-            }
-
-            if (result is DivoResult.Success) {
-                sendEffect(
-                    ModelsViewEffect.ActionChanged(
+            toggleLikeUseCase.execute(
+                feedId = feedId,
+                isLiked = isLiked,
+                currentCount = targetItem.user.likesCount,
+                onUpdate = { newLiked, newCount -> setState { copy(tabFeeds = updateAll(newLiked, newCount)) } },
+                onRollback = { setState { copy(tabFeeds = savedState) } },
+                onSuccess = { newLiked ->
+                    sendEffect(ModelsViewEffect.ActionChanged(
                         R.drawable.ic_divo_favorite_selected,
                         if (newLiked) R.string.Liked else R.string.Unliked
-                    )
-                )
-            } else {
-                setState { copy(tabFeeds = oldState) }
-                sendEffect(ModelsViewEffect.ShowError(result.getErrorMessage()))
+                    ))
+                },
+                onError = { sendEffect(ModelsViewEffect.ShowError(it)) }
+            )
+        }
+    }
+
+    private fun bookmarkModel(modelId: Int) {
+        var targetItem: FeedItem? = null
+        for (items in state.value.tabFeeds.values) {
+            targetItem = items.find { it.user.id == modelId }
+            if (targetItem != null) break
+        }
+        val item = targetItem ?: return
+        val savedState = state.value.tabFeeds
+
+        fun updateAll(newFavorite: Boolean, newCount: Int): Map<Tab, List<FeedItem>> =
+            state.value.tabFeeds.mapValues { (_, items) ->
+                items.map { if (it.user.id == modelId) it.copy(isFavorite = newFavorite, user = it.user.copy(followersCount = newCount)) else it }
             }
+
+        viewModelScope.launch {
+            toggleBookmarkUseCase.execute(
+                userId = item.user.id,
+                entity = item.user.role.value,
+                isFavorite = item.isFavorite,
+                currentFollowersCount = item.user.followersCount,
+                onUpdate = { newFavorite, newCount -> setState { copy(tabFeeds = updateAll(newFavorite, newCount)) } },
+                onRollback = { setState { copy(tabFeeds = savedState) } },
+                onSuccess = { newFavorite ->
+                    sendEffect(ModelsViewEffect.ActionChanged(
+                        resDrawableId = R.drawable.ic_divo_bookmark_glass_selected,
+                        resStringId = if (newFavorite) R.string.BookmarkSaved else R.string.BookmarkUnsaved
+                    ))
+                },
+                onError = { sendEffect(ModelsViewEffect.ShowError(it)) }
+            )
         }
     }
 

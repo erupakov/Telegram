@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +36,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -64,9 +66,8 @@ fun DivoTabSelector(
     cornerRadius: Dp = 99.dp,
     innerPadding: Dp = 2.dp,
     horizontalPadding: Dp = 16.dp,
-    animationSpec: AnimationSpec<Float> = spring(
-        stiffness = Spring.StiffnessMediumLow,
-    ),
+    tabWidth: Dp? = null, // null = старое поведение, задай Dp для фикс. ширины
+    animationSpec: AnimationSpec<Float> = spring(stiffness = Spring.StiffnessMediumLow),
     onTabSelected: (Int) -> Unit,
 ) {
     val animatedFraction by animateFloatAsState(
@@ -74,22 +75,31 @@ fun DivoTabSelector(
         animationSpec = animationSpec,
         label = "tab_fraction"
     )
+    val density = LocalDensity.current
 
     Box(
         modifier = modifier
             .padding(horizontal = horizontalPadding)
             .height(height)
+            .then(if (tabWidth != null) Modifier.wrapContentWidth() else Modifier.fillMaxWidth())
             .clip(RoundedCornerShape(cornerRadius))
             .background(containerColor)
             .padding(innerPadding)
     ) {
-
+        // Индикатор
         Box(
             modifier = Modifier
                 .fillMaxHeight()
-                .fillMaxWidth(if (tabs.isNotEmpty()) 1f / tabs.size else 1f)
+                .then(
+                    if (tabWidth != null) Modifier.width(tabWidth)
+                    else Modifier.fillMaxWidth(if (tabs.isNotEmpty()) 1f / tabs.size else 1f)
+                )
                 .graphicsLayer {
-                    translationX = size.width * animatedFraction
+                    translationX = if (tabWidth != null) {
+                        with(density) { tabWidth.toPx() } * animatedFraction
+                    } else {
+                        size.width * animatedFraction
+                    }
                 }
                 .shadow(
                     elevation = 4.dp,
@@ -101,8 +111,9 @@ fun DivoTabSelector(
                 .background(activeTabColor)
         )
 
+        // Табы
         Row(
-            modifier = Modifier.fillMaxSize(),
+            modifier = if (tabWidth != null) Modifier.wrapContentWidth() else Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -111,15 +122,13 @@ fun DivoTabSelector(
 
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .then(if (tabWidth != null) Modifier.width(tabWidth) else Modifier.weight(1f))
                         .fillMaxHeight()
                         .clickable(
                             enabled = tab.enabled,
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-                        ) {
-                            onTabSelected(index)
-                        },
+                        ) { onTabSelected(index) },
                     contentAlignment = Alignment.Center
                 ) {
                     Row(
@@ -130,13 +139,12 @@ fun DivoTabSelector(
                             Image(
                                 painter = painterResource(id = resId),
                                 contentDescription = tab.contentDescription,
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(20.dp),
                                 colorFilter = ColorFilter.tint(
                                     if (isSelected) selectedContentColor else unselectedContentColor
                                 )
                             )
                         }
-
                         tab.textResId?.let { resId ->
                             Text(
                                 modifier = Modifier.padding(top = 2.dp),

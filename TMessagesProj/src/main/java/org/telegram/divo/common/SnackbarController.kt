@@ -53,7 +53,7 @@ class AppSnackbarHostState {
             val result = hostState.showSnackbar(
                 message = event.message,
                 actionLabel = if (event is SnackbarEvent.ErrorWithRetry) event.actionLabel else null,
-                duration = SnackbarDuration.Short
+                duration = if (event is SnackbarEvent.ErrorWithRetry) SnackbarDuration.Indefinite else SnackbarDuration.Short
             )
 
             if (result == SnackbarResult.ActionPerformed && event is SnackbarEvent.ErrorWithRetry) {

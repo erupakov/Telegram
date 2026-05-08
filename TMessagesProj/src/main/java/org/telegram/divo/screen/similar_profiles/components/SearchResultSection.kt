@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -42,23 +41,17 @@ fun SearchResultSection(
 ) {
     val imageAlignment = remember(fx, fy) {
         if (fx != null && fy != null) {
-            object : Alignment {
-                override fun align(
-                    size: androidx.compose.ui.unit.IntSize,
-                    space: androidx.compose.ui.unit.IntSize,
-                    layoutDirection: androidx.compose.ui.unit.LayoutDirection
-                ): androidx.compose.ui.unit.IntOffset {
-                    var offsetX = space.width / 2f - fx * size.width.toFloat()
-                    var offsetY = space.height / 2f - fy * size.height.toFloat()
+            Alignment { size, space, layoutDirection ->
+                var offsetX = space.width / 2f - fx * size.width.toFloat()
+                var offsetY = space.height / 2f - fy * size.height.toFloat()
 
-                    val minOffsetX = space.width.toFloat() - size.width.toFloat()
-                    val minOffsetY = space.height.toFloat() - size.height.toFloat()
+                val minOffsetX = space.width.toFloat() - size.width.toFloat()
+                val minOffsetY = space.height.toFloat() - size.height.toFloat()
 
-                    offsetX = offsetX.coerceIn(minOffsetX, 0f)
-                    offsetY = offsetY.coerceIn(minOffsetY, 0f)
+                offsetX = offsetX.coerceIn(minOffsetX, 0f)
+                offsetY = offsetY.coerceIn(minOffsetY, 0f)
 
-                    return androidx.compose.ui.unit.IntOffset(offsetX.toInt(), offsetY.toInt())
-                }
+                androidx.compose.ui.unit.IntOffset(offsetX.toInt(), offsetY.toInt())
             }
         } else {
             Alignment.Center

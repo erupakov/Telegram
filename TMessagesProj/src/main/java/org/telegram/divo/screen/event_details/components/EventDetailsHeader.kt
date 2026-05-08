@@ -34,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -62,12 +63,19 @@ import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
+import org.telegram.divo.components.TelegramPhotoBackground
+
 @Composable
 fun EventDetailsHeader(
     event: EventDetails?,
     isModel: Boolean,
     isOwnProfile: Boolean,
-    onMenuClicked: () -> Unit,
+    isOwnEvent: Boolean,
+    engagementsAlpha: Float = 1f,
+    onEditEvent: () -> Unit,
+    onCloseApplications: () -> Unit,
+    onCancelEvent: () -> Unit,
+    onDeleteEvent: () -> Unit,
     onBack: () -> Unit,
 ) {
     val topPadding = remember {
@@ -84,28 +92,61 @@ fun EventDetailsHeader(
             .fillMaxWidth()
             .aspectRatio(1f)
     ) {
-        Background(
-            backgroundUrl = event?.creator?.photo?.fullUrl,
+        TelegramPhotoBackground(
+            photo = event?.files?.firstOrNull()?.fullUrl,
+            modifier = Modifier.fillMaxSize()
         )
         Column(
-            modifier = Modifier.fillMaxSize().padding(top = topPadding.value + 8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = topPadding.value + 14.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            ButtonsSection(
-                modifier = Modifier,
-                event = event,
-                onMenuClicked = onMenuClicked,
-                onBack = onBack
+            StatsSection(
+                modifier = Modifier.graphicsLayer { alpha = engagementsAlpha },
+                event = event
             )
             ContentSection(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 event = event,
-                isOwnProfile = isOwnProfile,
-                isModel = isModel
+                isOwnEvent = isOwnEvent,
+                isModel = isModel,
+                onEditEvent = onEditEvent
             )
         }
+    }
+}
+
+@Composable
+private fun StatsSection(
+    modifier: Modifier = Modifier,
+    event: EventDetails?,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.End
+    ) {
+        // Space for fixed toolbar buttons
+        Spacer(Modifier.height(48.dp))
+        
+        EngagementItem(
+            resId = R.drawable.ic_divo_favorite,
+            count = event?.appliesCount ?: 0
+        )
+        Spacer(Modifier.height(10.dp))
+        EngagementItem(
+            resId = R.drawable.ic_divo_visibility,
+            count = event?.viewsCount ?: 0
+        )
+        Spacer(Modifier.height(10.dp))
+        EngagementItem(
+            resId = R.drawable.ic_divo_bookmark_glass,
+            count = event?.userReachCount ?: 0
+        )
     }
 }
 
@@ -113,6 +154,7 @@ fun EventDetailsHeader(
 private fun ButtonsSection(
     modifier: Modifier = Modifier,
     event: EventDetails?,
+    isOwnEvent: Boolean,
     onMenuClicked: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -150,14 +192,16 @@ private fun ButtonsSection(
                     contentDescription = null,
                     tint = AppTheme.colors.onBackground
                 )
-                Icon(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickableWithoutRipple { onMenuClicked() },
-                    painter = painterResource(R.drawable.ic_ab_other),
-                    contentDescription = null,
-                    tint = AppTheme.colors.onBackground
-                )
+                if (isOwnEvent) {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickableWithoutRipple { onMenuClicked() },
+                        painter = painterResource(R.drawable.ic_ab_other),
+                        contentDescription = null,
+                        tint = AppTheme.colors.onBackground
+                    )
+                }
             }
         }
         Column(
@@ -187,33 +231,30 @@ private fun ButtonsSection(
 private fun ContentSection(
     modifier: Modifier = Modifier,
     event: EventDetails?,
-    isOwnProfile: Boolean,
+    isOwnEvent: Boolean,
     isModel: Boolean,
+    onEditEvent: () -> Unit,
 ) {
     Column(
         modifier = modifier
     ) {
         event?.let {
+            DivoChip(
+                text = it.type.orEmpty(),
+                contentPadding = PaddingValues(8.dp)
+            )
+            Spacer(Modifier.height(4.dp))
             Text(
                 text = it.title.orEmpty(),
                 style = AppTheme.typography.displayLarge,
                 color = AppTheme.colors.onBackground
             )
             Spacer(Modifier.height(4.dp))
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                DivoChip(
-                    text = it.type.orEmpty(),
-                    contentPadding = PaddingValues(8.dp)
-                )
-                Spacer(Modifier.width(10.dp))
-                Text(
-                    text = it.date?.toEventDisplayDate(it.address?.countryCode, it.address?.cityName).orEmpty(),
-                    style = AppTheme.typography.bodyMedium,
-                    color = AppTheme.colors.onBackground
-                )
-            }
+            Text(
+                text = it.date?.toEventDisplayDate(it.address?.countryCode, it.address?.cityName).orEmpty(),
+                style = AppTheme.typography.bodyMedium,
+                color = AppTheme.colors.onBackground
+            )
             Spacer(Modifier.height(14.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -222,6 +263,7 @@ private fun ContentSection(
             ) {
                 RoundedGlassContainer(
                     height = 36.dp,
+                    contentPadding = PaddingValues(start = 8.dp, end = 12.dp),
                     space = 4.dp
                 ) {
                     Icon(
@@ -249,15 +291,15 @@ private fun ContentSection(
                         onClick = {}
                     )
                 }
-                if (isOwnProfile && !isModel) {
+                if (isOwnEvent) {
                     UIButtonNew(
-                        text = stringResource(R.string.ButtonEdit),
+                        text = stringResource(R.string.ViewApplications),
                         textStyle = AppTheme.typography.helveticaNeueLtCom.copy(
                             fontSize = 14.sp,
                             color = AppTheme.colors.onBackground
                         ),
                         height = 36.dp,
-                        onClick = {}
+                        onClick = onEditEvent
                     )
                 }
             }

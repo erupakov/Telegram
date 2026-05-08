@@ -184,9 +184,40 @@ enum class ParametersType(
     HAIR_COLOR(R.string.ChooseHairColor),
     EYE_COLOR(R.string.ChooseEyeColor),
     SKIN_COLOR(R.string.ChooseSkinColor),
+    WEIGHT(R.string.LabelWeight),
     BREAST_SIZE(R.string.ChooseBreastSize),
     COUNTRY(R.string.CountryLabel),
     ROLE(R.string.RoleLabel),
+}
+
+fun ParametersType.numericFilterRange(): IntRange? = when (this) {
+    ParametersType.AGE -> 14..45
+    ParametersType.HEIGHT -> 120..220
+    ParametersType.WEIGHT -> 30..200
+    ParametersType.WAIST -> 40..130
+    ParametersType.HIPS -> 60..150
+    ParametersType.SHOE_SIZE -> 30..50
+    ParametersType.BREAST_SIZE -> 65..130
+    else -> null
+}
+
+fun resolveNumericBlockParamBounds(initialValue: String, bounds: IntRange): Pair<Int, Int> {
+    if (initialValue.isBlank()) return bounds.first to bounds.last
+    if ("-" in initialValue) {
+        val parts = initialValue.split("-").map { it.trim().toIntOrNull() ?: return bounds.first to bounds.last }
+        return if (parts.size >= 2) {
+            parts[0].coerceIn(bounds) to parts[1].coerceIn(bounds)
+        } else {
+            bounds.first to bounds.last
+        }
+    }
+    val single = initialValue.toDoubleOrNull()?.toInt() ?: initialValue.toIntOrNull()
+    return if (single != null) {
+        val v = single.coerceIn(bounds)
+        v to v
+    } else {
+        bounds.first to bounds.last
+    }
 }
 
 @Preview

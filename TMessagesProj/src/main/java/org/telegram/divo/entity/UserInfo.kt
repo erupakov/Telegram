@@ -25,6 +25,7 @@ data class UserInfo(
     val statistic: Statistic = Statistic(),
     val isFavorite: Boolean = false,
     val isFollowed: Boolean = false,
+    val isPremium: Boolean = false,
     val userRatingStatus: String = "",
     val userSocialNetworks: List<UserSocialNetwork> = emptyList()
 )
@@ -102,8 +103,8 @@ data class SkinColor(
     val title: String? = null
 )
 data class Statistic(
+    val likesCount: Int = 0,
     val followersCount: Int = 0,
-    val followingCount: Int = 0,
     val viewsCount: Int = 0,
     val sentToAgenciesCount: Int = 0,
     val modelsCount: Int = 0

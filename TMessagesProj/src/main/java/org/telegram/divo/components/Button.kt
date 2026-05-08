@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -123,6 +124,8 @@ fun UIButtonNew(
     background: Color = AppTheme.colors.accentOrange,
     paddingTop: Dp = 3.dp,
     enabled: Boolean = true,
+    leadingIcon: Int? = null,
+    leadingIconTint: Color = AppTheme.colors.onBackground,
     onClick: () -> Unit = {},
 ) {
     Button(
@@ -135,6 +138,15 @@ fun UIButtonNew(
             containerColor = background
         ),
     ) {
+        leadingIcon?.let {
+            Icon(
+                modifier = Modifier.size(12.dp),
+                painter = painterResource(leadingIcon),
+                tint = leadingIconTint,
+                contentDescription = null,
+            )
+            Spacer(Modifier.width(6.dp))
+        }
         Text(
             modifier = Modifier.padding(top = paddingTop),
             text = text,
@@ -188,6 +200,7 @@ fun RoundedGlassButton(
     borderColor: Color = AppTheme.colors.onBackground.copy(alpha = 0.4f),
     background: Color = AppTheme.colors.onBackground.copy(alpha = 0.2f),
     iconTint: Color = AppTheme.colors.onBackground,
+    iconSize: Dp = 16.dp,
     onClick: () -> Unit = {},
 ) {
     RoundedButton(
@@ -197,6 +210,7 @@ fun RoundedGlassButton(
         borderColor = borderColor,
         background = background,
         iconTint = iconTint,
+        iconSize = iconSize,
         onClick = onClick
     )
 }

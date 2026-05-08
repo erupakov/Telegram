@@ -1,152 +1,58 @@
 package org.telegram.divo.screen.profile.components
 
-import androidx.annotation.DrawableRes
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Tab
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.util.VelocityTracker
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.telegram.divo.style.AppTheme
-import org.telegram.messenger.R
+import org.telegram.divo.components.DivoTabSelector
+import org.telegram.divo.components.TabConfig
+
+enum class ProfileDestination {
+    SONGS,
+    ALBUM,
+    AGENCY,
+    PLAYLISTS,
+    EVENT,
+}
+
+enum class ProfileInfoDestination {
+    BIOGRAPHY,
+    APPEARANCE,
+    EXPERIENCE
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TabContainer(
     modifier: Modifier = Modifier,
-    lazyListState: LazyListState,
     pagerState: PagerState,
-    destinations: List<Destination>,
+    destinations: List<TabConfig>,
+    tabWidth: Dp? = null
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    val selectedDestination = pagerState.currentPage
-    val flingBehavior = ScrollableDefaults.flingBehavior()
-
     Box(
-        modifier = modifier
-            .pointerInput(Unit) {
-                val velocityTracker = VelocityTracker()
-                detectVerticalDragGestures(
-                    onDragEnd = {
-                        val velocity = velocityTracker.calculateVelocity()
-                        coroutineScope.launch {
-                            lazyListState.scroll {
-                                with(flingBehavior) {
-                                    performFling(-velocity.y)
-                                }
-                            }
-                        }
-                        velocityTracker.resetTracking()
-                    }
-                ) { change, dragAmount ->
-                    change.consume()
-                    velocityTracker.addPosition(change.uptimeMillis, change.position)
-                    coroutineScope.launch {
-                        lazyListState.dispatchRawDelta(-dragAmount)
-                    }
-                }
-            }
-            .background(AppTheme.colors.blackAlpha12)
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        PrimaryTabRow(
-            selectedTabIndex = selectedDestination,
-            containerColor = Color.Transparent,
-            indicator = {
-                Box(
-                    modifier = Modifier.tabIndicatorOffset(selectedDestination)
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .width(44.dp)
-                            .height(2.dp)
-                            .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(
-                                    topStart = 4.dp,
-                                    topEnd = 4.dp,
-                                    bottomStart = 0.dp,
-                                    bottomEnd = 0.dp
-                                )
-                            )
-                    )
+        DivoTabSelector(
+            modifier = Modifier,
+            tabs = destinations,
+            selectedIndex = pagerState.currentPage,
+            onTabSelected = { index ->
+                coroutineScope.launch {
+                    pagerState.animateScrollToPage(index)
                 }
             },
-            divider = {},
-        ) {
-            destinations.forEachIndexed { index, destination ->
-                Tab(
-                    modifier = Modifier.width(100.dp),
-                    selected = selectedDestination == index,
-                    icon = {
-                        val iconColor by animateColorAsState(
-                            if (selectedDestination == index) Color.White else Color.White.copy(0.5f)
-                        )
-
-                        Icon(
-                            imageVector = ImageVector.vectorResource(destination.iconResId),
-                            modifier = Modifier.size(24.dp),
-                            contentDescription = destination.contentDescription,
-                            tint = iconColor
-                        )
-                    },
-                    onClick = {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(index)
-                        }
-                    },
-                )
-            }
-        }
-    }
-}
-
-enum class Destination(
-    val route: String,
-    @DrawableRes val iconResId: Int,
-    val contentDescription: String,
-) {
-    SONGS("songs", R.drawable.divo_profile_tab_1, "Songs"),
-    ALBUM("album", R.drawable.divo_profile_tab_2, "Album"),
-    PLAYLISTS("playlist", R.drawable.divo_profile_tab_3, "Playlist"),
-    AGENCY("agency", R.drawable.ic_divo_tab_agency, "Agency"),
-    EVENT("event", R.drawable.ic_divo_event, "event")
-}
-
-@Preview
-@Composable
-private fun TabContainerPreview() {
-    AppTheme {
-        TabContainer(
-            lazyListState = rememberLazyListState(),
-            pagerState = rememberPagerState(0) { 3 },
-            destinations = listOf(Destination.SONGS, Destination.ALBUM, Destination.PLAYLISTS)
+            horizontalPadding = 16.dp,
+            tabWidth = tabWidth
         )
     }
 }

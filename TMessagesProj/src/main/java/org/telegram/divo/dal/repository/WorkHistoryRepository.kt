@@ -23,11 +23,11 @@ class WorkHistoryRepository(
     private val _selectedAgency = MutableStateFlow("")
     val selectedAgency: StateFlow<String> = _selectedAgency.asStateFlow()
 
-    suspend fun getWorkHistory(): DivoResult<List<WorkExperience>> {
+    suspend fun getWorkHistory(userId: Int): DivoResult<List<WorkExperience>> {
         _cache.value?.let { return DivoResult.Success(it) }
 
         return resultOf {
-            service.getWorkHistory()
+            service.getWorkHistory(userId)
                 .data
                 ?.items
                 ?.map { it.toEntity() }

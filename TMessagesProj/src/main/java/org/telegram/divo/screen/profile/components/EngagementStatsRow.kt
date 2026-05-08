@@ -46,32 +46,6 @@ fun EngagementStatsRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
     ) {
-        if (!isOwnProfile) {
-            Row(
-                modifier = Modifier
-                    .height(36.dp)
-                    .clickableWithoutRipple(onClick = onClicked)
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(AppTheme.colors.blackAlpha12)
-                    .padding(horizontal = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                Icon(
-                    painter = painterResource(drawable.ic_divo_send),
-                    tint = Color.White,
-                    contentDescription = null
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    modifier = Modifier.padding(top = 2.dp),
-                    text = stringResource(R.string.SendDM),
-                    style = AppTheme.typography.helveticaNeueLtCom,
-                    fontSize = 13.sp,
-                    color = Color.White
-                )
-            }
-        }
 
         EngagementStatsItem(
             count = stats.followers,

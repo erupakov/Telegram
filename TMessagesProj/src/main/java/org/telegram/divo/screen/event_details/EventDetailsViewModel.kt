@@ -16,6 +16,7 @@ class EventDetailsViewModel(
     private val eventId: Int,
     private val isOwnProfile: Boolean
 ) : BaseViewModel<EventDetailsViewState, EventDetailsIntent, EventDetailsEffect>() {
+    private var currentUserId: Int? = null
 
     override fun createInitialState(): EventDetailsViewState = EventDetailsViewState(eventId, isOwnProfile)
 
@@ -26,6 +27,8 @@ class EventDetailsViewModel(
             is EventDetailsIntent.OnEventCtaClicked -> {}
             EventDetailsIntent.OnSearchClicked -> {}
             EventDetailsIntent.OnBackClicked -> sendEffect(Back)
+            EventDetailsIntent.OnEditEventClick -> state.value.eventDetails?.id?.let { sendEffect(NavigateToEditEvent(it)) }
+            EventDetailsIntent.OnDeleteEventConfirmed -> deleteEvent()
             is EventDetailsIntent.OnPhotoClick -> sendEffect(NavigateToGallery(intent.items, intent.id))
             EventDetailsIntent.OnParamsClick -> sendEffect(NavigateToParams)
             is EventDetailsIntent.OnPrevEventClicked -> sendEffect(NavigateToPrevEvent(intent.eventId))
@@ -33,16 +36,21 @@ class EventDetailsViewModel(
         }
     }
 
-    private val eventPaginator = GetEventListUseCase(limit = 10).paginator
+    private var eventPaginator = GetEventListUseCase(limit = 10).paginator
 
     init {
         setIntent(EventDetailsIntent.OnLoad)
+        viewModelScope.launch {
+            DivoApi.eventRepository.eventsUpdatedFlow.collect {
+                loadData()
+            }
+        }
     }
 
     fun loadData() {
-        observeEvents()
         loadEvent()
         loadRoleInfo()
+        loadCurrentUserForOwnership()
     }
 
     private fun loadEvent() {
@@ -54,9 +62,13 @@ class EventDetailsViewModel(
                 setState {
                     copy(
                         eventDetails = result.value,
+                        isOwnEvent = (currentUserId != null && currentUserId == result.value.creator?.id) || isOwnProfile,
                         isLoading = false
                     )
                 }
+                val creatorId = result.value.creator?.id ?: return@launch
+                eventPaginator = GetEventListUseCase(limit = 10, creatorId = creatorId).paginator
+                observeEvents()
             } else {
                 val errorMsg = result.getErrorMessage()
                 sendEffect(ShowError(errorMsg))
@@ -99,6 +111,37 @@ class EventDetailsViewModel(
                 val errorMsg = result.getErrorMessage()
                 setState { copy(isRoleLoading = false) }
                 sendEffect(ShowError(errorMsg))
+            }
+        }
+    }
+
+    private fun loadCurrentUserForOwnership() {
+        viewModelScope.launch {
+            when (val userResult = DivoApi.userRepository.getCurrentUserInfo()) {
+                is DivoResult.Success -> {
+                    currentUserId = userResult.value.id
+                    setState {
+                        copy(
+                            isOwnEvent = (eventDetails?.creator?.id == currentUserId) || isOwnProfile
+                        )
+                    }
+                }
+                else -> Unit
+            }
+        }
+    }
+
+    private fun deleteEvent() {
+        state.value.eventDetails?.id?.let { id ->
+            viewModelScope.launch {
+                setState { copy(isLoading = true) }
+                val result = DivoApi.eventRepository.deleteEvent(id)
+                if (result is DivoResult.Success) {
+                    sendEffect(Back)
+                } else {
+                    setState { copy(isLoading = false) }
+                    sendEffect(ShowError(result.getErrorMessage()))
+                }
             }
         }
     }
