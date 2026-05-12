@@ -56,6 +56,7 @@ import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.SnackbarEvent
+import org.telegram.divo.common.SnackbarEvent.*
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.RoundedButton
@@ -73,7 +74,8 @@ fun SettingsScreen(
     navigateToPrivacy: () -> Unit = {},
     navigateToDataStorage: () -> Unit = {},
     navigateToAppearance: () -> Unit = {},
-    navigateToSetUsername: () -> Unit = {}
+    navigateToSetUsername: () -> Unit = {},
+    navigateToLogout: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarState = remember { AppSnackbarHostState() }
@@ -82,7 +84,6 @@ fun SettingsScreen(
     val dividerColor = Color(0x1A000000)
     val scrollState = rememberScrollState()
 
-    // Refresh user data when screen becomes visible
     LifecycleResumeEffect(Unit) {
         onPauseOrDispose { }
     }
@@ -136,13 +137,15 @@ fun SettingsScreen(
 
                 is SettingsViewEffect.ShowError -> {
                     snackbarState.show(
-                        SnackbarEvent.ErrorWithRetry(
+                        ErrorWithRetry(
                             message = it.message,
                             actionLabel = context.getString(R.string.RetryLabel),
                             onRetry = { viewModel.setIntent(SettingsViewIntent.OnRefresh) }
                         )
                     )
                 }
+
+                SettingsViewEffect.NavigateToLogout -> navigateToLogout()
             }
         }
     }
@@ -267,6 +270,19 @@ fun SettingsScreen(
                             title = stringResource(R.string.AppearanceLabel),
                             iconResId = R.drawable.ic_divo_apperance,
                             intent = SettingsViewIntent.OnAppearanceClicked
+                        ),
+                        viewModel = viewModel
+                    )
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                ContainerItems {
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.LogOutLabel),
+                            iconResId = R.drawable.ic_divo_logout,
+                            intent = SettingsViewIntent.OnLogoutClicked
                         ),
                         viewModel = viewModel
                     )

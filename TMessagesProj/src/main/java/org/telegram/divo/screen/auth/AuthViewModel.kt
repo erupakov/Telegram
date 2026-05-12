@@ -1,11 +1,15 @@
 package org.telegram.divo.screen.auth
 
+import android.os.Build
 import androidx.lifecycle.viewModelScope
+import com.google.android.exoplayer2.util.Log
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.dto.auth.LoginRequest
+import org.telegram.divo.dal.network.getErrorMessage
 
 class AuthViewModel :
     BaseViewModel<AuthViewState, AuthViewIntent, AuthViewEffect>() {
@@ -17,8 +21,6 @@ class AuthViewModel :
             is AuthViewIntent.Login -> performLogin(
                 email = intent.email,
                 password = intent.password,
-                deviceId = intent.deviceId,
-                deviceType = intent.deviceType
             )
         }
     }
@@ -26,11 +28,15 @@ class AuthViewModel :
     private fun performLogin(
         email: String,
         password: String,
-        deviceId: String,
-        deviceType: String
     ) {
         viewModelScope.launch {
-            setState { copy(isLoading = true, errorMessage = null) }
+            Log.d("VideoGrid", "performLogin before")
+            setState { copy(isLoading = true) }
+
+            val manufacturer = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
+            val model = Build.MODEL ?: "Android Device"
+            val deviceId = "$manufacturer $model"
+            val deviceType = "android"
 
             val request = LoginRequest(
                 email = email,
@@ -39,29 +45,15 @@ class AuthViewModel :
                 deviceType = deviceType
             )
 
-            when (val result = DivoApi.authRepository.login(request)) {
-                is DivoResult.Success -> {
-                    setState { copy(isLoading = false, loginResponse = result.value) }
-                    sendEffect(AuthViewEffect.LoginSuccess)
-                }
+            val result = DivoApi.authRepository.login(request)
 
-                is DivoResult.HttpError -> {
-                    val message = result.body?.message ?: "HTTP ${result.code}"
-                    setState { copy(isLoading = false, errorMessage = message) }
-                    sendEffect(AuthViewEffect.ShowError(message))
-                }
-
-                is DivoResult.NetworkError -> {
-                    val message = result.exception.localizedMessage ?: "Network error"
-                    setState { copy(isLoading = false, errorMessage = message) }
-                    sendEffect(AuthViewEffect.ShowError(message))
-                }
-
-                is DivoResult.UnknownError -> {
-                    val message = result.throwable.localizedMessage ?: "Unknown error"
-                    setState { copy(isLoading = false, errorMessage = message) }
-                    sendEffect(AuthViewEffect.ShowError(message))
-                }
+            if (result is DivoResult.Success) {
+                sendEffect(AuthViewEffect.LoginSuccess)
+                delay(500)
+                setState { copy(isLoading = false) }
+            } else {
+                setState { copy(isLoading = false) }
+                sendEffect(AuthViewEffect.ShowError(result.getErrorMessage()))
             }
         }
     }

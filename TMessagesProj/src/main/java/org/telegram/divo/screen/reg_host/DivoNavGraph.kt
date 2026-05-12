@@ -6,7 +6,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.telegram.divo.Screen
-import org.telegram.divo.screen.onboarding.OnboardingHost
 import org.telegram.divo.screen.reg_agency.ApplyAgenciesBrandsScreen
 import org.telegram.divo.screen.reg_new_talent.ApplyNewTalentScreen
 import org.telegram.divo.screen.reg_professional_model.ApplyProfessionalModelScreen

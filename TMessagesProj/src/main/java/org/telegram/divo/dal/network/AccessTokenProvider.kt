@@ -11,11 +11,11 @@ interface AccessTokenProvider {
     /**
      * Returns the current access token, or null if the user is not authenticated.
      */
-    suspend fun getAccessToken(): String?
+    fun getAccessToken(): String?
 
     /**
      * Persists the latest access token. Passing null should clear any stored token.
      */
-    suspend fun setAccessToken(token: String?)
+    fun setAccessToken(token: String?)
 }
 

@@ -27,6 +27,7 @@ import org.telegram.divo.dal.dto.user.UserGalleryListRequest
 import org.telegram.divo.dal.dto.user.toDto
 import org.telegram.divo.dal.dto.user.toEntities
 import org.telegram.divo.dal.dto.user.toEntity
+import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.Agency
@@ -118,7 +119,9 @@ class UserRepository(
     }
 
     fun clearCache() {
+        DivoApi.accessTokenProvider.setAccessToken(null)
         _currentUserCache.value = null
+        _galleryCache.value = emptyMap()
         prefs.edit { clear() }
         NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
     }

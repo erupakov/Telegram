@@ -92,6 +92,7 @@ import com.google.firebase.appindexing.builders.AssistActionBuilder;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher;
+import org.telegram.divo.screen.auth.AuthFragment;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -563,10 +564,22 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         LiteMode.addOnPowerSaverAppliedListener(onPowerSaverCallback = this::onPowerSaver);
         if (actionBarLayout.getFragmentStack().isEmpty() && (layersActionBarLayout == null || layersActionBarLayout.getFragmentStack().isEmpty())) {
             if (!UserConfig.getInstance(currentAccount).isClientActivated()) {
+                //DIVO Юзер вообще не авторизован (нет сессии)
                 actionBarLayout.addFragmentToStack(getClientNotActivatedFragment());
             } else {
-                MainTabsActivity mainTabsActivity = new MainTabsActivity();
-                actionBarLayout.addFragmentToStack(mainTabsActivity);
+                // Проверка завершения AuthFragment
+                long userId = UserConfig.getInstance(currentAccount).getClientUserId();
+                SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("divo_auth", Context.MODE_PRIVATE);
+
+                boolean isAuthCompleted = prefs.getBoolean("auth_completed_" + userId, true);
+
+                if (!isAuthCompleted) {
+                    actionBarLayout.addFragmentToStack(new AuthFragment());
+                } else {
+                    MainTabsActivity mainTabsActivity = new MainTabsActivity();
+                    actionBarLayout.addFragmentToStack(mainTabsActivity);
+                }
+                // DIVO--END
             }
 
             try {

@@ -11,6 +11,7 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChangeUsernameActivity
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.DataSettingsActivity
+import org.telegram.ui.LogoutActivity
 import org.telegram.ui.MainTabsActivityController
 import org.telegram.ui.NotificationsSettingsActivity
 import org.telegram.ui.PrivacySettingsActivity
@@ -49,7 +50,8 @@ class FragmentSettings : BaseFragment() {
                     },
                     onInnerNavControllerReady = { navController ->
                         profileNavController = navController
-                    }
+                    },
+                    navigateToLogout = { presentFragment(LogoutActivity()) }
                 )
             }
         }

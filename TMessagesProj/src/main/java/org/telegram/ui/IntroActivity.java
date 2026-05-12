@@ -196,7 +196,23 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         fragmentView = composeView;
         return fragmentView;
     }
+
+    @Override
+    public boolean isSupportEdgeToEdge() {
+        return true;
+    }
+
+    @Override
+    public boolean drawEdgeNavigationBar() {
+        return false;
+    }
+
+    @Override
+    public boolean isLightStatusBar() {
+        return true;
+    }
     //DIVO--END
+
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onResume() {
@@ -768,11 +784,5 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                 messageTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             }
         } else Intro.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-    }
-
-    @Override
-    public boolean isLightStatusBar() {
-        int color = Theme.getColor(Theme.key_windowBackgroundWhite, null, true);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
     }
 }

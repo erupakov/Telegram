@@ -17,9 +17,7 @@ class AuthRepository(
 
     suspend fun login(request: LoginRequest): DivoResult<LoginResponse> {
         val result = resultOf { service.login(request) }
-        Log.d("MyTag", "login")
         if (result is DivoResult.Success) {
-            Log.d("MyTag", "success ${result.value.data?.accessToken}")
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
         }
         return result

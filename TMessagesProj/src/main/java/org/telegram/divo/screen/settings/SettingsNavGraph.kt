@@ -30,6 +30,7 @@ fun SettingsNavGraph(
     navigateToDataStorage: () -> Unit,
     navigateToAppearance: () -> Unit,
     navigateToSetUsername: () -> Unit,
+    navigateToLogout: () -> Unit,
     onNavControllerReady: (NavController) -> Unit,
     onInnerNavControllerReady: (NavController?) -> Unit,
 ) {
@@ -50,7 +51,8 @@ fun SettingsNavGraph(
                 navigateToPrivacy = navigateToPrivacy,
                 navigateToDataStorage = navigateToDataStorage,
                 navigateToAppearance = navigateToAppearance,
-                navigateToSetUsername = navigateToSetUsername
+                navigateToSetUsername = navigateToSetUsername,
+                navigateToLogout = navigateToLogout
             )
         }
 

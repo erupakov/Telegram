@@ -16,6 +16,7 @@
     <string name="ButtonCancel">Cancel</string>
     <string name="ButtonEdit">Edit</string>
     <string name="ButtonDelete">Delete</string>
+    <string name="ButtonContinue">Continue</string>
     <string name="RetryLabel">Retry</string>
 
     <!--profile screen-->
@@ -317,7 +318,7 @@
         <item>New face</item>
     </string-array>
 
-    <!--settings screen end-->
+    <!--settings screen-->
     <string name="SettingsTitle">Settings</string>
     <string name="EditBtn">Edit</string>
     <string name="PromoCardHeadline">GET DISCOVERED IN THE FASHION WORLD</string>
@@ -330,6 +331,15 @@
     <string name="PrivacyAndSecurityLabel">Privacy and Security</string>
     <string name="DataAndStorageLabel">Data and Storage</string>
     <string name="AppearanceLabel">Appearance</string>
+    <string name="LogOutLabel">Log out</string>
+
+    <!--onboarding screen-->
+    <string name="OnboardingTitleGetSeenByTheRightPeople">Get Seen by the Right People</string>
+    <string name="OnboardingSubtitleGetSeenByTheRightPeople">A professional profile that puts you in front of agencies and brands actively looking for talent</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">Real Castings. Real Opportunities.</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Apply to verified jobs from agencies and brands — no middlemen, no guesswork.</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Discovered Faster with AI.</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO\'s AI finds the best match between talent and brands — so opportunities come to you.</string>
     <!--divo view end-->
 
 

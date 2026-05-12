@@ -43,6 +43,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             SettingsViewIntent.OnAppearanceClicked -> sendEffect(SettingsViewEffect.NavigateToAppearance)
             SettingsViewIntent.OnQrCodeClicked -> sendEffect(SettingsViewEffect.ShowQrCode)
             SettingsViewIntent.OnRefresh -> loadUserData()
+            SettingsViewIntent.OnLogoutClicked -> sendEffect(SettingsViewEffect.NavigateToLogout)
         }
     }
 

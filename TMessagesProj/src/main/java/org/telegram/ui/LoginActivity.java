@@ -120,6 +120,7 @@ import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.components.SliderView;
 import org.telegram.divo.components.items.ButtonContainer;
 import org.telegram.divo.components.items.RegButtonView;
+import org.telegram.divo.screen.auth.AuthFragment;
 import org.telegram.divo.screen.reg_select_role.Role;
 import org.telegram.divo.screen.reg_select_role.RoleSelectionView;
 import org.telegram.messenger.AccountInstance;
@@ -1745,7 +1746,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
         MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(AndroidUtilities.STICKERS_PLACEHOLDER_PACK_NAME, false, true);
 
-        needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+        // DIVO--START
+        // 1. Сохраняем флаг, что AuthFragment ЕЩЕ НЕ ПРОЙДЕН (false)
+        SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("divo_auth", Context.MODE_PRIVATE);
+        prefs.edit().putBoolean("auth_completed_" + res.user.id, false).apply();
+
+        needHideProgress(false);
+        presentFragment(new AuthFragment(), true);
+        //needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+        //DIVO--END
     }
 
     private void fillNextCodeParams(Bundle params, TL_account.sentEmailCode res) {
@@ -2610,11 +2619,14 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             getConnectionsManager().sendRequest(req, (response, error) -> {
                 AndroidUtilities.runOnUIThread(() -> {
                     if (error == null) {
+                        TLRPC.TL_help_countriesList help_countriesList = (TLRPC.TL_help_countriesList) response;
+                        if (help_countriesList.countries.isEmpty()) {
+                            return; // Если стран нет, ничего не чистим и выходим -- временно
+                        }
                         countriesArray.clear();
                         codesMap.clear();
                         phoneFormatMap.clear();
 
-                        TLRPC.TL_help_countriesList help_countriesList = (TLRPC.TL_help_countriesList) response;
                         for (int i = 0; i < help_countriesList.countries.size(); i++) {
                             TLRPC.TL_help_country c = help_countriesList.countries.get(i);
                             for (int k = 0; k < c.country_codes.size(); k++) {
@@ -4946,12 +4958,25 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 if (authorization.terms_of_service != null) {
                                     currentTermsOfService = authorization.terms_of_service;
                                 }
-                                Bundle params = new Bundle();
-                                params.putString("phoneFormated", requestPhone);
-                                params.putString("phoneHash", phoneHash);
-                                params.putString("code", req.phone_code);
-                                pendingRegisterParams = params;
-                                animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
+                                //DIVO--START--временно -- пользователь ввел правильный код из СМС, но аккаунта на этот номер телефона еще не существует
+                                
+                                TLRPC.TL_auth_authorization dummyAuth = new TLRPC.TL_auth_authorization();
+                                dummyAuth.user = new TLRPC.TL_user();
+                                dummyAuth.user.id = 123456789L;
+                                dummyAuth.user.first_name = "Divo";
+                                dummyAuth.user.last_name = "User";
+                                dummyAuth.user.phone = requestPhone;
+                                dummyAuth.user.self = true;
+                                dummyAuth.user.flags = 1024 | 2 | 4 | 16;
+                                
+                                animateSuccess(() -> onAuthSuccess(dummyAuth, true));
+                                //Bundle params = new Bundle();
+                                //params.putString("phoneFormated", requestPhone);
+                                //params.putString("phoneHash", phoneHash);
+                                //params.putString("code", req.phone_code);
+                                //pendingRegisterParams = params;
+                                //animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
+                                //DIVO--END
                             } else {
                                 animateSuccess(() -> onAuthSuccess((TLRPC.TL_auth_authorization) response));
                             }

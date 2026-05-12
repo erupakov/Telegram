@@ -32,7 +32,7 @@ object DivoApi {
     private val applicationContext
         get() = ApplicationLoader.applicationContext
 
-    private val accessTokenProvider: AccessTokenProvider by lazy {
+    val accessTokenProvider: AccessTokenProvider by lazy {
         SharedPrefsAccessTokenProvider(applicationContext)
     }
 
