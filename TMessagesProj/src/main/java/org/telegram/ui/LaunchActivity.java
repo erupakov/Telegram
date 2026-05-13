@@ -568,17 +568,19 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 actionBarLayout.addFragmentToStack(getClientNotActivatedFragment());
             } else {
                 // Проверка завершения AuthFragment
-                long userId = UserConfig.getInstance(currentAccount).getClientUserId();
-                SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("divo_auth", Context.MODE_PRIVATE);
-
-                boolean isAuthCompleted = prefs.getBoolean("auth_completed_" + userId, true);
-
-                if (!isAuthCompleted) {
-                    actionBarLayout.addFragmentToStack(new AuthFragment());
-                } else {
-                    MainTabsActivity mainTabsActivity = new MainTabsActivity();
-                    actionBarLayout.addFragmentToStack(mainTabsActivity);
-                }
+//                long userId = UserConfig.getInstance(currentAccount).getClientUserId();
+//                SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("divo_auth", Context.MODE_PRIVATE);
+//
+//                boolean isAuthCompleted = prefs.getBoolean("auth_completed_" + userId, true);
+//
+//                if (!isAuthCompleted) {
+//                    actionBarLayout.addFragmentToStack(new AuthFragment());
+//                } else {
+//                    MainTabsActivity mainTabsActivity = new MainTabsActivity();
+//                    actionBarLayout.addFragmentToStack(mainTabsActivity);
+//                }
+                MainTabsActivity mainTabsActivity = new MainTabsActivity();
+                actionBarLayout.addFragmentToStack(mainTabsActivity);
                 // DIVO--END
             }
 

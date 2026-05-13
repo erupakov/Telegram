@@ -340,6 +340,17 @@
     <string name="OnboardingSubtitleRealCastingsRealOpportunities">Apply to verified jobs from agencies and brands — no middlemen, no guesswork.</string>
     <string name="OnboardingTitleDiscoveredFasterWithAI">Discovered Faster with AI.</string>
     <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO\'s AI finds the best match between talent and brands — so opportunities come to you.</string>
+    <string name="OnboardingEnterCode">Enter Code</string>
+    <string name="WelcomeToDivo">Welcome to DIVO</string>
+    <string name="SignOrCreateAccount">Sign in or create your account</string>
+    <string name="ContinueWithPhoneNumber">Continue with phone number</string>
+    <string name="OnboardingOrLabel">or</string>
+    <string name="OnboardingSignInWithGoogle">Sign In with Google</string>
+    <string name="OnboardingSignInWithApple">Sign In with Apple</string>
+    <string name="TermsPrefix">By continuing you agree to our</string>
+    <string name="OnboardingAnd">and</string>
+    <string name="OnboardingTermsOfService">Terms of Service</string>
+    <string name="OnboardingPrivacyPolicy">Privacy Policy</string>
     <!--divo view end-->
 
 

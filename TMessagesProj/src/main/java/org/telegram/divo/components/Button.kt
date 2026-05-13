@@ -24,6 +24,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -124,8 +125,10 @@ fun UIButtonNew(
     background: Color = AppTheme.colors.accentOrange,
     paddingTop: Dp = 3.dp,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     leadingIcon: Int? = null,
-    leadingIconTint: Color = AppTheme.colors.onBackground,
+    leadingIconSize: Int = 12,
+    leadingIconTint: Color = LocalContentColor.current,
     onClick: () -> Unit = {},
 ) {
     Button(
@@ -135,23 +138,30 @@ fun UIButtonNew(
         onClick = onClick,
         shape = shape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = background
+            containerColor = background,
+            disabledContainerColor = background.copy(0.6f)
         ),
     ) {
-        leadingIcon?.let {
-            Icon(
-                modifier = Modifier.size(12.dp),
-                painter = painterResource(leadingIcon),
-                tint = leadingIconTint,
-                contentDescription = null,
+        if (!isLoading) {
+            leadingIcon?.let {
+                Icon(
+                    modifier = Modifier.size(leadingIconSize.dp),
+                    painter = painterResource(leadingIcon),
+                    tint = leadingIconTint,
+                    contentDescription = null,
+                )
+                Spacer(Modifier.width(6.dp))
+            }
+            Text(
+                modifier = Modifier.padding(top = paddingTop),
+                text = text,
+                style = textStyle,
             )
-            Spacer(Modifier.width(6.dp))
+        } else {
+            LottieProgressIndicator(
+                color = Color.White
+            )
         }
-        Text(
-            modifier = Modifier.padding(top = paddingTop),
-            text = text,
-            style = textStyle,
-        )
     }
 }
 
@@ -283,6 +293,15 @@ fun RoundedGlassContainer(
         horizontalArrangement = Arrangement.spacedBy(space)
     ) {
         content()
+    }
+}
+
+fun mountRoundedButton(
+    composeView: androidx.compose.ui.platform.ComposeView,
+    onClick: () -> Unit
+) {
+    composeView.setContent {
+        RoundedButton(onClick = onClick)
     }
 }
 

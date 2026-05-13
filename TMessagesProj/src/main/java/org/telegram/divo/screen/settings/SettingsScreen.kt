@@ -212,14 +212,14 @@ fun SettingsScreen(
                     }
                 }
 
-                Spacer(Modifier.height(16.dp))
-
-                PromoCard(
-                    headline = stringResource(R.string.PromoCardHeadline),
-                    body = stringResource(R.string.PromoCardBody),
-                    buttonText = stringResource(R.string.PromoCardBtn),
-                    onClick = { viewModel.setIntent(SettingsViewIntent.OnPromoClicked) }
-                )
+//                Spacer(Modifier.height(16.dp))
+//
+//                PromoCard(
+//                    headline = stringResource(R.string.PromoCardHeadline),
+//                    body = stringResource(R.string.PromoCardBody),
+//                    buttonText = stringResource(R.string.PromoCardBtn),
+//                    onClick = { viewModel.setIntent(SettingsViewIntent.OnPromoClicked) }
+//                )
 
                 Spacer(Modifier.height(16.dp))
 
@@ -264,15 +264,15 @@ fun SettingsScreen(
                         ),
                         viewModel = viewModel
                     )
-                    HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
-                    SettingsItemRow(
-                        item = SettingsItem(
-                            title = stringResource(R.string.AppearanceLabel),
-                            iconResId = R.drawable.ic_divo_apperance,
-                            intent = SettingsViewIntent.OnAppearanceClicked
-                        ),
-                        viewModel = viewModel
-                    )
+//                    HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
+//                    SettingsItemRow(
+//                        item = SettingsItem(
+//                            title = stringResource(R.string.AppearanceLabel),
+//                            iconResId = R.drawable.ic_divo_apperance,
+//                            intent = SettingsViewIntent.OnAppearanceClicked
+//                        ),
+//                        viewModel = viewModel
+//                    )
                 }
 
                 Spacer(Modifier.height(16.dp))
@@ -352,14 +352,14 @@ private fun ProfileRow(
         Spacer(Modifier.height(16.dp))
 
         Text(
+            modifier = Modifier.padding(horizontal = 16.dp),
             text = name,
             style = AppTheme.typography.helveticaNeueRegular,
             color = AppTheme.colors.textPrimary,
             fontSize = 18.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-
-            )
+        )
         Spacer(Modifier.height(10.dp))
         Text(
             text = "+7 999 999 99 99",

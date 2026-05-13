@@ -30,6 +30,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -44,6 +45,8 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
@@ -120,7 +123,6 @@ import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.components.SliderView;
 import org.telegram.divo.components.items.ButtonContainer;
 import org.telegram.divo.components.items.RegButtonView;
-import org.telegram.divo.screen.auth.AuthFragment;
 import org.telegram.divo.screen.reg_select_role.Role;
 import org.telegram.divo.screen.reg_select_role.RoleSelectionView;
 import org.telegram.messenger.AccountInstance;
@@ -784,16 +786,27 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         });
 
         backButtonView = new ImageView(context);
-        backButtonView.setImageResource(R.drawable.ic_ab_back);
+        //DIVO--START
+        backButtonView.setImageResource(R.drawable.ic_divo_back);
+        backButtonView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        backButtonView.setColorFilter(new android.graphics.PorterDuffColorFilter(0xff212121, android.graphics.PorterDuff.Mode.SRC_IN));
+        GradientDrawable bgShape = new GradientDrawable();
+        bgShape.setShape(GradientDrawable.OVAL);
+        bgShape.setColor(0xFFFFFFFF);
+        bgShape.setSize(AndroidUtilities.dp(40), AndroidUtilities.dp(40));
+        ColorStateList rippleColor = ColorStateList.valueOf(Theme.getColor(Theme.key_listSelector));
+        RippleDrawable rippleDrawable = new RippleDrawable(rippleColor, bgShape, null);
+        int p = AndroidUtilities.dp(12);
+        backButtonView.setPadding(p, p, p, p);
+        backButtonView.setBackground(rippleDrawable);
+        //DIVO--END
         backButtonView.setOnClickListener(v -> {
             if (onBackPressed(true)) {
                 finishFragment();
             }
         });
         backButtonView.setContentDescription(getString(R.string.Back));
-        int padding = AndroidUtilities.dp(4);
-        backButtonView.setPadding(padding, padding, padding, padding);
-        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(32, 32, Gravity.LEFT | Gravity.TOP, 16, 16, 0, 0));
+        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(40, 40, Gravity.LEFT | Gravity.TOP, 16, 16, 0, 0));
 
         if (emailChangeSkipCallback != null && !emailChangeNonSkippable && emailChangeIsSuggestion) {
             emailChangeSkipButton = new TextView(context);
@@ -857,12 +870,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 setCustomKeyboardVisible(v.hasCustomKeyboard(), false);
 
                 currentDoneType = DONE_TYPE_FLOATING;
-                boolean needFloatingButton = a == VIEW_PHONE_INPUT ||
-
-
+                //DIVO--START: VIEW_PHONE_INPUT handled by RegButtonView (buttonView) inside PhoneView
+                boolean needFloatingButton = //a == VIEW_PHONE_INPUT ||
                         //a == VIEW_REGISTER ||
                         a == VIEW_PASSWORD || a == VIEW_NEW_PASSWORD_STAGE_1 || a == VIEW_NEW_PASSWORD_STAGE_2 ||
                         a == VIEW_ADD_EMAIL;
+                //DIVO--END
                 showDoneButton(needFloatingButton, false);
                 if (a == VIEW_CODE_MESSAGE || a == VIEW_CODE_SMS || a == VIEW_CODE_FLASH_CALL || a == VIEW_CODE_CALL) {
                     currentDoneType = DONE_TYPE_ACTION;
@@ -1473,6 +1486,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
         if (floating) {
+            //DIVO--START: for PhoneView use RegButtonView instead of FAB to avoid FAB anchor issues
+            if (currentViewNum == VIEW_PHONE_INPUT && views[VIEW_PHONE_INPUT] instanceof PhoneView) {
+                ((PhoneView) views[VIEW_PHONE_INPUT]).setButtonLoading(show);
+                return; // skip FAB entirely — it is hidden on phone screen
+            }
+            //DIVO--END
             floatingButton.setProgressVisible(show, animated);
             return;
         }
@@ -1566,8 +1585,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     public void setPage(@ViewNumber int page, boolean animated, Bundle params, boolean back) {
-        //DIVO
-        boolean needFloatingButton = page == VIEW_PHONE_INPUT || page == VIEW_PASSWORD ||
+        //DIVO: VIEW_PHONE_INPUT excluded — it uses RegButtonView instead of FAB
+        boolean needFloatingButton = /*page == VIEW_PHONE_INPUT ||*/ page == VIEW_PASSWORD ||
                 page == VIEW_NEW_PASSWORD_STAGE_1 || page == VIEW_NEW_PASSWORD_STAGE_2 || page == VIEW_ADD_EMAIL || page == VIEW_CODE_PHRASE || page == VIEW_CODE_WORD;
         if (page == currentViewNum) {
             animated = false;
@@ -1748,12 +1767,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         // DIVO--START
         // 1. Сохраняем флаг, что AuthFragment ЕЩЕ НЕ ПРОЙДЕН (false)
-        SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("divo_auth", Context.MODE_PRIVATE);
-        prefs.edit().putBoolean("auth_completed_" + res.user.id, false).apply();
-
-        needHideProgress(false);
-        presentFragment(new AuthFragment(), true);
-        //needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+//        SharedPreferences prefs = ApplicationLoader.applicationContext.getSharedPreferences("divo_auth", Context.MODE_PRIVATE);
+//        prefs.edit().putBoolean("auth_completed_" + res.user.id, false).apply();
+//
+//        needHideProgress(false);
+//        presentFragment(new AuthFragment(), true);
+        needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
         //DIVO--END
     }
 
@@ -2040,6 +2059,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private ImageView chevronRight;
         private CheckBoxCell syncContactsBox;
         private CheckBoxCell testBackendCheckBox;
+        private RegButtonView buttonView;
+        //DIVO--START: inline country prefix (replaces separate countryOutlineView)
+        private LinearLayout countryPrefixLayout;
+        private TextView prefixFlagView;
+        private TextView prefixCodeView;
+        //DIVO--END
 
         @CountryState
         private int countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
@@ -2058,18 +2083,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         public PhoneView(Context context) {
             super(context);
-
             setOrientation(VERTICAL);
-            setGravity(Gravity.CENTER);
+            setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
 
             titleView = new TextView(context);
             //DIVO--START
-            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
+            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 32);
             titleView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
+            titleView.setAllCaps(true);
             titleView.setText(getString(activityMode == MODE_CHANGE_PHONE_NUMBER ? R.string.ChangePhoneNewNumber : R.string.YourNumber));
-            titleView.setGravity(Gravity.CENTER);
+            titleView.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
             titleView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 32, 0, 32, 0));
+            addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 48, 0, 28));
 
             subtitleView = new TextView(context);
 
@@ -2078,7 +2103,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             subtitleView.setTypeface(AndroidUtilities.helveticaNeueMedium());
             subtitleView.setGravity(Gravity.CENTER);
             subtitleView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 32, 8, 32, 0));
+            //addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 32, 8, 32, 0));
 
             countryButton = new TextViewSwitcher(context);
             countryButton.setFactory(() -> {
@@ -2115,7 +2140,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             countryOutlineView.setFocusable(true);
             countryOutlineView.setContentDescription(getString(R.string.Country));
             countryOutlineView.setOnFocusChangeListener((v, hasFocus) -> countryOutlineView.animateSelection(hasFocus ? 1 : 0));
-            addView(countryOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 24, 16, 14));
+            //DIVO: countryOutlineView hidden — country picker is now inline inside phoneOutlineView
+            //addView(countryOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 24, 16, 14));
             countryOutlineView.setOnClickListener(view -> {
                 CountrySelectActivity fragment = new CountrySelectActivity(true, countriesArray);
                 fragment.setCountrySelectActivityDelegate((country) -> {
@@ -2131,15 +2157,57 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             linearLayout.setOrientation(HORIZONTAL);
             //DIVO--START
             phoneOutlineView = new OutlineTextContainerDivoView(context);
-            phoneOutlineView.addView(linearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 16, 8, 16, 8));
-            phoneOutlineView.setText(getString(R.string.PhoneNumber));
-            addView(phoneOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 8, 16, 8));
+            phoneOutlineView.addView(linearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 16, 0, 16, 0)); //DIVO: 12dp side padding
+            phoneOutlineView.setText(""); //DIVO: no floating label
+            //DIVO--START: pill-shaped white field, no border
+            phoneOutlineView.setBackgroundFill(Color.WHITE);
+            phoneOutlineView.setCornerRadius(100);
+            phoneOutlineView.hideOutline();
+            phoneOutlineView.setPadding(0, 0, 0, 0); // remove top gap reserved for label
+            //DIVO--END
+            addView(phoneOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 56, 0, 8, 0, 18)); //DIVO: 0 outer horizontal margin
 
             plusTextView = new TextView(context);
             plusTextView.setText("+");
             plusTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             plusTextView.setFocusable(false);
-            linearLayout.addView(plusTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+            //DIVO: plusTextView hidden — replaced by prefixCodeView inside countryPrefixLayout
+            //linearLayout.addView(plusTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+
+            //DIVO--START: inline country prefix button (flag + code + arrow)
+            countryPrefixLayout = new LinearLayout(context);
+            countryPrefixLayout.setOrientation(HORIZONTAL);
+            countryPrefixLayout.setGravity(Gravity.CENTER_VERTICAL);
+
+            prefixFlagView = new TextView(context);
+            prefixFlagView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            prefixFlagView.setPadding(0, 0, AndroidUtilities.dp(4), 0);
+            countryPrefixLayout.addView(prefixFlagView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+
+            prefixCodeView = new TextView(context);
+            prefixCodeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            prefixCodeView.setTextColor(Color.BLACK); //DIVO
+            countryPrefixLayout.addView(prefixCodeView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+
+            ImageView prefixChevron = new ImageView(context);
+            prefixChevron.setImageResource(R.drawable.msg_inputarrow);
+            prefixChevron.setRotation(90f);
+            prefixChevron.setColorFilter(Color.BLACK, android.graphics.PorterDuff.Mode.SRC_ATOP); //DIVO
+            prefixChevron.setPadding(6, 0, 0, 0);
+            countryPrefixLayout.addView(prefixChevron, LayoutHelper.createLinear(20, 20, Gravity.CENTER_VERTICAL));
+
+            countryPrefixLayout.setOnClickListener(v -> {
+                CountrySelectActivity fragment = new CountrySelectActivity(true, countriesArray);
+                fragment.setCountrySelectActivityDelegate((country) -> {
+                    selectCountry(country);
+                    AndroidUtilities.runOnUIThread(() -> showKeyboard(phoneField), 300);
+                    phoneField.requestFocus();
+                    phoneField.setSelection(phoneField.length());
+                });
+                presentFragment(fragment);
+            });
+            linearLayout.addView(countryPrefixLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
+            //DIVO--END
 
             codeField = new AnimatedPhoneNumberEditText(context) {
                 @Override
@@ -2161,10 +2229,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             codeField.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             codeField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             codeField.setBackground(null);
-//            codeField.setLineColors(getThemedColor(Theme.key_windowBackgroundWhiteInputField), getThemedColor(Theme.key_windowBackgroundWhiteInputFieldActivated), getThemedColor(Theme.key_text_RedRegular));
-            codeField.setShowSoftInputOnFocus(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
+            codeField.setShowSoftInputOnFocus(false); //DIVO: hidden, no keyboard needed
             codeField.setContentDescription(getString(R.string.LoginAccessibilityCountryCode));
-            linearLayout.addView(codeField, LayoutHelper.createLinear(55, 36, -9, 0, 0, 0));
+            codeField.setVisibility(View.GONE); //DIVO: hidden but kept for country-detection logic
+            linearLayout.addView(codeField, LayoutHelper.createLinear(0, 0)); //DIVO: zero-size, logic only
             codeField.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -2307,9 +2375,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 @Override
                 public boolean onKeyDown(int keyCode, KeyEvent event) {
                     if (keyCode == KeyEvent.KEYCODE_DEL && phoneField.length() == 0) {
-                        codeField.requestFocus();
-                        codeField.setSelection(codeField.length());
-                        codeField.dispatchKeyEvent(event);
+                        //DIVO: codeField is now hidden — do NOT dispatch DEL to it.
+                        // Previously this let user backspace into country code, but now
+                        // country is changed via the prefix button only.
+                        return true; // consume event, keep codeField intact
                     }
                     return super.onKeyDown(keyCode, event);
                 }
@@ -2354,7 +2423,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             phoneField.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             phoneField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             phoneField.setBackground(null);
-//            phoneField.setLineColors(getThemedColor(Theme.key_windowBackgroundWhiteInputField), getThemedColor(Theme.key_windowBackgroundWhiteInputFieldActivated), getThemedColor(Theme.key_text_RedRegular));
+            phoneField.setTextColor(Color.BLACK); //DIVO
+            phoneField.setHintTextColor(0xFF999999); //DIVO
             phoneField.setShowSoftInputOnFocus(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
             phoneField.setContentDescription(getString(R.string.PhoneNumber));
             linearLayout.addView(phoneField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 36));
@@ -2526,9 +2596,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
 
             //DIVO--START
-            RegButtonView buttonView = new RegButtonView(context, "Continue");
+            buttonView = new RegButtonView(context, context.getString(R.string.ButtonContinue));
             buttonView.setOnClick(() -> {
-                onDoneButtonPressed();   // behave exactly like the FAB
+                // DIVO: set confirmedNumber=true to skip PhoneNumberConfirmView which
+                // is tightly coupled with the FAB anchor — we don't use FAB on this screen
+                confirmedNumber = true;
+                onDoneButtonPressed();
                 return kotlin.Unit.INSTANCE;
             });
             addView(buttonView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
@@ -2577,15 +2650,37 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             try {
                 TelephonyManager telephonyManager = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
                 if (telephonyManager != null) {
-                    country = null;//telephonyManager.getSimCountryIso().toUpperCase();
+                    //DIVO: try SIM country first (most accurate)
+                    String simIso = telephonyManager.getSimCountryIso();
+                    if (!TextUtils.isEmpty(simIso)) {
+                        country = simIso.toUpperCase();
+                    }
+                    //DIVO: fallback 2 — network country if SIM not available
+                    if (TextUtils.isEmpty(country)) {
+                        String netIso = telephonyManager.getNetworkCountryIso();
+                        if (!TextUtils.isEmpty(netIso)) {
+                            country = netIso.toUpperCase();
+                        }
+                    }
                 }
             } catch (Exception e) {
                 FileLog.e(e);
             }
 
+            //DIVO: fallback 3 — device locale (language settings)
+            if (TextUtils.isEmpty(country)) {
+                String localeCountry = Locale.getDefault().getCountry();
+                if (!TextUtils.isEmpty(localeCountry)) {
+                    country = localeCountry.toUpperCase();
+                }
+            }
+
             if (country != null) {
                 setCountry(languageMap, country.toUpperCase());
-            } else {
+            }
+
+            if (codeField.length() == 0) {
+                //DIVO: fallback 4 — IP geolocation via Telegram getNearestDc
                 TLRPC.TL_help_getNearestDc req = new TLRPC.TL_help_getNearestDc();
                 getAccountInstance().getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                     if (response == null) {
@@ -2598,8 +2693,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }), ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagFailOnServerErrors);
             }
             if (codeField.length() == 0) {
-                setCountryButtonText(null);
-                phoneField.setHintText(null);
+                //DIVO: don't clear hint here - it hasn't been set yet, async callback will populate
                 countryState = COUNTRY_STATE_EMPTY;
             }
 
@@ -2705,9 +2799,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         @Override
         public void updateColors() {
             //DIVO--START
-            fragmentView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.divo_screen_background));
+            fragmentView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.divo_screen_background_light));
 
-            titleView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_title_color));
+            titleView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
             subtitleView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_subtitle_color));
 
             for (int i = 0; i < countryButton.getChildCount(); i++) {
@@ -2721,14 +2815,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             plusTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
 
-            codeField.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
-            codeField.setCursorColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            //DIVO: fields are on white background — fixed colors, not theme-dependent
+            codeField.setTextColor(Color.BLACK);
+            codeField.setCursorColor(Color.BLACK);
 
-            codeDividerView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            codeDividerView.setBackgroundColor(0xFF999999); // placeholder gray
 
-            phoneField.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
-            phoneField.setHintTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_subtitle_color));
-            phoneField.setCursorColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            phoneField.setTextColor(Color.BLACK);
+            phoneField.setHintTextColor(0xFF999999);
+            phoneField.setCursorColor(Color.BLACK);
 
             if (syncContactsBox != null) {
                 syncContactsBox.setSquareCheckBoxColor(Theme.key_checkboxSquareUnchecked, Theme.key_checkboxSquareBackground, Theme.key_checkboxSquareCheck);
@@ -2743,6 +2838,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             //DIVO--END
             phoneOutlineView.updateColor();
             countryOutlineView.updateColor();
+            //DIVO--END
+            // prefix text colors are fixed to black in constructor, not theme-dependent
         }
 
         @Override
@@ -2794,6 +2891,14 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             setCountryButtonText(Emoji.replaceEmoji(sb, countryButton.getCurrentView().getPaint().getFontMetricsInt(), false));
             countryCodeForHint = code;
             wasCountryHintIndex = -1;
+            //DIVO--START: update inline country prefix
+            if (prefixFlagView != null) {
+                prefixFlagView.setText(flag != null ? flag : "");
+            }
+            if (prefixCodeView != null) {
+                prefixCodeView.setText("+" + code);
+            }
+            //DIVO--END
             invalidateCountryHint();
         }
 
@@ -2801,6 +2906,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private void invalidateCountryHint() {
             String code = countryCodeForHint;
             String str = phoneField.getText() != null ? phoneField.getText().toString().replace(" ", "") : "";
+            //DIVO: when field is empty, reset so hint is always re-applied (avoids disappear on full delete)
+            if (str.isEmpty()) {
+                wasCountryHintIndex = -1;
+            }
 
             if (phoneFormatMap.get(code) != null && !phoneFormatMap.get(code).isEmpty()) {
                 int index = -1;
@@ -2855,22 +2964,29 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             countryOutlineView.animateSelection(cs != null ? 1f : 0f);
         }
 
-        private void setCountry(HashMap<String, String> languageMap, String country) {
-            String name = languageMap.get(country);
-            if (name != null && countriesArray != null) {
-                CountrySelectActivity.Country countryWithCode = null;
-                for (int i = 0; i < countriesArray.size(); i++) {
-                    if (countriesArray.get(i) != null && countriesArray.get(i).name.equals(country)) {
-                        countryWithCode = countriesArray.get(i);
-                        break;
-                    }
-                }
-                if (countryWithCode != null) {
-                    codeField.setText(countryWithCode.code);
-                    countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
+        private void setCountry(HashMap<String, String> languageMap, String countryIso) {
+            //DIVO: fixed — search by shortname (ISO code) instead of buggy name comparison
+            CountrySelectActivity.Country countryWithCode = null;
+            for (int i = 0; i < countriesArray.size(); i++) {
+                CountrySelectActivity.Country c = countriesArray.get(i);
+                if (c != null && countryIso.equalsIgnoreCase(c.shortname)) {
+                    countryWithCode = c;
+                    break;
                 }
             }
+            if (countryWithCode != null) {
+                codeField.setText(countryWithCode.code);
+                countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
+            }
         }
+
+        //DIVO--START
+        public void setButtonLoading(boolean loading) {
+            if (buttonView != null) {
+                buttonView.setLoading(loading);
+            }
+        }
+        //DIVO--END
 
         @Override
         public void onCancelPressed() {
@@ -3689,9 +3805,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
 
             titleTextView1 = new TextView(context);
-            titleTextView1.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 34);
+            titleTextView1.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 32);
             titleTextView1.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
-            titleTextView1.setText("Enter Code");
+            titleTextView1.setText(getString(R.string.OnboardingEnterCode).toUpperCase());
             titleTextView1.setGravity(Gravity.CENTER);
             titleTextView1.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
 
@@ -3730,7 +3846,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
 
                 addView(titleTextView1, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 8, 0, 0));
-                addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 8, 0, 0));
+                //addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 8, 0, 0));
 
                 missedCallDescriptionSubtitle = new TextView(context);
                 missedCallDescriptionSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -3815,8 +3931,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 //frameLayout.addView(blueImageView, LayoutHelper.createFrame(size, size, Gravity.LEFT | Gravity.TOP, 0, 0, 0, currentType == AUTH_TYPE_MESSAGE && !AndroidUtilities.isSmallScreen() ? -AndroidUtilities.dp(16) : 0));
                 titleTextView.setText(overrideTitle != null ? overrideTitle : getString(currentType == AUTH_TYPE_MESSAGE ? R.string.SentAppCodeTitle : R.string.SentSmsCodeTitle));
 
-                addView(titleTextView1, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 18, 0, 0));
-                addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 18, 0, 0));
+                addView(titleTextView1, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 48, 0, 0));
+                //addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 18, 0, 0));
                 int sideMargin = currentType == AUTH_TYPE_FRAGMENT_SMS ? 16 : 0;
                 addView(confirmTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, sideMargin, 17, sideMargin, 0));
             }
@@ -3828,7 +3944,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                 };
 
-                addView(codeFieldContainer, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 42, Gravity.CENTER_HORIZONTAL, 0, 32, 0, 0));
+                addView(codeFieldContainer, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 42, Gravity.CENTER_HORIZONTAL, 0, 28, 0, 0));
             }
             if (currentType == AUTH_TYPE_FLASH_CALL) {
                 codeFieldContainer.setVisibility(GONE);
@@ -3856,9 +3972,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     return getVisibility() == View.VISIBLE && !(time > 0 && timeTimer != null);
                 }
             };
-            timeText.setLinkTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText));
+            timeText.setLinkTextColor(getContext().getResources().getColor(R.color.divo_dark_text_color));
             timeText.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            timeText.setPadding(AndroidUtilities.dp(14), AndroidUtilities.dp(8), AndroidUtilities.dp(14), AndroidUtilities.dp(16));
+            timeText.setPadding(AndroidUtilities.dp(14), AndroidUtilities.dp(8), AndroidUtilities.dp(14), AndroidUtilities.dp(0));
             timeText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             timeText.setGravity(Gravity.TOP | Gravity.LEFT);
             timeText.setOnClickListener(v -> {
@@ -3870,7 +3986,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }
                 isResendingCode = true;
                 timeText.invalidate();
-                timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+                timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
 
                 if (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_SMS || nextType == AUTH_TYPE_PHRASE || nextType == AUTH_TYPE_WORD || nextType == AUTH_TYPE_MISSED_CALL || nextType == AUTH_TYPE_FRAGMENT_SMS) {
 //                    timeText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
@@ -4168,7 +4284,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             confirmTextView.setTextColor(Theme.getColor(isInCancelAccountDeletionMode() ? Theme.key_windowBackgroundWhiteBlackText : Theme.key_windowBackgroundWhiteGrayText6));
             confirmTextView.setLinkTextColor(Theme.getColor(Theme.key_chats_actionBackground));
             titleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_subtitle_color));
-            titleTextView1.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            titleTextView1.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
 
             if (currentType == AUTH_TYPE_MISSED_CALL) {
                 missedCallDescriptionSubtitle.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
@@ -4192,10 +4308,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 timeTextColorTag = Theme.key_windowBackgroundWhiteGrayText6;
             }
             //DIVO
-            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
 
             if (currentType != AUTH_TYPE_FRAGMENT_SMS) {
-                problemText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+                problemText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
             }
             wrongCode.setTextColor(Theme.getColor(Theme.key_text_RedBold));
         }
@@ -4680,7 +4796,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (timeTimer != null) {
                 return;
             }
-            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
             timeText.setTag(R.id.color_key_tag, Theme.key_windowBackgroundWhiteGrayText6);
             if (progressView != null) {
                 progressView.resetProgressAnimation();
@@ -4720,7 +4836,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 } else {
                                     timeText.setText(getString("RequestSmsButton", R.string.RequestSmsButton));
                                 }
-                                timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+                                timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
                                 timeText.setTag(R.id.color_key_tag, Theme.key_chats_actionBackground);
                             }
                         }
@@ -4730,7 +4846,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
         private void destroyTimer() {
-            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
             timeText.setTag(R.id.color_key_tag, Theme.key_windowBackgroundWhiteGrayText6);
             try {
                 synchronized (timerSync) {
@@ -10857,8 +10973,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private void updateColors() {
         fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
-        backButtonView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-        backButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
+        //DIVO backButtonView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        //DIVO backButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
 
         proxyDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.SRC_IN));
         proxyButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));

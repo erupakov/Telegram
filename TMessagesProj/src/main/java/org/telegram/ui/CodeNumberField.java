@@ -82,7 +82,7 @@ public class CodeNumberField extends EditTextBoldCursor {
     public CodeNumberField(Context context) {
         super(context);
         setBackground(null);
-        setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+        setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color)); //DIVO
         setMovementMethod(null);
         addTextChangedListener(new TextWatcher() {
             @Override

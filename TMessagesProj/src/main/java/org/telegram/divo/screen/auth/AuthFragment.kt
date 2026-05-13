@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
 import org.telegram.ui.ActionBar.BaseFragment
-import org.telegram.ui.MainTabsActivity
+import org.telegram.ui.LoginActivity
 
 class AuthFragment : BaseFragment() {
 
@@ -14,7 +14,7 @@ class AuthFragment : BaseFragment() {
         fragmentView = ComposeView(context).apply {
             setContent {
                 AuthScreen(
-                    onAuthClicked = { presentFragment(MainTabsActivity(), true) }
+                    onAuthClicked = { presentFragment(LoginActivity(), true) }
                 )
             }
         }
