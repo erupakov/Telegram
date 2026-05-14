@@ -351,6 +351,107 @@
     <string name="OnboardingAnd">and</string>
     <string name="OnboardingTermsOfService">Terms of Service</string>
     <string name="OnboardingPrivacyPolicy">Privacy Policy</string>
+    <string name="OptionGetHiredTitle">I WANT TO GET HIRED</string>
+    <string name="OptionLookingForTalentTitle">I\'M LOOKING FOR TALENT</string>
+    <string name="OptionHereToFollowTitle">I\'M HERE TO FOLLOW</string>
+    <string name="OptionGetHiredSubtitle">Model, performer, creative pro</string>
+    <string name="OptionLookingForTalentSubtitle">Agency, brand, scout, booker</string>
+    <string name="OptionHereToFollowSubtitle">Fan of fashion and creators</string>
+    <string name="QuizStepProgress">Question %1$d of %2$d</string>
+    <string name="RoleResultSoundsRight">Sounds right — let\'s go</string>
+    <string name="RoleResultChooseDifferentRole">Choose a different role</string>
+
+    <string name="RoleResultTitleFashionFan">YOU\'RE A FASHION FAN</string>
+    <string name="RoleResultDescriptionFashionFan">You\'ll be able to follow your favourite models and creators, discover new talent and stay connected to the fashion world.</string>
+
+    <string name="RoleResultTitleModel">You\'re a Professional Model</string>
+    <string name="RoleResultDescriptionModel">Your profile will be built to showcase your portfolio and connect you directly with agencies and brands looking for experienced talent.</string>
+
+    <string name="RoleResultTitleRisingTalent">You\'re a Rising Talent</string>
+    <string name="RoleResultDescriptionRisingTalent">Your profile will help you build your portfolio, get visibility and land your first castings — including free TFP shoots with photographers and stylists.</string>
+
+    <string name="RoleResultTitleActor">You\'re an Actor</string>
+    <string name="RoleResultDescriptionActor">Your profile will connect you with brands and agencies looking for acting talent for campaigns, fashion films and live events.</string>
+
+    <string name="RoleResultTitleDancer">You\'re a Dancer</string>
+    <string name="RoleResultDescriptionDancer">Your profile will connect you with shows, campaigns and events looking for dance talent across all styles.</string>
+
+    <string name="RoleResultTitlePerformer">You\'re a Performer</string>
+    <string name="RoleResultDescriptionPerformer">Your profile will connect you with fashion events, brand campaigns and creative projects looking for live performance talent.</string>
+
+    <string name="RoleResultTitleCreativeProfessional">You\'re a Creative Professional</string>
+    <string name="RoleResultDescriptionCreativeProfessional">Our profile will showcase your portfolio, let you post projects and connect with models, brands and agencies — on both sides of the market.</string>
+
+    <string name="RoleResultTitleFindTalent">You\'re Here to Find Talent</string>
+    <string name="RoleResultDescriptionFindTalent">Our profile will be set up to search, post castings and connect directly with models and creatives — whether you\'re a global agency or a local brand.</string>
+
+    <string name="RoleResultTitleIndustryProfessional">You\'re a Talent Industry Professional</string>
+    <string name="RoleResultDescriptionIndustryProfessional">Your profile will give you direct access to DIVO\'s talent database, advanced search tools and casting workflow — built for the way professionals actually work.</string>
+
+    <!-- Companies (A) -->
+    <string name="SubRoleModelingAgency">Modeling Agency</string>
+    <string name="SubRoleFashionBrand">Fashion Brand</string>
+    <string name="SubRoleBeautyBrand">Beauty Brand</string>
+    <string name="SubRoleBrandOrBusiness">Brand or Business</string>
+    <string name="SubRoleEventAgency">Event Agency</string>
+    <string name="SubRoleMagazine">Magazine or Media</string>
+    <!-- Industry Pros (B) -->
+    <string name="SubRoleScout">Scout</string>
+    <string name="SubRoleBooker">Booker</string>
+    <string name="SubRoleCastingDirector">Casting Director</string>
+    <string name="SubRoleTalentManager">Talent Manager</string>
+    <!-- Creative (C) -->
+    <string name="SubRolePhotographer">Photographer</string>
+    <string name="SubRoleStylist">Stylist</string>
+    <string name="SubRoleMakeupArtist">Makeup Artist</string>
+    <string name="SubRoleHairStylist">Hair Stylist</string>
+    <string name="SubRoleVideographer">Videographer</string>
+    <string name="SubRoleCreativeDirector">Creative Director</string>
+    <string name="SubRoleFashionDesigner">Fashion Designer</string>
+    <!-- Talent (D) -->
+    <string name="SubRoleModel">Model</string>
+    <string name="SubRoleNewTalent">New Talent</string>
+    <string name="SubRoleActor">Actor or Actress</string>
+    <string name="SubRoleDancer">Dancer</string>
+    <string name="SubRoleSingerOrPerformer">Singer or Performer</string>
+    <!-- Audience (E) -->
+    <string name="SubRoleFan">Fan</string>
+
+    <string name="QuizGetHiredTitle">What kind of talent\nare you?</string>
+    <string name="QuizGetHiredSubtitle">Be honest — this helps us show you the right opportunities</string>
+    <string name="QuizSectionTalents">TALENTS</string>
+    <string name="QuizSectionCreative">CREATIVE</string>
+
+    <string name="QuizModelExperienceTitle">Do you have professional modelling experience and an agency?</string>
+    <string name="QuizModelExperienceSubtitle">This helps us match you with the right castings from day one</string>
+    <string name="QuizModelExperienceYesLabel">YES</string>
+    <string name="QuizModelExperienceYesDescription">I have a portfolio and I work with or have worked with an agency</string>
+    <string name="QuizModelExperienceNoLabel">NO YET</string>
+    <string name="QuizModelExperienceNoDescription">I\'m building my career and don\'t have an agency yet</string>
+
+    <string name="QuizHiringTypeTitle">How do you work?</string>
+    <string name="QuizHiringTypeSubtitle">This helps us set up the right profile</string>
+    <string name="QuizHiringTypeCompanyLabel">I represent a company</string>
+    <string name="QuizHiringTypeCompanyDescription">Agency, brand, media or studio</string>
+    <string name="QuizHiringTypeIndividualLabel">I\'m an individual specialist</string>
+    <string name="QuizHiringTypeIndividualDescription">Scout, booker, casting director…</string>
+
+    <string name="QuizCompanyTitle">What best describes\nyour company?</string>
+    <string name="QuizCompanySubtitle">Choose the option that\'s closest to what you do</string>
+
+    <string name="SubRoleModelingAgencyDescription">I manage a roster of models and handle bookings</string>
+    <string name="SubRoleFashionBrandDescription">My brand is in fashion: clothing, shoes or accessories</string>
+    <string name="SubRoleBeautyBrandDescription">I work in beauty: cosmetics, skincare or fragrance</string>
+    <string name="SubRoleBrandOrBusinessDescription">I\'m a business looking for models: restaurant, hotel, retailer or any other company</string>
+    <string name="SubRoleEventAgencyDescription">I organise events, shows or promotional activities</string>
+    <string name="SubRoleMagazineDescription">I\'m a publication, media outlet or digital editorial</string>
+
+    <string name="QuizIndustryTitle">What\'s your role\nin the industry?</string>
+    <string name="QuizIndustrySubtitle">Choose the option that best describes what you do day-to-day</string>
+    <string name="SubRoleScoutDescription">I find new faces, independently or for an agency</string>
+    <string name="SubRoleBookerDescription">I manage bookings and negotiations for models at an agency</string>
+    <string name="SubRoleCastingDirectorDescription">I run castings for specific projects: shows, ads or film</string>
+    <string name="SubRoleTalentManagerDescription">I represent and manage individual talent on their career</string>
     <!--divo view end-->
 
 

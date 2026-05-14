@@ -139,7 +139,7 @@ fun UIButtonNew(
         shape = shape,
         colors = ButtonDefaults.buttonColors(
             containerColor = background,
-            disabledContainerColor = background.copy(0.6f)
+            disabledContainerColor = background.copy(0.7f)
         ),
     ) {
         if (!isLoading) {

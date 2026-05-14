@@ -123,7 +123,6 @@ import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.components.SliderView;
 import org.telegram.divo.components.items.ButtonContainer;
 import org.telegram.divo.components.items.RegButtonView;
-import org.telegram.divo.screen.reg_select_role.Role;
 import org.telegram.divo.screen.reg_select_role.RoleSelectionView;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
@@ -376,6 +375,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private ProxyDrawable proxyDrawable;
 
     // Open animation stuff
+    private Space statusBarSpacer;
     private LinearLayout keyboardLinearLayout;
     private FrameLayout slideViewsContainer;
     private View introView;
@@ -643,9 +643,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         keyboardLinearLayout.setOrientation(LinearLayout.VERTICAL);
         scrollView.addView(keyboardLinearLayout, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT));
 
-        Space spacer = new Space(context);
-        spacer.setMinimumHeight(AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight);
-        keyboardLinearLayout.addView(spacer);
+        statusBarSpacer = new Space(context);
+        statusBarSpacer.setMinimumHeight(AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight);
+        keyboardLinearLayout.addView(statusBarSpacer);
         slideViewsContainer = new FrameLayout(context) {
             @Override
             protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
@@ -686,29 +686,34 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         //DIVO--START
         RoleSelectionView roleSelectionView = new RoleSelectionView(context);
-        roleSelectionView.setOnSelect(role -> {
-            // обработка выбора роли
-            // ... твой код ...
-            return Unit.INSTANCE; // важно вернуть Unit для Kotlin-функции
-        });
-
-        roleSelectionView.setOnContinue(role -> {
-
-            if (role == Role.NEW_TALENT) {
-                setPage(VIEW_REGISTER_TALENT, true, pendingRegisterParams, false);
-
-            }
-            if (role == Role.AGENCY_SCOUTS) {
-                setPage(VIEW_REGISTER_AGENCY, true, pendingRegisterParams, false);
-
-            }
-            if (role == Role.MODEL) {
-                setPage(VIEW_REGISTER_MODEL, true, pendingRegisterParams, false);
-
-            }
-
+//        roleSelectionView.setOnSelect(role -> {
+//            // обработка выбора роли
+//            // ... твой код ...
+//            return Unit.INSTANCE; // важно вернуть Unit для Kotlin-функции
+//        });
+//
+        roleSelectionView.setOnBack(() -> {
+            setPage(VIEW_PHONE_INPUT, true, null, true);
             return Unit.INSTANCE;
         });
+//
+//        roleSelectionView.setOnContinue(role -> {
+//
+//            if (role == Role.FAN) {
+//                setPage(VIEW_REGISTER_TALENT, true, pendingRegisterParams, false);
+//
+//            }
+//            if (role == Role.AGENCY_SCOUTS) {
+//                setPage(VIEW_REGISTER_AGENCY, true, pendingRegisterParams, false);
+//
+//            }
+//            if (role == Role.MODEL) {
+//                setPage(VIEW_REGISTER_MODEL, true, pendingRegisterParams, false);
+//
+//            }
+//
+//            return Unit.INSTANCE;
+//        });
 
 
         views[VIEW_PHONE_INPUT] = new PhoneView(context);
@@ -738,7 +743,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         for (int a = 0; a < views.length; a++) {
             views[a].setVisibility(a == 0 ? View.VISIBLE : View.GONE);
             final boolean needsTopMargin = a != VIEW_PAY;
-            slideViewsContainer.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER, AndroidUtilities.isTablet() ? 26 : 18, needsTopMargin ? 30 : 0, AndroidUtilities.isTablet() ? 26 : 18, 0));
+            if (views[a] instanceof RoleSelectionView) {
+                slideViewsContainer.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+            } else {
+                slideViewsContainer.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER, AndroidUtilities.isTablet() ? 26 : 18, needsTopMargin ? 30 : 0, AndroidUtilities.isTablet() ? 26 : 18, 0));
+            }
         }
 
         Bundle savedInstanceState = activityMode == MODE_LOGIN ? loadCurrentState(newAccount, currentAccount) : null;
@@ -893,6 +902,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         if (isInCancelAccountDeletionMode()) {
             fillNextCodeParams(cancelDeletionParams, cancelDeletionCode, false);
+        }
+
+        if (statusBarSpacer != null) {
+            statusBarSpacer.setVisibility(views[currentViewNum] instanceof RoleSelectionView ? View.GONE : View.VISIBLE);
         }
 
         return fragmentView;
@@ -1585,6 +1598,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     public void setPage(@ViewNumber int page, boolean animated, Bundle params, boolean back) {
+        if (statusBarSpacer != null) {
+            statusBarSpacer.setVisibility(views[page] instanceof RoleSelectionView ? View.GONE : View.VISIBLE);
+        }
+
         //DIVO: VIEW_PHONE_INPUT excluded — it uses RegButtonView instead of FAB
         boolean needFloatingButton = /*page == VIEW_PHONE_INPUT ||*/ page == VIEW_PASSWORD ||
                 page == VIEW_NEW_PASSWORD_STAGE_1 || page == VIEW_NEW_PASSWORD_STAGE_2 || page == VIEW_ADD_EMAIL || page == VIEW_CODE_PHRASE || page == VIEW_CODE_WORD;
@@ -5076,22 +5093,22 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 }
                                 //DIVO--START--временно -- пользователь ввел правильный код из СМС, но аккаунта на этот номер телефона еще не существует
                                 
-                                TLRPC.TL_auth_authorization dummyAuth = new TLRPC.TL_auth_authorization();
-                                dummyAuth.user = new TLRPC.TL_user();
-                                dummyAuth.user.id = 123456789L;
-                                dummyAuth.user.first_name = "Divo";
-                                dummyAuth.user.last_name = "User";
-                                dummyAuth.user.phone = requestPhone;
-                                dummyAuth.user.self = true;
-                                dummyAuth.user.flags = 1024 | 2 | 4 | 16;
-                                
-                                animateSuccess(() -> onAuthSuccess(dummyAuth, true));
-                                //Bundle params = new Bundle();
-                                //params.putString("phoneFormated", requestPhone);
-                                //params.putString("phoneHash", phoneHash);
-                                //params.putString("code", req.phone_code);
-                                //pendingRegisterParams = params;
-                                //animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
+//                                TLRPC.TL_auth_authorization dummyAuth = new TLRPC.TL_auth_authorization();
+//                                dummyAuth.user = new TLRPC.TL_user();
+//                                dummyAuth.user.id = 123456789L;
+//                                dummyAuth.user.first_name = "Divo";
+//                                dummyAuth.user.last_name = "User";
+//                                dummyAuth.user.phone = requestPhone;
+//                                dummyAuth.user.self = true;
+//                                dummyAuth.user.flags = 1024 | 2 | 4 | 16;
+//
+//                                animateSuccess(() -> onAuthSuccess(dummyAuth, true));
+                                Bundle params = new Bundle();
+                                params.putString("phoneFormated", requestPhone);
+                                params.putString("phoneHash", phoneHash);
+                                params.putString("code", req.phone_code);
+                                pendingRegisterParams = params;
+                                animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
                                 //DIVO--END
                             } else {
                                 animateSuccess(() -> onAuthSuccess((TLRPC.TL_auth_authorization) response));
