@@ -30,6 +30,7 @@ import org.telegram.divo.screen.reg_select_role.RoleSelectionIntent
 import org.telegram.divo.screen.reg_select_role.RoleSelectionViewModel
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.R
 
 @Composable
@@ -54,6 +55,8 @@ fun QuizResultScreen(
         }
     }
 
+    val navBarHeight = AndroidUtilities.navigationBarHeight
+
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             modifier = Modifier.fillMaxSize(),
@@ -66,6 +69,7 @@ fun QuizResultScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
+                .padding(bottom = (navBarHeight / AndroidUtilities.density).dp)
                 .padding(horizontal = 16.dp)
         ) {
             Text(

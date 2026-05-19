@@ -14,6 +14,7 @@ import org.telegram.divo.screen.reg_select_role.HiringType
 import org.telegram.divo.screen.reg_select_role.QuizOption
 import org.telegram.divo.screen.reg_select_role.RoleSelectionState
 import org.telegram.divo.screen.reg_select_role.SubRole
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.R
 
 private val companyOptions = listOf(
@@ -83,7 +84,7 @@ private fun HiringTypePage(
             selected = selectedType == HiringType.INDIVIDUAL,
             onClick = { onSelected(HiringType.INDIVIDUAL) }
         )
-        Spacer(Modifier.height(72.dp))
+        Spacer(Modifier.height((72 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp))
     }
 }
 
@@ -108,7 +109,7 @@ private fun CompanySubRolePage(
             )
             Spacer(Modifier.height(10.dp))
         }
-        Spacer(Modifier.height(72.dp))
+        Spacer(Modifier.height((72 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp))
     }
 }
 
@@ -133,6 +134,6 @@ private fun IndividualSubRolePage(
             )
             Spacer(Modifier.height(10.dp))
         }
-        Spacer(Modifier.height(72.dp))
+        Spacer(Modifier.height((72 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp))
     }
 }

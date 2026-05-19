@@ -63,7 +63,7 @@ fun RegFormsScreen(
         viewModel.setIntent(RegFormsIntent.OnBack)
     }
 
-    if (state.formData == null) {
+    if (state.formData == null || state.isLoading) {
         Box(
             modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundLight),
             contentAlignment = Alignment.Center
@@ -105,6 +105,7 @@ private fun RegFormsScreenContent(
             )
         },
         containerColor = AppTheme.colors.backgroundLight,
+        contentWindowInsets = WindowInsets(0),
     ) { padding ->
         Box(
             modifier = Modifier
@@ -166,7 +167,7 @@ private fun RegFormsScreenContent(
             UIButtonNew(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp, start = 16.dp, end = 16.dp)
+                    .padding(bottom = (8 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp, start = 16.dp, end = 16.dp)
                     .align(Alignment.BottomCenter),
                 text = if (state.isLastStep)
                     stringResource(R.string.ButtonDone)

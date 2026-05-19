@@ -30,6 +30,7 @@ import org.telegram.divo.screen.reg_form.RegistrationFormData
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.divo.screen.search.components.CityPickerSheet
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -199,25 +200,7 @@ fun StepOne(
             Spacer(Modifier.height(16.dp))
         }
 
-        if (config.showSpecialisation) {
-//            RegDropdownField(
-//                value = formData.specialisation ?: "",
-//                placeholder = stringResource(R.string.RegFormSpecialisation),
-//                onClick = { onIntent(RegFormsIntent.OnSpecialisationPickerOpen) }
-//            )
-            Spacer(Modifier.height(16.dp))
-        }
-
-        if (config.showRole) {
-//            RegDropdownField(
-//                value = formData.subRole.labelRes.let { stringResource(it) },
-//                placeholder = stringResource(R.string.RegFormRole),
-//                onClick = { } // уже выбрано на предыдущем шаге
-//            )
-            Spacer(Modifier.height(12.dp))
-        }
-
-        Spacer(Modifier.height(72.dp))
+        Spacer(Modifier.height((72 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp))
     }
 }
 

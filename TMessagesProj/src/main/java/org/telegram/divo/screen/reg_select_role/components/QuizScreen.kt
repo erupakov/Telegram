@@ -101,6 +101,7 @@ fun QuizScreen(
             )
         },
         containerColor = AppTheme.colors.backgroundLight,
+        contentWindowInsets = WindowInsets(0),
         snackbarHost = {
             AppSnackbarHost(state = snackbarState, bottomPadding = 76.dp)
         },
@@ -136,7 +137,7 @@ fun QuizScreen(
             UIButtonNew(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 8.dp, start = 16.dp, end = 16.dp)
+                    .padding(bottom = (8 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp, start = 16.dp, end = 16.dp)
                     .align(Alignment.BottomCenter),
                 text = stringResource(R.string.ButtonContinue),
                 enabled = canContinue,
@@ -145,14 +146,12 @@ fun QuizScreen(
                         val isLastPage = pagerState.currentPage == pagerState.pageCount - 1
 
                         when {
-                            // Model на странице 0 — идём на страницу 2 (квиз опыта)
                             intent == UserIntent.GET_HIRED
                                     && pagerState.currentPage == 0
                                     && state.subRole == SubRole.MODEL -> {
                                 pagerState.animateScrollToPage(1)
                             }
 
-                            // Creative / Actor / Dancer / Singer — пропускаем стр.2, сразу результат
                             intent == UserIntent.GET_HIRED
                                     && pagerState.currentPage == 0
                                     && state.subRole != SubRole.MODEL -> {
@@ -160,13 +159,11 @@ fun QuizScreen(
                                 if (finalRole != null) onComplete(finalRole)
                             }
 
-                            // LOOKING_FOR_TALENT стр.0 — всегда идём на стр.1
                             intent == UserIntent.LOOKING_FOR_TALENT
                                     && pagerState.currentPage == 0 -> {
                                 pagerState.animateScrollToPage(1)
                             }
 
-                            // Последняя страница — резолвим и завершаем
                             isLastPage -> {
                                 val finalRole = resolveFinalSubRole(state)
                                 if (finalRole != null) onComplete(finalRole)

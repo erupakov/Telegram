@@ -523,6 +523,7 @@
     <string name="RegFormContactLastName">Contact last name</string>
     <string name="RegFormContactRole">Contact role / title</string>
     <string name="RegFormAgencyOrganisation">Agency / Organisation</string>
+    <string name="RegFormCurrentOrLastAgency">Current or last agency</string>
     <string name="RegFormAgencyHintPro">Your agency will receive a confirmation request</string>
     <string name="RegFormAgencyHintModel">Add your agency to get a verified badge</string>
     <string name="RegFormInstagramHandle">Instagram handle</string>
@@ -535,6 +536,7 @@
     <string name="RegFormAddLogoOrPhoto">Add your logo or profile photo</string>
     <string name="RegFormAddProfilePhoto">Add your profile photo</string>
     <string name="RegFormProfilePhotoSubtitle">Use a clear photo of yourself. You can update this any time.</string>
+    <string name="RegFormModelPhotoSubtitle">Use a clear, front-facing photo. You can update this any time.</string>
     <string name="RegFormShowYourMainSpace">Show your main space</string>
     <string name="RegFormStudioPhotoSubtitle">Clients want to see what they\'re booking</string>
     <string name="RegFormShowTheWorld">Show the world who you are</string>

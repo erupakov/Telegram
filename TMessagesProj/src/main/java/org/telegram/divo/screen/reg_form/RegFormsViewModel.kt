@@ -44,6 +44,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
     private fun onContinue() {
         logFormData()
         if (state.value.isLastStep) {
+            setState { copy(isLoading = true) }
             sendEffect(RegFormsEffect.FinishRegistration)
         } else {
             setState { copy(currentStepIndex = currentStepIndex + 1) }

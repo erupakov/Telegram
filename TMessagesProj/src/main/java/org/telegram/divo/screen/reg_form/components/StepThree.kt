@@ -25,6 +25,7 @@ import org.telegram.divo.screen.reg_form.RegFormsIntent
 import org.telegram.divo.screen.reg_form.RegistrationFormData
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.R
 
 @Composable
@@ -79,7 +80,7 @@ fun StepThree(
         if (config.showAgencyName) {
             RegTextField(
                 value = formData.agencyName,
-                placeholder = stringResource(R.string.RegFormAgencyOrganisation),
+                placeholder = if (formData.subRole == SubRole.MODEL) stringResource(R.string.RegFormCurrentOrLastAgency) else stringResource(R.string.RegFormAgencyOrganisation),
                 onValueChange = {
                     onIntent(RegFormsIntent.OnFieldChanged { copy(agencyName = it) })
                 }
@@ -139,7 +140,7 @@ fun StepThree(
             Spacer(Modifier.height(16.dp))
         }
 
-        Spacer(Modifier.height(72.dp))
+        Spacer(Modifier.height((72 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp))
     }
 }
 

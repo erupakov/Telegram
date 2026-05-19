@@ -34,6 +34,7 @@ import org.telegram.divo.screen.reg_form.RegFormsIntent
 import org.telegram.divo.screen.reg_form.RegistrationFormData
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.R
 
 @Composable
@@ -130,7 +131,7 @@ fun StepPhoto(
             TfpHintBlock()
         }
 
-        Spacer(Modifier.height(72.dp))
+        Spacer(Modifier.height((72 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp))
     }
 }
 
@@ -192,7 +193,8 @@ fun SubRole.stepPhotoConfig(): StepPhotoConfig = when (this) {
     )
     SubRole.MODEL -> StepPhotoConfig(
         titleRes = R.string.RegFormShowTheWorld,
-        subtitleRes = R.string.RegFormProfilePhotoSubtitle,
+        subtitleRes = R.string.RegFormModelPhotoSubtitle,
+        isLogo = true,
     )
     SubRole.NEW_TALENT -> StepPhotoConfig(
         titleRes = R.string.RegFormAddProfilePhoto,

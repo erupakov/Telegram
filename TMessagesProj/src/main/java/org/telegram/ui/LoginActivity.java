@@ -155,6 +155,7 @@ import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.ActionBarLayout;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -696,6 +697,21 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             setPage(VIEW_PHONE_INPUT, true, null, true);
             return Unit.INSTANCE;
         });
+        roleSelectionView.setOnFinish(() -> {
+            TLRPC.TL_auth_authorization dummyAuth = new TLRPC.TL_auth_authorization();
+            dummyAuth.user = new TLRPC.TL_user();
+            dummyAuth.user.id = 123456789L;
+            dummyAuth.user.first_name = "Divo";
+            dummyAuth.user.last_name = "User";
+            // pendingRegisterParams заполняется при переходе на VIEW_REGISTER (содержит "phoneFormated")
+            dummyAuth.user.phone = pendingRegisterParams != null ? pendingRegisterParams.getString("phoneFormated") : "";
+            dummyAuth.user.self = true;
+            dummyAuth.user.flags = 1024 | 2 | 4 | 16;
+            // animateSuccess() — метод внутреннего класса LoginActivitySmsView, недоступен здесь
+            // Вызываем onAuthSuccess напрямую
+            onAuthSuccess(dummyAuth, true);
+            return Unit.INSTANCE;
+        });
 //
 //        roleSelectionView.setOnContinue(role -> {
 //
@@ -744,7 +760,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             views[a].setVisibility(a == 0 ? View.VISIBLE : View.GONE);
             final boolean needsTopMargin = a != VIEW_PAY;
             if (views[a] instanceof RoleSelectionView) {
-                slideViewsContainer.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+                //DIVO: RoleSelectionView добавляем в корневой FrameLayout (sizeNotifierFrameLayout),
+                // а НЕ в slideViewsContainer, чтобы оно растягивалось на весь экран вместе с навбаром.
+                // slideViewsContainer живёт внутри ScrollView и не доходит до nav bar.
+                sizeNotifierFrameLayout.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
             } else {
                 slideViewsContainer.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER, AndroidUtilities.isTablet() ? 26 : 18, needsTopMargin ? 30 : 0, AndroidUtilities.isTablet() ? 26 : 18, 0));
             }
@@ -908,6 +927,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             statusBarSpacer.setVisibility(views[currentViewNum] instanceof RoleSelectionView ? View.GONE : View.VISIBLE);
         }
 
+        // DIVO--START: Восстанавливаем edge-to-edge при загрузке из SharedPreferences
+        if (parentLayout instanceof ActionBarLayout) {
+            ActionBarLayout actionBarLayout = (ActionBarLayout) parentLayout;
+            boolean needEdgeToEdge = (currentViewNum == VIEW_REGISTER);
+            if (actionBarLayout.containerView != null) {
+                actionBarLayout.containerView.setShouldHandleBottomInsets(needEdgeToEdge);
+                actionBarLayout.containerView.setDrawNavigationBar(!needEdgeToEdge);
+            }
+        }
+        // DIVO--END
+
         return fragmentView;
     }
 
@@ -1027,6 +1057,19 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         if (currentViewNum >= 0 && currentViewNum < views.length) {
             views[currentViewNum].onResume();
         }
+
+        // DIVO--START: Обновляем инсеты и навбар при возврате в приложение
+        if (parentLayout instanceof ActionBarLayout) {
+            ActionBarLayout actionBarLayout = (ActionBarLayout) parentLayout;
+            boolean needEdgeToEdge = (currentViewNum == VIEW_REGISTER);
+            if (actionBarLayout.containerView != null) {
+                actionBarLayout.containerView.setShouldHandleBottomInsets(needEdgeToEdge);
+                actionBarLayout.containerView.setDrawNavigationBar(!needEdgeToEdge);
+                // Просим перерисовать layout, чтобы отступы обновились сразу
+                actionBarLayout.containerView.requestLayout();
+            }
+        }
+        // DIVO--END
     }
 
     @Override
@@ -1598,6 +1641,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     public void setPage(@ViewNumber int page, boolean animated, Bundle params, boolean back) {
+        //DIVO--START: Динамически переключаем edge-to-edge только для RoleSelectionView
+        // containerView — public поле ActionBarLayout, setShouldHandleBottomInsets — public метод
+        if (parentLayout instanceof ActionBarLayout) {
+            ActionBarLayout actionBarLayout = (ActionBarLayout) parentLayout;
+            boolean needEdgeToEdge = (page == VIEW_REGISTER);
+            if (actionBarLayout.containerView != null) {
+                actionBarLayout.containerView.setShouldHandleBottomInsets(needEdgeToEdge);
+                actionBarLayout.containerView.setDrawNavigationBar(!needEdgeToEdge);
+            }
+        }
+        //DIVO--END
+
         if (statusBarSpacer != null) {
             statusBarSpacer.setVisibility(views[page] instanceof RoleSelectionView ? View.GONE : View.VISIBLE);
         }

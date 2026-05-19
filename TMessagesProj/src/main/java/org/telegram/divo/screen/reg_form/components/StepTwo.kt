@@ -32,6 +32,7 @@ import org.telegram.divo.screen.reg_form.RegistrationFormData
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.divo.screen.search.components.CityPickerSheet
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -240,7 +241,7 @@ fun StepTwo(
             Spacer(Modifier.height(16.dp))
         }
 
-        Spacer(Modifier.height(72.dp))
+        Spacer(Modifier.height((72 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp))
     }
 }
 

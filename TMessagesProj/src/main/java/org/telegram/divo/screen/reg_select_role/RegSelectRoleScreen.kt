@@ -24,6 +24,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.screen.reg_select_role.components.RoleCard
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.R
 
 
@@ -40,6 +41,10 @@ fun RoleSelectionScreen(
     onBack: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
+    // LoginActivity не включает edge-to-edge, поэтому WindowInsets недоступны в ComposeView.
+    // Читаем реальные значения из AndroidUtilities напрямую (так же делает OnboardingScreen).
+    val statusBarHeight = if (AndroidUtilities.isTablet()) 0 else AndroidUtilities.statusBarHeight
+    val navBarHeight = AndroidUtilities.navigationBarHeight
 
     val options = listOf(
         RoleOption(
@@ -68,7 +73,8 @@ fun RoleSelectionScreen(
         )
         Column {
             RoundedButton(
-                modifier = Modifier.padding(top = 40.dp, start = 16.dp),
+                modifier = Modifier
+                    .padding(top = (16 + statusBarHeight / AndroidUtilities.density).dp, start = 16.dp),
                 onClick = onBack
             )
             Box(
@@ -102,7 +108,10 @@ fun RoleSelectionScreen(
             }
 
             UIButtonNew(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = (8 + navBarHeight / AndroidUtilities.density).dp),
                 enabled = state.intent != null,
                 text = stringResource(R.string.ButtonContinue)
             ) {

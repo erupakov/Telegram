@@ -14,6 +14,7 @@ class RoleSelectionView(context: Context) : SlideView(context) {
     private var currentPhoneHash: String? = null
 
     var onBack: (() -> Unit)? = null
+    var onFinish: (() -> Unit)? = null
 
     init {
         orientation = VERTICAL
@@ -27,10 +28,7 @@ class RoleSelectionView(context: Context) : SlideView(context) {
                         this@RoleSelectionView.rolesNavController = navController
                     },
                     onBackToPhone = { onBack?.invoke() },
-                    onFinishedFlow = {
-                        // Сюда прилетят данные из Compose-экранов
-                        //submitRegistration(signUpData)
-                    }
+                    onFinishedFlow = { onFinish?.invoke() }
                 )
             }
         }
@@ -71,21 +69,7 @@ class RoleSelectionView(context: Context) : SlideView(context) {
         return super.onBackPressed(force)
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        var newHeightMeasureSpec = heightMeasureSpec
 
-        if (MeasureSpec.getMode(heightMeasureSpec) == MeasureSpec.UNSPECIFIED) {
-            val parentView = parent as? android.view.View
-            val availableHeight = if (parentView != null && parentView.measuredHeight > 0) {
-                parentView.measuredHeight
-            } else {
-                org.telegram.messenger.AndroidUtilities.displaySize.y
-            }
-            newHeightMeasureSpec = MeasureSpec.makeMeasureSpec(availableHeight, MeasureSpec.EXACTLY)
-        }
-
-        super.onMeasure(widthMeasureSpec, newHeightMeasureSpec)
-    }
 
     // Метод, который будет дергать Telegram API для регистрации
 //    private fun submitRegistration(data: SignUpData) {

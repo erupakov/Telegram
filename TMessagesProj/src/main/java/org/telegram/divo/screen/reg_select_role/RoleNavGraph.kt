@@ -115,7 +115,7 @@ fun RoleNavGraph(
 
             RegFormsScreen(
                 subRole = subRole,
-                onFinished = {},
+                onFinished = onFinishedFlow,
                 onBack = { nav.popBackStack() }
             )
         }

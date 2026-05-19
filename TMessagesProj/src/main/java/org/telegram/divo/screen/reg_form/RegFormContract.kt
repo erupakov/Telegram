@@ -23,10 +23,10 @@ data class RegFormsState(
     val canContinue: Boolean get() = formData?.isStepValid(currentStep) ?: false
 
     private fun RegistrationFormData.isStepValid(step: RegFormStep?): Boolean = when (step) {
-        RegFormStep.COMPANY_INFO,
         RegFormStep.IDENTITY,
         RegFormStep.CREATIVE_IDENTITY -> firstName.isNotBlank() && lastName.isNotBlank()
 
+        RegFormStep.COMPANY_INFO,
         RegFormStep.STUDIO_DETAILS -> companyName.isNotBlank()
 
         RegFormStep.TALENT_IDENTITY,
