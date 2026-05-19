@@ -188,6 +188,7 @@ enum class ParametersType(
     BREAST_SIZE(R.string.ChooseBreastSize),
     COUNTRY(R.string.CountryLabel),
     ROLE(R.string.RoleLabel),
+    SPECIALISATION(R.string.RegFormSpecialisationLabel)
 }
 
 fun ParametersType.numericFilterRange(): IntRange? = when (this) {

@@ -73,6 +73,7 @@ enum class SubRole(@StringRes val labelRes: Int) {
     VIDEOGRAPHER(R.string.SubRoleVideographer),
     CREATIVE_DIRECTOR(R.string.SubRoleCreativeDirector),
     FASHION_DESIGNER(R.string.SubRoleFashionDesigner),
+    STUDIO(R.string.SubRoleStudio),
     // Talent (D)
     MODEL(R.string.SubRoleModel),
     NEW_TALENT(R.string.SubRoleNewTalent),

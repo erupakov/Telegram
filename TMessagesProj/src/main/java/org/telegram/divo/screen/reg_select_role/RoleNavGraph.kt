@@ -23,7 +23,9 @@ sealed class Screen(val route: String) {
     data object QuizResult : Screen("quiz_result/{subRole}") {
         fun createRoute(subRole: SubRole) = "quiz_result/${subRole.name}"
     }
-    data object RegForms : Screen("reg_forms")
+    data object RegForms : Screen("reg_forms/{subRole}") {
+        fun createRoute(subRole: SubRole) = "reg_forms/${subRole.name}"
+    }
 }
 
 @Composable
@@ -95,15 +97,27 @@ fun RoleNavGraph(
             QuizResultScreen(
                 viewModel = viewModel,
                 subRole = subRole,
-                onContinue = { nav.navigate(Screen.RegForms.route) },
+                onContinue = { nav.navigate(Screen.RegForms.createRoute(it)) },
                 onBack = { nav.popBackStack() },
             )
         }
 
         composable(
-            route = Screen.RegForms.route
-        ) {
-            RegFormsScreen()
+            route = Screen.RegForms.route,
+            arguments = listOf(
+                navArgument("subRole") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val subRole = backStackEntry.arguments
+                ?.getString("subRole")
+                ?.let { SubRole.valueOf(it) }
+                ?: return@composable
+
+            RegFormsScreen(
+                subRole = subRole,
+                onFinished = {},
+                onBack = { nav.popBackStack() }
+            )
         }
     }
 }

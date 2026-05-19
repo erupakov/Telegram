@@ -28,38 +28,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
-import org.telegram.messenger.AndroidUtilities
-import org.telegram.messenger.ImageLocation
 import org.telegram.messenger.R
-import org.telegram.ui.Components.BackupImageView
-
-@Composable
-fun LocalImageView(
-    filePath: String?,
-    modifier: Modifier = Modifier,
-    cornerRadius: Int = 0
-) {
-    if (filePath == null) return
-
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            BackupImageView(context).apply {
-                if (cornerRadius > 0) {
-                    setRoundRadius(AndroidUtilities.dp(cornerRadius.toFloat()))
-                }
-            }
-        },
-        update = { view ->
-            val location = ImageLocation.getForPath(filePath)
-            view.setImage(location, "800_800", null as android.graphics.drawable.Drawable?, null)
-        }
-    )
-}
 
 @Composable
 fun TelegramPhotoBackground(

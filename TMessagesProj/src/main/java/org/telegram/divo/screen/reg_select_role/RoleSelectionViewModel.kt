@@ -54,7 +54,8 @@ class RoleSelectionViewModel : BaseViewModel<RoleSelectionState, RoleSelectionIn
 
     // Q2 только для Model
     private fun onExperienceSelected(hasExperience: Boolean) {
-        setState { copy(hasModelingExperience = hasExperience) }
+        val subRole = if (hasExperience) SubRole.MODEL else SubRole.NEW_TALENT
+        setState { copy(subRole = subRole, hasModelingExperience = hasExperience) }
     }
 
     private fun onContinue() {

@@ -29,8 +29,6 @@ import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.screen.event_create.Intent
-import org.telegram.divo.screen.reg_select_role.HiringType
 import org.telegram.divo.screen.reg_select_role.RoleSelectionIntent
 import org.telegram.divo.screen.reg_select_role.RoleSelectionState
 import org.telegram.divo.screen.reg_select_role.RoleSelectionViewModel
@@ -86,7 +84,7 @@ fun QuizScreen(
     Scaffold(
         topBar = {
             val totalPages = when {
-                intent == UserIntent.GET_HIRED && state.subRole == SubRole.MODEL -> pagerState.pageCount
+                intent == UserIntent.GET_HIRED && (state.subRole == SubRole.MODEL || state.subRole == SubRole.NEW_TALENT) -> pagerState.pageCount
                 intent == UserIntent.LOOKING_FOR_TALENT -> pagerState.pageCount
                 else -> 1
             }

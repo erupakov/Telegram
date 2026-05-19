@@ -48,6 +48,7 @@ private val creativeOptions = listOf(
     QuizOption(R.drawable.ic_divo_quiz_videographer, SubRole.VIDEOGRAPHER),
     QuizOption(R.drawable.ic_divo_quiz_creative_director, SubRole.CREATIVE_DIRECTOR),
     QuizOption(R.drawable.ic_divo_quiz_fashion_designer, SubRole.FASHION_DESIGNER),
+    QuizOption(R.drawable.ic_divo_quiz_studio, SubRole.STUDIO),
 )
 
 @Composable

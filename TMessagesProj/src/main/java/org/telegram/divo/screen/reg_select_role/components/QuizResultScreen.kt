@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -34,12 +36,17 @@ import org.telegram.messenger.R
 fun QuizResultScreen(
     viewModel: RoleSelectionViewModel = viewModel(),
     subRole: SubRole,
-    onContinue: () -> Unit,
+    onContinue: (SubRole) -> Unit,
     onBack: () -> Unit
 ) {
     StatusBarIconColorEffect(false)
 
     val content = roleResultContentMap[subRole] ?: return
+    val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        if (subRole == SubRole.FAN) viewModel.setIntent(RoleSelectionIntent.OnSubRoleSelected(SubRole.FAN))
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect {
@@ -77,7 +84,7 @@ fun QuizResultScreen(
             UIButtonNew(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.RoleResultSoundsRight),
-                onClick = onContinue
+                onClick = { state.subRole?.let { onContinue(it) } }
             )
             Spacer(Modifier.height(16.dp))
             UIButtonNew(
@@ -156,6 +163,11 @@ private val roleResultContentMap = mapOf(
         description = R.string.RoleResultDescriptionCreativeProfessional
     ),
     SubRole.FASHION_DESIGNER to RoleResultContent(
+        background = R.drawable.divo_result_creative,
+        title = R.string.RoleResultTitleCreativeProfessional,
+        description = R.string.RoleResultDescriptionCreativeProfessional
+    ),
+    SubRole.STUDIO to RoleResultContent(
         background = R.drawable.divo_result_creative,
         title = R.string.RoleResultTitleCreativeProfessional,
         description = R.string.RoleResultDescriptionCreativeProfessional

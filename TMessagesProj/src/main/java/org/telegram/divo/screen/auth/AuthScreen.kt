@@ -20,7 +20,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
@@ -96,10 +95,8 @@ fun AuthScreen(
             Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
                 UIButtonNew(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Login (Model)",
+                    text = "Continue with phone number",//"Login (Model)",
                     onClick = {
-                        // ==========================================
-                        // 2. Пользователь всё сделал. Ставим флаг в TRUE
                         val prefs = context.getSharedPreferences("divo_auth", Context.MODE_PRIVATE)
                         val userId = UserConfig.getInstance(currentAccount).clientUserId
                         prefs.edit { putBoolean("auth_completed_$userId", true) }
@@ -114,27 +111,27 @@ fun AuthScreen(
                         )
                     }
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-                UIButtonNew(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "Login (Agency)",
-                    onClick = {
-                        // ==========================================
-                        // 2. Пользователь всё сделал. Ставим флаг в TRUE
-                        val prefs = context.getSharedPreferences("divo_auth", Context.MODE_PRIVATE)
-                        val userId = UserConfig.getInstance(currentAccount).clientUserId
-                        prefs.edit { putBoolean("auth_completed_$userId", true) }
-                        // ==========================================
-
-                        // Переходим на главный экран
-                        viewModel.setIntent(
-                            AuthViewIntent.Login(
-                                email = "chiva_gp2022@icloud.com", //elenared720@gmail.com
-                                password = "Qwerty#123",
-                            )
-                        )
-                    }
-                )
+//                Spacer(modifier = Modifier.height(10.dp))
+//                UIButtonNew(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    text = "Login (Agency)",
+//                    onClick = {
+//                        // ==========================================
+//                        // 2. Пользователь всё сделал. Ставим флаг в TRUE
+//                        val prefs = context.getSharedPreferences("divo_auth", Context.MODE_PRIVATE)
+//                        val userId = UserConfig.getInstance(currentAccount).clientUserId
+//                        prefs.edit { putBoolean("auth_completed_$userId", true) }
+//                        // ==========================================
+//
+//                        // Переходим на главный экран
+//                        viewModel.setIntent(
+//                            AuthViewIntent.Login(
+//                                email = "chiva_gp2022@icloud.com", //elenared720@gmail.com
+//                                password = "Qwerty#123",
+//                            )
+//                        )
+//                    }
+//                )
             }
 
             Spacer(modifier = Modifier.height(28.dp))
