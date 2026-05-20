@@ -1,5 +1,573 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--divo view start-->
+    <string name="DivoMainTabsModels">Модели</string>
+    <string name="DivoMainTabsEvents">Мероприятия</string>
+    <string name="DivoMainTabsChats">Чаты</string>
+    <string name="DivoMainTabsSettings">Настройки</string>
+    <string name="ButtonBack">Назад</string>
+    <string name="ButtonCreate">Создать</string>
+    <string name="ButtonSave">Сохранить</string>
+    <string name="ButtonApply">Применить</string>
+    <string name="ButtonApplied">Применено</string>
+    <string name="ButtonOk">ОК</string>
+    <string name="ButtonCancel">Отмена</string>
+    <string name="ButtonEdit">Редактировать</string>
+    <string name="ButtonDelete">Удалить</string>
+    <string name="ButtonContinue">Продолжить</string>
+    <string name="ButtonDone">Готово</string>
+    <string name="RetryLabel">Повторить</string>
+    <string name="YourPhoneLabel">Ваш номер телефона</string>
+    <string name="ChooseCountryLabel">Выберите страну</string>
+    <string name="SearchLabel">Поиск</string>
+
+    <!--profile screen-->
+    <string name="SimilarProfiles">Вас могут заинтересовать похожие профили</string>
+    <string name="UploadPhotos">Загрузить фото</string>
+    <string name="UploadVideos">Загрузить видео</string>
+    <string name="UploadingPhotos">Загрузка фото…</string>
+    <string name="UploadingVideos">Загрузка видео…</string>
+    <string name="AddEvent">Добавить мероприятие</string>
+    <string name="MyLinks">Мои ссылки</string>
+    <string name="EditLinks">Редактировать ссылки</string>
+    <string name="SendDM">Написать сообщение</string>
+    <string name="Like">Нравится</string>
+    <string name="Viewed">Просмотрено</string>
+    <string name="Saved">Сохранить</string>
+    <string name="LoadingModelsList">Загрузка списка моделей…</string>
+    <string name="EditProfile">Редактировать профиль</string>
+    <string name="ChangeProfileBackground">Изменить фон профиля</string>
+    <string name="EditSocialLinks">Редактировать соцсети</string>
+    <string name="ManageWorkExperience">Управление опытом работы</string>
+    <string name="Profile">Мой профиль</string>
+    <string name="CurrentAgency">Текущее агентство</string>
+    <string name="SeeHistory">посмотреть историю</string>
+    <string name="SeeLess">СКРЫТЬ</string>
+    <string name="SeeMore">ПОДРОБНЕЕ</string>
+    <string name="AddModel">Добавить модель</string>
+    <string name="AgencyModelsEmpty">В вашем агентстве пока нет моделей.</string>
+    <string name="AgencyModelsEmptyHint">Нажмите кнопку ниже,\nчтобы добавить модель</string>
+    <string name="PremiumLabel">Премиум</string>
+    <string name="ReportThisProfile">Пожаловаться на профиль</string>
+    <string name="BlockProfile">Заблокировать пользователя</string>
+    <string name="SearchByName">Поиск по имени или @нику</string>
+    <string name="YearsOld">лет</string>
+    <string name="NotBio">Эта модель еще не заполнила раздел \"О себе\"</string>
+    <string name="NotAgencyBio">Это агентство еще не заполнило раздел \"О себе\"</string>
+    <string name="NotAppearance">Параметры модели не заполнены</string>
+    <string name="NotExperience">Опыт работы еще не добавлен</string>
+    <string name="FillInBio">Заполнить биографию</string>
+    <string name="ThereAreNoBioAddedYet">Биография еще не добавлена</string>
+    <string name="ThereAreNoYourParametersYet">Ваши параметры еще не добавлены</string>
+    <string name="AddYourParameters">Добавить параметры</string>
+    <string name="AddWorkHistory">Добавить историю работы</string>
+    <string name="ThereAreNoWorkExperienceYet">Опыт работы еще не добавлен</string>
+    <string name="ThereAreNoChannels">В НАСТОЯЩИЙ МОМЕНТ НЕТ КАНАЛОВ</string>
+    <string name="YouHaveNotCreatedChannels">Вы еще не создали ни одного канала</string>
+    <string name="ThisAgencyHasNotCreatedChannels">Это агентство еще не создало ни одного канала</string>
+    <string name="ThisModelHasNotCreatedChannels">Эта модель еще не создала ни одного канала</string>
+    <string name="CreateNewChannel">Создать новый канал</string>
+    <string name="SearchModels">Поиск моделей</string>
+    <string name="NoLikesYet">Пока нет лайков.</string>
+    <string name="NothingSavedYet">Пока ничего не сохранено.</string>
+    <string name="NoProfileViewedYet">Профили\nеще не просмотрены.</string>
+    <string name="StatLikes">ЛАЙКИ</string>
+    <string name="StatViews">ПРОСМОТРЕНО</string>
+    <string name="StatSaves">СОХРАНЕНО</string>
+
+    <!--your parameters screen-->
+    <string name="ParametersSaved">Параметры сохранены</string>
+    <string name="YourParameters">Ваши параметры</string>
+    <string name="ResetParameter">Сбросить параметр</string>
+    <string name="SelectGender">Выберите пол</string>
+    <string name="LabelGender">Пол</string>
+    <string name="AllGendersLabel">Любой пол</string>
+    <string name="LabelAge">Возраст</string>
+    <string name="LabelHeight">Рост (см)</string>
+    <string name="LabelWaist">Талия (см)</string>
+    <string name="LabelHips">Бедра (см)</string>
+    <string name="LabelWeight">Вес (кг)</string>
+    <string name="LabelShoeSize">Размер обуви (EU)</string>
+    <string name="LabelShoeSizeUS">Размер обуви (US)</string>
+    <string name="LabelBreastSize">Размер груди</string>
+    <string name="LabelHairColor">Цвет волос</string>
+    <string name="LabelHairLength">Длина волос</string>
+    <string name="LabelEyeColor">Цвет глаз</string>
+    <string name="LabelSkinColor">Цвет кожи</string>
+    <string name="ChooseHairLength">Длина волос</string>
+    <string name="ChooseHairColor">Цвет волос</string>
+    <string name="ChooseEyeColor">Цвет глаз</string>
+    <string name="ChooseSkinColor">Цвет кожи</string>
+    <string name="ChooseBreastSize">Размер груди</string>
+    <string name="ChoosePrefix">Выберите</string>
+    <string name="Female">Женский</string>
+    <string name="NoBiographyAvailable">Биография пока не добавлена</string>
+
+    <string-array name="GenderItems">
+        <item>Любой пол</item>
+        <item>Мужской</item>
+        <item>Женский</item>
+    </string-array>
+
+    <string-array name="BreastSizeItems">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>DD</item>
+        <item>E</item>
+        <item>F</item>
+    </string-array>
+
+    <!--edit my profile screen-->
+    <string name="FullNameEditProfileScreen">Полное имя</string>
+    <string name="BiographyPlaceholder">Топ-модель Франции…</string>
+    <string name="Biography">Биография</string>
+    <string name="SaveEditProfileScreen">Сохранить</string>
+    <string name="TabBiography">О СЕБЕ</string>
+    <string name="TabAppearance">ВНЕШНОСТЬ</string>
+    <string name="TabExperience">ОПЫТ</string>
+    <string name="MyAgencyProfile">Профиль моего агентства</string>
+
+    <!--work experience screen-->
+    <string name="CreateExperience">ДОБАВИТЬ ОПЫТ</string>
+    <string name="EditExperience">РЕДАКТИРОВАТЬ</string>
+    <string name="WorkExperience">ОПЫТ РАБОТЫ</string>
+    <string name="WorkExperienceInfo">Информация об опыте работы</string>
+    <string name="CurrentlyWorkingRole">Я сейчас работаю в этой должности</string>
+    <string name="CreateNewWorkExperience">Добавить новый опыт работы</string>
+    <string name="AgencyName">Название агентства</string>
+    <string name="EnterAgencyName">Введите название агентства</string>
+    <string name="StartDate">Дата начала</string>
+    <string name="EndDate">Дата окончания</string>
+    <string name="AddWorkExperience">Добавить опыт работы</string>
+    <string name="WorkHistoryEmptyTitle">Опыт работы\nпока не добавлен</string>
+    <string name="WorkHistoryEmptySubtitle">Нажмите кнопку ниже,\nчтобы добавить опыт работы</string>
+    <string name="SaveChanges">Сохранить изменения</string>
+    <string name="WorkExperienceSaved">Опыт работы успешно добавлен</string>
+    <string name="PresentLabel">По настоящее время</string>
+    <string name="EndDateCannotBeEarly">Дата окончания не может быть раньше даты начала</string>
+
+    <plurals name="work_years">
+        <item quantity="one">%d год</item>
+        <item quantity="few">%d года</item>
+        <item quantity="many">%d лет</item>
+        <item quantity="other">%d лет</item>
+    </plurals>
+    <plurals name="work_months">
+        <item quantity="one">%d месяц</item>
+        <item quantity="few">%d месяца</item>
+        <item quantity="many">%d месяцев</item>
+        <item quantity="other">%d месяцев</item>
+    </plurals>
+
+    <!--add model screen-->
+    <string name="AddNewModel">ДОБАВИТЬ НОВУЮ МОДЕЛЬ</string>
+    <string name="AddModelDescription">Заполните данные модели, чтобы добавить её в ваше агентство. Вы сможете обновить эту информацию в любое время.</string>
+    <string name="PersonalData">Личные данные</string>
+    <string name="FullName">Полное имя</string>
+    <string name="CountryLabel">Страна</string>
+    <string name="ProfileLink">Ссылка на профиль в Divo</string>
+    <string name="NextStep">Следующий шаг</string>
+    <string name="AddStoryLabel">Добавить</string>
+    <string name="Liked">Понравилось</string>
+    <string name="Unliked">Больше не нравится</string>
+    <string name="BookmarkSaved">Сохранено</string>
+    <string name="BookmarkUnsaved">Удалено из сохраненного</string>
+    <string name="AddModelToYourRoster">Добавить модель в ваш список</string>
+    <string name="StartTypingToSearchForModel">Начните вводить текст\nдля поиска модели</string>
+
+    <!--events screen-->
+    <string name="EventList">Мероприятия</string>
+    <string name="OrganizationLabel">Организация</string>
+    <string name="ParametersForApplying">Параметры для участия</string>
+    <string name="AgeRange">%1$d-%2$d</string>
+    <string name="PreviousEvents">Прошлые мероприятия</string>
+    <string name="CountdownFormat">%1$d д : %2$d ч : %3$d м</string>
+    <string name="CountdownStarted">Началось</string>
+    <string name="CountdownFinished">Завершено</string>
+    <string name="NoEventsYet">Пока нет мероприятий</string>
+    <string name="CreateEvent">Создать мероприятие</string>
+    <string name="EventType">Тип мероприятия</string>
+    <string name="EventName">Название мероприятия *</string>
+    <string name="EventDescription">Описание *</string>
+    <string name="EventDescriptionAbout">Описание мероприятия</string>
+    <string name="EventDate">Дата мероприятия *</string>
+    <string name="EventTime">Время мероприятия *</string>
+    <string name="EventDatePlaceholder">01 янв 2000</string>
+    <string name="EventTimePlaceholder">00:00</string>
+    <string name="EventChooseCountry">Выберите страну</string>
+    <string name="EventContinue">Продолжить</string>
+    <string name="EventStepProgress">Шаг %1$d/%2$d</string>
+    <string name="EventWhoCanApply">Кто может участвовать</string>
+    <string name="EventMaxParticipants">Макс. участников</string>
+    <string name="EventSelectMaxParticipants">Выбрать участников</string>
+    <string name="EventChooseTalent">Выберите талант</string>
+    <string name="EventChooseAnEvent">Выберите мероприятие</string>
+    <string name="EventRequirements">Требования</string>
+    <string name="EventEnterRequirements">Введите требования</string>
+    <string name="EventNdaRequired">Требуется NDA</string>
+    <string name="EventApplicationDeadlineDate">Дата окончания приема заявок *</string>
+    <string name="EventApplicationDeadlineTime">Время окончания приема заявок *</string>
+    <string name="EventPaid">Оплачивается</string>
+    <string name="EventRate">Ставка</string>
+    <string name="EventRatePlaceholder">100</string>
+    <string name="EventPublicEvent">Публичное мероприятие</string>
+    <string name="EventVisibleToAllUsers">Видно всем пользователям</string>
+    <string name="EventPhotoGallery">Фотогалерея мероприятий</string>
+    <string name="EventUploadEventPhotos">Загрузить фото мероприятия</string>
+    <string name="EventPreview">Предпросмотр</string>
+    <string name="EventPublish">Опубликовать мероприятие</string>
+    <string name="EventUploadingPhotos">Загрузка фото...</string>
+    <string name="EventParametersForApplying">Параметры для участия</string>
+    <string name="EventApplied">Откликов: %d</string>
+    <string name="EventMaxSpots">Макс. мест: %d</string>
+    <string name="EditEvent">Редактировать мероприятие</string>
+    <string name="CloseApplicationsEvent">Закрыть прием заявок</string>
+    <string name="CancelEvent">Отменить мероприятие</string>
+    <string name="DeleteEvent">Удалить</string>
+    <string name="DeleteEventTitle">Удалить \"%s\"?</string>
+    <string name="DeleteEventDescription">Это действие нельзя отменить. Все заявки будут аннулированы.</string>
+    <string name="DeleteEventConfirm">Удалить мероприятие</string>
+    <string name="ThereAreNoUpcomingEvents">В настоящий момент нет предстоящих мероприятий</string>
+    <string name="CheckBackLaterOrCreateEvents">Зайдите позже или создайте\nновое</string>
+    <string name="ClosesDate">Закрывается: %1$s</string>
+    <string name="ViewApplications">Посмотреть заявки</string>
+    <string name="ApplyNowPreview">Подать заявку (только предпросмотр)</string>
+    <plurals name="ParticipantsCount">
+        <item quantity="one">%d участник</item>
+        <item quantity="few">%d участника</item>
+        <item quantity="many">%d участников</item>
+        <item quantity="other">%d участников</item>
+    </plurals>
+
+    <!--models screen-->
+    <string name="Models">Модели</string>
+    <string name="NewTalents">Новые лица</string>
+    <string name="Agencies">Агентства</string>
+
+    <!--search screen-->
+    <string name="FindSimilarProfiles">Найти похожие профили</string>
+    <string name="UploadPhoto">Загрузите фото, чтобы найти моделей с похожей внешностью</string>
+    <string name="TakePhoto">Сделать фото</string>
+    <string name="ChooseFromLibrary">Выбрать из галереи</string>
+    <string name="UseDivoPhoto">Использовать фото профиля DIVO</string>
+    <string name="FaceSearchTitle">Как работает поиск по лицам</string>
+    <string name="FaceSearchDescriptionFirst">Мы анализируем ваше фото, чтобы найти профили DIVO с похожей внешностью. Ваше фото используется только для этого поиска и нигде не сохраняется.</string>
+    <string name="FaceSearchDescriptionSecond">Результаты ранжируются по визуальному сходству. Используйте фильтры для уточнения поиска по местоположению, роли и другим критериям.</string>
+    <string name="FaceSearchConfirm">Понятно, давайте искать</string>
+    <string name="CameraPermissionTitle">Необходим доступ к камере</string>
+    <string name="CameraPermissionDescription">Чтобы сделать фото для поиска по лицу, разрешите доступ к камере. Вы можете включить его в настройках приложения.</string>
+    <string name="OpenSettings">Открыть настройки</string>
+    <string name="FaceSearch">Поиск по лицу</string>
+    <string name="ChangePhoto">Изменить фото</string>
+    <string name="SimilarityScore">Результаты отсортированы по проценту визуального сходства</string>
+    <string name="NoFaceDetected">Лицо не распознано</string>
+    <string name="PleaseUsePhotoClearly">Пожалуйста, используйте фото, на котором четко видно лицо — в анфас, с хорошим освещением и без помех.</string>
+    <string name="MultipleFacesDetected">Обнаружено %d лиц — нажмите на одно для поиска</string>
+    <string name="ReadyToSearchFace">Лицо выбрано — готово к поиску</string>
+    <string name="AvoidSunglasses">Избегайте солнцезащитных очков, масок или сильного кадрирования.</string>
+    <string name="FullFacePhotos">Фотографии в анфас работают лучше всего — избегайте фото в профиль.</string>
+    <string name="AnalysingFacialFeatures">Анализируем черты лица..</string>
+    <string name="NoResultsFound">Ничего не найдено</string>
+    <string name="TryAdjustingYourFilters">Попробуйте изменить фильтры</string>
+    <string name="CityLabel">Город</string>
+    <string name="CitiesLabel">Города</string>
+    <string name="CountriesLabel">Страны</string>
+    <string name="SuggestedCities">Предложенные города</string>
+    <string name="NoItemsFound">Не найдено: %1$s</string>
+    <string name="TryDifferent">Попробуйте другое значение: %1$s</string>
+    <string name="AllColorsLabel">Все цвета</string>
+    <string name="AllLengthsLabel">Все длины</string>
+    <string name="ForLabel">Для</string>
+    <string name="RecentFaceSearches">Недавние поиски по лицу</string>
+    <string name="Found">найдено</string>
+    <string name="NoFilters">Без фильтров</string>
+    <string name="SeeAll">Показать все</string>
+    <plurals name="ResultFor">
+        <item quantity="one">результат</item>
+        <item quantity="few">результата</item>
+        <item quantity="many">результатов</item>
+        <item quantity="other">результатов</item>
+    </plurals>
+
+    <!--similar profiles screen-->
+    <string name="SimilarProfilesTitle">Похожие профили</string>
+    <string name="FaceSearchHistoryTitle">История поиска по лицу</string>
+    <string name="ClearAll">Очистить все</string>
+    <string name="ResultsWithSimilarity">%1$s · %2$d%%+</string>
+    <string name="SortedBy">Сортировка: </string>
+    <string name="SimilarityFormat">%1$d%% совпадение</string>
+    <string name="FilterResults">Фильтровать результаты</string>
+    <string name="ButtonReset">Сбросить</string>
+    <string name="MinimumSimilarity">Минимальное сходство</string>
+    <string name="HigherValuesShow">Более высокие значения показывают меньше результатов, но с большим сходством</string>
+    <string name="AnyLabel">Любой</string>
+    <string name="RoleLabel">Роль</string>
+    <string name="AllLabel">Все роли</string>
+    <string name="CountriesValue">Все страны</string>
+    <string name="MoreParameters">Больше параметров</string>
+    <string name="LessParameters">Меньше параметров</string>
+    <string name="ApplyFilter">Применить фильтр</string>
+    <string name="SortedByMatch">совпадение</string>
+    <string name="SortedByFilters">Фильтр:</string>
+    <string name="Model">Модель</string>
+    <string name="Agency">Агентство</string>
+    <string name="NewTalent">Новое лицо</string>
+    <plurals name="ProfilesFound">
+        <item quantity="one">%d профиль найден</item>
+        <item quantity="few">%d профиля найдено</item>
+        <item quantity="many">%d профилей найдено</item>
+        <item quantity="other">%d профилей найдено</item>
+    </plurals>
+
+    <plurals name="ResultsCount">
+        <item quantity="one">%d результат</item>
+        <item quantity="few">%d результата</item>
+        <item quantity="many">%d результатов</item>
+        <item quantity="other">%d результатов</item>
+    </plurals>
+
+    <string-array name="ModelFunNewTalent">
+        <item>Все роли</item>
+        <item>Модель</item>
+        <item>Фан</item>
+        <item>Новое лицо</item>
+    </string-array>
+
+    <!--settings screen-->
+    <string name="SettingsTitle">Настройки</string>
+    <string name="EditBtn">Редактировать</string>
+    <string name="PromoCardHeadline">ОТКРОЙТЕ ДЛЯ СЕБЯ МИР МОДЫ</string>
+    <string name="PromoCardBody">Опубликуйте свой профиль модели, участвуйте в кастингах или создавайте мероприятия как агентство — станьте частью глобальной сети модной индустрии.</string>
+    <string name="PromoCardBtn">Узнать больше</string>
+    <string name="SetUsernameLabel">Задать имя пользователя</string>
+    <string name="FillYourParametersLabel">Заполнить параметры</string>
+    <string name="SavedMessagesLabel">Сохраненные сообщения</string>
+    <string name="NotificationsAndSoundsLabel">Уведомления и звуки</string>
+    <string name="PrivacyAndSecurityLabel">Конфиденциальность и безопасность</string>
+    <string name="DataAndStorageLabel">Данные и память</string>
+    <string name="AppearanceLabel">Оформление</string>
+    <string name="LogOutLabel">Выйти</string>
+
+    <!--onboarding screen-->
+    <string name="OnboardingTitleGetSeenByTheRightPeople">Покажите себя нужным людям</string>
+    <string name="OnboardingSubtitleGetSeenByTheRightPeople">Профессиональный профиль, который заметят агентства и бренды, активно ищущие таланты</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">Реальные кастинги. Реальные возможности.</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Откликайтесь на проверенные предложения от агентств и брендов — без посредников и сомнений.</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Быстрый поиск с помощью ИИ.</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">ИИ DIVO находит идеальные совпадения между талантами и брендами — так что возможности сами находят вас.</string>
+    <string name="OnboardingEnterCode">Ввести код</string>
+    <string name="WelcomeToDivo">Добро пожаловать в DIVO</string>
+    <string name="SignOrCreateAccount">Войдите или создайте аккаунт</string>
+    <string name="ContinueWithPhoneNumber">Продолжить по номеру телефона</string>
+    <string name="OnboardingOrLabel">или</string>
+    <string name="OnboardingSignInWithGoogle">Войти через Google</string>
+    <string name="OnboardingSignInWithApple">Войти через Apple</string>
+    <string name="TermsPrefix">Продолжая, вы соглашаетесь с нашими</string>
+    <string name="OnboardingAnd">и</string>
+    <string name="OnboardingTermsOfService">Условиями предоставления услуг</string>
+    <string name="OnboardingPrivacyPolicy">Политикой конфиденциальности</string>
+    <string name="OptionGetHiredTitle">Я ИЩУ РАБОТУ</string>
+    <string name="OptionLookingForTalentTitle">Я ИЩУ ТАЛАНТЫ</string>
+    <string name="OptionHereToFollowTitle">Я ЗДЕСЬ КАК ЗРИТЕЛЬ</string>
+    <string name="OptionGetHiredSubtitle">Модель, исполнитель, креативный специалист</string>
+    <string name="OptionLookingForTalentSubtitle">Агентство, бренд, скаут, букер</string>
+    <string name="OptionHereToFollowSubtitle">Фанат моды и криэйторов</string>
+    <string name="QuizStepProgress">Вопрос %1$d из %2$d</string>
+    <string name="RegStepProgress">Шаг %1$d из %2$d</string>
+    <string name="RoleResultSoundsRight">Звучит отлично — поехали</string>
+    <string name="RoleResultChooseDifferentRole">Выбрать другую роль</string>
+
+    <string name="RoleResultTitleFashionFan">ВЫ ФАНАТ МОДЫ</string>
+    <string name="RoleResultDescriptionFashionFan">Вы сможете следить за любимыми моделями и криэйторами, открывать новые таланты и быть на связи с миром моды.</string>
+
+    <string name="RoleResultTitleModel">Вы — профессиональная модель</string>
+    <string name="RoleResultDescriptionModel">Ваш профиль поможет продемонстрировать портфолио и свяжет вас напрямую с агентствами и брендами, ищущими опытные таланты.</string>
+
+    <string name="RoleResultTitleRisingTalent">Вы — восходящий талант</string>
+    <string name="RoleResultDescriptionRisingTalent">Ваш профиль поможет создать портфолио, стать заметнее и получить первые кастинги — включая бесплатные TFP-съемки с фотографами и стилистами.</string>
+
+    <string name="RoleResultTitleActor">Вы — актёр</string>
+    <string name="RoleResultDescriptionActor">Ваш профиль свяжет вас с брендами и агентствами, ищущими актёров для рекламных кампаний, фэшн-фильмов и мероприятий.</string>
+
+    <string name="RoleResultTitleDancer">Вы — танцор</string>
+    <string name="RoleResultDescriptionDancer">Ваш профиль свяжет вас с шоу, рекламными кампаниями и мероприятиями, ищущими танцоров во всех стилях.</string>
+
+    <string name="RoleResultTitlePerformer">Вы — исполнитель</string>
+    <string name="RoleResultDescriptionPerformer">Ваш профиль свяжет вас с модными мероприятиями, рекламными кампаниями и креативными проектами, где нужны артисты.</string>
+
+    <string name="RoleResultTitleCreativeProfessional">Вы — креативный специалист</string>
+    <string name="RoleResultDescriptionCreativeProfessional">Наш профиль продемонстрирует ваше портфолио, позволит публиковать проекты и связываться с моделями, брендами и агентствами по обе стороны рынка.</string>
+
+    <string name="RoleResultTitleFindTalent">Вы здесь, чтобы найти таланты</string>
+    <string name="RoleResultDescriptionFindTalent">Профиль будет настроен для поиска, публикации кастингов и прямого общения с моделями и криэйторами — будь вы глобальным агентством или локальным брендом.</string>
+
+    <string name="RoleResultTitleIndustryProfessional">Вы — профессионал индустрии талантов</string>
+    <string name="RoleResultDescriptionIndustryProfessional">Ваш профиль предоставит прямой доступ к базе талантов DIVO, расширенным инструментам поиска и процессу кастинга — созданным специально для работы профессионалов.</string>
+
+    <!-- Companies (A) -->
+    <string name="SubRoleModelingAgency">Модельное агентство</string>
+    <string name="SubRoleFashionBrand">Модный бренд</string>
+    <string name="SubRoleBeautyBrand">Бьюти-бренд</string>
+    <string name="SubRoleBrandOrBusiness">Бренд или бизнес</string>
+    <string name="SubRoleEventAgency">Ивент-агентство</string>
+    <string name="SubRoleMagazine">Журнал или медиа</string>
+    <!-- Industry Pros (B) -->
+    <string name="SubRoleScout">Скаут</string>
+    <string name="SubRoleBooker">Букер</string>
+    <string name="SubRoleCastingDirector">Кастинг-директор</string>
+    <string name="SubRoleTalentManager">Талант-менеджер</string>
+    <!-- Creative (C) -->
+    <string name="SubRolePhotographer">Фотограф</string>
+    <string name="SubRoleStylist">Стилист</string>
+    <string name="SubRoleMakeupArtist">Визажист</string>
+    <string name="SubRoleHairStylist">Парикмахер</string>
+    <string name="SubRoleVideographer">Видеограф</string>
+    <string name="SubRoleCreativeDirector">Креативный директор</string>
+    <string name="SubRoleFashionDesigner">Дизайнер одежды</string>
+    <string name="SubRoleStudio">Студия</string>
+    <!-- Talent (D) -->
+    <string name="SubRoleModel">Модель</string>
+    <string name="SubRoleNewTalent">Новое лицо</string>
+    <string name="SubRoleActor">Актер / Актриса</string>
+    <string name="SubRoleDancer">Танцор</string>
+    <string name="SubRoleSingerOrPerformer">Певец / Исполнитель</string>
+    <!-- Audience (E) -->
+    <string name="SubRoleFan">Фанат</string>
+
+    <string name="QuizGetHiredTitle">Какой вы талант?</string>
+    <string name="QuizGetHiredSubtitle">Будьте честны — это поможет нам показывать вам подходящие возможности</string>
+    <string name="QuizSectionTalents">ТАЛАНТЫ</string>
+    <string name="QuizSectionCreative">КРЕАТИВ</string>
+
+    <string name="QuizModelExperienceTitle">Есть ли у вас профессиональный модельный опыт и агентство?</string>
+    <string name="QuizModelExperienceSubtitle">Это поможет нам подбирать для вас подходящие кастинги с первого дня</string>
+    <string name="QuizModelExperienceYesLabel">ДА</string>
+    <string name="QuizModelExperienceYesDescription">У меня есть портфолио, и я работаю или работал(-а) с агентством</string>
+    <string name="QuizModelExperienceNoLabel">ПОКА НЕТ</string>
+    <string name="QuizModelExperienceNoDescription">Я строю свою карьеру и пока не состою в агентстве</string>
+
+    <string name="QuizHiringTypeTitle">Как вы работаете?</string>
+    <string name="QuizHiringTypeSubtitle">Это поможет нам правильно настроить профиль</string>
+    <string name="QuizHiringTypeCompanyLabel">Я представляю компанию</string>
+    <string name="QuizHiringTypeCompanyDescription">Агентство, бренд, медиа или студию</string>
+    <string name="QuizHiringTypeIndividualLabel">Я частный специалист</string>
+    <string name="QuizHiringTypeIndividualDescription">Скаут, букер, кастинг-директор…</string>
+
+    <string name="QuizCompanyTitle">Что лучше всего описывает\nвашу компанию?</string>
+    <string name="QuizCompanySubtitle">Выберите вариант, который ближе всего к тому, чем вы занимаетесь</string>
+
+    <string name="SubRoleModelingAgencyDescription">Я управляю списком моделей и занимаюсь букингом</string>
+    <string name="SubRoleFashionBrandDescription">Мой бренд в сфере моды: одежда, обувь или аксессуары</string>
+    <string name="SubRoleBeautyBrandDescription">Я работаю в бьюти-сфере: косметика, уход за кожей или парфюмерия</string>
+    <string name="SubRoleBrandOrBusinessDescription">Я представляю бизнес, ищущий моделей: ресторан, отель, ритейлер или другая компания</string>
+    <string name="SubRoleEventAgencyDescription">Я организую мероприятия, шоу или промо-акции</string>
+    <string name="SubRoleMagazineDescription">Я представляю издание, СМИ или цифровое медиа</string>
+
+    <string name="QuizIndustryTitle">Какова ваша роль\nв индустрии?</string>
+    <string name="QuizIndustrySubtitle">Выберите вариант, который лучше всего описывает вашу повседневную работу</string>
+    <string name="SubRoleScoutDescription">Я ищу новые лица, независимо или для агентства</string>
+    <string name="SubRoleBookerDescription">Я занимаюсь букингом и переговорами для моделей в агентстве</string>
+    <string name="SubRoleCastingDirectorDescription">Я провожу кастинги для конкретных проектов: показов, рекламы или фильмов</string>
+    <string name="SubRoleTalentManagerDescription">Я представляю и управляю карьерой отдельных талантов</string>
+
+    <!--reg forms-->
+    <string name="RegFormCompanyInfoTitle">Расскажите о своей компании</string>
+    <string name="RegFormProfessionalIdentityTitle">Ваша профессиональная идентичность</string>
+    <string name="RegFormCreativeIdentityTitle">Ваша творческая идентичность</string>
+    <string name="RegFormStudioDetailsTitle">Данные вашей студии</string>
+    <string name="RegFormYourIdentityTitle">Кто вы</string>
+    <string name="RegFormFanIdentityTitle">Расскажите о себе</string>
+    <string name="RegFormCompanyName">Название компании / организации *</string>
+    <string name="RegFormFirstName">Имя *</string>
+    <string name="RegFormLastName">Фамилия *</string>
+    <string name="RegFormStudioName">Название студии / пространства *</string>
+    <string name="RegFormDateOfBirth">Дата рождения</string>
+    <string name="RegFormDateOfBirthPlaceholder">Выберите дату</string>
+    <string name="RegFormGender">Выберите пол</string>
+    <string name="RegFormWhereAreYouBased">Где вы находитесь?</string>
+    <string name="RegFormPersonalDetails">Личные данные</string>
+    <string name="RegFormContactDetails">Контактные данные</string>
+    <string name="RegFormLocation">Местоположение</string>
+    <string name="RegFormWebsiteOrInstagram">Веб-сайт или Instagram</string>
+    <string name="RegFormContactName">Контактное лицо</string>
+    <string name="RegFormContactPhone">Контактный телефон или email</string>
+    <string name="RegFormSpecialisation">Выберите специализацию</string>
+    <string name="RegFormSpecialisationLabel">Специализация</string>
+    <string name="RegFormWebsiteOrInstagramHint">Легкая проверка подлинности</string>
+    <string name="RegFormContactNameHint">Лицо, управляющее бронированиями</string>
+    <string name="RegFormContactPhoneHint">Для запросов на бронирование</string>
+
+    <string-array name="ActorSpecialisations">
+        <item>Кино</item>
+        <item>Театр</item>
+        <item>Реклама</item>
+        <item>Дубляж</item>
+        <item>ТВ</item>
+        <item>Другое</item>
+    </string-array>
+
+    <string-array name="DancerSpecialisations">
+        <item>Контемпорари</item>
+        <item>Балет</item>
+        <item>Хип-хоп</item>
+        <item>Бальные танцы</item>
+        <item>Коммерческая хореография</item>
+        <item>Латина</item>
+        <item>Джаз</item>
+        <item>Другое</item>
+    </string-array>
+
+    <string-array name="SingerSpecialisations">
+        <item>Поп</item>
+        <item>R&amp;B</item>
+        <item>Джаз</item>
+        <item>Классика</item>
+        <item>Мюзикл</item>
+        <item>Опера</item>
+        <item>Другое</item>
+    </string-array>
+
+    <string name="RegFormVerificationContact">Верификация и контакты</string>
+    <string name="RegFormProfessionalLinks">Профессиональные ссылки</string>
+    <string name="RegFormAddYourPortfolio">Добавьте свое портфолио</string>
+    <string name="RegFormPortfolioSubtitle">Рекомендуется — помогает клиентам быстрее находить ваши работы</string>
+    <string name="RegFormWebsiteUrl">URL веб-сайта</string>
+    <string name="RegFormWebsiteUrlHint">Помогает подтвердить ваш аккаунт</string>
+    <string name="RegFormContactFirstName">Имя контактного лица</string>
+    <string name="RegFormContactLastName">Фамилия контактного лица</string>
+    <string name="RegFormContactRole">Должность контактного лица</string>
+    <string name="RegFormAgencyOrganisation">Агентство / Организация</string>
+    <string name="RegFormCurrentOrLastAgency">Текущее или последнее агентство</string>
+    <string name="RegFormAgencyHintPro">Ваше агентство получит запрос на подтверждение</string>
+    <string name="RegFormAgencyHintModel">Добавьте агентство, чтобы получить значок верификации</string>
+    <string name="RegFormInstagramHandle">Ник в Instagram</string>
+    <string name="RegFormInstagramHint">Помогает быстрее вас находить</string>
+    <string name="RegFormPortfolioUrl">Ссылка на Instagram / Портфолио</string>
+    <string name="RegFormPortfolioUrlHint">Поделитесь ссылкой на ваш Instagram, Behance, личный сайт или любое портфолио</string>
+    <string name="RegFormShowreelUrl">Ссылка на шоурил / деморил</string>
+    <string name="RegFormCastingProfileUrl">Ссылка на Instagram / профиль кастинга</string>
+
+    <string name="RegFormAddLogoOrPhoto">Добавьте логотип или фото профиля</string>
+    <string name="RegFormAddProfilePhoto">Добавьте фото профиля</string>
+    <string name="RegFormProfilePhotoSubtitle">Используйте свое четкое фото. Вы можете обновить его в любое время.</string>
+    <string name="RegFormModelPhotoSubtitle">Используйте четкое фото в анфас. Вы можете обновить его в любое время.</string>
+    <string name="RegFormShowYourMainSpace">Покажите свое основное пространство</string>
+    <string name="RegFormStudioPhotoSubtitle">Клиенты хотят видеть, что они бронируют</string>
+    <string name="RegFormShowTheWorld">Покажите миру, кто вы</string>
+
+    <string name="RegFormUploadLogo">Загрузите логотип или сделайте фото</string>
+    <string name="RegFormUploadPhoto">Загрузите из галереи или сделайте фото</string>
+    <string name="RegFormAnyFileFormat">Поддерживается любой формат файлов</string>
+
+    <string name="RegFormTfpHintTitle">Ваш первый шаг: найти TFP-съемку</string>
+    <string name="RegFormTfpHintDescription">TFP-съемки (Time For Portfolio) — это бесплатное сотрудничество с фотографами. Они помогут быстро собрать портфолио. Мы покажем вам, как это сделать, когда вы зайдете в приложение.</string>
+
+    <string name="ButtonLetsGo">Поехали</string>
+    <!--divo view end-->
+
+
     <string name="AppName">Divo</string>
     <string name="AppNameBeta">Divo Beta</string>
     <string name="LanguageName">Русский</string>

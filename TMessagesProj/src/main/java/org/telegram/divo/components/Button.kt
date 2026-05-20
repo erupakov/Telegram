@@ -38,9 +38,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
+import dev.chrisbanes.haze.hazeEffect
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont
@@ -150,12 +155,14 @@ fun UIButtonNew(
                     tint = leadingIconTint,
                     contentDescription = null,
                 )
-                Spacer(Modifier.width(6.dp))
+                Spacer(Modifier.width(8.dp))
             }
             Text(
                 modifier = Modifier.padding(top = paddingTop),
                 text = text,
                 style = textStyle,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         } else {
             LottieProgressIndicator(

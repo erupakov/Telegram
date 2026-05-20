@@ -3266,7 +3266,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
 
             if (countryState == COUNTRY_STATE_EMPTY) {
-                needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ChooseCountry", R.string.ChooseCountry));
+                needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ChooseCountry", R.string.ChooseCountryLabel));
                 needHideProgress(false);
                 return;
                 //DIVO--START
@@ -3709,7 +3709,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         @Override
         public String getHeaderName() {
-            return getString("YourPhone", R.string.YourPhone);
+            return getString("YourPhone", R.string.YourPhoneLabel);
         }
 
         @Override

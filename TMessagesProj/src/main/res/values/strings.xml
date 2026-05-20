@@ -3,6 +3,11 @@
     <!--divo view start-->
     <string name="AppName">Divo</string>
     <string name="AppNameBeta">Divo Beta</string>
+    <string name="LanguageName">English</string>
+    <string name="English">English</string>
+    <string name="LanguageNameInEnglish">English</string>
+    <string name="LanguageCode">en</string>
+    <string name="ContinueOnThisLanguage">Continue in English</string>
     <string name="DivoMainTabsModels">Models</string>
     <string name="DivoMainTabsEvents">Events</string>
     <string name="DivoMainTabsChats">Chats</string>
@@ -19,6 +24,9 @@
     <string name="ButtonContinue">Continue</string>
     <string name="ButtonDone">Done</string>
     <string name="RetryLabel">Retry</string>
+    <string name="YourPhoneLabel">Your Phone</string>
+    <string name="ChooseCountryLabel">Choose a country</string>
+    <string name="SearchLabel">Search</string>
 
     <!--profile screen-->
     <string name="SimilarProfiles">You may be interested in similar profiles</string>
@@ -70,6 +78,9 @@
     <string name="NoLikesYet">No likes yet.</string>
     <string name="NothingSavedYet">Nothing saved yet.</string>
     <string name="NoProfileViewedYet">No profile\nviewed yet.</string>
+    <string name="StatLikes">LIKES</string>
+    <string name="StatViews">VIEWED</string>
+    <string name="StatSaves">SAVED</string>
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>
@@ -78,7 +89,7 @@
     <string name="SelectGender">Select a Gender</string>
     <string name="LabelGender">Gender</string>
     <string name="AllGendersLabel">All genders</string>
-    <string name="LabelAge">Age (y.o)</string>
+    <string name="LabelAge">Age</string>
     <string name="LabelHeight">Height (cm)</string>
     <string name="LabelWaist">Waist (cm)</string>
     <string name="LabelHips">Hips (cm)</string>
@@ -553,11 +564,6 @@
 
 
 
-    <string name="LanguageName">English</string>
-    <string name="English">English</string>
-    <string name="LanguageNameInEnglish">English</string>
-    <string name="LanguageCode">en</string>
-    <string name="ContinueOnThisLanguage">Continue in English</string>
     <!--signin view-->
     <string name="YourPhone">Your Phone</string>
     <string name="StartText">Please confirm your country code and enter your phone number.</string>

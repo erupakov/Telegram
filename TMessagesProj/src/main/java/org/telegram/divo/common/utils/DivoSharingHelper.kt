@@ -44,17 +44,18 @@ object DivoSharingHelper {
         val shareUrl = type.buildUrl(id)
         val textBody = "$customMessage\n$shareUrl"
 
-        if (imageUrl.isNullOrBlank()) {
-            openShareSheet(context, textBody, null)
-        } else {
-            scope.launch(Dispatchers.IO) {
-                val downloadedFile = ImageCacheHelper.getLocalUri(context, imageUrl)
-                    ?.let { File(context.cacheDir, "share_preview_temp.jpg") }
-                withContext(Dispatchers.Main) {
-                    openShareSheet(context, textBody, downloadedFile)
-                }
-            }
-        }
+        openShareSheet(context, textBody, null)
+//        if (imageUrl.isNullOrBlank()) {
+//            openShareSheet(context, textBody, null)
+//        } else {
+//            scope.launch(Dispatchers.IO) {
+//                val downloadedFile = ImageCacheHelper.getLocalUri(context, imageUrl)
+//                    ?.let { File(context.cacheDir, "share_preview_temp.jpg") }
+//                withContext(Dispatchers.Main) {
+//                    openShareSheet(context, textBody, downloadedFile)
+//                }
+//            }
+//        }
     }
 
     private fun openShareSheet(

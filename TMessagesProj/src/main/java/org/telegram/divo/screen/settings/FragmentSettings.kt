@@ -11,6 +11,7 @@ import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChangeUsernameActivity
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.DataSettingsActivity
+import org.telegram.ui.LanguageSelectActivity
 import org.telegram.ui.LogoutActivity
 import org.telegram.ui.MainTabsActivityController
 import org.telegram.ui.NotificationsSettingsActivity
@@ -41,6 +42,7 @@ class FragmentSettings : BaseFragment() {
                     navigateToDataStorage = { presentFragment(DataSettingsActivity()) },
                     navigateToAppearance = { presentFragment(ThemeActivity(ThemeActivity.THEME_TYPE_BASIC)) },
                     navigateToSetUsername = { presentFragment(ChangeUsernameActivity()) },
+                    navigateToLanguage = { presentFragment(LanguageSelectActivity()) },
                     onNavControllerReady = { navController ->
                         this@FragmentSettings.settingsNavController = navController
                         navController.addOnDestinationChangedListener { _, destination, _ ->

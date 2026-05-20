@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,7 +58,7 @@ fun DivoTextField(
     value: String,
     onValueChange: (String) -> Unit = {},
     onSearchConfirmed: () -> Unit = {},
-    placeholder: String = "Search",
+    placeholder: String = stringResource(R.string.SearchLabel),
     @DrawableRes leadingIcon: Int? = null,
     trailingIcon: Int? = null,
     onTrailingIconClick: () -> Unit = {},

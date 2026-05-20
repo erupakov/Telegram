@@ -75,6 +75,7 @@ fun SettingsScreen(
     navigateToDataStorage: () -> Unit = {},
     navigateToAppearance: () -> Unit = {},
     navigateToSetUsername: () -> Unit = {},
+    navigateToLanguage: () -> Unit = {},
     navigateToLogout: () -> Unit = {}
 ) {
     val state by viewModel.state.collectAsState()
@@ -97,6 +98,10 @@ fun SettingsScreen(
 
                 SettingsViewEffect.NavigateToDataStorage -> {
                     navigateToDataStorage()
+                }
+
+                SettingsViewEffect.NavigateToLanguage -> {
+                    navigateToLanguage()
                 }
 
                 SettingsViewEffect.NavigateToEditProfile -> {
@@ -261,6 +266,15 @@ fun SettingsScreen(
                             title = stringResource(R.string.DataAndStorageLabel),
                             iconResId = R.drawable.ic_divo_settings_data_and_storage,
                             intent = SettingsViewIntent.OnDataStorageClicked
+                        ),
+                        viewModel = viewModel
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.Language),
+                            iconResId = R.drawable.msg_language,
+                            intent = SettingsViewIntent.OnLanguageClicked
                         ),
                         viewModel = viewModel
                     )

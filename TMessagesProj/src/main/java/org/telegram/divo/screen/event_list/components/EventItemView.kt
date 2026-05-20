@@ -39,6 +39,7 @@ import dev.chrisbanes.haze.hazeEffect
 import kotlinx.coroutines.delay
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.toEventDisplayDate
+import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.entity.Event
 import org.telegram.divo.screen.event_list.EventCtaType
 import org.telegram.divo.style.AppTheme
@@ -68,6 +69,12 @@ fun EventItemView(
                 url = event.files.firstOrNull()?.fullUrl ?: event.creator?.avatar?.fullUrl.orEmpty(),
                 hazeState = hazeState
             )
+            DurationChip(
+                modifier = Modifier.padding(start = 16.dp, top = 16.dp),
+                dateFrom = event.date,
+                dateTo = event.dateTo,
+                hazeState = hazeState
+            )
 
             Column(
                 modifier = Modifier
@@ -90,25 +97,13 @@ fun EventItemView(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(Modifier.height(6.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-
-                    DurationChip(dateFrom = event.date, dateTo = event.dateTo, hazeState = hazeState)
-
-                    if (isModel) {
-                        EventCtaButton(
-                            text = stringResource(R.string.ButtonApply),
-                            onClick = onCtaClicked,
-                        )
-                    }
+                Spacer(Modifier.height(14.dp))
+                if (isModel) {
+                    EventCtaButton(
+                        text = stringResource(R.string.ButtonApply),
+                        onClick = onCtaClicked,
+                    )
                 }
-                Spacer(Modifier.height(4.dp))
             }
         }
     }
@@ -116,6 +111,7 @@ fun EventItemView(
 
 @Composable
 private fun DurationChip(
+    modifier: Modifier = Modifier,
     dateFrom: String,
     dateTo: String,
     hazeState: HazeState,
@@ -134,7 +130,7 @@ private fun DurationChip(
     }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(22.dp)
             .clip(RoundedCornerShape(12.dp))
             .hazeEffect(
@@ -208,18 +204,20 @@ private fun EventCtaButton(
 ) {
     Surface(
         modifier = Modifier
-            .height(22.dp)
-            .clickable(onClick = onClick),
+            .fillMaxWidth()
+            .height(24.dp)
+            .clickableWithoutRipple(onClick = onClick),
         color = AppTheme.colors.accentOrange,
         shape = RoundedCornerShape(12.dp),
     ) {
         Box(
-            modifier = Modifier.fillMaxHeight().padding(horizontal = 8.dp),
+            modifier = Modifier.fillMaxHeight(),
             contentAlignment = Alignment.Center,
         ) {
             Text(
-                modifier = Modifier.offset(y = 1.dp),
+                modifier = Modifier,
                 text = text,
+                fontSize = 12.sp,
                 style = AppTheme.typography.textButtonSmall,
                 color = AppTheme.colors.onBackground,
             )

@@ -118,7 +118,7 @@ public class CountrySelectActivity extends BaseFragment {
     public View createView(Context context) {
         actionBar.setBackButtonImage(R.drawable.ic_ab_back);
         actionBar.setAllowOverlayTitle(false);
-        actionBar.setTitle(LocaleController.getString(R.string.ChooseCountry));
+        actionBar.setTitle(LocaleController.getString(R.string.ChooseCountryLabel));
 
         actionBar.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
         actionBar.setItemsColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), false);

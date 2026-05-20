@@ -278,8 +278,8 @@ fun ProfileInfoEmptyContent(
             color = AppTheme.colors.textPrimary,
             style = AppTheme.typography.helveticaNeueLtCom,
             fontSize = 16.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            lineHeight = 22.sp,
+            textAlign = TextAlign.Center
         )
 
         if (isOwnProfile) {
@@ -287,8 +287,9 @@ fun ProfileInfoEmptyContent(
             UIButtonNew(
                 text = textButton,
                 height = 36.dp,
-                paddingTop = 4.dp,
+                paddingTop = 1.dp,
                 leadingIcon = R.drawable.ic_divo_plus,
+                leadingIconTint = AppTheme.colors.onBackground,
                 textStyle = AppTheme.typography.helveticaNeueLtCom.copy(
                     fontSize = 14.sp,
                     color = AppTheme.colors.onBackground

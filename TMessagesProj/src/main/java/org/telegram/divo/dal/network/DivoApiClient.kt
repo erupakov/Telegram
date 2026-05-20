@@ -1,11 +1,10 @@
 package org.telegram.divo.dal.network
 
-import com.google.android.exoplayer2.util.Log
+import android.util.Log
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import org.telegram.messenger.BuildVars
@@ -14,9 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import okhttp3.Authenticator
-import okhttp3.Route
-import org.telegram.divo.dal.dto.auth.LoginRequest
 
 /**
  * Builds shared OkHttp and Retrofit instances for talking to the Divo backend.
@@ -72,9 +68,12 @@ object DivoApiClient {
             val url = originalRequest.url
             val path = url.encodedPath
 
+            val currentLanguage = DivoLanguageManager.getLanguageCode()
+
             val requestBuilder = originalRequest.newBuilder()
                 .addHeader("App-Platform", "android")
                 .addHeader("App-Version", "(126)")
+                .addHeader("Accept-Language", currentLanguage)
 
             if (!shouldSkipAuth(path)) {
                 val token = runBlocking { accessTokenProvider.getAccessToken() }
@@ -84,7 +83,9 @@ object DivoApiClient {
                 }
             }
 
-            return chain.proceed(requestBuilder.build())
+            val request = requestBuilder.build()
+            Log.d("DivoNetwork", "Sending request to ${request.url} with lang: ${request.header("Accept-Language")}")
+            return chain.proceed(request)
         }
 
         private fun shouldSkipAuth(path: String): Boolean {

@@ -215,6 +215,7 @@ private fun ProfileItem(
                 if (profile.similarity != null) {
                     Box(
                         modifier = Modifier
+                            .weight(0.6f)
                             .height(22.dp)
                             .clip(CircleShape)
                             .border(1.dp, AppTheme.colors.accentOrange, CircleShape)
@@ -227,13 +228,15 @@ private fun ProfileItem(
                             color = AppTheme.colors.accentOrange,
                             style = AppTheme.typography.helveticaNeueRegular,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 11.sp
+                            fontSize = 11.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 } else {
                     Spacer(Modifier)
                 }
-
+                Spacer(Modifier.width(8.dp))
                 RoundedGlassContainer(
                     space = 10.dp,
                     height = 22.dp,

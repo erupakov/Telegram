@@ -82,9 +82,11 @@ fun AuthScreen(
                 modifier = Modifier.padding(top = 120.dp),
                 text = stringResource(R.string.WelcomeToDivo).uppercase(),
                 fontSize = 32.sp,
-                style = AppTheme.typography.helveticaNeueLtCom
+                lineHeight = 36.sp,
+                style = AppTheme.typography.helveticaNeueLtCom,
+                textAlign = TextAlign.Center
             )
-            Spacer(Modifier.height(6.dp))
+            Spacer(Modifier.height(8.dp))
             Text(
                 modifier = Modifier,
                 text = stringResource(R.string.SignOrCreateAccount),
@@ -105,7 +107,7 @@ fun AuthScreen(
                         // Переходим на главный экран
                         viewModel.setIntent(
                             AuthViewIntent.Login(
-                                email = "elenared720@gmail.com",
+                                email = "chiva_gp2022@icloud.com",
                                 password = "Qwerty#123",
                             )
                         )

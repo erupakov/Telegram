@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--divo view start-->
+    <string name="AppName">Divo</string>
+    <string name="AppNameBeta">Divo Beta</string>
+    <string name="LanguageName">中文 (简体)</string>
+    <string name="English">英文</string>
+    <string name="LanguageNameInEnglish">Chinese (Simplified)</string>
+    <string name="LanguageCode">zh</string>
+    <string name="ContinueOnThisLanguage">继续使用中文</string>
+    <string name="DivoMainTabsModels">模特</string>
+    <string name="DivoMainTabsEvents">活动</string>
+    <string name="DivoMainTabsChats">聊天</string>
+    <string name="DivoMainTabsSettings">设置</string>
+    <string name="ButtonBack">返回</string>
+    <string name="ButtonCreate">创建</string>
+    <string name="ButtonSave">保存</string>
+    <string name="ButtonApply">应用</string>
+    <string name="ButtonApplied">已应用</string>
+    <string name="ButtonOk">确定</string>
+    <string name="ButtonCancel">取消</string>
+    <string name="ButtonEdit">编辑</string>
+    <string name="ButtonDelete">删除</string>
+    <string name="ButtonContinue">继续</string>
+    <string name="ButtonDone">完成</string>
+    <string name="RetryLabel">重试</string>
+    <string name="YourPhoneLabel">您的手机</string>
+    <string name="ChooseCountryLabel">选择国家/地区</string>
+    <string name="SearchLabel">搜索</string>
+
+    <!--profile screen-->
+    <string name="SimilarProfiles">您可能对相似主页感兴趣</string>
+    <string name="UploadPhotos">上传您的照片</string>
+    <string name="UploadVideos">上传您的视频</string>
+    <string name="UploadingPhotos">正在上传照片…</string>
+    <string name="UploadingVideos">正在上传视频…</string>
+    <string name="AddEvent">添加活动</string>
+    <string name="MyLinks">我的链接</string>
+    <string name="EditLinks">编辑链接</string>
+    <string name="SendDM">发送私信</string>
+    <string name="Like">喜欢</string>
+    <string name="Viewed">已浏览</string>
+    <string name="Saved">保存</string>
+    <string name="LoadingModelsList">正在加载模特列表…</string>
+    <string name="EditProfile">编辑个人资料</string>
+    <string name="ChangeProfileBackground">更改主页背景</string>
+    <string name="EditSocialLinks">编辑社交链接</string>
+    <string name="ManageWorkExperience">管理工作经历</string>
+    <string name="Profile">我的主页</string>
+    <string name="CurrentAgency">当前经纪公司</string>
+    <string name="SeeHistory">查看历史记录</string>
+    <string name="SeeLess">收起</string>
+    <string name="SeeMore">查看更多</string>
+    <string name="AddModel">添加模特</string>
+    <string name="AgencyModelsEmpty">您的经纪公司暂无模特。</string>
+    <string name="AgencyModelsEmptyHint">点击下方按钮\n添加您的模特</string>
+    <string name="PremiumLabel">高级版</string>
+    <string name="ReportThisProfile">举报此主页</string>
+    <string name="BlockProfile">屏蔽用户</string>
+    <string name="SearchByName">按姓名或 @用户名 搜索</string>
+    <string name="YearsOld">岁</string>
+    <string name="NotBio">该模特尚未填写简介</string>
+    <string name="NotAgencyBio">该机构尚未填写简介</string>
+    <string name="NotAppearance">尚未填写模特参数</string>
+    <string name="NotExperience">尚未添加工作经历</string>
+    <string name="FillInBio">填写简介</string>
+    <string name="ThereAreNoBioAddedYet">尚未添加简介</string>
+    <string name="ThereAreNoYourParametersYet">您尚未设置参数</string>
+    <string name="AddYourParameters">添加您的参数</string>
+    <string name="AddWorkHistory">添加工作记录</string>
+    <string name="ThereAreNoWorkExperienceYet">暂无工作经历</string>
+    <string name="ThereAreNoChannels">目前没有频道</string>
+    <string name="YouHaveNotCreatedChannels">您尚未创建任何频道</string>
+    <string name="ThisAgencyHasNotCreatedChannels">该机构尚未创建任何频道</string>
+    <string name="ThisModelHasNotCreatedChannels">该模特尚未创建任何频道</string>
+    <string name="CreateNewChannel">创建新频道</string>
+    <string name="SearchModels">搜索模特</string>
+    <string name="NoLikesYet">暂无点赞。</string>
+    <string name="NothingSavedYet">暂无保存内容。</string>
+    <string name="NoProfileViewedYet">暂无\n浏览记录。</string>
+    <string name="StatLikes">获赞</string>
+    <string name="StatViews">浏览</string>
+    <string name="StatSaves">收藏</string>
+
+    <!--your parameters screen-->
+    <string name="ParametersSaved">参数已保存</string>
+    <string name="YourParameters">您的参数</string>
+    <string name="ResetParameter">重置参数</string>
+    <string name="SelectGender">选择性别</string>
+    <string name="LabelGender">性别</string>
+    <string name="AllGendersLabel">所有性别</string>
+    <string name="LabelAge">年龄</string>
+    <string name="LabelHeight">身高 (cm)</string>
+    <string name="LabelWaist">腰围 (cm)</string>
+    <string name="LabelHips">臀围 (cm)</string>
+    <string name="LabelWeight">体重 (kg)</string>
+    <string name="LabelShoeSize">鞋码 (EU)</string>
+    <string name="LabelShoeSizeUS">鞋码 (US)</string>
+    <string name="LabelBreastSize">罩杯尺寸</string>
+    <string name="LabelHairColor">发色</string>
+    <string name="LabelHairLength">发长</string>
+    <string name="LabelEyeColor">瞳色</string>
+    <string name="LabelSkinColor">肤色</string>
+    <string name="ChooseHairLength">选择发长</string>
+    <string name="ChooseHairColor">选择发色</string>
+    <string name="ChooseEyeColor">选择瞳色</string>
+    <string name="ChooseSkinColor">选择肤色</string>
+    <string name="ChooseBreastSize">选择罩杯尺寸</string>
+    <string name="ChoosePrefix">选择您的</string>
+    <string name="Female">女性</string>
+    <string name="NoBiographyAvailable">暂无简介</string>
+
+    <string-array name="GenderItems">
+        <item>所有性别</item>
+        <item>男性</item>
+        <item>女性</item>
+    </string-array>
+
+    <string-array name="BreastSizeItems">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>DD</item>
+        <item>E</item>
+        <item>F</item>
+    </string-array>
+
+    <!--edit my profile screen-->
+    <string name="FullNameEditProfileScreen">全名</string>
+    <string name="BiographyPlaceholder">法国顶级模特…</string>
+    <string name="Biography">个人简介</string>
+    <string name="SaveEditProfileScreen">保存</string>
+    <string name="TabBiography">简介</string>
+    <string name="TabAppearance">外貌</string>
+    <string name="TabExperience">经历</string>
+    <string name="MyAgencyProfile">我的机构主页</string>
+
+    <!--work experience screen-->
+    <string name="CreateExperience">创建经历</string>
+    <string name="EditExperience">编辑经历</string>
+    <string name="WorkExperience">工作经历</string>
+    <string name="WorkExperienceInfo">工作经历信息</string>
+    <string name="CurrentlyWorkingRole">我目前正在担任此职务</string>
+    <string name="CreateNewWorkExperience">创建新工作经历</string>
+    <string name="AgencyName">机构名称</string>
+    <string name="EnterAgencyName">输入机构名称</string>
+    <string name="StartDate">开始日期</string>
+    <string name="EndDate">结束日期</string>
+    <string name="AddWorkExperience">添加工作经历</string>
+    <string name="WorkHistoryEmptyTitle">暂无工作经历</string>
+    <string name="WorkHistoryEmptySubtitle">点击下方按钮\n添加您的工作经历</string>
+    <string name="SaveChanges">保存更改</string>
+    <string name="WorkExperienceSaved">工作经历添加成功</string>
+    <string name="PresentLabel">至今</string>
+    <string name="EndDateCannotBeEarly">结束日期不能早于开始日期</string>
+
+    <plurals name="work_years">
+        <item quantity="one">%d 年</item>
+        <item quantity="other">%d 年</item>
+    </plurals>
+    <plurals name="work_months">
+        <item quantity="one">%d 个月</item>
+        <item quantity="other">%d 个月</item>
+    </plurals>
+
+    <!--add model screen-->
+    <string name="AddNewModel">添加新模特</string>
+    <string name="AddModelDescription">填写模特详细信息以将他们添加到您的机构。您可以随时更新这些信息。</string>
+    <string name="PersonalData">个人资料</string>
+    <string name="FullName">全名</string>
+    <string name="CountryLabel">国家/地区</string>
+    <string name="ProfileLink">Divo 主页链接</string>
+    <string name="NextStep">下一步</string>
+    <string name="AddStoryLabel">添加动态</string>
+    <string name="Liked">已赞</string>
+    <string name="Unliked">取消点赞</string>
+    <string name="BookmarkSaved">已保存</string>
+    <string name="BookmarkUnsaved">未保存</string>
+    <string name="AddModelToYourRoster">将模特添加到您的名单</string>
+    <string name="StartTypingToSearchForModel">开始输入以\n搜索模特</string>
+
+    <!--events screen-->
+    <string name="EventList">活动</string>
+    <string name="OrganizationLabel">组织机构</string>
+    <string name="ParametersForApplying">报名条件</string>
+    <string name="AgeRange">%1$d-%2$d 岁</string>
+    <string name="PreviousEvents">往期活动</string>
+    <string name="CountdownFormat">%1$d天 : %2$d小时 : %3$d分</string>
+    <string name="CountdownStarted">已开始</string>
+    <string name="CountdownFinished">已结束</string>
+    <string name="NoEventsYet">暂无活动</string>
+    <string name="CreateEvent">创建活动</string>
+    <string name="EventType">活动类型</string>
+    <string name="EventName">活动名称 *</string>
+    <string name="EventDescription">描述 *</string>
+    <string name="EventDescriptionAbout">活动详情</string>
+    <string name="EventDate">活动日期 *</string>
+    <string name="EventTime">活动时间 *</string>
+    <string name="EventDatePlaceholder">2000年1月1日</string>
+    <string name="EventTimePlaceholder">00:00</string>
+    <string name="EventChooseCountry">选择国家/地区</string>
+    <string name="EventContinue">继续</string>
+    <string name="EventStepProgress">第 %1$d/%2$d 步</string>
+    <string name="EventWhoCanApply">报名要求</string>
+    <string name="EventMaxParticipants">人数上限</string>
+    <string name="EventSelectMaxParticipants">选择人数上限</string>
+    <string name="EventChooseTalent">选择特长</string>
+    <string name="EventChooseAnEvent">选择一个活动</string>
+    <string name="EventRequirements">活动要求</string>
+    <string name="EventEnterRequirements">输入活动要求</string>
+    <string name="EventNdaRequired">需要签署保密协议(NDA)</string>
+    <string name="EventApplicationDeadlineDate">报名截止日期*</string>
+    <string name="EventApplicationDeadlineTime">报名截止时间*</string>
+    <string name="EventPaid">是否有酬劳</string>
+    <string name="EventRate">薪酬</string>
+    <string name="EventRatePlaceholder">100</string>
+    <string name="EventPublicEvent">公开活动</string>
+    <string name="EventVisibleToAllUsers">对所有用户可见</string>
+    <string name="EventPhotoGallery">活动图库</string>
+    <string name="EventUploadEventPhotos">上传活动照片</string>
+    <string name="EventPreview">预览</string>
+    <string name="EventPublish">发布活动</string>
+    <string name="EventUploadingPhotos">正在上传照片...</string>
+    <string name="EventParametersForApplying">报名条件</string>
+    <string name="EventApplied">%d 人已报名</string>
+    <string name="EventMaxSpots">上限 %d 人</string>
+    <string name="EditEvent">编辑活动</string>
+    <string name="CloseApplicationsEvent">停止报名</string>
+    <string name="CancelEvent">取消活动</string>
+    <string name="DeleteEvent">删除</string>
+    <string name="DeleteEventTitle">要删除 \"%s\" 吗？</string>
+    <string name="DeleteEventDescription">此操作无法撤销，所有报名申请都将被取消。</string>
+    <string name="DeleteEventConfirm">删除活动</string>
+    <string name="ThereAreNoUpcomingEvents">目前没有即将到来的活动</string>
+    <string name="CheckBackLaterOrCreateEvents">请稍后查看或\n创建一个新活动</string>
+    <string name="ClosesDate">截止时间：%1$s</string>
+    <string name="ViewApplications">查看报名申请</string>
+    <string name="ApplyNowPreview">立即报名 (仅限预览)</string>
+    <plurals name="ParticipantsCount">
+        <item quantity="one">%d 名参与者</item>
+        <item quantity="other">%d 名参与者</item>
+    </plurals>
+
+    <!--models screen-->
+    <string name="Models">模特</string>
+    <string name="NewTalents">新面孔</string>
+    <string name="Agencies">机构</string>
+
+    <!--search screen-->
+    <string name="FindSimilarProfiles">寻找相似主页</string>
+    <string name="UploadPhoto">上传照片以寻找外貌相似的模特</string>
+    <string name="TakePhoto">拍照</string>
+    <string name="ChooseFromLibrary">从相册选择</string>
+    <string name="UseDivoPhoto">使用 DIVO 头像</string>
+    <string name="FaceSearchTitle">人脸搜索如何工作</string>
+    <string name="FaceSearchDescriptionFirst">我们会分析您的照片以寻找外貌相似的 DIVO 主页。您的照片仅用于此次搜索，不会被存储或分享。</string>
+    <string name="FaceSearchDescriptionSecond">结果根据视觉相似度排序。您可以使用过滤器进一步缩小位置、角色等范围。</string>
+    <string name="FaceSearchConfirm">知道了，开始搜索</string>
+    <string name="CameraPermissionTitle">需要相机权限</string>
+    <string name="CameraPermissionDescription">为了拍摄照片进行人脸搜索，请允许访问相机。您可以在应用设置中开启。</string>
+    <string name="OpenSettings">打开设置</string>
+    <string name="FaceSearch">人脸搜索</string>
+    <string name="ChangePhoto">更改照片</string>
+    <string name="SimilarityScore">结果按视觉相似度排序</string>
+    <string name="NoFaceDetected">未检测到人脸</string>
+    <string name="PleaseUsePhotoClearly">请使用面部清晰可见的照片——正面、光线充足且无遮挡。</string>
+    <string name="MultipleFacesDetected">检测到 %d 张人脸 — 点击其中一张进行搜索</string>
+    <string name="ReadyToSearchFace">已选择人脸 — 准备搜索</string>
+    <string name="AvoidSunglasses">避免佩戴墨镜、口罩或照片裁剪过度。</string>
+    <string name="FullFacePhotos">全脸照片效果最佳 — 请勿使用侧脸照片。</string>
+    <string name="AnalysingFacialFeatures">正在分析面部特征...</string>
+    <string name="NoResultsFound">未找到结果</string>
+    <string name="TryAdjustingYourFilters">尝试调整您的过滤器</string>
+    <string name="CityLabel">城市</string>
+    <string name="CitiesLabel">城市</string>
+    <string name="CountriesLabel">国家/地区</string>
+    <string name="SuggestedCities">推荐城市</string>
+    <string name="NoItemsFound">未找到 %1$s</string>
+    <string name="TryDifferent">尝试其他 %1$s</string>
+    <string name="AllColorsLabel">所有颜色</string>
+    <string name="AllLengthsLabel">所有长度</string>
+    <string name="ForLabel">用于</string>
+    <string name="RecentFaceSearches">最近的人脸搜索</string>
+    <string name="Found">找到</string>
+    <string name="NoFilters">无过滤器</string>
+    <string name="SeeAll">查看全部</string>
+    <plurals name="ResultFor">
+        <item quantity="one">个结果</item>
+        <item quantity="other">个结果</item>
+    </plurals>
+
+    <!--similar profiles screen-->
+    <string name="SimilarProfilesTitle">相似主页</string>
+    <string name="FaceSearchHistoryTitle">人脸搜索历史</string>
+    <string name="ClearAll">清除全部</string>
+    <string name="ResultsWithSimilarity">%1$s · 相似度 %2$d%%+</string>
+    <string name="SortedBy">排序方式：</string>
+    <string name="SimilarityFormat">%1$d%% 匹配</string>
+    <string name="FilterResults">过滤结果</string>
+    <string name="ButtonReset">重置</string>
+    <string name="MinimumSimilarity">最低相似度</string>
+    <string name="HigherValuesShow">数值越高匹配越精确，但结果较少</string>
+    <string name="AnyLabel">不限</string>
+    <string name="RoleLabel">角色</string>
+    <string name="AllLabel">所有角色</string>
+    <string name="CountriesValue">所有国家/地区</string>
+    <string name="MoreParameters">更多参数</string>
+    <string name="LessParameters">收起参数</string>
+    <string name="ApplyFilter">应用过滤器</string>
+    <string name="SortedByMatch">匹配度</string>
+    <string name="SortedByFilters">过滤条件：</string>
+    <string name="Model">模特</string>
+    <string name="Agency">机构</string>
+    <string name="NewTalent">新面孔</string>
+    <plurals name="ProfilesFound">
+        <item quantity="one">找到 %d 个主页</item>
+        <item quantity="other">找到 %d 个主页</item>
+    </plurals>
+
+    <plurals name="ResultsCount">
+        <item quantity="one">%d 个结果</item>
+        <item quantity="other">%d 个结果</item>
+    </plurals>
+
+    <string-array name="ModelFunNewTalent">
+        <item>所有角色</item>
+        <item>模特</item>
+        <item>爱好者</item>
+        <item>新面孔</item>
+    </string-array>
+
+    <!--settings screen-->
+    <string name="SettingsTitle">设置</string>
+    <string name="EditBtn">编辑</string>
+    <string name="PromoCardHeadline">在时尚界大放异彩</string>
+    <string name="PromoCardBody">作为模特发布您的主页，参与选角；或作为经纪公司发布活动 — 成为全球时尚网络的一员。</string>
+    <string name="PromoCardBtn">了解更多</string>
+    <string name="SetUsernameLabel">设置用户名</string>
+    <string name="FillYourParametersLabel">填写您的参数</string>
+    <string name="SavedMessagesLabel">收藏的消息</string>
+    <string name="NotificationsAndSoundsLabel">通知与声音</string>
+    <string name="PrivacyAndSecurityLabel">隐私与安全</string>
+    <string name="DataAndStorageLabel">数据与存储</string>
+    <string name="AppearanceLabel">外观</string>
+    <string name="LogOutLabel">退出登录</string>
+
+    <!--onboarding screen-->
+    <string name="OnboardingTitleGetSeenByTheRightPeople">被对的人看见</string>
+    <string name="OnboardingSubtitleGetSeenByTheRightPeople">专业的个人主页，让正在寻找合适人才的经纪公司和品牌一眼看到您</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">真实的试镜。真正的机会。</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">申请来自机构和品牌的经过验证的工作 — 没有中间商，无需猜测。</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">AI 助力，更快被发掘。</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO的 AI 为人才和品牌进行最佳匹配 — 让机会主动找上门。</string>
+    <string name="OnboardingEnterCode">输入验证码</string>
+    <string name="WelcomeToDivo">欢迎来到 DIVO</string>
+    <string name="SignOrCreateAccount">登录或创建您的账户</string>
+    <string name="ContinueWithPhoneNumber">使用手机号码继续</string>
+    <string name="OnboardingOrLabel">或</string>
+    <string name="OnboardingSignInWithGoogle">使用 Google 登录</string>
+    <string name="OnboardingSignInWithApple">使用 Apple 登录</string>
+    <string name="TermsPrefix">继续即表示您同意我们的</string>
+    <string name="OnboardingAnd">及</string>
+    <string name="OnboardingTermsOfService">服务条款</string>
+    <string name="OnboardingPrivacyPolicy">隐私政策</string>
+    <string name="OptionGetHiredTitle">我想找工作</string>
+    <string name="OptionLookingForTalentTitle">我在寻找人才</string>
+    <string name="OptionHereToFollowTitle">我只是来关注动态的</string>
+    <string name="OptionGetHiredSubtitle">模特、表演者、创意工作者</string>
+    <string name="OptionLookingForTalentSubtitle">机构、品牌、星探、经纪人</string>
+    <string name="OptionHereToFollowSubtitle">时尚及创作者的粉丝</string>
+    <string name="QuizStepProgress">第 %1$d 题，共 %2$d 题</string>
+    <string name="RegStepProgress">第 %1$d 步，共 %2$d 步</string>
+    <string name="RoleResultSoundsRight">听起来不错 — 让我们开始吧</string>
+    <string name="RoleResultChooseDifferentRole">选择其他身份</string>
+
+    <string name="RoleResultTitleFashionFan">您是一位时尚爱好者</string>
+    <string name="RoleResultDescriptionFashionFan">您将能够关注您喜爱的模特和创作者，发现新面孔，并与时尚界保持联系。</string>
+
+    <string name="RoleResultTitleModel">您是一位专业模特</string>
+    <string name="RoleResultDescriptionModel">您的主页将用于展示您的作品集，并直接将您与寻找资深人才的机构和品牌联系起来。</string>
+
+    <string name="RoleResultTitleRisingTalent">您是一位明日之星</string>
+    <string name="RoleResultDescriptionRisingTalent">您的主页将帮助您建立作品集、获得曝光并拿下您的第一次试镜机会 — 包括与摄影师和造型师合作的免费互勉拍摄 (TFP)。</string>
+
+    <string name="RoleResultTitleActor">您是一位演员</string>
+    <string name="RoleResultDescriptionActor">您的主页将把您与正在为广告、时尚短片和现场活动寻找演员的品牌及机构联系起来。</string>
+
+    <string name="RoleResultTitleDancer">您是一位舞者</string>
+    <string name="RoleResultDescriptionDancer">您的主页将把您与各种寻求各类舞蹈人才的演出、宣传和活动联系起来。</string>
+
+    <string name="RoleResultTitlePerformer">您是一位表演者</string>
+    <string name="RoleResultDescriptionPerformer">您的主页将把您与寻找现场表演人才的时尚活动、品牌宣传及创意项目联系起来。</string>
+
+    <string name="RoleResultTitleCreativeProfessional">您是一位创意专业人士</string>
+    <string name="RoleResultDescriptionCreativeProfessional">您的主页将展示您的作品集，让您发布项目，并在市场的供需两端与模特、品牌及机构建立联系。</string>
+
+    <string name="RoleResultTitleFindTalent">您来这里是为了寻找人才</string>
+    <string name="RoleResultDescriptionFindTalent">无论您是全球性经纪公司还是本土品牌，您的主页都将用于搜索、发布试镜，并直接与模特和创意人员取得联系。</string>
+
+    <string name="RoleResultTitleIndustryProfessional">您是一位业内专业人士</string>
+    <string name="RoleResultDescriptionIndustryProfessional">您的主页将赋予您直接访问 DIVO 人才库的权限，享受高级搜索工具及选角工作流 — 专为专业人士的真实工作习惯而打造。</string>
+
+    <!-- Companies (A) -->
+    <string name="SubRoleModelingAgency">模特经纪公司</string>
+    <string name="SubRoleFashionBrand">时尚品牌</string>
+    <string name="SubRoleBeautyBrand">美妆品牌</string>
+    <string name="SubRoleBrandOrBusiness">品牌或企业</string>
+    <string name="SubRoleEventAgency">活动策划公司</string>
+    <string name="SubRoleMagazine">杂志或媒体</string>
+    <!-- Industry Pros (B) -->
+    <string name="SubRoleScout">星探</string>
+    <string name="SubRoleBooker">经纪人</string>
+    <string name="SubRoleCastingDirector">选角导演</string>
+    <string name="SubRoleTalentManager">艺人经纪人</string>
+    <!-- Creative (C) -->
+    <string name="SubRolePhotographer">摄影师</string>
+    <string name="SubRoleStylist">造型师</string>
+    <string name="SubRoleMakeupArtist">化妆师</string>
+    <string name="SubRoleHairStylist">发型师</string>
+    <string name="SubRoleVideographer">摄像师</string>
+    <string name="SubRoleCreativeDirector">创意总监</string>
+    <string name="SubRoleFashionDesigner">时装设计师</string>
+    <string name="SubRoleStudio">工作室</string>
+    <!-- Talent (D) -->
+    <string name="SubRoleModel">模特</string>
+    <string name="SubRoleNewTalent">新面孔</string>
+    <string name="SubRoleActor">演员</string>
+    <string name="SubRoleDancer">舞者</string>
+    <string name="SubRoleSingerOrPerformer">歌手或表演者</string>
+    <!-- Audience (E) -->
+    <string name="SubRoleFan">爱好者</string>
+
+    <string name="QuizGetHiredTitle">您是哪一类的\n人才？</string>
+    <string name="QuizGetHiredSubtitle">请如实回答 — 这有助于我们为您推送合适的机会</string>
+    <string name="QuizSectionTalents">演艺/模特人才</string>
+    <string name="QuizSectionCreative">创意工作者</string>
+
+    <string name="QuizModelExperienceTitle">您是否有专业的模特经验并签约了经纪公司？</string>
+    <string name="QuizModelExperienceSubtitle">这有助于我们从第一天起为您匹配合适的试镜</string>
+    <string name="QuizModelExperienceYesLabel">是</string>
+    <string name="QuizModelExperienceYesDescription">我有作品集，并且目前正在与经纪公司合作（或曾经合作过）</string>
+    <string name="QuizModelExperienceNoLabel">还没</string>
+    <string name="QuizModelExperienceNoDescription">我的事业刚起步，还没有签约经纪公司</string>
+
+    <string name="QuizHiringTypeTitle">您的工作方式是？</string>
+    <string name="QuizHiringTypeSubtitle">这有助于我们为您设置合适的主页类型</string>
+    <string name="QuizHiringTypeCompanyLabel">我代表一家公司</string>
+    <string name="QuizHiringTypeCompanyDescription">机构、品牌、媒体或工作室</string>
+    <string name="QuizHiringTypeIndividualLabel">我是一名独立专家</string>
+    <string name="QuizHiringTypeIndividualDescription">星探、经纪人、选角导演等…</string>
+
+    <string name="QuizCompanyTitle">哪一项最能描述\n您的公司？</string>
+    <string name="QuizCompanySubtitle">选择最接近您业务的选项</string>
+
+    <string name="SubRoleModelingAgencyDescription">我管理着一批模特并负责预订工作</string>
+    <string name="SubRoleFashionBrandDescription">我的品牌涉及时尚：服装、鞋履或配饰</string>
+    <string name="SubRoleBeautyBrandDescription">我从事美妆行业：化妆品、护肤品或香水</string>
+    <string name="SubRoleBrandOrBusinessDescription">我是寻找模特的商家：餐厅、酒店、零售商或任何其他公司</string>
+    <string name="SubRoleEventAgencyDescription">我组织活动、演出或促销推广</string>
+    <string name="SubRoleMagazineDescription">我是出版物、媒体机构或数字编辑团队</string>
+
+    <string name="QuizIndustryTitle">您在行业内的\n职位是什么？</string>
+    <string name="QuizIndustrySubtitle">选择最符合您日常工作的选项</string>
+    <string name="SubRoleScoutDescription">我为经纪公司或独立寻找新面孔</string>
+    <string name="SubRoleBookerDescription">我在经纪公司负责管理模特的预订及合同谈判</string>
+    <string name="SubRoleCastingDirectorDescription">我为特定项目负责选角：走秀、广告或电影</string>
+    <string name="SubRoleTalentManagerDescription">我作为独立艺人的代理并负责管理他们的职业生涯</string>
+
+    <!--reg forms-->
+    <string name="RegFormCompanyInfoTitle">告诉我们关于您的公司信息</string>
+    <string name="RegFormProfessionalIdentityTitle">您的职业身份</string>
+    <string name="RegFormCreativeIdentityTitle">您的创意身份</string>
+    <string name="RegFormStudioDetailsTitle">您的工作室详情</string>
+    <string name="RegFormYourIdentityTitle">您的身份</string>
+    <string name="RegFormFanIdentityTitle">自我介绍</string>
+    <string name="RegFormCompanyName">公司 / 组织名称 *</string>
+    <string name="RegFormFirstName">名字 *</string>
+    <string name="RegFormLastName">姓氏 *</string>
+    <string name="RegFormStudioName">工作室 / 场地名称 *</string>
+    <string name="RegFormDateOfBirth">出生日期</string>
+    <string name="RegFormDateOfBirthPlaceholder">选择日期</string>
+    <string name="RegFormGender">选择性别</string>
+    <string name="RegFormWhereAreYouBased">您在哪里办公/居住？</string>
+    <string name="RegFormPersonalDetails">个人信息</string>
+    <string name="RegFormContactDetails">联系方式</string>
+    <string name="RegFormLocation">位置</string>
+    <string name="RegFormWebsiteOrInstagram">网站或 Instagram</string>
+    <string name="RegFormContactName">联系人姓名</string>
+    <string name="RegFormContactPhone">联系电话或电子邮件</string>
+    <string name="RegFormSpecialisation">选择专业领域</string>
+    <string name="RegFormSpecialisationLabel">专业领域</string>
+    <string name="RegFormWebsiteOrInstagramHint">用于辅助身份验证</string>
+    <string name="RegFormContactNameHint">负责管理预订的人</string>
+    <string name="RegFormContactPhoneHint">用于预订咨询</string>
+
+    <string-array name="ActorSpecialisations">
+        <item>电影</item>
+        <item>戏剧</item>
+        <item>商业广告</item>
+        <item>配音</item>
+        <item>电视</item>
+        <item>其他</item>
+    </string-array>
+
+    <string-array name="DancerSpecialisations">
+        <item>现代舞</item>
+        <item>芭蕾</item>
+        <item>嘻哈/街舞</item>
+        <item>国标舞</item>
+        <item>商业舞蹈</item>
+        <item>拉丁舞</item>
+        <item>爵士舞</item>
+        <item>其他</item>
+    </string-array>
+
+    <string-array name="SingerSpecialisations">
+        <item>流行乐 (Pop)</item>
+        <item>节奏蓝调 (R&amp;B)</item>
+        <item>爵士乐</item>
+        <item>古典乐</item>
+        <item>音乐剧</item>
+        <item>歌剧</item>
+        <item>其他</item>
+    </string-array>
+
+    <string name="RegFormVerificationContact">验证与联系方式</string>
+    <string name="RegFormProfessionalLinks">职业链接</string>
+    <string name="RegFormAddYourPortfolio">添加您的作品集</string>
+    <string name="RegFormPortfolioSubtitle">推荐 — 这将帮助客户更快找到您的作品</string>
+    <string name="RegFormWebsiteUrl">网站链接 URL</string>
+    <string name="RegFormWebsiteUrlHint">帮助验证您的帐户</string>
+    <string name="RegFormContactFirstName">联系人名字</string>
+    <string name="RegFormContactLastName">联系人姓氏</string>
+    <string name="RegFormContactRole">联系人职务 / 头衔</string>
+    <string name="RegFormAgencyOrganisation">机构 / 组织</string>
+    <string name="RegFormCurrentOrLastAgency">目前或最近合作的经纪公司</string>
+    <string name="RegFormAgencyHintPro">您的经纪公司将会收到一条确认请求</string>
+    <string name="RegFormAgencyHintModel">添加您的经纪公司以获得官方认证徽章</string>
+    <string name="RegFormInstagramHandle">Instagram 用户名</string>
+    <string name="RegFormInstagramHint">帮助您更快地被发掘</string>
+    <string name="RegFormPortfolioUrl">Instagram / 作品集链接 URL</string>
+    <string name="RegFormPortfolioUrlHint">分享您的 Instagram、Behance、个人网站或任何作品集链接</string>
+    <string name="RegFormShowreelUrl">个人作品集视频 / 演示视频 URL</string>
+    <string name="RegFormCastingProfileUrl">Instagram / 选角主页 URL</string>
+
+    <string name="RegFormAddLogoOrPhoto">添加您的标志(Logo)或头像</string>
+    <string name="RegFormAddProfilePhoto">添加您的头像</string>
+    <string name="RegFormProfilePhotoSubtitle">请使用清晰的本人照片，您随时可以更新。</string>
+    <string name="RegFormModelPhotoSubtitle">请使用清晰的正面照，您随时可以更新。</string>
+    <string name="RegFormShowYourMainSpace">展示您的主要场地/空间</string>
+    <string name="RegFormStudioPhotoSubtitle">客户希望看到他们正在预订怎样的场地</string>
+    <string name="RegFormShowTheWorld">向世界展示您是谁</string>
+
+    <string name="RegFormUploadLogo">上传 Logo 或拍照</string>
+    <string name="RegFormUploadPhoto">从相册上传或拍照</string>
+    <string name="RegFormAnyFileFormat">支持任何文件格式</string>
+
+    <string name="RegFormTfpHintTitle">您的第一步：寻找一次互勉 (TFP) 拍摄</string>
+    <string name="RegFormTfpHintDescription">互勉拍摄 (TFP) 是指与摄影师的免费合作。这能帮助您快速丰富作品集。当您进入应用后，我们会告诉您该如何操作。</string>
+
+    <string name="ButtonLetsGo">开始吧</string>
+    <!--divo view end-->
+</resources>

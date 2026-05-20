@@ -41,6 +41,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             SettingsViewIntent.OnPrivacyClicked -> sendEffect(SettingsViewEffect.NavigateToPrivacy)
             SettingsViewIntent.OnDataStorageClicked -> sendEffect(SettingsViewEffect.NavigateToDataStorage)
             SettingsViewIntent.OnAppearanceClicked -> sendEffect(SettingsViewEffect.NavigateToAppearance)
+            SettingsViewIntent.OnLanguageClicked -> sendEffect(SettingsViewEffect.NavigateToLanguage)
             SettingsViewIntent.OnQrCodeClicked -> sendEffect(SettingsViewEffect.ShowQrCode)
             SettingsViewIntent.OnRefresh -> loadUserData()
             SettingsViewIntent.OnLogoutClicked -> sendEffect(SettingsViewEffect.NavigateToLogout)
