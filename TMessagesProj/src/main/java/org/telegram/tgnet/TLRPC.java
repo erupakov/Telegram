@@ -3050,59 +3050,23 @@ public class TLRPC {
 
     //auth_Authorization start
     public static class TL_auth_signUp extends TLObject {
-        public static final int constructor = 0x46ca89f4;
+        public static final int constructor = 0x80eee427;
 
-        public int flags;
-        public boolean no_joined_notifications;
         public String phone_number;
         public String phone_code_hash;
         public String first_name;
         public String last_name;
-        public TL_modelInfo model_info;
-
 
         public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
             return auth_Authorization.TLdeserialize(stream, constructor, exception);
         }
 
-        public static TL_auth_signUp TLdeserialize(InputSerializedData stream, int constructor, boolean exception) {
-            if (TL_auth_signUp.constructor != constructor) {
-                if (exception) {
-                    throw new RuntimeException(String.format("can't parse magic %x in TL_auth_signUp", constructor));
-                } else {
-                    return null;
-                }
-            }
-            TL_auth_signUp result = new TL_auth_signUp();
-            result.readParams(stream, exception);
-            return result;
-        }
-
-        public void readParams(InputSerializedData stream, boolean exception) {
-            flags = stream.readInt32(exception);
-            no_joined_notifications = (flags & 1) != 0;
-
-            phone_number = stream.readString(exception);
-            phone_code_hash = stream.readString(exception);
-            first_name = stream.readString(exception);
-            last_name = stream.readString(exception);
-            if ((flags & 2) != 0) {
-                model_info = TL_modelInfo.TLdeserialize(stream, stream.readInt32(exception), exception);
-            }
-        }
-
         public void serializeToStream(OutputSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = no_joined_notifications ? (flags | 1) : (flags & ~1);
-            flags = model_info != null ? (flags | 2) : (flags & ~2);
-            stream.writeInt32(flags);
             stream.writeString(phone_number);
             stream.writeString(phone_code_hash);
             stream.writeString(first_name);
             stream.writeString(last_name);
-            if ((flags & 2) != 0) {
-                model_info.serializeToStream(stream);
-            }
         }
     }
 

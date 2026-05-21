@@ -2135,7 +2135,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         //DIVO--START: inline country prefix (replaces separate countryOutlineView)
         private LinearLayout countryPrefixLayout;
         private TextView prefixFlagView;
-        private TextView prefixCodeView;
         //DIVO--END
 
         @CountryState
@@ -2242,6 +2241,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             plusTextView = new TextView(context);
             plusTextView.setText("+");
             plusTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            plusTextView.setTextColor(Color.BLACK); // DIVO
             plusTextView.setFocusable(false);
             //DIVO: plusTextView hidden — replaced by prefixCodeView inside countryPrefixLayout
             //linearLayout.addView(plusTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
@@ -2255,11 +2255,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             prefixFlagView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             prefixFlagView.setPadding(0, 0, AndroidUtilities.dp(4), 0);
             countryPrefixLayout.addView(prefixFlagView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
-
-            prefixCodeView = new TextView(context);
-            prefixCodeView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-            prefixCodeView.setTextColor(Color.BLACK); //DIVO
-            countryPrefixLayout.addView(prefixCodeView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+            countryPrefixLayout.addView(plusTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
 
             ImageView prefixChevron = new ImageView(context);
             prefixChevron.setImageResource(R.drawable.msg_inputarrow);
@@ -2295,16 +2291,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             codeField.setInputType(InputType.TYPE_CLASS_PHONE);
             codeField.setCursorSize(AndroidUtilities.dp(20));
             codeField.setCursorWidth(1.5f);
-            codeField.setPadding(AndroidUtilities.dp(10), 0, 0, 0);
+            codeField.setPadding(0, 0, 0, 0); // DIVO: removed left padding
             codeField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            codeField.setTextColor(Color.BLACK); // DIVO
             codeField.setMaxLines(1);
             codeField.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             codeField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             codeField.setBackground(null);
-            codeField.setShowSoftInputOnFocus(false); //DIVO: hidden, no keyboard needed
+            codeField.setMinWidth(AndroidUtilities.dp(20)); // DIVO: expand area when empty so user can click it
+            // codeField.setShowSoftInputOnFocus(false); // DIVO: restored keyboard
             codeField.setContentDescription(getString(R.string.LoginAccessibilityCountryCode));
-            codeField.setVisibility(View.GONE); //DIVO: hidden but kept for country-detection logic
-            linearLayout.addView(codeField, LayoutHelper.createLinear(0, 0)); //DIVO: zero-size, logic only
+            // codeField.setVisibility(View.GONE); // DIVO: restored visibility
+            countryPrefixLayout.addView(codeField, 2, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
             codeField.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -2447,10 +2445,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 @Override
                 public boolean onKeyDown(int keyCode, KeyEvent event) {
                     if (keyCode == KeyEvent.KEYCODE_DEL && phoneField.length() == 0) {
-                        //DIVO: codeField is now hidden — do NOT dispatch DEL to it.
-                        // Previously this let user backspace into country code, but now
-                        // country is changed via the prefix button only.
-                        return true; // consume event, keep codeField intact
+                        codeField.requestFocus();
+                        codeField.dispatchKeyEvent(event);
+                        return true;
                     }
                     return super.onKeyDown(keyCode, event);
                 }
@@ -2967,9 +2964,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (prefixFlagView != null) {
                 prefixFlagView.setText(flag != null ? flag : "");
             }
-            if (prefixCodeView != null) {
-                prefixCodeView.setText("+" + code);
-            }
+            // DIVO: removed prefixCodeView logic, handled naturally by codeField
             //DIVO--END
             invalidateCountryHint();
         }
@@ -5163,6 +5158,28 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 params.putString("phoneHash", phoneHash);
                                 params.putString("code", req.phone_code);
                                 pendingRegisterParams = params;
+                                
+                                // DIVO MOCK TEST: test TL_auth_signUp
+                                TLRPC.TL_auth_signUp mockSignUp = new TLRPC.TL_auth_signUp();
+                                mockSignUp.phone_number = requestPhone;
+                                mockSignUp.phone_code_hash = phoneHash;
+                                mockSignUp.first_name = "MockFirstName";
+                                mockSignUp.last_name = "MockLastName";
+                                ConnectionsManager.getInstance(currentAccount).sendRequest(mockSignUp, (responseTest, errorTest) -> {
+                                    AndroidUtilities.runOnUIThread(() -> {
+                                        String msg = "Mock auth_signUp result: ";
+                                        if (errorTest != null) {
+                                            msg += "Error " + errorTest.code + ": " + errorTest.text;
+                                        } else {
+                                            msg += "Success! " + responseTest;
+                                        }
+                                        if (getParentActivity() != null) {
+                                            android.widget.Toast.makeText(getParentActivity(), msg, android.widget.Toast.LENGTH_LONG).show();
+                                        }
+                                        android.util.Log.e("DivoMock", msg);
+                                    });
+                                }, ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagFailOnServerErrors);
+
                                 animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
                                 //DIVO--END
                             } else {
@@ -9314,7 +9331,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             req.phone_number = requestPhone;
             req.first_name = firstNameField.getText().toString();
             req.last_name = lastNameField.getText().toString();
-            req.no_joined_notifications = true;
 
             TLRPC.TL_modelInfo modelInfo = new TLRPC.TL_modelInfo();
             modelInfo.age = userAge;
@@ -9325,7 +9341,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             ;
             modelInfo.agency_name = "empty name";
             modelInfo.type_id = 1; // 1 2
-            req.model_info = modelInfo;
             if (flag) {
                 return;
             }
@@ -10079,7 +10094,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             req.phone_number = requestPhone;
             req.first_name = firstNameField.getText().toString();
             req.last_name = "";
-            req.no_joined_notifications = true;
 
             TLRPC.TL_modelInfo modelInfo = new TLRPC.TL_modelInfo();
             modelInfo.age = userAge;
@@ -10090,7 +10104,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             ;
             modelInfo.agency_name = "empty name";
             modelInfo.type_id = 1; // 1 2
-            req.model_info = modelInfo;
             if (flag) {
                 return;
             }
@@ -10818,7 +10831,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             req.phone_number = requestPhone;
             req.first_name = firstNameField.getText().toString();
             req.last_name = lastNameField.getText().toString();
-            req.no_joined_notifications = true;
 
             TLRPC.TL_modelInfo modelInfo = new TLRPC.TL_modelInfo();
             modelInfo.age = userAge;
@@ -10829,7 +10841,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             ;
             modelInfo.agency_name = "empty name";
             modelInfo.type_id = 1; // 1 2
-            req.model_info = modelInfo;
             if (flag) {
                 return;
             }
