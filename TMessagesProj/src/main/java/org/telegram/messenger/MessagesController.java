@@ -1507,7 +1507,7 @@ public class MessagesController extends BaseController implements NotificationCe
         maxFaveStickersCount = mainPreferences.getInt("maxFaveStickersCount", 5);
         maxEditTime = mainPreferences.getInt("maxEditTime", 3600);
         ratingDecay = mainPreferences.getInt("ratingDecay", 2419200);
-        linkPrefix = mainPreferences.getString("linkPrefix", "t.me");
+        linkPrefix = mainPreferences.getString("linkPrefix", "t.divo.global");
         callReceiveTimeout = mainPreferences.getInt("callReceiveTimeout", 20000);
         callRingTimeout = mainPreferences.getInt("callRingTimeout", 90000);
         callConnectTimeout = mainPreferences.getInt("callConnectTimeout", 30000);
