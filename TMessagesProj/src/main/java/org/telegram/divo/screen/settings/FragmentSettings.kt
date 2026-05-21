@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.messenger.UserConfig
+import org.telegram.divo.style.setDivoContent
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChangeUsernameActivity
 import org.telegram.ui.ChatActivity
@@ -34,7 +35,7 @@ class FragmentSettings : BaseFragment() {
         if (fragmentView != null) return fragmentView
         actionBar.setAddToContainer(false)
         fragmentView = ComposeView(context).apply {
-            setContent {
+            setDivoContent {
                 SettingsNavGraph(
                     navigateToSavedMessages = { openSavedMessages() },
                     navigateToNotifications = { presentFragment(NotificationsSettingsActivity()) },

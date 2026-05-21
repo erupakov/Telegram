@@ -3,6 +3,7 @@ package org.telegram.divo.screen.models
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ import org.telegram.divo.screen.models.ModelsViewIntent.Refresh
 import org.telegram.divo.usecase.GetFeedUseCase
 import org.telegram.divo.usecase.ToggleBookmarkUseCase
 import org.telegram.divo.usecase.ToggleLikeUseCase
+import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
 
 class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
@@ -47,6 +49,15 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     private val agenciesPaginator = GetFeedUseCase(
         limit = PAGE_SIZE, role = RoleType.AGENCY.value
     ).paginator
+
+    private val languageObserver = NotificationCenter.NotificationCenterDelegate { id, _, _ ->
+        if (id == NotificationCenter.reloadInterface) {
+            viewModelScope.launch {
+                delay(300)
+                refresh()
+            }
+        }
+    }
 
     init {
         setIntent(LoadInitialData)
@@ -97,6 +108,13 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                 }
             }
         }
+
+        NotificationCenter.getGlobalInstance().addObserver(languageObserver, NotificationCenter.reloadInterface)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        NotificationCenter.getGlobalInstance().removeObserver(languageObserver, NotificationCenter.reloadInterface)
     }
 
     private fun currentPaginator(): OffsetPaginator<FeedItem> = when (state.value.selectedTab) {

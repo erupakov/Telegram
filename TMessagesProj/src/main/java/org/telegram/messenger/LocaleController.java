@@ -568,10 +568,10 @@ public class LocaleController {
         languagesDict.put(localeInfo.shortName, localeInfo);
 
         localeInfo = new LocaleInfo();
-        localeInfo.name = "Italiano";
-        localeInfo.nameEnglish = "Italian";
-        localeInfo.shortName = localeInfo.pluralLangCode = "it";
-        localeInfo.pathToFile = null;
+        localeInfo.name = "Русский";
+        localeInfo.nameEnglish = "Russian";
+        localeInfo.shortName = localeInfo.pluralLangCode = "ru";
+        localeInfo.pathToFile = null; // TODO: change to "remote" when Telegram servers are connected
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
@@ -580,35 +580,8 @@ public class LocaleController {
         localeInfo.name = "Español";
         localeInfo.nameEnglish = "Spanish";
         localeInfo.shortName = localeInfo.pluralLangCode = "es";
+        localeInfo.pathToFile = null; // TODO: change to "remote" when Telegram servers are connected
         localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.shortName, localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "Deutsch";
-        localeInfo.nameEnglish = "German";
-        localeInfo.shortName = localeInfo.pluralLangCode = "de";
-        localeInfo.pathToFile = null;
-        localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.shortName, localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "Nederlands";
-        localeInfo.nameEnglish = "Dutch";
-        localeInfo.shortName = localeInfo.pluralLangCode = "nl";
-        localeInfo.pathToFile = null;
-        localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.shortName, localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "العربية";
-        localeInfo.nameEnglish = "Arabic";
-        localeInfo.shortName = localeInfo.pluralLangCode = "ar";
-        localeInfo.pathToFile = null;
-        localeInfo.builtIn = true;
-        localeInfo.isRtl = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
 
@@ -616,16 +589,17 @@ public class LocaleController {
         localeInfo.name = "Português (Brasil)";
         localeInfo.nameEnglish = "Portuguese (Brazil)";
         localeInfo.shortName = localeInfo.pluralLangCode = "pt_br";
-        localeInfo.pathToFile = null;
+        localeInfo.pathToFile = null; // TODO: change to "remote" when Telegram servers are connected
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
 
         localeInfo = new LocaleInfo();
-        localeInfo.name = "한국어";
-        localeInfo.nameEnglish = "Korean";
-        localeInfo.shortName = localeInfo.pluralLangCode = "ko";
-        localeInfo.pathToFile = null;
+        localeInfo.name = "中文 (简体)";
+        localeInfo.nameEnglish = "Chinese (Simplified)";
+        localeInfo.shortName = "zh_hans_cn";
+        localeInfo.pluralLangCode = "zh";
+        localeInfo.pathToFile = null; // TODO: change to "remote" when Telegram servers are connected
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);

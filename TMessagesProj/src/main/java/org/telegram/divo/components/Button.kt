@@ -42,12 +42,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.HazeTint
-import dev.chrisbanes.haze.hazeEffect
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
+import org.telegram.divo.style.setDivoContent
 import org.telegram.divo.style.DivoFont
 import org.telegram.messenger.R
 
@@ -307,7 +304,7 @@ fun mountRoundedButton(
     composeView: androidx.compose.ui.platform.ComposeView,
     onClick: () -> Unit
 ) {
-    composeView.setContent {
+    composeView.setDivoContent {
         RoundedButton(onClick = onClick)
     }
 }

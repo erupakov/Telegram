@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
+import org.telegram.divo.style.setDivoContent
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.MainTabsActivity
 import org.telegram.ui.MainTabsActivityController
@@ -28,7 +29,7 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
         actionBar.setAddToContainer(false)
 
         fragmentView = ComposeView(context).apply {
-            setContent {
+            setDivoContent {
                 ModelsNavGraph(
                     onNavControllerReady = { navController ->
                         this@FragmentModels.modelsNavController = navController

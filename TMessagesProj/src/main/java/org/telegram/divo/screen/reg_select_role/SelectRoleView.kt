@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.navigation.NavController
+import org.telegram.divo.style.setDivoContent
 import org.telegram.ui.Components.SlideView
 
 class RoleSelectionView(context: Context) : SlideView(context) {
@@ -22,7 +23,7 @@ class RoleSelectionView(context: Context) : SlideView(context) {
         val composeView = ComposeView(context).apply {
             // Чтобы ComposeView корректно уничтожался вместе со SlideView
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnDetachedFromWindow)
-            setContent {
+            setDivoContent {
                 RoleNavGraph(
                     onNavControllerReady = { navController ->
                         this@RoleSelectionView.rolesNavController = navController

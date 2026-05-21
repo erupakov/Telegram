@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.style.setDivoContent
 import org.telegram.divo.style.DivoFont
 
 @Composable
@@ -45,7 +46,7 @@ object OnboardingScreen {
     @JvmStatic
     fun mountOnboarding(composeView: ComposeView,onNext: () -> Unit
     ) {
-        composeView.setContent {
+        composeView.setDivoContent {
             OnboardingHost(onNext)
         }
     }

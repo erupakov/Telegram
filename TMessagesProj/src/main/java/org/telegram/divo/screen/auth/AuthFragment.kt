@@ -3,6 +3,7 @@ package org.telegram.divo.screen.auth
 import android.content.Context
 import android.view.View
 import androidx.compose.ui.platform.ComposeView
+import org.telegram.divo.style.setDivoContent
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.LoginActivity
 
@@ -12,7 +13,7 @@ class AuthFragment : BaseFragment() {
         actionBar.setAddToContainer(false) // Отключаем стандартный тулбар Telegram
 
         fragmentView = ComposeView(context).apply {
-            setContent {
+            setDivoContent {
                 AuthScreen(
                     onAuthClicked = { presentFragment(LoginActivity(), true) }
                 )

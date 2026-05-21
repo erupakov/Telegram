@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.screen.event_filter.FragmentEventFilter
+import org.telegram.divo.style.setDivoContent
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.MainTabsActivityController
 
@@ -28,7 +29,7 @@ class FragmentEventList : BaseFragment() {
         actionBar.setAddToContainer(false)
 
         fragmentView = ComposeView(context).apply {
-            setContent {
+            setDivoContent {
                 EventsNavGraph(
                     onNavControllerReady = { navController ->
                         this@FragmentEventList.eventsNavController = navController

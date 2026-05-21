@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
+import org.telegram.divo.style.setDivoContent
 import org.telegram.ui.ActionBar.BaseFragment
 
 class FragmentProfileN : BaseFragment() {
@@ -41,7 +42,7 @@ class FragmentProfileN : BaseFragment() {
 //        }
 
         return ComposeView(context).apply {
-            setContent {
+            setDivoContent {
                 ProfileNavGraph(
                     userId = targetUserId,
                     isOwnProfile = true,
