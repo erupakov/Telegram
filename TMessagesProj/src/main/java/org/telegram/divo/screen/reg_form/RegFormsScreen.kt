@@ -16,10 +16,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.SnackbarEvent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -40,21 +45,34 @@ import org.telegram.messenger.R
 @Composable
 fun RegFormsScreen(
     subRole: SubRole,
+    currentAccount: Int,
+    phoneHash: String,
+    phoneNumber: String,
     viewModel: RegFormsViewModel = viewModel(),
-    onFinished: () -> Unit,
+    onFinished: (org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit,
     onBack: () -> Unit,
+    onBackToPhone: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.setIntent(RegFormsIntent.Init(subRole))
+        viewModel.setIntent(RegFormsIntent.Init(subRole, currentAccount, phoneHash, phoneNumber))
     }
+
+    val snackbarHostState = remember { AppSnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is RegFormsEffect.FinishRegistration -> onFinished()
+                is RegFormsEffect.FinishRegistration -> onFinished(effect.authResponse)
                 is RegFormsEffect.NavigateBack -> onBack()
+                is RegFormsEffect.NavigateBackToPhone -> onBackToPhone()
+                is RegFormsEffect.ShowError -> {
+                    scope.launch {
+                        snackbarHostState.show(SnackbarEvent.Error(effect.message))
+                    }
+                }
             }
         }
     }
@@ -73,6 +91,7 @@ fun RegFormsScreen(
     } else {
         RegFormsScreenContent(
             state = state,
+            snackbarHostState = snackbarHostState,
             onIntent = { viewModel.setIntent(it) }
         )
     }
@@ -81,6 +100,7 @@ fun RegFormsScreen(
 @Composable
 private fun RegFormsScreenContent(
     state: RegFormsState,
+    snackbarHostState: AppSnackbarHostState,
     onIntent: (RegFormsIntent) -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -97,6 +117,7 @@ private fun RegFormsScreenContent(
     }
 
     Scaffold(
+        snackbarHost = { AppSnackbarHost(state = snackbarHostState) },
         topBar = {
             TopBar(
                 currentPage = state.currentStepIndex + 1,

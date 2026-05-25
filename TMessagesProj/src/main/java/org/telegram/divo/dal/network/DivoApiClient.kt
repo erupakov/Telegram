@@ -89,7 +89,7 @@ object DivoApiClient {
         }
 
         private fun shouldSkipAuth(path: String): Boolean {
-            if (path.startsWith("/auth/")) {
+            if (path.startsWith("/auth/") && !path.startsWith("/auth/logout")) {
                 return true
             }
             if (path.startsWith("/geo/")) {

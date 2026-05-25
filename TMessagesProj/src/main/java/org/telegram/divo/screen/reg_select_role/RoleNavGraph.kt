@@ -30,9 +30,12 @@ sealed class Screen(val route: String) {
 
 @Composable
 fun RoleNavGraph(
+    currentAccount: Int,
+    phoneHash: String,
+    phoneNumber: String,
     onNavControllerReady: (NavController) -> Unit,
     onBackToPhone: () -> Unit,
-    onFinishedFlow: () -> Unit = {}
+    onFinishedFlow: (org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit = {}
 ) {
     val nav = rememberNavController()
     val viewModel: RoleSelectionViewModel = viewModel()
@@ -115,8 +118,12 @@ fun RoleNavGraph(
 
             RegFormsScreen(
                 subRole = subRole,
+                currentAccount = currentAccount,
+                phoneHash = phoneHash,
+                phoneNumber = phoneNumber,
                 onFinished = onFinishedFlow,
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onBackToPhone = onBackToPhone
             )
         }
     }

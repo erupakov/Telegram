@@ -15,6 +15,9 @@ data class RegFormsState(
     val isLoading: Boolean = false,
     val allCountries: List<LocalCountry> = emptyList(),
     val allCities: List<LocalCity> = emptyList(),
+    val currentAccount: Int = 0,
+    val phoneHash: String = "",
+    val phoneNumber: String = "",
 ) : ViewState {
     val currentStep: RegFormStep? get() = steps.getOrNull(currentStepIndex)
     val totalSteps: Int get() = steps.size
@@ -37,7 +40,12 @@ data class RegFormsState(
 }
 
 sealed class RegFormsIntent : ViewIntent {
-    data class Init(val subRole: SubRole) : RegFormsIntent()
+    data class Init(
+        val subRole: SubRole,
+        val currentAccount: Int,
+        val phoneHash: String,
+        val phoneNumber: String
+    ) : RegFormsIntent()
     data class OnFieldChanged(val update: RegistrationFormData.() -> RegistrationFormData) : RegFormsIntent()
     data object OnContinue : RegFormsIntent()
     data object OnBack : RegFormsIntent()
@@ -45,7 +53,9 @@ sealed class RegFormsIntent : ViewIntent {
 
 sealed class RegFormsEffect : ViewEffect {
     data object NavigateBack : RegFormsEffect()
-    data object FinishRegistration : RegFormsEffect()
+    data object NavigateBackToPhone : RegFormsEffect()
+    data class FinishRegistration(val authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization) : RegFormsEffect()
+    data class ShowError(val message: String) : RegFormsEffect()
 }
 
 // Накопитель данных всего флоу регистрации

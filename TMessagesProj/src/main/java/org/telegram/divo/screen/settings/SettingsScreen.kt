@@ -55,14 +55,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.SnackbarEvent
 import org.telegram.divo.common.SnackbarEvent.*
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
-import org.telegram.tgnet.TLRPC
 
 @Composable
 fun SettingsScreen(
@@ -174,7 +172,9 @@ fun SettingsScreen(
     ) { padding ->
         if (state.isLoading) {
             Box(
-                modifier = Modifier.fillMaxSize().padding(padding),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
                 LottieProgressIndicator(Modifier.size(32.dp))
@@ -190,7 +190,8 @@ fun SettingsScreen(
 
                 ProfileRow(
                     name = state.userName,
-                    avatar = state.avatarUrl
+                    avatar = state.avatarUrl,
+                    phone = state.phoneNumber
                 )
 
                 Spacer(Modifier.height(24.dp))
@@ -324,7 +325,9 @@ private fun SettingsTopBar(
         contentAlignment = Alignment.CenterStart
     ) {
         RoundedButton(
-            modifier = Modifier.padding(start = 16.dp).align(Alignment.CenterStart),
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .align(Alignment.CenterStart),
             resId = R.drawable.ic_qr_code,
             iconSize = 24.dp,
             iconTint = Color.Red,
@@ -336,7 +339,10 @@ private fun SettingsTopBar(
             style = AppTheme.typography.appBar
         )
         Text(
-            modifier = Modifier.padding(end = 16.dp).align(Alignment.CenterEnd).clickableWithoutRipple { onAction() },
+            modifier = Modifier
+                .padding(end = 16.dp)
+                .align(Alignment.CenterEnd)
+                .clickableWithoutRipple { onAction() },
             text = stringResource(R.string.EditBtn),
             style = AppTheme.typography.helveticaNeueRegular,
             fontSize = 15.sp,
@@ -348,6 +354,7 @@ private fun SettingsTopBar(
 @Composable
 private fun ProfileRow(
     name: String,
+    phone: String,
     avatar: String,
 ) {
     Column(
@@ -375,12 +382,14 @@ private fun ProfileRow(
             overflow = TextOverflow.Ellipsis,
         )
         Spacer(Modifier.height(10.dp))
-        Text(
-            text = "+7 999 999 99 99",
-            style = AppTheme.typography.helveticaNeueRegular,
-            color = Color.Red, //AppTheme.colors.textPrimary.copy(0.6f)
-            fontSize = 14.sp,
-        )
+        if (phone.isNotEmpty()) {
+            Text(
+                text = "+${phone}",
+                style = AppTheme.typography.helveticaNeueRegular,
+                color = AppTheme.colors.textPrimary.copy(0.8f),
+                fontSize = 14.sp,
+            )
+        }
     }
 }
 

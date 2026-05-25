@@ -108,6 +108,13 @@ class UserRepository(
             .also { updateCacheAndPersist(it) }
     }
 
+    suspend fun updateProfile(
+        request: UpdateProfileRequest
+    ): DivoResult<UserInfo> = resultOf {
+        service.updateProfile(request).toEntity()
+            .also { updateCacheAndPersist(it) }
+    }
+
     private fun updateCacheAndPersist(info: UserInfo) {
         _currentUserCache.value = info
         prefs.edit().apply {

@@ -62,7 +62,7 @@ public class TLRPC {
     public static final int MESSAGE_FLAG_HAS_BOT_ID         = 0x00000800;
     public static final int MESSAGE_FLAG_EDITED             = 0x00008000;
 
-    public static final int LAYER = 222;
+    public static final int LAYER = 201;
     // DIVO START  --------------------------
 
     public static class TL_profile_createWorkExperience extends TLObject {
@@ -40181,11 +40181,11 @@ public class TLRPC {
 
         public void readParams(InputSerializedData stream, boolean exception) {
             flags = stream.readInt32(exception);
-            default_p2p_contacts = (flags & 8) != 0;
-            preload_featured_stickers = (flags & 16) != 0;
-            revoke_pm_inbox = (flags & 64) != 0;
-            blocked_mode = (flags & 256) != 0;
-            force_try_ipv6 = (flags & 16384) != 0;
+            default_p2p_contacts = hasFlag(flags, FLAG_3);
+            preload_featured_stickers = hasFlag(flags, FLAG_4);
+            revoke_pm_inbox = hasFlag(flags, FLAG_6);
+            blocked_mode = hasFlag(flags, FLAG_8);
+            force_try_ipv6 = hasFlag(flags, FLAG_14);
             date = stream.readInt32(exception);
             expires = stream.readInt32(exception);
             test_mode = stream.readBool(exception);
@@ -40209,7 +40209,7 @@ public class TLRPC {
             rating_e_decay = stream.readInt32(exception);
             stickers_recent_limit = stream.readInt32(exception);
             channels_read_media_period = stream.readInt32(exception);
-            if ((flags & 1) != 0) {
+            if (hasFlag(flags, FLAG_0)) {
                 tmp_sessions = stream.readInt32(exception);
             }
             call_receive_timeout_ms = stream.readInt32(exception);
@@ -40217,48 +40217,48 @@ public class TLRPC {
             call_connect_timeout_ms = stream.readInt32(exception);
             call_packet_timeout_ms = stream.readInt32(exception);
             me_url_prefix = stream.readString(exception);
-            if ((flags & 128) != 0) {
+            if (hasFlag(flags, FLAG_7)) {
                 autoupdate_url_prefix = stream.readString(exception);
             }
-            if ((flags & 512) != 0) {
+            if (hasFlag(flags, FLAG_9)) {
                 gif_search_username = stream.readString(exception);
             }
-            if ((flags & 1024) != 0) {
+            if (hasFlag(flags, FLAG_10)) {
                 venue_search_username = stream.readString(exception);
             }
-            if ((flags & 2048) != 0) {
+            if (hasFlag(flags, FLAG_11)) {
                 img_search_username = stream.readString(exception);
             }
-            if ((flags & 4096) != 0) {
+            if (hasFlag(flags, FLAG_12)) {
                 static_maps_provider = stream.readString(exception);
             }
             caption_length_max = stream.readInt32(exception);
             message_length_max = stream.readInt32(exception);
             webfile_dc_id = stream.readInt32(exception);
-            if ((flags & 4) != 0) {
+            if (hasFlag(flags, FLAG_2)) {
                 suggested_lang_code = stream.readString(exception);
             }
-            if ((flags & 4) != 0) {
+            if (hasFlag(flags, FLAG_2)) {
                 lang_pack_version = stream.readInt32(exception);
             }
-            if ((flags & 4) != 0) {
+            if (hasFlag(flags, FLAG_2)) {
                 base_lang_pack_version = stream.readInt32(exception);
             }
-            if ((flags & 32768) != 0) {
+            if (hasFlag(flags, FLAG_15)) {
                 reactions_default = Reaction.TLdeserialize(stream, stream.readInt32(exception), exception);
             }
-            if ((flags & 65536) != 0) {
+            if (hasFlag(flags, FLAG_16)) {
                 autologin_token = stream.readString(exception);
             }
         }
 
         public void serializeToStream(OutputSerializedData stream) {
             stream.writeInt32(constructor);
-            flags = default_p2p_contacts ? (flags | 8) : (flags &~ 8);
-            flags = preload_featured_stickers ? (flags | 16) : (flags &~ 16);
-            flags = revoke_pm_inbox ? (flags | 64) : (flags &~ 64);
-            flags = blocked_mode ? (flags | 256) : (flags &~ 256);
-            flags = force_try_ipv6 ? (flags | 16384) : (flags &~ 16384);
+            flags = setFlag(flags, FLAG_3, default_p2p_contacts);
+            flags = setFlag(flags, FLAG_4, preload_featured_stickers);
+            flags = setFlag(flags, FLAG_6, revoke_pm_inbox);
+            flags = setFlag(flags, FLAG_8, blocked_mode);
+            flags = setFlag(flags, FLAG_14, force_try_ipv6);
             stream.writeInt32(flags);
             stream.writeInt32(date);
             stream.writeInt32(expires);
@@ -40283,7 +40283,7 @@ public class TLRPC {
             stream.writeInt32(rating_e_decay);
             stream.writeInt32(stickers_recent_limit);
             stream.writeInt32(channels_read_media_period);
-            if ((flags & 1) != 0) {
+            if (hasFlag(flags, FLAG_0)) {
                 stream.writeInt32(tmp_sessions);
             }
             stream.writeInt32(call_receive_timeout_ms);
@@ -40291,37 +40291,37 @@ public class TLRPC {
             stream.writeInt32(call_connect_timeout_ms);
             stream.writeInt32(call_packet_timeout_ms);
             stream.writeString(me_url_prefix);
-            if ((flags & 128) != 0) {
+            if (hasFlag(flags, FLAG_7)) {
                 stream.writeString(autoupdate_url_prefix);
             }
-            if ((flags & 512) != 0) {
+            if (hasFlag(flags, FLAG_9)) {
                 stream.writeString(gif_search_username);
             }
-            if ((flags & 1024) != 0) {
+            if (hasFlag(flags, FLAG_10)) {
                 stream.writeString(venue_search_username);
             }
-            if ((flags & 2048) != 0) {
+            if (hasFlag(flags, FLAG_11)) {
                 stream.writeString(img_search_username);
             }
-            if ((flags & 4096) != 0) {
+            if (hasFlag(flags, FLAG_12)) {
                 stream.writeString(static_maps_provider);
             }
             stream.writeInt32(caption_length_max);
             stream.writeInt32(message_length_max);
             stream.writeInt32(webfile_dc_id);
-            if ((flags & 4) != 0) {
+            if (hasFlag(flags, FLAG_2)) {
                 stream.writeString(suggested_lang_code);
             }
-            if ((flags & 4) != 0) {
+            if (hasFlag(flags, FLAG_2)) {
                 stream.writeInt32(lang_pack_version);
             }
-            if ((flags & 4) != 0) {
+            if (hasFlag(flags, FLAG_2)) {
                 stream.writeInt32(base_lang_pack_version);
             }
-            if ((flags & 32768) != 0) {
+            if (hasFlag(flags, FLAG_15)) {
                 reactions_default.serializeToStream(stream);
             }
-            if ((flags & 65536) != 0) {
+            if (hasFlag(flags, FLAG_16)) {
                 stream.writeString(autologin_token);
             }
         }
@@ -57949,28 +57949,6 @@ public class TLRPC {
             settings.serializeToStream(stream);
         }
     }
-
-//DIVO
-//    public static class TL_auth_signUp extends TLObject {
-//        public static final int constructor = 0x80eee427;
-//
-//        public String phone_number;
-//        public String phone_code_hash;
-//        public String first_name;
-//        public String last_name;
-//
-//        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
-//            return auth_Authorization.TLdeserialize(stream, constructor, exception);
-//        }
-//
-//        public void serializeToStream(OutputSerializedData stream) {
-//            stream.writeInt32(constructor);
-//            stream.writeString(phone_number);
-//            stream.writeString(phone_code_hash);
-//            stream.writeString(first_name);
-//            stream.writeString(last_name);
-//        }
-//    }
 
     public static class TL_auth_signInOld extends TLObject {
         public static final int constructor = 0xbcd51581;

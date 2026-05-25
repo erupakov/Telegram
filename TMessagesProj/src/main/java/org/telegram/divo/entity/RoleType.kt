@@ -3,6 +3,7 @@ package org.telegram.divo.entity
 enum class RoleType(val value: String) {
     MODEL("model"),
     NEW_FACE("new_face"),
+    NEW_TALENT("new_talent"),
     AGENCY("agency_employee"),
     PHOTOGRAPHER("photographer"),
     MEDIA("media"),
@@ -10,6 +11,7 @@ enum class RoleType(val value: String) {
     STYLIST("stylist"),
     PLACE("place"),
     CUSTOMER("customer"),
+    FAN("fan"),
     UNKNOWN("");
 
     fun isModel(): Boolean = this == NEW_FACE || this == MODEL

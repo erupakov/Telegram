@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.auth
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -32,7 +31,6 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.edit
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.telegram.divo.components.LottieProgressIndicator
@@ -99,41 +97,10 @@ fun AuthScreen(
                     modifier = Modifier.fillMaxWidth(),
                     text = "Continue with phone number",//"Login (Model)",
                     onClick = {
-                        val prefs = context.getSharedPreferences("divo_auth", Context.MODE_PRIVATE)
-                        val userId = UserConfig.getInstance(currentAccount).clientUserId
-                        prefs.edit { putBoolean("auth_completed_$userId", true) }
-                        // ==========================================
-
-                        // Переходим на главный экран
-                        viewModel.setIntent(
-                            AuthViewIntent.Login(
-                                email = "chiva_gp2022@icloud.com",
-                                password = "Qwerty#123",
-                            )
-                        )
+                        onAuthClicked()
                     }
                 )
-//                Spacer(modifier = Modifier.height(10.dp))
-//                UIButtonNew(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    text = "Login (Agency)",
-//                    onClick = {
-//                        // ==========================================
-//                        // 2. Пользователь всё сделал. Ставим флаг в TRUE
-//                        val prefs = context.getSharedPreferences("divo_auth", Context.MODE_PRIVATE)
-//                        val userId = UserConfig.getInstance(currentAccount).clientUserId
-//                        prefs.edit { putBoolean("auth_completed_$userId", true) }
-//                        // ==========================================
-//
-//                        // Переходим на главный экран
-//                        viewModel.setIntent(
-//                            AuthViewIntent.Login(
-//                                email = "chiva_gp2022@icloud.com", //elenared720@gmail.com
-//                                password = "Qwerty#123",
-//                            )
-//                        )
-//                    }
-//                )
+
             }
 
             Spacer(modifier = Modifier.height(28.dp))

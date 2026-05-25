@@ -1,16 +1,28 @@
 package org.telegram.divo.screen.reg_form
 
+import android.os.Build
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.screen.add_model.LocalCountry
-import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.divo.screen.search.LocalCity
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
-import java.io.BufferedReader
 import java.io.InputStreamReader
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import org.telegram.tgnet.ConnectionsManager
+import org.telegram.tgnet.TLRPC
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.dto.auth.RegistrationRequest
+import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
+import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.screen.reg_select_role.SubRole
+import org.telegram.tgnet.tl.TL_account
+import java.io.BufferedReader
 
 class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsEffect>() {
 
@@ -18,18 +30,21 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
 
     override fun handleIntent(intent: RegFormsIntent) {
         when (intent) {
-            is RegFormsIntent.Init -> init(intent.subRole)
+            is RegFormsIntent.Init -> init(intent)
             is RegFormsIntent.OnFieldChanged -> onFieldChanged(intent.update)
             is RegFormsIntent.OnContinue -> onContinue()
             is RegFormsIntent.OnBack -> onBack()
         }
     }
 
-    private fun init(subRole: SubRole) {
+    private fun init(intent: RegFormsIntent.Init) {
         setState {
             copy(
-                steps = subRole.formSteps(),
-                formData = RegistrationFormData(subRole = subRole)
+                steps = intent.subRole.formSteps(),
+                formData = RegistrationFormData(subRole = intent.subRole),
+                currentAccount = intent.currentAccount,
+                phoneHash = intent.phoneHash,
+                phoneNumber = intent.phoneNumber
             )
         }
         loadCountries()
@@ -45,7 +60,188 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
         logFormData()
         if (state.value.isLastStep) {
             setState { copy(isLoading = true) }
-            sendEffect(RegFormsEffect.FinishRegistration)
+            val data = state.value.formData ?: return
+
+            viewModelScope.launch {
+                try {
+                    // 0. Upload Photo (can be done without auth)
+                    var uploadedPhotoUuid: String? = null
+                    data.photoUri?.let { uri ->
+                        try {
+                            val context = ApplicationLoader.applicationContext
+                            val inputStream = context.contentResolver.openInputStream(uri)
+                            if (inputStream != null) {
+                                val tempFile = java.io.File(context.cacheDir, "upload_avatar_${System.currentTimeMillis()}.jpg")
+                                val outputStream = java.io.FileOutputStream(tempFile)
+                                inputStream.copyTo(outputStream)
+                                inputStream.close()
+                                outputStream.close()
+                                
+                                val uploadResult = DivoApi.userRepository.uploadPhoto(tempFile)
+                                if (uploadResult is DivoResult.Success) {
+                                    uploadedPhotoUuid = uploadResult.value.uuid
+                                }
+                                tempFile.delete()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    // 1. Divo Registration (REST)
+                    val tgUser = org.telegram.messenger.UserConfig.getInstance(state.value.currentAccount).currentUser
+
+                    val rawPhone = tgUser?.phone ?: state.value.phoneNumber
+                    val phone = rawPhone.replace("+", "").trim()
+
+                    val email = "$phone@divo.global"
+                    val manufacturer = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
+                    val model = Build.MODEL ?: "Android Device"
+                    val deviceId = "$manufacturer $model"
+                    val deviceType = "android"
+
+                    val (mappedRole, mappedSubrole) = data.subRole.toDivoRoleAndSubrole()
+                    
+                    val additionalInfo = mutableMapOf<String, Any>()
+                    if (data.firstName.isNotBlank()) additionalInfo["firstName"] = data.firstName
+                    if (data.lastName.isNotBlank()) additionalInfo["lastName"] = data.lastName
+                    if (!data.dateOfBirth.isNullOrBlank()) additionalInfo["dateOfBirth"] = data.dateOfBirth
+                    if (!data.gender.isNullOrBlank()) additionalInfo["gender"] = data.gender
+                    if (data.country.isNotBlank()) additionalInfo["country"] = data.country
+                    if (data.city.isNotBlank()) additionalInfo["city"] = data.city
+                    
+                    if (data.companyName.isNotBlank()) additionalInfo["companyName"] = data.companyName
+                    if (data.websiteUrl.isNotBlank()) additionalInfo["websiteUrl"] = data.websiteUrl
+                    if (data.contactRole.isNotBlank()) additionalInfo["contactRole"] = data.contactRole
+                    if (data.contactName.isNotBlank()) additionalInfo["contactName"] = data.contactName
+                    if (data.contactPhone.isNotBlank()) additionalInfo["contactPhone"] = data.contactPhone
+                    
+                    if (!data.specialisation.isNullOrBlank()) additionalInfo["specialisation"] = data.specialisation
+                    if (data.instagramUrl.isNotBlank()) additionalInfo["instagramUrl"] = data.instagramUrl
+                    if (data.portfolioUrl.isNotBlank()) additionalInfo["portfolioUrl"] = data.portfolioUrl
+                    if (data.agencyName.isNotBlank()) additionalInfo["agencyName"] = data.agencyName
+                    
+                    if (data.showreelUrl.isNotBlank()) additionalInfo["showreelUrl"] = data.showreelUrl
+                    if (data.castingProfileUrl.isNotBlank()) additionalInfo["castingProfileUrl"] = data.castingProfileUrl
+                    if (uploadedPhotoUuid != null) additionalInfo["photoUri"] = uploadedPhotoUuid
+
+                    val regRequest = RegistrationRequest(
+                        email = email,
+                        role = mappedRole,
+                        password = "divo_${phone}",
+                        subrole = mappedSubrole,
+                        deviceId = deviceId,
+                        deviceType = deviceType,
+                        additionalInfo = additionalInfo
+                    )
+                    
+                    val divoResponse = DivoApi.authRepository.register(regRequest)
+                    if (divoResponse !is DivoResult.Success) {
+                        val errorMessage = divoResponse.getErrorMessage()
+                        sendEffect(RegFormsEffect.ShowError("Registration failed: $errorMessage"))
+                        setState { copy(isLoading = false) }
+                        return@launch
+                    }
+                    val divoUserId = divoResponse.value.data?.user?.id
+
+                    // 2. TG Profile Update
+                    var firstName = data.firstName
+                    var lastName = data.lastName
+                    if (firstName.isBlank() && data.companyName.isNotBlank()) {
+                        firstName = data.companyName
+                        lastName = ""
+                    }
+                    if (firstName.isBlank()) {
+                        firstName = "User"
+                    }
+
+                    val req = TL_account.updateProfile().apply {
+                        flags = 1 or 2 // 1 = first_name, 2 = last_name
+                        first_name = firstName
+                        last_name = lastName
+                    }
+
+                    val profileUpdateResult = suspendCancellableCoroutine<TLRPC.User> { continuation ->
+                        val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(
+                            req,
+                            { response, error ->
+                                if (error != null) {
+                                    continuation.resumeWithException(RuntimeException(error.text))
+                                } else if (response is TLRPC.User) {
+                                    continuation.resume(response)
+                                } else {
+                                    continuation.resumeWithException(RuntimeException("Invalid response type"))
+                                }
+                            }
+                        )
+                        continuation.invokeOnCancellation {
+                            ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
+                        }
+                    }
+
+                    // 3. Divo Link (REST)
+                    val tgUserId = profileUpdateResult.id
+
+                    val linkRequest = TelegramLinkRequest(
+                        divoUserId = divoUserId,
+                        telegramUserId = tgUserId,
+                        phone = rawPhone,
+                        deviceId = deviceId,
+                        deviceType = deviceType
+                    )
+                    
+                    val linkResponse = DivoApi.authRepository.linkTelegramAccount(linkRequest)
+                    if (linkResponse !is DivoResult.Success) {
+                        val errorMessage = linkResponse.getErrorMessage()
+
+                        DivoApi.accessTokenProvider.setAccessToken(null)
+                        sendEffect(RegFormsEffect.ShowError("Linking failed: $errorMessage"))
+                        setState { copy(isLoading = false) }
+                        return@launch
+                    }
+
+                    // 4. Divo Update Profile (REST)
+                    val fullName = listOf(firstName, lastName).filter { it.isNotBlank() }.joinToString(" ")
+                    val photoContainer = uploadedPhotoUuid?.let { org.telegram.divo.dal.dto.common.UuidContainerDto(it) }
+                    
+                    val updateProfileRequest = org.telegram.divo.dal.dto.user.UpdateProfileRequest(
+                        fullName = fullName,
+                        phone = rawPhone,
+                        timezone = java.util.TimeZone.getDefault().id,
+                        gender = data.gender?.takeIf { it.isNotBlank() },
+                        birthday = data.dateOfBirth ?: "",
+                        geoCityId = null,
+                        measuringSystem = "metric",
+                        subrole = mappedSubrole,
+                        pushNotifications = true,
+                        isRegistrationFinished = true,
+                        photo = photoContainer,
+                        avatar = photoContainer,
+                        model = null,
+                        agency = null,
+                        customer = null
+                    )
+                    
+                    val updateResponse = DivoApi.userRepository.updateProfile(updateProfileRequest)
+                    if (updateResponse !is DivoResult.Success) {
+                        val errorMessage = updateResponse.getErrorMessage()
+                        sendEffect(RegFormsEffect.ShowError(errorMessage))
+                    }
+
+                    val dummyAuth = TLRPC.TL_auth_authorization().apply {
+                        user = profileUpdateResult
+                    }
+                    sendEffect(RegFormsEffect.FinishRegistration(dummyAuth))
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    setState { copy(isLoading = false) }
+                    if (e.message?.contains("PHONE_CODE_EXPIRED") == true) {
+                        sendEffect(RegFormsEffect.NavigateBackToPhone)
+                    } else {
+                        sendEffect(RegFormsEffect.ShowError(e.message ?: "Unknown error occurred"))
+                    }
+                }
+            }
         } else {
             setState { copy(currentStepIndex = currentStepIndex + 1) }
         }
@@ -151,5 +347,24 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
             appendLine("Photo URI: ${data.photoUri}")
             appendLine("==============================")
         })
+    }
+
+    private fun SubRole.toDivoRoleAndSubrole(): Pair<String, String?> {
+        return when (this) {
+            SubRole.MODELING_AGENCY -> "agency_employee" to "owner"
+            SubRole.FASHION_BRAND, SubRole.BEAUTY_BRAND, SubRole.BRAND_OR_BUSINESS -> "brand" to "brand"
+            SubRole.EVENT_AGENCY -> "agency_employee" to "owner"
+            SubRole.MAGAZINE -> "media" to "media"
+            SubRole.SCOUT -> "agency_employee" to "scout"
+            SubRole.BOOKER -> "agency_employee" to "booker"
+            SubRole.CASTING_DIRECTOR, SubRole.TALENT_MANAGER -> "agency_employee" to "agent"
+            SubRole.PHOTOGRAPHER -> "photographer" to "photographer"
+            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> "stylist" to "stylist"
+            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> "media" to "media"
+            SubRole.STUDIO -> "place" to "place"
+            SubRole.MODEL -> "model" to null
+            SubRole.NEW_TALENT, SubRole.ACTOR, SubRole.DANCER, SubRole.SINGER -> "new_talent" to null
+            SubRole.FAN -> "new_face" to null //"fan"
+        }
     }
 }
