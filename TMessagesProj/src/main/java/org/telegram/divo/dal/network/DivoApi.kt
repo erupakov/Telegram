@@ -5,6 +5,7 @@ import org.telegram.divo.dal.api.FaceRecognitionService
 import org.telegram.divo.dal.api.AuthService
 import org.telegram.divo.dal.api.DictionaryService
 import org.telegram.divo.dal.api.EventService
+import org.telegram.divo.dal.api.GeoService
 import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.api.SystemService
 import org.telegram.divo.dal.api.UserService
@@ -102,6 +103,10 @@ object DivoApi {
 
     val dictionaryService: DictionaryService by lazy {
         retrofit.create(DictionaryService::class.java)
+    }
+
+    val geoService: GeoService by lazy {
+        retrofit.create(GeoService::class.java)
     }
 }
 

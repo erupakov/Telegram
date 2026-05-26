@@ -72,6 +72,17 @@ public class FragmentSearchField extends FrameLayout implements FactorAnimator.T
 
         editText = new EditTextBoldCursor(context) {
             @Override
+            public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP) {
+                    if (length() == 0 && !hasRemovableFilters() && onCloseSearch != null) {
+                        onCloseSearch.run();
+                        return true;
+                    }
+                }
+                return super.onKeyPreIme(keyCode, event);
+            }
+
+            @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
                 setPivotX(getPaddingLeft());

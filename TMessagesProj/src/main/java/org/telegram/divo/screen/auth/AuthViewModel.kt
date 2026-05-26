@@ -22,6 +22,9 @@ class AuthViewModel :
                 email = intent.email,
                 password = intent.password,
             )
+            is AuthViewIntent.GoogleSignIn -> {
+                sendEffect(AuthViewEffect.GoogleSignInRequested)
+            }
         }
     }
 

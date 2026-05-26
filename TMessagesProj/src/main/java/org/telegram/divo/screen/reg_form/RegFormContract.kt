@@ -18,6 +18,8 @@ data class RegFormsState(
     val currentAccount: Int = 0,
     val phoneHash: String = "",
     val phoneNumber: String = "",
+    val firebaseUid: String? = null,
+    val googleEmail: String? = null,
 ) : ViewState {
     val currentStep: RegFormStep? get() = steps.getOrNull(currentStepIndex)
     val totalSteps: Int get() = steps.size
@@ -35,6 +37,12 @@ data class RegFormsState(
         RegFormStep.TALENT_IDENTITY,
         RegFormStep.FAN_IDENTITY -> firstName.isNotBlank() && lastName.isNotBlank()
 
+        // Location steps: city is required when country is selected
+        RegFormStep.COMPANY_LOCATION,
+        RegFormStep.TALENT_LOCATION -> country.isNotBlank() && city.isNotBlank()
+
+        RegFormStep.PERSONAL_DETAILS -> country.isBlank() || city.isNotBlank()
+
         else -> true
     }
 }
@@ -44,7 +52,9 @@ sealed class RegFormsIntent : ViewIntent {
         val subRole: SubRole,
         val currentAccount: Int,
         val phoneHash: String,
-        val phoneNumber: String
+        val phoneNumber: String,
+        val firebaseUid: String? = null,
+        val googleEmail: String? = null,
     ) : RegFormsIntent()
     data class OnFieldChanged(val update: RegistrationFormData.() -> RegistrationFormData) : RegFormsIntent()
     data object OnContinue : RegFormsIntent()
@@ -67,6 +77,7 @@ data class RegistrationFormData(
     val dateOfBirth: String? = null,
     val gender: String? = null,
     val country: String = "",
+    val countryCode: String = "",
     val city: String = "",
     // Company
     val companyName: String = "",

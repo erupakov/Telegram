@@ -44,7 +44,9 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                 formData = RegistrationFormData(subRole = intent.subRole),
                 currentAccount = intent.currentAccount,
                 phoneHash = intent.phoneHash,
-                phoneNumber = intent.phoneNumber
+                phoneNumber = intent.phoneNumber,
+                firebaseUid = intent.firebaseUid,
+                googleEmail = intent.googleEmail,
             )
         }
         loadCountries()
@@ -66,6 +68,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                 try {
                     // 0. Upload Photo (can be done without auth)
                     var uploadedPhotoUuid: String? = null
+                    var uploadedPhotoUrl: String? = null
                     data.photoUri?.let { uri ->
                         try {
                             val context = ApplicationLoader.applicationContext
@@ -80,6 +83,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                 val uploadResult = DivoApi.userRepository.uploadPhoto(tempFile)
                                 if (uploadResult is DivoResult.Success) {
                                     uploadedPhotoUuid = uploadResult.value.uuid
+                                    uploadedPhotoUrl = uploadResult.value.fullUrl
                                 }
                                 tempFile.delete()
                             }
@@ -94,7 +98,12 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     val rawPhone = tgUser?.phone ?: state.value.phoneNumber
                     val phone = rawPhone.replace("+", "").trim()
 
-                    val email = "$phone@divo.global"
+                    val firebaseUid = state.value.firebaseUid
+                    val email = if (firebaseUid != null) {
+                        state.value.googleEmail ?: "$phone@divo.global"
+                    } else {
+                        "$phone@divo.global"
+                    }
                     val manufacturer = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
                     val model = Build.MODEL ?: "Android Device"
                     val deviceId = "$manufacturer $model"
@@ -103,11 +112,13 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     val (mappedRole, mappedSubrole) = data.subRole.toDivoRoleAndSubrole()
                     
                     val additionalInfo = mutableMapOf<String, Any>()
+                    // Raw form fields
                     if (data.firstName.isNotBlank()) additionalInfo["firstName"] = data.firstName
                     if (data.lastName.isNotBlank()) additionalInfo["lastName"] = data.lastName
                     if (!data.dateOfBirth.isNullOrBlank()) additionalInfo["dateOfBirth"] = data.dateOfBirth
                     if (!data.gender.isNullOrBlank()) additionalInfo["gender"] = data.gender
                     if (data.country.isNotBlank()) additionalInfo["country"] = data.country
+                    if (data.countryCode.isNotBlank()) additionalInfo["countryCode"] = data.countryCode
                     if (data.city.isNotBlank()) additionalInfo["city"] = data.city
                     
                     if (data.companyName.isNotBlank()) additionalInfo["companyName"] = data.companyName
@@ -124,25 +135,62 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (data.showreelUrl.isNotBlank()) additionalInfo["showreelUrl"] = data.showreelUrl
                     if (data.castingProfileUrl.isNotBlank()) additionalInfo["castingProfileUrl"] = data.castingProfileUrl
                     if (uploadedPhotoUuid != null) additionalInfo["photoUri"] = uploadedPhotoUuid
+                    if (uploadedPhotoUrl != null) additionalInfo["photoUrl"] = uploadedPhotoUrl
 
-                    val regRequest = RegistrationRequest(
-                        email = email,
-                        role = mappedRole,
-                        password = "divo_${phone}",
-                        subrole = mappedSubrole,
-                        deviceId = deviceId,
-                        deviceType = deviceType,
-                        additionalInfo = additionalInfo
-                    )
-                    
-                    val divoResponse = DivoApi.authRepository.register(regRequest)
-                    if (divoResponse !is DivoResult.Success) {
-                        val errorMessage = divoResponse.getErrorMessage()
-                        sendEffect(RegFormsEffect.ShowError("Registration failed: $errorMessage"))
-                        setState { copy(isLoading = false) }
-                        return@launch
+                    // Computed / derived values
+                    val fullNameForInfo = listOf(data.firstName, data.lastName).filter { it.isNotBlank() }.joinToString(" ")
+                        .ifBlank { data.companyName }
+                    if (fullNameForInfo.isNotBlank()) additionalInfo["fullName"] = fullNameForInfo
+                    if (rawPhone.isNotBlank()) additionalInfo["phone"] = rawPhone
+                    additionalInfo["email"] = email
+                    additionalInfo["timezone"] = java.util.TimeZone.getDefault().id
+                    additionalInfo["measuringSystem"] = "metric"
+                    additionalInfo["subRole"] = data.subRole.name.lowercase()
+                    if (mappedSubrole != null) additionalInfo["subrole"] = mappedSubrole
+
+                    // Branch: social registration vs regular registration
+                    val divoUserId: Long?
+                    if (firebaseUid != null) {
+                        // Google Sign-In flow → registration-social
+                        val socialRequest = org.telegram.divo.dal.dto.auth.SocialRegistrationRequest(
+                            email = email,
+                            role = mappedRole,
+                            subrole = mappedSubrole,
+                            providerId = "google.com",
+                            uid = firebaseUid,
+                            timezone = java.util.TimeZone.getDefault().id,
+                            deviceId = deviceId,
+                            deviceType = deviceType,
+                            additionalInfo = additionalInfo
+                        )
+                        val divoResponse = DivoApi.authRepository.registrationSocial(socialRequest)
+                        if (divoResponse !is DivoResult.Success) {
+                            val errorMessage = divoResponse.getErrorMessage()
+                            sendEffect(RegFormsEffect.ShowError("Registration failed: $errorMessage"))
+                            setState { copy(isLoading = false) }
+                            return@launch
+                        }
+                        divoUserId = divoResponse.value.data?.user?.id
+                    } else {
+                        // Phone flow → regular registration
+                        val regRequest = RegistrationRequest(
+                            email = email,
+                            role = mappedRole,
+                            password = "divo_${phone}",
+                            subrole = mappedSubrole,
+                            deviceId = deviceId,
+                            deviceType = deviceType,
+                            additionalInfo = additionalInfo
+                        )
+                        val divoResponse = DivoApi.authRepository.register(regRequest)
+                        if (divoResponse !is DivoResult.Success) {
+                            val errorMessage = divoResponse.getErrorMessage()
+                            sendEffect(RegFormsEffect.ShowError("Registration failed: $errorMessage"))
+                            setState { copy(isLoading = false) }
+                            return@launch
+                        }
+                        divoUserId = divoResponse.value.data?.user?.id
                     }
-                    val divoUserId = divoResponse.value.data?.user?.id
 
                     // 2. TG Profile Update
                     var firstName = data.firstName
@@ -161,19 +209,16 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         last_name = lastName
                     }
 
-                    val profileUpdateResult = suspendCancellableCoroutine<TLRPC.User> { continuation ->
-                        val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(
-                            req,
-                            { response, error ->
-                                if (error != null) {
-                                    continuation.resumeWithException(RuntimeException(error.text))
-                                } else if (response is TLRPC.User) {
-                                    continuation.resume(response)
-                                } else {
-                                    continuation.resumeWithException(RuntimeException("Invalid response type"))
-                                }
+                    val profileUpdateResult = suspendCancellableCoroutine { continuation ->
+                        val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(req) { response, error ->
+                            if (error != null) {
+                                continuation.resumeWithException(RuntimeException(error.text))
+                            } else if (response is TLRPC.User) {
+                                continuation.resume(response)
+                            } else {
+                                continuation.resumeWithException(RuntimeException("Invalid response type"))
                             }
-                        )
+                        }
                         continuation.invokeOnCancellation {
                             ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
                         }
@@ -203,23 +248,77 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     // 4. Divo Update Profile (REST)
                     val fullName = listOf(firstName, lastName).filter { it.isNotBlank() }.joinToString(" ")
                     val photoContainer = uploadedPhotoUuid?.let { org.telegram.divo.dal.dto.common.UuidContainerDto(it) }
+
+                    // Resolve geoCityId from city name via geo API
+                    var resolvedCityId: Int? = null
+                    if (data.city.isNotBlank()) {
+                        try {
+                            val geoResponse = DivoApi.geoService.searchByAddressName(data.city)
+                            resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    // Build role-specific DTOs from form data
+                    val modelDto: org.telegram.divo.dal.dto.user.UpdateProfileModelDto? =
+                        if (mappedRole == "model" || mappedRole == "new_talent") {
+                            org.telegram.divo.dal.dto.user.UpdateProfileModelDto(
+                                agencyId = null,
+                                profileUrl = data.castingProfileUrl.takeIf { it.isNotBlank() },
+                                education = null,
+                                workExperience = null,
+                                description = null,
+                                languages = null,
+                                hasInternationalPassport = false,
+                                hasTattoo = false,
+                                hasPiercing = false,
+                                hasActingEducation = false,
+                                appearance = null,
+                                tiktokUrl = null,
+                                youtubeUrl = data.showreelUrl.takeIf { it.isNotBlank() },
+                                instagramUrl = data.instagramUrl.takeIf { it.isNotBlank() },
+                                websiteUrl = data.portfolioUrl.takeIf { it.isNotBlank() },
+                            )
+                        } else null
+
+                    val customerDto: org.telegram.divo.dal.dto.common.CustomerDto? =
+                        if (mappedRole == "customer") {
+                            org.telegram.divo.dal.dto.common.CustomerDto(
+                                site = data.websiteUrl.takeIf { it.isNotBlank() }
+                                    ?: data.portfolioUrl.takeIf { it.isNotBlank() },
+                                description = data.specialisation?.takeIf { it.isNotBlank() },
+                            )
+                        } else null
+
+                    val agencyDto: org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest? =
+                        if (mappedRole == "agency_employee") {
+                            org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest(
+                                agencyId = null,
+                                title = data.companyName.takeIf { it.isNotBlank() },
+                                description = data.websiteUrl.takeIf { it.isNotBlank() },
+                                address = null,
+                                background = null,
+                                photo = photoContainer,
+                            )
+                        } else null
                     
                     val updateProfileRequest = org.telegram.divo.dal.dto.user.UpdateProfileRequest(
                         fullName = fullName,
                         phone = rawPhone,
                         timezone = java.util.TimeZone.getDefault().id,
-                        gender = data.gender?.takeIf { it.isNotBlank() },
+                        gender = data.gender?.lowercase()?.takeIf { it.isNotBlank() },
                         birthday = data.dateOfBirth ?: "",
-                        geoCityId = null,
+                        geoCityId = resolvedCityId,
                         measuringSystem = "metric",
                         subrole = mappedSubrole,
                         pushNotifications = true,
                         isRegistrationFinished = true,
                         photo = photoContainer,
                         avatar = photoContainer,
-                        model = null,
-                        agency = null,
-                        customer = null
+                        model = modelDto,
+                        agency = agencyDto,
+                        customer = customerDto
                     )
                     
                     val updateResponse = DivoApi.userRepository.updateProfile(updateProfileRequest)
@@ -351,17 +450,17 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
 
     private fun SubRole.toDivoRoleAndSubrole(): Pair<String, String?> {
         return when (this) {
-            SubRole.MODELING_AGENCY -> "agency_employee" to "owner"
-            SubRole.FASHION_BRAND, SubRole.BEAUTY_BRAND, SubRole.BRAND_OR_BUSINESS -> "brand" to "brand"
-            SubRole.EVENT_AGENCY -> "agency_employee" to "owner"
-            SubRole.MAGAZINE -> "media" to "media"
-            SubRole.SCOUT -> "agency_employee" to "scout"
-            SubRole.BOOKER -> "agency_employee" to "booker"
-            SubRole.CASTING_DIRECTOR, SubRole.TALENT_MANAGER -> "agency_employee" to "agent"
-            SubRole.PHOTOGRAPHER -> "photographer" to "photographer"
-            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> "stylist" to "stylist"
-            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> "media" to "media"
-            SubRole.STUDIO -> "place" to "place"
+            SubRole.MODELING_AGENCY -> "agency_employee" to null //"owner"
+            SubRole.FASHION_BRAND, SubRole.BEAUTY_BRAND, SubRole.BRAND_OR_BUSINESS -> "agency_employee" to null //"brand"
+            SubRole.EVENT_AGENCY -> "agency_employee" to null //"owner"
+            SubRole.MAGAZINE -> "agency_employee" to null //"media"
+            SubRole.SCOUT -> "agency_employee" to null //"scout"
+            SubRole.BOOKER -> "agency_employee" to null //"booker"
+            SubRole.CASTING_DIRECTOR, SubRole.TALENT_MANAGER -> "agency_employee" to null //"agent"
+            SubRole.PHOTOGRAPHER -> "customer" to null //"photographer"
+            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> "customer" to null //"stylist"
+            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> "customer" to null //"media"
+            SubRole.STUDIO -> "customer" to null //"place"
             SubRole.MODEL -> "model" to null
             SubRole.NEW_TALENT, SubRole.ACTOR, SubRole.DANCER, SubRole.SINGER -> "new_talent" to null
             SubRole.FAN -> "new_face" to null //"fan"

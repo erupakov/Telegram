@@ -5,12 +5,16 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.dal.api.AuthService
+import org.telegram.divo.dal.dto.auth.SocialAuthResponse
+import org.telegram.divo.dal.dto.auth.SocialLoginRequest
+import org.telegram.divo.dal.dto.auth.SocialRegistrationRequest
 import org.telegram.divo.dal.dto.auth.LoginRequest
 import org.telegram.divo.dal.dto.auth.LoginResponse
 import org.telegram.divo.dal.dto.auth.RegistrationRequest
 import org.telegram.divo.dal.dto.auth.RegistrationResponse
 import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
 import org.telegram.divo.dal.dto.auth.TelegramLinkResponse
+import org.telegram.divo.dal.dto.auth.DummyPhoneResponse
 
 class AuthRepository(
     private val service: AuthService,
@@ -42,6 +46,26 @@ class AuthRepository(
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
         }
         return result
+    }
+
+    suspend fun loginSocial(request: SocialLoginRequest): DivoResult<SocialAuthResponse> {
+        val result = resultOf { service.loginSocial(request) }
+        if (result is DivoResult.Success) {
+            accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+        }
+        return result
+    }
+
+    suspend fun registrationSocial(request: SocialRegistrationRequest): DivoResult<SocialAuthResponse> {
+        val result = resultOf { service.registrationSocial(request) }
+        if (result is DivoResult.Success) {
+            accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+        }
+        return result
+    }
+
+    suspend fun getDummyPhone(): DivoResult<DummyPhoneResponse> {
+        return resultOf { service.getDummyPhone() }
     }
 
     suspend fun logout(): DivoResult<Unit> {

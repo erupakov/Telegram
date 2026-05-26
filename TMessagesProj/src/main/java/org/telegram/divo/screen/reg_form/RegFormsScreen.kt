@@ -48,6 +48,8 @@ fun RegFormsScreen(
     currentAccount: Int,
     phoneHash: String,
     phoneNumber: String,
+    firebaseUid: String? = null,
+    googleEmail: String? = null,
     viewModel: RegFormsViewModel = viewModel(),
     onFinished: (org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit,
     onBack: () -> Unit,
@@ -56,7 +58,14 @@ fun RegFormsScreen(
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.setIntent(RegFormsIntent.Init(subRole, currentAccount, phoneHash, phoneNumber))
+        viewModel.setIntent(RegFormsIntent.Init(
+            subRole = subRole,
+            currentAccount = currentAccount,
+            phoneHash = phoneHash,
+            phoneNumber = phoneNumber,
+            firebaseUid = firebaseUid,
+            googleEmail = googleEmail,
+        ))
     }
 
     val snackbarHostState = remember { AppSnackbarHostState() }
@@ -175,10 +184,6 @@ private fun RegFormsScreenContent(
                     RegFormStep.FAN_PHOTO -> StepPhoto(
                         formData = state.formData ?: return@HorizontalPager,
                         onIntent = onIntent,
-//                        onDone = { onIntent(RegFormsIntent.OnContinue) },
-//                        onSkip = if (state.formData?.subRole == SubRole.FAN)
-//                        { { onIntent(RegFormsIntent.OnContinue) } }
-//                        else null
                     )
 
                     null -> Unit

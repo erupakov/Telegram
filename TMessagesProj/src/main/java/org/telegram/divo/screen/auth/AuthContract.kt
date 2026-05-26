@@ -15,10 +15,12 @@ sealed class AuthViewIntent : ViewIntent {
         val email: String,
         val password: String,
     ) : AuthViewIntent()
+    data object GoogleSignIn : AuthViewIntent()
 }
 
 sealed class AuthViewEffect : ViewEffect {
     data object LoginSuccess : AuthViewEffect()
+    data object GoogleSignInRequested : AuthViewEffect()
     data class ShowError(val message: String) : AuthViewEffect()
 }
 

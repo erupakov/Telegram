@@ -14,7 +14,6 @@ import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.screen.models.ModelsViewEffect
 import org.telegram.divo.screen.profile.components.ProfileDestination
 import org.telegram.divo.screen.profile.components.ProfileInfoDestination
 import org.telegram.divo.screen.profile.components.StatsType

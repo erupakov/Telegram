@@ -472,6 +472,31 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
     }
 
+    private String googleFirebaseUid;
+    private String googleEmail;
+    private String googleDummyPhone;
+    private boolean googleAutoLogin;
+    private boolean forceRoleSelection;
+    private TLRPC.TL_auth_authorization googleAuthResponse;
+    private boolean isGoogleFlow;
+
+    public LoginActivity setGoogleRegistrationParams(String firebaseUid, String email, String dummyPhone, TLRPC.TL_auth_authorization authResponse, boolean autoLogin) {
+        this.googleFirebaseUid = firebaseUid;
+        this.googleEmail = email;
+        this.googleDummyPhone = dummyPhone;
+        this.googleAuthResponse = authResponse;
+        this.googleAutoLogin = autoLogin;
+        this.isGoogleFlow = true;
+        forceRoleSelection = true;
+        return this;
+    }
+
+    public LoginActivity setGoogleLoginSuccess(TLRPC.TL_auth_authorization authResponse) {
+        this.googleAuthResponse = authResponse;
+        this.isGoogleFlow = true;
+        return this;
+    }
+
     public LoginActivity() {
         super();
     }
@@ -481,8 +506,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         currentAccount = account;
         newAccount = true;
     }
-
-    private boolean forceRoleSelection;
 
     public LoginActivity startInRoleSelection() {
         forceRoleSelection = true;
@@ -914,7 +937,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 actionBarLayout.containerView.setDrawNavigationBar(!needEdgeToEdge);
             }
         }
-        // DIVO--END
+        if (isGoogleFlow && !forceRoleSelection) {
+            if (fragmentView instanceof ViewGroup) {
+                ViewGroup vg = (ViewGroup) fragmentView;
+                for (int i = 0; i < vg.getChildCount(); i++) {
+                    vg.getChildAt(i).setVisibility(View.INVISIBLE);
+                }
+            }
+            fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
+        }
 
         return fragmentView;
     }
@@ -1048,6 +1079,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         }
         // DIVO--END
+    }
+
+    @Override
+    public void onTransitionAnimationEnd(boolean isOpen, boolean backward) {
+        super.onTransitionAnimationEnd(isOpen, backward);
+        if (isOpen && googleAuthResponse != null) {
+            onAuthSuccess(googleAuthResponse, false);
+            googleAuthResponse = null; // Prevent re-triggering
+        }
     }
 
     @Override
@@ -1626,6 +1666,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 actionBarLayout.containerView.setDrawNavigationBar(!needEdgeToEdge);
             }
         }
+        
+        if (page == VIEW_REGISTER && googleFirebaseUid != null) {
+            if (params == null) {
+                params = new Bundle();
+            }
+            params.putString("firebaseUid", googleFirebaseUid);
+            params.putString("googleEmail", googleEmail);
+            if (googleDummyPhone != null) {
+                params.putString("phoneFormated", googleDummyPhone);
+            }
+        }
         //DIVO--END
 
         if (statusBarSpacer != null) {
@@ -1815,40 +1866,48 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(AndroidUtilities.STICKERS_PLACEHOLDER_PACK_NAME, false, true);
         // DIVO--START
         if (res.user != null && res.user.phone != null) {
-            if (divoAuthProgressDialog == null) {
-                divoAuthProgressDialog = new AlertDialog(getParentActivity(), 3);
-                divoAuthProgressDialog.setCanCancel(false);
-            }
-            divoAuthProgressDialog.show();
-
-            divoAuthRequest = org.telegram.divo.dal.network.DivoAuthHelper.checkDivoUserExists(
-                res.user.phone,
-                new org.telegram.divo.dal.network.DivoAuthHelper.DivoAuthCallback() {
-                    @Override
-                    public void onSuccess() {
-                        if (divoAuthProgressDialog != null) {
-                            try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
-                        }
-                        needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
-                    }
-
-                    @Override
-                    public void onUserNotFound() {
-                        if (divoAuthProgressDialog != null) {
-                            try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
-                        }
-                        setPage(VIEW_REGISTER, true, null, true);
-                    }
-
-                    @Override
-                    public void onError(@androidx.annotation.NonNull String error) {
-                        if (divoAuthProgressDialog != null) {
-                            try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
-                        }
-                        needShowAlert(getString(R.string.AppName), error);
-                    }
+            if (isGoogleFlow) {
+                if (forceRoleSelection) {
+                    setPage(VIEW_REGISTER, true, null, true);
+                } else {
+                    needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
                 }
-            );
+            } else {
+                if (divoAuthProgressDialog == null) {
+                    divoAuthProgressDialog = new AlertDialog(getParentActivity(), 3);
+                    divoAuthProgressDialog.setCanCancel(false);
+                }
+                divoAuthProgressDialog.show();
+
+                divoAuthRequest = org.telegram.divo.dal.network.DivoAuthHelper.checkDivoUserExists(
+                    res.user.phone,
+                    new org.telegram.divo.dal.network.DivoAuthHelper.DivoAuthCallback() {
+                        @Override
+                        public void onSuccess() {
+                            if (divoAuthProgressDialog != null) {
+                                try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                            }
+                            needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+                        }
+
+                        @Override
+                        public void onUserNotFound() {
+                            if (divoAuthProgressDialog != null) {
+                                try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                            }
+                            setPage(VIEW_REGISTER, true, null, true);
+                        }
+
+                        @Override
+                        public void onError(@androidx.annotation.NonNull String error) {
+                            if (divoAuthProgressDialog != null) {
+                                try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                            }
+                            needShowAlert(getString(R.string.AppName), error);
+                        }
+                    }
+                );
+            }
         } else {
             needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
         }
@@ -3483,7 +3542,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         private boolean numberFilled;
         public void fillNumber() {
-            if (numberFilled || activityMode != MODE_LOGIN) {
+            if (numberFilled || activityMode != MODE_LOGIN || isGoogleFlow) {
                 return;
             }
             try {

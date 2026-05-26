@@ -14,7 +14,7 @@ enum class RoleType(val value: String) {
     FAN("fan"),
     UNKNOWN("");
 
-    fun isModel(): Boolean = this == NEW_FACE || this == MODEL
+    fun isModel(): Boolean = this != AGENCY
 
     companion object {
         fun from(value: String?): RoleType {

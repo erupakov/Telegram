@@ -753,6 +753,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
     };
 
     private class ContentView extends SizeNotifierFrameLayout {
+        private int lastKeyboardHeight;
 
         private Paint actionBarSearchPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
@@ -1123,6 +1124,18 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             measureChildWithMargins(actionBar, widthMeasureSpec, 0, heightMeasureSpec, 0);
 
             int keyboardSize = measureKeyboardHeight();
+            if (lastKeyboardHeight > 0 && keyboardSize == 0) {
+                if (searching && fragmentSearchField != null && fragmentSearchField.editText.length() == 0) {
+                    if (searchViewPager != null && searchViewPager.actionModeShowing()) {
+                        searchViewPager.hideActionMode();
+                    } else {
+                        fragmentSearchField.editText.getText().clear();
+                        fragmentSearchField.editText.clearFocus();
+                        fragmentSearchFieldWatcher.toggleSearch(false);
+                    }
+                }
+            }
+            lastKeyboardHeight = keyboardSize;
             int childCount = getChildCount();
 
             for (int i = 0; i < childCount; i++) {

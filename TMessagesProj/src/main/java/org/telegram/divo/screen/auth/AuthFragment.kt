@@ -10,12 +10,20 @@ import org.telegram.ui.LoginActivity
 class AuthFragment : BaseFragment() {
 
     override fun createView(context: Context): View {
-        actionBar.setAddToContainer(false) // Отключаем стандартный тулбар Telegram
+        actionBar.setAddToContainer(false)
 
         fragmentView = ComposeView(context).apply {
             setDivoContent {
                 AuthScreen(
-                    onAuthClicked = { presentFragment(LoginActivity(), true) }
+                    onAuthClicked = { presentFragment(LoginActivity(), true) },
+                    onGoogleSuccess = { authResponse -> 
+                        val loginActivity = LoginActivity().setGoogleLoginSuccess(authResponse)
+                        presentFragment(loginActivity, true, true)
+                    },
+                    onGoogleUserNotFound = { uid, email, dummyPhone, authResponse ->
+                        val loginActivity = LoginActivity().setGoogleRegistrationParams(uid, email, dummyPhone, authResponse, true)
+                        presentFragment(loginActivity, true)
+                    }
                 )
             }
         }

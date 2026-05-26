@@ -138,6 +138,10 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     private fun loadInitialData() {
+        if (DivoApi.accessTokenProvider.getAccessToken().isNullOrEmpty()) {
+            setState { copy(isLoading = false) }
+            return
+        }
         setState { copy(isLoading = true) }
         // TODO: Load stories from repository
         // TODO: Load models for the initial tab from repository
@@ -168,6 +172,9 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     private fun loadFeed(loadMore: Boolean) {
+        if (DivoApi.accessTokenProvider.getAccessToken().isNullOrEmpty()) {
+            return
+        }
         viewModelScope.launch {
             if (loadMore) {
                 currentPaginator().loadMore()
@@ -249,6 +256,9 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     private fun refresh() {
+        if (DivoApi.accessTokenProvider.getAccessToken().isNullOrEmpty()) {
+            return
+        }
         setState { copy(isRefreshing = true, error = null) }
         viewModelScope.launch {
             listOf(

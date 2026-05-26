@@ -59,7 +59,7 @@ fun StepTwo(
             onPick = { selectedList ->
                 selectedList.firstOrNull()?.let { country ->
                     onIntent(RegFormsIntent.OnFieldChanged {
-                        copy(country = country.name, city = "")
+                        copy(country = country.name, countryCode = country.shortName, city = "")
                     })
                 }
                 showCountrySheet = false
@@ -86,7 +86,11 @@ fun StepTwo(
                         country = if (country.isEmpty() && matchedCountry != null)
                             matchedCountry.name
                         else
-                            country
+                            country,
+                        countryCode = if (countryCode.isEmpty() && matchedCountry != null)
+                            matchedCountry.shortName
+                        else
+                            countryCode
                     )
                 })
                 showCitySheet = false

@@ -56,7 +56,7 @@ fun StepOne(
             onPick = { selectedList ->
                 selectedList.firstOrNull()?.let { country ->
                     onIntent(RegFormsIntent.OnFieldChanged {
-                        copy(country = country.name, city = "") // сбрасываем город при смене страны
+                        copy(country = country.name, countryCode = country.shortName, city = "") // сбрасываем город при смене страны
                     })
                 }
                 showCountrySheet = false

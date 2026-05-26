@@ -16,6 +16,8 @@ class RoleSelectionView(context: Context, private val account: Int) : SlideView(
     private var rolesNavController: NavController? = null
     private var currentPhone by mutableStateOf("")
     private var currentPhoneHash by mutableStateOf("")
+    private var currentFirebaseUid: String? by mutableStateOf(null)
+    private var currentGoogleEmail: String? by mutableStateOf(null)
 
     var onBack: (() -> Unit)? = null
     var onFinish: ((org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit)? = null
@@ -30,6 +32,8 @@ class RoleSelectionView(context: Context, private val account: Int) : SlideView(
                     currentAccount = account,
                     phoneHash = currentPhoneHash,
                     phoneNumber = currentPhone,
+                    firebaseUid = currentFirebaseUid,
+                    googleEmail = currentGoogleEmail,
                     onNavControllerReady = { navController ->
                         this@RoleSelectionView.rolesNavController = navController
                     },
@@ -50,6 +54,8 @@ class RoleSelectionView(context: Context, private val account: Int) : SlideView(
         if (params != null) {
             currentPhone = params.getString("phoneFormated", "")
             currentPhoneHash = params.getString("phoneHash", "")
+            currentFirebaseUid = params.getString("firebaseUid")
+            currentGoogleEmail = params.getString("googleEmail")
         }
     }
 

@@ -6,7 +6,7 @@ import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyAddress
 
 class UpdateProfileAgencyRequest(
-    @SerializedName("agencyId") val agencyId: Int,
+    @SerializedName("agencyId") val agencyId: Int?,
     @SerializedName("title") val title: String?,
     @SerializedName("description") val description: String?,
     @SerializedName("address") val address: UpdateAgencyAddressDto?,

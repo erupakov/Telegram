@@ -33,6 +33,8 @@ fun RoleNavGraph(
     currentAccount: Int,
     phoneHash: String,
     phoneNumber: String,
+    firebaseUid: String? = null,
+    googleEmail: String? = null,
     onNavControllerReady: (NavController) -> Unit,
     onBackToPhone: () -> Unit,
     onFinishedFlow: (org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit = {}
@@ -121,6 +123,8 @@ fun RoleNavGraph(
                 currentAccount = currentAccount,
                 phoneHash = phoneHash,
                 phoneNumber = phoneNumber,
+                firebaseUid = firebaseUid,
+                googleEmail = googleEmail,
                 onFinished = onFinishedFlow,
                 onBack = { nav.popBackStack() },
                 onBackToPhone = onBackToPhone
