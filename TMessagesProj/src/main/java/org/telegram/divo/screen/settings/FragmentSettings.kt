@@ -54,7 +54,12 @@ class FragmentSettings : BaseFragment() {
                     onInnerNavControllerReady = { navController ->
                         profileNavController = navController
                     },
-                    navigateToLogout = { presentFragment(LogoutActivity()) }
+                    navigateToLogout = {
+                        val activity = parentActivity
+                        if (activity != null) {
+                            showDialog(LogoutActivity.makeLogOutDialog(activity, currentAccount))
+                        }
+                    }
                 )
             }
         }

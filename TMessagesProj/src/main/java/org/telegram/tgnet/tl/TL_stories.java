@@ -400,6 +400,34 @@ public class TL_stories {
         }
     }
 
+    public static class TL_stories_sendStory_layer199 extends TL_stories_sendStory {
+        public static final int constructor = 0xe4e6694b;
+
+        @Override
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = pinned ? (flags | 4) : (flags &~ 4);
+            flags = noforwards ? (flags | 16) : (flags &~ 16);
+            stream.writeInt32(flags);
+            peer.serializeToStream(stream);
+            media.serializeToStream(stream);
+            if ((flags & 32) != 0) {
+                Vector.serialize(stream, media_areas);
+            }
+            if ((flags & 1) != 0) {
+                stream.writeString(caption);
+            }
+            if ((flags & 2) != 0) {
+                Vector.serialize(stream, entities);
+            }
+            Vector.serialize(stream, privacy_rules);
+            stream.writeInt64(random_id);
+            if ((flags & 8) != 0) {
+                stream.writeInt32(period);
+            }
+        }
+    }
+
     public static class TL_stories_deleteStories extends TLObject {
         public static final int constructor = 0xae59db5f;
 

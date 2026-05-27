@@ -9820,42 +9820,7 @@ public class MediaDataController extends BaseController {
     public SearchStickersKey searchStickers(boolean emojis, String lang_code, String q, Utilities.Callback<ArrayList<TLRPC.Document>> whenDone, boolean next) {
         if (whenDone == null) return null;
         final SearchStickersKey key = new SearchStickersKey(emojis, lang_code, q);
-        SearchStickersResult cached = searchStickerResults.get(key);
-        if ((cached == null || cached.next_offset != null && next) && !loadingSearchStickersKeys.containsKey(key)) {
-            loadingSearchStickersKeys.put(key, 0);
-            MediaDataController.getInstance(currentAccount).getEmojiSuggestions(new String[]{lang_code}, q, true, (result, a) -> {
-                if (!loadingSearchStickersKeys.containsKey(key)) return;
-                StringBuilder s = new StringBuilder();
-                for (KeywordResult r : result) {
-                    if (!TextUtils.isEmpty(r.emoji) && !r.emoji.startsWith("animated_")) {
-                        s.append(r.emoji);
-                    }
-                }
-                TLRPC.TL_messages_searchStickers req = new TLRPC.TL_messages_searchStickers();
-                req.emojis = key.emojis;
-                if (!TextUtils.isEmpty(key.lang_code)) {
-                    req.lang_code.add(key.lang_code);
-                }
-                req.emoticon = s.toString();
-                req.q = key.q;
-                req.limit = 50;
-                req.offset = cached == null ? 0 : cached.next_offset;
-                final int reqId = getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-                    loadingSearchStickersKeys.remove(key);
-                    SearchStickersResult finalResult = cached != null ? cached : new SearchStickersResult();
-                    if (res instanceof TLRPC.TL_messages_foundStickers) {
-                        finalResult.apply((TLRPC.TL_messages_foundStickers) res);
-                    }
-                    searchStickerResults.put(key, finalResult);
-                    whenDone.run(finalResult.documents);
-                }));
-                loadingSearchStickersKeys.put(key, reqId);
-            }, false);
-        } else if (cached != null) {
-            whenDone.run(cached.documents);
-        } else {
-            whenDone.run(new ArrayList<>());
-        }
+        whenDone.run(new ArrayList<>());
         return key;
     }
     public void cancelSearchStickers(SearchStickersKey key) {

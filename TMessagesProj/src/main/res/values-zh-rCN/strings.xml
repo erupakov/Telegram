@@ -343,6 +343,7 @@
     <string name="PrivacyAndSecurityLabel">隐私与安全</string>
     <string name="DataAndStorageLabel">数据与存储</string>
     <string name="AppearanceLabel">外观</string>
+    <string name="Language">语言</string>
     <string name="LogOutLabel">退出登录</string>
 
     <!--onboarding screen-->

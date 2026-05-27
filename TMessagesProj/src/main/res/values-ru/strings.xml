@@ -348,6 +348,7 @@
     <string name="PrivacyAndSecurityLabel">Конфиденциальность и безопасность</string>
     <string name="DataAndStorageLabel">Данные и память</string>
     <string name="AppearanceLabel">Оформление</string>
+    <string name="Language">Язык</string>
     <string name="LogOutLabel">Выйти</string>
 
     <!--onboarding screen-->

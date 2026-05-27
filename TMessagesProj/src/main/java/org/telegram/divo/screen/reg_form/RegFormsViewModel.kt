@@ -11,6 +11,7 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import java.io.InputStreamReader
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.telegram.divo.common.AdditionalInfoKeys
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import org.telegram.tgnet.ConnectionsManager
@@ -113,40 +114,40 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     
                     val additionalInfo = mutableMapOf<String, Any>()
                     // Raw form fields
-                    if (data.firstName.isNotBlank()) additionalInfo["firstName"] = data.firstName
-                    if (data.lastName.isNotBlank()) additionalInfo["lastName"] = data.lastName
-                    if (!data.dateOfBirth.isNullOrBlank()) additionalInfo["dateOfBirth"] = data.dateOfBirth
-                    if (!data.gender.isNullOrBlank()) additionalInfo["gender"] = data.gender
-                    if (data.country.isNotBlank()) additionalInfo["country"] = data.country
-                    if (data.countryCode.isNotBlank()) additionalInfo["countryCode"] = data.countryCode
-                    if (data.city.isNotBlank()) additionalInfo["city"] = data.city
+                    if (data.firstName.isNotBlank()) additionalInfo[AdditionalInfoKeys.FIRST_NAME] = data.firstName
+                    if (data.lastName.isNotBlank()) additionalInfo[AdditionalInfoKeys.LAST_NAME] = data.lastName
+                    if (!data.dateOfBirth.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.DATE_OF_BIRTH] = data.dateOfBirth
+                    if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = data.gender
+                    if (data.country.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY] = data.country
+                    if (data.countryCode.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY_CODE] = data.countryCode
+                    if (data.city.isNotBlank()) additionalInfo[AdditionalInfoKeys.CITY] = data.city
                     
-                    if (data.companyName.isNotBlank()) additionalInfo["companyName"] = data.companyName
-                    if (data.websiteUrl.isNotBlank()) additionalInfo["websiteUrl"] = data.websiteUrl
-                    if (data.contactRole.isNotBlank()) additionalInfo["contactRole"] = data.contactRole
-                    if (data.contactName.isNotBlank()) additionalInfo["contactName"] = data.contactName
-                    if (data.contactPhone.isNotBlank()) additionalInfo["contactPhone"] = data.contactPhone
+                    if (data.companyName.isNotBlank()) additionalInfo[AdditionalInfoKeys.COMPANY_NAME] = data.companyName
+                    if (data.websiteUrl.isNotBlank()) additionalInfo[AdditionalInfoKeys.WEBSITE_URL] = data.websiteUrl
+                    if (data.contactRole.isNotBlank()) additionalInfo[AdditionalInfoKeys.CONTACT_ROLE] = data.contactRole
+                    if (data.contactName.isNotBlank()) additionalInfo[AdditionalInfoKeys.CONTACT_NAME] = data.contactName
+                    if (data.contactPhone.isNotBlank()) additionalInfo[AdditionalInfoKeys.CONTACT_PHONE] = data.contactPhone
                     
-                    if (!data.specialisation.isNullOrBlank()) additionalInfo["specialisation"] = data.specialisation
-                    if (data.instagramUrl.isNotBlank()) additionalInfo["instagramUrl"] = data.instagramUrl
-                    if (data.portfolioUrl.isNotBlank()) additionalInfo["portfolioUrl"] = data.portfolioUrl
-                    if (data.agencyName.isNotBlank()) additionalInfo["agencyName"] = data.agencyName
+                    if (!data.specialisation.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.SPECIALISATION] = data.specialisation
+                    if (data.instagramUrl.isNotBlank()) additionalInfo[AdditionalInfoKeys.INSTAGRAM_URL] = data.instagramUrl
+                    if (data.portfolioUrl.isNotBlank()) additionalInfo[AdditionalInfoKeys.PORTFOLIO_URL] = data.portfolioUrl
+                    if (data.agencyName.isNotBlank()) additionalInfo[AdditionalInfoKeys.AGENCY_NAME] = data.agencyName
                     
-                    if (data.showreelUrl.isNotBlank()) additionalInfo["showreelUrl"] = data.showreelUrl
-                    if (data.castingProfileUrl.isNotBlank()) additionalInfo["castingProfileUrl"] = data.castingProfileUrl
-                    if (uploadedPhotoUuid != null) additionalInfo["photoUri"] = uploadedPhotoUuid
-                    if (uploadedPhotoUrl != null) additionalInfo["photoUrl"] = uploadedPhotoUrl
+                    if (data.showreelUrl.isNotBlank()) additionalInfo[AdditionalInfoKeys.SHOWREEL_URL] = data.showreelUrl
+                    if (data.castingProfileUrl.isNotBlank()) additionalInfo[AdditionalInfoKeys.CASTING_PROFILE_URL] = data.castingProfileUrl
+                    if (uploadedPhotoUuid != null) additionalInfo[AdditionalInfoKeys.PHOTO_UUID] = uploadedPhotoUuid
+                    if (uploadedPhotoUrl != null) additionalInfo[AdditionalInfoKeys.PHOTO_URL] = uploadedPhotoUrl
 
                     // Computed / derived values
                     val fullNameForInfo = listOf(data.firstName, data.lastName).filter { it.isNotBlank() }.joinToString(" ")
                         .ifBlank { data.companyName }
-                    if (fullNameForInfo.isNotBlank()) additionalInfo["fullName"] = fullNameForInfo
-                    if (rawPhone.isNotBlank()) additionalInfo["phone"] = rawPhone
-                    additionalInfo["email"] = email
-                    additionalInfo["timezone"] = java.util.TimeZone.getDefault().id
-                    additionalInfo["measuringSystem"] = "metric"
-                    additionalInfo["subRole"] = data.subRole.name.lowercase()
-                    if (mappedSubrole != null) additionalInfo["subrole"] = mappedSubrole
+                    if (fullNameForInfo.isNotBlank()) additionalInfo[AdditionalInfoKeys.FULL_NAME] = fullNameForInfo
+                    if (rawPhone.isNotBlank()) additionalInfo[AdditionalInfoKeys.PHONE] = rawPhone
+                    additionalInfo[AdditionalInfoKeys.EMAIL] = email
+                    additionalInfo[AdditionalInfoKeys.TIMEZONE] = java.util.TimeZone.getDefault().id
+                    additionalInfo[AdditionalInfoKeys.MEASURING_SYSTEM] = "metric"
+                    additionalInfo[AdditionalInfoKeys.SUB_ROLE] = data.subRole.name.lowercase()
+                    if (mappedSubrole != null) additionalInfo[AdditionalInfoKeys.SUBROLE_MAPPED] = mappedSubrole
 
                     // Branch: social registration vs regular registration
                     val divoUserId: Long?

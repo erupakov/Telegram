@@ -571,7 +571,7 @@ public class LocaleController {
         localeInfo.name = "Русский";
         localeInfo.nameEnglish = "Russian";
         localeInfo.shortName = localeInfo.pluralLangCode = "ru";
-        localeInfo.pathToFile = null; // TODO: change to "remote" when Telegram servers are connected
+        localeInfo.pathToFile = "remote";
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
@@ -580,7 +580,7 @@ public class LocaleController {
         localeInfo.name = "Español";
         localeInfo.nameEnglish = "Spanish";
         localeInfo.shortName = localeInfo.pluralLangCode = "es";
-        localeInfo.pathToFile = null; // TODO: change to "remote" when Telegram servers are connected
+        localeInfo.pathToFile = "remote";
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
@@ -589,17 +589,7 @@ public class LocaleController {
         localeInfo.name = "Português (Brasil)";
         localeInfo.nameEnglish = "Portuguese (Brazil)";
         localeInfo.shortName = localeInfo.pluralLangCode = "pt_br";
-        localeInfo.pathToFile = null; // TODO: change to "remote" when Telegram servers are connected
-        localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.shortName, localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "中文 (简体)";
-        localeInfo.nameEnglish = "Chinese (Simplified)";
-        localeInfo.shortName = "zh_hans_cn";
-        localeInfo.pluralLangCode = "zh";
-        localeInfo.pathToFile = null; // TODO: change to "remote" when Telegram servers are connected
+        localeInfo.pathToFile = "remote";
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);

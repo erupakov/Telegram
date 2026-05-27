@@ -59360,6 +59360,41 @@ public class TLRPC {
         }
     }
 
+    public static class TL_messages_forwardMessages_layer199 extends TL_messages_forwardMessages {
+        public static final int constructor = 0x978928ca;
+
+        public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
+            return Updates.TLdeserialize(stream, constructor, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            flags = silent ? (flags | 32) : (flags &~ 32);
+            flags = background ? (flags | 64) : (flags &~ 64);
+            flags = with_my_score ? (flags | 256) : (flags &~ 256);
+            flags = drop_author ? (flags | 2048) : (flags &~ 2048);
+            flags = drop_media_captions ? (flags | 4096) : (flags &~ 4096);
+            flags = noforwards ? (flags | 16384) : (flags &~ 16384);
+            stream.writeInt32(flags);
+            from_peer.serializeToStream(stream);
+            Vector.serializeInt(stream, id);
+            Vector.serializeLong(stream, random_id);
+            to_peer.serializeToStream(stream);
+            if ((flags & 512) != 0) {
+                stream.writeInt32(top_msg_id);
+            }
+            if ((flags & 1024) != 0) {
+                stream.writeInt32(schedule_date);
+            }
+            if ((flags & 8192) != 0) {
+                send_as.serializeToStream(stream);
+            }
+            if ((flags & 131072) != 0) {
+                quick_reply_shortcut.serializeToStream(stream);
+            }
+        }
+    }
+
     public static class TL_messages_reportSpam extends TLObject {
         public static final int constructor = 0xcf1592db;
 
