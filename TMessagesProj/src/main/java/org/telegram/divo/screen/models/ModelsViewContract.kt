@@ -21,7 +21,6 @@ data class Model(
     val avatarUrl: String = "",
     val photos: List<String> = emptyList(),
     val roleLabel: String = "",
-    val userProfile: TLRPC.TL_userProfile? = null
 )
 
 enum class Tab(val displayResId: Int) {

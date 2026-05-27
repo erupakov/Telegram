@@ -122,7 +122,9 @@ class UserRepository(
             putString(KEY_AVATAR_URL, info.avatarUrl)
             apply()
         }
-        NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
+        scope.launch {
+            NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
+        }
     }
 
     fun clearCache() {
@@ -130,7 +132,9 @@ class UserRepository(
         _currentUserCache.value = null
         _galleryCache.value = emptyMap()
         prefs.edit { clear() }
-        NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
+        scope.launch {
+            NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
+        }
     }
 
     suspend fun updateAgency(

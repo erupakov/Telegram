@@ -1029,13 +1029,28 @@ public class TL_stories {
     }
 
     public static class TL_stories_getPeerMaxIDs extends TLMethod<Vector<TLRPC.TL_recentStory>> {
-        public static final int constructor = 0x78499170;
+        public static final int constructor = 0x535983c3;
 
         public ArrayList<TLRPC.InputPeer> id = new ArrayList<>();
 
         @Override
         public Vector<TLRPC.TL_recentStory> deserializeResponseT(InputSerializedData stream, int constructor, boolean exception) {
-            return Vector.TLDeserialize(stream, constructor, exception, TLRPC.TL_recentStory::TLdeserialize);
+            if (constructor != org.telegram.tgnet.Vector.constructor) {
+                if (exception) {
+                    throw new RuntimeException(String.format("can't parse magic %x in Vector", constructor));
+                }
+                return null;
+            }
+            Vector<TLRPC.TL_recentStory> vector = new Vector<>(null);
+            int count = stream.readInt32(exception);
+            for (int a = 0; a < count; a++) {
+                int maxId = stream.readInt32(exception);
+                TLRPC.TL_recentStory story = new TLRPC.TL_recentStory();
+                story.max_id = maxId;
+                story.flags |= 2;
+                vector.objects.add(story);
+            }
+            return vector;
         }
 
         public void serializeToStream(OutputSerializedData stream) {

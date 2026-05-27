@@ -21,6 +21,7 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.dto.auth.RegistrationRequest
 import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.tgnet.tl.TL_account
 import java.io.BufferedReader
@@ -66,6 +67,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
             val data = state.value.formData ?: return
 
             viewModelScope.launch {
+                var telegramPhotoFile: java.io.File? = null
                 try {
                     // 0. Upload Photo (can be done without auth)
                     var uploadedPhotoUuid: String? = null
@@ -86,7 +88,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                     uploadedPhotoUuid = uploadResult.value.uuid
                                     uploadedPhotoUrl = uploadResult.value.fullUrl
                                 }
-                                tempFile.delete()
+                                telegramPhotoFile = tempFile
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -225,6 +227,57 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         }
                     }
 
+                    // 2.5 TG Profile Photo Update
+                    if (telegramPhotoFile != null) {
+                        try {
+                            val inputFile = suspendCancellableCoroutine<org.telegram.tgnet.TLRPC.InputFile?> { continuation ->
+                                org.telegram.messenger.FileLoader.getInstance(state.value.currentAccount).uploadFile(telegramPhotoFile!!.absolutePath) { result ->
+                                    continuation.resume(result)
+                                }
+                            }
+                            if (inputFile != null) {
+                                val photoReq = TLRPC.TL_photos_uploadProfilePhoto().apply {
+                                    file = inputFile
+                                    flags = flags or 1
+                                }
+                                val photoResult = suspendCancellableCoroutine<TLRPC.TL_photos_photo?> { continuation ->
+                                    val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(photoReq) { response, error ->
+                                        if (error == null && response is TLRPC.TL_photos_photo) {
+                                            continuation.resume(response)
+                                        } else {
+                                            continuation.resume(null)
+                                        }
+                                    }
+                                    continuation.invokeOnCancellation {
+                                        ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
+                                    }
+                                }
+                                if (photoResult != null) {
+                                    val uc = org.telegram.messenger.UserConfig.getInstance(state.value.currentAccount)
+                                    val currentUser = uc.currentUser
+                                    if (currentUser != null && photoResult.photo != null) {
+                                        val bigSize = org.telegram.messenger.FileLoader.getClosestPhotoSizeWithSize(photoResult.photo.sizes, 800)
+                                        val smallSize = org.telegram.messenger.FileLoader.getClosestPhotoSizeWithSize(photoResult.photo.sizes, 150)
+                                        if (smallSize != null && bigSize != null) {
+                                            if (currentUser.photo == null) {
+                                                currentUser.photo = TLRPC.TL_userProfilePhoto()
+                                            }
+                                            currentUser.photo.photo_id = photoResult.photo.id
+                                            currentUser.photo.photo_small = smallSize.location
+                                            currentUser.photo.photo_big = bigSize.location
+                                            currentUser.photo.dc_id = photoResult.photo.dc_id
+                                            uc.setCurrentUser(currentUser)
+                                            uc.saveConfig(true)
+                                        }
+                                    }
+                                    org.telegram.messenger.MessagesController.getInstance(state.value.currentAccount).putUsers(photoResult.users, false)
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
                     // 3. Divo Link (REST)
                     val tgUserId = profileUpdateResult.id
 
@@ -263,7 +316,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
 
                     // Build role-specific DTOs from form data
                     val modelDto: org.telegram.divo.dal.dto.user.UpdateProfileModelDto? =
-                        if (mappedRole == "model" || mappedRole == "new_talent") {
+                        if (mappedRole == RoleType.MODEL.value || mappedRole == RoleType.NEW_FACE.value || mappedRole == RoleType.FAN.value) {
                             org.telegram.divo.dal.dto.user.UpdateProfileModelDto(
                                 agencyId = null,
                                 profileUrl = data.castingProfileUrl.takeIf { it.isNotBlank() },
@@ -284,7 +337,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         } else null
 
                     val customerDto: org.telegram.divo.dal.dto.common.CustomerDto? =
-                        if (mappedRole == "customer") {
+                        if (mappedRole == RoleType.CUSTOMER.value) {
                             org.telegram.divo.dal.dto.common.CustomerDto(
                                 site = data.websiteUrl.takeIf { it.isNotBlank() }
                                     ?: data.portfolioUrl.takeIf { it.isNotBlank() },
@@ -293,7 +346,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         } else null
 
                     val agencyDto: org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest? =
-                        if (mappedRole == "agency_employee") {
+                        if (mappedRole == RoleType.AGENCY.value) {
                             org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest(
                                 agencyId = null,
                                 title = data.companyName.takeIf { it.isNotBlank() },
@@ -340,6 +393,8 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     } else {
                         sendEffect(RegFormsEffect.ShowError(e.message ?: "Unknown error occurred"))
                     }
+                } finally {
+                    telegramPhotoFile?.delete()
                 }
             }
         } else {
@@ -451,20 +506,20 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
 
     private fun SubRole.toDivoRoleAndSubrole(): Pair<String, String?> {
         return when (this) {
-            SubRole.MODELING_AGENCY -> "agency_employee" to null //"owner"
-            SubRole.FASHION_BRAND, SubRole.BEAUTY_BRAND, SubRole.BRAND_OR_BUSINESS -> "agency_employee" to null //"brand"
-            SubRole.EVENT_AGENCY -> "agency_employee" to null //"owner"
-            SubRole.MAGAZINE -> "agency_employee" to null //"media"
-            SubRole.SCOUT -> "agency_employee" to null //"scout"
-            SubRole.BOOKER -> "agency_employee" to null //"booker"
-            SubRole.CASTING_DIRECTOR, SubRole.TALENT_MANAGER -> "agency_employee" to null //"agent"
-            SubRole.PHOTOGRAPHER -> "customer" to null //"photographer"
-            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> "customer" to null //"stylist"
-            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> "customer" to null //"media"
-            SubRole.STUDIO -> "customer" to null //"place"
-            SubRole.MODEL -> "model" to null
-            SubRole.NEW_TALENT, SubRole.ACTOR, SubRole.DANCER, SubRole.SINGER -> "new_talent" to null
-            SubRole.FAN -> "new_face" to null //"fan"
+            SubRole.MODELING_AGENCY -> RoleType.AGENCY.value to null //"owner"
+            SubRole.FASHION_BRAND, SubRole.BEAUTY_BRAND, SubRole.BRAND_OR_BUSINESS -> RoleType.AGENCY.value to null //"brand"
+            SubRole.EVENT_AGENCY -> RoleType.AGENCY.value to null //"owner"
+            SubRole.MAGAZINE -> RoleType.AGENCY.value to null //"media"
+            SubRole.SCOUT -> RoleType.AGENCY.value to null //"scout"
+            SubRole.BOOKER -> RoleType.AGENCY.value to null //"booker"
+            SubRole.CASTING_DIRECTOR, SubRole.TALENT_MANAGER -> RoleType.AGENCY.value to null //"agent"
+            SubRole.PHOTOGRAPHER -> RoleType.CUSTOMER.value to null //"photographer"
+            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> RoleType.CUSTOMER.value to null //"stylist"
+            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> RoleType.CUSTOMER.value to null //"media"
+            SubRole.STUDIO -> RoleType.CUSTOMER.value to null //"place"
+            SubRole.MODEL -> RoleType.MODEL.value to null
+            SubRole.NEW_TALENT, SubRole.ACTOR, SubRole.DANCER, SubRole.SINGER -> RoleType.NEW_FACE.value to null
+            SubRole.FAN -> RoleType.FAN.value to null //"fan"
         }
     }
 }

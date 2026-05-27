@@ -31,7 +31,6 @@ object GoogleSignInHelper {
     private const val WEB_CLIENT_ID =
         "121062802243-9hajm212lfu3cpejssjgtkbpqb3j4jlp.apps.googleusercontent.com"
 
-    private const val DEBUG_HARDCODED_PHONE = "79100083642"
     private const val DEBUG_HARDCODED_CODE = "12345"
 
     interface GoogleSignInCallback {
@@ -99,12 +98,11 @@ object GoogleSignInHelper {
                     val profileResult = withContext(Dispatchers.IO) {
                         DivoApi.userRepository.getCurrentUserInfo(forceRefresh = true)
                     }
-                    var dummyPhone = if (profileResult is DivoResult.Success) {
+                    val dummyPhone = if (profileResult is DivoResult.Success) {
                         profileResult.value.phone.takeIf { it.isNotBlank() }
-                    } else null
-
-                    if (DEBUG_HARDCODED_PHONE.isNotBlank()) {
-                        dummyPhone = DEBUG_HARDCODED_PHONE
+                    } else {
+                        Log.d("RegForm", profileResult.getErrorMessage())
+                        null
                     }
 
                     if (dummyPhone == null) {
@@ -113,8 +111,7 @@ object GoogleSignInHelper {
                         }
                         return@launch
                     }
-                    
-                    Log.d(TAG, "Doing Telegram auth with existing dummy phone: $dummyPhone")
+
                     val authResponse = doTelegramAuth(dummyPhone, currentAccount)
                     
                     withContext(Dispatchers.Main) {
@@ -125,17 +122,12 @@ object GoogleSignInHelper {
                         }
                     }
                 } else {
-                    Log.d(TAG, "User not found, fetching new dummy phone")
                     val dummyPhoneResult = withContext(Dispatchers.IO) {
                         DivoApi.authRepository.getDummyPhone()
                     }
-                    var newDummyPhone = if (dummyPhoneResult is DivoResult.Success) {
+                    val newDummyPhone = if (dummyPhoneResult is DivoResult.Success) {
                         dummyPhoneResult.value.data?.phone?.takeIf { it.isNotBlank() }
                     } else null
-
-                    if (DEBUG_HARDCODED_PHONE.isNotBlank()) {
-                        newDummyPhone = DEBUG_HARDCODED_PHONE
-                    }
 
                     if (newDummyPhone == null) {
                         withContext(Dispatchers.Main) {
@@ -207,6 +199,31 @@ object GoogleSignInHelper {
                                     org.telegram.messenger.UserConfig.getInstance(currentAccount).saveConfig(true)
                                     org.telegram.messenger.MessagesController.getInstance(currentAccount).putUser(signInResponse.user, false)
                                     continuation.resume(signInResponse)
+                                } else if (signInResponse is org.telegram.tgnet.TLRPC.TL_auth_authorizationSignUpRequired) {
+                                    // Номер не зарегистрирован — делаем signup с dummy-данными
+                                    val signUp = org.telegram.tgnet.TLRPC.TL_auth_signUp().apply {
+                                        phone_number = phone
+                                        phone_code_hash = response.phone_code_hash
+                                        first_name = "User"
+                                        last_name = ""
+                                    }
+                                    org.telegram.tgnet.ConnectionsManager.getInstance(currentAccount).sendRequest(
+                                        signUp,
+                                        { signUpResponse, signUpError ->
+                                            if (signUpError != null || signUpResponse !is org.telegram.tgnet.TLRPC.TL_auth_authorization) {
+                                                continuation.resume(null)
+                                                return@sendRequest
+                                            }
+                                            org.telegram.messenger.UserConfig.getInstance(currentAccount).apply {
+                                                clientUserId = signUpResponse.user.id
+                                                currentUser = signUpResponse.user
+                                                saveConfig(true)
+                                            }
+                                            org.telegram.messenger.MessagesController.getInstance(currentAccount)
+                                                .putUser(signUpResponse.user, false)
+                                            continuation.resume(signUpResponse)
+                                        }, org.telegram.tgnet.ConnectionsManager.RequestFlagWithoutLogin
+                                    )
                                 } else {
                                     continuation.resume(null as org.telegram.tgnet.TLRPC.TL_auth_authorization?)
                                 }
