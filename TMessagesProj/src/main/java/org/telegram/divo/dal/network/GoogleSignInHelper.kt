@@ -8,7 +8,8 @@ import androidx.credentials.GetCredentialRequest
 import androidx.credentials.GetCredentialResponse
 import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
-import com.google.android.libraries.identity.googleid.GetGoogleIdOption
+import androidx.credentials.exceptions.NoCredentialException
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.telegram.divo.dal.dto.auth.SocialLoginRequest
+import org.telegram.messenger.R
 import kotlin.coroutines.resume
 
 object GoogleSignInHelper {
@@ -64,14 +66,14 @@ object GoogleSignInHelper {
                 // Step 1: Get Google ID Token via Credential Manager
                 val googleIdToken = getGoogleIdToken(context)
                 if (googleIdToken == null) {
-                    callback.onError("Failed to get Google ID Token")
+                    callback.onError(context.getString(R.string.ErrorGoogleSignInFailed))
                     return@launch
                 }
 
                 // Step 2: Sign in to Firebase with Google credential
                 val firebaseUser = signInToFirebase(googleIdToken)
                 if (firebaseUser == null) {
-                    callback.onError("Firebase authentication failed")
+                    callback.onError(context.getString(R.string.ErrorFirebaseAuthFailed))
                     return@launch
                 }
 
@@ -107,7 +109,7 @@ object GoogleSignInHelper {
 
                     if (dummyPhone == null) {
                         withContext(Dispatchers.Main) {
-                            callback.onError("Profile fetch failed or phone is missing")
+                            callback.onError(context.getString(R.string.ErrorProfileFetchFailed))
                         }
                         return@launch
                     }
@@ -116,9 +118,10 @@ object GoogleSignInHelper {
                     
                     withContext(Dispatchers.Main) {
                         if (authResponse != null) {
+                            DivoApi.accessTokenProvider.setGoogleLogin(true)
                             callback.onSuccess(authResponse)
                         } else {
-                            callback.onError("Telegram Auth Failed")
+                            callback.onError(context.getString(R.string.ErrorTelegramAuthFailed))
                         }
                     }
                 } else {
@@ -131,7 +134,7 @@ object GoogleSignInHelper {
 
                     if (newDummyPhone == null) {
                         withContext(Dispatchers.Main) {
-                            callback.onError("Failed to fetch new dummy phone for registration")
+                            callback.onError(context.getString(R.string.ErrorDummyPhoneFailed))
                         }
                         return@launch
                     }
@@ -142,17 +145,18 @@ object GoogleSignInHelper {
                         if (authResponse != null) {
                             callback.onUserNotFound(uid, email, newDummyPhone, authResponse)
                         } else {
-                            callback.onError("Telegram Auth Failed")
+                            callback.onError(context.getString(R.string.ErrorTelegramAuthFailed))
                         }
                     }
                 }
-
             } catch (e: GetCredentialCancellationException) {
                 callback.onCancelled()
+            } catch (e: NoCredentialException) {
+                callback.onError(context.getString(R.string.ErrorGoogleNoAccount))
             } catch (e: GetCredentialException) {
-                callback.onError(e.message ?: "Google Sign-In failed")
+                callback.onError(context.getString(R.string.ErrorGoogleSignInFailed))
             } catch (e: Exception) {
-                callback.onError(e.message ?: "Unexpected error")
+                callback.onError(context.getString(R.string.ErrorUnexpected))
             }
         }
         return Runnable { job.cancel() }
@@ -243,9 +247,7 @@ object GoogleSignInHelper {
     private suspend fun getGoogleIdToken(context: Context): String? {
         val credentialManager = CredentialManager.create(context)
 
-        val googleIdOption = GetGoogleIdOption.Builder()
-            .setFilterByAuthorizedAccounts(false)
-            .setServerClientId(WEB_CLIENT_ID)
+        val googleIdOption = GetSignInWithGoogleOption.Builder(WEB_CLIENT_ID)
             .build()
 
         val request = GetCredentialRequest.Builder()

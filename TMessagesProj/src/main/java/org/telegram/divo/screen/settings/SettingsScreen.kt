@@ -59,6 +59,7 @@ import org.telegram.divo.common.SnackbarEvent.*
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -382,7 +383,7 @@ private fun ProfileRow(
             overflow = TextOverflow.Ellipsis,
         )
         Spacer(Modifier.height(10.dp))
-        if (phone.isNotEmpty()) {
+        if (phone.isNotEmpty() && !DivoApi.accessTokenProvider.isGoogleLogin()) {
             Text(
                 text = "+${phone}",
                 style = AppTheme.typography.helveticaNeueRegular,

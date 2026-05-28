@@ -52,6 +52,7 @@ class AuthViewModel :
 
             if (result is DivoResult.Success) {
                 sendEffect(AuthViewEffect.LoginSuccess)
+                DivoApi.accessTokenProvider.setGoogleLogin(false)
                 delay(500)
                 setState { copy(isLoading = false) }
             } else {

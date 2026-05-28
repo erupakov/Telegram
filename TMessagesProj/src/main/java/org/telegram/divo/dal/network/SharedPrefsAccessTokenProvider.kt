@@ -8,6 +8,7 @@ import androidx.core.content.edit
 
 private const val PREFS_NAME_PREFIX = "divo_auth_"
 private const val KEY_ACCESS_TOKEN = "access_token"
+private const val KEY_IS_GOOGLE_LOGIN = "is_google_login"
 
 /**
  * Simple SharedPreferences-based implementation of [AccessTokenProvider].
@@ -25,9 +26,20 @@ class SharedPrefsAccessTokenProvider(
         prefs.edit {
             if (token == null) {
                 remove(KEY_ACCESS_TOKEN)
+                remove(KEY_IS_GOOGLE_LOGIN)
             } else {
                 putString(KEY_ACCESS_TOKEN, token)
             }
+        }
+    }
+
+    override fun isGoogleLogin(): Boolean {
+        return prefs.getBoolean(KEY_IS_GOOGLE_LOGIN, false)
+    }
+
+    override fun setGoogleLogin(isGoogle: Boolean) {
+        prefs.edit {
+            putBoolean(KEY_IS_GOOGLE_LOGIN, isGoogle)
         }
     }
 }

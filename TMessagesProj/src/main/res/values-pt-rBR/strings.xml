@@ -1806,4 +1806,11 @@
     <string name="RemindDayAt">\'Lembrar em\' d \'de\' MMM \'às\' HH:mm</string>
     <string name="RemindDayYearAt">\'Lembrar em\' d \'de\' MMM \'de\' yyyy \'às\' HH:mm</string>
     <string name="BotsMenuTitle">Menu</string>
+    <string name="ErrorGoogleNoAccount">Nenhuma conta do Google encontrada neste dispositivo. Adicione uma nas configurações.</string>
+    <string name="ErrorGoogleSignInFailed">Falha no login do Google</string>
+    <string name="ErrorFirebaseAuthFailed">Falha na autenticação do Firebase</string>
+    <string name="ErrorProfileFetchFailed">Falha ao obter o perfil ou telefone ausente</string>
+    <string name="ErrorTelegramAuthFailed">Falha na autenticação do Telegram</string>
+    <string name="ErrorDummyPhoneFailed">Falha ao obter telefone fictício para registro</string>
+    <string name="ErrorUnexpected">Erro inesperado</string>
 </resources>

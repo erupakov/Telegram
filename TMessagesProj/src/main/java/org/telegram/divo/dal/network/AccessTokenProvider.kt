@@ -17,5 +17,7 @@ interface AccessTokenProvider {
      * Persists the latest access token. Passing null should clear any stored token.
      */
     fun setAccessToken(token: String?)
+    fun isGoogleLogin(): Boolean
+    fun setGoogleLogin(isGoogle: Boolean)
 }
 

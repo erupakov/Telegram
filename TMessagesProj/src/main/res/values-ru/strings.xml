@@ -832,4 +832,11 @@
     <string name="RemindTodayAt">\'Отправить сегодня в\' HH:mm</string>
     <string name="RemindDayAt">\'Отправить\' d MMM \'в\' HH:mm</string>
     <string name="RemindDayYearAt">\'Напомнить\' d MMM yyyy \'в\' HH:mm</string>
+    <string name="ErrorGoogleNoAccount">На устройстве не найден Google-аккаунт. Пожалуйста, добавьте его в настройках телефона.</string>
+    <string name="ErrorGoogleSignInFailed">Ошибка авторизации через Google</string>
+    <string name="ErrorFirebaseAuthFailed">Ошибка аутентификации Firebase</string>
+    <string name="ErrorProfileFetchFailed">Не удалось получить профиль или отсутствует телефон</string>
+    <string name="ErrorTelegramAuthFailed">Ошибка авторизации Telegram</string>
+    <string name="ErrorDummyPhoneFailed">Не удалось получить номер для регистрации</string>
+    <string name="ErrorUnexpected">Непредвиденная ошибка</string>
 </resources>

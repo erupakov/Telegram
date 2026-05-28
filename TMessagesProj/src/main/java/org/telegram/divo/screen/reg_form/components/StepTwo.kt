@@ -57,11 +57,14 @@ fun StepTwo(
             ),
             onDismiss = { showCountrySheet = false },
             onPick = { selectedList ->
-                selectedList.firstOrNull()?.let { country ->
-                    onIntent(RegFormsIntent.OnFieldChanged {
-                        copy(country = country.name, countryCode = country.shortName, city = "")
-                    })
-                }
+                val country = selectedList.firstOrNull()
+                onIntent(RegFormsIntent.OnFieldChanged {
+                    copy(
+                        country = country?.name ?: "", 
+                        countryCode = country?.shortName ?: "", 
+                        city = ""
+                    )
+                })
                 showCountrySheet = false
             }
         )

@@ -10959,4 +10959,11 @@
     <string name="ChannelAdmins">Channel admins</string>
     <string name="ChannelSubscribers2">Channel subscribers</string>
     <string name="MembersSearch">Search people</string>
+    <string name="ErrorGoogleNoAccount">No Google account found on this device. Please add one in your device settings.</string>
+    <string name="ErrorGoogleSignInFailed">Google Sign-In failed</string>
+    <string name="ErrorFirebaseAuthFailed">Firebase authentication failed</string>
+    <string name="ErrorProfileFetchFailed">Profile fetch failed or phone is missing</string>
+    <string name="ErrorTelegramAuthFailed">Telegram Auth Failed</string>
+    <string name="ErrorDummyPhoneFailed">Failed to fetch dummy phone for registration</string>
+    <string name="ErrorUnexpected">Unexpected error</string>
 </resources>

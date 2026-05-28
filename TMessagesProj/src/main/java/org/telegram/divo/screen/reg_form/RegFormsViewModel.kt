@@ -173,6 +173,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                             setState { copy(isLoading = false) }
                             return@launch
                         }
+                        DivoApi.accessTokenProvider.setGoogleLogin(true)
                         divoUserId = divoResponse.value.data?.user?.id
                     } else {
                         // Phone flow → regular registration
@@ -192,6 +193,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                             setState { copy(isLoading = false) }
                             return@launch
                         }
+                        DivoApi.accessTokenProvider.setGoogleLogin(false)
                         divoUserId = divoResponse.value.data?.user?.id
                     }
 

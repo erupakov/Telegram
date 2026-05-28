@@ -44,6 +44,7 @@ object DivoAuthHelper {
             val result = DivoApi.authRepository.login(request)
             withContext(Dispatchers.Main) {
                 if (result is DivoResult.Success) {
+                    DivoApi.accessTokenProvider.setGoogleLogin(false)
                     callback.onSuccess()
                 } else {
                     val errorMsg = result.getErrorMessage()

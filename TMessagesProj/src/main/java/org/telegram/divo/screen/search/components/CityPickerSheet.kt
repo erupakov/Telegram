@@ -50,13 +50,14 @@ fun CityPickerSheet(
     allCountries: List<LocalCountry> = emptyList(),      // Все страны для поиска названий
     selectedCountries: List<LocalCountry> = emptyList(), // Выбранные страны в фильтре
     selectedCity: LocalCity? = null, // Заменили List на одиночный элемент (или null)
+    isApplyEnable: Boolean = true,
     onDismiss: () -> Unit,
     onPick: (LocalCity?) -> Unit      // Возвращаем один город
 ) {
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf(selectedCity?.name ?: "") }
     val countryNameMap = remember(allCountries) {
         allCountries.associate { it.shortName.uppercase() to it.name }
     }
@@ -93,6 +94,7 @@ fun CityPickerSheet(
         isSaveMode = false,
         contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp),
         onDismiss = onDismiss,
+        isApplyEnable = isApplyEnable,
         iconClose = R.drawable.ic_divo_back,
         onReset = {
             scope.launch {

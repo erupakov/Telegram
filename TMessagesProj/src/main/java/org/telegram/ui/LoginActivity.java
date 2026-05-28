@@ -366,7 +366,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private Runnable keyboardHideCallback;
 
     private ImageView backButtonView;
-    private RadialProgressView radialProgressView;
+    private RLottieImageView radialProgressView;
 
     private ImageView proxyButtonView;
     private ProxyDrawable proxyDrawable;
@@ -726,10 +726,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 //        });
 //
         roleSelectionView.setOnBack(() -> {
-            setPage(VIEW_PHONE_INPUT, true, null, true);
+            if (onBackPressed(true)) {
+                if (parentLayout != null && parentLayout.getFragmentStack().size() <= 1) {
+                    presentFragment(new org.telegram.divo.screen.auth.AuthFragment(), true);
+                } else {
+                    finishFragment();
+                }
+            }
             return Unit.INSTANCE;
         });
         roleSelectionView.setOnFinish((TLRPC.TL_auth_authorization authResponse) -> {
+            forceRoleSelection = false;
             onAuthSuccess(authResponse, true);
             return kotlin.Unit.INSTANCE;
         });
@@ -831,7 +838,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         //DIVO--END
         backButtonView.setOnClickListener(v -> {
             if (onBackPressed(true)) {
-                finishFragment();
+                if (parentLayout != null && parentLayout.getFragmentStack().size() <= 1) {
+                    presentFragment(new org.telegram.divo.screen.auth.AuthFragment(), true);
+                } else {
+                    finishFragment();
+                }
             }
         });
         backButtonView.setContentDescription(getString(R.string.Back));
@@ -862,9 +873,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         sizeNotifierFrameLayout.addView(proxyButtonView, LayoutHelper.createFrame(32, 32, Gravity.RIGHT | Gravity.TOP, 16, 16, 16, 16));
         updateProxyButton(false, true);
 
-        radialProgressView = new RadialProgressView(context);
-        radialProgressView.setSize(AndroidUtilities.dp(20));
-        radialProgressView.setAlpha(0);
+        radialProgressView = new RLottieImageView(context);
+        radialProgressView.setAnimation(org.telegram.messenger.R.raw.loading_animation, 32, 32);
+        radialProgressView.setAutoRepeat(true);
+        radialProgressView.playAnimation();
+        radialProgressView.setAlpha(0f);
         radialProgressView.setScaleX(0.1f);
         radialProgressView.setScaleY(0.1f);
         sizeNotifierFrameLayout.addView(radialProgressView, LayoutHelper.createFrame(32, 32, Gravity.RIGHT | Gravity.TOP, 0, 16, 16, 0));
@@ -1234,7 +1247,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             return false;
         }
 
-        if (currentViewNum == VIEW_PHONE_INPUT || activityMode == MODE_CHANGE_LOGIN_EMAIL && currentViewNum == VIEW_ADD_EMAIL) {
+        if (currentViewNum == VIEW_PHONE_INPUT || currentViewNum == VIEW_REGISTER || activityMode == MODE_CHANGE_LOGIN_EMAIL && currentViewNum == VIEW_ADD_EMAIL) {
             if (invoked) {
                 for (int a = 0; a < views.length; a++) {
                     if (views[a] != null) {
@@ -1242,6 +1255,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                 }
                 clearCurrentState();
+                if (parentLayout != null && parentLayout.getFragmentStack().size() <= 1) {
+                    presentFragment(new org.telegram.divo.screen.auth.AuthFragment(), true);
+                    return false;
+                }
             }
             return true;
         } else if (currentViewNum == VIEW_PASSWORD) {
@@ -1260,11 +1277,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         }
         //DIVO
-        //else if (currentViewNum == VIEW_REGISTER) {
-        //   if (invoked) {
-        //        ((LoginActivityRegisterView) views[currentViewNum]).wrongNumber.callOnClick();
-        //   }
-        //}
         else if (currentViewNum == VIEW_NEW_PASSWORD_STAGE_1) {
             if (invoked) {
                 views[currentViewNum].onBackPressed(true);
@@ -1873,40 +1885,44 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
                 }
             } else {
-                if (divoAuthProgressDialog == null) {
-                    divoAuthProgressDialog = new AlertDialog(getParentActivity(), 3);
-                    divoAuthProgressDialog.setCanCancel(false);
-                }
-                divoAuthProgressDialog.show();
-
-                divoAuthRequest = org.telegram.divo.dal.network.DivoAuthHelper.checkDivoUserExists(
-                    res.user.phone,
-                    new org.telegram.divo.dal.network.DivoAuthHelper.DivoAuthCallback() {
-                        @Override
-                        public void onSuccess() {
-                            if (divoAuthProgressDialog != null) {
-                                try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
-                            }
-                            needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
-                        }
-
-                        @Override
-                        public void onUserNotFound() {
-                            if (divoAuthProgressDialog != null) {
-                                try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
-                            }
-                            setPage(VIEW_REGISTER, true, null, true);
-                        }
-
-                        @Override
-                        public void onError(@androidx.annotation.NonNull String error) {
-                            if (divoAuthProgressDialog != null) {
-                                try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
-                            }
-                            needShowAlert(getString(R.string.AppName), error);
-                        }
+                if (currentViewNum == VIEW_REGISTER) {
+                    needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+                } else {
+                    if (divoAuthProgressDialog == null) {
+                        divoAuthProgressDialog = new AlertDialog(getParentActivity(), 3);
+                        divoAuthProgressDialog.setCanCancel(false);
                     }
-                );
+                    divoAuthProgressDialog.show();
+
+                    divoAuthRequest = org.telegram.divo.dal.network.DivoAuthHelper.checkDivoUserExists(
+                        res.user.phone,
+                        new org.telegram.divo.dal.network.DivoAuthHelper.DivoAuthCallback() {
+                            @Override
+                            public void onSuccess() {
+                                if (divoAuthProgressDialog != null) {
+                                    try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                                }
+                                needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+                            }
+
+                            @Override
+                            public void onUserNotFound() {
+                                if (divoAuthProgressDialog != null) {
+                                    try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                                }
+                                setPage(VIEW_REGISTER, true, null, true);
+                            }
+
+                            @Override
+                            public void onError(@androidx.annotation.NonNull String error) {
+                                if (divoAuthProgressDialog != null) {
+                                    try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                                }
+                                needShowAlert(getString(R.string.AppName), error);
+                            }
+                        }
+                    );
+                }
             }
         } else {
             needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
@@ -2978,6 +2994,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
         @Override
+        public boolean needBackButton() {
+            return true;
+        }
+
+        @Override
         public boolean hasCustomKeyboard() {
             return true;
         }
@@ -3253,7 +3274,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             confirmView.dismiss();
                             AndroidUtilities.runOnUIThread(()-> {
                                 onNextPressed(code);
-                                floatingButton.progressView.sync(confirmView.fabButton.progressView);
+                                // floatingButton.progressView.sync(confirmView.fabButton.progressView);
                             }, 150);
                         });
                     }
@@ -8185,7 +8206,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         proxyDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.SRC_IN));
         proxyButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
 
-        radialProgressView.setProgressColor(Theme.getColor(Theme.key_chats_actionBackground));
+        radialProgressView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_actionBackground), PorterDuff.Mode.SRC_IN));
 
         floatingButton.updateColors();
         floatingButtonIcon.setColor(Theme.getColor(Theme.key_chats_actionIcon));

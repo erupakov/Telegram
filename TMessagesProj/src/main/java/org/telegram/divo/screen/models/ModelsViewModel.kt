@@ -50,11 +50,17 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         limit = PAGE_SIZE, role = RoleType.AGENCY.value
     ).paginator
 
+    private var currentLanguage = org.telegram.messenger.LocaleController.getInstance().currentLocale?.language ?: ""
+
     private val languageObserver = NotificationCenter.NotificationCenterDelegate { id, _, _ ->
         if (id == NotificationCenter.reloadInterface) {
-            viewModelScope.launch {
-                delay(300)
-                refresh()
+            val newLanguage = org.telegram.messenger.LocaleController.getInstance().currentLocale?.language ?: ""
+            if (newLanguage != currentLanguage) {
+                currentLanguage = newLanguage
+                viewModelScope.launch {
+                    delay(300)
+                    refresh()
+                }
             }
         }
     }

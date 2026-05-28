@@ -54,11 +54,14 @@ fun StepOne(
             ),
             onDismiss = { showCountrySheet = false },
             onPick = { selectedList ->
-                selectedList.firstOrNull()?.let { country ->
-                    onIntent(RegFormsIntent.OnFieldChanged {
-                        copy(country = country.name, countryCode = country.shortName, city = "") // сбрасываем город при смене страны
-                    })
-                }
+                val country = selectedList.firstOrNull()
+                onIntent(RegFormsIntent.OnFieldChanged {
+                    copy(
+                        country = country?.name ?: "", 
+                        countryCode = country?.shortName ?: "", 
+                        city = ""
+                    )
+                })
                 showCountrySheet = false
             }
         )
@@ -281,5 +284,6 @@ fun SubRole.identityStepConfig(): StepOneConfig = when (this) {
         titleRes = R.string.RegFormFanIdentityTitle,
         showDateOfBirth = true,
         showCountry = true,
+        showCity = true,
     )
 }

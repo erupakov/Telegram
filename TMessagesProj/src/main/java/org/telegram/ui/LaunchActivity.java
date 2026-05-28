@@ -1069,6 +1069,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         if (LoginActivity.loadCurrentState(false, currentAccount).getInt("currentViewNum", 0) != 0) {
             return new LoginActivity();
         }
+        boolean onboardingSeen = ApplicationLoader.applicationContext.getSharedPreferences("kit_prefs", Context.MODE_PRIVATE).getBoolean("onboarding_seen", false);
+        if (onboardingSeen) {
+            return new org.telegram.divo.screen.auth.AuthFragment();
+        }
         return new IntroActivity();
     }
 
@@ -1234,7 +1238,12 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 layersActionBarLayout.rebuildLogout();
                 rightActionBarLayout.rebuildLogout();
             }
-            presentFragment(new IntroActivity().setOnLogout());
+            boolean onboardingSeen = ApplicationLoader.applicationContext.getSharedPreferences("kit_prefs", Context.MODE_PRIVATE).getBoolean("onboarding_seen", false);
+            if (onboardingSeen) {
+                presentFragment(new org.telegram.divo.screen.auth.AuthFragment());
+            } else {
+                presentFragment(new IntroActivity().setOnLogout());
+            }
         }
     }
 

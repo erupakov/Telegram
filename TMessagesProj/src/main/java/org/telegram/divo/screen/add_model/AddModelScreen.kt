@@ -293,10 +293,17 @@ fun CountryPickerSheet(
     DivoBottomSheet(
         sheetState = sheetState,
         title = stringResource(R.string.CountryLabel),
+        isSaveMode = isMultiSelection,
         contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp),
         onDismiss = onDismiss,
         iconClose = R.drawable.ic_divo_back,
-        onSave = { onPick(currentSelection) }
+        onSave = { onPick(currentSelection) },
+        onReset = {
+            scope.launch {
+                sheetState.hide()
+                onPick(emptyList())
+            }
+        }
     ) {
         Spacer(Modifier.height(20.dp))
         DivoTextField(

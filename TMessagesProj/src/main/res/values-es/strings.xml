@@ -1873,4 +1873,11 @@
     <string name="RemindDayYearAt">\'Recordar el\' d \'de\' MMM \'de\' yyyy \'a las\' HH:mm</string>
     <string name="BotsMenuTitle">Menu</string>
     <string name="Understood">👍 Entendido</string>
+    <string name="ErrorGoogleNoAccount">No se ha encontrado ninguna cuenta de Google en este dispositivo. Por favor, añádela en los ajustes.</string>
+    <string name="ErrorGoogleSignInFailed">Error al iniciar sesión con Google</string>
+    <string name="ErrorFirebaseAuthFailed">Error de autenticación de Firebase</string>
+    <string name="ErrorProfileFetchFailed">Error al obtener el perfil o falta el teléfono</string>
+    <string name="ErrorTelegramAuthFailed">Error de autenticación de Telegram</string>
+    <string name="ErrorDummyPhoneFailed">Error al obtener número temporal para el registro</string>
+    <string name="ErrorUnexpected">Error inesperado</string>
 </resources>

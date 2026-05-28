@@ -112,8 +112,6 @@ private fun RegFormsScreenContent(
     snackbarHostState: AppSnackbarHostState,
     onIntent: (RegFormsIntent) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { state.totalSteps }
@@ -147,8 +145,8 @@ private fun RegFormsScreenContent(
                 state = pagerState,
                 userScrollEnabled = false,
                 verticalAlignment = Alignment.Top
-            ) {
-                when (state.currentStep) {
+            ) { page ->
+                when (state.steps.getOrNull(page)) {
                     RegFormStep.COMPANY_INFO,
                     RegFormStep.IDENTITY,
                     RegFormStep.CREATIVE_IDENTITY,

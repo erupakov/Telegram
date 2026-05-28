@@ -15,14 +15,14 @@ class AuthFragment : BaseFragment() {
         fragmentView = ComposeView(context).apply {
             setDivoContent {
                 AuthScreen(
-                    onAuthClicked = { presentFragment(LoginActivity(), true) },
+                    onAuthClicked = { presentFragment(LoginActivity(), false) },
                     onGoogleSuccess = { authResponse -> 
                         val loginActivity = LoginActivity().setGoogleLoginSuccess(authResponse)
-                        presentFragment(loginActivity, true, true)
+                        presentFragment(loginActivity, false, true)
                     },
                     onGoogleUserNotFound = { uid, email, dummyPhone, authResponse ->
                         val loginActivity = LoginActivity().setGoogleRegistrationParams(uid, email, dummyPhone, authResponse, true)
-                        presentFragment(loginActivity, true)
+                        presentFragment(loginActivity, false)
                     }
                 )
             }

@@ -13,14 +13,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.Text
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +33,7 @@ import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
@@ -38,10 +42,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import org.telegram.divo.common.AppSnackbarHost
+import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.SnackbarEvent
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.dal.network.GoogleSignInHelper
 import org.telegram.divo.style.AppTheme
+import org.telegram.divo.style.DivoFont
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
 
@@ -57,13 +65,17 @@ fun AuthScreen(
     val isGoogleLoading = remember { mutableStateOf(false) }
 
     val currentAccount = UserConfig.selectedAccount
+    val snackbarHostState = remember { AppSnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             launch {
                 when (effect) {
                     is AuthViewEffect.ShowError -> {
-                        Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                        scope.launch {
+                            snackbarHostState.show(SnackbarEvent.Error(effect.message))
+                        }
                     }
                     is AuthViewEffect.LoginSuccess -> {
                         onAuthClicked()
@@ -80,7 +92,9 @@ fun AuthScreen(
                         }
                         
                         if (activity == null) {
-                            Toast.makeText(context, "Context is not an Activity", Toast.LENGTH_SHORT).show()
+                            scope.launch {
+                                snackbarHostState.show(SnackbarEvent.Error("Context is not an Activity"))
+                            }
                             return@launch
                         }
 
@@ -98,7 +112,9 @@ fun AuthScreen(
                                 }
                                 override fun onError(error: String) {
                                     isGoogleLoading.value = false
-                                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                                    scope.launch {
+                                        snackbarHostState.show(SnackbarEvent.Error(error))
+                                    }
                                 }
                                 override fun onCancelled() {
                                     isGoogleLoading.value = false
@@ -111,18 +127,23 @@ fun AuthScreen(
         }
     }
 
-    if (state.isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            LottieProgressIndicator(modifier = Modifier.size(32.dp))
-        }
-    } else {
-        Column(
-            modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundLight).padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+    Scaffold(
+        snackbarHost = { AppSnackbarHost(state = snackbarHostState) },
+        containerColor = AppTheme.colors.backgroundLight,
+        contentWindowInsets = WindowInsets(0),
+    ) { padding ->
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                LottieProgressIndicator(modifier = Modifier.size(32.dp))
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
             Text(
                 modifier = Modifier.padding(top = 120.dp),
                 text = stringResource(R.string.WelcomeToDivo).uppercase(),
@@ -143,6 +164,13 @@ fun AuthScreen(
                 UIButtonNew(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.ContinueWithPhoneNumber),
+                    textStyle = AppTheme.typography.textButton.copy(
+                        color = AppTheme.colors.buttonTextColor,
+                        fontFamily = DivoFont.HelveticaNeueLtCom77,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 19.sp
+                    ),
+                    paddingTop = 1.dp,
                     enabled = !isGoogleLoading.value,
                     onClick = {
                         onAuthClicked()
@@ -199,6 +227,7 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(28.dp))
             TermsText()
         }
+    }
     }
 }
 

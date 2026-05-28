@@ -32,15 +32,14 @@ data class RegFormsState(
         RegFormStep.CREATIVE_IDENTITY -> firstName.isNotBlank() && lastName.isNotBlank()
 
         RegFormStep.COMPANY_INFO,
-        RegFormStep.STUDIO_DETAILS -> companyName.isNotBlank()
+        RegFormStep.STUDIO_DETAILS -> companyName.isNotBlank() && (country.isBlank() || city.isNotBlank())
 
         RegFormStep.TALENT_IDENTITY,
-        RegFormStep.FAN_IDENTITY -> firstName.isNotBlank() && lastName.isNotBlank()
+        RegFormStep.FAN_IDENTITY -> firstName.isNotBlank() && lastName.isNotBlank() && (country.isBlank() || city.isNotBlank())
 
-        // Location steps: city is required when country is selected
+        // Location steps: city is required only when country is selected
         RegFormStep.COMPANY_LOCATION,
-        RegFormStep.TALENT_LOCATION -> country.isNotBlank() && city.isNotBlank()
-
+        RegFormStep.TALENT_LOCATION,
         RegFormStep.PERSONAL_DETAILS -> country.isBlank() || city.isNotBlank()
 
         else -> true
