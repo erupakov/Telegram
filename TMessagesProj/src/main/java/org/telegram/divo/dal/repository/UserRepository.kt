@@ -27,6 +27,7 @@ import org.telegram.divo.dal.dto.user.UserGalleryListRequest
 import org.telegram.divo.dal.dto.user.toDto
 import org.telegram.divo.dal.dto.user.toEntities
 import org.telegram.divo.dal.dto.user.toEntity
+import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.Agency
@@ -107,6 +108,13 @@ class UserRepository(
             .also { updateCacheAndPersist(it) }
     }
 
+    suspend fun updateProfile(
+        request: UpdateProfileRequest
+    ): DivoResult<UserInfo> = resultOf {
+        service.updateProfile(request).toEntity()
+            .also { updateCacheAndPersist(it) }
+    }
+
     private fun updateCacheAndPersist(info: UserInfo) {
         _currentUserCache.value = info
         prefs.edit().apply {
@@ -114,13 +122,19 @@ class UserRepository(
             putString(KEY_AVATAR_URL, info.avatarUrl)
             apply()
         }
-        NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
+        scope.launch {
+            NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
+        }
     }
 
     fun clearCache() {
+        DivoApi.accessTokenProvider.setAccessToken(null)
         _currentUserCache.value = null
+        _galleryCache.value = emptyMap()
         prefs.edit { clear() }
-        NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
+        scope.launch {
+            NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
+        }
     }
 
     suspend fun updateAgency(

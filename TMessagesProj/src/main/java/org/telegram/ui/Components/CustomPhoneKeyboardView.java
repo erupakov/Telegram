@@ -5,6 +5,7 @@ import static org.telegram.messenger.AndroidUtilities.dp;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -256,8 +257,8 @@ public class CustomPhoneKeyboardView extends ViewGroup {
         final boolean isRight = index % 3 == 2; // 2 5 8 11
         final boolean isBottom = index > 8;     // 9 10 11
 
-        final int defaultColor = Theme.getColor(Theme.key_listSelector);
-        final int pressedColor = ColorUtils.setAlphaComponent(Theme.getColor(Theme.key_listSelector), 30);
+        final int defaultColor = Color.WHITE; //DIVO
+        final int pressedColor = ColorUtils.setAlphaComponent(Color.WHITE, 30); //DIVO
 
         return Theme.createSimpleSelectorRoundRectDrawable(
             dp(isLeft && isTop ? 24 : 12),
@@ -268,7 +269,7 @@ public class CustomPhoneKeyboardView extends ViewGroup {
     }
 
     public void updateColors() {
-        backButton.setColorFilter(ContextCompat.getColor(getContext(),R.color.divo_text_color)); //DIVO
+        backButton.setColorFilter(ContextCompat.getColor(getContext(),R.color.divo_dark_text_color)); //DIVO
         //backButton.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
         for (int a = 0; a < views.length; a++) {
             View v = views[a];
@@ -301,8 +302,8 @@ public class CustomPhoneKeyboardView extends ViewGroup {
         }
 
         private void updateColors() {
-            numberTextPaint.setColor(ContextCompat.getColor(getContext(),R.color.divo_text_color)); //DIVO
-            symbolsTextPaint.setColor(ContextCompat.getColor(getContext(),R.color.divo_text_color)); //DIVO
+            numberTextPaint.setColor(ContextCompat.getColor(getContext(),R.color.divo_dark_text_color)); //DIVO
+            symbolsTextPaint.setColor(ContextCompat.getColor(getContext(),R.color.divo_dark_text_color)); //DIVO
 //            numberTextPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
 //            symbolsTextPaint.setColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
         }

@@ -86,6 +86,7 @@ fun ProfileSocialLinksScreenView(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
+                        modifier = Modifier.padding(start = 10.dp),
                         text = stringResource(R.string.EditSocialLinks).uppercase(),
                         style = AppTheme.typography.appBar,
                     )

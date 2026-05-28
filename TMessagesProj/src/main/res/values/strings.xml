@@ -3,6 +3,11 @@
     <!--divo view start-->
     <string name="AppName">Divo</string>
     <string name="AppNameBeta">Divo Beta</string>
+    <string name="LanguageName">English</string>
+    <string name="English">English</string>
+    <string name="LanguageNameInEnglish">English</string>
+    <string name="LanguageCode">en</string>
+    <string name="ContinueOnThisLanguage">Continue in English</string>
     <string name="DivoMainTabsModels">Models</string>
     <string name="DivoMainTabsEvents">Events</string>
     <string name="DivoMainTabsChats">Chats</string>
@@ -16,7 +21,12 @@
     <string name="ButtonCancel">Cancel</string>
     <string name="ButtonEdit">Edit</string>
     <string name="ButtonDelete">Delete</string>
+    <string name="ButtonContinue">Continue</string>
+    <string name="ButtonDone">Done</string>
     <string name="RetryLabel">Retry</string>
+    <string name="YourPhoneLabel">Your Phone</string>
+    <string name="ChooseCountryLabel">Choose a country</string>
+    <string name="SearchLabel">Search</string>
 
     <!--profile screen-->
     <string name="SimilarProfiles">You may be interested in similar profiles</string>
@@ -68,6 +78,9 @@
     <string name="NoLikesYet">No likes yet.</string>
     <string name="NothingSavedYet">Nothing saved yet.</string>
     <string name="NoProfileViewedYet">No profile\nviewed yet.</string>
+    <string name="StatLikes">LIKES</string>
+    <string name="StatViews">VIEWED</string>
+    <string name="StatSaves">SAVED</string>
 
     <!--your parameters screen-->
     <string name="ParametersSaved">Parameters saved</string>
@@ -76,7 +89,7 @@
     <string name="SelectGender">Select a Gender</string>
     <string name="LabelGender">Gender</string>
     <string name="AllGendersLabel">All genders</string>
-    <string name="LabelAge">Age (y.o)</string>
+    <string name="LabelAge">Age</string>
     <string name="LabelHeight">Height (cm)</string>
     <string name="LabelWaist">Waist (cm)</string>
     <string name="LabelHips">Hips (cm)</string>
@@ -317,7 +330,7 @@
         <item>New face</item>
     </string-array>
 
-    <!--settings screen end-->
+    <!--settings screen-->
     <string name="SettingsTitle">Settings</string>
     <string name="EditBtn">Edit</string>
     <string name="PromoCardHeadline">GET DISCOVERED IN THE FASHION WORLD</string>
@@ -330,15 +343,227 @@
     <string name="PrivacyAndSecurityLabel">Privacy and Security</string>
     <string name="DataAndStorageLabel">Data and Storage</string>
     <string name="AppearanceLabel">Appearance</string>
+    <string name="LogOutLabel">Log out</string>
+
+    <!--onboarding screen-->
+    <string name="OnboardingTitleGetSeenByTheRightPeople">Get Seen by the Right People</string>
+    <string name="OnboardingSubtitleGetSeenByTheRightPeople">A professional profile that puts you in front of agencies and brands actively looking for talent</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">Real Castings. Real Opportunities.</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Apply to verified jobs from agencies and brands — no middlemen, no guesswork.</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Discovered Faster with AI.</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO\'s AI finds the best match between talent and brands — so opportunities come to you.</string>
+    <string name="OnboardingEnterCode">Enter Code</string>
+    <string name="WelcomeToDivo">Welcome to DIVO</string>
+    <string name="SignOrCreateAccount">Sign in or create your account</string>
+    <string name="ContinueWithPhoneNumber">Continue with phone number</string>
+    <string name="OnboardingOrLabel">or</string>
+    <string name="OnboardingSignInWithGoogle">Sign In with Google</string>
+    <string name="OnboardingSignInWithApple">Sign In with Apple</string>
+    <string name="TermsPrefix">By continuing you agree to our</string>
+    <string name="OnboardingAnd">and</string>
+    <string name="OnboardingTermsOfService">Terms of Service</string>
+    <string name="OnboardingPrivacyPolicy">Privacy Policy</string>
+    <string name="OptionGetHiredTitle">I WANT TO GET HIRED</string>
+    <string name="OptionLookingForTalentTitle">I\'M LOOKING FOR TALENT</string>
+    <string name="OptionHereToFollowTitle">I\'M HERE TO FOLLOW</string>
+    <string name="OptionGetHiredSubtitle">Model, performer, creative pro</string>
+    <string name="OptionLookingForTalentSubtitle">Agency, brand, scout, booker</string>
+    <string name="OptionHereToFollowSubtitle">Fan of fashion and creators</string>
+    <string name="QuizStepProgress">Question %1$d of %2$d</string>
+    <string name="RegStepProgress">Step %1$d of %2$d</string>
+    <string name="RoleResultSoundsRight">Sounds right — let\'s go</string>
+    <string name="RoleResultChooseDifferentRole">Choose a different role</string>
+
+    <string name="RoleResultTitleFashionFan">YOU\'RE A FASHION FAN</string>
+    <string name="RoleResultDescriptionFashionFan">You\'ll be able to follow your favourite models and creators, discover new talent and stay connected to the fashion world.</string>
+
+    <string name="RoleResultTitleModel">You\'re a Professional Model</string>
+    <string name="RoleResultDescriptionModel">Your profile will be built to showcase your portfolio and connect you directly with agencies and brands looking for experienced talent.</string>
+
+    <string name="RoleResultTitleRisingTalent">You\'re a Rising Talent</string>
+    <string name="RoleResultDescriptionRisingTalent">Your profile will help you build your portfolio, get visibility and land your first castings — including free TFP shoots with photographers and stylists.</string>
+
+    <string name="RoleResultTitleActor">You\'re an Actor</string>
+    <string name="RoleResultDescriptionActor">Your profile will connect you with brands and agencies looking for acting talent for campaigns, fashion films and live events.</string>
+
+    <string name="RoleResultTitleDancer">You\'re a Dancer</string>
+    <string name="RoleResultDescriptionDancer">Your profile will connect you with shows, campaigns and events looking for dance talent across all styles.</string>
+
+    <string name="RoleResultTitlePerformer">You\'re a Performer</string>
+    <string name="RoleResultDescriptionPerformer">Your profile will connect you with fashion events, brand campaigns and creative projects looking for live performance talent.</string>
+
+    <string name="RoleResultTitleCreativeProfessional">You\'re a Creative Professional</string>
+    <string name="RoleResultDescriptionCreativeProfessional">Our profile will showcase your portfolio, let you post projects and connect with models, brands and agencies — on both sides of the market.</string>
+
+    <string name="RoleResultTitleFindTalent">You\'re Here to Find Talent</string>
+    <string name="RoleResultDescriptionFindTalent">Our profile will be set up to search, post castings and connect directly with models and creatives — whether you\'re a global agency or a local brand.</string>
+
+    <string name="RoleResultTitleIndustryProfessional">You\'re a Talent Industry Professional</string>
+    <string name="RoleResultDescriptionIndustryProfessional">Your profile will give you direct access to DIVO\'s talent database, advanced search tools and casting workflow — built for the way professionals actually work.</string>
+
+    <!-- Companies (A) -->
+    <string name="SubRoleModelingAgency">Modeling Agency</string>
+    <string name="SubRoleFashionBrand">Fashion Brand</string>
+    <string name="SubRoleBeautyBrand">Beauty Brand</string>
+    <string name="SubRoleBrandOrBusiness">Brand or Business</string>
+    <string name="SubRoleEventAgency">Event Agency</string>
+    <string name="SubRoleMagazine">Magazine or Media</string>
+    <!-- Industry Pros (B) -->
+    <string name="SubRoleScout">Scout</string>
+    <string name="SubRoleBooker">Booker</string>
+    <string name="SubRoleCastingDirector">Casting Director</string>
+    <string name="SubRoleTalentManager">Talent Manager</string>
+    <!-- Creative (C) -->
+    <string name="SubRolePhotographer">Photographer</string>
+    <string name="SubRoleStylist">Stylist</string>
+    <string name="SubRoleMakeupArtist">Makeup Artist</string>
+    <string name="SubRoleHairStylist">Hair Stylist</string>
+    <string name="SubRoleVideographer">Videographer</string>
+    <string name="SubRoleCreativeDirector">Creative Director</string>
+    <string name="SubRoleFashionDesigner">Fashion Designer</string>
+    <string name="SubRoleStudio">Studio</string>
+    <!-- Talent (D) -->
+    <string name="SubRoleModel">Model</string>
+    <string name="SubRoleNewTalent">New Talent</string>
+    <string name="SubRoleActor">Actor or Actress</string>
+    <string name="SubRoleDancer">Dancer</string>
+    <string name="SubRoleSingerOrPerformer">Singer or Performer</string>
+    <!-- Audience (E) -->
+    <string name="SubRoleFan">Fan</string>
+
+    <string name="QuizGetHiredTitle">What kind of talent\nare you?</string>
+    <string name="QuizGetHiredSubtitle">Be honest — this helps us show you the right opportunities</string>
+    <string name="QuizSectionTalents">TALENTS</string>
+    <string name="QuizSectionCreative">CREATIVE</string>
+
+    <string name="QuizModelExperienceTitle">Do you have professional modelling experience and an agency?</string>
+    <string name="QuizModelExperienceSubtitle">This helps us match you with the right castings from day one</string>
+    <string name="QuizModelExperienceYesLabel">YES</string>
+    <string name="QuizModelExperienceYesDescription">I have a portfolio and I work with or have worked with an agency</string>
+    <string name="QuizModelExperienceNoLabel">NO YET</string>
+    <string name="QuizModelExperienceNoDescription">I\'m building my career and don\'t have an agency yet</string>
+
+    <string name="QuizHiringTypeTitle">How do you work?</string>
+    <string name="QuizHiringTypeSubtitle">This helps us set up the right profile</string>
+    <string name="QuizHiringTypeCompanyLabel">I represent a company</string>
+    <string name="QuizHiringTypeCompanyDescription">Agency, brand, media or studio</string>
+    <string name="QuizHiringTypeIndividualLabel">I\'m an individual specialist</string>
+    <string name="QuizHiringTypeIndividualDescription">Scout, booker, casting director…</string>
+
+    <string name="QuizCompanyTitle">What best describes\nyour company?</string>
+    <string name="QuizCompanySubtitle">Choose the option that\'s closest to what you do</string>
+
+    <string name="SubRoleModelingAgencyDescription">I manage a roster of models and handle bookings</string>
+    <string name="SubRoleFashionBrandDescription">My brand is in fashion: clothing, shoes or accessories</string>
+    <string name="SubRoleBeautyBrandDescription">I work in beauty: cosmetics, skincare or fragrance</string>
+    <string name="SubRoleBrandOrBusinessDescription">I\'m a business looking for models: restaurant, hotel, retailer or any other company</string>
+    <string name="SubRoleEventAgencyDescription">I organise events, shows or promotional activities</string>
+    <string name="SubRoleMagazineDescription">I\'m a publication, media outlet or digital editorial</string>
+
+    <string name="QuizIndustryTitle">What\'s your role\nin the industry?</string>
+    <string name="QuizIndustrySubtitle">Choose the option that best describes what you do day-to-day</string>
+    <string name="SubRoleScoutDescription">I find new faces, independently or for an agency</string>
+    <string name="SubRoleBookerDescription">I manage bookings and negotiations for models at an agency</string>
+    <string name="SubRoleCastingDirectorDescription">I run castings for specific projects: shows, ads or film</string>
+    <string name="SubRoleTalentManagerDescription">I represent and manage individual talent on their career</string>
+
+    <!--reg forms-->
+    <string name="RegFormCompanyInfoTitle">Tell us about your company</string>
+    <string name="RegFormProfessionalIdentityTitle">Your professional identity</string>
+    <string name="RegFormCreativeIdentityTitle">Your creative identity</string>
+    <string name="RegFormStudioDetailsTitle">Your studio details</string>
+    <string name="RegFormYourIdentityTitle">Your identity</string>
+    <string name="RegFormFanIdentityTitle">Tell us about yourself</string>
+    <string name="RegFormCompanyName">Company / Organisation name *</string>
+    <string name="RegFormFirstName">First name *</string>
+    <string name="RegFormLastName">Last name *</string>
+    <string name="RegFormStudioName">Studio / space name *</string>
+    <string name="RegFormDateOfBirth">Date of birth</string>
+    <string name="RegFormDateOfBirthPlaceholder">Choose a date</string>
+    <string name="RegFormGender">Choose a gender</string>
+    <string name="RegFormWhereAreYouBased">Where are you based?</string>
+    <string name="RegFormPersonalDetails">Personal details</string>
+    <string name="RegFormContactDetails">Contact details</string>
+    <string name="RegFormLocation">Location</string>
+    <string name="RegFormWebsiteOrInstagram">Website or Instagram</string>
+    <string name="RegFormContactName">Contact name</string>
+    <string name="RegFormContactPhone">Contact phone or email</string>
+    <string name="RegFormSpecialisation">Choose specialisation</string>
+    <string name="RegFormSpecialisationLabel">Specialisation</string>
+    <string name="RegFormWebsiteOrInstagramHint">Light verification signal</string>
+    <string name="RegFormContactNameHint">Person managing bookings</string>
+    <string name="RegFormContactPhoneHint">For booking enquiries</string>
+
+    <string-array name="ActorSpecialisations">
+        <item>Film</item>
+        <item>Theatre</item>
+        <item>Commercial</item>
+        <item>Dubbing</item>
+        <item>TV</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="DancerSpecialisations">
+        <item>Contemporary</item>
+        <item>Ballet</item>
+        <item>Hip-hop</item>
+        <item>Ballroom</item>
+        <item>Commercial</item>
+        <item>Latin</item>
+        <item>Jazz</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="SingerSpecialisations">
+        <item>Pop</item>
+        <item>R&amp;B</item>
+        <item>Jazz</item>
+        <item>Classical</item>
+        <item>Musical Theatre</item>
+        <item>Opera</item>
+        <item>Other</item>
+    </string-array>
+
+    <string name="RegFormVerificationContact">Verification &amp; Contact</string>
+    <string name="RegFormProfessionalLinks">Professional Links</string>
+    <string name="RegFormAddYourPortfolio">Add your portfolio</string>
+    <string name="RegFormPortfolioSubtitle">Recommended — helps clients find your work faster</string>
+    <string name="RegFormWebsiteUrl">Website URL</string>
+    <string name="RegFormWebsiteUrlHint">Helps verify your account</string>
+    <string name="RegFormContactFirstName">Contact first name</string>
+    <string name="RegFormContactLastName">Contact last name</string>
+    <string name="RegFormContactRole">Contact role / title</string>
+    <string name="RegFormAgencyOrganisation">Agency / Organisation</string>
+    <string name="RegFormCurrentOrLastAgency">Current or last agency</string>
+    <string name="RegFormAgencyHintPro">Your agency will receive a confirmation request</string>
+    <string name="RegFormAgencyHintModel">Add your agency to get a verified badge</string>
+    <string name="RegFormInstagramHandle">Instagram handle</string>
+    <string name="RegFormInstagramHint">Helps you get discovered faster</string>
+    <string name="RegFormPortfolioUrl">Instagram / Portfolio URL</string>
+    <string name="RegFormPortfolioUrlHint">Share a link to your Instagram, Behance, personal site or any portfolio</string>
+    <string name="RegFormShowreelUrl">Showreel / demo reel URL</string>
+    <string name="RegFormCastingProfileUrl">Instagram / casting profile URL</string>
+
+    <string name="RegFormAddLogoOrPhoto">Add your logo or profile photo</string>
+    <string name="RegFormAddProfilePhoto">Add your profile photo</string>
+    <string name="RegFormProfilePhotoSubtitle">Use a clear photo of yourself. You can update this any time.</string>
+    <string name="RegFormModelPhotoSubtitle">Use a clear, front-facing photo. You can update this any time.</string>
+    <string name="RegFormShowYourMainSpace">Show your main space</string>
+    <string name="RegFormStudioPhotoSubtitle">Clients want to see what they\'re booking</string>
+    <string name="RegFormShowTheWorld">Show the world who you are</string>
+
+    <string name="RegFormUploadLogo">Upload logo or take photo</string>
+    <string name="RegFormUploadPhoto">Upload from library or take a photo</string>
+    <string name="RegFormAnyFileFormat">Any file format supported</string>
+
+    <string name="RegFormTfpHintTitle">Your first step: find a TFP shoot</string>
+    <string name="RegFormTfpHintDescription">TFP (Time For Portfolio) shoots are free collaborations with photographers. They\'ll build your portfolio fast. We\'ll show you how when you\'re in the app.</string>
+
+    <string name="ButtonLetsGo">Let\'s go</string>
     <!--divo view end-->
 
 
 
-    <string name="LanguageName">English</string>
-    <string name="English">English</string>
-    <string name="LanguageNameInEnglish">English</string>
-    <string name="LanguageCode">en</string>
-    <string name="ContinueOnThisLanguage">Continue in English</string>
     <!--signin view-->
     <string name="YourPhone">Your Phone</string>
     <string name="StartText">Please confirm your country code and enter your phone number.</string>
@@ -10734,4 +10959,11 @@
     <string name="ChannelAdmins">Channel admins</string>
     <string name="ChannelSubscribers2">Channel subscribers</string>
     <string name="MembersSearch">Search people</string>
+    <string name="ErrorGoogleNoAccount">No Google account found on this device. Please add one in your device settings.</string>
+    <string name="ErrorGoogleSignInFailed">Google Sign-In failed</string>
+    <string name="ErrorFirebaseAuthFailed">Firebase authentication failed</string>
+    <string name="ErrorProfileFetchFailed">Profile fetch failed or phone is missing</string>
+    <string name="ErrorTelegramAuthFailed">Telegram Auth Failed</string>
+    <string name="ErrorDummyPhoneFailed">Failed to fetch dummy phone for registration</string>
+    <string name="ErrorUnexpected">Unexpected error</string>
 </resources>

@@ -43,7 +43,7 @@ public class FragmentFloatingButton extends FrameLayout implements FactorAnimato
 
 
     public final RLottieImageView imageView;
-    public final RadialProgressView progressView;
+    public final RLottieImageView progressView;
     private final Theme.ResourcesProvider resourcesProvider;
     private ArrayList<View> additionalContentViews;
     private final boolean isSubButton;
@@ -62,9 +62,11 @@ public class FragmentFloatingButton extends FrameLayout implements FactorAnimato
         imageView.setScaleType(ImageView.ScaleType.CENTER);
         addView(imageView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
-        progressView = new RadialProgressView(context);
-        progressView.setSize(dp(18));
-        progressView.setStrokeWidth(2);
+        progressView = new RLottieImageView(context);
+        progressView.setAnimation(org.telegram.messenger.R.raw.loading_animation, 28, 28);
+        progressView.setScaleType(ImageView.ScaleType.CENTER);
+        progressView.setAutoRepeat(true);
+        progressView.playAnimation();
         addView(progressView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
         setAnimatedVisibility(progressView, 0);
 
@@ -150,7 +152,7 @@ public class FragmentFloatingButton extends FrameLayout implements FactorAnimato
     public void updateColors() {
         if (isSubButton) {
             imageView.setColorFilter(Theme.getColor(Theme.key_actionBarDefaultIcon, resourcesProvider), PorterDuff.Mode.SRC_IN);
-            progressView.setProgressColor(Theme.getColor(Theme.key_actionBarDefaultIcon, resourcesProvider));
+            progressView.setColorFilter(new android.graphics.PorterDuffColorFilter(Theme.getColor(Theme.key_actionBarDefaultIcon, resourcesProvider), PorterDuff.Mode.SRC_IN));
 
             iBlur3SourceColor.setColor(Theme.getColor(Theme.key_windowBackgroundWhite));
             iBlur3ColorProviderTabs.updateColors();
@@ -162,7 +164,7 @@ public class FragmentFloatingButton extends FrameLayout implements FactorAnimato
             setBackground(Theme.createInsetRoundRectDrawable(pressedColor, rad, dp(6)));
         } else {
             imageView.setColorFilter(Theme.getColor(Theme.key_chats_actionIcon, resourcesProvider), PorterDuff.Mode.SRC_IN);
-            progressView.setProgressColor(Theme.getColor(Theme.key_chats_actionIcon, resourcesProvider));
+            progressView.setColorFilter(new android.graphics.PorterDuffColorFilter(Theme.getColor(Theme.key_chats_actionIcon, resourcesProvider), PorterDuff.Mode.SRC_IN));
             setBackground(Theme.createSimpleSelectorCircleDrawable(dp(48),
                 Theme.getColor(Theme.key_featuredStickers_addButton, resourcesProvider),
                 Theme.getColor(Theme.key_featuredStickers_addButtonPressed, resourcesProvider)

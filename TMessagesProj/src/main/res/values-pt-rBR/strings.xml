@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--divo view start-->
     <string name="AppName">Divo</string>
     <string name="AppNameBeta">Divo Beta</string>
     <string name="LanguageName">Português (Brasil)</string>
@@ -7,6 +8,562 @@
     <string name="LanguageNameInEnglish">Portuguese (Brazil)</string>
     <string name="LanguageCode">pt_BR</string>
     <string name="ContinueOnThisLanguage">Continuar em Português</string>
+    <string name="DivoMainTabsModels">Modelos</string>
+    <string name="DivoMainTabsEvents">Eventos</string>
+    <string name="DivoMainTabsChats">Chats</string>
+    <string name="DivoMainTabsSettings">Configurações</string>
+    <string name="ButtonBack">Voltar</string>
+    <string name="ButtonCreate">Criar</string>
+    <string name="ButtonSave">Salvar</string>
+    <string name="ButtonApply">Aplicar</string>
+    <string name="ButtonApplied">Aplicado</string>
+    <string name="ButtonOk">Ok</string>
+    <string name="ButtonCancel">Cancelar</string>
+    <string name="ButtonEdit">Editar</string>
+    <string name="ButtonDelete">Excluir</string>
+    <string name="ButtonContinue">Continuar</string>
+    <string name="ButtonDone">Concluído</string>
+    <string name="RetryLabel">Tentar novamente</string>
+    <string name="YourPhoneLabel">Seu telefone</string>
+    <string name="ChooseCountryLabel">Escolha um país</string>
+    <string name="SearchLabel">Buscar</string>
+
+    <!--profile screen-->
+    <string name="SimilarProfiles">Você pode se interessar por perfis semelhantes</string>
+    <string name="UploadPhotos">Envie sua foto</string>
+    <string name="UploadVideos">Envie seu vídeo</string>
+    <string name="UploadingPhotos">Enviando sua foto…</string>
+    <string name="UploadingVideos">Enviando seu vídeo…</string>
+    <string name="AddEvent">Adicionar evento</string>
+    <string name="MyLinks">Meus links</string>
+    <string name="EditLinks">Editar links</string>
+    <string name="SendDM">Enviar DM</string>
+    <string name="Like">Curtir</string>
+    <string name="Viewed">Visualizados</string>
+    <string name="Saved">Salvar</string>
+    <string name="LoadingModelsList">Carregando lista de modelos…</string>
+    <string name="EditProfile">Editar perfil</string>
+    <string name="ChangeProfileBackground">Alterar fundo do perfil</string>
+    <string name="EditSocialLinks">Editar links sociais</string>
+    <string name="ManageWorkExperience">Gerenciar experiência de trabalho</string>
+    <string name="Profile">Meu perfil</string>
+    <string name="CurrentAgency">Agência atual</string>
+    <string name="SeeHistory">ver histórico</string>
+    <string name="SeeLess">VER MENOS</string>
+    <string name="SeeMore">VER MAIS</string>
+    <string name="AddModel">Adicionar modelo</string>
+    <string name="AgencyModelsEmpty">Ainda não há modelos da sua agência.</string>
+    <string name="AgencyModelsEmptyHint">Clique no botão abaixo \n para adicionar seu modelo</string>
+    <string name="PremiumLabel">Premium</string>
+    <string name="ReportThisProfile">Denunciar este perfil</string>
+    <string name="BlockProfile">Bloquear usuário</string>
+    <string name="SearchByName">Buscar por nome ou @usuario</string>
+    <string name="YearsOld">anos</string>
+    <string name="NotBio">Este modelo não preencheu sua biografia</string>
+    <string name="NotAgencyBio">Esta agência não preencheu sua biografia</string>
+    <string name="NotAppearance">Os parâmetros do modelo não estão preenchidos</string>
+    <string name="NotExperience">Nenhuma experiência de trabalho adicionada ainda</string>
+    <string name="FillInBio">Preencher biografia</string>
+    <string name="ThereAreNoBioAddedYet">Nenhuma biografia adicionada ainda</string>
+    <string name="ThereAreNoYourParametersYet">Seus parâmetros ainda não foram adicionados</string>
+    <string name="AddYourParameters">Adicione seus parâmetros</string>
+    <string name="AddWorkHistory">Adicionar histórico de trabalho</string>
+    <string name="ThereAreNoWorkExperienceYet">Nenhuma experiência de trabalho ainda</string>
+    <string name="ThereAreNoChannels">NÃO HÁ CANAIS NO MOMENTO</string>
+    <string name="YouHaveNotCreatedChannels">Você ainda não criou nenhum canal</string>
+    <string name="ThisAgencyHasNotCreatedChannels">Esta agência ainda não criou canais</string>
+    <string name="ThisModelHasNotCreatedChannels">Este modelo ainda não criou canais</string>
+    <string name="CreateNewChannel">Criar novo canal</string>
+    <string name="SearchModels">Buscar modelos</string>
+    <string name="NoLikesYet">Nenhuma curtida ainda.</string>
+    <string name="NothingSavedYet">Nada salvo ainda.</string>
+    <string name="NoProfileViewedYet">Nenhum perfil\nvisualizado ainda.</string>
+    <string name="StatLikes">CURTIDAS</string>
+    <string name="StatViews">VISUALIZAÇÕES</string>
+    <string name="StatSaves">SALVOS</string>
+
+    <!--your parameters screen-->
+    <string name="ParametersSaved">Parâmetros salvos</string>
+    <string name="YourParameters">Seus parâmetros</string>
+    <string name="ResetParameter">Redefinir parâmetro</string>
+    <string name="SelectGender">Selecione um gênero</string>
+    <string name="LabelGender">Gênero</string>
+    <string name="AllGendersLabel">Todos os gêneros</string>
+    <string name="LabelAge">Idade</string>
+    <string name="LabelHeight">Altura (cm)</string>
+    <string name="LabelWaist">Cintura (cm)</string>
+    <string name="LabelHips">Quadril (cm)</string>
+    <string name="LabelWeight">Peso (kg)</string>
+    <string name="LabelShoeSize">Tamanho do calçado (EU)</string>
+    <string name="LabelShoeSizeUS">Tamanho do calçado (US)</string>
+    <string name="LabelBreastSize">Tamanho do busto</string>
+    <string name="LabelHairColor">Cor do cabelo</string>
+    <string name="LabelHairLength">Comprimento do cabelo</string>
+    <string name="LabelEyeColor">Cor dos olhos</string>
+    <string name="LabelSkinColor">Cor da pele</string>
+    <string name="ChooseHairLength">Escolha o comprimento do cabelo</string>
+    <string name="ChooseHairColor">Escolha a cor do cabelo</string>
+    <string name="ChooseEyeColor">Escolha a cor dos olhos</string>
+    <string name="ChooseSkinColor">Escolha a cor da pele</string>
+    <string name="ChooseBreastSize">Escolha o tamanho do busto</string>
+    <string name="ChoosePrefix">Escolha seu</string>
+    <string name="Female">Feminino</string>
+    <string name="NoBiographyAvailable">Nenhuma biografia ainda</string>
+
+    <string-array name="GenderItems">
+        <item>Todos os gêneros</item>
+        <item>Masculino</item>
+        <item>Feminino</item>
+    </string-array>
+
+    <string-array name="BreastSizeItems">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>DD</item>
+        <item>E</item>
+        <item>F</item>
+    </string-array>
+
+    <!--edit my profile screen-->
+    <string name="FullNameEditProfileScreen">Nome completo</string>
+    <string name="BiographyPlaceholder">A top model do Brasil…</string>
+    <string name="Biography">Biografia</string>
+    <string name="SaveEditProfileScreen">Salvar</string>
+    <string name="TabBiography">BIOGRAFIA</string>
+    <string name="TabAppearance">APARÊNCIA</string>
+    <string name="TabExperience">EXPERIÊNCIA</string>
+    <string name="MyAgencyProfile">Perfil da minha agência</string>
+
+    <!--work experience screen-->
+    <string name="CreateExperience">CRIAR EXPERIÊNCIA</string>
+    <string name="EditExperience">EDITAR EXPERIÊNCIA</string>
+    <string name="WorkExperience">EXPERIÊNCIA DE TRABALHO</string>
+    <string name="WorkExperienceInfo">Informações da experiência de trabalho</string>
+    <string name="CurrentlyWorkingRole">Atualmente trabalho nesta função</string>
+    <string name="CreateNewWorkExperience">Criar nova experiência de trabalho</string>
+    <string name="AgencyName">Nome da agência</string>
+    <string name="EnterAgencyName">Digite o nome da agência</string>
+    <string name="StartDate">Data de início</string>
+    <string name="EndDate">Data de término</string>
+    <string name="AddWorkExperience">Adicionar experiência de trabalho</string>
+    <string name="WorkHistoryEmptyTitle">Ainda não há\nexperiência de trabalho</string>
+    <string name="WorkHistoryEmptySubtitle">Clique no botão abaixo\npara adicionar sua experiência de trabalho</string>
+    <string name="SaveChanges">Salvar alterações</string>
+    <string name="WorkExperienceSaved">Experiência de trabalho adicionada com sucesso</string>
+    <string name="PresentLabel">Presente</string>
+    <string name="EndDateCannotBeEarly">A data de término não pode ser anterior à data de início</string>
+
+    <plurals name="work_years">
+        <item quantity="one">%d ano</item>
+        <item quantity="other">%d anos</item>
+    </plurals>
+    <plurals name="work_months">
+        <item quantity="one">%d mês</item>
+        <item quantity="other">%d meses</item>
+    </plurals>
+
+    <!--add model screen-->
+    <string name="AddNewModel">ADICIONAR UM NOVO MODELO</string>
+    <string name="AddModelDescription">Preencha os detalhes do modelo para adicioná-lo à sua agência. Você pode atualizar essas informações a qualquer momento.</string>
+    <string name="PersonalData">Dados pessoais</string>
+    <string name="FullName">Nome completo</string>
+    <string name="CountryLabel">País</string>
+    <string name="ProfileLink">Link do perfil no Divo</string>
+    <string name="NextStep">Próximo passo</string>
+    <string name="AddStoryLabel">Adicionar história</string>
+    <string name="Liked">Curtiu</string>
+    <string name="Unliked">Descurtiu</string>
+    <string name="BookmarkSaved">Salvo</string>
+    <string name="BookmarkUnsaved">Não salvo</string>
+    <string name="AddModelToYourRoster">Adicionar um modelo ao seu elenco</string>
+    <string name="StartTypingToSearchForModel">Comece a digitar para buscar\num modelo</string>
+
+    <!--events screen-->
+    <string name="EventList">Eventos</string>
+    <string name="OrganizationLabel">Organização</string>
+    <string name="ParametersForApplying">Parâmetros para inscrição</string>
+    <string name="AgeRange">%1$d-%2$d</string>
+    <string name="PreviousEvents">Eventos anteriores</string>
+    <string name="CountdownFormat">%1$dd : %2$dh : %3$dm</string>
+    <string name="CountdownStarted">Iniciado</string>
+    <string name="CountdownFinished">Finalizado</string>
+    <string name="NoEventsYet">Nenhum evento ainda</string>
+    <string name="CreateEvent">Criar evento</string>
+    <string name="EventType">Tipo de evento</string>
+    <string name="EventName">Nome do evento *</string>
+    <string name="EventDescription">Descrição *</string>
+    <string name="EventDescriptionAbout">Descrição do evento</string>
+    <string name="EventDate">Data do evento *</string>
+    <string name="EventTime">Horário do evento *</string>
+    <string name="EventDatePlaceholder">01 Jan 2000</string>
+    <string name="EventTimePlaceholder">00:00</string>
+    <string name="EventChooseCountry">Escolha um país</string>
+    <string name="EventContinue">Continuar</string>
+    <string name="EventStepProgress">Passo %1$d/%2$d</string>
+    <string name="EventWhoCanApply">Quem pode se inscrever</string>
+    <string name="EventMaxParticipants">Máx. de participantes</string>
+    <string name="EventSelectMaxParticipants">Selecionar participantes</string>
+    <string name="EventChooseTalent">Escolha um talento</string>
+    <string name="EventChooseAnEvent">Escolha um evento</string>
+    <string name="EventRequirements">Requisitos</string>
+    <string name="EventEnterRequirements">Digite os requisitos</string>
+    <string name="EventNdaRequired">NDA necessário</string>
+    <string name="EventApplicationDeadlineDate">Data limite de inscrição*</string>
+    <string name="EventApplicationDeadlineTime">Horário limite de inscrição*</string>
+    <string name="EventPaid">Remunerado</string>
+    <string name="EventRate">Valor</string>
+    <string name="EventRatePlaceholder">100</string>
+    <string name="EventPublicEvent">Evento público</string>
+    <string name="EventVisibleToAllUsers">Visível para todos os usuários</string>
+    <string name="EventPhotoGallery">Galeria de fotos do evento</string>
+    <string name="EventUploadEventPhotos">Fazer upload de fotos do evento</string>
+    <string name="EventPreview">Pré-visualização</string>
+    <string name="EventPublish">Publicar evento</string>
+    <string name="EventUploadingPhotos">Enviando fotos...</string>
+    <string name="EventParametersForApplying">Parâmetros para inscrição</string>
+    <string name="EventApplied">%d inscritos</string>
+    <string name="EventMaxSpots">%d vagas máx.</string>
+    <string name="EditEvent">Editar evento</string>
+    <string name="CloseApplicationsEvent">Encerrar inscrições</string>
+    <string name="CancelEvent">Cancelar evento</string>
+    <string name="DeleteEvent">Excluir</string>
+    <string name="DeleteEventTitle">Excluir \"%s\"?</string>
+    <string name="DeleteEventDescription">Esta ação não pode ser desfeita. Todas as inscrições serão canceladas.</string>
+    <string name="DeleteEventConfirm">Excluir evento</string>
+    <string name="ThereAreNoUpcomingEvents">Não há próximos eventos no momento</string>
+    <string name="CheckBackLaterOrCreateEvents">Volte mais tarde ou crie\num novo</string>
+    <string name="ClosesDate">Encerra: %1$s</string>
+    <string name="ViewApplications">Ver inscrições</string>
+    <string name="ApplyNowPreview">Inscreva-se agora (apenas pré-visualização)</string>
+    <plurals name="ParticipantsCount">
+        <item quantity="one">%d participante</item>
+        <item quantity="other">%d participantes</item>
+    </plurals>
+
+    <!--models screen-->
+    <string name="Models">Modelos</string>
+    <string name="NewTalents">Novos talentos</string>
+    <string name="Agencies">Agências</string>
+
+    <!--search screen-->
+    <string name="FindSimilarProfiles">Encontrar perfis semelhantes</string>
+    <string name="UploadPhoto">Envie uma foto para encontrar modelos com aparência semelhante</string>
+    <string name="TakePhoto">Tirar uma foto</string>
+    <string name="ChooseFromLibrary">Escolher da galeria</string>
+    <string name="UseDivoPhoto">Usar uma foto de perfil do DIVO</string>
+    <string name="FaceSearchTitle">Como funciona a busca facial</string>
+    <string name="FaceSearchDescriptionFirst">Analisamos sua foto para encontrar perfis do DIVO com uma aparência semelhante. Sua foto é usada apenas para esta busca e não é armazenada ou compartilhada.</string>
+    <string name="FaceSearchDescriptionSecond">Os resultados são classificados por similaridade visual. Use os filtros para refinar por localização, função e outros critérios.</string>
+    <string name="FaceSearchConfirm">Entendi, vamos buscar</string>
+    <string name="CameraPermissionTitle">Acesso à câmera necessário</string>
+    <string name="CameraPermissionDescription">Para tirar uma foto para a busca facial, permita o acesso à câmera. Você pode ativá-lo nas configurações do aplicativo.</string>
+    <string name="OpenSettings">Abrir Configurações</string>
+    <string name="FaceSearch">Busca facial</string>
+    <string name="ChangePhoto">Alterar foto</string>
+    <string name="SimilarityScore">Os resultados são ordenados por pontuação de similaridade visual</string>
+    <string name="NoFaceDetected">Nenhum rosto detectado</string>
+    <string name="PleaseUsePhotoClearly">Use uma foto onde o rosto esteja claramente visível — de frente, bem iluminado e sem obstruções.</string>
+    <string name="MultipleFacesDetected">%d rostos detectados — toque em um para buscar</string>
+    <string name="ReadyToSearchFace">Rosto selecionado — pronto para buscar</string>
+    <string name="AvoidSunglasses">Evite óculos de sol, máscaras ou cortes muito fechados.</string>
+    <string name="FullFacePhotos">Fotos de rosto inteiro funcionam melhor — não perfis laterais.</string>
+    <string name="AnalysingFacialFeatures">Analisando características faciais..</string>
+    <string name="NoResultsFound">Nenhum resultado encontrado</string>
+    <string name="TryAdjustingYourFilters">Tente ajustar seus filtros</string>
+    <string name="CityLabel">Cidade</string>
+    <string name="CitiesLabel">Cidades</string>
+    <string name="CountriesLabel">Países</string>
+    <string name="SuggestedCities">Cidades sugeridas</string>
+    <string name="NoItemsFound">Nenhum(a) %1$s encontrado(a)</string>
+    <string name="TryDifferent">Tente um(a) %1$s diferente</string>
+    <string name="AllColorsLabel">Todas as cores</string>
+    <string name="AllLengthsLabel">Todos os comprimentos</string>
+    <string name="ForLabel">Para</string>
+    <string name="RecentFaceSearches">Buscas faciais recentes</string>
+    <string name="Found">encontrados</string>
+    <string name="NoFilters">Sem filtros</string>
+    <string name="SeeAll">Ver tudo</string>
+    <plurals name="ResultFor">
+        <item quantity="one">resultado</item>
+        <item quantity="other">resultados</item>
+    </plurals>
+
+    <!--similar profiles screen-->
+    <string name="SimilarProfilesTitle">Perfis semelhantes</string>
+    <string name="FaceSearchHistoryTitle">Histórico de busca facial</string>
+    <string name="ClearAll">Limpar tudo</string>
+    <string name="ResultsWithSimilarity">%1$s · %2$d%%+</string>
+    <string name="SortedBy">Ordenado por: </string>
+    <string name="SimilarityFormat">%1$d%% de compatibilidade</string>
+    <string name="FilterResults">Filtrar resultados</string>
+    <string name="ButtonReset">Redefinir</string>
+    <string name="MinimumSimilarity">Similaridade mínima</string>
+    <string name="HigherValuesShow">Valores mais altos mostram menos correspondências, porém mais precisas</string>
+    <string name="AnyLabel">Qualquer</string>
+    <string name="RoleLabel">Função</string>
+    <string name="AllLabel">Todas as funções</string>
+    <string name="CountriesValue">Todos os países</string>
+    <string name="MoreParameters">Mais parâmetros</string>
+    <string name="LessParameters">Menos parâmetros</string>
+    <string name="ApplyFilter">Aplicar filtro</string>
+    <string name="SortedByMatch">compatibilidade</string>
+    <string name="SortedByFilters">Filtrar por:</string>
+    <string name="Model">Modelo</string>
+    <string name="Agency">Agência</string>
+    <string name="NewTalent">New Face</string>
+    <plurals name="ProfilesFound">
+        <item quantity="one">%d perfil encontrado</item>
+        <item quantity="other">%d perfis encontrados</item>
+    </plurals>
+
+    <plurals name="ResultsCount">
+        <item quantity="one">%d resultado</item>
+        <item quantity="other">%d resultados</item>
+    </plurals>
+
+    <string-array name="ModelFunNewTalent">
+        <item>Todas as funções</item>
+        <item>Modelo</item>
+        <item>Diversão</item>
+        <item>New face</item>
+    </string-array>
+
+    <!--settings screen-->
+    <string name="SettingsTitle">Configurações</string>
+    <string name="EditBtn">Editar</string>
+    <string name="PromoCardHeadline">SEJA DESCOBERTO NO MUNDO DA MODA</string>
+    <string name="PromoCardBody">Publique seu perfil como modelo, participe de castings ou adicione eventos como agência — faça parte da rede global de moda.</string>
+    <string name="PromoCardBtn">Saiba mais</string>
+    <string name="SetUsernameLabel">Definir nome de usuário</string>
+    <string name="FillYourParametersLabel">Preencha seus parâmetros</string>
+    <string name="SavedMessagesLabel">Mensagens salvas</string>
+    <string name="NotificationsAndSoundsLabel">Notificações e Sons</string>
+    <string name="PrivacyAndSecurityLabel">Privacidade e Segurança</string>
+    <string name="DataAndStorageLabel">Dados e Armazenamento</string>
+    <string name="AppearanceLabel">Aparência</string>
+    <string name="LogOutLabel">Sair</string>
+
+    <!--onboarding screen-->
+    <string name="OnboardingTitleGetSeenByTheRightPeople">Seja visto pelas pessoas certas</string>
+    <string name="OnboardingSubtitleGetSeenByTheRightPeople">Um perfil profissional que o coloca de frente para agências e marcas que procuram talento ativamente</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">Castings reais. Oportunidades reais.</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Candidate-se a trabalhos verificados de agências e marcas — sem intermediários, sem adivinhação.</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Descoberto mais rápido com IA.</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">A IA do DIVO encontra a melhor correspondência entre talento e marcas — para que as oportunidades cheguem até você.</string>
+    <string name="OnboardingEnterCode">Inserir código</string>
+    <string name="WelcomeToDivo">Bem-vindo(a) ao DIVO</string>
+    <string name="SignOrCreateAccount">Faça login ou crie sua conta</string>
+    <string name="ContinueWithPhoneNumber">Continuar com o número de telefone</string>
+    <string name="OnboardingOrLabel">ou</string>
+    <string name="OnboardingSignInWithGoogle">Entrar com o Google</string>
+    <string name="OnboardingSignInWithApple">Entrar com a Apple</string>
+    <string name="TermsPrefix">Ao continuar, você concorda com nossos</string>
+    <string name="OnboardingAnd">e</string>
+    <string name="OnboardingTermsOfService">Termos de Serviço</string>
+    <string name="OnboardingPrivacyPolicy">Política de Privacidade</string>
+    <string name="OptionGetHiredTitle">QUERO SER CONTRATADO</string>
+    <string name="OptionLookingForTalentTitle">ESTOU PROCURANDO TALENTOS</string>
+    <string name="OptionHereToFollowTitle">ESTOU AQUI PARA ACOMPANHAR</string>
+    <string name="OptionGetHiredSubtitle">Modelo, artista, profissional criativo</string>
+    <string name="OptionLookingForTalentSubtitle">Agência, marca, olheiro (scout), booker</string>
+    <string name="OptionHereToFollowSubtitle">Fã de moda e criadores</string>
+    <string name="QuizStepProgress">Pergunta %1$d de %2$d</string>
+    <string name="RegStepProgress">Passo %1$d de %2$d</string>
+    <string name="RoleResultSoundsRight">Parece certo — vamos lá</string>
+    <string name="RoleResultChooseDifferentRole">Escolher uma função diferente</string>
+
+    <string name="RoleResultTitleFashionFan">VOCÊ É UM FÃ DE MODA</string>
+    <string name="RoleResultDescriptionFashionFan">Você poderá seguir seus modelos e criadores favoritos, descobrir novos talentos e manter-se conectado ao mundo da moda.</string>
+
+    <string name="RoleResultTitleModel">Você é um(a) Modelo Profissional</string>
+    <string name="RoleResultDescriptionModel">Seu perfil será criado para mostrar seu portfólio e conectar você diretamente a agências e marcas que buscam talentos experientes.</string>
+
+    <string name="RoleResultTitleRisingTalent">Você é um Talento em Ascensão</string>
+    <string name="RoleResultDescriptionRisingTalent">Seu perfil ajudará você a construir seu portfólio, obter visibilidade e conseguir seus primeiros castings — incluindo sessões de fotos TFP gratuitas com fotógrafos e estilistas.</string>
+
+    <string name="RoleResultTitleActor">Você é um(a) Ator/Atriz</string>
+    <string name="RoleResultDescriptionActor">Seu perfil conectará você com marcas e agências que buscam talentos de atuação para campanhas, filmes de moda e eventos ao vivo.</string>
+
+    <string name="RoleResultTitleDancer">Você é um(a) Dançarino(a)</string>
+    <string name="RoleResultDescriptionDancer">Seu perfil conectará você com shows, campanhas e eventos que buscam talentos de dança em todos os estilos.</string>
+
+    <string name="RoleResultTitlePerformer">Você é um(a) Artista</string>
+    <string name="RoleResultDescriptionPerformer">Seu perfil conectará você com eventos de moda, campanhas de marcas e projetos criativos que buscam talentos para apresentações ao vivo.</string>
+
+    <string name="RoleResultTitleCreativeProfessional">Você é um Profissional Criativo</string>
+    <string name="RoleResultDescriptionCreativeProfessional">Nosso perfil mostrará seu portfólio, permitirá que você publique projetos e se conecte com modelos, marcas e agências — em ambos os lados do mercado.</string>
+
+    <string name="RoleResultTitleFindTalent">Você Está Aqui Para Encontrar Talentos</string>
+    <string name="RoleResultDescriptionFindTalent">Nosso perfil será configurado para pesquisar, publicar castings e se conectar diretamente com modelos e criativos — seja você uma agência global ou uma marca local.</string>
+
+    <string name="RoleResultTitleIndustryProfessional">Você é um Profissional da Indústria</string>
+    <string name="RoleResultDescriptionIndustryProfessional">Seu perfil lhe dará acesso direto ao banco de dados de talentos do DIVO, ferramentas avançadas de pesquisa e fluxo de trabalho de castings — criados para a maneira como os profissionais realmente trabalham.</string>
+
+    <!-- Companies (A) -->
+    <string name="SubRoleModelingAgency">Agência de Modelos</string>
+    <string name="SubRoleFashionBrand">Marca de Moda</string>
+    <string name="SubRoleBeautyBrand">Marca de Beleza</string>
+    <string name="SubRoleBrandOrBusiness">Marca ou Empresa</string>
+    <string name="SubRoleEventAgency">Agência de Eventos</string>
+    <string name="SubRoleMagazine">Revista ou Mídia</string>
+    <!-- Industry Pros (B) -->
+    <string name="SubRoleScout">Scout / Olheiro</string>
+    <string name="SubRoleBooker">Booker</string>
+    <string name="SubRoleCastingDirector">Diretor(a) de Casting</string>
+    <string name="SubRoleTalentManager">Gerente de Talentos</string>
+    <!-- Creative (C) -->
+    <string name="SubRolePhotographer">Fotógrafo(a)</string>
+    <string name="SubRoleStylist">Estilista</string>
+    <string name="SubRoleMakeupArtist">Maquiador(a)</string>
+    <string name="SubRoleHairStylist">Cabeleireiro(a)</string>
+    <string name="SubRoleVideographer">Videomaker</string>
+    <string name="SubRoleCreativeDirector">Diretor(a) Criativo(a)</string>
+    <string name="SubRoleFashionDesigner">Designer de Moda</string>
+    <string name="SubRoleStudio">Estúdio</string>
+    <!-- Talent (D) -->
+    <string name="SubRoleModel">Modelo</string>
+    <string name="SubRoleNewTalent">New Face / Novo Talento</string>
+    <string name="SubRoleActor">Ator ou Atriz</string>
+    <string name="SubRoleDancer">Dançarino(a)</string>
+    <string name="SubRoleSingerOrPerformer">Cantor(a) ou Artista</string>
+    <!-- Audience (E) -->
+    <string name="SubRoleFan">Fã</string>
+
+    <string name="QuizGetHiredTitle">Que tipo de talento\nvocê é?</string>
+    <string name="QuizGetHiredSubtitle">Seja honesto — isso nos ajuda a mostrar as oportunidades certas</string>
+    <string name="QuizSectionTalents">TALENTOS</string>
+    <string name="QuizSectionCreative">CRIATIVOS</string>
+
+    <string name="QuizModelExperienceTitle">Você tem experiência profissional como modelo e tem agência?</string>
+    <string name="QuizModelExperienceSubtitle">Isso nos ajuda a conectar você com os castings certos desde o primeiro dia</string>
+    <string name="QuizModelExperienceYesLabel">SIM</string>
+    <string name="QuizModelExperienceYesDescription">Eu tenho um portfólio e trabalho ou já trabalhei com uma agência</string>
+    <string name="QuizModelExperienceNoLabel">AINDA NÃO</string>
+    <string name="QuizModelExperienceNoDescription">Estou construindo minha carreira e ainda não tenho uma agência</string>
+
+    <string name="QuizHiringTypeTitle">Como você trabalha?</string>
+    <string name="QuizHiringTypeSubtitle">Isso nos ajuda a configurar o perfil certo</string>
+    <string name="QuizHiringTypeCompanyLabel">Represento uma empresa</string>
+    <string name="QuizHiringTypeCompanyDescription">Agência, marca, mídia ou estúdio</string>
+    <string name="QuizHiringTypeIndividualLabel">Sou um especialista individual</string>
+    <string name="QuizHiringTypeIndividualDescription">Scout, booker, diretor de casting…</string>
+
+    <string name="QuizCompanyTitle">O que melhor descreve\nsua empresa?</string>
+    <string name="QuizCompanySubtitle">Escolha a opção que mais se aproxima do que você faz</string>
+
+    <string name="SubRoleModelingAgencyDescription">Gerencio uma lista de modelos e cuido das reservas (bookings)</string>
+    <string name="SubRoleFashionBrandDescription">Minha marca atua na moda: roupas, sapatos ou acessórios</string>
+    <string name="SubRoleBeautyBrandDescription">Trabalho com beleza: cosméticos, cuidados com a pele ou fragrâncias</string>
+    <string name="SubRoleBrandOrBusinessDescription">Sou de uma empresa procurando modelos: restaurante, hotel, varejista ou outra</string>
+    <string name="SubRoleEventAgencyDescription">Organizo eventos, shows ou atividades promocionais</string>
+    <string name="SubRoleMagazineDescription">Sou de uma publicação, veículo de mídia ou editorial digital</string>
+
+    <string name="QuizIndustryTitle">Qual é o seu papel\nna indústria?</string>
+    <string name="QuizIndustrySubtitle">Escolha a opção que melhor descreve o que você faz no dia a dia</string>
+    <string name="SubRoleScoutDescription">Encontro novos rostos, de forma independente ou para uma agência</string>
+    <string name="SubRoleBookerDescription">Gerencio reservas e negociações de modelos em uma agência</string>
+    <string name="SubRoleCastingDirectorDescription">Organizo castings para projetos específicos: desfiles, anúncios ou filmes</string>
+    <string name="SubRoleTalentManagerDescription">Represento e gerencio talentos individuais em suas carreiras</string>
+
+    <!--reg forms-->
+    <string name="RegFormCompanyInfoTitle">Fale-nos sobre sua empresa</string>
+    <string name="RegFormProfessionalIdentityTitle">Sua identidade profissional</string>
+    <string name="RegFormCreativeIdentityTitle">Sua identidade criativa</string>
+    <string name="RegFormStudioDetailsTitle">Detalhes do seu estúdio</string>
+    <string name="RegFormYourIdentityTitle">Sua identidade</string>
+    <string name="RegFormFanIdentityTitle">Fale-nos sobre você</string>
+    <string name="RegFormCompanyName">Nome da empresa / Organização *</string>
+    <string name="RegFormFirstName">Nome *</string>
+    <string name="RegFormLastName">Sobrenome *</string>
+    <string name="RegFormStudioName">Nome do estúdio / espaço *</string>
+    <string name="RegFormDateOfBirth">Data de nascimento</string>
+    <string name="RegFormDateOfBirthPlaceholder">Escolha uma data</string>
+    <string name="RegFormGender">Escolha um gênero</string>
+    <string name="RegFormWhereAreYouBased">Onde você está localizado?</string>
+    <string name="RegFormPersonalDetails">Detalhes pessoais</string>
+    <string name="RegFormContactDetails">Detalhes de contato</string>
+    <string name="RegFormLocation">Localização</string>
+    <string name="RegFormWebsiteOrInstagram">Site ou Instagram</string>
+    <string name="RegFormContactName">Nome de contato</string>
+    <string name="RegFormContactPhone">Telefone ou e-mail de contato</string>
+    <string name="RegFormSpecialisation">Escolha a especialização</string>
+    <string name="RegFormSpecialisationLabel">Especialização</string>
+    <string name="RegFormWebsiteOrInstagramHint">Sinal leve de verificação</string>
+    <string name="RegFormContactNameHint">Pessoa que gerencia as reservas</string>
+    <string name="RegFormContactPhoneHint">Para dúvidas sobre reservas</string>
+
+    <string-array name="ActorSpecialisations">
+        <item>Cinema</item>
+        <item>Teatro</item>
+        <item>Comercial</item>
+        <item>Dublagem</item>
+        <item>TV</item>
+        <item>Outro</item>
+    </string-array>
+
+    <string-array name="DancerSpecialisations">
+        <item>Contemporânea</item>
+        <item>Balé</item>
+        <item>Hip-hop</item>
+        <item>Dança de salão</item>
+        <item>Comercial</item>
+        <item>Latina</item>
+        <item>Jazz</item>
+        <item>Outro</item>
+    </string-array>
+
+    <string-array name="SingerSpecialisations">
+        <item>Pop</item>
+        <item>R&amp;B</item>
+        <item>Jazz</item>
+        <item>Clássica</item>
+        <item>Teatro Musical</item>
+        <item>Ópera</item>
+        <item>Outro</item>
+    </string-array>
+
+    <string name="RegFormVerificationContact">Verificação e Contato</string>
+    <string name="RegFormProfessionalLinks">Links Profissionais</string>
+    <string name="RegFormAddYourPortfolio">Adicione seu portfólio</string>
+    <string name="RegFormPortfolioSubtitle">Recomendado — ajuda os clientes a encontrar seu trabalho mais rapidamente</string>
+    <string name="RegFormWebsiteUrl">URL do site</string>
+    <string name="RegFormWebsiteUrlHint">Ajuda a verificar sua conta</string>
+    <string name="RegFormContactFirstName">Nome do contato</string>
+    <string name="RegFormContactLastName">Sobrenome do contato</string>
+    <string name="RegFormContactRole">Função / Cargo do contato</string>
+    <string name="RegFormAgencyOrganisation">Agência / Organização</string>
+    <string name="RegFormCurrentOrLastAgency">Agência atual ou anterior</string>
+    <string name="RegFormAgencyHintPro">Sua agência receberá um pedido de confirmação</string>
+    <string name="RegFormAgencyHintModel">Adicione sua agência para receber um selo de verificação</string>
+    <string name="RegFormInstagramHandle">Usuário do Instagram</string>
+    <string name="RegFormInstagramHint">Ajuda você a ser descoberto mais rapidamente</string>
+    <string name="RegFormPortfolioUrl">URL do Instagram / Portfólio</string>
+    <string name="RegFormPortfolioUrlHint">Compartilhe um link para o seu Instagram, Behance, site pessoal ou qualquer portfólio</string>
+    <string name="RegFormShowreelUrl">URL do Showreel / Demo reel</string>
+    <string name="RegFormCastingProfileUrl">URL do Instagram / Perfil de casting</string>
+
+    <string name="RegFormAddLogoOrPhoto">Adicione seu logotipo ou foto de perfil</string>
+    <string name="RegFormAddProfilePhoto">Adicione sua foto de perfil</string>
+    <string name="RegFormProfilePhotoSubtitle">Use uma foto clara de si mesmo. Você pode atualizar isso a qualquer momento.</string>
+    <string name="RegFormModelPhotoSubtitle">Use uma foto clara, de frente. Você pode atualizar isso a qualquer momento.</string>
+    <string name="RegFormShowYourMainSpace">Mostre seu espaço principal</string>
+    <string name="RegFormStudioPhotoSubtitle">Os clientes querem ver o que estão reservando</string>
+    <string name="RegFormShowTheWorld">Mostre ao mundo quem você é</string>
+
+    <string name="RegFormUploadLogo">Enviar logotipo ou tirar foto</string>
+    <string name="RegFormUploadPhoto">Enviar da galeria ou tirar uma foto</string>
+    <string name="RegFormAnyFileFormat">Qualquer formato de arquivo é compatível</string>
+
+    <string name="RegFormTfpHintTitle">Seu primeiro passo: encontre um ensaio TFP</string>
+    <string name="RegFormTfpHintDescription">Os ensaios TFP (Time For Portfolio) são colaborações gratuitas com fotógrafos. Eles construirão seu portfólio rapidamente. Mostraremos como quando você estiver no aplicativo.</string>
+
+    <string name="ButtonLetsGo">Vamos lá</string>
+    <!--divo view end-->
+
+
+
     <!--signin view-->
     <string name="YourPhone">Seu Número</string>
     <string name="StartText">Por favor, confirme o código do\nseu país e digite o seu\nnúmero de telefone.</string>
@@ -1249,4 +1806,11 @@
     <string name="RemindDayAt">\'Lembrar em\' d \'de\' MMM \'às\' HH:mm</string>
     <string name="RemindDayYearAt">\'Lembrar em\' d \'de\' MMM \'de\' yyyy \'às\' HH:mm</string>
     <string name="BotsMenuTitle">Menu</string>
+    <string name="ErrorGoogleNoAccount">Nenhuma conta do Google encontrada neste dispositivo. Adicione uma nas configurações.</string>
+    <string name="ErrorGoogleSignInFailed">Falha no login do Google</string>
+    <string name="ErrorFirebaseAuthFailed">Falha na autenticação do Firebase</string>
+    <string name="ErrorProfileFetchFailed">Falha ao obter o perfil ou telefone ausente</string>
+    <string name="ErrorTelegramAuthFailed">Falha na autenticação do Telegram</string>
+    <string name="ErrorDummyPhoneFailed">Falha ao obter telefone fictício para registro</string>
+    <string name="ErrorUnexpected">Erro inesperado</string>
 </resources>

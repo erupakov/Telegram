@@ -541,6 +541,7 @@ private fun PreviewBottomBar(
             text = stringResource(R.string.ButtonEdit),
             background = AppTheme.colors.buttonSecondary,
             leadingIcon = R.drawable.ic_divo_edit_24,
+            leadingIconTint = AppTheme.colors.onBackground,
             onClick = onEdit
         )
 

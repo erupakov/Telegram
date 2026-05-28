@@ -3,6 +3,7 @@ package org.telegram.divo.common.utils
 import android.content.Context
 import android.net.Uri
 import org.telegram.divo.components.items.ProfileParameter
+import org.telegram.divo.dal.network.DivoLanguageManager
 import org.telegram.messenger.R
 import java.io.File
 import java.time.Instant
@@ -14,25 +15,29 @@ import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeParseException
 import java.util.Locale
 
-fun String.toCountryFlagEmoji() =
-    this.uppercase()
-        .map { char -> Character.toCodePoint('\uD83C', '\uDDE6' + (char - 'A')) }
-        .joinToString("") { String(Character.toChars(it)) }
+fun String.toCountryFlagEmoji(): String = this.uppercase(Locale.ROOT)
+    .map { char -> Character.toCodePoint('\uD83C', '\uDDE6' + (char - 'A')) }
+    .joinToString("") { String(Character.toChars(it)) }
 
-fun String.formattedAge(context: Context, locale: Locale = Locale.getDefault()): String {
-    try {
+fun String.formattedAge(context: Context, locale: Locale = DivoLanguageManager.getSystemLocale()): String {
+    return try {
         val birthDate = LocalDate.parse(this)
         val age = Period.between(birthDate, LocalDate.now()).years
 
-        return "$age ${context.getString(R.string.YearsOld)}"
-    } catch (_: Exception) {
-        return ""
+        val configuration = android.content.res.Configuration(context.resources.configuration)
+        configuration.setLocale(locale)
+        val localizedContext = context.createConfigurationContext(configuration)
+        val yearsOldStr = localizedContext.getString(R.string.YearsOld)
+
+        String.format(locale, "%d %s", age, yearsOldStr)
+    } catch (e: Exception) {
+        ""
     }
 }
 
-fun String.toAge(): Int? {
+fun String.toAge(locale: Locale = DivoLanguageManager.getSystemLocale()): Int? {
     return try {
-        val birthDate = LocalDate.parse(this, DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        val birthDate = LocalDate.parse(this, DateTimeFormatter.ofPattern("dd.MM.yyyy", locale))
         Period.between(birthDate, LocalDate.now()).years
     } catch (e: Exception) {
         null
@@ -67,17 +72,18 @@ fun String.formatWeird(): String {
     return "$integer.$normalizedDecimal"
 }
 
-fun String.formatDate(): String = try {
+fun String.formatDate(locale: Locale = DivoLanguageManager.getSystemLocale()): String = try {
     val localDate = LocalDate.parse(this)
-    String.format(Locale.getDefault(), "%02d.%02d.%d", localDate.dayOfMonth, localDate.monthValue, localDate.year)
+    String.format(locale, "%02d.%02d.%d", localDate.dayOfMonth, localDate.monthValue, localDate.year)
 } catch (_: Exception) {
     this
 }
 
-fun Long.toFormattedDate(): String = Instant.ofEpochMilli(this)
-    .atZone(ZoneId.systemDefault())
-    .toLocalDate()
-    .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()))
+fun Long.toFormattedDate(locale: Locale = DivoLanguageManager.getSystemLocale()): String =
+    Instant.ofEpochMilli(this)
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+        .format(DateTimeFormatter.ofPattern("dd.MM.yyyy", locale))
 
 fun Int.toShortString(): String = when {
     this >= 1_000_000 -> {
@@ -111,16 +117,17 @@ fun Context.uriToFile(uri: Uri): Result<File> {
 fun String.toEventDisplayDate(
     countryCode: String? = null,
     city: String? = null,
-    showTime: Boolean = true
+    showTime: Boolean = true,
+    locale: Locale = DivoLanguageManager.getSystemLocale()
 ): String = try {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
     val localDateTime = LocalDateTime.parse(this, formatter)
 
-    val date = localDateTime.format(DateTimeFormatter.ofPattern("MMMM d"))
+    val date = localDateTime.format(DateTimeFormatter.ofPattern("MMMM d", locale))
     val flag = countryCode?.toCountryFlagEmoji().orEmpty()
 
     if (showTime) {
-        val time = localDateTime.format(DateTimeFormatter.ofPattern("h:mm a"))
+        val time = localDateTime.format(DateTimeFormatter.ofPattern("h:mm a", locale))
         "$date · $time · $flag $city"
     } else {
         "$date · $flag $city"
@@ -129,24 +136,23 @@ fun String.toEventDisplayDate(
     this
 }
 
-fun String.toMonthDayFormat(): String {
+fun String.toMonthDayFormat(locale: Locale = DivoLanguageManager.getSystemLocale()): String {
     return try {
-        val inputFormatter = DateTimeFormatter.ofPattern("d MMM yyyy")
-        val outputFormatter = DateTimeFormatter.ofPattern("MMM d")
+        val inputFormatter = DateTimeFormatter.ofPattern("d MMM yyyy", locale)
+        val outputFormatter = DateTimeFormatter.ofPattern("MMM d", locale)
         val date = LocalDate.parse(this, inputFormatter)
-
         date.format(outputFormatter)
     } catch (e: Exception) {
         this
     }
 }
 
-fun String.getInitials(): String = this
+fun String.getInitials(locale: Locale = DivoLanguageManager.getSystemLocale()): String = this
     .trim()
     .split(" ")
     .filter { it.isNotBlank() }
     .take(2)
-    .mapNotNull { it.firstOrNull()?.uppercaseChar()?.toString() }
+    .mapNotNull { it.firstOrNull()?.toString()?.uppercase(locale) }
     .joinToString("")
     .ifBlank { "A" }
 

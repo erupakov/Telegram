@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -102,8 +103,11 @@ private fun AddModelScreenContent(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
+                        modifier = Modifier.padding(horizontal = 10.dp),
                         text = stringResource(R.string.AddNewModel).uppercase(),
                         style = AppTheme.typography.appBar,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 },
                 navigationIcon = {
@@ -289,10 +293,17 @@ fun CountryPickerSheet(
     DivoBottomSheet(
         sheetState = sheetState,
         title = stringResource(R.string.CountryLabel),
+        isSaveMode = isMultiSelection,
         contentPadding = PaddingValues(bottom = 16.dp, start = 16.dp, end = 16.dp),
         onDismiss = onDismiss,
         iconClose = R.drawable.ic_divo_back,
-        onSave = { onPick(currentSelection) }
+        onSave = { onPick(currentSelection) },
+        onReset = {
+            scope.launch {
+                sheetState.hide()
+                onPick(emptyList())
+            }
+        }
     ) {
         Spacer(Modifier.height(20.dp))
         DivoTextField(

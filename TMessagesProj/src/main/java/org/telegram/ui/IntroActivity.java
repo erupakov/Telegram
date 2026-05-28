@@ -40,22 +40,19 @@ import android.text.style.ImageSpan;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.compose.ui.platform.ComposeView;
 import androidx.compose.ui.platform.ViewCompositionStrategy;
-import androidx.compose.ui.text.android.style.PlaceholderSpan;
-import androidx.core.graphics.ColorUtils;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.telegram.divo.screen.auth.AuthFragment;
 import org.telegram.divo.screen.onboarding.OnboardingScreen;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -180,7 +177,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                         getContext().getSharedPreferences("kit_prefs", Context.MODE_PRIVATE)
                                 .edit().putBoolean("onboarding_seen", true).apply();
 
-                        presentFragment(new LoginActivity(), true);
+                        presentFragment(new AuthFragment(), true); //DIVO
                         destroyed = true;
                         return kotlin.Unit.INSTANCE;
                     }
@@ -196,7 +193,23 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
         fragmentView = composeView;
         return fragmentView;
     }
+
+    @Override
+    public boolean isSupportEdgeToEdge() {
+        return true;
+    }
+
+    @Override
+    public boolean drawEdgeNavigationBar() {
+        return false;
+    }
+
+    @Override
+    public boolean isLightStatusBar() {
+        return false;
+    }
     //DIVO--END
+
     @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onResume() {
@@ -768,11 +781,5 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                 messageTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
             }
         } else Intro.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-    }
-
-    @Override
-    public boolean isLightStatusBar() {
-        int color = Theme.getColor(Theme.key_windowBackgroundWhite, null, true);
-        return ColorUtils.calculateLuminance(color) > 0.7f;
     }
 }

@@ -18,6 +18,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
                             userId = it.id,
                             userName = it.fullName,
                             avatarUrl = it.avatarUrl,
+                            phoneNumber = it.phone,
                             isModel = it.role.isModel()
                         )
                     }
@@ -41,8 +42,10 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             SettingsViewIntent.OnPrivacyClicked -> sendEffect(SettingsViewEffect.NavigateToPrivacy)
             SettingsViewIntent.OnDataStorageClicked -> sendEffect(SettingsViewEffect.NavigateToDataStorage)
             SettingsViewIntent.OnAppearanceClicked -> sendEffect(SettingsViewEffect.NavigateToAppearance)
+            SettingsViewIntent.OnLanguageClicked -> sendEffect(SettingsViewEffect.NavigateToLanguage)
             SettingsViewIntent.OnQrCodeClicked -> sendEffect(SettingsViewEffect.ShowQrCode)
             SettingsViewIntent.OnRefresh -> loadUserData()
+            SettingsViewIntent.OnLogoutClicked -> sendEffect(SettingsViewEffect.NavigateToLogout)
         }
     }
 
@@ -57,6 +60,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
                         userId = result.value.id,
                         userName = result.value.fullName,
                         avatarUrl = result.value.avatarUrl,
+                        phoneNumber = result.value.phone,
                         isModel = result.value.role.isModel(),
                         isLoading = false
                     )

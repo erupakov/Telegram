@@ -1,11 +1,10 @@
 package org.telegram.divo.dal.network
 
-import com.google.android.exoplayer2.util.Log
+import android.util.Log
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import org.telegram.messenger.BuildVars
@@ -14,9 +13,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
-import okhttp3.Authenticator
-import okhttp3.Route
-import org.telegram.divo.dal.dto.auth.LoginRequest
 
 /**
  * Builds shared OkHttp and Retrofit instances for talking to the Divo backend.
@@ -37,7 +33,7 @@ object DivoApiClient {
         // Authorization header interceptor
         builder.addInterceptor(AuthorizationInterceptor(accessTokenProvider))
 
-        builder.authenticator(TokenAuthenticator(accessTokenProvider))
+        //builder.authenticator(TokenAuthenticator(accessTokenProvider))
 
         // Logging interceptor for debug builds
         if (BuildVars.LOGS_ENABLED) {
@@ -72,9 +68,12 @@ object DivoApiClient {
             val url = originalRequest.url
             val path = url.encodedPath
 
+            val currentLanguage = DivoLanguageManager.getLanguageCode()
+
             val requestBuilder = originalRequest.newBuilder()
                 .addHeader("App-Platform", "android")
                 .addHeader("App-Version", "(126)")
+                .addHeader("Accept-Language", currentLanguage)
 
             if (!shouldSkipAuth(path)) {
                 val token = runBlocking { accessTokenProvider.getAccessToken() }
@@ -84,11 +83,13 @@ object DivoApiClient {
                 }
             }
 
-            return chain.proceed(requestBuilder.build())
+            val request = requestBuilder.build()
+            Log.d("DivoNetwork", "Sending request to ${request.url} with lang: ${request.header("Accept-Language")}")
+            return chain.proceed(request)
         }
 
         private fun shouldSkipAuth(path: String): Boolean {
-            if (path.startsWith("/auth/")) {
+            if (path.startsWith("/auth/") && !path.startsWith("/auth/logout")) {
                 return true
             }
             if (path.startsWith("/geo/")) {
@@ -121,59 +122,50 @@ object DivoApiClient {
         }
     }
 
-    /**
-     * Authenticator для обработки 401: делает релогин и ретраит запрос.
-     * Временное: использует hardcoded creds.
-     */
-    private class TokenAuthenticator(
-        private val accessTokenProvider: AccessTokenProvider
-    ) : Authenticator {
-
-        override fun authenticate(route: Route?, response: Response): Request? {
-            if (responseCount(response) >= 2) {
-                return null
-            }
-
-            val newToken = runBlocking {
-                val request = LoginRequest(
-                    email = "chiva_gp2022@icloud.com", //elenared720@gmail.com
-                    password = "Qwerty#123",
-                    deviceType = "android",
-                    deviceId = "samsung-S25",
-                )
-                val result = DivoApi.authRepository.login(request)
-
-                if (result is DivoResult.Success) {
-                    result.value.data?.accessToken
-                } else {
-                    val msg = when (result) {
-                        is DivoResult.HttpError -> result.body?.message ?: "HTTP ${result.code}"
-                        is DivoResult.NetworkError -> result.exception.localizedMessage ?: "Network error"
-                        is DivoResult.UnknownError -> result.throwable.localizedMessage ?: "Unknown error"
-                        else -> "Unexpected error"
-                    }
-                    Log.e("TokenAuthenticator", "Login error: $msg")
-                    null
-                }
-            } ?: return null
-
-            runBlocking { accessTokenProvider.setAccessToken(newToken) }
-
-            return response.request.newBuilder()
-                .header("Authorization", "Bearer $newToken")
-                .build()
-        }
-
-        // Счётчик ретраев
-        private fun responseCount(response: Response?): Int {
-            var count = 1
-            var res = response
-            while (res?.priorResponse != null) {
-                count++
-                res = res.priorResponse
-            }
-            return count
-        }
-    }
+//    private class TokenAuthenticator(
+//        private val accessTokenProvider: AccessTokenProvider
+//    ) : Authenticator {
+//
+//        override fun authenticate(route: Route?, response: Response): Request? {
+//            if (responseCount(response) >= 2) {
+//                return null
+//            }
+//
+//            val newToken = runBlocking {
+//                val request = LoginRequest()
+//                val result = DivoApi.authRepository.login(request)
+//
+//                if (result is DivoResult.Success) {
+//                    result.value.data?.accessToken
+//                } else {
+//                    val msg = when (result) {
+//                        is DivoResult.HttpError -> result.body?.message ?: "HTTP ${result.code}"
+//                        is DivoResult.NetworkError -> result.exception.localizedMessage ?: "Network error"
+//                        is DivoResult.UnknownError -> result.throwable.localizedMessage ?: "Unknown error"
+//                        else -> "Unexpected error"
+//                    }
+//                    Log.e("TokenAuthenticator", "Login error: $msg")
+//                    null
+//                }
+//            } ?: return null
+//
+//            runBlocking { accessTokenProvider.setAccessToken(newToken) }
+//
+//            return response.request.newBuilder()
+//                .header("Authorization", "Bearer $newToken")
+//                .build()
+//        }
+//
+//        // Счётчик ретраев
+//        private fun responseCount(response: Response?): Int {
+//            var count = 1
+//            var res = response
+//            while (res?.priorResponse != null) {
+//                count++
+//                res = res.priorResponse
+//            }
+//            return count
+//        }
+//    }
 }
 

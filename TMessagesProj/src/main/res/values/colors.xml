@@ -10,7 +10,9 @@
     <color name="widget_edit_text">#999999</color>
     <color name="transparent">#00FFFFFF</color>
 
-    <color name="divo_screen_background">#222222</color>
+    <color name="divo_dark_text_color">#222222</color>
+    <color name="divo_accent_orange">#FF772D</color>
+    <color name="divo_screen_background_light">#F0F0F0</color>
     <color name="divo_text_title_color">#FFFFFF</color>
     <color name="divo_text_color">#FFFFFF</color>
     <color name="divo_text_subtitle_color">#99FFFFFF</color>

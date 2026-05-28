@@ -92,6 +92,9 @@ private fun ImageCore(
                 }
             },
             error = {
+                LaunchedEffect(Unit) {
+                    onReady()
+                }
                 Box(
                     modifier = Modifier
                         .fillMaxSize()

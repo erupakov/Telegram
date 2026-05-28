@@ -658,9 +658,6 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         }
 
         checkUi_bottomBarLayout();
-        if (bottomBarContainer != null) {
-            bottomBarContainer.requestLayout();
-        }
         //DIVO--END
     }
 
@@ -719,10 +716,10 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         }
 
         final int tabsPadding = dp(DialogsActivity.MAIN_TABS_MARGIN + 4);
-        tabsView.setPadding(tabsPadding, tabsPadding, tabsPadding, tabsPadding);
+        if (tabsView.getPaddingLeft() != tabsPadding || tabsView.getPaddingTop() != tabsPadding) {
+            tabsView.setPadding(tabsPadding, tabsPadding, tabsPadding, tabsPadding);
+        }
 
-        tabsView.requestLayout();
-        bottomBarContainer.requestLayout();
         //DIVO--END
     }
 

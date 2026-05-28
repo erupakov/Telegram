@@ -18,8 +18,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -27,6 +29,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -77,6 +82,14 @@ fun AnimatedLargeStoriesOverlay(
     val startYPx = with(density) { (overlayHeight * 0.15f).toPx() }
     val endYPx = with(density) { overlayHeight.toPx() }
 
+    val listState = rememberLazyListState()
+    val itemWidthWithSpacingPx = with(density) { 80.dp.toPx() }
+    val scrollOffsetPx by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex * itemWidthWithSpacingPx + listState.firstVisibleItemScrollOffset
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -115,6 +128,8 @@ fun AnimatedLargeStoriesOverlay(
         modifier = Modifier
             .fillMaxWidth()
             .offset(y = baseY + lift),
+        state = listState,
+        userScrollEnabled = collapseFraction == 0f,
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -140,7 +155,7 @@ fun AnimatedLargeStoriesOverlay(
             } else {
                 0.dp
             }
-            val shiftXPx = with(density) { shiftXDp.toPx() }
+            val shiftXPx = with(density) { shiftXDp.toPx() } + if (isInCollapsedGroup) scrollOffsetPx * collapseFraction else 0f
 
 
 
@@ -154,6 +169,7 @@ fun AnimatedLargeStoriesOverlay(
 
             Column(
                 modifier = Modifier
+                    .width(64.dp)
                     .zIndex((100 - index).toFloat())
                     .graphicsLayer {
                         scaleX = itemScale

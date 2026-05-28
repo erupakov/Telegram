@@ -428,6 +428,20 @@ public class LanguageSelectActivity extends BaseFragment implements Notification
         }
     }
 
+    private static final java.util.Set<String> DIVO_SUPPORTED_LANGUAGES = new HashSet<>(java.util.Arrays.asList(
+            "en", "ru", "es", "pt_br", "zh_hans_cn", "zh"
+    ));
+
+    private boolean isDivoSupportedLanguage(LocaleController.LocaleInfo info) {
+        if (info == null) return false;
+        String shortName = info.shortName != null ? info.shortName.toLowerCase() : "";
+        String pluralCode = info.pluralLangCode != null ? info.pluralLangCode.toLowerCase() : "";
+        return DIVO_SUPPORTED_LANGUAGES.contains(shortName)
+                || DIVO_SUPPORTED_LANGUAGES.contains(pluralCode)
+                || shortName.startsWith("zh")
+                || shortName.startsWith("pt");
+    }
+
     private void fillLanguages() {
         final LocaleController.LocaleInfo currentLocale = LocaleController.getInstance().getCurrentLocaleInfo();
         Comparator<LocaleController.LocaleInfo> comparator = (o, o2) -> {
@@ -447,19 +461,21 @@ public class LanguageSelectActivity extends BaseFragment implements Notification
         };
 
         sortedLanguages = new ArrayList<>();
-        unofficialLanguages = new ArrayList<>(LocaleController.getInstance().unofficialLanguages);
+        // Divo: не показываем unofficial языки
+        unofficialLanguages = new ArrayList<>();
 
         ArrayList<LocaleController.LocaleInfo> arrayList = LocaleController.getInstance().languages;
         for (int a = 0, size = arrayList.size(); a < size; a++) {
             LocaleController.LocaleInfo info = arrayList.get(a);
+            // Divo: показываем только поддерживаемые языки
+            if (!isDivoSupportedLanguage(info)) {
+                continue;
+            }
             if (info.serverIndex != Integer.MAX_VALUE) {
                 sortedLanguages.add(info);
-            } else {
-                unofficialLanguages.add(info);
             }
         }
         Collections.sort(sortedLanguages, comparator);
-        Collections.sort(unofficialLanguages, comparator);
     }
 
     @Override

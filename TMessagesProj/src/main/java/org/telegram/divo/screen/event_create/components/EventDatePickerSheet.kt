@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.telegram.divo.components.items.DivoBottomSheet
 import org.telegram.divo.components.items.DivoWheelPicker
+import org.telegram.divo.dal.network.DivoLanguageManager
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 import java.time.Month
@@ -47,7 +48,7 @@ fun EventDatePickerSheet(
     val todayMonth = now.get(Calendar.MONTH)
     val todayDay   = now.get(Calendar.DAY_OF_MONTH)
 
-    val allMonths = (1..12).map { Month.of(it).getDisplayName(TextStyle.FULL, Locale.ENGLISH) }
+    val allMonths = (1..12).map { Month.of(it).getDisplayName(TextStyle.FULL, DivoLanguageManager.getSystemLocale()) }
     val yearsList = (todayYear..todayYear + 10).map { it.toString() }
 
     val parts = if (initialDate.isNotBlank()) initialDate.split(" ") else emptyList()

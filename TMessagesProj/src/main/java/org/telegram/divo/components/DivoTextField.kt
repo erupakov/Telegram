@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -57,7 +58,7 @@ fun DivoTextField(
     value: String,
     onValueChange: (String) -> Unit = {},
     onSearchConfirmed: () -> Unit = {},
-    placeholder: String = "Search",
+    placeholder: String = stringResource(R.string.SearchLabel),
     @DrawableRes leadingIcon: Int? = null,
     trailingIcon: Int? = null,
     onTrailingIconClick: () -> Unit = {},
@@ -214,6 +215,33 @@ fun DivoTextField(
             }
         }
     }
+}
+
+@Composable
+fun RegTextField(
+    value: String,
+    placeholder: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    cornerRadius: Dp = 99.dp,
+    keyboardType: KeyboardType = KeyboardType.Text,
+    focusedBorderColor: Color = AppTheme.colors.accentOrange,
+    backgroundColor: Color = AppTheme.colors.onBackground,
+    placeholderColor: Color = AppTheme.colors.textPrimary.copy(0.4f),
+    horizontalContentPadding: Dp = 16.dp,
+) {
+    DivoTextField(
+        modifier = modifier.fillMaxWidth(),
+        value = value,
+        placeholder = placeholder,
+        cornerRadius = cornerRadius,
+        keyboardType = keyboardType,
+        focusedBorderColor = focusedBorderColor,
+        backgroundColor = backgroundColor,
+        placeholderColor = placeholderColor,
+        horizontalContentPadding = horizontalContentPadding,
+        onValueChange = onValueChange,
+    )
 }
 
 @Preview(showBackground = true, backgroundColor = 0xFFFFFFFF, name = "Default")

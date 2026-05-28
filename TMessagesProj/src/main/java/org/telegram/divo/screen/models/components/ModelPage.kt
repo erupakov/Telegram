@@ -77,7 +77,7 @@ fun ModelPage(
             .height(cardHeight)
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .clip(RoundedCornerShape(26.dp))
-            .clickableWithoutRipple { onClick(feed.id) }
+            .clickableWithoutRipple { onClick(feed.user.id) }
     ) {
 
         val bgAlpha by animateFloatAsState(
@@ -98,7 +98,6 @@ fun ModelPage(
                 onBlurImageReady = { readyCount++ }
             )
 
-            // Лёгкое затемнение, чтобы элементы не сливались с фоном
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -106,7 +105,6 @@ fun ModelPage(
             )
         }
 
-        // Шиммер-плейсхолдер: ПОД контентом, исчезает когда фон готов
         AnimatedVisibility(
             visible = !allImagesReady,
             exit = fadeOut(animationSpec = tween(durationMillis = 300))
@@ -119,7 +117,6 @@ fun ModelPage(
             )
         }
 
-        // Контент карточки: всегда поверх шиммера
         Box(modifier = Modifier.fillMaxSize()) {
             Row(
                 modifier = Modifier

@@ -32,7 +32,9 @@ sealed class SettingsViewIntent : ViewIntent {
     data object OnDataStorageClicked : SettingsViewIntent()
     data object OnAppearanceClicked : SettingsViewIntent()
     data object OnQrCodeClicked : SettingsViewIntent()
+    data object OnLanguageClicked : SettingsViewIntent()
     data object OnRefresh : SettingsViewIntent()
+    data object OnLogoutClicked : SettingsViewIntent()
 }
 
 sealed class SettingsViewEffect : ViewEffect {
@@ -46,6 +48,8 @@ sealed class SettingsViewEffect : ViewEffect {
     data object NavigateToPrivacy : SettingsViewEffect()
     data object NavigateToDataStorage : SettingsViewEffect()
     data object NavigateToAppearance : SettingsViewEffect()
+    data object NavigateToLanguage : SettingsViewEffect()
+    data object NavigateToLogout : SettingsViewEffect()
     data object ShowQrCode : SettingsViewEffect()
     data class ShowError(val message: String) : SettingsViewEffect()
 }

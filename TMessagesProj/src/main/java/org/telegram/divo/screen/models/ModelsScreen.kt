@@ -286,7 +286,9 @@ fun ModelsHomeScreen(
 
                             if (targetListState?.firstVisibleItemIndex == 0) {
                                 val currentPx = headerScrollOffset.roundToInt()
-                                targetListState.scrollToItem(0, currentPx)
+                                launch {
+                                    targetListState.scrollToItem(0, currentPx)
+                                }
                             }
 
                             pagerState.animateScrollToPage(index)

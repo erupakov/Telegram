@@ -54,7 +54,7 @@ class UserDto(
     @SerializedName("id")
     val id: Int,
     @SerializedName("fullName")
-    val fullName: String,
+    val fullName: String?,
     @SerializedName("role")
     val role: String,
     @SerializedName("subrole")
@@ -115,7 +115,7 @@ private fun FeedItemDto.toEntity(): FeedItem =
 private fun UserDto.toEntity(): User =
     User(
         id = id,
-        fullName = fullName,
+        fullName = fullName.orEmpty(),
         role = RoleType.from(role),
         subrole = subrole,
         roleLabel = roleLabel,

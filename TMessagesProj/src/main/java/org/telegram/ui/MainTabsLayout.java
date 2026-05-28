@@ -114,6 +114,7 @@ public class MainTabsLayout extends AnimatedLinearLayout {
         }
 
         float l = 0;
+        boolean animating = false;
         for (int a = 0, N = getChildCount(); a < N; a++) {
             if (!isViewVisible(getChildAt(a))) {
                 continue;
@@ -122,10 +123,21 @@ public class MainTabsLayout extends AnimatedLinearLayout {
             tabsWidth[a] = Math.round(tabsTextWidthWithMargin[a]);
             tabsLeftPos[a] = Math.round(l);
 
-            tabsWidthAnimated[a] = lerp(tabsWidthAnimated[a], tabsTextWidthWithMargin[a], 0.3f);
-            tabsLeftPosAnimated[a] = lerp(tabsLeftPosAnimated[a], l, 0.3f);
+            if (Math.abs(tabsWidthAnimated[a] - tabsTextWidthWithMargin[a]) > 0.5f || 
+                Math.abs(tabsLeftPosAnimated[a] - l) > 0.5f) {
+                tabsWidthAnimated[a] = lerp(tabsWidthAnimated[a], tabsTextWidthWithMargin[a], 0.3f);
+                tabsLeftPosAnimated[a] = lerp(tabsLeftPosAnimated[a], l, 0.3f);
+                animating = true;
+            } else {
+                tabsWidthAnimated[a] = tabsTextWidthWithMargin[a];
+                tabsLeftPosAnimated[a] = l;
+            }
 
             l += tabsTextWidthWithMargin[a];
+        }
+
+        if (animating) {
+            post(this::requestLayout);
         }
 
         setMeasuredDimension(Math.round(l) + getPaddingLeft() + getPaddingRight(), height);

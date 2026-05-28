@@ -127,7 +127,7 @@ private fun PortfolioAddButton(
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    modifier = Modifier.offset(y = 1.dp),
+                    modifier = Modifier,
                     text = if (isVideo) stringResource(R.string.UploadingVideos) else stringResource(R.string.UploadingPhotos),
                     style = AppTheme.typography.helveticaNeueLtCom,
                     fontSize = 16.sp,
@@ -139,9 +139,9 @@ private fun PortfolioAddButton(
                     painter = painterResource(iconRes),
                     contentDescription = null,
                 )
-                Spacer(Modifier.width(4.dp))
+                Spacer(Modifier.width(6.dp))
                 Text(
-                    modifier = Modifier.offset(y = 1.dp),
+                    modifier = Modifier,
                     text = text,
                     style = AppTheme.typography.helveticaNeueLtCom,
                     fontSize = 16.sp,

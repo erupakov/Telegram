@@ -29,6 +29,7 @@ data class UserInfo(
     val userRatingStatus: String = "",
     val userSocialNetworks: List<UserSocialNetwork> = emptyList()
 )
+
 data class Gender(
     val id: String = "",
     val title: String = ""

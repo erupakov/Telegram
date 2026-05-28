@@ -24,6 +24,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,11 +38,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
+import org.telegram.divo.style.setDivoContent
 import org.telegram.divo.style.DivoFont
 import org.telegram.messenger.R
 
@@ -124,8 +127,10 @@ fun UIButtonNew(
     background: Color = AppTheme.colors.accentOrange,
     paddingTop: Dp = 3.dp,
     enabled: Boolean = true,
+    isLoading: Boolean = false,
     leadingIcon: Int? = null,
-    leadingIconTint: Color = AppTheme.colors.onBackground,
+    leadingIconSize: Int = 12,
+    leadingIconTint: Color = LocalContentColor.current,
     onClick: () -> Unit = {},
 ) {
     Button(
@@ -135,23 +140,32 @@ fun UIButtonNew(
         onClick = onClick,
         shape = shape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = background
+            containerColor = background,
+            disabledContainerColor = background.copy(0.7f)
         ),
     ) {
-        leadingIcon?.let {
-            Icon(
-                modifier = Modifier.size(12.dp),
-                painter = painterResource(leadingIcon),
-                tint = leadingIconTint,
-                contentDescription = null,
+        if (!isLoading) {
+            leadingIcon?.let {
+                Icon(
+                    modifier = Modifier.size(leadingIconSize.dp),
+                    painter = painterResource(leadingIcon),
+                    tint = leadingIconTint,
+                    contentDescription = null,
+                )
+                Spacer(Modifier.width(8.dp))
+            }
+            Text(
+                modifier = Modifier.padding(top = paddingTop),
+                text = text,
+                style = textStyle,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
-            Spacer(Modifier.width(6.dp))
+        } else {
+            LottieProgressIndicator(
+                color = Color.White
+            )
         }
-        Text(
-            modifier = Modifier.padding(top = paddingTop),
-            text = text,
-            style = textStyle,
-        )
     }
 }
 
@@ -283,6 +297,15 @@ fun RoundedGlassContainer(
         horizontalArrangement = Arrangement.spacedBy(space)
     ) {
         content()
+    }
+}
+
+fun mountRoundedButton(
+    composeView: androidx.compose.ui.platform.ComposeView,
+    onClick: () -> Unit
+) {
+    composeView.setDivoContent {
+        RoundedButton(onClick = onClick)
     }
 }
 

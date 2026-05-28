@@ -93,6 +93,7 @@ private fun FaceSearchHistoryContent(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
+                        modifier = Modifier.padding(horizontal = 10.dp),
                         text = stringResource(R.string.FaceSearchHistoryTitle).uppercase(),
                         style = AppTheme.typography.appBar,
                         maxLines = 1,

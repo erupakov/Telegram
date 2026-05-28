@@ -885,9 +885,12 @@ public class AlertDialog extends Dialog implements Drawable.Callback, Notificati
             }
             containerView.addView(progressViewContainer, LayoutHelper.createLinear(86, 86, Gravity.CENTER));
 
-            RadialProgressView progressView = new RadialProgressView(getContext(), resourcesProvider);
-            progressView.setSize(dp(32));
-            progressView.setProgressColor(getThemedColor(Theme.key_dialog_inlineProgress));
+            RLottieImageView progressView = new RLottieImageView(getContext());
+            progressView.setAnimation(org.telegram.messenger.R.raw.loading_animation, 32, 32);
+            progressView.setScaleType(ImageView.ScaleType.CENTER);
+            progressView.setAutoRepeat(true);
+            progressView.playAnimation();
+            progressView.setColorFilter(new android.graphics.PorterDuffColorFilter(getThemedColor(Theme.key_dialog_inlineProgress), android.graphics.PorterDuff.Mode.SRC_IN));
             progressViewContainer.addView(progressView, LayoutHelper.createFrame(86, 86, Gravity.CENTER));
         } else {
             if (aboveMessageView != null) {

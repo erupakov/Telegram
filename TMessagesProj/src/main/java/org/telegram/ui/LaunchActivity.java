@@ -92,6 +92,7 @@ import com.google.firebase.appindexing.builders.AssistActionBuilder;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher;
+import org.telegram.divo.screen.auth.AuthFragment;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -563,10 +564,19 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         LiteMode.addOnPowerSaverAppliedListener(onPowerSaverCallback = this::onPowerSaver);
         if (actionBarLayout.getFragmentStack().isEmpty() && (layersActionBarLayout == null || layersActionBarLayout.getFragmentStack().isEmpty())) {
             if (!UserConfig.getInstance(currentAccount).isClientActivated()) {
+                //DIVO Юзер вообще не авторизован (нет сессии)
                 actionBarLayout.addFragmentToStack(getClientNotActivatedFragment());
             } else {
-                MainTabsActivity mainTabsActivity = new MainTabsActivity();
-                actionBarLayout.addFragmentToStack(mainTabsActivity);
+                // DIVO--START
+                String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken();
+                if (android.text.TextUtils.isEmpty(token)) {
+                    // Divo token is missing (registration not finished)
+                    actionBarLayout.addFragmentToStack(new LoginActivity().startInRoleSelection());
+                } else {
+                    MainTabsActivity mainTabsActivity = new MainTabsActivity();
+                    actionBarLayout.addFragmentToStack(mainTabsActivity);
+                }
+                // DIVO--END
             }
 
             try {
@@ -1059,6 +1069,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
         if (LoginActivity.loadCurrentState(false, currentAccount).getInt("currentViewNum", 0) != 0) {
             return new LoginActivity();
         }
+        boolean onboardingSeen = ApplicationLoader.applicationContext.getSharedPreferences("kit_prefs", Context.MODE_PRIVATE).getBoolean("onboarding_seen", false);
+        if (onboardingSeen) {
+            return new org.telegram.divo.screen.auth.AuthFragment();
+        }
         return new IntroActivity();
     }
 
@@ -1224,7 +1238,12 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 layersActionBarLayout.rebuildLogout();
                 rightActionBarLayout.rebuildLogout();
             }
-            presentFragment(new IntroActivity().setOnLogout());
+            boolean onboardingSeen = ApplicationLoader.applicationContext.getSharedPreferences("kit_prefs", Context.MODE_PRIVATE).getBoolean("onboarding_seen", false);
+            if (onboardingSeen) {
+                presentFragment(new org.telegram.divo.screen.auth.AuthFragment());
+            } else {
+                presentFragment(new IntroActivity().setOnLogout());
+            }
         }
     }
 
@@ -1925,9 +1944,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                     String host = data.getHost().toLowerCase();
                                     Matcher prefixMatcher = PREFIX_T_ME_PATTERN.matcher(host);
                                     boolean isPrefix = prefixMatcher.find();
-                                    if (host.equals("telegram.me") || host.equals("t.me") || host.equals("telegram.dog") || isPrefix) {
+                                    if (host.equals("telegram.me") || host.equals("t.me") || host.equals("telegram.dog") || host.equals("divo.global") || host.equals("t.divo.global") || isPrefix) {
                                         if (isPrefix) {
-                                            data = Uri.parse("https://t.me/" + prefixMatcher.group(1) + (TextUtils.isEmpty(data.getPath()) ? "" : data.getPath()) + (TextUtils.isEmpty(data.getQuery()) ? "" : "?" + data.getQuery()));
+                                            data = Uri.parse("https://t.divo.global/" + prefixMatcher.group(1) + (TextUtils.isEmpty(data.getPath()) ? "" : data.getPath()) + (TextUtils.isEmpty(data.getQuery()) ? "" : "?" + data.getQuery()));
                                         }
                                         String path = data.getPath();
                                         if (path != null && path.length() > 1) {
@@ -2229,9 +2248,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                     }
                                     break;
                                 }
-                                case "tg": {
+                                case "tg":
+                                case "dg": {
                                     String url = data.toString();
-                                    if (url.startsWith("tg:premium_offer") || url.startsWith("tg://premium_offer")) {
+                                    if (url.startsWith("tg:premium_offer") || url.startsWith("tg://premium_offer") || url.startsWith("dg:premium_offer") || url.startsWith("dg://premium_offer")) {
                                         String finalUrl = url;
                                         AndroidUtilities.runOnUIThread(() -> {
                                         if (!actionBarLayout.getFragmentStack().isEmpty()) {
@@ -2239,8 +2259,8 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                                             Uri uri = Uri.parse(finalUrl);
                                             fragment.presentFragment(new PremiumPreviewFragment(uri.getQueryParameter("ref")));
                                         }});
-                                    } else if (url.startsWith("tg:resolve") || url.startsWith("tg://resolve")) {
-                                        url = url.replace("tg:resolve", "tg://telegram.org").replace("tg://resolve", "tg://telegram.org");
+                                    } else if (url.startsWith("tg:resolve") || url.startsWith("tg://resolve") || url.startsWith("dg:resolve") || url.startsWith("dg://resolve")) {
+                                        url = url.replace("dg:resolve", "tg://telegram.org").replace("dg://resolve", "tg://telegram.org").replace("tg:resolve", "tg://telegram.org").replace("tg://resolve", "tg://telegram.org");
                                         data = Uri.parse(url);
                                         username = data.getQueryParameter("domain");
                                         if (username == null) {

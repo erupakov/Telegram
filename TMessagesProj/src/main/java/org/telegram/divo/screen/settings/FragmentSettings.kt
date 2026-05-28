@@ -7,10 +7,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.messenger.UserConfig
+import org.telegram.divo.style.setDivoContent
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChangeUsernameActivity
 import org.telegram.ui.ChatActivity
 import org.telegram.ui.DataSettingsActivity
+import org.telegram.ui.LanguageSelectActivity
+import org.telegram.ui.LogoutActivity
 import org.telegram.ui.MainTabsActivityController
 import org.telegram.ui.NotificationsSettingsActivity
 import org.telegram.ui.PrivacySettingsActivity
@@ -32,7 +35,7 @@ class FragmentSettings : BaseFragment() {
         if (fragmentView != null) return fragmentView
         actionBar.setAddToContainer(false)
         fragmentView = ComposeView(context).apply {
-            setContent {
+            setDivoContent {
                 SettingsNavGraph(
                     navigateToSavedMessages = { openSavedMessages() },
                     navigateToNotifications = { presentFragment(NotificationsSettingsActivity()) },
@@ -40,6 +43,7 @@ class FragmentSettings : BaseFragment() {
                     navigateToDataStorage = { presentFragment(DataSettingsActivity()) },
                     navigateToAppearance = { presentFragment(ThemeActivity(ThemeActivity.THEME_TYPE_BASIC)) },
                     navigateToSetUsername = { presentFragment(ChangeUsernameActivity()) },
+                    navigateToLanguage = { presentFragment(LanguageSelectActivity()) },
                     onNavControllerReady = { navController ->
                         this@FragmentSettings.settingsNavController = navController
                         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -49,6 +53,12 @@ class FragmentSettings : BaseFragment() {
                     },
                     onInnerNavControllerReady = { navController ->
                         profileNavController = navController
+                    },
+                    navigateToLogout = {
+                        val activity = parentActivity
+                        if (activity != null) {
+                            showDialog(LogoutActivity.makeLogOutDialog(activity, currentAccount))
+                        }
                     }
                 )
             }

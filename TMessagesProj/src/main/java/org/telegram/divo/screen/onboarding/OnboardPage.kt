@@ -4,5 +4,6 @@ import androidx.annotation.DrawableRes
 
 data class OnboardPage(
     @DrawableRes val imageRes: Int,
-    val subtitle: String
+    val titleRes: Int,
+    val subtitleRes: Int
 )

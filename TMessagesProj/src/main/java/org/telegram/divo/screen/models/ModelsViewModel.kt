@@ -3,6 +3,7 @@ package org.telegram.divo.screen.models
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
@@ -23,6 +24,7 @@ import org.telegram.divo.screen.models.ModelsViewIntent.Refresh
 import org.telegram.divo.usecase.GetFeedUseCase
 import org.telegram.divo.usecase.ToggleBookmarkUseCase
 import org.telegram.divo.usecase.ToggleLikeUseCase
+import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
 
 class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
@@ -47,6 +49,21 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     private val agenciesPaginator = GetFeedUseCase(
         limit = PAGE_SIZE, role = RoleType.AGENCY.value
     ).paginator
+
+    private var currentLanguage = org.telegram.messenger.LocaleController.getInstance().currentLocale?.language ?: ""
+
+    private val languageObserver = NotificationCenter.NotificationCenterDelegate { id, _, _ ->
+        if (id == NotificationCenter.reloadInterface) {
+            val newLanguage = org.telegram.messenger.LocaleController.getInstance().currentLocale?.language ?: ""
+            if (newLanguage != currentLanguage) {
+                currentLanguage = newLanguage
+                viewModelScope.launch {
+                    delay(300)
+                    refresh()
+                }
+            }
+        }
+    }
 
     init {
         setIntent(LoadInitialData)
@@ -97,6 +114,13 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                 }
             }
         }
+
+        NotificationCenter.getGlobalInstance().addObserver(languageObserver, NotificationCenter.reloadInterface)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        NotificationCenter.getGlobalInstance().removeObserver(languageObserver, NotificationCenter.reloadInterface)
     }
 
     private fun currentPaginator(): OffsetPaginator<FeedItem> = when (state.value.selectedTab) {
@@ -120,6 +144,10 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     private fun loadInitialData() {
+        if (DivoApi.accessTokenProvider.getAccessToken().isNullOrEmpty()) {
+            setState { copy(isLoading = false) }
+            return
+        }
         setState { copy(isLoading = true) }
         // TODO: Load stories from repository
         // TODO: Load models for the initial tab from repository
@@ -150,6 +178,9 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     private fun loadFeed(loadMore: Boolean) {
+        if (DivoApi.accessTokenProvider.getAccessToken().isNullOrEmpty()) {
+            return
+        }
         viewModelScope.launch {
             if (loadMore) {
                 currentPaginator().loadMore()
@@ -231,6 +262,9 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     private fun refresh() {
+        if (DivoApi.accessTokenProvider.getAccessToken().isNullOrEmpty()) {
+            return
+        }
         setState { copy(isRefreshing = true, error = null) }
         viewModelScope.launch {
             listOf(

@@ -1,14 +1,20 @@
 package org.telegram.divo.dal.repository
 
-import com.google.android.exoplayer2.util.Log
 import org.telegram.divo.dal.network.AccessTokenProvider
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.dal.api.AuthService
+import org.telegram.divo.dal.dto.auth.SocialAuthResponse
+import org.telegram.divo.dal.dto.auth.SocialLoginRequest
+import org.telegram.divo.dal.dto.auth.SocialRegistrationRequest
 import org.telegram.divo.dal.dto.auth.LoginRequest
 import org.telegram.divo.dal.dto.auth.LoginResponse
 import org.telegram.divo.dal.dto.auth.RegistrationRequest
+import org.telegram.divo.dal.dto.auth.RegistrationResponse
+import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
+import org.telegram.divo.dal.dto.auth.TelegramLinkResponse
+import org.telegram.divo.dal.dto.auth.DummyPhoneResponse
 
 class AuthRepository(
     private val service: AuthService,
@@ -17,27 +23,58 @@ class AuthRepository(
 
     suspend fun login(request: LoginRequest): DivoResult<LoginResponse> {
         val result = resultOf { service.login(request) }
-        Log.d("MyTag", "login")
         if (result is DivoResult.Success) {
-            Log.d("MyTag", "success ${result.value.data?.accessToken}")
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
         }
         return result
     }
 
-    suspend fun register(request: RegistrationRequest): DivoResult<LoginResponse> {
+    suspend fun register(request: RegistrationRequest): DivoResult<RegistrationResponse> {
         val result = resultOf { service.registration(request) }
+        if (result is DivoResult.Success) {
+            val token = result.value.data?.accessToken ?: result.value.data?.token
+            accessTokenProvider.setAccessToken(token)
+        }
+        return result
+    }
+
+    suspend fun linkTelegramAccount(request: TelegramLinkRequest): DivoResult<TelegramLinkResponse> {
+        val token = accessTokenProvider.getAccessToken() ?: ""
+        val bearerToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+        val result = resultOf { service.linkTelegramAccount(bearerToken, request) }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
         }
         return result
+    }
+
+    suspend fun loginSocial(request: SocialLoginRequest): DivoResult<SocialAuthResponse> {
+        val result = resultOf { service.loginSocial(request) }
+        if (result is DivoResult.Success) {
+            accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+        }
+        return result
+    }
+
+    suspend fun registrationSocial(request: SocialRegistrationRequest): DivoResult<SocialAuthResponse> {
+        val result = resultOf { service.registrationSocial(request) }
+        if (result is DivoResult.Success) {
+            accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+        }
+        return result
+    }
+
+    suspend fun getDummyPhone(): DivoResult<DummyPhoneResponse> {
+        return resultOf { service.getDummyPhone() }
     }
 
     suspend fun logout(): DivoResult<Unit> {
         val result = resultOf { service.logout() }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(null)
-            DivoApi.userRepository.clearCache()
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                DivoApi.userRepository.clearCache()
+            }
         }
         return result
     }

@@ -2315,7 +2315,7 @@ public class StoriesController {
 
                     req = addPreviewMedia;
                 } else {
-                    TL_stories.TL_stories_sendStory sendStory = new TL_stories.TL_stories_sendStory();
+                    TL_stories.TL_stories_sendStory sendStory = new TL_stories.TL_stories_sendStory_layer199();
                     sendStory.random_id = random_id;
                     sendStory.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
                     sendStory.media = media;

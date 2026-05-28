@@ -137,7 +137,7 @@ fun EngagementStatsBottomSheet(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     Text(
-                        text = stats.value,
+                        text = stringResource(stats.value),
                         style = AppTheme.typography.helveticaNeueLtCom,
                         fontSize = 20.sp,
                         color = Color.Black
@@ -374,10 +374,10 @@ private fun EmptyContent(
     }
 }
 
-enum class StatsType(val value: String) {
-    LIKES("LIKES"),
-    VIEWS("VIEWED"),
-    SAVES("SAVED"),
+enum class StatsType(val value: Int) {
+    LIKES(R.string.StatLikes),
+    VIEWS(R.string.StatViews),
+    SAVES(R.string.StatSaves),
 }
 
 @Preview
