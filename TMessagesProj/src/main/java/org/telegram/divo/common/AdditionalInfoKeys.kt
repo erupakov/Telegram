@@ -32,4 +32,6 @@ object AdditionalInfoKeys {
     const val MEASURING_SYSTEM = "measuringSystem"
     const val SUB_ROLE = "subRole"
     const val SUBROLE_MAPPED = "subrole"
+    const val TELEGRAM_ID = "telegramId"
+    const val TELEGRAM_USERNAME = "telegramUsername"
 }

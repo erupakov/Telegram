@@ -16,7 +16,8 @@
     <string name="ButtonCreate">Criar</string>
     <string name="ButtonSave">Salvar</string>
     <string name="ButtonApply">Aplicar</string>
-    <string name="ButtonApplied">Aplicado</string>
+    <string name="ButtonApplied">Inscrito</string>
+    <string name="ButtonClosed">Fechado</string>
     <string name="ButtonOk">Ok</string>
     <string name="ButtonCancel">Cancelar</string>
     <string name="ButtonEdit">Editar</string>
@@ -1813,4 +1814,17 @@
     <string name="ErrorTelegramAuthFailed">Falha na autenticação do Telegram</string>
     <string name="ErrorDummyPhoneFailed">Falha ao obter telefone fictício para registro</string>
     <string name="ErrorUnexpected">Erro inesperado</string>
+    <string name="EventStatusApplicationsClosed">Inscrições Encerradas</string>
+    <string name="EventStatusInProgress">Em Andamento</string>
+    <string name="EventStatusCompleted">Concluído</string>
+    <string name="EventStatusClosesIn">Encerra em %1$s</string>
+    <string name="EventStatusDeadline">Prazo: %1$s</string>
+    <string name="EventTabMyEvents">Meus Eventos</string>
+    <string name="EventTabAllEvents">Todos os Eventos</string>
+    <string name="EventEmptyTitle">Não há eventos futuros no momento.</string>
+    <string name="EventEmptySubtitleAgency">Volte mais tarde ou\ncrie um novo.</string>
+    <string name="EventEmptySubtitle">Volte mais tarde.</string>
+    <string name="EventCreateButton">Criar Evento</string>
+    <string name="EventSeenAll">Você viu todos os eventos</string>
+    <string name="EventSpotsLeft">Restam %1$d vagas</string>
 </resources>

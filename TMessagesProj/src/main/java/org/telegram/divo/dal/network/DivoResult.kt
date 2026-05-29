@@ -67,7 +67,19 @@ fun DivoResult<*>.getErrorMessage(): String {
     return when (this) {
         is DivoResult.Success -> ""
         is DivoResult.NetworkError -> exception.message ?: "Network error"
-        is DivoResult.HttpError -> body?.message ?: "HTTP error: $code"
+        is DivoResult.HttpError -> {
+            val baseMsg = body?.message ?: "HTTP error: $code"
+            val validationErrors = body?.errors?.mapNotNull { (field, errors) ->
+                val errorList = (errors as? List<*>)?.joinToString(", ") ?: errors.toString()
+                "$field: $errorList"
+            }?.joinToString("\n")
+            
+            if (!validationErrors.isNullOrBlank()) {
+                "$baseMsg\n$validationErrors"
+            } else {
+                baseMsg
+            }
+        }
         is DivoResult.UnknownError -> throwable.message ?: "Unknown error"
     }
 }

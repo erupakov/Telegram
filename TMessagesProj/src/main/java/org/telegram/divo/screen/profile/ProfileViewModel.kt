@@ -132,6 +132,38 @@ class ProfileViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            DivoApi.eventRepository.eventParticipationFlow.collect { update ->
+                val savedEvents = state.value.events
+                setState {
+                    copy(
+                        events = savedEvents.map { event ->
+                            if (event.id == update.eventId)
+                                event.copy(isApplied = update.isApplied, appliesCount = update.appliesCount)
+                            else event
+                        }
+                    )
+                }
+            }
+        }
+        viewModelScope.launch {
+            DivoApi.authRepository.authStateFlow.collect { isLoggedIn ->
+                setState { ProfileViewState(userId = userId, isOwnProfile = isOwnProfile) }
+                eventPaginator.reset()
+                agencyModelsPaginator.reset()
+                if (engagementLoaded) {
+                    engagement.likedPaginator.reset()
+                    engagement.viewedPaginator.reset()
+                    engagement.followedPaginator.reset()
+                    engagement.searchPaginator.reset()
+                }
+                portfolioPaginator.reset()
+                videoPaginator.reset()
+                if (isLoggedIn) {
+                    setIntent(ProfileIntent.OnLoad)
+                }
+            }
+        }
     }
 
     override fun handleIntent(intent: ProfileIntent) {
@@ -688,25 +720,33 @@ class ProfileViewModel(
     }
 
     private fun applyEvent(id: Int) {
-        val savedEvents = state.value.events
+        val event = state.value.events.find { it.id == id } ?: return
+        val isCurrentlyApplied = event.isApplied
 
-        setState {
-            copy(
-                events = events.map { event ->
-                    if (event.id == id)
-                        event.copy(isApplied = true, appliesCount = event.appliesCount + 1)
-                    else event
-                }
-            )
+        val expectedNewCount = if (!isCurrentlyApplied) event.appliesCount + 1 else event.appliesCount - 1
+        
+        fun updateEventLocally(isApp: Boolean, count: Int) {
+            setState {
+                copy(events = events.map { if (it.id == id) it.copy(isApplied = isApp, appliesCount = count) else it })
+            }
+            eventPaginator.updateItem({ it.id == id }) {
+                it.copy(isApplied = isApp, appliesCount = count)
+            }
         }
+        
+        updateEventLocally(!isCurrentlyApplied, expectedNewCount)
+        DivoApi.eventRepository.notifyEventParticipationChanged(id, !isCurrentlyApplied, expectedNewCount)
 
         viewModelScope.launch {
-            val result = DivoApi.eventRepository.applyEvent(id)
-
-            if (result is DivoResult.Success) {
-                //sendEffect(ProfileEffect.SaveSuccess())
+            val result = if (isCurrentlyApplied) {
+                DivoApi.eventRepository.unapplyEvent(id)
             } else {
-                setState { copy(events = savedEvents) }
+                DivoApi.eventRepository.applyEvent(id)
+            }
+
+            if (result !is DivoResult.Success) {
+                updateEventLocally(isCurrentlyApplied, event.appliesCount)
+                DivoApi.eventRepository.notifyEventParticipationChanged(id, isCurrentlyApplied, event.appliesCount)
                 sendEffect(ShowError(result.getErrorMessage()))
             }
         }

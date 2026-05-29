@@ -109,7 +109,11 @@ fun EventsNavGraph(
             val sharedViewModel: CreateEventViewModel = viewModel(createEventEntry)
             EventPreviewScreen(
                 viewModel = sharedViewModel,
-                onPublish = {},
+                onPublish = {
+                    nav.getBackStackEntry(EventRoute.Events.route)
+                        .savedStateHandle["needsRefresh"] = true
+                    nav.popBackStack(EventRoute.Events.route, inclusive = false)
+                },
                 onBack = { nav.popBackStack() }
             )
         }
@@ -124,6 +128,10 @@ fun EventsNavGraph(
                 eventId = eventId,
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToEditEvent = { nav.navigate(EventRoute.CreateEvent.createRoute(it)) },
+                onEventDeleted = {
+                    nav.getBackStackEntry(EventRoute.Events.route).savedStateHandle["needsRefresh"] = true
+                    nav.popBackStack()
+                },
                 onNavigateBack = { nav.popBackStack() },
             )
         }

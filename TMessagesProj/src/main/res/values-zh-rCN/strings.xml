@@ -16,7 +16,8 @@
     <string name="ButtonCreate">创建</string>
     <string name="ButtonSave">保存</string>
     <string name="ButtonApply">应用</string>
-    <string name="ButtonApplied">已应用</string>
+    <string name="ButtonApplied">已申请</string>
+    <string name="ButtonClosed">已关闭</string>
     <string name="ButtonOk">确定</string>
     <string name="ButtonCancel">取消</string>
     <string name="ButtonEdit">编辑</string>
@@ -569,4 +570,17 @@
     <string name="ErrorTelegramAuthFailed">Telegram验证失败</string>
     <string name="ErrorDummyPhoneFailed">获取注册的虚拟电话失败</string>
     <string name="ErrorUnexpected">发生意外错误</string>
+    <string name="EventStatusApplicationsClosed">申请已截止</string>
+    <string name="EventStatusInProgress">进行中</string>
+    <string name="EventStatusCompleted">已结束</string>
+    <string name="EventStatusClosesIn">%1$s 后截止</string>
+    <string name="EventStatusDeadline">截止日期: %1$s</string>
+    <string name="EventTabMyEvents">我的活动</string>
+    <string name="EventTabAllEvents">所有活动</string>
+    <string name="EventEmptyTitle">目前没有即将举行的活动。</string>
+    <string name="EventEmptySubtitleAgency">稍后再来查看或\n创建新活动。</string>
+    <string name="EventEmptySubtitle">稍后再来查看。</string>
+    <string name="EventCreateButton">创建活动</string>
+    <string name="EventSeenAll">您已查看所有活动</string>
+    <string name="EventSpotsLeft">剩余 %1$d 个名额</string>
 </resources>

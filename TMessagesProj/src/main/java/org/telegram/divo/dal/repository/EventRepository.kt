@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import org.telegram.divo.dal.api.EventService
 import org.telegram.divo.dal.dto.event.CreateEventRequest
+import org.telegram.divo.dal.dto.event.EventIdRequest
 import org.telegram.divo.dal.dto.event.EventListRequest
 import org.telegram.divo.dal.dto.event.toEntities
 import org.telegram.divo.dal.dto.event.toEntity
@@ -21,6 +22,15 @@ class EventRepository(
     private val _eventsUpdatedFlow = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
     val eventsUpdatedFlow = _eventsUpdatedFlow.asSharedFlow()
 
+    data class EventParticipationUpdate(val eventId: Int, val isApplied: Boolean, val appliesCount: Int)
+    
+    private val _eventParticipationFlow = MutableSharedFlow<EventParticipationUpdate>(extraBufferCapacity = 1)
+    val eventParticipationFlow = _eventParticipationFlow.asSharedFlow()
+
+    fun notifyEventParticipationChanged(eventId: Int, isApplied: Boolean, appliesCount: Int) {
+        _eventParticipationFlow.tryEmit(EventParticipationUpdate(eventId, isApplied, appliesCount))
+    }
+
     suspend fun listEvents(request: EventListRequest): DivoResult<EventList> =
         resultOf { service.listEvents(request) }.map { it.toEntity() }
 
@@ -31,7 +41,11 @@ class EventRepository(
     }
 
     suspend fun applyEvent(id: Int): DivoResult<Unit> = resultOf {
-        service.applyEvent(id)
+        service.applyEvent(EventIdRequest(id))
+    }
+
+    suspend fun unapplyEvent(id: Int): DivoResult<Unit> = resultOf {
+        service.unapplyEvent(EventIdRequest(id))
     }
 
     suspend fun getEventTypes(): DivoResult<List<EventType>> =

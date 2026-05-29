@@ -17,6 +17,7 @@
     <string name="ButtonSave">Save</string>
     <string name="ButtonApply">Apply</string>
     <string name="ButtonApplied">Applied</string>
+    <string name="ButtonClosed">Closed</string>
     <string name="ButtonOk">Ok</string>
     <string name="ButtonCancel">Cancel</string>
     <string name="ButtonEdit">Edit</string>
@@ -35,6 +36,8 @@
     <string name="UploadingPhotos">Upload your photo…</string>
     <string name="UploadingVideos">Upload your video…</string>
     <string name="AddEvent">Add Event</string>
+    <string name="EventPublished">Event published</string>
+    <string name="EventUpdated">Event updated</string>
     <string name="MyLinks">My Links</string>
     <string name="EditLinks">Edit Links</string>
     <string name="SendDM">Send DM</string>
@@ -10966,4 +10969,17 @@
     <string name="ErrorTelegramAuthFailed">Telegram Auth Failed</string>
     <string name="ErrorDummyPhoneFailed">Failed to fetch dummy phone for registration</string>
     <string name="ErrorUnexpected">Unexpected error</string>
+    <string name="EventStatusApplicationsClosed">Applications Closed</string>
+    <string name="EventStatusInProgress">In Progress</string>
+    <string name="EventStatusCompleted">Completed</string>
+    <string name="EventStatusClosesIn">Closes in %1$s</string>
+    <string name="EventStatusDeadline">Deadline: %1$s</string>
+    <string name="EventTabMyEvents">My Events</string>
+    <string name="EventTabAllEvents">All Events</string>
+    <string name="EventEmptyTitle">There are no upcoming events at the moment.</string>
+    <string name="EventEmptySubtitleAgency">Check back later or\ncreate a new one.</string>
+    <string name="EventEmptySubtitle">Check back later.</string>
+    <string name="EventCreateButton">Create Event</string>
+    <string name="EventSeenAll">You\'ve seen all events</string>
+    <string name="EventSpotsLeft">%1$d spots left</string>
 </resources>

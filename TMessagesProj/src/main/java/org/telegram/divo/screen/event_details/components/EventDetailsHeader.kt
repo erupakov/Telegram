@@ -76,6 +76,7 @@ fun EventDetailsHeader(
     onCloseApplications: () -> Unit,
     onCancelEvent: () -> Unit,
     onDeleteEvent: () -> Unit,
+    onCtaClicked: () -> Unit,
     onBack: () -> Unit,
 ) {
     val topPadding = remember {
@@ -90,32 +91,30 @@ fun EventDetailsHeader(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1f)
+            .aspectRatio(0.9f)
     ) {
         TelegramPhotoBackground(
             photo = event?.files?.firstOrNull()?.fullUrl,
             modifier = Modifier.fillMaxSize()
         )
-        Column(
+
+        StatsSection(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = topPadding.value + 14.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            StatsSection(
-                modifier = Modifier.graphicsLayer { alpha = engagementsAlpha },
-                event = event
-            )
-            ContentSection(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                event = event,
-                isOwnEvent = isOwnEvent,
-                isModel = isModel,
-                onEditEvent = onEditEvent
-            )
-        }
+                .padding(top = topPadding.value + 16.dp)
+                .graphicsLayer { alpha = engagementsAlpha },
+            event = event
+        )
+        ContentSection(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp),
+            event = event,
+            isOwnEvent = isOwnEvent,
+            isModel = isModel,
+            onEditEvent = onEditEvent,
+            onCtaClicked = onCtaClicked
+        )
     }
 }
 
@@ -234,6 +233,7 @@ private fun ContentSection(
     isOwnEvent: Boolean,
     isModel: Boolean,
     onEditEvent: () -> Unit,
+    onCtaClicked: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -247,7 +247,9 @@ private fun ContentSection(
             Text(
                 text = it.title.orEmpty(),
                 style = AppTheme.typography.displayLarge,
-                color = AppTheme.colors.onBackground
+                color = AppTheme.colors.onBackground,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(Modifier.height(4.dp))
             Text(
@@ -281,14 +283,38 @@ private fun ContentSection(
                 }
 
                 if (isModel) {
+                    val isApplied = event.isApplied
+                    val isClosed = isEventClosed(event.date ?: "", event.dateTo ?: "", null)
+                    val buttonTextId = when {
+                        isApplied -> R.string.ButtonApplied
+                        isClosed -> R.string.ButtonClosed
+                        else -> R.string.ButtonApply
+                    }
+                    val buttonIconResId = when {
+                        isApplied -> R.drawable.divo_check_ic
+                        else -> null
+                    }
+                    val buttonBgColor = when {
+                        isClosed && !isApplied -> AppTheme.colors.buttonSecondary.copy(alpha = 0.2f)
+                        else -> AppTheme.colors.accentOrange
+                    }
+                    val buttonTextColor = when {
+                        isClosed && !isApplied -> AppTheme.colors.textHintColor
+                        else -> AppTheme.colors.onBackground
+                    }
+
                     UIButtonNew(
-                        text = stringResource(R.string.ButtonApply),
+                        text = stringResource(buttonTextId),
+                        leadingIcon = buttonIconResId,
+                        leadingIconTint = buttonTextColor,
                         textStyle = AppTheme.typography.helveticaNeueLtCom.copy(
                             fontSize = 14.sp,
-                            color = AppTheme.colors.onBackground
+                            color = buttonTextColor
                         ),
                         height = 36.dp,
-                        onClick = {}
+                        background = buttonBgColor,
+                        enabled = !isClosed,
+                        onClick = onCtaClicked
                     )
                 }
                 if (isOwnEvent) {
@@ -401,5 +427,20 @@ private fun Background(
                     )
                 )
         )
+    }
+}
+
+private fun isEventClosed(dateFrom: String, dateTo: String, applicationDeadline: String?): Boolean {
+    val formatter = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+    val from = runCatching { formatter.parse(dateFrom) }.getOrNull() ?: return false
+    val to = runCatching { formatter.parse(dateTo) }.getOrNull() ?: return false
+    val deadline = applicationDeadline?.let { runCatching { formatter.parse(it) }.getOrNull() }
+    val now = java.util.Date()
+
+    return when {
+        now.after(to) -> true
+        deadline != null && now.after(deadline) -> true
+        now.after(from) -> true
+        else -> false
     }
 }

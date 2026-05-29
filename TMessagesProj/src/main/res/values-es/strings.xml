@@ -17,6 +17,7 @@
     <string name="ButtonSave">Guardar</string>
     <string name="ButtonApply">Aplicar</string>
     <string name="ButtonApplied">Aplicado</string>
+    <string name="ButtonClosed">Cerrado</string>
     <string name="ButtonOk">Aceptar</string>
     <string name="ButtonCancel">Cancelar</string>
     <string name="ButtonEdit">Editar</string>
@@ -1880,4 +1881,17 @@
     <string name="ErrorTelegramAuthFailed">Error de autenticación de Telegram</string>
     <string name="ErrorDummyPhoneFailed">Error al obtener número temporal para el registro</string>
     <string name="ErrorUnexpected">Error inesperado</string>
+    <string name="EventStatusApplicationsClosed">Inscripciones Cerradas</string>
+    <string name="EventStatusInProgress">En Progreso</string>
+    <string name="EventStatusCompleted">Completado</string>
+    <string name="EventStatusClosesIn">Cierra en %1$s</string>
+    <string name="EventStatusDeadline">Fecha límite: %1$s</string>
+    <string name="EventTabMyEvents">Mis Eventos</string>
+    <string name="EventTabAllEvents">Todos los Eventos</string>
+    <string name="EventEmptyTitle">No hay eventos próximos en este momento.</string>
+    <string name="EventEmptySubtitleAgency">Vuelve más tarde o\ncrea uno nuevo.</string>
+    <string name="EventEmptySubtitle">Vuelve más tarde.</string>
+    <string name="EventCreateButton">Crear Evento</string>
+    <string name="EventSeenAll">Has visto todos los eventos</string>
+    <string name="EventSpotsLeft">Quedan %1$d lugares</string>
 </resources>

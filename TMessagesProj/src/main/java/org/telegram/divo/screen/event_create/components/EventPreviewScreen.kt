@@ -147,10 +147,16 @@ fun EventPreviewScreen(
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { action ->
-            if (action is Effect.ShowError) {
-                snackbarState.show(
-                    SnackbarEvent.Error(action.message)
-                )
+            when (action) {
+                is Effect.ShowError -> {
+                    snackbarState.show(
+                        SnackbarEvent.Error(action.message)
+                    )
+                }
+                is Effect.EventPublished -> {
+                    onPublish()
+                }
+                else -> {}
             }
         }
     }
@@ -169,12 +175,12 @@ fun EventPreviewScreen(
             isSolid = isSolid,
             titleContent = {
                 Text(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
                     text = stringResource(R.string.EventPreview).uppercase(),
                     style = AppTheme.typography.helveticaNeueLtCom,
-                    fontSize = 18.sp,
+                    fontSize = 16.sp,
                     color = AppTheme.colors.textPrimary,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
                 )
             },
             actionsContent = { _, buttonBgColor, iconColor, buttonBorderColor ->

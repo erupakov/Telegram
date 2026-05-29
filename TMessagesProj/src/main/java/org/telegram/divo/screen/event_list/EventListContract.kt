@@ -12,6 +12,8 @@ data class EventListViewState(
     val hasMore: Boolean = true,
 
     val isModel: Boolean = false,
+    val isAgency: Boolean = false,
+    val selectedTab: Int = 0,
     val isRoleLoading: Boolean = false,
     val filterCount: Int? = null
 ) : ViewState
@@ -28,6 +30,7 @@ sealed class EventListIntent : ViewIntent {
     data class OnEventCtaClicked(val eventId: Int) : EventListIntent()
     data object OnLoad : EventListIntent()
     data object OnLoadMore : EventListIntent()
+    data class OnTabSelected(val tabIndex: Int) : EventListIntent()
 }
 
 sealed class EventListEffect : ViewEffect {

@@ -78,6 +78,7 @@ fun EventDetailsScreen(
     onParamsClicked: () -> Unit,
     onEditEvent: (Int) -> Unit,
     onPrevEventClicked: (Int) -> Unit,
+    onEventDeleted: () -> Unit,
     onBack: () -> Unit,
 ) {
     val uiState = viewModel.state.collectAsState().value
@@ -91,6 +92,7 @@ fun EventDetailsScreen(
         viewModel.effect.collect { action ->
             when (action) {
                 EventDetailsEffect.Back -> onBack()
+                EventDetailsEffect.EventDeleted -> onEventDeleted()
                 is EventDetailsEffect.ShowError -> {
                     snackbarState.show(
                         SnackbarEvent.ErrorWithRetry(action.message, retryText) {
@@ -208,9 +210,10 @@ private fun EventDetailsContent(
             isSolid = isSolid,
             titleContent = {
                 Text(
+                    modifier = Modifier.padding(horizontal = 10.dp),
                     text = uiState.eventDetails?.title.orEmpty(),
                     style = AppTheme.typography.helveticaNeueRegular,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     color = AppTheme.colors.textPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -319,6 +322,7 @@ private fun EventDetailsContent(
                         onCloseApplications = {},
                         onCancelEvent = {},
                         onDeleteEvent = {},
+                        onCtaClicked = { uiState.eventDetails?.id?.let { onIntent(EventDetailsIntent.OnEventCtaClicked(it)) } },
                         onBack = { onIntent(EventDetailsIntent.OnBackClicked) }
                     )
                 }
@@ -336,7 +340,7 @@ private fun EventDetailsContent(
                 item(key = "organizer") {
                     Spacer(Modifier.height(16.dp))
                     OrganizerCard(
-                        avatarModel = uiState.eventDetails?.creator?.avatar?.fullUrl,
+                        avatarModel = uiState.eventDetails?.creator?.avatar?.fullUrl ?: uiState.eventDetails?.creator?.photo?.fullUrl,
                         name =  uiState.eventDetails?.creator?.fullName.orEmpty(),
                         status = "Online",
                     )

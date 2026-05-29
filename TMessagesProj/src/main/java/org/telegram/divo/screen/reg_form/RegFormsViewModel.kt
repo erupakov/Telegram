@@ -151,6 +151,13 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     additionalInfo[AdditionalInfoKeys.SUB_ROLE] = data.subRole.name.lowercase()
                     if (mappedSubrole != null) additionalInfo[AdditionalInfoKeys.SUBROLE_MAPPED] = mappedSubrole
 
+                    if (tgUser != null) {
+                        additionalInfo[AdditionalInfoKeys.TELEGRAM_ID] = tgUser.id
+                        if (!tgUser.username.isNullOrBlank()) {
+                            additionalInfo[AdditionalInfoKeys.TELEGRAM_USERNAME] = tgUser.username
+                        }
+                    }
+
                     // Branch: social registration vs regular registration
                     val divoUserId: Long?
                     if (firebaseUid != null) {

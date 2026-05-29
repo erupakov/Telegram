@@ -76,9 +76,10 @@ fun ParameterBottomSheet(
     }
     val isNumericRangePicker = numericFilterBounds != null && !isDatePicker && !isAgePicker
 
+    val ageBounds = ParametersType.AGE.numericFilterRange() ?: (16..45)
     val ageParts = if (isAgePicker) initialValue.split("-") else emptyList()
-    var selectedMinAge by remember { mutableIntStateOf(ageParts.getOrNull(0)?.toIntOrNull() ?: 14) }
-    var selectedMaxAge by remember { mutableIntStateOf(ageParts.getOrNull(1)?.toIntOrNull() ?: 45) }
+    var selectedMinAge by remember { mutableIntStateOf(ageParts.getOrNull(0)?.toIntOrNull() ?: ageBounds.first) }
+    var selectedMaxAge by remember { mutableIntStateOf(ageParts.getOrNull(1)?.toIntOrNull() ?: ageBounds.last) }
 
     val dateParts = if (isDatePicker) initialValue.split("-") else emptyList()
     var selectedYear by remember { mutableStateOf(dateParts.getOrNull(0)?.takeIf { it.length == 4 } ?: "2000") }
@@ -321,8 +322,9 @@ fun AgeRangeSelector(
     maxAge: Int,
     onAgeChange: (Int, Int) -> Unit
 ) {
+    val bounds = ParametersType.AGE.numericFilterRange() ?: (16..45)
     NumericRangeSelector(
-        bounds = 14..45,
+        bounds = bounds,
         minVal = minAge,
         maxVal = maxAge,
         maxDigits = 2,

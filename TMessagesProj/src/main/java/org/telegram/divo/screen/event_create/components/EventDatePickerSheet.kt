@@ -51,17 +51,24 @@ fun EventDatePickerSheet(
     val allMonths = (1..12).map { Month.of(it).getDisplayName(TextStyle.FULL, DivoLanguageManager.getSystemLocale()) }
     val yearsList = (todayYear..todayYear + 10).map { it.toString() }
 
-    val parts = if (initialDate.isNotBlank()) initialDate.split(" ") else emptyList()
+    val parsedCalendar = remember(initialDate) {
+        val cal = Calendar.getInstance()
+        if (initialDate.isNotBlank()) {
+            try {
+                val sdf = java.text.SimpleDateFormat("dd.MM.yyyy", Locale.US)
+                val date = sdf.parse(initialDate)
+                if (date != null) cal.time = date
+            } catch (e: Exception) {}
+        }
+        cal
+    }
 
     var selectedMonthIndex by remember {
-        val parsed = parts.getOrNull(1)?.let { name ->
-            allMonths.indexOfFirst { it.equals(name, ignoreCase = true) }
-        }?.takeIf { it >= 0 } ?: todayMonth
-        mutableIntStateOf(parsed)
+        mutableIntStateOf(parsedCalendar.get(Calendar.MONTH))
     }
 
     var selectedYearIndex by remember {
-        val y = parts.getOrNull(2)?.toIntOrNull() ?: todayYear
+        val y = parsedCalendar.get(Calendar.YEAR)
         mutableIntStateOf(yearsList.indexOf(y.toString()).coerceAtLeast(0))
     }
 
@@ -79,8 +86,7 @@ fun EventDatePickerSheet(
     }
 
     var selectedDayIndex by remember {
-        val d = parts.getOrNull(0)?.toIntOrNull()?.minus(1) ?: (todayDay - 1)
-        mutableIntStateOf(d.coerceIn(0, 30))
+        mutableIntStateOf((parsedCalendar.get(Calendar.DAY_OF_MONTH) - 1).coerceIn(0, 30))
     }
 
     LaunchedEffect(daysInMonth) {
@@ -118,10 +124,10 @@ fun EventDatePickerSheet(
         contentPadding = PaddingValues(horizontal = 16.dp),
         onDismiss = onDismiss,
         onSave = {
-            val day   = selectedDayIndex + 1
-            val month = allMonths[selectedMonthIndex]
-            val year  = yearsList[selectedYearIndex]
-            onDateSelected("$day $month $year")
+            val day = (selectedDayIndex + 1).toString().padStart(2, '0')
+            val month = (selectedMonthIndex + 1).toString().padStart(2, '0')
+            val year = yearsList[selectedYearIndex]
+            onDateSelected("$day.$month.$year")
         }
     ) {
         Spacer(modifier = Modifier.height(20.dp))

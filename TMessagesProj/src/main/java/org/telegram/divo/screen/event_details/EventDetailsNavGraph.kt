@@ -43,6 +43,7 @@ fun EventDetailsNavGraph(
     eventId: Int,
     isOwnProfile: Boolean = false,
     onNavigateToEditEvent: (Int) -> Unit = {},
+    onEventDeleted: () -> Unit = {},
     onNavigateBack: () -> Unit,
     onNavControllerReady: (NavController) -> Unit = {},
 ) {
@@ -83,6 +84,7 @@ fun EventDetailsNavGraph(
                 onPrevEventClicked = {
                     nav.navigate(EventDetailsRoute.Detail.createRoute(it))
                 },
+                onEventDeleted = onEventDeleted,
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }

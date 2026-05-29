@@ -2,14 +2,15 @@
 <resources>
     <!--divo view start-->
     <string name="DivoMainTabsModels">Модели</string>
-    <string name="DivoMainTabsEvents">Мероприятия</string>
+    <string name="DivoMainTabsEvents">События</string>
     <string name="DivoMainTabsChats">Чаты</string>
     <string name="DivoMainTabsSettings">Настройки</string>
     <string name="ButtonBack">Назад</string>
     <string name="ButtonCreate">Создать</string>
     <string name="ButtonSave">Сохранить</string>
     <string name="ButtonApply">Применить</string>
-    <string name="ButtonApplied">Применено</string>
+    <string name="ButtonApplied">Подано</string>
+    <string name="ButtonClosed">Закрыто</string>
     <string name="ButtonOk">ОК</string>
     <string name="ButtonCancel">Отмена</string>
     <string name="ButtonEdit">Редактировать</string>
@@ -839,4 +840,17 @@
     <string name="ErrorTelegramAuthFailed">Ошибка авторизации Telegram</string>
     <string name="ErrorDummyPhoneFailed">Не удалось получить номер для регистрации</string>
     <string name="ErrorUnexpected">Непредвиденная ошибка</string>
+    <string name="EventStatusApplicationsClosed">Подача закрыта</string>
+    <string name="EventStatusInProgress">Прямо сейчас</string>
+    <string name="EventStatusCompleted">Завершён</string>
+    <string name="EventStatusClosesIn">Закрывается через %1$s</string>
+    <string name="EventStatusDeadline">Дедлайн: %1$s</string>
+    <string name="EventTabMyEvents">Мои события</string>
+    <string name="EventTabAllEvents">Все события</string>
+    <string name="EventEmptyTitle">На данный момент нет предстоящих событий.</string>
+    <string name="EventEmptySubtitleAgency">Загляните позже или\nсоздайте новое.</string>
+    <string name="EventEmptySubtitle">Загляните позже.</string>
+    <string name="EventCreateButton">Создать событие</string>
+    <string name="EventSeenAll">Вы просмотрели все события</string>
+    <string name="EventSpotsLeft">Осталось мест: %1$d</string>
 </resources>

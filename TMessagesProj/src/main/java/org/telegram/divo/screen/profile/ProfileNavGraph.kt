@@ -135,10 +135,21 @@ fun ProfileNavGraph(
 
             val currentIsOwnProfile = isOwnProfile && (currentUserId == userId)
 
+            val needsRefresh = backStackEntry.savedStateHandle.get<Boolean>("needsRefresh") == true
+            if (needsRefresh) {
+                backStackEntry.savedStateHandle.remove<Boolean>("needsRefresh")
+            }
+
             val profileViewModel: ProfileViewModel = viewModel(
                 key = "profile_$currentUserId",
                 factory = ProfileViewModel.factory(currentUserId, currentIsOwnProfile)
             )
+
+            LaunchedEffect(needsRefresh) {
+                if (needsRefresh) {
+                    profileViewModel.setIntent(ProfileIntent.OnLoad)
+                }
+            }
 
             ProfileScreen(
                 viewModel = profileViewModel,
@@ -295,6 +306,10 @@ fun ProfileNavGraph(
                 eventId = eventId,
                 isOwnProfile = isOwnProfile,
                 onNavigateToEditEvent = { nav.navigate(ProfileRoute.CreateEvent.createRoute(it)) },
+                onEventDeleted = {
+                    nav.previousBackStackEntry?.savedStateHandle?.set("needsRefresh", true)
+                    if (!nav.popBackStack()) onNavigateBack()
+                },
                 onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
@@ -382,7 +397,9 @@ fun ProfileNavGraph(
             val sharedViewModel: CreateEventViewModel = viewModel(createEventEntry)
             EventPreviewScreen(
                 viewModel = sharedViewModel,
-                onPublish = {},
+                onPublish = {
+                    nav.popBackStack(ProfileRoute.Profile.route, inclusive = false)
+                },
                 onBack = { nav.popBackStack() }
             )
         }

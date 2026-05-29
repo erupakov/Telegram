@@ -167,9 +167,10 @@ class SimilarProfilesViewModel(
             val ageMatch = if (ageParam.isNullOrEmpty()) {
                 true
             } else {
+                val ageBounds = ParametersType.AGE.numericFilterRange() ?: (16..45)
                 val parts = ageParam.split("-")
-                val minAge = parts.getOrNull(0)?.toIntOrNull() ?: 14
-                val maxAge = parts.getOrNull(1)?.toIntOrNull() ?: 45
+                val minAge = parts.getOrNull(0)?.toIntOrNull() ?: ageBounds.first
+                val maxAge = parts.getOrNull(1)?.toIntOrNull() ?: ageBounds.last
 
                 val profileAge = profile.age
                 profileAge != null && profileAge in minAge..maxAge
