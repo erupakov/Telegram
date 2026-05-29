@@ -11,6 +11,7 @@ import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
+import org.telegram.divo.components.items.numericFilterRange
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
 import org.telegram.divo.dal.dto.face.SimilarFaceDto
 import org.telegram.divo.dal.network.DivoApi
@@ -181,8 +182,6 @@ class SimilarProfilesViewModel(
     }
 
     private fun onLikeChange(id: Int) {
-        val oldProfile = state.value.profiles.find { it.id == id } ?: return
-
         setState {
             val updatedProfiles = profiles.map { profile ->
                 if (profile.id == id) {
