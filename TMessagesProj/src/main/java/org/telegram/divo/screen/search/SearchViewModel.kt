@@ -333,6 +333,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                                 id = cols[0].toLongOrNull() ?: return@forEachLine,
                                 name = cols[1],
                                 asciiName = cols[2],
+                                alternateNames = cols[3],
                                 countryCode = cols[8],
                                 population = cols[14].toIntOrNull() ?: 0
                             )

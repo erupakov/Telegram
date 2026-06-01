@@ -243,6 +243,19 @@
         <item quantity="other">%d participantes</item>
     </plurals>
 
+    <string name="EventSearchPlaceholder">Buscar evento</string>
+    <string name="EventSearchNoResults">Nenhum evento corresponde aos seus filtros</string>
+    <string name="EventSearchNoResultsSubtitle">Tente ajustar sua busca ou filtros</string>
+    <string name="EventSearchClearFilters">Limpar filtros</string>
+    <string name="EventSearchEventsFound">eventos encontrados</string>
+    <string name="EventFilterTypeEvents">Tipo de eventos</string>
+    <string name="EventFilterChooseEvent">Escolha um evento</string>
+    <string name="EventFilterAge">Idade (anos)</string>
+    <string name="EventFilterSelectAgeRange">Selecionar faixa etária</string>
+    <string name="EventFilterPaidOnly">Apenas pagos</string>
+    <string name="EventFilterAllRoles">Todas as funções</string>
+    <string name="EventFilterResetParameter">Redefinir parâmetro</string>
+
     <!--models screen-->
     <string name="Models">Modelos</string>
     <string name="NewTalents">Novos talentos</string>

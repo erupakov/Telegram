@@ -18,6 +18,7 @@ data class Event(
     val typeId: Int? = null,
     val paymentType: String?,
     val paymentTypeId: Int? = null,
+    val modelAttributes: EventModelAttributes? = null,
     val maxAttendees: Int?,
     val likesCount: Int,
     val appliesCount: Int,

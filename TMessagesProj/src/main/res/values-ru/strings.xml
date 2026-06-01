@@ -242,6 +242,19 @@
         <item quantity="other">%d участников</item>
     </plurals>
 
+    <string name="EventSearchPlaceholder">Поиск событий</string>
+    <string name="EventSearchNoResults">Нет событий по вашим фильтрам</string>
+    <string name="EventSearchNoResultsSubtitle">Попробуйте изменить параметры поиска или фильтры</string>
+    <string name="EventSearchClearFilters">Сбросить фильтры</string>
+    <string name="EventSearchEventsFound">событий найдено</string>
+    <string name="EventFilterTypeEvents">Тип событий</string>
+    <string name="EventFilterChooseEvent">Выберите событие</string>
+    <string name="EventFilterAge">Возраст (лет)</string>
+    <string name="EventFilterSelectAgeRange">Выберите возраст</string>
+    <string name="EventFilterPaidOnly">Только платные</string>
+    <string name="EventFilterAllRoles">Все роли</string>
+    <string name="EventFilterResetParameter">Сбросить параметр</string>
+
     <!--models screen-->
     <string name="Models">Модели</string>
     <string name="NewTalents">Новые лица</string>
@@ -853,4 +866,5 @@
     <string name="EventCreateButton">Создать событие</string>
     <string name="EventSeenAll">Вы просмотрели все события</string>
     <string name="EventSpotsLeft">Осталось мест: %1$d</string>
+
 </resources>

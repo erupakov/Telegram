@@ -78,8 +78,8 @@ class EventModelAttributesDto(
 )
 
 class EventRangeDto(
-    @SerializedName("from") val from: Int?,
-    @SerializedName("to") val to: Int?
+    @SerializedName("from") val from: Double?,
+    @SerializedName("to") val to: Double?
 )
 
 fun EventDetailsResponse.toEntity(): EventDetails? {
@@ -121,21 +121,21 @@ fun EventAddressDto.toEntity() = EventAddress(
 
 fun EventModelAttributesDto.toEntity() = EventModelAttributes(
     roles = role ?: emptyList(),
-    ageFrom = age?.from,
-    ageTo = age?.to,
+    ageFrom = age?.from?.toInt(),
+    ageTo = age?.to?.toInt(),
     genders = gender?.mapNotNull { it.title } ?: emptyList(),
-    heightFrom = height?.from,
-    heightTo = height?.to,
-    weightFrom = weight?.from,
-    weightTo = weight?.to,
-    breastSizeFrom = breastSize?.from,
-    breastSizeTo = breastSize?.to,
-    waistFrom = waist?.from,
-    waistTo = waist?.to,
-    hipsFrom = hips?.from,
-    hipsTo = hips?.to,
-    shoesSizeFrom = shoesSize?.from,
-    shoesSizeTo = shoesSize?.to,
+    heightFrom = height?.from?.toInt(),
+    heightTo = height?.to?.toInt(),
+    weightFrom = weight?.from?.toInt(),
+    weightTo = weight?.to?.toInt(),
+    breastSizeFrom = breastSize?.from?.toInt(),
+    breastSizeTo = breastSize?.to?.toInt(),
+    waistFrom = waist?.from?.toInt(),
+    waistTo = waist?.to?.toInt(),
+    hipsFrom = hips?.from?.toInt(),
+    hipsTo = hips?.to?.toInt(),
+    shoesSizeFrom = shoesSize?.from?.toInt(),
+    shoesSizeTo = shoesSize?.to?.toInt(),
     hairColors = hairColor?.mapNotNull { it.title } ?: emptyList(),
     hairLengths = hairLength?.mapNotNull { it.title } ?: emptyList(),
     eyeColors = eyeColor?.mapNotNull { it.title } ?: emptyList(),

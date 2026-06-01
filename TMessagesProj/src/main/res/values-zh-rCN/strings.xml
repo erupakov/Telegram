@@ -243,6 +243,19 @@
         <item quantity="other">%d 名参与者</item>
     </plurals>
 
+    <string name="EventSearchPlaceholder">搜索活动</string>
+    <string name="EventSearchNoResults">没有符合您过滤条件的活动</string>
+    <string name="EventSearchNoResultsSubtitle">请尝试调整搜索或过滤条件</string>
+    <string name="EventSearchClearFilters">清除过滤器</string>
+    <string name="EventSearchEventsFound">个活动找到</string>
+    <string name="EventFilterTypeEvents">活动类型</string>
+    <string name="EventFilterChooseEvent">选择一个活动</string>
+    <string name="EventFilterAge">年龄 (岁)</string>
+    <string name="EventFilterSelectAgeRange">选择年龄范围</string>
+    <string name="EventFilterPaidOnly">仅限付费</string>
+    <string name="EventFilterAllRoles">所有角色</string>
+    <string name="EventFilterResetParameter">重置参数</string>
+
     <!--models screen-->
     <string name="Models">模特</string>
     <string name="NewTalents">新面孔</string>

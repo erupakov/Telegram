@@ -62,7 +62,7 @@ fun StepTwo(
                     copy(
                         country = country?.name ?: "", 
                         countryCode = country?.shortName ?: "", 
-                        city = ""
+                        city = null
                     )
                 })
                 showCountrySheet = false
@@ -73,7 +73,7 @@ fun StepTwo(
     if (showCitySheet) {
         CityPickerSheet(
             list = state.allCities,
-            selectedCity = state.allCities.find { it.name == formData.city },
+            selectedCity = formData.city,
             allCountries = state.allCountries,
             selectedCountries = listOfNotNull(
                 state.allCountries.find { it.name == formData.country }
@@ -85,7 +85,7 @@ fun StepTwo(
                 }
                 onIntent(RegFormsIntent.OnFieldChanged {
                     copy(
-                        city = selectedCity?.name.orEmpty(),
+                        city = selectedCity,
                         country = if (country.isEmpty() && matchedCountry != null)
                             matchedCountry.name
                         else
@@ -193,7 +193,7 @@ fun StepTwo(
 
         if (config.showCity) {
             PlaceField(
-                text = formData.city,
+                text = formData.city?.let { it.matchedName ?: it.name }.orEmpty(),
                 label = stringResource(R.string.CityLabel),
                 onClick = { showCitySheet = true }
             )

@@ -1,12 +1,12 @@
 package org.telegram.divo.screen.event_list
 
 import android.annotation.SuppressLint
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -25,12 +25,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,23 +37,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.chrisbanes.haze.hazeSource
+import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent
-import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.screen.event_list.components.EventItemView
@@ -71,12 +60,10 @@ object EventIntentData {
 
 @Composable
 fun EventListScreen(
-    viewModel: EventListViewModel = viewModel(
-        viewModelStoreOwner = LocalContext.current.findActivity() as ViewModelStoreOwner
-    ),
-    onNavigateToEventDetails: (Int) -> Unit = {},
-    onNavigateToCreateEvent: () -> Unit = {},
-    onNavigateToSearch: () -> Unit = {},
+    viewModel: EventListViewModel,
+    onNavigateToEventDetails: (Int) -> Unit,
+    onNavigateToCreateEvent: () -> Unit,
+    onNavigateToSearch: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarState = remember { AppSnackbarHostState() }
@@ -111,7 +98,7 @@ fun EventListScreen(
             viewModel.handleIntent(EventListIntent.OnEventCtaClicked(it))
         },
         onSearchClick = {
-            onNavigateToSearch()
+            viewModel.handleIntent(EventListIntent.OnSearchClicked)
         },
         onAddEventClick = {
             onNavigateToCreateEvent()
@@ -121,7 +108,7 @@ fun EventListScreen(
         },
         onTabSelected = {
             viewModel.handleIntent(EventListIntent.OnTabSelected(it))
-        }
+        },
     )
 }
 
@@ -154,8 +141,8 @@ private fun EventListContent(
     }
 
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val topBarHeight = if (state.isAgency) 56.dp + 44.dp else 56.dp
-    val contentTopPadding = statusBarHeight + topBarHeight
+    val normalTopBarHeight = if (state.isAgency) 56.dp + 44.dp else 56.dp
+    val contentTopPadding = statusBarHeight + normalTopBarHeight
 
     Scaffold(
         modifier = Modifier
@@ -170,7 +157,7 @@ private fun EventListContent(
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize()) {
             when {
-                state.isLoading || state.isRoleLoading -> {
+                (state.isLoading || state.isRoleLoading) && !state.isSearchMode -> {
                     Box(
                         modifier = Modifier
                             .fillMaxSize(),
@@ -182,7 +169,7 @@ private fun EventListContent(
                     }
                 }
 
-                state.events.isEmpty() -> {
+                state.events.isEmpty() && !state.isLoading && !state.isRoleLoading -> {
                     EventsEmptyState(
                         modifier = Modifier
                             .fillMaxSize(),
@@ -202,72 +189,73 @@ private fun EventListContent(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-
-                    itemsIndexed(
-                        items = state.events,
-                        key = { _, event -> event.id },
-                    ) { index, event ->
-                        EventItemView(
-                            modifier = Modifier
-                                .aspectRatio(0.72f)
-                                .fillMaxWidth(),
-                            event = event,
-                            isModel = state.isModel,
-                            onCardClick = { onEventClick(event.id) },
-                            onCtaClicked = { onCtaClick(event.id) },
-                        )
-                    }
-
-                    if (state.isLoadingMore) {
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            Box(
+                        itemsIndexed(
+                            items = state.events,
+                            key = { _, event -> event.id },
+                        ) { index, event ->
+                            EventItemView(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                LottieProgressIndicator(
-                                    modifier = Modifier.size(32.dp)
-                                )
+                                    .aspectRatio(0.72f)
+                                    .fillMaxWidth(),
+                                event = event,
+                                isModel = state.isModel,
+                                onCardClick = { onEventClick(event.id) },
+                                onCtaClicked = { onCtaClick(event.id) },
+                            )
+                        }
+
+                        if (state.isLoadingMore) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 16.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    LottieProgressIndicator(
+                                        modifier = Modifier.size(32.dp)
+                                    )
+                                }
+                            }
+                        } else if (!state.hasMore && state.events.isNotEmpty()) {
+                            item(span = { GridItemSpan(maxLineSpan) }) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 24.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.ic_divo_check_circle),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp),
+                                        tint = AppTheme.colors.textPrimary
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = stringResource(R.string.EventSeenAll),
+                                        style = AppTheme.typography.helveticaNeueRegular,
+                                        fontSize = 16.sp,
+                                        color = AppTheme.colors.textPrimary
+                                    )
+                                }
                             }
                         }
-                    } else if (!state.hasMore && state.events.isNotEmpty()) {
-                        item(span = { GridItemSpan(maxLineSpan) }) {
-                            androidx.compose.foundation.layout.Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 24.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_divo_check_circle),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(24.dp),
-                                    tint = AppTheme.colors.textPrimary
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = stringResource(R.string.EventSeenAll),
-                                    style = AppTheme.typography.helveticaNeueRegular,
-                                    fontSize = 16.sp,
-                                    color = AppTheme.colors.textPrimary
-                                )
-                            }
-                        }
-                    }
                     }
                 }
             }
 
+            // Top bar
             EventListTopBar(
-                isModel = state.isModel,
-                isAgency = state.isAgency,
-                selectedTabIndex = state.selectedTab,
-                onTabSelected = onTabSelected,
-                onSearchClick = onSearchClick,
-                onAddEventClick = onAddEventClick,
-            )
+                    isModel = state.isModel,
+                    isAgency = state.isAgency,
+                    selectedTabIndex = state.selectedTab,
+                    onTabSelected = onTabSelected,
+                    onSearchClick = onSearchClick,
+                    onAddEventClick = onAddEventClick,
+                )
+
         }
     }
 }
@@ -344,6 +332,7 @@ private fun EventsEmptyState(
         }
     }
 }
+
 
 fun android.content.Context.findActivity(): android.app.Activity? {
     var context = this

@@ -38,7 +38,8 @@ class EventDto(
     @SerializedName("isLikedByUser") val isLikedByUser: Boolean,
     @SerializedName("creator") val creator: EventCreatorDto?,
     @SerializedName("files") val files: List<EventFileDto>?,
-    @SerializedName("address") val address: AgencyAddressDto?
+    @SerializedName("address") val address: AgencyAddressDto?,
+    @SerializedName("modelAttributes") val modelAttributes: EventModelAttributesDto?
 )
 
 class EventCreatorDto(
@@ -80,6 +81,7 @@ fun EventDto.toEntity() = Event(
     typeId = type?.id,
     paymentType = paymentType?.title,
     paymentTypeId = paymentType?.id,
+    modelAttributes = modelAttributes?.toEntity(),
     maxAttendees = maxAttendees,
     likesCount = likesCount,
     appliesCount = appliesCount,

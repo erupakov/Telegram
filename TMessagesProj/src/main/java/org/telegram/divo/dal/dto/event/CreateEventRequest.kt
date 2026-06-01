@@ -21,7 +21,7 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
     fun blockNumericRangeToDto(type: ParametersType, raw: String): EventRangeDto {
         val bounds = checkNotNull(type.numericFilterRange())
         val (from, to) = resolveNumericBlockParamBounds(raw, bounds)
-        return EventRangeDto(from = from, to = to)
+        return EventRangeDto(from = from?.toDouble(), to = to?.toDouble())
     }
 
     fun mapRoleLabelToApiType(roleValue: String): List<String> {

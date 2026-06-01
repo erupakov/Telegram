@@ -75,7 +75,8 @@ fun CityPickerSheet(
                 .filter { city ->
                     // 1. Поиск по названию
                     val matchesQuery = city.name.lowercase().contains(query) ||
-                            city.asciiName.lowercase().contains(query)
+                            city.asciiName.lowercase().contains(query) ||
+                            city.alternateNames.lowercase().contains(query)
 
                     // 2. Поиск по стране (если список пуст — ищем везде)
                     val matchesCountry = allowedCountryCodes.isEmpty() ||
@@ -140,9 +141,20 @@ fun CityPickerSheet(
                         contentPadding = PaddingValues(bottom = 8.dp)
                     ) {
                         items(filteredList) { item ->
-                            val isSelected = item == selectedCity
+                            val isSelected = item.id == selectedCity?.id
                             val countryName =
                                 countryNameMap[item.countryCode.uppercase()] ?: item.countryCode
+
+                            val displayName = remember(item, searchQuery) {
+                                val query = searchQuery.trim().lowercase()
+                                if (query.isNotBlank() && item.alternateNames.lowercase().contains(query)) {
+                                    item.alternateNames.split(",")
+                                        .find { it.trim().lowercase().contains(query) }
+                                        ?.trim() ?: item.name
+                                } else {
+                                    item.name
+                                }
+                            }
 
                             Row(
                                 modifier = Modifier
@@ -151,14 +163,14 @@ fun CityPickerSheet(
                                     .clickableWithoutRipple {
                                         scope.launch {
                                             sheetState.hide()
-                                            onPick(item)
+                                            onPick(item.copy(matchedName = displayName))
                                         }
                                     }
                                     .padding(start = 16.dp, end = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "${item.name}, $countryName",
+                                    text = "$displayName, $countryName",
                                     style = AppTheme.typography.bodyLarge,
                                     modifier = Modifier.weight(1f)
                                 )

@@ -245,6 +245,19 @@
         <item quantity="other">%d participants</item>
     </plurals>
 
+    <string name="EventSearchPlaceholder">Search event</string>
+    <string name="EventSearchNoResults">No events match your filters</string>
+    <string name="EventSearchNoResultsSubtitle">Try adjusting your search or filters</string>
+    <string name="EventSearchClearFilters">Clear filters</string>
+    <string name="EventSearchEventsFound">events found</string>
+    <string name="EventFilterTypeEvents">Type events</string>
+    <string name="EventFilterChooseEvent">Choose an event</string>
+    <string name="EventFilterAge">Age (y.o)</string>
+    <string name="EventFilterSelectAgeRange">Select age range</string>
+    <string name="EventFilterPaidOnly">Paid only</string>
+    <string name="EventFilterAllRoles">All roles</string>
+    <string name="EventFilterResetParameter">Reset parameter</string>
+
     <!--models screen-->
     <string name="Models">Models</string>
     <string name="NewTalents">New talents</string>
@@ -10982,4 +10995,5 @@
     <string name="EventCreateButton">Create Event</string>
     <string name="EventSeenAll">You\'ve seen all events</string>
     <string name="EventSpotsLeft">%1$d spots left</string>
+
 </resources>
