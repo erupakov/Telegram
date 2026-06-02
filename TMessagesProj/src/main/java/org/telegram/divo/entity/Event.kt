@@ -12,6 +12,8 @@ data class Event(
     val date: String,
     val dateTo: String,
     val applicationDeadline: String?,
+    val isPublic: Boolean = true,
+    val ndaRequired: Boolean = false,
     val city: String,
     val countryCode: String,
     val type: String?,

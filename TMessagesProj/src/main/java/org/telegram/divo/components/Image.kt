@@ -59,7 +59,7 @@ fun TelegramPhotoBackground(
         DivoAsyncImage(
             model = photo,
             contentDescription = null,
-            contentScale = ContentScale.FillWidth,
+            contentScale = ContentScale.Crop,
             alignment = Alignment.TopCenter,
             modifier = Modifier.fillMaxSize(),
             onReady = { mainReady.value = true },
@@ -97,7 +97,7 @@ fun TelegramPhotoBackground(
                         .blur(35.dp),
                     alignment = Alignment.TopCenter,
                     model = photo,
-                    contentScale = ContentScale.FillWidth,
+                    contentScale = ContentScale.Crop,
                     onReady = { blurReady.value = true },
                     loadingContent = {
                         Box(

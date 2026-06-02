@@ -32,7 +32,38 @@ class EventDetailsViewModel(
             is EventDetailsIntent.OnPhotoClick -> sendEffect(NavigateToGallery(intent.items, intent.id))
             EventDetailsIntent.OnParamsClick -> sendEffect(NavigateToParams)
             is EventDetailsIntent.OnPrevEventClicked -> sendEffect(NavigateToPrevEvent(intent.eventId))
+            EventDetailsIntent.OnLikeClicked -> handleLikeClicked()
             EventDetailsIntent.OnLoad -> loadData()
+        }
+    }
+
+    private fun handleLikeClicked() {
+        val currentEvent = state.value.eventDetails ?: return
+        val isCurrentlyLiked = currentEvent.isLiked
+
+        // Optimistic update
+        setState {
+            copy(
+                eventDetails = currentEvent.copy(isLiked = !isCurrentlyLiked)
+            )
+        }
+
+        viewModelScope.launch {
+            val result = if (isCurrentlyLiked) {
+                DivoApi.eventRepository.unlikeEvent(currentEvent.id)
+            } else {
+                DivoApi.eventRepository.likeEvent(currentEvent.id)
+            }
+
+            if (result !is DivoResult.Success) {
+                // Revert optimistic update
+                setState {
+                    copy(
+                        eventDetails = currentEvent.copy(isLiked = isCurrentlyLiked)
+                    )
+                }
+                sendEffect(ShowError(result.getErrorMessage()))
+            }
         }
     }
 

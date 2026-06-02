@@ -211,6 +211,8 @@
     <string name="EventRequirements">Requisitos</string>
     <string name="EventEnterRequirements">Introduce los requisitos</string>
     <string name="EventNdaRequired">Se requiere NDA</string>
+    <string name="EventRequired">Requerido</string>
+    <string name="EventNotRequired">No requerido</string>
     <string name="EventApplicationDeadlineDate">Fecha límite de solicitud*</string>
     <string name="EventApplicationDeadlineTime">Hora límite de solicitud*</string>
     <string name="EventPaid">Remunerado</string>

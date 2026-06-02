@@ -73,5 +73,15 @@ class EventRepository(
     }.also {
         if (it is DivoResult.Success) _eventsUpdatedFlow.emit(Unit)
     }
+
+    suspend fun likeEvent(id: Int): DivoResult<Unit> = resultOf {
+        service.likeEvent(id)
+        Unit
+    }
+
+    suspend fun unlikeEvent(id: Int): DivoResult<Unit> = resultOf {
+        service.unlikeEvent(id)
+        Unit
+    }
 }
 

@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,7 +37,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -69,23 +67,16 @@ import org.telegram.divo.components.TelegramPhotoBackground
 fun EventDetailsHeader(
     event: EventDetails?,
     isModel: Boolean,
-    isOwnProfile: Boolean,
     isOwnEvent: Boolean,
     engagementsAlpha: Float = 1f,
     onEditEvent: () -> Unit,
-    onCloseApplications: () -> Unit,
-    onCancelEvent: () -> Unit,
-    onDeleteEvent: () -> Unit,
     onCtaClicked: () -> Unit,
-    onBack: () -> Unit,
+    onLikeClicked: () -> Unit,
 ) {
-    val topPadding = remember {
-        mutableStateOf(0.dp)
-    }
-    val statusBarInsets = WindowInsets.statusBars.asPaddingValues()
-
-    LaunchedEffect(Unit) {
-        topPadding.value = statusBarInsets.calculateTopPadding()
+    val rawTopPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    var topPadding by remember { mutableStateOf(rawTopPadding) }
+    if (rawTopPadding > topPadding) {
+        topPadding = rawTopPadding
     }
 
     Box(
@@ -100,7 +91,7 @@ fun EventDetailsHeader(
 
         StatsSection(
             modifier = Modifier
-                .padding(top = topPadding.value + 16.dp)
+                .padding(top = topPadding + 16.dp)
                 .graphicsLayer { alpha = engagementsAlpha },
             event = event
         )
@@ -156,6 +147,7 @@ private fun ButtonsSection(
     isOwnEvent: Boolean,
     onMenuClicked: () -> Unit,
     onBack: () -> Unit,
+    onLikeClicked: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -208,9 +200,12 @@ private fun ButtonsSection(
             horizontalAlignment = Alignment.End
         ) {
             Spacer(Modifier.height(16.dp))
+            val isLiked = event?.isLiked == true
             EngagementItem(
-                resId = R.drawable.ic_divo_favorite,
-                count = event?.appliesCount ?: 0 //TODO понять что выводить
+                resId = if (isLiked) R.drawable.ic_divo_favorite_selected else R.drawable.ic_divo_favorite,
+                count = event?.appliesCount ?: 0,
+                tint = if (isLiked) AppTheme.colors.accentOrange else AppTheme.colors.onBackground,
+                onClick = onLikeClicked
             )
             Spacer(Modifier.height(10.dp))
             EngagementItem(
@@ -238,14 +233,34 @@ private fun ContentSection(
     Column(
         modifier = modifier
     ) {
-        event?.let {
-            DivoChip(
-                text = it.type.orEmpty(),
-                contentPadding = PaddingValues(8.dp)
-            )
-            Spacer(Modifier.height(4.dp))
+        event?.let { eventDetails ->
+            Row(
+                modifier = Modifier.padding(bottom = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (!eventDetails.type.isNullOrEmpty()) {
+                    DivoChip(
+                        modifier = Modifier.height(27.dp),
+                        text = eventDetails.type,
+                        background = getEventTypeColor(eventDetails.typeId, eventDetails.type),
+                        textColor = Color.White,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+                if (eventDetails.paymentTypeId == 1) { // Paid
+                    DivoChip(
+                        modifier = Modifier.height(27.dp),
+                        text = eventDetails.paymentType.orEmpty(),
+                        resId = R.drawable.ic_divo_paid,
+                        background = Color.White.copy(alpha = 0.3f),
+                        textColor = Color.White,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
             Text(
-                text = it.title.orEmpty(),
+                text = eventDetails.title.orEmpty(),
                 style = AppTheme.typography.displayLarge,
                 color = AppTheme.colors.onBackground,
                 maxLines = 3,
@@ -253,7 +268,7 @@ private fun ContentSection(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = it.date?.toEventDisplayDate(it.address?.countryCode, it.address?.cityName).orEmpty(),
+                text = formatEventSubtitle(eventDetails),
                 style = AppTheme.typography.bodyMedium,
                 color = AppTheme.colors.onBackground
             )
@@ -263,23 +278,30 @@ private fun ContentSection(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                RoundedGlassContainer(
-                    height = 36.dp,
-                    contentPadding = PaddingValues(start = 8.dp, end = 12.dp),
-                    space = 4.dp
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_divo_person_heart),
-                        contentDescription = null,
-                        tint = AppTheme.colors.onBackground
+                    val statusText = resolveEventStatus(
+                        context = LocalContext.current,
+                        dateFrom = eventDetails.date,
+                        dateTo = eventDetails.dateTo,
+                        applicationDeadline = eventDetails.applicationDeadline
                     )
-                    Text(
-                        modifier = Modifier.offset(y = 2.dp),
-                        text = pluralStringResource(R.plurals.ParticipantsCount, event.appliesCount, event.appliesCount),
-                        style = AppTheme.typography.helveticaNeueLtCom,
-                        color = AppTheme.colors.onBackground,
-                        fontSize = 13.sp
-                    )
+                    if (statusText.isNotEmpty()) {
+                        RoundedGlassContainer(
+                            height = 36.dp,
+                            background = Color.White.copy(alpha = 0.3f),
+                            contentPadding = PaddingValues(horizontal = 10.dp)
+                        ) {
+                            Text(
+                                text = statusText,
+                                style = AppTheme.typography.helveticaNeueLtCom,
+                                color = AppTheme.colors.onBackground,
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
                 }
 
                 if (isModel) {
@@ -338,9 +360,18 @@ private fun ContentSection(
 private fun EngagementItem(
     @DrawableRes resId: Int,
     count: Int,
+    tint: Color = AppTheme.colors.onBackground,
+    onClick: (() -> Unit)? = null
 ) {
+    val baseModifier = Modifier.width(56.dp)
+    val containerModifier = if (onClick != null) {
+        baseModifier.clickableWithoutRipple { onClick() }
+    } else {
+        baseModifier
+    }
+
     RoundedGlassContainer(
-        modifier = Modifier.width(56.dp),
+        modifier = containerModifier,
         height = 30.dp,
         space = 4.dp,
         contentPadding = PaddingValues(horizontal = 6.dp)
@@ -349,7 +380,7 @@ private fun EngagementItem(
             modifier = Modifier.size(20.dp),
             painter = painterResource(resId),
             contentDescription = null,
-            tint = AppTheme.colors.onBackground
+            tint = tint
         )
         Text(
             modifier = Modifier.offset(y = 0.5.dp),
@@ -443,4 +474,82 @@ private fun isEventClosed(dateFrom: String, dateTo: String, applicationDeadline:
         now.after(from) -> true
         else -> false
     }
+}
+
+private fun formatEventSubtitle(event: EventDetails): String {
+    var subtitle = event.date?.toEventDisplayDate(
+        countryCode = event.address?.countryCode,
+        city = event.address?.cityName
+    ).orEmpty()
+
+    if (!event.cost.isNullOrEmpty() && (event.cost.toDoubleOrNull() ?: 0.0) > 0.0) {
+        val formattedCost = event.cost.toDoubleOrNull()?.toInt()?.toString() ?: event.cost
+        subtitle += " · $$formattedCost"
+    }
+
+    return subtitle
+}
+
+private fun resolveEventStatus(
+    context: android.content.Context,
+    dateFrom: String?,
+    dateTo: String?,
+    applicationDeadline: String?
+): String {
+    if (dateFrom == null || dateTo == null) return ""
+    val formatter = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+    val from = runCatching { formatter.parse(dateFrom) }.getOrNull() ?: return ""
+    val to = runCatching { formatter.parse(dateTo) }.getOrNull() ?: return ""
+    val deadline = applicationDeadline?.let { runCatching { formatter.parse(it) }.getOrNull() }
+    val now = java.util.Date()
+
+    return when {
+        now.after(to) -> context.getString(R.string.EventStatusCompleted)
+        now.after(from) && now.before(to) -> context.getString(R.string.EventStatusInProgress)
+        deadline != null && now.after(deadline) -> context.getString(R.string.EventStatusApplicationsClosed)
+        now.after(from) -> context.getString(R.string.EventStatusApplicationsClosed)
+        else -> {
+            val targetDate = deadline ?: from
+            val diffMillis = targetDate.time - now.time
+            val totalHours = diffMillis / 1000 / 60 / 60
+            if (totalHours > 24) {
+                val locale = org.telegram.messenger.LocaleController.getInstance().currentLocale ?: java.util.Locale.getDefault()
+                val dateFormat = java.text.SimpleDateFormat("MMM dd", locale)
+                context.getString(R.string.EventStatusDeadline, dateFormat.format(targetDate))
+            } else {
+                val totalMinutes = diffMillis / 1000 / 60
+                val hours = totalMinutes / 60
+                val minutes = totalMinutes % 60
+                val formattedTime = if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
+                context.getString(R.string.EventStatusClosesIn, formattedTime)
+            }
+        }
+    }
+}
+
+private fun getEventTypeColor(typeId: Int?, type: String?): Color {
+    if (typeId != null) {
+        return when (typeId) {
+            1 -> Color(0xFF185FA5) // Casting
+            // TODO: add actual IDs here
+            // X -> Color(0xFF534AB7) // Show
+            281 -> Color(0xFF0F6E56) // Exhibition
+            // X -> Color(0xFF888780) // Event
+            // X -> Color(0xFFE8520A) // TFP
+            // X -> Color(0xFF534AB7) // Dancer
+            // X -> Color(0xFF0F6E56) // Hostess
+            // X -> Color(0xFFE8520A) // Foreign / Contract
+            else -> generateColorForId(typeId)
+        }
+    }
+    return Color(0xFF185FA5)
+}
+
+private fun generateColorForId(id: Int): Color {
+    val colors = listOf(
+        Color(0xFF185FA5), Color(0xFF534AB7), Color(0xFF0F6E56),
+        Color(0xFF888780), Color(0xFFE8520A), Color(0xFFD81B60),
+        Color(0xFF8E24AA), Color(0xFF00897B), Color(0xFFF4511E)
+    )
+    return colors[id % colors.size]
 }

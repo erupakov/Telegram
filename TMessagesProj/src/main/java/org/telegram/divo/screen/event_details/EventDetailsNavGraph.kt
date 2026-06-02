@@ -19,6 +19,7 @@ import org.telegram.divo.screen.gallery.GalleryViewerScreen
 
 object EventParamsHolder {
     var params: EventModelAttributes? = null
+    var isNdaRequired: Boolean? = null
 }
 
 sealed class EventDetailsRoute(val route: String) {
@@ -77,7 +78,9 @@ fun EventDetailsNavGraph(
                     nav.navigate(EventDetailsRoute.GalleryViewer.createRoute(items, index))
                 },
                 onParamsClicked = {
-                    EventParamsHolder.params = eventDetailsViewModel.state.value.eventDetails?.modelAttributes
+                    val eventDetails = eventDetailsViewModel.state.value.eventDetails
+                    EventParamsHolder.params = eventDetails?.modelAttributes
+                    EventParamsHolder.isNdaRequired = eventDetails?.ndaRequired
                     nav.navigate(EventDetailsRoute.Params.route)
                 },
                 onEditEvent = onNavigateToEditEvent,
@@ -118,11 +121,13 @@ fun EventDetailsNavGraph(
             DisposableEffect(Unit) {
                 onDispose {
                     EventParamsHolder.params = null
+                    EventParamsHolder.isNdaRequired = null
                 }
             }
 
             EventParametersScreen(
                 params = EventParamsHolder.params,
+                isNdaRequired = EventParamsHolder.isNdaRequired,
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }

@@ -46,6 +46,12 @@ interface EventService {
     @DELETE("event/{id}")
     suspend fun deleteEvent(@Path("id") id: Int): EmptyResponse
 
+    @POST("event/{id}/like")
+    suspend fun likeEvent(@Path("id") id: Int): EmptyResponse
+
+    @POST("event/{id}/unlike")
+    suspend fun unlikeEvent(@Path("id") id: Int): EmptyResponse
+
 }
 
 

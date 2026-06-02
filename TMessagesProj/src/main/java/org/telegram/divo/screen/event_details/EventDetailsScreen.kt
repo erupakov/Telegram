@@ -255,8 +255,7 @@ private fun EventDetailsContent(
                     }
                 } else {
                     RoundedGlassButton(
-                        modifier = Modifier
-                            .align(Alignment.CenterStart),
+                        modifier = Modifier.align(Alignment.CenterStart),
                         background = buttonBgColor,
                         resId = R.drawable.ic_divo_share_model,
                         iconTint = iconColor,
@@ -315,15 +314,11 @@ private fun EventDetailsContent(
                     EventDetailsHeader(
                         event = uiState.eventDetails,
                         isModel = uiState.isModel,
-                        isOwnProfile = uiState.isOwnProfile,
                         isOwnEvent = uiState.isOwnEvent,
                         engagementsAlpha = engagementsAlpha,
                         onEditEvent = { onIntent(EventDetailsIntent.OnEditEventClick) },
-                        onCloseApplications = {},
-                        onCancelEvent = {},
-                        onDeleteEvent = {},
                         onCtaClicked = { uiState.eventDetails?.id?.let { onIntent(EventDetailsIntent.OnEventCtaClicked(it)) } },
-                        onBack = { onIntent(EventDetailsIntent.OnBackClicked) }
+                        onLikeClicked = { onIntent(EventDetailsIntent.OnLikeClicked) },
                     )
                 }
 
@@ -342,7 +337,8 @@ private fun EventDetailsContent(
                     OrganizerCard(
                         avatarModel = uiState.eventDetails?.creator?.avatar?.fullUrl ?: uiState.eventDetails?.creator?.photo?.fullUrl,
                         name =  uiState.eventDetails?.creator?.fullName.orEmpty(),
-                        status = "Online",
+                        status = "12K followers · Online",
+                        isVerified = true
                     )
                 }
 

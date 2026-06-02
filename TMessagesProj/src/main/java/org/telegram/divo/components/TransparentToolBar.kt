@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,17 +38,17 @@ fun TransparentToolBarBackground(
     transitionProgress: Float,
     hazeState: HazeState? = null,
 ) {
-    val statusBarPadding = remember { mutableStateOf(0.dp) }
-    val statusBarInsetsRaw = WindowInsets.statusBars.asPaddingValues()
-    LaunchedEffect(Unit) {
-        statusBarPadding.value = statusBarInsetsRaw.calculateTopPadding()
+    val rawTopPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    var statusBarPadding by remember { mutableStateOf(rawTopPadding) }
+    if (rawTopPadding > statusBarPadding) {
+        statusBarPadding = rawTopPadding
     }
     val density = LocalDensity.current
     val extendedHeight = 24.dp
-    val toolbarHeight = statusBarPadding.value + 56.dp
+    val toolbarHeight = statusBarPadding + 56.dp
     val totalHeight = toolbarHeight + extendedHeight
 
-    val startYPx = with(density) { (statusBarPadding.value + 46.dp).toPx() }
+    val startYPx = with(density) { (statusBarPadding + 46.dp).toPx() }
     val endYPx = with(density) { totalHeight.toPx() }
 
     if (hazeState != null && transitionProgress > 0f) {
@@ -90,10 +92,10 @@ fun TransparentToolBarContent(
     val buttonIconColor = lerp(Color.White, Color.Black, transitionProgress)
     val buttonBorderColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.4f), Color.Transparent, transitionProgress)
 
-    val statusBarPadding = remember { mutableStateOf(0.dp) }
-    val statusBarInsetsRaw = WindowInsets.statusBars.asPaddingValues()
-    LaunchedEffect(Unit) {
-        statusBarPadding.value = statusBarInsetsRaw.calculateTopPadding()
+    val rawTopPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    var statusBarPadding by remember { mutableStateOf(rawTopPadding) }
+    if (rawTopPadding > statusBarPadding) {
+        statusBarPadding = rawTopPadding
     }
 
     val animatable = remember { Animatable(0f) }
@@ -107,7 +109,7 @@ fun TransparentToolBarContent(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = statusBarPadding.value + 8.dp, bottom = 8.dp),
+            .padding(top = statusBarPadding + 8.dp, bottom = 8.dp),
         contentAlignment = Alignment.Center
     ) {
         val boxScope = this

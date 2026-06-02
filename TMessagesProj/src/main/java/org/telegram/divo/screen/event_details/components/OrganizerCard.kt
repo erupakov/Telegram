@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.event_details.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -29,6 +31,7 @@ import org.telegram.messenger.R
 fun OrganizerCard(
     avatarModel: Any?,
     name: String,
+    isVerified: Boolean,
     status: String,
 ) {
     Surface(
@@ -57,13 +60,26 @@ fun OrganizerCard(
                 )
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(
-                        text = "@$name",
-                        style = AppTheme.typography.bodyLarge,
-                        color = AppTheme.colors.textPrimary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "@$name",
+                            style = AppTheme.typography.bodyLarge,
+                            color = AppTheme.colors.textPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        if (isVerified) {
+                            Image(
+                                modifier = Modifier.size(16.dp),
+                                painter = painterResource(R.drawable.ic_divo_verified),
+                                contentDescription = null
+                            )
+                        }
+                    }
+
                     Spacer(Modifier.height(10.dp))
                     Text(
                         text = status,

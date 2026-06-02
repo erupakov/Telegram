@@ -211,6 +211,8 @@
     <string name="EventRequirements">活动要求</string>
     <string name="EventEnterRequirements">输入活动要求</string>
     <string name="EventNdaRequired">需要签署保密协议(NDA)</string>
+    <string name="EventRequired">必需</string>
+    <string name="EventNotRequired">非必需</string>
     <string name="EventApplicationDeadlineDate">报名截止日期*</string>
     <string name="EventApplicationDeadlineTime">报名截止时间*</string>
     <string name="EventPaid">是否有酬劳</string>

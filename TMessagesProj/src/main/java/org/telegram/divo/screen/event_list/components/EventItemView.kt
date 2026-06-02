@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -118,42 +117,11 @@ fun EventItemView(
                         }
                     }
                     if (hasPayment) {
-                        Box(
-                            modifier = Modifier
-                                .height(22.dp)
-                                .clip(RoundedCornerShape(14.dp))
-                                .hazeEffect(
-                                    state = hazeState,
-                                    style = HazeStyle(
-                                        backgroundColor = Color.White.copy(alpha = 0.2f),
-                                        blurRadius = 20.dp,
-                                        tints = listOf(HazeTint(Color.White.copy(alpha = 0.1f)))
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_divo_paid),
-                                    contentDescription = null,
-                                    tint = AppTheme.colors.onBackground,
-                                    modifier = Modifier.size(12.dp)
-                                )
-                                Spacer(Modifier.width(4.dp))
-                                Text(
-                                    modifier = Modifier,
-                                    text = event.paymentType.orEmpty(),
-                                    style = AppTheme.typography.helveticaNeueRegular,
-                                    fontSize = 10.sp,
-                                    color = AppTheme.colors.onBackground,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
+                        EventPreviewGlassChip(
+                            hazeState = hazeState,
+                            text = event.paymentType ?: "Paid",
+                            iconResId = R.drawable.ic_divo_paid
+                        )
                     }
                 }
 
@@ -401,22 +369,66 @@ private fun isEventClosed(dateFrom: String, dateTo: String, applicationDeadline:
 
 private fun getEventTypeColor(typeId: Int?, type: String?): Color {
     if (typeId != null) {
-        when (typeId) {
-            1 -> return Color(0xFF185FA5) // Casting
-            281 -> return Color(0xFF0F6E56) // Exhibition...
+        return when (typeId) {
+            1 -> Color(0xFF185FA5)
+            281 -> Color(0xFF0F6E56)
+            else -> generateColorForId(typeId)
         }
     }
+    return Color(0xFF185FA5)
+}
 
-    val lower = type?.lowercase() ?: return Color(0xFF185FA5)
-    return when {
-        lower.contains("casting") || lower.contains("кастинг") -> Color(0xFF185FA5)
-        lower.contains("show") || lower.contains("шоу") -> Color(0xFF534AB7)
-        lower.contains("exhibition") || lower.contains("выставк") -> Color(0xFF0F6E56)
-        lower.contains("event") || lower.contains("ивент") || lower.contains("мероприят") -> Color(0xFF888780)
-        lower.contains("tfp") || lower.contains("тфп") -> Color(0xFFE8520A)
-        lower.contains("dancer") || lower.contains("танцор") -> Color(0xFF534AB7)
-        lower.contains("hostess") || lower.contains("хостес") -> Color(0xFF0F6E56)
-        lower.contains("foreign") || lower.contains("контракт") -> Color(0xFFE8520A)
-        else -> Color(0xFF185FA5)
+private fun generateColorForId(id: Int): Color {
+    val colors = listOf(
+        Color(0xFF185FA5), Color(0xFF534AB7), Color(0xFF0F6E56), 
+        Color(0xFF888780), Color(0xFFE8520A), Color(0xFFD81B60),
+        Color(0xFF8E24AA), Color(0xFF00897B), Color(0xFFF4511E)
+    )
+    return colors[id % colors.size]
+}
+
+@Composable
+private fun EventPreviewGlassChip(
+    hazeState: HazeState,
+    text: String,
+    iconResId: Int? = null
+) {
+    Box(
+        modifier = Modifier
+            .height(22.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .hazeEffect(
+                state = hazeState,
+                style = HazeStyle(
+                    backgroundColor = Color.White.copy(alpha = 0.2f),
+                    blurRadius = 20.dp,
+                    tints = listOf(HazeTint(Color.White.copy(alpha = 0.1f)))
+                )
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (iconResId != null && iconResId != 0) {
+                Icon(
+                    painter = painterResource(id = iconResId),
+                    contentDescription = null,
+                    tint = AppTheme.colors.onBackground,
+                    modifier = Modifier.size(12.dp)
+                )
+                Spacer(Modifier.width(4.dp))
+            }
+            Text(
+                modifier = Modifier,
+                text = text,
+                style = AppTheme.typography.helveticaNeueRegular,
+                fontSize = 10.sp,
+                color = AppTheme.colors.onBackground,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }

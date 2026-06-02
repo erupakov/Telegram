@@ -213,6 +213,8 @@
     <string name="EventRequirements">Requirements</string>
     <string name="EventEnterRequirements">Enter Requirements</string>
     <string name="EventNdaRequired">NDA required</string>
+    <string name="EventRequired">Required</string>
+    <string name="EventNotRequired">Not required</string>
     <string name="EventApplicationDeadlineDate">Application deadline date*</string>
     <string name="EventApplicationDeadlineTime">Application deadline time*</string>
     <string name="EventPaid">Paid</string>

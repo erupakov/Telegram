@@ -208,6 +208,8 @@
     <string name="EventRequirements">Требования</string>
     <string name="EventEnterRequirements">Введите требования</string>
     <string name="EventNdaRequired">Требуется NDA</string>
+    <string name="EventRequired">Требуется</string>
+    <string name="EventNotRequired">Не требуется</string>
     <string name="EventApplicationDeadlineDate">Дата окончания приема заявок *</string>
     <string name="EventApplicationDeadlineTime">Время окончания приема заявок *</string>
     <string name="EventPaid">Оплачивается</string>
