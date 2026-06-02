@@ -59,6 +59,10 @@ sealed class ProfileRoute(val route: String) {
         fun createRoute(eventId: Int) = "event/$eventId"
     }
 
+    data object ApplyConfirmation : ProfileRoute("apply_confirmation/{eventId}") {
+        fun createRoute(eventId: Int) = "apply_confirmation/$eventId"
+    }
+
     data object Edit : ProfileRoute("profile_edit?isModel={isModel}&initialPage={initialPage}") {
 
         fun createRoute(isModel: Boolean, initialPage: Int): String {
@@ -181,6 +185,9 @@ fun ProfileNavGraph(
                 },
                 onFindSimilarProfiles = {
                     nav.navigate(ProfileRoute.FaceSearch.createRoute(it))
+                },
+                onNavigateToApplyConfirmation = {
+                    nav.navigate(ProfileRoute.ApplyConfirmation.createRoute(it))
                 },
                 onNavigateToAppearances = {
                     ParamsHolder.params = it
@@ -400,6 +407,17 @@ fun ProfileNavGraph(
                 onPublish = {
                     nav.popBackStack(ProfileRoute.Profile.route, inclusive = false)
                 },
+                onBack = { nav.popBackStack() }
+            )
+        }
+        composable(
+            route = ProfileRoute.ApplyConfirmation.route,
+            arguments = listOf(navArgument("eventId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+            org.telegram.divo.screen.apply_confirmation.ApplyConfirmationScreen(
+                eventId = eventId,
+                onSuccessDismiss = { nav.popBackStack() },
                 onBack = { nav.popBackStack() }
             )
         }

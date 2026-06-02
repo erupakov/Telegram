@@ -267,7 +267,7 @@ fun ProfileNameItem(
         ) {
             Text(
                 modifier = Modifier.weight(1f, fill = false),
-                text = uiState.userInfo.fullName.uppercase(),
+                text = uiState.userInfo.displayName.uppercase(),
                 style = AppTheme.typography.helveticaNeueLtCom.copy(
                     platformStyle = PlatformTextStyle(includeFontPadding = false)
                 ),
@@ -300,8 +300,10 @@ fun ProfileNameItem(
             )
             Spacer(modifier = Modifier.width(10.dp))
             if (age.isNotEmpty()) {
+                val ageText = age.formattedAge(context)
+                val textToDisplay = if (city != null) "$ageText · " else ageText
                 Text(
-                    text = "${age.formattedAge(context)} · ",
+                    text = textToDisplay,
                     style = AppTheme.typography.helveticaNeueRegular,
                     fontSize = 14.sp,
                     color = AppTheme.colors.textColor,

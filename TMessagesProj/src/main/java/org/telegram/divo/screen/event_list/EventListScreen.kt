@@ -33,7 +33,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,10 +66,12 @@ fun EventListScreen(
     onNavigateToEventDetails: (Int) -> Unit,
     onNavigateToCreateEvent: () -> Unit,
     onNavigateToSearch: () -> Unit,
+    onNavigateToApplyConfirmation: (Int) -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarState = remember { AppSnackbarHostState() }
     val retryText = stringResource(R.string.RetryLabel)
+    var withdrawEventId by remember { mutableStateOf<Int?>(null) }
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect { action ->
@@ -77,6 +81,10 @@ fun EventListScreen(
                 is EventListEffect.NavigateToEventDetails -> onNavigateToEventDetails(
                     action.eventId
                 )
+                is EventListEffect.NavigateToApplyConfirmation -> onNavigateToApplyConfirmation(
+                    action.eventId
+                )
+                is EventListEffect.ShowWithdrawConfirmation -> { withdrawEventId = action.eventId }
                 is EventListEffect.ShowError -> {
                     snackbarState.show(
                         SnackbarEvent.ErrorWithRetry(action.message, retryText) {
@@ -110,6 +118,18 @@ fun EventListScreen(
             viewModel.handleIntent(EventListIntent.OnTabSelected(it))
         },
     )
+
+    if (withdrawEventId != null) {
+        org.telegram.divo.components.DivoWithdrawBottomSheet(
+            onKeepApplication = { withdrawEventId = null },
+            onWithdraw = {
+                val id = withdrawEventId
+                withdrawEventId = null
+                if (id != null) viewModel.handleIntent(EventListIntent.ConfirmWithdraw(id))
+            },
+            onDismiss = { withdrawEventId = null }
+        )
+    }
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

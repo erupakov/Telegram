@@ -35,10 +35,10 @@ class EditMyProfileViewModel(
                 val user = result.value
                 setState {
                     copy(
-                        fName = user.fullName,
-                        bio = user.model?.description.orEmpty(),
+                        fName = if (isModel) user.fullName else user.agency?.title ?: user.fullName,
+                        bio = if (isModel) user.model?.description.orEmpty() else user.agency?.description.orEmpty(),
                         userFull = user,
-                        avatarUrl = user.avatarUrl,
+                        avatarUrl = if (isModel) user.avatarUrl else user.agency?.photo?.fullUrl ?: user.avatarUrl,
                         isLoading = false
                     )
                 }
@@ -70,14 +70,24 @@ class EditMyProfileViewModel(
                     userInfo.avatarUuid
                 }
                 val isModel = state.value.isModel
-                val result = DivoApi.userRepository.updateProfile(
-                    userInfo = userInfo.copy(
-                        fullName = if (isModel) fNameRaw else userInfo.fullName,
-                        model = if (isModel) userInfo.model?.copy(description = aboutRaw) else userInfo.model,
-                        avatarUuid = uploadedUuid,
-                        agency = if (isModel) userInfo.agency else userInfo.agency?.copy(description = aboutRaw, title = fNameRaw)
+                val result = if (isModel) {
+                    DivoApi.userRepository.updateProfile(
+                        userInfo = userInfo.copy(
+                            fullName = fNameRaw,
+                            model = userInfo.model?.copy(description = aboutRaw),
+                            avatarUuid = uploadedUuid
+                        )
                     )
-                )
+                } else {
+                    val agency = userInfo.agency ?: org.telegram.divo.entity.Agency()
+                    DivoApi.userRepository.updateAgency(
+                        agency = agency.copy(
+                            description = aboutRaw,
+                            title = fNameRaw,
+                            photo = if (uploadedUuid.isNotEmpty()) org.telegram.divo.entity.Photo(photoId = 0L, fileUuid = uploadedUuid) else agency.photo
+                        )
+                    )
+                }
 
                 when (result) {
                     is DivoResult.Success -> {

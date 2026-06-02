@@ -255,7 +255,7 @@ private fun TitleContent(
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = uiState.userInfo.fullName,
+            text = uiState.userInfo.displayName,
             style = AppTheme.typography.helveticaNeueRegular,
             fontSize = 14.sp,
             color = AppTheme.colors.textPrimary,
@@ -274,8 +274,10 @@ private fun TitleContent(
                     fontSize = 12.sp,
                 )
                 if (userInfo.birthday.isNotEmpty()) {
+                    val ageText = userInfo.birthday.formattedAge(context)
+                    val suffix = if (userInfo.city != null) " · " else ""
                     Text(
-                        text = " · ${userInfo.birthday.formattedAge(context)} · ",
+                        text = " · $ageText$suffix",
                         style = AppTheme.typography.helveticaNeueRegular,
                         color = AppTheme.colors.textPrimary,
                         fontSize = 12.sp,

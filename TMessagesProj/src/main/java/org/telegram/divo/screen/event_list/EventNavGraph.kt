@@ -32,6 +32,9 @@ sealed class EventRoute(val route: String) {
     data object Detail : EventRoute("detail/{eventId}") {
         fun createRoute(eventId: Int) = "detail/$eventId"
     }
+    data object ApplyConfirmation : EventRoute("apply_confirmation/{eventId}") {
+        fun createRoute(eventId: Int) = "apply_confirmation/$eventId"
+    }
 }
 
 @Composable
@@ -77,7 +80,8 @@ fun EventsNavGraph(
                 viewModel = viewModel,
                 onNavigateToEventDetails = { nav.navigate(EventRoute.Detail.createRoute(it)) },
                 onNavigateToCreateEvent = { nav.navigate(EventRoute.CreateEvent.createRoute()) },
-                onNavigateToSearch = { nav.navigate(EventRoute.Search.route) }
+                onNavigateToSearch = { nav.navigate(EventRoute.Search.route) },
+                onNavigateToApplyConfirmation = { nav.navigate(EventRoute.ApplyConfirmation.createRoute(it)) }
             )
         }
         composable(EventRoute.Search.route) {
@@ -86,6 +90,25 @@ fun EventsNavGraph(
             )
             val state = viewModel.state.collectAsState().value
             val snackbarState = remember { org.telegram.divo.common.AppSnackbarHostState() }
+            val context = LocalContext.current
+            
+            LaunchedEffect(viewModel.effect) {
+                viewModel.effect.collect { action ->
+                    when (action) {
+                        is EventListEffect.NavigateToEventDetails -> {
+                            EventIntentData.eventId = action.eventId
+                            nav.navigate(EventRoute.Detail.createRoute(action.eventId))
+                        }
+                        is EventListEffect.NavigateToApplyConfirmation -> {
+                            nav.navigate(EventRoute.ApplyConfirmation.createRoute(action.eventId))
+                        }
+                        is EventListEffect.ShowError -> {
+                            snackbarState.show(org.telegram.divo.common.SnackbarEvent.Error(action.message))
+                        }
+                        else -> {}
+                    }
+                }
+            }
             
             EventSearchScreen(
                 state = state,
@@ -172,6 +195,17 @@ fun EventsNavGraph(
                     nav.popBackStack()
                 },
                 onNavigateBack = { nav.popBackStack() },
+            )
+        }
+        composable(
+            route = EventRoute.ApplyConfirmation.route,
+            arguments = listOf(navArgument("eventId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+            org.telegram.divo.screen.apply_confirmation.ApplyConfirmationScreen(
+                eventId = eventId,
+                onSuccessDismiss = { nav.popBackStack() },
+                onBack = { nav.popBackStack() }
             )
         }
     }

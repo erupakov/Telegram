@@ -93,6 +93,7 @@ sealed class EventListIntent : ViewIntent {
     data object OnAddEventClicked : EventListIntent()
     data class OnEventCardClicked(val eventId: Int) : EventListIntent()
     data class OnEventCtaClicked(val eventId: Int) : EventListIntent()
+    data class ConfirmWithdraw(val eventId: Int) : EventListIntent()
     data object OnLoad : EventListIntent()
     data object OnLoadMore : EventListIntent()
     data class OnTabSelected(val tabIndex: Int) : EventListIntent()
@@ -110,5 +111,7 @@ sealed class EventListEffect : ViewEffect {
     data object NavigateToSearch : EventListEffect()
     data object NavigateToCreateEvent : EventListEffect()
     data class NavigateToEventDetails(val eventId: Int) : EventListEffect()
+    data class NavigateToApplyConfirmation(val eventId: Int) : EventListEffect()
+    data class ShowWithdrawConfirmation(val eventId: Int) : EventListEffect()
     data class ShowError(val message: String) : EventListEffect()
 }

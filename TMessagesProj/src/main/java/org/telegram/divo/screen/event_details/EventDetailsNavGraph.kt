@@ -28,6 +28,12 @@ sealed class EventDetailsRoute(val route: String) {
         fun createRoute(eventId: Int) = "detail/$eventId"
     }
     data object Params : EventDetailsRoute("params")
+    data class ApplyConfirmation(val eventId: Int) : EventDetailsRoute("apply_confirmation/$eventId") {
+        companion object {
+            const val ROUTE = "apply_confirmation/{eventId}"
+            fun createRoute(eventId: Int) = "apply_confirmation/$eventId"
+        }
+    }
 
     object GalleryViewer : EventDetailsRoute("gallery/{sourceType}") {
         const val ROUTE = "gallery/{sourceType}"
@@ -87,6 +93,9 @@ fun EventDetailsNavGraph(
                 onPrevEventClicked = {
                     nav.navigate(EventDetailsRoute.Detail.createRoute(it))
                 },
+                onApplyConfirmation = {
+                    nav.navigate(EventDetailsRoute.ApplyConfirmation.createRoute(it))
+                },
                 onEventDeleted = onEventDeleted,
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
@@ -129,6 +138,17 @@ fun EventDetailsNavGraph(
                 params = EventParamsHolder.params,
                 isNdaRequired = EventParamsHolder.isNdaRequired,
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
+        composable(
+            route = EventDetailsRoute.ApplyConfirmation.ROUTE,
+            arguments = listOf(navArgument("eventId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val applyEventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+            org.telegram.divo.screen.apply_confirmation.ApplyConfirmationScreen(
+                eventId = applyEventId,
+                onBack = { nav.popBackStack() },
+                onSuccessDismiss = { nav.popBackStack() }
             )
         }
     }

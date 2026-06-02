@@ -107,6 +107,7 @@ class EventListViewModel :
                     activePaginator.loadMore()
                 }
             }
+            is EventListIntent.ConfirmWithdraw -> confirmWithdraw(intent.eventId)
             EventListIntent.OnAddEventClicked -> sendEffect(EventListEffect.NavigateToCreateEvent)
             is EventListIntent.OnEventCardClicked -> sendEffect(
                 EventListEffect.NavigateToEventDetails(intent.eventId)
@@ -311,27 +312,35 @@ class EventListViewModel :
         val event = state.value.events.find { it.id == eventId } ?: return
         val isCurrentlyApplied = event.isApplied
 
+        if (isCurrentlyApplied) {
+            sendEffect(EventListEffect.ShowWithdrawConfirmation(eventId))
+        } else {
+            sendEffect(EventListEffect.NavigateToApplyConfirmation(eventId))
+        }
+    }
+
+    private fun confirmWithdraw(eventId: Int) {
+        val event = state.value.events.find { it.id == eventId } ?: return
+        val isCurrentlyApplied = event.isApplied
+        if (!isCurrentlyApplied) return
+
         // Optimistic UI update
         updateEventInList(eventId) { 
-            val newAppliesCount = if (!isCurrentlyApplied) it.appliesCount + 1 else it.appliesCount - 1
-            it.copy(isApplied = !isCurrentlyApplied, appliesCount = newAppliesCount) 
+            val newAppliesCount = it.appliesCount - 1
+            it.copy(isApplied = false, appliesCount = newAppliesCount) 
         }
-        val expectedNewCount = if (!isCurrentlyApplied) event.appliesCount + 1 else event.appliesCount - 1
-        DivoApi.eventRepository.notifyEventParticipationChanged(eventId, !isCurrentlyApplied, expectedNewCount)
+        val expectedNewCount = event.appliesCount - 1
+        DivoApi.eventRepository.notifyEventParticipationChanged(eventId, false, expectedNewCount)
 
         viewModelScope.launch {
-            val result = if (isCurrentlyApplied) {
-                DivoApi.eventRepository.unapplyEvent(eventId)
-            } else {
-                DivoApi.eventRepository.applyEvent(eventId)
-            }
+            val result = DivoApi.eventRepository.unapplyEvent(eventId)
 
             if (result !is DivoResult.Success) {
                 // Revert optimistic update
                 updateEventInList(eventId) { 
-                    it.copy(isApplied = isCurrentlyApplied, appliesCount = event.appliesCount) 
+                    it.copy(isApplied = true, appliesCount = event.appliesCount) 
                 }
-                DivoApi.eventRepository.notifyEventParticipationChanged(eventId, isCurrentlyApplied, event.appliesCount)
+                DivoApi.eventRepository.notifyEventParticipationChanged(eventId, true, event.appliesCount)
                 sendEffect(EventListEffect.ShowError(result.getErrorMessage()))
             }
         }

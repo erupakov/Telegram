@@ -37,7 +37,11 @@ fun String.formattedAge(context: Context, locale: Locale = DivoLanguageManager.g
 
 fun String.toAge(locale: Locale = DivoLanguageManager.getSystemLocale()): Int? {
     return try {
-        val birthDate = LocalDate.parse(this, DateTimeFormatter.ofPattern("dd.MM.yyyy", locale))
+        val birthDate = try {
+            LocalDate.parse(this)
+        } catch (e: Exception) {
+            LocalDate.parse(this, DateTimeFormatter.ofPattern("dd.MM.yyyy", locale))
+        }
         Period.between(birthDate, LocalDate.now()).years
     } catch (e: Exception) {
         null
@@ -132,6 +136,14 @@ fun String.toEventDisplayDate(
     } else {
         "$date · $flag $city"
     }
+} catch (_: Exception) {
+    this
+}
+
+fun String.toEventShortDate(locale: Locale = DivoLanguageManager.getSystemLocale()): String = try {
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ROOT)
+    val localDateTime = LocalDateTime.parse(this, formatter)
+    localDateTime.format(DateTimeFormatter.ofPattern("d MMMM", locale))
 } catch (_: Exception) {
     this
 }

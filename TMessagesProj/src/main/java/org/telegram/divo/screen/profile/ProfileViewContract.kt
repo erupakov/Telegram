@@ -197,6 +197,7 @@ sealed class ProfileIntent : ViewIntent {
     object OnLoadMoreVideos : ProfileIntent()
     object OnLoadMoreEvents : ProfileIntent()
     class OnEditClicked(val initialPage: Int) : ProfileIntent()
+    data class ConfirmWithdraw(val id: Int) : ProfileIntent()
     object OnEditLinksClicked : ProfileIntent()
 
     object OnNavigateBack : ProfileIntent()
@@ -226,6 +227,8 @@ sealed class ProfileEffect : ViewEffect {
     class NavigateToProfile(val profileId: Int) : ProfileEffect()
     object NavigateToAddModel : ProfileEffect()
     class NavigateToEvent(val eventId: Int) : ProfileEffect()
+    class NavigateToApplyConfirmation(val eventId: Int) : ProfileEffect()
+    class ShowWithdrawConfirmation(val eventId: Int) : ProfileEffect()
     class NavigateToFindSimilarProfiles(val photoUrl: String) : ProfileEffect()
     object NavigateToEditLinks : ProfileEffect()
     object NavigateToCreateEvent : ProfileEffect()

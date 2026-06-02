@@ -156,7 +156,7 @@ fun ProfileHeadlineContent(
                                     scope = scope,
                                     type = DivoShareType.PROFILE,
                                     id = user.id,
-                                    customMessage = "${user.fullName} - ${user.roleLabel}",
+                                    customMessage = "${user.displayName} - ${user.roleLabel}",
                                     imageUrl = user.photoUrl
                                 )
                             }

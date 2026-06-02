@@ -212,6 +212,7 @@ class ProfileViewModel(
             }
             is ProfileIntent.OnProfileClicked -> sendEffect(NavigateToProfile(intent.profileId))
             is ProfileIntent.OnAddModelClicked -> sendEffect(NavigateToAddModel)
+            is ProfileIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
             is ProfileIntent.OnFindSimilarProfiles -> sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
             ProfileIntent.OnShowAppearances -> sendEffect(ShowAppearances)
@@ -723,7 +724,19 @@ class ProfileViewModel(
         val event = state.value.events.find { it.id == id } ?: return
         val isCurrentlyApplied = event.isApplied
 
-        val expectedNewCount = if (!isCurrentlyApplied) event.appliesCount + 1 else event.appliesCount - 1
+        if (isCurrentlyApplied) {
+            sendEffect(ProfileEffect.ShowWithdrawConfirmation(id))
+        } else {
+            sendEffect(ProfileEffect.NavigateToApplyConfirmation(id))
+        }
+    }
+
+    private fun confirmWithdraw(id: Int) {
+        val event = state.value.events.find { it.id == id } ?: return
+        val isCurrentlyApplied = event.isApplied
+        if (!isCurrentlyApplied) return
+
+        val expectedNewCount = event.appliesCount - 1
         
         fun updateEventLocally(isApp: Boolean, count: Int) {
             setState {
@@ -734,19 +747,15 @@ class ProfileViewModel(
             }
         }
         
-        updateEventLocally(!isCurrentlyApplied, expectedNewCount)
-        DivoApi.eventRepository.notifyEventParticipationChanged(id, !isCurrentlyApplied, expectedNewCount)
+        updateEventLocally(false, expectedNewCount)
+        DivoApi.eventRepository.notifyEventParticipationChanged(id, false, expectedNewCount)
 
         viewModelScope.launch {
-            val result = if (isCurrentlyApplied) {
-                DivoApi.eventRepository.unapplyEvent(id)
-            } else {
-                DivoApi.eventRepository.applyEvent(id)
-            }
+            val result = DivoApi.eventRepository.unapplyEvent(id)
 
             if (result !is DivoResult.Success) {
-                updateEventLocally(isCurrentlyApplied, event.appliesCount)
-                DivoApi.eventRepository.notifyEventParticipationChanged(id, isCurrentlyApplied, event.appliesCount)
+                updateEventLocally(true, event.appliesCount)
+                DivoApi.eventRepository.notifyEventParticipationChanged(id, true, event.appliesCount)
                 sendEffect(ShowError(result.getErrorMessage()))
             }
         }

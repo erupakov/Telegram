@@ -91,7 +91,18 @@ fun rememberCameraCapture(
     onPhotoCaptured: (Uri) -> Unit,
 ): CameraCapture {
     val context = LocalContext.current
-    val activity = context as Activity
+    var activity = context as? Activity
+    if (activity == null) {
+        var currentContext = context
+        while (currentContext is android.content.ContextWrapper) {
+            if (currentContext is Activity) {
+                activity = currentContext
+                break
+            }
+            currentContext = currentContext.baseContext
+        }
+    }
+    
     var showRationale by remember { mutableStateOf(false) }
     var currentPhotoPath by androidx.compose.runtime.saveable.rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -125,7 +136,7 @@ fun rememberCameraCapture(
                     == PackageManager.PERMISSION_GRANTED -> {
                 cameraLauncher.launch(createNewUri())
             }
-            ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA) -> {
+            activity != null && ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.CAMERA) -> {
                 showRationale = true
             }
             else -> {

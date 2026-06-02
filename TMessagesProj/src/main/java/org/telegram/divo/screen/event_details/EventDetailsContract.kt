@@ -34,6 +34,7 @@ sealed class EventDetailsIntent : ViewIntent {
     data object OnLikeClicked : EventDetailsIntent()
     data class OnEventCardClicked(val eventId: Int) : EventDetailsIntent()
     data class OnEventCtaClicked(val eventId: Int) : EventDetailsIntent()
+    data class ConfirmWithdraw(val id: Int) : EventDetailsIntent()
     data class OnPrevEventClicked(val eventId: Int) : EventDetailsIntent()
     data class OnPhotoClick(val items: List<GalleryItem>, val id: Int) : EventDetailsIntent()
 }
@@ -45,5 +46,7 @@ sealed class EventDetailsEffect : ViewEffect {
     data class NavigateToGallery(val items: List<GalleryItem>, val id: Int) : EventDetailsEffect()
     data class NavigateToPrevEvent(val id: Int) : EventDetailsEffect()
     data object EventDeleted : EventDetailsEffect()
+    data class NavigateToApplyConfirmation(val eventId: Int) : EventDetailsEffect()
+    data class ShowWithdrawConfirmation(val eventId: Int) : EventDetailsEffect()
     data class ShowError(val message: String) : EventDetailsEffect()
 }

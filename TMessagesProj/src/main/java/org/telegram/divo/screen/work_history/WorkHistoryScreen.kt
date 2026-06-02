@@ -177,7 +177,7 @@ private fun WorkHistoryScreenView(
                 }
             }
         }
-        if (isFromEditScreen && state.experiences.isNotEmpty()) {
+        if (isFromEditScreen) {
             UIButtonNew(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -104,11 +104,13 @@ fun ProfileScreen(
     onEventClicked: (Int) -> Unit,
     onEventCreateClicked: () -> Unit,
     onFindSimilarProfiles: (String) -> Unit,
+    onNavigateToApplyConfirmation: (Int) -> Unit,
     onNavigateToAppearances: (PhysicalParams) -> Unit,
 ) {
     val context = LocalContext.current
     val uiState = viewModel.state.collectAsState().value
     val snackbarState = remember { AppSnackbarHostState() }
+    var withdrawEventId by remember { mutableStateOf<Int?>(null) }
 
     var isRefreshing by remember { mutableStateOf(false) }
 
@@ -148,6 +150,8 @@ fun ProfileScreen(
                     }
                     is ProfileEffect.NavigateToAddModel -> onAddModelClicked()
                     is ProfileEffect.NavigateToEvent -> onEventClicked(effect.eventId)
+                    is ProfileEffect.NavigateToApplyConfirmation -> onNavigateToApplyConfirmation(effect.eventId)
+                    is ProfileEffect.ShowWithdrawConfirmation -> { withdrawEventId = effect.eventId }
                     is ProfileEffect.NavigateToFindSimilarProfiles -> onFindSimilarProfiles(effect.photoUrl)
                     is ProfileEffect.NavigateToEditLinks -> onEditLinksClicked()
                     ProfileEffect.ShowAppearances -> onNavigateToAppearances(viewModel.state.value.physicalParams)
@@ -209,6 +213,18 @@ fun ProfileScreen(
             state = snackbarState,
             bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding() + 8.dp
         )
+
+        if (withdrawEventId != null) {
+            org.telegram.divo.components.DivoWithdrawBottomSheet(
+                onKeepApplication = { withdrawEventId = null },
+                onWithdraw = {
+                    val id = withdrawEventId
+                    withdrawEventId = null
+                    if (id != null) viewModel.setIntent(ProfileIntent.ConfirmWithdraw(id))
+                },
+                onDismiss = { withdrawEventId = null }
+            )
+        }
     }
 }
 
@@ -342,17 +358,6 @@ private fun ProfileScreenContent(
         }
     }
 
-//    val transitionProgress by remember {
-//        derivedStateOf {
-//            if (lazyListState.firstVisibleItemIndex > 0) {
-//                1f
-//            } else {
-//                val offset = lazyListState.firstVisibleItemScrollOffset.toFloat()
-//                (offset / fadeRangePx).coerceIn(0f, 1f)
-//            }
-//        }
-//    }
-
     val isToolbarSolid by remember {
         derivedStateOf {
             transitionProgress >= 1f
@@ -424,7 +429,7 @@ private fun ProfileScreenContent(
                     ProfileInfoPager(
                         isModel = uiState.isModel,
                         pagerInfoState = pagerInfoState,
-                        bio = uiState.userInfo.model?.description.orEmpty(),
+                        bio = if (uiState.isModel) uiState.userInfo.model?.description.orEmpty() else uiState.userInfo.agency?.description.orEmpty(),
                         physicalParams = uiState.physicalParams,
                         agency = uiState.userInfo.model?.agency,
                         isOwnProfile = uiState.isOwnProfile,

@@ -1,19 +1,25 @@
 package org.telegram.divo.screen.event_details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -28,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -46,6 +53,8 @@ import org.telegram.divo.common.SnackbarEvent
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.DivoShareType
 import org.telegram.divo.common.utils.DivoSharingHelper
+import org.telegram.divo.common.utils.toEventDisplayDate
+import org.telegram.divo.common.utils.toEventShortDate
 import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.PopupMenuItem
@@ -78,6 +87,7 @@ fun EventDetailsScreen(
     onParamsClicked: () -> Unit,
     onEditEvent: (Int) -> Unit,
     onPrevEventClicked: (Int) -> Unit,
+    onApplyConfirmation: (Int) -> Unit,
     onEventDeleted: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -85,6 +95,7 @@ fun EventDetailsScreen(
     val snackbarState = remember { AppSnackbarHostState() }
     val retryText = stringResource(R.string.RetryLabel)
     var isSolid by remember { mutableStateOf(false) }
+    var withdrawEventId by remember { mutableStateOf<Int?>(null) }
 
     StatusBarIconColorEffect(isSolid)
 
@@ -103,6 +114,8 @@ fun EventDetailsScreen(
                 is EventDetailsEffect.NavigateToGallery -> { onPhotoClicked(action.items, action.id) }
                 EventDetailsEffect.NavigateToParams -> { onParamsClicked() }
                 is EventDetailsEffect.NavigateToEditEvent -> onEditEvent(action.eventId)
+                is EventDetailsEffect.NavigateToApplyConfirmation -> onApplyConfirmation(action.eventId)
+                is EventDetailsEffect.ShowWithdrawConfirmation -> { withdrawEventId = action.eventId }
                 is EventDetailsEffect.NavigateToPrevEvent -> { onPrevEventClicked(action.id) }
             }
         }
@@ -123,6 +136,18 @@ fun EventDetailsScreen(
             snackbarHostState = snackbarState,
             onIntent = { viewModel.setIntent(it) },
             onSolidChanged = { isSolid = it }
+        )
+    }
+
+    if (withdrawEventId != null) {
+        org.telegram.divo.components.DivoWithdrawBottomSheet(
+            onKeepApplication = { withdrawEventId = null },
+            onWithdraw = {
+                val id = withdrawEventId
+                withdrawEventId = null
+                if (id != null) viewModel.setIntent(EventDetailsIntent.ConfirmWithdraw(id))
+            },
+            onDismiss = { withdrawEventId = null }
         )
     }
 }
@@ -322,7 +347,17 @@ private fun EventDetailsContent(
                     )
                 }
 
-                item(key = "empty_item") {  }
+                if (uiState.eventDetails?.isApplied == true && !uiState.isOwnEvent) {
+                    item(key = "applied_banner") {
+                        Spacer(Modifier.height(16.dp))
+                        AppliedBanner(
+                            appliedDateString = uiState.eventDetails.appliedDate ?: uiState.eventDetails.date,
+                            onWithdrawClick = { uiState.eventDetails.id.let { onIntent(EventDetailsIntent.OnEventCtaClicked(it)) } }
+                        )
+                    }
+                } else {
+                    item(key = "empty_item") {  }
+                }
 
                 item(key = "capacity") {
                     Spacer(Modifier.height(20.dp))
@@ -338,7 +373,7 @@ private fun EventDetailsContent(
                         avatarModel = uiState.eventDetails?.creator?.avatar?.fullUrl ?: uiState.eventDetails?.creator?.photo?.fullUrl,
                         name =  uiState.eventDetails?.creator?.fullName.orEmpty(),
                         status = "12K followers · Online",
-                        isVerified = true
+                        isVerified = uiState.eventDetails?.creator?.isVerified == true
                     )
                 }
 
@@ -392,6 +427,53 @@ private fun EventDetailsContent(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun AppliedBanner(
+    appliedDateString: String?,
+    onWithdrawClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .border(
+                width = 1.dp,
+                color = AppTheme.colors.accentOrange,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .background(Color.White, RoundedCornerShape(16.dp))
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = if (appliedDateString.isNullOrEmpty()) {
+                    stringResource(R.string.YouApplied)
+                } else {
+                    stringResource(R.string.YouAppliedOn, appliedDateString.toEventShortDate())
+                },
+                style = AppTheme.typography.helveticaNeueRegular,
+                fontSize = 16.sp,
+                color = AppTheme.colors.textPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                modifier = Modifier.clickableWithoutRipple { onWithdrawClick() },
+                text = stringResource(R.string.WithdrawApplicationTextButton),
+                style = AppTheme.typography.helveticaNeueLtCom,
+                fontSize = 10.sp,
+                color = AppTheme.colors.textPrimary
+            )
         }
     }
 }

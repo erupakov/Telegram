@@ -85,6 +85,7 @@ fun TransparentToolBarContent(
     onNavigateBack: () -> Unit = {},
     transitionProgress: Float = 0f,
     isSolid: Boolean = false,
+    alwaysShowTitle: Boolean = false,
     titleContent: @Composable (BoxScope.(progress: Float) -> Unit)? = null,
     actionsContent: @Composable (BoxScope.(progress: Float, buttonBgColor: Color, buttonIconColor: Color, buttonBorderColor: Color) -> Unit)? = null,
 ) {
@@ -130,8 +131,8 @@ fun TransparentToolBarContent(
                     .padding(horizontal = 56.dp)
                     .graphicsLayer {
                         val progress = animatable.value
-                        alpha = progress
-                        translationY = (1f - progress) * 15f
+                        alpha = if (alwaysShowTitle) 1f else progress
+                        translationY = if (alwaysShowTitle) 0f else (1f - progress) * 15f
                     },
                 contentAlignment = Alignment.Center
             ) {

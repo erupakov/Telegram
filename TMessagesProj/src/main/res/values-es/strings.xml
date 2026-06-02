@@ -836,6 +836,7 @@
     <string name="UsernameAvailable">%1$s está disponible.</string>
     <string name="UsernameEmpty">Ninguno</string>
     <string name="ErrorOccurred">Ocurrió un error.</string>
+
     <string name="None">Ninguno</string>
     <!--settings view-->
     <string name="ResetNotificationsText">Todos los ajustes de notificaciones fueron restablecidos a los valores por defecto</string>
@@ -1909,4 +1910,61 @@
     <string name="EventCreateButton">Crear Evento</string>
     <string name="EventSeenAll">Has visto todos los eventos</string>
     <string name="EventSpotsLeft">Quedan %1$d lugares</string>
+    <string name="WithdrawApplicationTitle">¿Retirar la solicitud?</string>
+    <string name="WithdrawApplicationMessage">El organizador será notificado. No podrás volver a inscribirte en este evento.</string>
+    <string name="KeepApplicationButton">Mantener solicitud</string>
+    <string name="YesWithdrawButton">Sí, retirar</string>
+    <string name="YouApplied">Te has postulado a este evento</string>
+    <string name="YouAppliedOn">Te postulaste el %1$s</string>
+    <string name="WithdrawApplicationTextButton">RETIRAR SOLICITUD</string>
+    <string name="ParamGender">Género</string>
+    <string name="ParamAge">Edad (años)</string>
+    <string name="ParamAgeFrom">Desde %1$d años</string>
+    <string name="ParamAgeTo">Hasta %1$d años</string>
+    <string name="ParamAgeRange">%1$d-%2$d años</string>
+    <string name="ParamHeight">Altura</string>
+    <string name="ParamHeightFrom">Desde %1$d cm.</string>
+    <string name="ParamHeightTo">Hasta %1$d cm.</string>
+    <string name="ParamHeightRange">%1$d-%2$d cm.</string>
+    <string name="ParamHairColor">Color de pelo</string>
+    <string name="MismatchGender">Tu género no coincide.</string>
+    <string name="MismatchAge">Tu edad no coincide.</string>
+    <string name="MismatchHeight">Tu altura no coincide.</string>
+    <string name="MismatchHairColor">Tu color de pelo no coincide.</string>
+    <string name="ApplyAnywaySuffix">¿Aplicar de todos modos?</string>
+    <string name="MismatchMultipleApplyAnyway">Algunos parámetros no coinciden. ¿Aplicar de todos modos?</string>
+    <string name="ApplyConfirmationShareInfo">Compartiremos con el organizador</string>
+    <string name="ApplyConfirmationParametersTitle">Parámetros de la solicitud</string>
+    <string name="PortfolioLinkTitle">ENLACE AL PORTAFOLIO</string>
+    <string name="FollowersOnlineText">%1$s seguidores</string>
+    <string name="SubmitApplicationTitle">ENVIAR SOLICITUD</string>
+    <string name="SubmitButton">Enviar</string>
+    <string name="ParamWeight">Peso</string>
+    <string name="ParamBreastSize">Talla de pecho</string>
+    <string name="ParamWaist">Cintura</string>
+    <string name="ParamHips">Caderas</string>
+    <string name="ParamShoesSize">Talla de zapatos</string>
+    <string name="ParamHairLength">Longitud del cabello</string>
+    <string name="ParamEyeColor">Color de ojos</string>
+    <string name="ParamSkinColor">Color de piel</string>
+    <string name="ParamRole">Rol</string>
+
+    <string name="MismatchWeight">Tu peso no coincide.</string>
+    <string name="MismatchBreastSize">Tu talla de pecho no coincide.</string>
+    <string name="MismatchWaist">Tu cintura no coincide.</string>
+    <string name="MismatchHips">Tus caderas no coinciden.</string>
+    <string name="MismatchShoesSize">Tu talla de zapatos no coincide.</string>
+    <string name="MismatchHairLength">Tu longitud de cabello no coincide.</string>
+    <string name="MismatchEyeColor">Tu color de ojos no coincide.</string>
+    <string name="MismatchSkinColor">Tu color de piel no coincide.</string>
+    <string name="MismatchRole">Tu rol no coincide.</string>
+
+    <string name="ParamValueRange">%1$d-%2$d %3$s</string>
+    <string name="ParamValueFrom">Desde %1$d %2$s</string>
+    <string name="ParamValueTo">Hasta %1$d %2$s</string>
+    <string name="ParamValueRangeNoUnit">%1$d-%2$d</string>
+    <string name="ParamValueFromNoUnit">Desde %1$d</string>
+    <string name="ParamValueToNoUnit">Hasta %1$d</string>
+    <string name="ApplySuccessTitle">¡ESTÁS DENTRO!</string>
+    <string name="ApplySuccessDescription">Tu solicitud ha sido enviada. El organizador la revisará pronto.</string>
 </resources>
