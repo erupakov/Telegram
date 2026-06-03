@@ -265,6 +265,30 @@
     <string name="NewTalents">New talents</string>
     <string name="Agencies">Agencies</string>
 
+    <string name="DivoAgencyModelRepresentedBy">This model is currently
+represented by %1$s</string>
+    <string name="DivoAgencyModelAnotherAgency">another agency</string>
+    <string name="DivoAgencyModelRepresentedByDesc">You cannot add her to your roster
+while she is with another agency.</string>
+    <string name="DivoAgencyModelAddNoteTitle">Add a personal note</string>
+    <string name="DivoAgencyModelAddNoteHint">e.g. We\'d love to represent you for our campaigns.</string>
+    <string name="DivoAgencyModelCancelRequestTitle">Cancel request to %1$s?</string>
+    <string name="DivoAgencyModelRemoveRosterTitle">Remove %1$s from your roster?</string>
+    <string name="DivoAgencyModelYesCancel">Yes, cancel</string>
+    <string name="DivoAgencyModelYesRemove">Yes, remove</string>
+    <string name="DivoAgencyModelKeepRequest">Keep request</string>
+    <string name="DivoAgencyModelKeepModel">Keep model</string>
+    <string name="DivoAgencyModelPending">Pending confirmation</string>
+    <string name="DivoAgencyModelYearsOld">%1$d y.o</string>
+    <string name="DivoAgencyModelHeight">H %1$d</string>
+    <string name="DivoAgencyModelBreast">B %1$s</string>
+    <string name="DivoAgencyModelWaist">W %1$d</string>
+    <string name="DivoAgencyModelHips">H %1$d</string>
+    <string name="DivoAgencyModelAddNoteDescription">Note: Adding this model to your roster allows your agency to send them exclusive private casting calls, manage their bookings, and officially represent them on Divo.</string>
+    <string name="DivoAgencyModelAlreadyAdded">Already added</string>
+    <string name="DivoAgencyModelRepresentedByOther">Represented by another agency</string>
+
+
     <!--search screen-->
     <string name="FindSimilarProfiles">Find similar profiles</string>
     <string name="UploadPhoto">Upload a photo to find models with a similar appearance</string>

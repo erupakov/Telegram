@@ -7,9 +7,11 @@ import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.components.TabConfig
 import org.telegram.divo.entity.AgencyModel
+import org.telegram.divo.entity.AgencySearchModel
 import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.Publication
+import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
@@ -45,12 +47,17 @@ data class ProfileViewState(
     val isLoadingAgencyModels: Boolean = false,
     val isLoadingMoreAgencyModels: Boolean = false,
     val hasMoreAgencyModels: Boolean = true,
+    val isAddingAgencyModel: Boolean = false,
+    val selectedAgencyModelForAdd: AgencySearchModel? = null,
+    val selectedAgencyModelInfo: UserInfo? = null,
 
-//    val searchModelsQuery: String = "",
-//    val searchModels: List<SearchedProfile> = emptyList(),
-//    val isLoadingSearchModels: Boolean = false,
-//    val isLoadingMoreSearchModels: Boolean = false,
-//    val hasMoreSearchModels: Boolean = false,
+    val searchModelsQuery: String = "",
+    val searchModels: List<AgencySearchModel> = emptyList(),
+    val isLoadingSearchModels: Boolean = false,
+    val isLoadingMoreSearchModels: Boolean = false,
+    val hasMoreSearchModels: Boolean = false,
+    val searchModelsError: String? = null,
+    val isAgencySearchSheetVisible: Boolean = false,
 
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -191,8 +198,8 @@ sealed class ProfileIntent : ViewIntent {
     class OpenSocialLink(val socialNetworkType: SocialNetworkType) : ProfileIntent()
     class OnSearchQueryChanged(val query: String) : ProfileIntent()
     object OnLoadMoreSearchResults : ProfileIntent()
-//    class OnSearchModelsQueryChanged(val query: String) : ProfileIntent()
-//    object OnLoadMoreSearchModels : ProfileIntent()
+    class OnSearchModelsQueryChanged(val query: String) : ProfileIntent()
+    object OnLoadMoreSearchModels : ProfileIntent()
     object OnLoadMorePortfolio : ProfileIntent()
     object OnLoadMoreVideos : ProfileIntent()
     object OnLoadMoreEvents : ProfileIntent()
@@ -206,12 +213,15 @@ sealed class ProfileIntent : ViewIntent {
     object OnShowAppearances : ProfileIntent()
     class OnGalleryClicked(val url: String, val isVideo: Boolean) : ProfileIntent()
     class OnProfileClicked(val profileId: Int) : ProfileIntent()
-    object OnAddModelClicked : ProfileIntent()
     class OnEventClicked(val eventId: Int) : ProfileIntent()
     class OnEventApplied(val eventId: Int) : ProfileIntent()
     object OnFindSimilarProfiles : ProfileIntent()
     object OnEventCreate : ProfileIntent()
     object OnLoadMoreAgencyModels : ProfileIntent()
+    class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
+    data class OnCancelAgencyModelRequest(val modelId: Int) : ProfileIntent()
+    data class OnToggleAgencySearch(val visible: Boolean) : ProfileIntent()
+    class OnSelectAgencyModelForAdd(val model: AgencySearchModel?) : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
@@ -225,7 +235,6 @@ sealed class ProfileEffect : ViewEffect {
     object ShowAppearances : ProfileEffect()
     class NavigateToGallery(val index: Int, val isVideo: Boolean) : ProfileEffect()
     class NavigateToProfile(val profileId: Int) : ProfileEffect()
-    object NavigateToAddModel : ProfileEffect()
     class NavigateToEvent(val eventId: Int) : ProfileEffect()
     class NavigateToApplyConfirmation(val eventId: Int) : ProfileEffect()
     class ShowWithdrawConfirmation(val eventId: Int) : ProfileEffect()
@@ -233,4 +242,5 @@ sealed class ProfileEffect : ViewEffect {
     object NavigateToEditLinks : ProfileEffect()
     object NavigateToCreateEvent : ProfileEffect()
     data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : ProfileEffect()
+    object AgencyModelAdded : ProfileEffect()
 }

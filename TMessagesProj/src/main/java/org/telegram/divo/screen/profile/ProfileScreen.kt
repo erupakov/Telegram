@@ -100,7 +100,6 @@ fun ProfileScreen(
     showWorkHistory: (Int) -> Unit = {},
     onGalleryClicked: (Int, Boolean) -> Unit = { _, _ -> },
     onProfileClicked: (Int) -> Unit = {},
-    onAddModelClicked: () -> Unit,
     onEventClicked: (Int) -> Unit,
     onEventCreateClicked: () -> Unit,
     onFindSimilarProfiles: (String) -> Unit,
@@ -148,7 +147,6 @@ fun ProfileScreen(
                     is ProfileEffect.NavigateToProfile -> {
                         onProfileClicked(effect.profileId)
                     }
-                    is ProfileEffect.NavigateToAddModel -> onAddModelClicked()
                     is ProfileEffect.NavigateToEvent -> onEventClicked(effect.eventId)
                     is ProfileEffect.NavigateToApplyConfirmation -> onNavigateToApplyConfirmation(effect.eventId)
                     is ProfileEffect.ShowWithdrawConfirmation -> { withdrawEventId = effect.eventId }
@@ -156,6 +154,11 @@ fun ProfileScreen(
                     is ProfileEffect.NavigateToEditLinks -> onEditLinksClicked()
                     ProfileEffect.ShowAppearances -> onNavigateToAppearances(viewModel.state.value.physicalParams)
                     ProfileEffect.NavigateToCreateEvent -> onEventCreateClicked()
+                    ProfileEffect.AgencyModelAdded -> {
+                        viewModel.setIntent(ProfileIntent.OnSelectAgencyModelForAdd(null))
+                        viewModel.setIntent(ProfileIntent.OnToggleAgencySearch(false))
+                        viewModel.setIntent(ProfileIntent.OnSearchModelsQueryChanged(""))
+                    }
                     is ProfileEffect.ActionChanged -> {
                         snackbarState.show(
                             SuccessWithIcon(
@@ -376,6 +379,7 @@ private fun ProfileScreenContent(
     val showAddButton = uiState.isOwnProfile && isPagerSectionVisible && when (currentPage) {
         0 -> uiState.userGalleryItems.isNotEmpty()
         1 -> uiState.videoItems.isNotEmpty()
+        2 -> !uiState.isModel && uiState.agencyModels.isNotEmpty()
         4 -> uiState.events.isNotEmpty()
         else -> false
     }
@@ -504,15 +508,25 @@ private fun ProfileScreenContent(
                                     AgencyModels(
                                         topPadding = totalTopPaddingDp,
                                         models = uiState.agencyModels,
-                                        //query = uiState.searchModelsQuery,
-                                        //searchModels = uiState.searchModels,
+                                        query = uiState.searchModelsQuery,
+                                        searchModels = uiState.searchModels,
                                         isOwnProfile = uiState.isOwnProfile,
-                                        //isLoadingMore = uiState.isLoadingMoreSearchModels,
-                                        //hasMore = uiState.hasMoreSearchModels,
-                                        //onQueryChanged = { onIntent(ProfileIntent.OnSearchModelsQueryChanged(it)) },
-                                        onAddModelClicked = { onIntent(ProfileIntent.OnAddModelClicked) },
+                                        isLoadingSearchModels = uiState.isLoadingSearchModels,
+                                        isLoadingMore = uiState.isLoadingMoreSearchModels,
+                                        hasMore = uiState.hasMoreSearchModels,
+                                        searchModelsError = uiState.searchModelsError,
+                                        isAddingAgencyModel = uiState.isAddingAgencyModel,
+                                        selectedModelForAdd = uiState.selectedAgencyModelForAdd,
+                                        selectedModelInfo = uiState.selectedAgencyModelInfo,
+                                        isBottomSheetVisible = uiState.isAgencySearchSheetVisible,
+                                        onToggleBottomSheet = { onIntent(ProfileIntent.OnToggleAgencySearch(it)) },
+                                        onLoadMoreAgencyModels = { onIntent(ProfileIntent.OnLoadMoreAgencyModels) },
+                                        onLoadMoreSearchModels = { onIntent(ProfileIntent.OnLoadMoreSearchModels) },
+                                        onQueryChanged = { onIntent(ProfileIntent.OnSearchModelsQueryChanged(it)) },
                                         onModelClicked = { onIntent(ProfileIntent.OnProfileClicked(it)) },
-                                        onLoadMoreAgencyModels = { onIntent(ProfileIntent.OnLoadMoreAgencyModels) }
+                                        onAddModel = { userId, note -> onIntent(ProfileIntent.OnAddAgencyModel(userId, note)) },
+                                        onCancelRequest = { modelId -> onIntent(ProfileIntent.OnCancelAgencyModelRequest(modelId)) },
+                                        onSelectModelForAdd = { onIntent(ProfileIntent.OnSelectAgencyModelForAdd(it)) }
                                     )
                                 }
                                 3 -> ChannelsContent(title = "Vogue Inside", isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp)
@@ -609,7 +623,8 @@ private fun ProfileScreenContent(
                     else -> onIntent(ProfileIntent.OnPortfolioPhotoSelected(context.uriToFile(uri)))
                 }
             },
-            onEventCreate = { onIntent(ProfileIntent.OnEventCreate) }
+            onEventCreate = { onIntent(ProfileIntent.OnEventCreate) },
+            onAddModel = { onIntent(ProfileIntent.OnToggleAgencySearch(true)) }
         )
     }
 }

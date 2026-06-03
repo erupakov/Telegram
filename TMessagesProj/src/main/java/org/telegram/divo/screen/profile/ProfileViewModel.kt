@@ -24,7 +24,6 @@ import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.profile.ProfileEffect.NavigateBack
-import org.telegram.divo.screen.profile.ProfileEffect.NavigateToAddModel
 import org.telegram.divo.screen.profile.ProfileEffect.NavigateToCreateEvent
 import org.telegram.divo.screen.profile.ProfileEffect.NavigateToEdit
 import org.telegram.divo.screen.profile.ProfileEffect.NavigateToEditLinks
@@ -104,23 +103,33 @@ class ProfileViewModel(
         )
     }
 
-//    private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
-//        when (val result = DivoApi.publicationRepository.searchFeeds(
-//            offset = offset,
-//            limit = limit,
-//            query = state.value.searchModelsQuery,
-//            role = listOf(RoleType.MODEL.value)
-//        )) {
-//            is DivoResult.Success -> {
-//                val data = result.value
-//                PaginatedResult(
-//                    items = data.items,
-//                    totalCount = data.pagination?.totalCount ?: data.items.size
-//                )
-//            }
-//            else -> throw Exception(result.getErrorMessage())
-//        }
-//    }
+    private val searchModelsPaginator = OffsetPaginator<org.telegram.divo.entity.AgencySearchModel>(limit = PAGE_SIZE) { offset, limit ->
+        when (val result = DivoApi.userRepository.searchAgencyModels(
+            query = state.value.searchModelsQuery,
+            offset = offset,
+            limit = limit,
+            currentAgencyId = state.value.userInfo.agency?.id
+        )) {
+            is DivoResult.Success -> {
+                val currentAgencyModels = state.value.agencyModels
+                val paginatedResult = result.value
+                val mappedItems = paginatedResult.items.map { searchModel ->
+                    val existing = currentAgencyModels.find { it.userId == searchModel.userId }
+                    if (existing != null) {
+                        if (existing.status == org.telegram.divo.entity.AgencyModelStatus.PENDING) {
+                            searchModel.copy(status = org.telegram.divo.entity.AgencySearchModelStatus.RequestPending)
+                        } else {
+                            searchModel.copy(status = org.telegram.divo.entity.AgencySearchModelStatus.AlreadyAdded)
+                        }
+                    } else {
+                        searchModel
+                    }
+                }
+                paginatedResult.copy(items = mappedItems)
+            }
+            else -> throw Exception(result.getErrorMessage())
+        }
+    }
 
     init {
         loadData()
@@ -211,18 +220,33 @@ class ProfileViewModel(
                 sendEffect(NavigateToGallery(index, intent.isVideo))
             }
             is ProfileIntent.OnProfileClicked -> sendEffect(NavigateToProfile(intent.profileId))
-            is ProfileIntent.OnAddModelClicked -> sendEffect(NavigateToAddModel)
             is ProfileIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
             is ProfileIntent.OnFindSimilarProfiles -> sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
             ProfileIntent.OnShowAppearances -> sendEffect(ShowAppearances)
             ProfileIntent.OnBackgroundReady -> setState { copy(hasBackgroundReady = true) }
             ProfileIntent.OnEventCreate -> sendEffect(NavigateToCreateEvent)
-//            ProfileIntent.OnLoadMoreSearchModels -> loadMoreSearchModels()
-//            is ProfileIntent.OnSearchModelsQueryChanged -> onSearchModelsQueryChanged(intent.query)
+            ProfileIntent.OnLoadMoreSearchModels -> loadMoreSearchModels()
+            is ProfileIntent.OnSearchModelsQueryChanged -> onSearchModelsQueryChanged(intent.query)
             ProfileIntent.OnLoadMoreAgencyModels -> viewModelScope.launch { agencyModelsPaginator.loadMore() }
             ProfileIntent.OnBookmarkClick -> toggleBookmark()
             is ProfileIntent.OnEventApplied -> applyEvent(intent.eventId)
+            is ProfileIntent.OnAddAgencyModel -> addAgencyModel(intent.userId, intent.note)
+            is ProfileIntent.OnCancelAgencyModelRequest -> cancelAgencyModelRequest(intent.modelId)
+            is ProfileIntent.OnToggleAgencySearch -> setState { copy(isAgencySearchSheetVisible = intent.visible) }
+            is ProfileIntent.OnSelectAgencyModelForAdd -> {
+                setState { copy(selectedAgencyModelForAdd = intent.model) }
+                if (intent.model != null) {
+                    viewModelScope.launch {
+                        val res = DivoApi.userRepository.getUserById(intent.model.userId)
+                        if (res is DivoResult.Success) {
+                            setState { copy(selectedAgencyModelInfo = res.value) }
+                        }
+                    }
+                } else {
+                    setState { copy(selectedAgencyModelInfo = null) }
+                }
+            }
         }
     }
 
@@ -245,6 +269,7 @@ class ProfileViewModel(
                 launch { agencyModelsPaginator.loadInitial() }
                 observeEvents()
                 observeAgencyModelsPaginator()
+                observeSearchModelsPaginator()
             }
         }
     }
@@ -400,33 +425,85 @@ class ProfileViewModel(
         }
     }
 
-//    private fun onSearchModelsQueryChanged(query: String) {
-//        searchModelsJob?.cancel()
-//        setState { copy(searchModelsQuery = query) }
-//
-//        if (query.isBlank()) {
-//            searchPaginator.reset()
-//
-//            viewModelScope.launch {
-//                if (state.value.searchModels.isEmpty()) {
-//                    searchPaginator.loadInitial()
-//                }
-//            }
-//            return
-//        }
-//
-//        searchModelsJob = viewModelScope.launch {
-//            delay(SEARCH_DEBOUNCE_MS)
-//            searchPaginator.reset()
-//            searchPaginator.loadInitial()
-//        }
-//    }
-//
-//    private fun loadMoreSearchModels() {
-//        viewModelScope.launch {
-//            searchPaginator.loadMore()
-//        }
-//    }
+    private fun observeSearchModelsPaginator() {
+        viewModelScope.launch {
+            searchModelsPaginator.state.collect { pState ->
+                setState {
+                    copy(
+                        searchModels = pState.items,
+                        isLoadingSearchModels = pState.isLoading,
+                        isLoadingMoreSearchModels = pState.isLoadingMore,
+                        hasMoreSearchModels = pState.hasMore,
+                        searchModelsError = pState.error
+                    )
+                }
+                pState.error?.let { sendEffect(ShowError(it)) }
+            }
+        }
+    }
+
+    private fun onSearchModelsQueryChanged(query: String) {
+        searchModelsJob?.cancel()
+        setState { copy(searchModelsQuery = query) }
+
+        if (query.isBlank()) {
+            searchModelsPaginator.reset()
+
+            viewModelScope.launch {
+                if (state.value.searchModels.isEmpty()) {
+                    searchModelsPaginator.loadInitial()
+                }
+            }
+            return
+        }
+
+        searchModelsJob = viewModelScope.launch {
+            delay(SEARCH_DEBOUNCE_MS)
+            searchModelsPaginator.reset()
+            searchModelsPaginator.loadInitial()
+        }
+    }
+
+    private fun loadMoreSearchModels() {
+        viewModelScope.launch {
+            searchModelsPaginator.loadMore()
+        }
+    }
+
+    private fun addAgencyModel(userId: Int, note: String?) {
+        viewModelScope.launch {
+            setState { copy(isAddingAgencyModel = true) }
+            val result = DivoApi.userRepository.addAgencyModel(userId, note)
+            if (result is DivoResult.Success) {
+                // Refresh models list or update search status locally
+                agencyModelsPaginator.reset()
+                searchModelsPaginator.reset()
+                kotlinx.coroutines.joinAll(
+                    launch { agencyModelsPaginator.loadInitial() },
+                    launch { searchModelsPaginator.loadInitial() }
+                )
+                sendEffect(ProfileEffect.AgencyModelAdded)
+            } else {
+                sendEffect(ShowError(result.getErrorMessage()))
+            }
+            setState { copy(isAddingAgencyModel = false) }
+        }
+    }
+
+    private fun cancelAgencyModelRequest(modelId: Int) {
+        viewModelScope.launch {
+            val agencyId = state.value.userInfo.agency?.id ?: return@launch
+            val result = DivoApi.userRepository.deleteAgencyModel(agencyId, modelId)
+            if (result is DivoResult.Success) {
+                agencyModelsPaginator.reset()
+                agencyModelsPaginator.loadInitial()
+                searchModelsPaginator.reset()
+                searchModelsPaginator.loadInitial()
+            } else {
+                sendEffect(ShowError(result.getErrorMessage()))
+            }
+        }
+    }
 
     private fun loadMorePortfolio() {
         viewModelScope.launch {

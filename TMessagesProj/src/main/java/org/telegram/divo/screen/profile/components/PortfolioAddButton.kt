@@ -52,6 +52,7 @@ fun AnimatedPortfolioAddButton(
     isUploading: Boolean,
     onMediaSelected: (Uri) -> Unit,
     onEventCreate: () -> Unit,
+    onAddModel: () -> Unit = {},
 ) {
     var frozenPage by remember { mutableIntStateOf(pagerState.currentPage) }
 
@@ -77,6 +78,7 @@ fun AnimatedPortfolioAddButton(
                 isUploading = isUploading,
                 onMediaSelected = onMediaSelected,
                 onEventCreate = onEventCreate,
+                onAddModel = onAddModel
             )
         }
     }
@@ -89,23 +91,30 @@ private fun PortfolioAddButton(
     isUploading: Boolean,
     onMediaSelected: (Uri) -> Unit,
     onEventCreate: () -> Unit,
+    onAddModel: () -> Unit = {},
 ) {
     val isEventPage = currentPage == 4
+    val isAgencyPage = currentPage == 2
     val isVideo = currentPage == 1
 
     val text = when (currentPage) {
         0 -> stringResource(R.string.UploadPhotos)
         1 -> stringResource(R.string.UploadVideos)
+        2 -> stringResource(R.string.AddModelToYourRoster)
         else -> stringResource(R.string.AddEvent)
     }
 
-    val iconRes = if (isEventPage) R.drawable.ic_divo_add else R.drawable.ic_divo_add_a_photo
+    val iconRes = if (isEventPage || isAgencyPage) R.drawable.ic_divo_add else R.drawable.ic_divo_add_a_photo
 
-    val iconSize = if (isEventPage) 16.dp else 24.dp
+    val iconSize = if (isEventPage || isAgencyPage) 16.dp else 24.dp
 
     val openGallery = rememberGalleryLauncher(isVideo) { uri -> onMediaSelected(uri) }
 
-    val handleClick: () -> Unit = if (isEventPage) onEventCreate else openGallery
+    val handleClick: () -> Unit = when {
+        isEventPage -> onEventCreate
+        isAgencyPage -> onAddModel
+        else -> openGallery
+    }
 
     Box(
         modifier = modifier.fillMaxWidth(),

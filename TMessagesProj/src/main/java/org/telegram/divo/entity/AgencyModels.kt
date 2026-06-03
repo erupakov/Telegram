@@ -11,5 +11,12 @@ data class AgencyModel(
     val birthday: String?,
     val photoUrl: String,
     val city: City?,
-    val userId: Int
+    val userId: Int,
+    val isPremium: Boolean = false,
+    val status: AgencyModelStatus? = null
 )
+
+enum class AgencyModelStatus {
+    ACTIVE,
+    PENDING
+}

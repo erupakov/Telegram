@@ -263,6 +263,30 @@
     <string name="NewTalents">新面孔</string>
     <string name="Agencies">机构</string>
 
+    <string name="DivoAgencyModelRepresentedBy">该模特目前由
+%1$s 代表</string>
+    <string name="DivoAgencyModelAnotherAgency">其他机构</string>
+    <string name="DivoAgencyModelRepresentedByDesc">当她与其他机构合作时，
+您无法将其添加到您的名单中。</string>
+    <string name="DivoAgencyModelAddNoteTitle">添加个人备注</string>
+    <string name="DivoAgencyModelAddNoteHint">例如：我们很希望在我们的活动中代表您。</string>
+    <string name="DivoAgencyModelCancelRequestTitle">取消对 %1$s 的请求？</string>
+    <string name="DivoAgencyModelRemoveRosterTitle">从您的名单中移除 %1$s？</string>
+    <string name="DivoAgencyModelYesCancel">是，取消</string>
+    <string name="DivoAgencyModelYesRemove">是，移除</string>
+    <string name="DivoAgencyModelKeepRequest">保留请求</string>
+    <string name="DivoAgencyModelKeepModel">保留模特</string>
+    <string name="DivoAgencyModelPending">等待确认中</string>
+    <string name="DivoAgencyModelYearsOld">%1$d 岁</string>
+    <string name="DivoAgencyModelHeight">身高 %1$d</string>
+    <string name="DivoAgencyModelBreast">胸围 %1$s</string>
+    <string name="DivoAgencyModelWaist">腰围 %1$d</string>
+    <string name="DivoAgencyModelHips">臀围 %1$d</string>
+    <string name="DivoAgencyModelAddNoteDescription">注意：将此模特添加到您的名单中后，您的机构可以向其发送独家私人通告，管理其预订，并在 Divo 上正式代表她。</string>
+    <string name="DivoAgencyModelAlreadyAdded">已添加</string>
+    <string name="DivoAgencyModelRepresentedByOther">由其他机构代表</string>
+
+
     <!--search screen-->
     <string name="FindSimilarProfiles">寻找相似主页</string>
     <string name="UploadPhoto">上传照片以寻找外貌相似的模特</string>

@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.profile.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +22,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -37,6 +39,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -50,32 +53,44 @@ import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.PopupMenuItem
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.entity.AgencyModel
+import org.telegram.divo.entity.AgencySearchModel
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
+@androidx.compose.material3.ExperimentalMaterial3Api
 @Composable
 fun AgencyModels(
     models: List<AgencyModel>,
-    //searchModels: List<SearchedProfile>,
-    //query: String,
-    //onQueryChanged: (String) -> Unit,
+    searchModels: List<AgencySearchModel>,
+    query: String,
+    onQueryChanged: (String) -> Unit,
     isOwnProfile: Boolean,
     topPadding: Dp = 0.dp,
-    //isLoadingMore: Boolean,
-    //hasMore: Boolean,
+    isLoadingSearchModels: Boolean,
+    isLoadingMore: Boolean,
+    hasMore: Boolean,
+    searchModelsError: String?,
+    isAddingAgencyModel: Boolean,
+    selectedModelForAdd: AgencySearchModel?,
+    selectedModelInfo: org.telegram.divo.entity.UserInfo?,
+    isBottomSheetVisible: Boolean,
+    onToggleBottomSheet: (Boolean) -> Unit,
     onLoadMoreAgencyModels: () -> Unit,
-    onAddModelClicked: () -> Unit,
+    onLoadMoreSearchModels: () -> Unit,
     onModelClicked: (Int) -> Unit,
+    onAddModel: (Int, String?) -> Unit,
+    onCancelRequest: (Int) -> Unit,
+    onSelectModelForAdd: (AgencySearchModel?) -> Unit,
 ) {
-    var showBottomSheet by remember { mutableStateOf(false) }
+    var modelToCancel by remember { mutableStateOf<AgencyModel?>(null) }
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 8.dp
 
     if (models.isEmpty()) {
         EmptyModels(
             isOwnProfile = isOwnProfile,
             bottomPadding = bottomPadding,
-            onClick = onAddModelClicked
+            onClick = { onToggleBottomSheet(true) }
         )
     } else {
         val lazyListState = rememberLazyListState()
@@ -120,37 +135,105 @@ fun AgencyModels(
                     ModelItem(
                         item = it,
                         isOwnProfile = isOwnProfile,
-                        onClicked = onModelClicked,
-                        onEdit = {}, //TODO
-                        onDelete = {} //TODO
+                        onClicked = { id ->
+                            val clickedModel = models.find { it.userId == id }
+                            if (clickedModel?.status == org.telegram.divo.entity.AgencyModelStatus.PENDING) {
+                                modelToCancel = clickedModel
+                            } else {
+                                onModelClicked(id)
+                            }
+                        },
+                        onDelete = { modelToCancel = it }
                     )
                 }
-            }
-
-            if (isOwnProfile) {
-                UIButtonNew(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = bottomPadding)
-                        .align(Alignment.BottomCenter),
-                    text = stringResource(R.string.AddModel),
-                    onClick = onAddModelClicked
-                )
             }
         }
     }
 
-    if (showBottomSheet) {
-//        AgencyModelsBottomSheet(
-//            query = query,
-//            searchModels = searchModels,
-//            onValueChanged = onQueryChanged,
-//            isLoadingMore = isLoadingMore,
-//            hasMore = hasMore,
-//            onLoadMore = onLoadMoreAgencyModels,
-//            onClicked = {},//TODO
-//            onDismiss = { showBottomSheet = false }
-//        )
+    if (isBottomSheetVisible) {
+        AgencyModelsBottomSheet(
+            query = query,
+            searchModels = searchModels,
+            isLoadingSearch = isLoadingSearchModels,
+            isLoadingMore = isLoadingMore,
+            hasMore = hasMore,
+            error = searchModelsError,
+            isAddingModel = isAddingAgencyModel,
+            selectedModelForAdd = selectedModelForAdd,
+            selectedModelInfo = selectedModelInfo,
+            onLoadMore = onLoadMoreSearchModels,
+            onValueChanged = onQueryChanged,
+            onAddClicked = onAddModel,
+            onDismiss = { onToggleBottomSheet(false) },
+            onSelectModelForAdd = onSelectModelForAdd
+        )
+    }
+
+    modelToCancel?.let { model ->
+        val sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val isPending = model.status == org.telegram.divo.entity.AgencyModelStatus.PENDING
+
+        androidx.compose.material3.ModalBottomSheet(
+            onDismissRequest = { modelToCancel = null },
+            sheetState = sheetState,
+            containerColor = Color.Transparent,
+            dragHandle = null
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(AppTheme.colors.backgroundLight),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(Modifier.height(24.dp))
+                    Text(
+                        text = if (isPending) stringResource(R.string.DivoAgencyModelCancelRequestTitle, model.name) else stringResource(R.string.DivoAgencyModelRemoveRosterTitle, model.name),
+                        style = AppTheme.typography.helveticaNeueRegular,
+                        fontSize = 15.sp,
+                        color = Color.Black.copy(alpha = 0.6f)
+                    )
+                    Spacer(Modifier.height(24.dp))
+                    androidx.compose.material.Divider(color = Color.LightGray, thickness = 0.5.dp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickableWithoutRipple {
+                                onCancelRequest(model.id)
+                                modelToCancel = null
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 18.dp),
+                            text = if (isPending) stringResource(R.string.DivoAgencyModelYesCancel) else stringResource(R.string.DivoAgencyModelYesRemove),
+                            style = AppTheme.typography.helveticaNeueRegular,
+                            fontSize = 17.sp,
+                            color = AppTheme.colors.accentOrange
+                        )
+                    }
+                    androidx.compose.material.Divider(color = Color.LightGray, thickness = 0.5.dp)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickableWithoutRipple { modelToCancel = null },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 18.dp),
+                            text = if (isPending) stringResource(R.string.DivoAgencyModelKeepRequest) else stringResource(R.string.DivoAgencyModelKeepModel),
+                            style = AppTheme.typography.helveticaNeueLtCom.copy(fontWeight = FontWeight.Bold),
+                            fontSize = 17.sp,
+                            color = Color.Black
+                        )
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+            }
+        }
     }
 }
 
@@ -159,7 +242,6 @@ private fun ModelItem(
     item: AgencyModel,
     isOwnProfile: Boolean,
     onClicked: (Int) -> Unit,
-    onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
@@ -191,27 +273,35 @@ private fun ModelItem(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.width(8.dp))
-                DivoChip(
-                    modifier = Modifier.offset(y = (-2).dp),
-                    text = stringResource(R.string.PremiumLabel),
-                    resId = R.drawable.ic_divo_premium_11,
-                    background = Color.Red,
-                    textColor = AppTheme.colors.accentOrange,
-                    iconSize = 11.dp,
-                    border = 1.dp,
-                    contentPadding= PaddingValues(start = 6.dp, end = 8.dp, top = 6.dp, bottom = 6.dp)
-                )
+                if (item.isPremium) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Image(
+                        modifier = Modifier.size(15.dp).offset(y = (-1).dp),
+                        painter = painterResource(R.drawable.divo_premium_bage),
+                        contentDescription = null,
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = RoleType.MODEL.name.lowercase(), 
-                style = AppTheme.typography.helveticaNeueRegular,
-                fontSize = 14.sp,
-                color = Color.Black.copy(0.6f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = RoleType.MODEL.name.lowercase(), 
+                    style = AppTheme.typography.helveticaNeueRegular,
+                    fontSize = 14.sp,
+                    color = Color.Black.copy(0.6f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (item.status == org.telegram.divo.entity.AgencyModelStatus.PENDING) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    DivoChip(
+                        text = stringResource(R.string.DivoAgencyModelPending),
+                        textColor = AppTheme.colors.accentOrange,
+                        border = 1.dp,
+                        contentPadding = PaddingValues(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            }
         }
         if (isOwnProfile) {
             Icon(
@@ -223,10 +313,9 @@ private fun ModelItem(
             DivoPopupMenu(
                 visible = menuExpanded,
                 onDismiss = { menuExpanded = false },
-                offset = IntOffset(x = 0, y = -63),
+                offset = IntOffset(x = 0, y = 0),
                 items = listOf(
-                    PopupMenuItem(R.string.ButtonEdit, onEdit),
-                    PopupMenuItem(R.string.ButtonDelete, onDelete),
+                    PopupMenuItem(R.string.DeleteEvent, onDelete),
                 )
             )
         }

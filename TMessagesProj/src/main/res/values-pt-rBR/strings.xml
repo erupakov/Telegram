@@ -263,6 +263,30 @@
     <string name="NewTalents">Novos talentos</string>
     <string name="Agencies">Agências</string>
 
+    <string name="DivoAgencyModelRepresentedBy">Este modelo é atualmente
+representado por %1$s</string>
+    <string name="DivoAgencyModelAnotherAgency">outra agência</string>
+    <string name="DivoAgencyModelRepresentedByDesc">Você não pode adicioná-la à sua lista
+enquanto ela estiver com outra agência.</string>
+    <string name="DivoAgencyModelAddNoteTitle">Adicionar uma nota pessoal</string>
+    <string name="DivoAgencyModelAddNoteHint">ex. Gostaríamos muito de representá-la em nossas campanhas.</string>
+    <string name="DivoAgencyModelCancelRequestTitle">Cancelar solicitação para %1$s?</string>
+    <string name="DivoAgencyModelRemoveRosterTitle">Remover %1$s da sua lista?</string>
+    <string name="DivoAgencyModelYesCancel">Sim, cancelar</string>
+    <string name="DivoAgencyModelYesRemove">Sim, remover</string>
+    <string name="DivoAgencyModelKeepRequest">Manter solicitação</string>
+    <string name="DivoAgencyModelKeepModel">Manter modelo</string>
+    <string name="DivoAgencyModelPending">Aguardando confirmação</string>
+    <string name="DivoAgencyModelYearsOld">%1$d anos</string>
+    <string name="DivoAgencyModelHeight">A %1$d</string>
+    <string name="DivoAgencyModelBreast">B %1$s</string>
+    <string name="DivoAgencyModelWaist">C %1$d</string>
+    <string name="DivoAgencyModelHips">Q %1$d</string>
+    <string name="DivoAgencyModelAddNoteDescription">Nota: Adicionar esta modelo à sua lista permite que sua agência envie castings privados exclusivos, gerencie suas reservas e a represente oficialmente na Divo.</string>
+    <string name="DivoAgencyModelAlreadyAdded">Já adicionado</string>
+    <string name="DivoAgencyModelRepresentedByOther">Representado por outra agência</string>
+
+
     <!--search screen-->
     <string name="FindSimilarProfiles">Encontrar perfis semelhantes</string>
     <string name="UploadPhoto">Envie uma foto para encontrar modelos com aparência semelhante</string>

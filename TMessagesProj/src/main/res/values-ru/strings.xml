@@ -262,6 +262,30 @@
     <string name="NewTalents">Новые лица</string>
     <string name="Agencies">Агентства</string>
 
+    <string name="DivoAgencyModelRepresentedBy">В данный момент модель
+представляет %1$s</string>
+    <string name="DivoAgencyModelAnotherAgency">другое агентство</string>
+    <string name="DivoAgencyModelRepresentedByDesc">Вы не можете добавить её в свой состав,
+пока она сотрудничает с другим агентством.</string>
+    <string name="DivoAgencyModelAddNoteTitle">Добавить личное сообщение</string>
+    <string name="DivoAgencyModelAddNoteHint">напр. Мы бы хотели видеть вас в наших кампаниях.</string>
+    <string name="DivoAgencyModelCancelRequestTitle">Отменить запрос к %1$s?</string>
+    <string name="DivoAgencyModelRemoveRosterTitle">Удалить %1$s из состава?</string>
+    <string name="DivoAgencyModelYesCancel">Да, отменить</string>
+    <string name="DivoAgencyModelYesRemove">Да, удалить</string>
+    <string name="DivoAgencyModelKeepRequest">Оставить запрос</string>
+    <string name="DivoAgencyModelKeepModel">Оставить модель</string>
+    <string name="DivoAgencyModelPending">Ожидает подтверждения</string>
+    <string name="DivoAgencyModelYearsOld">%1$d лет</string>
+    <string name="DivoAgencyModelHeight">Р %1$d</string>
+    <string name="DivoAgencyModelBreast">Г %1$s</string>
+    <string name="DivoAgencyModelWaist">Т %1$d</string>
+    <string name="DivoAgencyModelHips">Б %1$d</string>
+    <string name="DivoAgencyModelAddNoteDescription">Примечание: Добавление этой модели в ваш список позволяет вашему агентству отправлять ей эксклюзивные приватные приглашения на кастинги, управлять её бронированиями и официально представлять её в Divo.</string>
+    <string name="DivoAgencyModelAlreadyAdded">Уже добавлена</string>
+    <string name="DivoAgencyModelRepresentedByOther">Представляет другое агентство</string>
+
+
     <!--search screen-->
     <string name="FindSimilarProfiles">Найти похожие профили</string>
     <string name="UploadPhoto">Загрузите фото, чтобы найти моделей с похожей внешностью</string>

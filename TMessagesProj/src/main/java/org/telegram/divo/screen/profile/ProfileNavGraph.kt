@@ -174,9 +174,6 @@ fun ProfileNavGraph(
                 onProfileClicked = { anotherUserId ->
                     nav.navigate(ProfileRoute.Profile.createRoute(anotherUserId))
                 },
-                onAddModelClicked = {
-                    nav.navigate(ProfileRoute.AddModel.route)
-                },
                 onEventClicked = {
                     nav.navigate(ProfileRoute.Event.createRoute(it))
                 },
