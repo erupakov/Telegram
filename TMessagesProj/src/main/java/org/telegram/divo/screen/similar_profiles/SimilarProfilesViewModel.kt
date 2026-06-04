@@ -133,6 +133,7 @@ class SimilarProfilesViewModel(
                     isLiked = false,
                     photo = dto.image.orEmpty(),
                     index = dto.index,
+                    isModel = RoleType.from(dto.role).isModel(),
                     roleLabel = RoleType.from(dto.role).value,
                     similarity = ((dto.score ?: 0.0) * 100).toInt(),
                 )

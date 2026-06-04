@@ -310,6 +310,14 @@ private fun ModelItem(
         DivoAsyncImage(
             modifier = Modifier.size(52.dp).clip(CircleShape),
             model = item.photoUrl,
+            errorContent = {
+                Image(
+                    painter = painterResource(R.drawable.divo_avatar_placeholder),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         )
         Spacer(modifier = Modifier.width(10.dp))
         Column(
@@ -439,7 +447,15 @@ private fun ConfirmModelAdditionBottomSheet(
                         DivoAsyncImage(
                             model = model.photoUrl,
                             modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Crop,
+                            errorContent = {
+                                Image(
+                                    painter = painterResource(R.drawable.divo_models_placeholder),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
                         )
                     }
 
@@ -456,7 +472,15 @@ private fun ConfirmModelAdditionBottomSheet(
                                 .size(68.dp)
                                 .offset(y = (-34).dp)
                                 .clip(CircleShape),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Crop,
+                            errorContent = {
+                                Image(
+                                    painter = painterResource(R.drawable.divo_avatar_placeholder),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         // Name and Premium

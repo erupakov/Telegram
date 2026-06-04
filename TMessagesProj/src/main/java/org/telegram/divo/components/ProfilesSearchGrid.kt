@@ -44,8 +44,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.Image
+import org.telegram.messenger.R
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -68,7 +71,6 @@ import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.common.utils.toShortString
 import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.style.AppTheme
-import org.telegram.messenger.R
 
 @Composable
 fun ProfilesSearchGrid(
@@ -159,6 +161,7 @@ private fun ProfileItem(
     val scope = rememberCoroutineScope()
     val hazeState = remember { HazeState() }
     var componentHeight by remember { mutableFloatStateOf(0f) }
+    var hasError by remember { androidx.compose.runtime.mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -168,39 +171,49 @@ private fun ProfileItem(
             .onSizeChanged { componentHeight = it.height.toFloat() }
             .clickableWithoutRipple { onProfileClicked() }
     ) {
-        DivoAsyncImage(
-            modifier = Modifier
-                .matchParentSize()
-                .hazeSource(state = hazeState),
-            model = profile.photo
-        )
+        if (profile.photo.isEmpty() || hasError) {
+            Image(
+                painter = painterResource(if (profile.isModel) R.drawable.divo_models_placeholder else R.drawable.divo_agency_placeholder),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            DivoAsyncImage(
+                modifier = Modifier
+                    .matchParentSize()
+                    .hazeSource(state = hazeState),
+                model = profile.photo,
+                onError = { hasError = true }
+            )
 
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .hazeEffect(
-                    state = hazeState,
-                    style = HazeStyle(
-                        backgroundColor = Color.Black,
-                        blurRadius = 30.dp,
-                        tints = listOf(HazeTint(Color.Black.copy(alpha = 0.2f)))
-                    )
-                ) {
-                    progressive = HazeProgressive.verticalGradient(
-                        startY = componentHeight * 0.65f,
-                        startIntensity = 0f,
-                        endY = componentHeight * 0.9f,
-                        endIntensity = 1f,
-                        easing = LinearEasing
-                    )
-                }
-        )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .hazeEffect(
+                        state = hazeState,
+                        style = HazeStyle(
+                            backgroundColor = Color.Black,
+                            blurRadius = 30.dp,
+                            tints = listOf(HazeTint(Color.Black.copy(alpha = 0.2f)))
+                        )
+                    ) {
+                        progressive = HazeProgressive.verticalGradient(
+                            startY = componentHeight * 0.65f,
+                            startIntensity = 0f,
+                            endY = componentHeight * 0.9f,
+                            endIntensity = 1f,
+                            easing = LinearEasing
+                        )
+                    }
+            )
 
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .background(Color.Black.copy(0.15f))
-        )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .background(Color.Black.copy(0.15f))
+            )
+        }
 
         Column(
             modifier = Modifier

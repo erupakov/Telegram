@@ -74,6 +74,7 @@ fun ProfileHeadlineContent(
         TelegramPhotoBackground(
             modifier = Modifier.fillMaxSize(),
             photo = uiState.userInfo.photoUrl,
+            fallbackResId = if (uiState.isModel) R.drawable.divo_models_placeholder else R.drawable.divo_agency_placeholder,
             onReady = onReady
         )
 

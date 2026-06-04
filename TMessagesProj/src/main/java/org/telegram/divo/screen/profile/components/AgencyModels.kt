@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.ContentScale
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.DivoChip
@@ -258,6 +259,14 @@ private fun ModelItem(
         DivoAsyncImage(
             modifier = Modifier.size(52.dp).clip(CircleShape),
             model = item.photoUrl,
+            errorContent = {
+                Image(
+                    painter = painterResource(R.drawable.divo_avatar_placeholder),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         )
         Spacer(modifier = Modifier.width(10.dp))
         Column(

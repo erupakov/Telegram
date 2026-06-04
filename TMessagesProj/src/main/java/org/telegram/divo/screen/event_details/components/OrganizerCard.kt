@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.ContentScale
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -57,6 +59,14 @@ fun OrganizerCard(
                 DivoAsyncImage(
                     modifier = Modifier.size(56.dp).clip(CircleShape),
                     model = avatarModel,
+                    errorContent = {
+                        Image(
+                            painter = painterResource(R.drawable.divo_avatar_placeholder),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 )
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {

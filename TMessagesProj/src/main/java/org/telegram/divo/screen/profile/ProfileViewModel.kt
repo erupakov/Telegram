@@ -849,6 +849,7 @@ class ProfileViewModel(
         isLiked = this.isLikedByUser,
         photo = this.searchImageUrl.orEmpty(),
         index = null,
+        isModel = org.telegram.divo.entity.RoleType.from(this.user?.role).isModel(),
         roleLabel = this.user?.roleLabel.orEmpty(),
         similarity = null
     )

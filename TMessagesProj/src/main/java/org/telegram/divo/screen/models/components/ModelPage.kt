@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,8 +24,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -93,8 +96,9 @@ fun ModelPage(
                 .graphicsLayer { alpha = bgAlpha }
         ) {
             CardBlurredBackground(
-                imageUrl = feed.files.first().url,
+                imageUrl = feed.files.firstOrNull()?.url,
                 isBlurSupported = isBlurSupported,
+                isModel = feed.user.role.isModel(),
                 onMainImageReady = { readyCount++ },
                 onBlurImageReady = { readyCount++ }
             )
@@ -278,25 +282,43 @@ fun ModelPage(
 
 @Composable
 private fun CardBlurredBackground(
-    imageUrl: String,
+    imageUrl: String?,
     isBlurSupported: Boolean,
+    isModel: Boolean,
     onMainImageReady: () -> Unit = {},
     onBlurImageReady: () -> Unit = {},
 ) {
-    DivoAsyncImage(
-        modifier = Modifier.fillMaxSize(),
-        model = imageUrl,
-        contentScale = ContentScale.Crop,
-        onReady = onMainImageReady
-    )
+    var hasError by remember { mutableStateOf(false) }
 
-    if (isBlurSupported) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                .drawWithContent {
-                    drawContent()
+    if (imageUrl.isNullOrEmpty() || hasError) {
+        Image(
+            painter = painterResource(if (isModel) R.drawable.divo_models_placeholder else R.drawable.divo_agency_placeholder),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+        LaunchedEffect(Unit) {
+            onMainImageReady()
+            if (isBlurSupported) {
+                onBlurImageReady()
+            }
+        }
+    } else {
+        DivoAsyncImage(
+            modifier = Modifier.fillMaxSize(),
+            model = imageUrl,
+            contentScale = ContentScale.Crop,
+            onReady = onMainImageReady,
+            onError = { hasError = true }
+        )
+
+        if (isBlurSupported) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                    .drawWithContent {
+                        drawContent()
 
                     val h = size.height
                     val topBlurHeight = 94.dp.toPx()    // Высота размытия сверху
@@ -357,6 +379,7 @@ private fun CardBlurredBackground(
                         1.0f to Color.Black.copy(alpha = 0.7f)
                     )
                 )
-        )
+            )
+        }
     }
 }

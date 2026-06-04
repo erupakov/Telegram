@@ -21,6 +21,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import org.telegram.messenger.R
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.style.AppTheme
 
@@ -71,7 +74,15 @@ fun DivoAvatar(
                     .padding(4.dp)
                     .clip(CircleShape),
                 model = imageUrl,
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
+                errorContent = {
+                    Image(
+                        painter = painterResource(R.drawable.divo_avatar_placeholder),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             )
         }
 

@@ -86,6 +86,7 @@ fun EventDetailsHeader(
     ) {
         TelegramPhotoBackground(
             photo = event?.files?.firstOrNull()?.fullUrl,
+            fallbackResId = R.drawable.divo_event_placeholder,
             modifier = Modifier.fillMaxSize()
         )
 

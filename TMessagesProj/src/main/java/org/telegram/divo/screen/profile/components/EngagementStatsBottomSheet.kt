@@ -249,7 +249,15 @@ private fun StatsDetailRow(
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape),
-            model = avatarUrl
+            model = avatarUrl,
+            errorContent = {
+                Image(
+                    painter = painterResource(R.drawable.divo_avatar_placeholder),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
+            }
         )
         Spacer(modifier = Modifier.width(10.dp))
         Column {

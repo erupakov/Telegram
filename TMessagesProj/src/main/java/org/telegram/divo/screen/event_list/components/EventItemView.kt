@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -130,10 +131,18 @@ fun EventItemView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     DivoAsyncImage(
-                        model = event.creator?.avatar?.fullUrl ?: event.creator?.photo?.fullUrl,
+                        model = event.creator?.avatar?.fullUrl,
                         modifier = Modifier
                             .size(20.dp)
-                            .clip(androidx.compose.foundation.shape.CircleShape)
+                            .clip(androidx.compose.foundation.shape.CircleShape),
+                        errorContent = {
+                            Image(
+                                painter = painterResource(R.drawable.divo_avatar_placeholder),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                            )
+                        }
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
