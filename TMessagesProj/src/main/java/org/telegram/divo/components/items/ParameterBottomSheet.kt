@@ -114,14 +114,9 @@ fun ParameterBottomSheet(
         }
         range.map { it.toString() }
     }
-    val decimalParts = remember { (0..9).map { it.toString() } }
-
     var selectedIntPart by remember(initialValue, integerParts) {
         val parsed = initialValue.substringBefore(".").takeIf { it.isNotEmpty() }
         mutableStateOf(parsed.takeIf { integerParts.contains(it) } ?: integerParts[integerParts.size / 2])
-    }
-    var selectedDecPart by remember(initialValue) {
-        mutableStateOf(if (initialValue.contains(".")) initialValue.substringAfter(".") else "0")
     }
 
     var selectedOptions by remember(initialValue, options) {
@@ -161,7 +156,7 @@ fun ParameterBottomSheet(
             } else if (isDatePicker) {
                 onSave("$selectedYear-$selectedMonth-$selectedDay")
             } else if (options.isNullOrEmpty()) {
-                onSave("$selectedIntPart.$selectedDecPart")
+                onSave(selectedIntPart)
             } else {
                 val defaultOption = options.firstOrNull()
                 if (isMultiSelect && selectedOptions == setOf(defaultOption)) {
@@ -288,15 +283,6 @@ fun ParameterBottomSheet(
                                 isCyclic = true,
                                 modifier = Modifier.width(70.dp),
                                 onItemSelected = { _, item -> selectedIntPart = item }
-                            )
-
-                            DivoWheelPicker(
-                                items = decimalParts,
-                                initialIndex = decimalParts.indexOf(selectedDecPart)
-                                    .coerceAtLeast(0),
-                                isCyclic = true,
-                                modifier = Modifier.width(70.dp),
-                                onItemSelected = { _, item -> selectedDecPart = item }
                             )
                         }
                     }

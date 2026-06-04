@@ -497,6 +497,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         return this;
     }
 
+    private String initialRoleSelectionPhone;
+
     public LoginActivity() {
         super();
     }
@@ -507,8 +509,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         newAccount = true;
     }
 
-    public LoginActivity startInRoleSelection() {
+    public LoginActivity startInRoleSelection(String phone) {
         forceRoleSelection = true;
+        initialRoleSelectionPhone = phone;
         return this;
     }
 
@@ -905,6 +908,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }
             }
             if (currentViewNum == a) {
+                if (a == VIEW_REGISTER && initialRoleSelectionPhone != null) {
+                    Bundle b = new Bundle();
+                    b.putString("phoneFormated", initialRoleSelectionPhone);
+                    v.setParams(b, false);
+                }
                 backButtonView.setVisibility(v.needBackButton() || newAccount || activityMode == MODE_CHANGE_PHONE_NUMBER ? View.VISIBLE : View.GONE);
                 v.setVisibility(View.VISIBLE);
                 v.onShow();
@@ -1880,7 +1888,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         if (res.user != null && res.user.phone != null) {
             if (isGoogleFlow) {
                 if (forceRoleSelection) {
-                    setPage(VIEW_REGISTER, true, null, true);
+                    Bundle b = new Bundle();
+                    if (res.user.phone != null) b.putString("phoneFormated", res.user.phone);
+                    setPage(VIEW_REGISTER, true, b, true);
                 } else {
                     needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
                 }
@@ -1910,7 +1920,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 if (divoAuthProgressDialog != null) {
                                     try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
                                 }
-                                setPage(VIEW_REGISTER, true, null, true);
+                                Bundle b = new Bundle();
+                                if (res.user.phone != null) b.putString("phoneFormated", res.user.phone);
+                                setPage(VIEW_REGISTER, true, b, true);
                             }
 
                             @Override
@@ -3491,7 +3503,23 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             phoneInputData.phoneNumber = "+" + codeField.getText() + " " + phoneField.getText();
             phoneInputData.country = currentCountry;
             phoneInputData.patterns = phoneFormatMap.get(codeField.getText().toString());
-            int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+            //DIVO--START
+            final int[] reqId = new int[1];
+            Runnable timeoutRunnable = () -> {
+                if (nextPressed) {
+                    ConnectionsManager.getInstance(currentAccount).cancelRequest(reqId[0], true);
+                    nextPressed = false;
+                    needHideProgress(false);
+                    if (slideViewsContainer != null) {
+                        BulletinFactory.of(slideViewsContainer, null).createErrorBulletin(LocaleController.getString("DivoCheckInternetConnection", R.string.DivoCheckInternetConnection)).show();
+                    }
+                }
+            };
+            AndroidUtilities.runOnUIThread(timeoutRunnable, 20000);
+
+            reqId[0] = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                AndroidUtilities.cancelRunOnUIThread(timeoutRunnable);
+                //DIVO--END
                 nextPressed = false;
                 if (error == null) {
                     if (response instanceof TLRPC.TL_auth_sentCodeSuccess) {
@@ -3558,7 +3586,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     needHideProgress(false);
                 }
             }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagTryDifferentDc | ConnectionsManager.RequestFlagEnableUnauthorized);
-            needShowProgress(reqId);
+            needShowProgress(reqId[0]);
         }
 
         private boolean numberFilled;

@@ -1923,4 +1923,6 @@ enquanto ela estiver com outra agência.</string>
     <string name="ParamValueToNoUnit">Até %1$d</string>
     <string name="ApplySuccessTitle">VOCÊ ESTÁ DENTRO!</string>
     <string name="ApplySuccessDescription">Sua inscrição foi enviada. O organizador a analisará em breve.</string>
+    <string name="DivoCheckInternetConnection">Por favor, verifique sua conexão à internet</string>
+    <string name="DivoActionSkip">Pular</string>
 </resources>

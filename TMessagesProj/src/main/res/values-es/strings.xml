@@ -1991,4 +1991,6 @@ mientras esté con otra agencia.</string>
     <string name="ParamValueToNoUnit">Hasta %1$d</string>
     <string name="ApplySuccessTitle">¡ESTÁS DENTRO!</string>
     <string name="ApplySuccessDescription">Tu solicitud ha sido enviada. El organizador la revisará pronto.</string>
+    <string name="DivoCheckInternetConnection">Por favor, compruebe su conexión a internet</string>
+    <string name="DivoActionSkip">Omitir</string>
 </resources>

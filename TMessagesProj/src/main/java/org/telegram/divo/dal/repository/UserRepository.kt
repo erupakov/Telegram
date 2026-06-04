@@ -86,14 +86,24 @@ class UserRepository(
     suspend fun updateProfile(
         userInfo: UserInfo
     ): DivoResult<UserInfo> = resultOf {
+        var resolvedCityId = userInfo.city?.id?.takeIf { it > 0 }
+        if (resolvedCityId == null && userInfo.city?.name?.isNotBlank() == true) {
+            try {
+                val geoResponse = DivoApi.geoService.searchByAddressName(userInfo.city.name)
+                resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
         service.updateProfile(
             UpdateProfileRequest(
                 fullName = userInfo.fullName,
                 phone = userInfo.phone,
                 timezone = TimeZone.getDefault().id,
-                gender = userInfo.gender?.id,
+                gender = userInfo.gender?.id?.lowercase(java.util.Locale.US),
                 birthday = userInfo.birthday,
-                geoCityId = userInfo.city?.id,
+                geoCityId = resolvedCityId?.takeIf { it > 0 },
                 measuringSystem = userInfo.measuringSystem,
                 subrole = userInfo.subrole,
                 pushNotifications = userInfo.pushNotifications,

@@ -679,4 +679,6 @@
     <string name="ParamValueToNoUnit">到 %1$d</string>
     <string name="ApplySuccessTitle">申请已提交！</string>
     <string name="ApplySuccessDescription">您的申请已发送，组织者将尽快审核。</string>
+    <string name="DivoCheckInternetConnection">请检查您的互联网连接</string>
+    <string name="DivoActionSkip">跳过</string>
 </resources>

@@ -193,10 +193,19 @@ private fun RegFormsScreenContent(
                     .fillMaxWidth()
                     .padding(bottom = (8 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp, start = 16.dp, end = 16.dp)
                     .align(Alignment.BottomCenter),
-                text = if (state.isLastStep)
-                    stringResource(R.string.ButtonDone)
-                else
-                    stringResource(R.string.ButtonContinue),
+                text = if (state.isLastStep) {
+                    if (state.isCurrentStepEmpty && state.currentStepIndex >= 1) {
+                        stringResource(R.string.DivoActionSkip)
+                    } else {
+                        stringResource(R.string.ButtonDone)
+                    }
+                } else {
+                    if (state.isCurrentStepEmpty && state.currentStepIndex >= 1) {
+                        stringResource(R.string.DivoActionSkip)
+                    } else {
+                        stringResource(R.string.ButtonContinue)
+                    }
+                },
                 enabled = state.canContinue,
                 onClick = { onIntent(RegFormsIntent.OnContinue) }
             )

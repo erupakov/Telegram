@@ -139,7 +139,7 @@ fun CityPickerSheet(
                     ) {
                         items(filteredList) { item ->
                             val isSelected = item.id == selectedCity?.id
-                            val countryName = org.telegram.messenger.LocaleController.getCountryName(item.countryCode) ?: item.countryCode
+                            val flag = org.telegram.messenger.LocaleController.getLanguageFlag(item.countryCode) ?: ""
 
                             val displayName = remember(item, searchQuery) {
                                 val query = searchQuery.trim().lowercase()
@@ -174,7 +174,7 @@ fun CityPickerSheet(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "$displayName, $countryName",
+                                    text = "$flag  $displayName".trimStart(),
                                     style = AppTheme.typography.bodyLarge,
                                     modifier = Modifier.weight(1f)
                                 )

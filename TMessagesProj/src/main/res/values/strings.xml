@@ -11079,4 +11079,6 @@ while she is with another agency.</string>
     <string name="ParamValueToNoUnit">Up to %1$d</string>
     <string name="ApplySuccessTitle">YOU\'RE IN!</string>
     <string name="ApplySuccessDescription">Your application has been sent. The organiser will review it soon.</string>
+    <string name="DivoCheckInternetConnection">Please check your internet connection</string>
+    <string name="DivoActionSkip">Skip</string>
 </resources>

@@ -44,6 +44,33 @@ data class RegFormsState(
 
         else -> true
     }
+
+    val isCurrentStepEmpty: Boolean get() = formData?.isStepEmpty(currentStep) ?: true
+
+    private fun RegistrationFormData.isStepEmpty(step: RegFormStep?): Boolean = when (step) {
+        // Step 2
+        RegFormStep.COMPANY_LOCATION,
+        RegFormStep.PERSONAL_DETAILS,
+        RegFormStep.TALENT_LOCATION -> country.isBlank() && city == null && dateOfBirth.isNullOrEmpty() && gender.isNullOrEmpty() && specialisation.isNullOrEmpty()
+        
+        RegFormStep.STUDIO_CONTACT -> websiteUrl.isBlank() && contactName.isBlank() && contactPhone.isBlank()
+
+        // Step 3
+        RegFormStep.COMPANY_CONTACT -> websiteUrl.isBlank() && contactRole.isBlank() && contactName.isBlank() && contactPhone.isBlank()
+        
+        RegFormStep.PROFESSIONAL_LINKS,
+        RegFormStep.TALENT_LINKS,
+        RegFormStep.PORTFOLIO -> instagramUrl.isBlank() && portfolioUrl.isBlank() && agencyName.isBlank() && castingProfileUrl.isBlank() && showreelUrl.isBlank()
+
+        // Step 4
+        RegFormStep.COMPANY_PHOTO,
+        RegFormStep.PROFILE_PHOTO,
+        RegFormStep.STUDIO_PHOTO,
+        RegFormStep.TALENT_PHOTO,
+        RegFormStep.FAN_PHOTO -> photoUri == null
+
+        else -> false
+    }
 }
 
 sealed class RegFormsIntent : ViewIntent {

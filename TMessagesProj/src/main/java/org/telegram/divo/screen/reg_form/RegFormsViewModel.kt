@@ -98,7 +98,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     // 1. Divo Registration (REST)
                     val tgUser = org.telegram.messenger.UserConfig.getInstance(state.value.currentAccount).currentUser
 
-                    val rawPhone = tgUser?.phone ?: state.value.phoneNumber
+                    val rawPhone = tgUser?.phone?.takeIf { it.isNotBlank() } ?: state.value.phoneNumber
                     val phone = rawPhone.replace("+", "").trim()
 
                     val firebaseUid = state.value.firebaseUid
@@ -119,7 +119,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (data.firstName.isNotBlank()) additionalInfo[AdditionalInfoKeys.FIRST_NAME] = data.firstName
                     if (data.lastName.isNotBlank()) additionalInfo[AdditionalInfoKeys.LAST_NAME] = data.lastName
                     if (!data.dateOfBirth.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.DATE_OF_BIRTH] = data.dateOfBirth
-                    if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = data.gender
+                    if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = data.gender.lowercase(java.util.Locale.US)
                     if (data.country.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY] = data.country
                     if (data.countryCode.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY_CODE] = data.countryCode
                     if (data.city != null) additionalInfo[AdditionalInfoKeys.CITY] = data.city.name
@@ -221,18 +221,20 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         last_name = lastName
                     }
 
-                    val profileUpdateResult = suspendCancellableCoroutine { continuation ->
-                        val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(req) { response, error ->
-                            if (error != null) {
-                                continuation.resumeWithException(RuntimeException(error.text))
-                            } else if (response is TLRPC.User) {
-                                continuation.resume(response)
-                            } else {
-                                continuation.resumeWithException(RuntimeException("Invalid response type"))
+                    val profileUpdateResult = kotlinx.coroutines.withTimeoutOrNull(5000) {
+                        suspendCancellableCoroutine<TLRPC.User> { continuation ->
+                            val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(req) { response, error ->
+                                if (error != null) {
+                                    continuation.resumeWithException(RuntimeException(error.text))
+                                } else if (response is TLRPC.User) {
+                                    continuation.resume(response)
+                                } else {
+                                    continuation.resumeWithException(RuntimeException("Invalid response type"))
+                                }
                             }
-                        }
-                        continuation.invokeOnCancellation {
-                            ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
+                            continuation.invokeOnCancellation {
+                                ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
+                            }
                         }
                     }
 
@@ -249,16 +251,18 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                     file = inputFile
                                     flags = flags or 1
                                 }
-                                val photoResult = suspendCancellableCoroutine<TLRPC.TL_photos_photo?> { continuation ->
-                                    val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(photoReq) { response, error ->
-                                        if (error == null && response is TLRPC.TL_photos_photo) {
-                                            continuation.resume(response)
-                                        } else {
-                                            continuation.resume(null)
+                                val photoResult = kotlinx.coroutines.withTimeoutOrNull(10000) {
+                                    suspendCancellableCoroutine<TLRPC.TL_photos_photo?> { continuation ->
+                                        val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(photoReq) { response, error ->
+                                            if (error == null && response is TLRPC.TL_photos_photo) {
+                                                continuation.resume(response)
+                                            } else {
+                                                continuation.resume(null)
+                                            }
                                         }
-                                    }
-                                    continuation.invokeOnCancellation {
-                                        ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
+                                        continuation.invokeOnCancellation {
+                                            ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
+                                        }
                                     }
                                 }
                                 if (photoResult != null) {
@@ -288,7 +292,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     }
 
                     // 3. Divo Link (REST)
-                    val tgUserId = profileUpdateResult.id
+                    val tgUserId = profileUpdateResult?.id ?: tgUser?.id ?: 0L
 
                     val linkRequest = TelegramLinkRequest(
                         divoUserId = divoUserId,
@@ -372,7 +376,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         timezone = java.util.TimeZone.getDefault().id,
                         gender = data.gender?.lowercase()?.takeIf { it.isNotBlank() },
                         birthday = data.dateOfBirth ?: "",
-                        geoCityId = resolvedCityId,
+                        geoCityId = resolvedCityId?.takeIf { it > 0 },
                         measuringSystem = "metric",
                         subrole = mappedSubrole,
                         pushNotifications = true,
@@ -391,7 +395,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     }
 
                     val dummyAuth = TLRPC.TL_auth_authorization().apply {
-                        user = profileUpdateResult
+                        user = profileUpdateResult ?: tgUser
                     }
                     sendEffect(RegFormsEffect.FinishRegistration(dummyAuth))
                 } catch (e: Exception) {
@@ -525,10 +529,10 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
             SubRole.SCOUT -> RoleType.AGENCY.value to null //"scout"
             SubRole.BOOKER -> RoleType.AGENCY.value to null //"booker"
             SubRole.CASTING_DIRECTOR, SubRole.TALENT_MANAGER -> RoleType.AGENCY.value to null //"agent"
-            SubRole.PHOTOGRAPHER -> RoleType.CUSTOMER.value to null //"photographer"
-            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> RoleType.CUSTOMER.value to null //"stylist"
-            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> RoleType.CUSTOMER.value to null //"media"
-            SubRole.STUDIO -> RoleType.CUSTOMER.value to null //"place"
+            SubRole.PHOTOGRAPHER -> RoleType.NEW_FACE.value to null //"photographer"
+            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> RoleType.NEW_FACE.value to null //"stylist"
+            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> RoleType.NEW_FACE.value to null //"media"
+            SubRole.STUDIO -> RoleType.NEW_FACE.value to null //"place"
             SubRole.MODEL -> RoleType.MODEL.value to null
             SubRole.NEW_TALENT, SubRole.ACTOR, SubRole.DANCER, SubRole.SINGER -> RoleType.NEW_FACE.value to null
             SubRole.FAN -> RoleType.FAN.value to null //"fan"
