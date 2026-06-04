@@ -430,7 +430,9 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (args.size >= 3) {
                         val code = args[0]
                         val shortname = args[1]
-                        val name = args[2]
+                        val defaultName = args[2]
+                        val locName = LocaleController.getCountryName(shortname)
+                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
                         val flag = LocaleController.getLanguageFlag(shortname)
                         list.add(
                             LocalCountry(

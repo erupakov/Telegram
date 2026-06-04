@@ -126,7 +126,8 @@ fun PhotoSourceBottomSheet(
         containerColor = AppTheme.colors.backgroundLight,
         dragHandle = null
     ) {
-        Box {
+        org.telegram.divo.style.DivoLocaleProvider {
+            Box {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -174,6 +175,7 @@ fun PhotoSourceBottomSheet(
                 paddingTop = 0.dp,
                 onClick = onDismiss
             )
+        }
         }
     }
 }

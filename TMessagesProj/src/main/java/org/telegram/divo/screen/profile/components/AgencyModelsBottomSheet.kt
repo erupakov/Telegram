@@ -418,7 +418,8 @@ private fun ConfirmModelAdditionBottomSheet(
         modifier = Modifier.padding(top = topPadding + 16.dp),
         contentWindowInsets = { WindowInsets(0.dp) }
     ) {
-        Box(
+        org.telegram.divo.style.DivoLocaleProvider {
+            Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(AppTheme.colors.backgroundLight)
@@ -611,10 +612,12 @@ private fun ConfirmModelAdditionBottomSheet(
                         )
                     }
                 }
+                }
             }
         }
     }
 }
+
 
 @Composable
 private fun SearchModelsLoadingContent() {

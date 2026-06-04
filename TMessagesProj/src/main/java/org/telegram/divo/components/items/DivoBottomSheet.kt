@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.RoundedButton
 import org.telegram.divo.style.AppTheme
+import org.telegram.divo.style.DivoLocaleProvider
 import org.telegram.messenger.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,25 +64,27 @@ fun DivoBottomSheet(
         modifier = Modifier.padding(top = topPadding + 16.dp),
         contentWindowInsets = { WindowInsets(0.dp) }
     ) {
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .background(containerColor)
-                .navigationBarsPadding()
-                .padding(contentPadding),
-            horizontalAlignment = horizontalAlignment,
-            verticalArrangement = verticalArrangement
-        ) {
-            HeaderSection(
-                title = title,
-                isSaveMode = isSaveMode,
-                iconClose = iconClose,
-                isApplyEnable = isApplyEnable,
-                onDismiss = onDismiss,
-                onSave = onSave,
-                onReset = onReset
-            )
-            bodyContent()
+        DivoLocaleProvider {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .background(containerColor)
+                    .navigationBarsPadding()
+                    .padding(contentPadding),
+                horizontalAlignment = horizontalAlignment,
+                verticalArrangement = verticalArrangement
+            ) {
+                HeaderSection(
+                    title = title,
+                    isSaveMode = isSaveMode,
+                    iconClose = iconClose,
+                    isApplyEnable = isApplyEnable,
+                    onDismiss = onDismiss,
+                    onSave = onSave,
+                    onReset = onReset
+                )
+                bodyContent()
+            }
         }
     }
 }

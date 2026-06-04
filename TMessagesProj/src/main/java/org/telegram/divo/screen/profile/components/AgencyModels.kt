@@ -179,7 +179,8 @@ fun AgencyModels(
             containerColor = Color.Transparent,
             dragHandle = null
         ) {
-            Column(
+            org.telegram.divo.style.DivoLocaleProvider {
+                Column(
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Column(
@@ -232,6 +233,7 @@ fun AgencyModels(
                     }
                 }
                 Spacer(Modifier.height(16.dp))
+            }
             }
         }
     }

@@ -58,9 +58,6 @@ fun CityPickerSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     var searchQuery by remember { mutableStateOf(selectedCity?.name ?: "") }
-    val countryNameMap = remember(allCountries) {
-        allCountries.associate { it.shortName.uppercase() to it.name }
-    }
 
     // Убрали сложную сортировку и sortSnapshot. Просто фильтруем по тексту.
     val filteredList = remember(searchQuery, list, selectedCountries) {
@@ -142,15 +139,22 @@ fun CityPickerSheet(
                     ) {
                         items(filteredList) { item ->
                             val isSelected = item.id == selectedCity?.id
-                            val countryName =
-                                countryNameMap[item.countryCode.uppercase()] ?: item.countryCode
+                            val countryName = org.telegram.messenger.LocaleController.getCountryName(item.countryCode) ?: item.countryCode
 
                             val displayName = remember(item, searchQuery) {
                                 val query = searchQuery.trim().lowercase()
-                                if (query.isNotBlank() && item.alternateNames.lowercase().contains(query)) {
-                                    item.alternateNames.split(",")
-                                        .find { it.trim().lowercase().contains(query) }
-                                        ?.trim() ?: item.name
+                                if (query.isNotBlank()) {
+                                    if (item.name.lowercase().contains(query)) {
+                                        item.name
+                                    } else if (item.asciiName.lowercase().contains(query)) {
+                                        item.asciiName
+                                    } else if (item.alternateNames.lowercase().contains(query)) {
+                                        item.alternateNames.split(",")
+                                            .find { it.trim().lowercase().contains(query) }
+                                            ?.trim() ?: item.name
+                                    } else {
+                                        item.name
+                                    }
                                 } else {
                                     item.name
                                 }
