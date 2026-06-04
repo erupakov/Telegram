@@ -1,5 +1,6 @@
 package org.telegram.divo.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -126,7 +128,8 @@ fun PhotoSourceBottomSheet(
         containerColor = AppTheme.colors.backgroundLight,
         dragHandle = null
     ) {
-        Box {
+        org.telegram.divo.style.DivoLocaleProvider {
+            Box {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -174,6 +177,7 @@ fun PhotoSourceBottomSheet(
                 paddingTop = 0.dp,
                 onClick = onDismiss
             )
+        }
         }
     }
 }
@@ -231,11 +235,11 @@ private fun ChoosePhotoSection(
             modifier = Modifier.clickableWithoutRipple { onChooseFromLibrary() },
             text = stringResource(R.string.ChooseFromLibrary)
         )
-        Divider(color = Color.LightGray, thickness = 0.5.dp)
-        Button(
-            modifier = Modifier.clickableWithoutRipple { onUseDivoPhoto() },
-            text = stringResource(R.string.UseDivoPhoto)
-        )
+//        Divider(color = Color.LightGray, thickness = 0.5.dp)
+//        Button(
+//            modifier = Modifier.clickableWithoutRipple { onUseDivoPhoto() },
+//            text = stringResource(R.string.UseDivoPhoto)
+//        )
 
         if (isSearchEnabled) {
             SearchContent(
@@ -452,7 +456,15 @@ private fun SuggestionItem(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape),
-                model = avatarUrl
+                model = avatarUrl,
+                errorContent = {
+                    Image(
+                        painter = painterResource(R.drawable.divo_avatar_placeholder),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             )
         }
 

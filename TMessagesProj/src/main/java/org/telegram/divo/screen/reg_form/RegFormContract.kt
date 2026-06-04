@@ -32,15 +32,15 @@ data class RegFormsState(
         RegFormStep.CREATIVE_IDENTITY -> firstName.isNotBlank() && lastName.isNotBlank()
 
         RegFormStep.COMPANY_INFO,
-        RegFormStep.STUDIO_DETAILS -> companyName.isNotBlank() && (country.isBlank() || city.isNotBlank())
+        RegFormStep.STUDIO_DETAILS -> companyName.isNotBlank() && (country.isBlank() || city != null)
 
         RegFormStep.TALENT_IDENTITY,
-        RegFormStep.FAN_IDENTITY -> firstName.isNotBlank() && lastName.isNotBlank() && (country.isBlank() || city.isNotBlank())
+        RegFormStep.FAN_IDENTITY -> firstName.isNotBlank() && lastName.isNotBlank() && (country.isBlank() || city != null)
 
         // Location steps: city is required only when country is selected
         RegFormStep.COMPANY_LOCATION,
         RegFormStep.TALENT_LOCATION,
-        RegFormStep.PERSONAL_DETAILS -> country.isBlank() || city.isNotBlank()
+        RegFormStep.PERSONAL_DETAILS -> country.isBlank() || city != null
 
         else -> true
     }
@@ -77,7 +77,7 @@ data class RegistrationFormData(
     val gender: String? = null,
     val country: String = "",
     val countryCode: String = "",
-    val city: String = "",
+    val city: LocalCity? = null,
     // Company
     val companyName: String = "",
     val websiteUrl: String = "",

@@ -42,7 +42,8 @@ fun DeleteEventConfirmationDialog(
         containerColor = Color.Transparent,
         dragHandle = null
     ) {
-        Column(
+        org.telegram.divo.style.DivoLocaleProvider {
+            Column(
             modifier = Modifier.padding(horizontal = 16.dp)
         ) {
             Column(
@@ -101,6 +102,7 @@ fun DeleteEventConfirmationDialog(
                 )
             }
             Spacer(Modifier.height(8.dp))
+        }
         }
     }
 }

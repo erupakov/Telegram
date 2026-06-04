@@ -2,6 +2,7 @@ package org.telegram.divo.screen.event_list
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModelStoreOwner
@@ -20,6 +21,7 @@ import org.telegram.divo.screen.event_details.EventDetailsNavGraph
 
 sealed class EventRoute(val route: String) {
     data object Events : EventRoute("events")
+    data object Search : EventRoute("search")
     data object CreateEvent : EventRoute("create_event?eventId={eventId}") {
         const val BASE_ROUTE = "create_event"
         fun createRoute(eventId: Int? = null): String =
@@ -30,11 +32,13 @@ sealed class EventRoute(val route: String) {
     data object Detail : EventRoute("detail/{eventId}") {
         fun createRoute(eventId: Int) = "detail/$eventId"
     }
+    data object ApplyConfirmation : EventRoute("apply_confirmation/{eventId}") {
+        fun createRoute(eventId: Int) = "apply_confirmation/$eventId"
+    }
 }
 
 @Composable
 fun EventsNavGraph(
-    onNavigateToSearch: () -> Unit = {},
     onNavControllerReady: (NavController) -> Unit,
     onInnerNavControllerReady: (NavController?) -> Unit,
 ) {
@@ -76,7 +80,65 @@ fun EventsNavGraph(
                 viewModel = viewModel,
                 onNavigateToEventDetails = { nav.navigate(EventRoute.Detail.createRoute(it)) },
                 onNavigateToCreateEvent = { nav.navigate(EventRoute.CreateEvent.createRoute()) },
-                onNavigateToSearch = onNavigateToSearch
+                onNavigateToSearch = { nav.navigate(EventRoute.Search.route) },
+                onNavigateToApplyConfirmation = { nav.navigate(EventRoute.ApplyConfirmation.createRoute(it)) }
+            )
+        }
+        composable(EventRoute.Search.route) {
+            val viewModel: EventListViewModel = viewModel(
+                viewModelStoreOwner = LocalContext.current.findActivity() as ViewModelStoreOwner
+            )
+            val state = viewModel.state.collectAsState().value
+            val snackbarState = remember { org.telegram.divo.common.AppSnackbarHostState() }
+            val context = LocalContext.current
+            
+            LaunchedEffect(viewModel.effect) {
+                viewModel.effect.collect { action ->
+                    when (action) {
+                        is EventListEffect.NavigateToEventDetails -> {
+                            EventIntentData.eventId = action.eventId
+                            nav.navigate(EventRoute.Detail.createRoute(action.eventId))
+                        }
+                        is EventListEffect.NavigateToApplyConfirmation -> {
+                            nav.navigate(EventRoute.ApplyConfirmation.createRoute(action.eventId))
+                        }
+                        is EventListEffect.ShowError -> {
+                            snackbarState.show(org.telegram.divo.common.SnackbarEvent.Error(action.message))
+                        }
+                        else -> {}
+                    }
+                }
+            }
+            
+            EventSearchScreen(
+                state = state,
+                snackbarState = snackbarState,
+                onEventClick = {
+                    EventIntentData.eventId = it
+                    nav.navigate(EventRoute.Detail.createRoute(it))
+                },
+                onCtaClick = {
+                    viewModel.handleIntent(EventListIntent.OnEventCtaClicked(it))
+                },
+                onCloseSearch = {
+                    viewModel.handleIntent(EventListIntent.OnCloseSearch)
+                    nav.popBackStack()
+                },
+                onSearchQueryChanged = {
+                    viewModel.handleIntent(EventListIntent.OnSearchQueryChanged(it))
+                },
+                onSearchConfirmed = {
+                    viewModel.handleIntent(EventListIntent.OnSearchConfirmed)
+                },
+                onApplyFilters = {
+                    viewModel.handleIntent(EventListIntent.OnApplyFilters(it))
+                },
+                onResetFilters = {
+                    viewModel.handleIntent(EventListIntent.OnResetFilters)
+                },
+                onLoadMore = {
+                    viewModel.handleIntent(EventListIntent.OnLoadMore)
+                }
             )
         }
         composable(
@@ -109,7 +171,11 @@ fun EventsNavGraph(
             val sharedViewModel: CreateEventViewModel = viewModel(createEventEntry)
             EventPreviewScreen(
                 viewModel = sharedViewModel,
-                onPublish = {},
+                onPublish = {
+                    nav.getBackStackEntry(EventRoute.Events.route)
+                        .savedStateHandle["needsRefresh"] = true
+                    nav.popBackStack(EventRoute.Events.route, inclusive = false)
+                },
                 onBack = { nav.popBackStack() }
             )
         }
@@ -124,7 +190,22 @@ fun EventsNavGraph(
                 eventId = eventId,
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToEditEvent = { nav.navigate(EventRoute.CreateEvent.createRoute(it)) },
+                onEventDeleted = {
+                    nav.getBackStackEntry(EventRoute.Events.route).savedStateHandle["needsRefresh"] = true
+                    nav.popBackStack()
+                },
                 onNavigateBack = { nav.popBackStack() },
+            )
+        }
+        composable(
+            route = EventRoute.ApplyConfirmation.route,
+            arguments = listOf(navArgument("eventId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+            org.telegram.divo.screen.apply_confirmation.ApplyConfirmationScreen(
+                eventId = eventId,
+                onSuccessDismiss = { nav.popBackStack() },
+                onBack = { nav.popBackStack() }
             )
         }
     }

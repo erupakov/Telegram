@@ -1,6 +1,8 @@
 package org.telegram.divo.screen.search.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +30,7 @@ import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun FRSearchHistoryContent(
@@ -78,7 +81,15 @@ fun FRSearchHistoryContent(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(56.dp)
-                        .clip(androidx.compose.foundation.shape.CircleShape)
+                        .clip(androidx.compose.foundation.shape.CircleShape),
+                    errorContent = {
+                        Image(
+                            painter = painterResource(R.drawable.divo_avatar_placeholder),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(

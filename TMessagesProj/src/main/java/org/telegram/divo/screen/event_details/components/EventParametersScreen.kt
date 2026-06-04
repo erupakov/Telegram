@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -18,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
@@ -34,6 +36,7 @@ import org.telegram.messenger.R
 @Composable
 fun EventParametersScreen(
     params: EventModelAttributes?,
+    isNdaRequired: Boolean?,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -63,72 +66,111 @@ fun EventParametersScreen(
     ) { paddingValues ->
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-                .clip(RoundedCornerShape(20.dp))
-                .background(AppTheme.colors.onBackground)
-                .padding(horizontal = 16.dp)
                 .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            ParameterItem(
-                label = stringResource(R.string.LabelGender),
-                value = params?.genders?.joinToString(", ").orEmpty()
-            )
-            if (params?.ageFrom != null && params.ageTo != null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(AppTheme.colors.onBackground)
+                    .padding(horizontal = 16.dp)
+            ) {
                 ParameterItem(
-                    label = stringResource(R.string.LabelAge),
-                    value = stringResource(R.string.AgeRange, params.ageFrom, params.ageTo)
+                    label = stringResource(R.string.LabelGender),
+                    value = params?.genders?.joinToString(", ").orEmpty()
                 )
+                if (params?.ageFrom != null && params.ageTo != null) {
+                    ParameterItem(
+                        label = stringResource(R.string.LabelAge),
+                        value = stringResource(R.string.AgeRange, params.ageFrom, params.ageTo)
+                    )
+                }
+                val sep = if (params?.weightFrom != null && params.weightTo != null) "-" else ""
+                ParameterItem(
+                    label = stringResource(R.string.LabelWeight),
+                    value = "${params?.weightFrom}$sep${params?.weightTo}"
+                )
+                val sepHeight = if (params?.heightFrom != null && params.heightTo != null) "-" else ""
+                ParameterItem(
+                    label = stringResource(R.string.LabelHeight),
+                    value = "${params?.heightFrom}$sepHeight${params?.heightTo}"
+                )
+                ParameterItem(
+                    label = stringResource(R.string.LabelHairLength),
+                    value = params?.hairLengths?.joinToString(", ").orEmpty()
+                )
+                ParameterItem(
+                    label = stringResource(R.string.LabelEyeColor),
+                    value = params?.eyeColors?.joinToString(", ").orEmpty()
+                )
+                val sepBreast = if (params?.breastSizeFrom != null && params.breastSizeTo != null) "-" else ""
+                ParameterItem(
+                    label = stringResource(R.string.LabelBreastSize),
+                    value = "${params?.breastSizeFrom}$sepBreast${params?.breastSizeTo}"
+                )
+                val waistSep = if (params?.waistFrom != null && params.waistTo != null) "-" else ""
+                ParameterItem(
+                    label = stringResource(R.string.LabelWaist),
+                    value = "${params?.waistFrom}$waistSep${params?.waistTo}"
+                )
+                val sepShoe = if (params?.shoesSizeFrom != null && params.shoesSizeTo != null) "-" else ""
+                ParameterItem(
+                    label = stringResource(R.string.LabelShoeSizeUS),
+                    value = "${params?.shoesSizeFrom}$sepShoe${params?.shoesSizeTo}"
+                )
+                ParameterItem(
+                    label = stringResource(R.string.LabelHairColor),
+                    value = params?.hairColors?.joinToString(", ").orEmpty()
+                )
+                val sepHips = if (params?.hipsFrom != null && params?.hipsTo != null) "-" else ""
+                ParameterItem(
+                    label = stringResource(R.string.LabelHips),
+                    value = "${params?.hipsFrom}$sepHips${params?.hipsTo}"
+                )
+    
+                ParameterItem(
+                    label = stringResource(R.string.LabelSkinColor),
+                    value = params?.skinColors?.joinToString(", ").orEmpty(),
+                    showDivider = false
+                )
+                Spacer(Modifier.height(16.dp))
             }
-            val sep = if (params?.weightFrom != null && params.weightTo != null) "-" else ""
-            ParameterItem(
-                label = stringResource(R.string.LabelWeight),
-                value = "${params?.weightFrom}$sep${params?.weightTo}"
-            )
-            val sepHeight = if (params?.heightFrom != null && params.heightTo != null) "-" else ""
-            ParameterItem(
-                label = stringResource(R.string.LabelHeight),
-                value = "${params?.heightFrom}$sepHeight${params?.heightTo}"
-            )
-            ParameterItem(
-                label = stringResource(R.string.LabelHairLength),
-                value = params?.hairLengths?.joinToString(", ").orEmpty()
-            )
-            ParameterItem(
-                label = stringResource(R.string.LabelEyeColor),
-                value = params?.eyeColors?.joinToString(", ").orEmpty()
-            )
-            val sepBreast = if (params?.breastSizeFrom != null && params.breastSizeTo != null) "-" else ""
-            ParameterItem(
-                label = stringResource(R.string.LabelBreastSize),
-                value = "${params?.breastSizeFrom}$sepBreast${params?.breastSizeTo}"
-            )
-            val waistSep = if (params?.waistFrom != null && params.waistTo != null) "-" else ""
-            ParameterItem(
-                label = stringResource(R.string.LabelWaist),
-                value = "${params?.waistFrom}$waistSep${params?.waistTo}"
-            )
-            val sepShoe = if (params?.shoesSizeFrom != null && params.shoesSizeTo != null) "-" else ""
-            ParameterItem(
-                label = stringResource(R.string.LabelShoeSizeUS),
-                value = "${params?.shoesSizeFrom}$sepShoe${params?.shoesSizeTo}"
-            )
-            ParameterItem(
-                label = stringResource(R.string.LabelHairColor),
-                value = params?.hairColors?.joinToString(", ").orEmpty()
-            )
-            val sepHips = if (params?.hipsFrom != null && params?.hipsTo != null) "-" else ""
-            ParameterItem(
-                label = stringResource(R.string.LabelHips),
-                value = "${params?.hipsFrom}$sepHips${params?.hipsTo}"
-            )
 
-            ParameterItem(
-                label = stringResource(R.string.LabelSkinColor),
-                value = params?.skinColors?.joinToString(", ").orEmpty(),
-                showDivider = false
-            )
-            Spacer(Modifier.height(16.dp))
+            if (isNdaRequired != null) {
+                Spacer(Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(46.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(AppTheme.colors.onBackground)
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        modifier = Modifier.weight(0.35f),
+                        text = stringResource(R.string.EventNdaRequired),
+                        style = AppTheme.typography.bodyLarge,
+                        color = AppTheme.colors.textPrimary,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        modifier = Modifier.weight(0.65f),
+                        text = if (isNdaRequired) stringResource(R.string.EventRequired) else stringResource(R.string.EventNotRequired),
+                        style = AppTheme.typography.bodyLarge,
+                        color = AppTheme.colors.textPrimary.copy(0.6f),
+                        lineHeight = 16.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.End,
+                    )
+                }
+            }
         }
     }
 }

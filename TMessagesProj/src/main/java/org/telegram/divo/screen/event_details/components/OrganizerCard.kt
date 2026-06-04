@@ -1,8 +1,10 @@
 package org.telegram.divo.screen.event_details.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,10 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.layout.ContentScale
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -29,6 +33,7 @@ import org.telegram.messenger.R
 fun OrganizerCard(
     avatarModel: Any?,
     name: String,
+    isVerified: Boolean,
     status: String,
 ) {
     Surface(
@@ -54,16 +59,37 @@ fun OrganizerCard(
                 DivoAsyncImage(
                     modifier = Modifier.size(56.dp).clip(CircleShape),
                     model = avatarModel,
+                    errorContent = {
+                        Image(
+                            painter = painterResource(R.drawable.divo_avatar_placeholder),
+                            contentDescription = null,
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
                 )
                 Spacer(Modifier.width(10.dp))
                 Column(Modifier.weight(1f)) {
-                    Text(
-                        text = "@$name",
-                        style = AppTheme.typography.bodyLarge,
-                        color = AppTheme.colors.textPrimary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "@$name",
+                            style = AppTheme.typography.bodyLarge,
+                            color = AppTheme.colors.textPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        if (isVerified) {
+                            Image(
+                                modifier = Modifier.size(16.dp),
+                                painter = painterResource(R.drawable.ic_divo_verified),
+                                contentDescription = null
+                            )
+                        }
+                    }
+
                     Spacer(Modifier.height(10.dp))
                     Text(
                         text = status,

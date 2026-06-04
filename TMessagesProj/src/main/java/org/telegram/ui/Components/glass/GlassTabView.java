@@ -456,7 +456,7 @@ public class GlassTabView extends FrameLayout implements MainTabsLayout.Tab, Fac
     // DIVO
     public void setAvatarUrl(String url) {
         if (backupImageView != null) {
-            backupImageView.setImage(url, "50_50", null);
+            backupImageView.setImage(url, "50_50", getContext().getResources().getDrawable(R.drawable.divo_avatar_placeholder));
         }
     }
 

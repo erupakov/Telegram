@@ -116,7 +116,7 @@ fun AppSnackbarHost(
 
                 Text(
                     text = data.visuals.message,
-                    maxLines = 2,
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodyMedium
                 )

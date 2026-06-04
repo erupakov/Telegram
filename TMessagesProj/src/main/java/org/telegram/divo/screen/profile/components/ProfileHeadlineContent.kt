@@ -74,6 +74,7 @@ fun ProfileHeadlineContent(
         TelegramPhotoBackground(
             modifier = Modifier.fillMaxSize(),
             photo = uiState.userInfo.photoUrl,
+            fallbackResId = if (uiState.isModel) R.drawable.divo_models_placeholder else R.drawable.divo_agency_placeholder,
             onReady = onReady
         )
 
@@ -156,7 +157,7 @@ fun ProfileHeadlineContent(
                                     scope = scope,
                                     type = DivoShareType.PROFILE,
                                     id = user.id,
-                                    customMessage = "${user.fullName} - ${user.roleLabel}",
+                                    customMessage = "${user.displayName} - ${user.roleLabel}",
                                     imageUrl = user.photoUrl
                                 )
                             }

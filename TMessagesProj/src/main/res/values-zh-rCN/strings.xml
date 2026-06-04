@@ -16,7 +16,8 @@
     <string name="ButtonCreate">创建</string>
     <string name="ButtonSave">保存</string>
     <string name="ButtonApply">应用</string>
-    <string name="ButtonApplied">已应用</string>
+    <string name="ButtonApplied">已申请</string>
+    <string name="ButtonClosed">已关闭</string>
     <string name="ButtonOk">确定</string>
     <string name="ButtonCancel">取消</string>
     <string name="ButtonEdit">编辑</string>
@@ -210,6 +211,8 @@
     <string name="EventRequirements">活动要求</string>
     <string name="EventEnterRequirements">输入活动要求</string>
     <string name="EventNdaRequired">需要签署保密协议(NDA)</string>
+    <string name="EventRequired">必需</string>
+    <string name="EventNotRequired">非必需</string>
     <string name="EventApplicationDeadlineDate">报名截止日期*</string>
     <string name="EventApplicationDeadlineTime">报名截止时间*</string>
     <string name="EventPaid">是否有酬劳</string>
@@ -242,10 +245,47 @@
         <item quantity="other">%d 名参与者</item>
     </plurals>
 
+    <string name="EventSearchPlaceholder">搜索活动</string>
+    <string name="EventSearchNoResults">没有符合您过滤条件的活动</string>
+    <string name="EventSearchNoResultsSubtitle">请尝试调整搜索或过滤条件</string>
+    <string name="EventSearchClearFilters">清除过滤器</string>
+    <string name="EventSearchEventsFound">个活动找到</string>
+    <string name="EventFilterTypeEvents">活动类型</string>
+    <string name="EventFilterChooseEvent">选择一个活动</string>
+    <string name="EventFilterAge">年龄 (岁)</string>
+    <string name="EventFilterSelectAgeRange">选择年龄范围</string>
+    <string name="EventFilterPaidOnly">仅限付费</string>
+    <string name="EventFilterAllRoles">所有角色</string>
+    <string name="EventFilterResetParameter">重置参数</string>
+
     <!--models screen-->
     <string name="Models">模特</string>
     <string name="NewTalents">新面孔</string>
     <string name="Agencies">机构</string>
+
+    <string name="DivoAgencyModelRepresentedBy">该模特目前由
+%1$s 代表</string>
+    <string name="DivoAgencyModelAnotherAgency">其他机构</string>
+    <string name="DivoAgencyModelRepresentedByDesc">当她与其他机构合作时，
+您无法将其添加到您的名单中。</string>
+    <string name="DivoAgencyModelAddNoteTitle">添加个人备注</string>
+    <string name="DivoAgencyModelAddNoteHint">例如：我们很希望在我们的活动中代表您。</string>
+    <string name="DivoAgencyModelCancelRequestTitle">取消对 %1$s 的请求？</string>
+    <string name="DivoAgencyModelRemoveRosterTitle">从您的名单中移除 %1$s？</string>
+    <string name="DivoAgencyModelYesCancel">是，取消</string>
+    <string name="DivoAgencyModelYesRemove">是，移除</string>
+    <string name="DivoAgencyModelKeepRequest">保留请求</string>
+    <string name="DivoAgencyModelKeepModel">保留模特</string>
+    <string name="DivoAgencyModelPending">等待确认中</string>
+    <string name="DivoAgencyModelYearsOld">%1$d 岁</string>
+    <string name="DivoAgencyModelHeight">身高 %1$d</string>
+    <string name="DivoAgencyModelBreast">胸围 %1$s</string>
+    <string name="DivoAgencyModelWaist">腰围 %1$d</string>
+    <string name="DivoAgencyModelHips">臀围 %1$d</string>
+    <string name="DivoAgencyModelAddNoteDescription">注意：将此模特添加到您的名单中后，您的机构可以向其发送独家私人通告，管理其预订，并在 Divo 上正式代表她。</string>
+    <string name="DivoAgencyModelAlreadyAdded">已添加</string>
+    <string name="DivoAgencyModelRepresentedByOther">由其他机构代表</string>
+
 
     <!--search screen-->
     <string name="FindSimilarProfiles">寻找相似主页</string>
@@ -569,4 +609,74 @@
     <string name="ErrorTelegramAuthFailed">Telegram验证失败</string>
     <string name="ErrorDummyPhoneFailed">获取注册的虚拟电话失败</string>
     <string name="ErrorUnexpected">发生意外错误</string>
+    <string name="EventStatusApplicationsClosed">申请已截止</string>
+    <string name="EventStatusInProgress">进行中</string>
+    <string name="EventStatusCompleted">已结束</string>
+    <string name="EventStatusClosesIn">%1$s 后截止</string>
+    <string name="EventStatusDeadline">截止日期: %1$s</string>
+    <string name="EventTabMyEvents">我的活动</string>
+    <string name="EventTabAllEvents">所有活动</string>
+    <string name="EventEmptyTitle">目前没有即将举行的活动。</string>
+    <string name="EventEmptySubtitleAgency">稍后再来查看或\n创建新活动。</string>
+    <string name="EventEmptySubtitle">稍后再来查看。</string>
+    <string name="EventCreateButton">创建活动</string>
+    <string name="EventSeenAll">您已查看所有活动</string>
+    <string name="EventSpotsLeft">剩余 %1$d 个名额</string>
+    <string name="WithdrawApplicationTitle">撤回申请？</string>
+    <string name="WithdrawApplicationMessage">主办方将会收到通知。您将无法再次申请此活动。</string>
+    <string name="KeepApplicationButton">保留申请</string>
+    <string name="YesWithdrawButton">是的，撤回</string>
+    <string name="YouApplied">您已申请此活动</string>
+    <string name="YouAppliedOn">您于 %1$s 申请</string>
+    <string name="WithdrawApplicationTextButton">撤回申请</string>
+    <string name="ParamGender">性别</string>
+    <string name="ParamAge">年龄（岁）</string>
+    <string name="ParamAgeFrom">从 %1$d 岁</string>
+    <string name="ParamAgeTo">最多 %1$d 岁</string>
+    <string name="ParamAgeRange">%1$d-%2$d 岁</string>
+    <string name="ParamHeight">身高</string>
+    <string name="ParamHeightFrom">从 %1$d 厘米</string>
+    <string name="ParamHeightTo">最多 %1$d 厘米</string>
+    <string name="ParamHeightRange">%1$d-%2$d 厘米</string>
+    <string name="ParamHairColor">头发颜色</string>
+    <string name="MismatchGender">您的性别不符合。</string>
+    <string name="MismatchAge">您的年龄不符合。</string>
+    <string name="MismatchHeight">您的身高不符合。</string>
+    <string name="MismatchHairColor">您的头发颜色不符合。</string>
+    <string name="ApplyAnywaySuffix">仍然申请？</string>
+    <string name="MismatchMultipleApplyAnyway">某些参数不符合。仍然申请？</string>
+    <string name="ApplyConfirmationShareInfo">我们将与主办方分享</string>
+    <string name="ApplyConfirmationParametersTitle">申请参数</string>
+    <string name="PortfolioLinkTitle">作品集链接</string>
+    <string name="FollowersOnlineText">%1$s 粉丝</string>
+    <string name="SubmitApplicationTitle">提交申请</string>
+    <string name="SubmitButton">提交</string>
+    <string name="ParamWeight">体重</string>
+    <string name="ParamBreastSize">胸围</string>
+    <string name="ParamWaist">腰围</string>
+    <string name="ParamHips">臀围</string>
+    <string name="ParamShoesSize">鞋码</string>
+    <string name="ParamHairLength">头发长度</string>
+    <string name="ParamEyeColor">眼睛颜色</string>
+    <string name="ParamSkinColor">肤色</string>
+    <string name="ParamRole">角色</string>
+
+    <string name="MismatchWeight">您的体重不符合。</string>
+    <string name="MismatchBreastSize">您的胸围不符合。</string>
+    <string name="MismatchWaist">您的腰围不符合。</string>
+    <string name="MismatchHips">您的臀围不符合。</string>
+    <string name="MismatchShoesSize">您的鞋码不符合。</string>
+    <string name="MismatchHairLength">您的头发长度不符合。</string>
+    <string name="MismatchEyeColor">您的眼睛颜色不符合。</string>
+    <string name="MismatchSkinColor">您的肤色不符合。</string>
+    <string name="MismatchRole">您的角色不符合。</string>
+
+    <string name="ParamValueRange">%1$d-%2$d %3$s</string>
+    <string name="ParamValueFrom">从 %1$d %2$s</string>
+    <string name="ParamValueTo">到 %1$d %2$s</string>
+    <string name="ParamValueRangeNoUnit">%1$d-%2$d</string>
+    <string name="ParamValueFromNoUnit">从 %1$d</string>
+    <string name="ParamValueToNoUnit">到 %1$d</string>
+    <string name="ApplySuccessTitle">申请已提交！</string>
+    <string name="ApplySuccessDescription">您的申请已发送，组织者将尽快审核。</string>
 </resources>

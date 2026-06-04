@@ -132,7 +132,7 @@ fun ProfileInfoPager(
     } else {
         Spacer(Modifier.height(20.dp))
         AgencyDescriptionSection(
-            text = agency?.description.orEmpty(),
+            text = bio,
             isOwnProfile = isOwnProfile,
             onEditClick = { onEditClicked(0) }
         )

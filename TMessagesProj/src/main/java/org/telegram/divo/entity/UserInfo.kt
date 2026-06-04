@@ -26,9 +26,14 @@ data class UserInfo(
     val isFavorite: Boolean = false,
     val isFollowed: Boolean = false,
     val isPremium: Boolean = false,
+    val isVerified: Boolean = false,
     val userRatingStatus: String = "",
+    val isOnline: Boolean? = false,
     val userSocialNetworks: List<UserSocialNetwork> = emptyList()
-)
+) {
+    val displayName: String
+        get() = if (role == RoleType.AGENCY) agency?.title?.takeIf { it.isNotBlank() } ?: fullName else fullName
+}
 
 data class Gender(
     val id: String = "",

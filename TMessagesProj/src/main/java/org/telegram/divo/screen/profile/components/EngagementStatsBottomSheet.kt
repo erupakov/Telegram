@@ -78,7 +78,8 @@ fun EngagementStatsBottomSheet(
 
     val shouldLoadMore by remember {
         derivedStateOf {
-            val lastVisibleIndex = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            val lastVisibleIndex =
+                lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
             val totalItems = lazyListState.layoutInfo.totalItemsCount
             lastVisibleIndex >= totalItems - 5 && totalItems > 0
         }
@@ -118,97 +119,106 @@ fun EngagementStatsBottomSheet(
             )
         }
     ) {
-        BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
-            val configuration = LocalConfiguration.current
-            val screenHeight = configuration.screenHeightDp.dp
-            val topOffset = screenHeight * 0.05f
-            val targetHeight = (maxHeight - topOffset).coerceAtLeast(0.dp)
+        org.telegram.divo.style.DivoLocaleProvider {
+            BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+                val configuration = LocalConfiguration.current
+                val screenHeight = configuration.screenHeightDp.dp
+                val topOffset = screenHeight * 0.05f
+                val targetHeight = (maxHeight - topOffset).coerceAtLeast(0.dp)
 
-            if (items.isEmpty()) {
-                EmptyContent(stats)
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(targetHeight)
-                        .padding(horizontal = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Text(
-                        text = stringResource(stats.value),
-                        style = AppTheme.typography.helveticaNeueLtCom,
-                        fontSize = 20.sp,
-                        color = Color.Black
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    DivoTextField(
-                        value = searchQuery,
-                        onValueChange = onQueryChanged,
-                        leadingIcon = R.drawable.ic_divo_search,
-                        placeholder = stringResource(R.string.SearchModels),
-                        backgroundColor = AppTheme.colors.onBackground,
-                        cornerRadius = 99.dp,
-                        placeholderColor = AppTheme.colors.textPrimary.copy(0.6f),
-                        height = 40.dp,
-                        textStyle = TextStyle(fontSize = 15.sp),
-                        horizontalContentPadding = 16.dp,
-                        trailingIcon = if (searchQuery.isNotBlank()) R.drawable.ic_divo_clear else null,
-                        onTrailingIconClick = { onQueryChanged("") }
-                    )
-
-                    if (isSearchMode && isLoadingSearch) {
+                if (items.isEmpty()) {
+                    EmptyContent(stats)
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(targetHeight)
+                            .padding(horizontal = 16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
                         Spacer(modifier = Modifier.height(20.dp))
-                        EngagementStatsLoadingContent()
-                    } else if (isSearchMode && searchResults.isEmpty()) {
-                        EmptySearchContent()
-                    } else {
+
+                        Text(
+                            text = stringResource(stats.value),
+                            style = AppTheme.typography.helveticaNeueLtCom,
+                            fontSize = 20.sp,
+                            color = Color.Black
+                        )
+
                         Spacer(modifier = Modifier.height(20.dp))
-                        LazyColumn(
-                            state = lazyListState,
-                            contentPadding = PaddingValues(bottom = 20.dp),
-                            verticalArrangement = Arrangement.spacedBy(14.dp)
-                        ) {
-                            when {
-                                isSearchMode -> {
-                                    items(searchResults, key = { it.id }) { item ->
-                                        StatsDetailRow(
-                                            name = item.fullName,
-                                            type = item.roleLabel,
-                                            avatarUrl = item.photoUrl,
-                                            onClicked = { onProfileClicked(item.id) }
-                                        )
-                                    }
-                                    if (isLoadingMoreSearch) {
-                                        item {
-                                            Box(
-                                                modifier = Modifier.fillMaxWidth().height(72.dp).navigationBarsPadding(),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                CircularProgressIndicator(color = Color.Black)
+
+                        DivoTextField(
+                            value = searchQuery,
+                            onValueChange = onQueryChanged,
+                            leadingIcon = R.drawable.ic_divo_search,
+                            placeholder = stringResource(R.string.SearchModels),
+                            backgroundColor = AppTheme.colors.onBackground,
+                            cornerRadius = 99.dp,
+                            placeholderColor = AppTheme.colors.textPrimary.copy(0.6f),
+                            height = 40.dp,
+                            textStyle = TextStyle(fontSize = 15.sp),
+                            horizontalContentPadding = 16.dp,
+                            trailingIcon = if (searchQuery.isNotBlank()) R.drawable.ic_divo_clear else null,
+                            onTrailingIconClick = { onQueryChanged("") }
+                        )
+
+                        if (isSearchMode && isLoadingSearch) {
+                            Spacer(modifier = Modifier.height(20.dp))
+                            EngagementStatsLoadingContent()
+                        } else if (isSearchMode && searchResults.isEmpty()) {
+                            EmptySearchContent()
+                        } else {
+                            Spacer(modifier = Modifier.height(20.dp))
+                            LazyColumn(
+                                state = lazyListState,
+                                contentPadding = PaddingValues(bottom = 20.dp),
+                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                            ) {
+                                when {
+                                    isSearchMode -> {
+                                        items(searchResults, key = { it.id }) { item ->
+                                            StatsDetailRow(
+                                                name = item.fullName,
+                                                type = item.roleLabel,
+                                                avatarUrl = item.photoUrl,
+                                                onClicked = { onProfileClicked(item.id) }
+                                            )
+                                        }
+                                        if (isLoadingMoreSearch) {
+                                            item {
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth().height(72.dp)
+                                                        .navigationBarsPadding(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    CircularProgressIndicator(color = Color.Black)
+                                                }
                                             }
                                         }
                                     }
-                                }
-                                else -> {
-                                    items(items, key = { it.id }) { user ->
-                                        StatsDetailRow(
-                                            name = user.fullName,
-                                            type = user.roleLabel,
-                                            avatarUrl = user.photoUrl,
-                                            onClicked = { onProfileClicked(user.id) }
-                                        )
-                                    }
-                                    if (isLoadingMoreFeed) {
-                                        item {
-                                            Box(
-                                                modifier = Modifier.fillMaxWidth().height(54.dp).navigationBarsPadding(),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                LottieProgressIndicator(modifier = Modifier.size(32.dp))
+
+                                    else -> {
+                                        items(items, key = { it.id }) { user ->
+                                            StatsDetailRow(
+                                                name = user.fullName,
+                                                type = user.roleLabel,
+                                                avatarUrl = user.photoUrl,
+                                                onClicked = { onProfileClicked(user.id) }
+                                            )
+                                        }
+                                        if (isLoadingMoreFeed) {
+                                            item {
+                                                Box(
+                                                    modifier = Modifier.fillMaxWidth().height(54.dp)
+                                                        .navigationBarsPadding(),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    LottieProgressIndicator(
+                                                        modifier = Modifier.size(
+                                                            32.dp
+                                                        )
+                                                    )
+                                                }
                                             }
                                         }
                                     }
@@ -239,7 +249,15 @@ private fun StatsDetailRow(
             modifier = Modifier
                 .size(60.dp)
                 .clip(CircleShape),
-            model = avatarUrl
+            model = avatarUrl,
+            errorContent = {
+                Image(
+                    painter = painterResource(R.drawable.divo_avatar_placeholder),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
+            }
         )
         Spacer(modifier = Modifier.width(10.dp))
         Column {
@@ -360,7 +378,8 @@ private fun EmptyContent(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth().height(screenHeight * 0.5f).padding(horizontal = 20.dp),
+        modifier = Modifier.fillMaxWidth().height(screenHeight * 0.5f)
+            .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

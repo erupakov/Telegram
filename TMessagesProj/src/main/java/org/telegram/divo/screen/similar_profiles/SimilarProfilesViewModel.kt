@@ -11,6 +11,7 @@ import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
+import org.telegram.divo.components.items.numericFilterRange
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
 import org.telegram.divo.dal.dto.face.SimilarFaceDto
 import org.telegram.divo.dal.network.DivoApi
@@ -132,6 +133,7 @@ class SimilarProfilesViewModel(
                     isLiked = false,
                     photo = dto.image.orEmpty(),
                     index = dto.index,
+                    isModel = RoleType.from(dto.role).isModel(),
                     roleLabel = RoleType.from(dto.role).value,
                     similarity = ((dto.score ?: 0.0) * 100).toInt(),
                 )
@@ -167,9 +169,10 @@ class SimilarProfilesViewModel(
             val ageMatch = if (ageParam.isNullOrEmpty()) {
                 true
             } else {
+                val ageBounds = ParametersType.AGE.numericFilterRange() ?: (16..45)
                 val parts = ageParam.split("-")
-                val minAge = parts.getOrNull(0)?.toIntOrNull() ?: 14
-                val maxAge = parts.getOrNull(1)?.toIntOrNull() ?: 45
+                val minAge = parts.getOrNull(0)?.toIntOrNull() ?: ageBounds.first
+                val maxAge = parts.getOrNull(1)?.toIntOrNull() ?: ageBounds.last
 
                 val profileAge = profile.age
                 profileAge != null && profileAge in minAge..maxAge
@@ -180,8 +183,6 @@ class SimilarProfilesViewModel(
     }
 
     private fun onLikeChange(id: Int) {
-        val oldProfile = state.value.profiles.find { it.id == id } ?: return
-
         setState {
             val updatedProfiles = profiles.map { profile ->
                 if (profile.id == id) {
@@ -250,7 +251,9 @@ class SimilarProfilesViewModel(
                     if (args.size >= 3) {
                         val code = args[0]
                         val shortname = args[1]
-                        val name = args[2]
+                        val defaultName = args[2]
+                        val locName = LocaleController.getCountryName(shortname)
+                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
                         val flag = LocaleController.getLanguageFlag(shortname)
                         list.add(
                             LocalCountry(

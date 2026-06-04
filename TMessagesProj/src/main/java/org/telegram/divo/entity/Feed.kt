@@ -31,6 +31,8 @@ data class User(
     val age: Int?,
     val countryCode: String?,
     val countryName: String?,
+    val photoUrl: String?,
+    val isOnline: Boolean?
 )
 
 data class FileModel(

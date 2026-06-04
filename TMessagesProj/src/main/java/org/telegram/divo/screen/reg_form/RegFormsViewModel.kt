@@ -122,7 +122,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = data.gender
                     if (data.country.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY] = data.country
                     if (data.countryCode.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY_CODE] = data.countryCode
-                    if (data.city.isNotBlank()) additionalInfo[AdditionalInfoKeys.CITY] = data.city
+                    if (data.city != null) additionalInfo[AdditionalInfoKeys.CITY] = data.city.name
                     
                     if (data.companyName.isNotBlank()) additionalInfo[AdditionalInfoKeys.COMPANY_NAME] = data.companyName
                     if (data.websiteUrl.isNotBlank()) additionalInfo[AdditionalInfoKeys.WEBSITE_URL] = data.websiteUrl
@@ -150,6 +150,13 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     additionalInfo[AdditionalInfoKeys.MEASURING_SYSTEM] = "metric"
                     additionalInfo[AdditionalInfoKeys.SUB_ROLE] = data.subRole.name.lowercase()
                     if (mappedSubrole != null) additionalInfo[AdditionalInfoKeys.SUBROLE_MAPPED] = mappedSubrole
+
+                    if (tgUser != null) {
+                        additionalInfo[AdditionalInfoKeys.TELEGRAM_ID] = tgUser.id
+                        if (!tgUser.username.isNullOrBlank()) {
+                            additionalInfo[AdditionalInfoKeys.TELEGRAM_USERNAME] = tgUser.username
+                        }
+                    }
 
                     // Branch: social registration vs regular registration
                     val divoUserId: Long?
@@ -307,9 +314,9 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
 
                     // Resolve geoCityId from city name via geo API
                     var resolvedCityId: Int? = null
-                    if (data.city.isNotBlank()) {
+                    if (data.city != null) {
                         try {
-                            val geoResponse = DivoApi.geoService.searchByAddressName(data.city)
+                            val geoResponse = DivoApi.geoService.searchByAddressName(data.city.name)
                             resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -423,7 +430,9 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (args.size >= 3) {
                         val code = args[0]
                         val shortname = args[1]
-                        val name = args[2]
+                        val defaultName = args[2]
+                        val locName = LocaleController.getCountryName(shortname)
+                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
                         val flag = LocaleController.getLanguageFlag(shortname)
                         list.add(
                             LocalCountry(
@@ -460,6 +469,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                 id = cols[0].toLongOrNull() ?: return@forEachLine,
                                 name = cols[1],
                                 asciiName = cols[2],
+                                alternateNames = cols[3],
                                 countryCode = cols[8],
                                 population = cols[14].toIntOrNull() ?: 0
                             )
@@ -485,7 +495,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
             appendLine("Date of birth: ${data.dateOfBirth}")
             appendLine("Gender: ${data.gender}")
             appendLine("Country: ${data.country}")
-            appendLine("City: ${data.city}")
+            appendLine("City: ${data.city?.name}")
             appendLine("--- Company ---")
             appendLine("Company name: ${data.companyName}")
             appendLine("Website URL: ${data.websiteUrl}")

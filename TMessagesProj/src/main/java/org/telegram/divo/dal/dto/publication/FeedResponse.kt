@@ -45,7 +45,7 @@ class FeedItemDto(
     @SerializedName("files")
     val files: List<FileDto>,
     @SerializedName("searchImage")
-    val searchImage: FileDto,
+    val searchImage: FileDto?,
     @SerializedName("additionalData")
     val additionalData: JsonElement?
 )
@@ -74,6 +74,10 @@ class UserDto(
     val countryCode: String?,
     @SerializedName("country_name")
     val countryName: String?,
+    @SerializedName("photoUrl")
+    val photoUrl: String?,
+    @SerializedName("isOnline")
+    val isOnline: Boolean?
 )
 
 class FileDto(
@@ -107,12 +111,12 @@ private fun FeedItemDto.toEntity(): FeedItem =
         type = type,
         isLiked = isLikedByUser,
         isFavorite = isFavoriteByUser,
-        user = user.toEntity(),
+        user = user.toEntity(searchImage?.fullUrl),
         files = files.map { it.toEntity() },
-        previewImage = searchImage.toEntity()
+        previewImage = searchImage?.toEntity() ?: FileModel(0, "", "", "", null, "")
     )
 
-private fun UserDto.toEntity(): User =
+private fun UserDto.toEntity(searchImageUrl: String? = null): User =
     User(
         id = id,
         fullName = fullName.orEmpty(),
@@ -125,6 +129,8 @@ private fun UserDto.toEntity(): User =
         age = age,
         countryCode = countryCode,
         countryName = countryName,
+        photoUrl = photoUrl ?: searchImageUrl,
+        isOnline = isOnline
     )
 
 private fun FileDto.toEntity(): FileModel =

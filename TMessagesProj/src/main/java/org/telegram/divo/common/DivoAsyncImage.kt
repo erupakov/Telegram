@@ -34,6 +34,7 @@ fun DivoAsyncImage(
     placeholderColor: Color = Color.White,
     errorIconSize: Dp = 32.dp,
     onReady: () -> Unit = {},
+    onError: () -> Unit = {},
     loadingContent: (@Composable () -> Unit)? = null,
     errorContent: (@Composable () -> Unit)? = null,
 ) {
@@ -48,6 +49,7 @@ fun DivoAsyncImage(
         placeholderColor = placeholderColor,
         errorIconSize = errorIconSize,
         onReady = onReady,
+        onError = onError,
         loadingContent = loadingContent,
         errorContent = errorContent,
     )
@@ -65,6 +67,7 @@ private fun ImageCore(
     placeholderColor: Color,
     errorIconSize: Dp,
     onReady: () -> Unit = {},
+    onError: () -> Unit = {},
     loadingContent: (@Composable () -> Unit)?,
     errorContent: (@Composable () -> Unit)?,
 ) {
@@ -93,6 +96,7 @@ private fun ImageCore(
             },
             error = {
                 LaunchedEffect(Unit) {
+                    onError()
                     onReady()
                 }
                 Box(
@@ -101,11 +105,11 @@ private fun ImageCore(
                         .background(placeholderColor),
                     contentAlignment = alignment,
                 ) {
-                    errorContent?.invoke() ?: Icon(
-                        imageVector = Icons.Outlined.Person,
-                        contentDescription = null,
-                        modifier = Modifier.size(errorIconSize),
-                        tint = AppTheme.colors.accentOrange.copy(alpha = 0.4f),
+                    errorContent?.invoke() ?: Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(AppTheme.colors.onBackground)
+                            .shimmer()
                     )
                 }
             },

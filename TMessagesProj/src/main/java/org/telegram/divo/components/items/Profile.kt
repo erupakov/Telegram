@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.components.DivoChip
+import org.telegram.divo.components.DivoAvatar
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -247,7 +248,6 @@ fun BioPageItem(
                 )
 
             }
-
         }
     }
 }
@@ -259,67 +259,79 @@ fun ProfileNameItem(
 ) {
     val context = LocalContext.current
 
-    Column(modifier) {
-        Row(
-            modifier = Modifier,
-            verticalAlignment = Alignment.Top,
-            horizontalArrangement = Arrangement.Start
-        ) {
-            Text(
-                modifier = Modifier.weight(1f, fill = false),
-                text = uiState.userInfo.fullName.uppercase(),
-                style = AppTheme.typography.helveticaNeueLtCom.copy(
-                    platformStyle = PlatformTextStyle(includeFontPadding = false)
-                ),
-                color = AppTheme.colors.textColor,
-                fontSize = 32.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            if (uiState.userInfo.isPremium) {
-                Spacer(Modifier.width(8.dp))
-                Image(
-                    modifier = Modifier
-                        .size(20.dp),
-                    painter = painterResource(R.drawable.divo_premium_bage),
-                    contentDescription = null,
-                )
-            }
-        }
-        Spacer(Modifier.height(4.dp))
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val age = uiState.userInfo.birthday
-            val city = uiState.userInfo.city
-            DivoChip(
-                text = uiState.userInfo.roleLabel,
-                resId = if (uiState.userInfo.role.isModel()) R.drawable.ic_divo_person_heart else R.drawable.ic_divo_agency,
-                background = Color(0xFF2262D8),
-                textColor = Color.White
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            if (age.isNotEmpty()) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        DivoAvatar(
+            imageUrl = uiState.userInfo.avatarUrl,
+            isOnline = uiState.userInfo.isOnline ?: false
+        )
+        Spacer(Modifier.width(12.dp))
+        Column(Modifier.weight(1f)) {
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.Top,
+                horizontalArrangement = Arrangement.Start
+            ) {
                 Text(
-                    text = "${age.formattedAge(context)} · ",
-                    style = AppTheme.typography.helveticaNeueRegular,
-                    fontSize = 14.sp,
+                    modifier = Modifier.weight(1f, fill = false),
+                    text = uiState.userInfo.displayName.uppercase(),
+                    style = AppTheme.typography.helveticaNeueLtCom.copy(
+                        platformStyle = PlatformTextStyle(includeFontPadding = false)
+                    ),
                     color = AppTheme.colors.textColor,
-                )
-            }
-            if (city != null) {
-                Text(
-                    text = uiState.userInfo.city.countryCode.toCountryFlagEmoji()
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = city.name,
-                    style = AppTheme.typography.helveticaNeueRegular,
-                    fontSize = 14.sp,
-                    color = AppTheme.colors.textColor,
+                    fontSize = 32.sp,
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
+                if (uiState.userInfo.isPremium) {
+                    Spacer(Modifier.width(8.dp))
+                    Image(
+                        modifier = Modifier
+                            .size(20.dp),
+                        painter = painterResource(R.drawable.divo_premium_bage),
+                        contentDescription = null,
+                    )
+                }
+            }
+            Spacer(Modifier.height(4.dp))
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val age = uiState.userInfo.birthday
+                val city = uiState.userInfo.city
+                DivoChip(
+                    text = uiState.userInfo.roleLabel,
+                    resId = if (uiState.userInfo.role.isModel()) R.drawable.ic_divo_person_heart else R.drawable.ic_divo_agency,
+                    background = Color(0xFF2262D8),
+                    textColor = Color.White
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                if (age.isNotEmpty()) {
+                    val ageText = age.formattedAge(context)
+                    val textToDisplay = if (city != null) "$ageText · " else ageText
+                    Text(
+                        text = textToDisplay,
+                        style = AppTheme.typography.helveticaNeueRegular,
+                        fontSize = 14.sp,
+                        color = AppTheme.colors.textColor,
+                    )
+                }
+                if (city != null) {
+                    Text(
+                        text = uiState.userInfo.city.countryCode.toCountryFlagEmoji()
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = city.name,
+                        style = AppTheme.typography.helveticaNeueRegular,
+                        fontSize = 14.sp,
+                        color = AppTheme.colors.textColor,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }

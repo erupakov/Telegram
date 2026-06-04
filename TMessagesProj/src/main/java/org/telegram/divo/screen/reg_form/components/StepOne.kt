@@ -59,7 +59,7 @@ fun StepOne(
                     copy(
                         country = country?.name ?: "", 
                         countryCode = country?.shortName ?: "", 
-                        city = ""
+                        city = null
                     )
                 })
                 showCountrySheet = false
@@ -70,7 +70,7 @@ fun StepOne(
     if (showCitySheet) {
         CityPickerSheet(
             list = state.allCities,
-            selectedCity = state.allCities.find { it.name == formData.city },
+            selectedCity = formData.city,
             allCountries = state.allCountries,
             selectedCountries = listOfNotNull(
                 state.allCountries.find { it.name == formData.country }
@@ -78,7 +78,7 @@ fun StepOne(
             onDismiss = { showCitySheet = false },
             onPick = { selectedCity ->
                 onIntent(RegFormsIntent.OnFieldChanged {
-                    copy(city = selectedCity?.name.orEmpty())
+                    copy(city = selectedCity)
                 })
                 showCitySheet = false
             }
@@ -196,7 +196,7 @@ fun StepOne(
 
         if (config.showCity) {
             PlaceField(
-                text = formData.city,
+                text = formData.city?.let { it.matchedName ?: it.name }.orEmpty(),
                 label = stringResource(R.string.CityLabel),
                 onClick = { showCitySheet = true }
             )

@@ -129,6 +129,7 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
         listOf(
             ProfileParameter(ParametersType.BIRTHDAY, birthday),
             ProfileParameter(ParametersType.HEIGHT, model?.appearance?.height?.let { "$it" }.orEmpty()),
+            ProfileParameter(ParametersType.WEIGHT, model?.appearance?.weight?.let { "$it" }.orEmpty()),
             ProfileParameter(ParametersType.WAIST, model?.appearance?.waist?.let { "$it" }.orEmpty()),
             ProfileParameter(ParametersType.HIPS, model?.appearance?.hips?.let { "$it" }.orEmpty()),
             ProfileParameter(ParametersType.SHOE_SIZE, model?.appearance?.shoesSize?.let { "$it" }.orEmpty()),
@@ -139,11 +140,13 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
 
         val BIRTHDAYStr = blockParams.getValue(ParametersType.BIRTHDAY)
         val heightStr = blockParams.getValue(ParametersType.HEIGHT)
+        val weightStr = blockParams.getValue(ParametersType.WEIGHT)
         val waistStr = blockParams.getValue(ParametersType.WAIST)
         val hipsStr = blockParams.getValue(ParametersType.HIPS)
         val shoesSizeStr = blockParams.getValue(ParametersType.SHOE_SIZE)
 
         val parsedHeight = heightStr?.toFloatOrNull()
+        val parsedWeight = weightStr?.toFloatOrNull()
         val parsedWaist = waistStr?.toFloatOrNull()
         val parsedHips = hipsStr?.toFloatOrNull()
         val parsedShoesSize = shoesSizeStr?.toFloatOrNull()
@@ -151,18 +154,20 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
         val updatedUserInfo = user.copy(
             gender = gender?.let { Gender(id = it.value.lowercase(), title = it.value) },
             birthday = BIRTHDAYStr.orEmpty(),
-            model = user.model?.copy(
-                appearance = appearance?.copy(
+            model = (user.model ?: org.telegram.divo.entity.Model()).copy(
+                appearance = (appearance ?: org.telegram.divo.entity.Appearance()).copy(
+                    measuringSystem = appearance?.measuringSystem ?: user.measuringSystem.takeIf { it.isNotBlank() } ?: "metric",
                     height = parsedHeight,
+                    weight = parsedWeight,
                     waist = parsedWaist,
                     hips = parsedHips,
                     shoesSize = parsedShoesSize,
 
-                    hairLength = hairLength?.let { HairLength(title = it.value, id = it.id ) },
-                    hairColor = hairColor?.let { HairColor(title = it.value, id = it.id ) },
-                    eyeColor = eyeColor?.let { EyeColor(title = it.value, id = it.id ) },
-                    skinColor = skinColor?.let { SkinColor(title = it.value, id = it.id ) },
-                    breastSize = breastSize?.value
+                    hairLength = hairLength?.takeIf { it.value.isNotBlank() }?.let { HairLength(title = it.value, id = it.id ) },
+                    hairColor = hairColor?.takeIf { it.value.isNotBlank() }?.let { HairColor(title = it.value, id = it.id ) },
+                    eyeColor = eyeColor?.takeIf { it.value.isNotBlank() }?.let { EyeColor(title = it.value, id = it.id ) },
+                    skinColor = skinColor?.takeIf { it.value.isNotBlank() }?.let { SkinColor(title = it.value, id = it.id ) },
+                    breastSize = breastSize?.value?.takeIf { it.isNotBlank() }
                 )
             )
         )

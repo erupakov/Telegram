@@ -369,6 +369,14 @@ private fun ProfileRow(
                 .clip(CircleShape)
                 .background(AppTheme.colors.onBackground),
             model = avatar,
+            errorContent = {
+                Image(
+                    painter = painterResource(R.drawable.divo_avatar_placeholder),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         )
 
         Spacer(Modifier.height(16.dp))

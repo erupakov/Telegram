@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.event_create
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,7 +51,7 @@ fun CreateEventScreen(
     onEventPublished: () -> Unit = {},
 ) {
     val snackbarState = remember { AppSnackbarHostState() }
-    val successMessage = if (editingEventId == null) "Event published" else "Event updated"
+    val successMessage = if (editingEventId == null) stringResource(R.string.EventPublished) else stringResource(R.string.EventUpdated)
 
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collect {

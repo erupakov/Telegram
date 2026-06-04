@@ -16,7 +16,8 @@
     <string name="ButtonCreate">Criar</string>
     <string name="ButtonSave">Salvar</string>
     <string name="ButtonApply">Aplicar</string>
-    <string name="ButtonApplied">Aplicado</string>
+    <string name="ButtonApplied">Inscrito</string>
+    <string name="ButtonClosed">Fechado</string>
     <string name="ButtonOk">Ok</string>
     <string name="ButtonCancel">Cancelar</string>
     <string name="ButtonEdit">Editar</string>
@@ -210,6 +211,8 @@
     <string name="EventRequirements">Requisitos</string>
     <string name="EventEnterRequirements">Digite os requisitos</string>
     <string name="EventNdaRequired">NDA necessário</string>
+    <string name="EventRequired">Obrigatório</string>
+    <string name="EventNotRequired">Não obrigatório</string>
     <string name="EventApplicationDeadlineDate">Data limite de inscrição*</string>
     <string name="EventApplicationDeadlineTime">Horário limite de inscrição*</string>
     <string name="EventPaid">Remunerado</string>
@@ -242,10 +245,47 @@
         <item quantity="other">%d participantes</item>
     </plurals>
 
+    <string name="EventSearchPlaceholder">Buscar evento</string>
+    <string name="EventSearchNoResults">Nenhum evento corresponde aos seus filtros</string>
+    <string name="EventSearchNoResultsSubtitle">Tente ajustar sua busca ou filtros</string>
+    <string name="EventSearchClearFilters">Limpar filtros</string>
+    <string name="EventSearchEventsFound">eventos encontrados</string>
+    <string name="EventFilterTypeEvents">Tipo de eventos</string>
+    <string name="EventFilterChooseEvent">Escolha um evento</string>
+    <string name="EventFilterAge">Idade (anos)</string>
+    <string name="EventFilterSelectAgeRange">Selecionar faixa etária</string>
+    <string name="EventFilterPaidOnly">Apenas pagos</string>
+    <string name="EventFilterAllRoles">Todas as funções</string>
+    <string name="EventFilterResetParameter">Redefinir parâmetro</string>
+
     <!--models screen-->
     <string name="Models">Modelos</string>
     <string name="NewTalents">Novos talentos</string>
     <string name="Agencies">Agências</string>
+
+    <string name="DivoAgencyModelRepresentedBy">Este modelo é atualmente
+representado por %1$s</string>
+    <string name="DivoAgencyModelAnotherAgency">outra agência</string>
+    <string name="DivoAgencyModelRepresentedByDesc">Você não pode adicioná-la à sua lista
+enquanto ela estiver com outra agência.</string>
+    <string name="DivoAgencyModelAddNoteTitle">Adicionar uma nota pessoal</string>
+    <string name="DivoAgencyModelAddNoteHint">ex. Gostaríamos muito de representá-la em nossas campanhas.</string>
+    <string name="DivoAgencyModelCancelRequestTitle">Cancelar solicitação para %1$s?</string>
+    <string name="DivoAgencyModelRemoveRosterTitle">Remover %1$s da sua lista?</string>
+    <string name="DivoAgencyModelYesCancel">Sim, cancelar</string>
+    <string name="DivoAgencyModelYesRemove">Sim, remover</string>
+    <string name="DivoAgencyModelKeepRequest">Manter solicitação</string>
+    <string name="DivoAgencyModelKeepModel">Manter modelo</string>
+    <string name="DivoAgencyModelPending">Aguardando confirmação</string>
+    <string name="DivoAgencyModelYearsOld">%1$d anos</string>
+    <string name="DivoAgencyModelHeight">A %1$d</string>
+    <string name="DivoAgencyModelBreast">B %1$s</string>
+    <string name="DivoAgencyModelWaist">C %1$d</string>
+    <string name="DivoAgencyModelHips">Q %1$d</string>
+    <string name="DivoAgencyModelAddNoteDescription">Nota: Adicionar esta modelo à sua lista permite que sua agência envie castings privados exclusivos, gerencie suas reservas e a represente oficialmente na Divo.</string>
+    <string name="DivoAgencyModelAlreadyAdded">Já adicionado</string>
+    <string name="DivoAgencyModelRepresentedByOther">Representado por outra agência</string>
+
 
     <!--search screen-->
     <string name="FindSimilarProfiles">Encontrar perfis semelhantes</string>
@@ -1813,4 +1853,74 @@
     <string name="ErrorTelegramAuthFailed">Falha na autenticação do Telegram</string>
     <string name="ErrorDummyPhoneFailed">Falha ao obter telefone fictício para registro</string>
     <string name="ErrorUnexpected">Erro inesperado</string>
+    <string name="EventStatusApplicationsClosed">Inscrições Encerradas</string>
+    <string name="EventStatusInProgress">Em Andamento</string>
+    <string name="EventStatusCompleted">Concluído</string>
+    <string name="EventStatusClosesIn">Encerra em %1$s</string>
+    <string name="EventStatusDeadline">Prazo: %1$s</string>
+    <string name="EventTabMyEvents">Meus Eventos</string>
+    <string name="EventTabAllEvents">Todos os Eventos</string>
+    <string name="EventEmptyTitle">Não há eventos futuros no momento.</string>
+    <string name="EventEmptySubtitleAgency">Volte mais tarde ou\ncrie um novo.</string>
+    <string name="EventEmptySubtitle">Volte mais tarde.</string>
+    <string name="EventCreateButton">Criar Evento</string>
+    <string name="EventSeenAll">Você viu todos os eventos</string>
+    <string name="EventSpotsLeft">Restam %1$d vagas</string>
+    <string name="WithdrawApplicationTitle">Retirar a sua candidatura?</string>
+    <string name="WithdrawApplicationMessage">O organizador será notificado. Não poderá candidatar-se novamente a este evento.</string>
+    <string name="KeepApplicationButton">Manter candidatura</string>
+    <string name="YesWithdrawButton">Sim, retirar</string>
+    <string name="YouApplied">Você se candidatou a este evento</string>
+    <string name="YouAppliedOn">Você se candidatou em %1$s</string>
+    <string name="WithdrawApplicationTextButton">RETIRAR CANDIDATURA</string>
+    <string name="ParamGender">Gênero</string>
+    <string name="ParamAge">Idade (anos)</string>
+    <string name="ParamAgeFrom">A partir de %1$d anos</string>
+    <string name="ParamAgeTo">Até %1$d anos</string>
+    <string name="ParamAgeRange">%1$d-%2$d anos</string>
+    <string name="ParamHeight">Altura</string>
+    <string name="ParamHeightFrom">A partir de %1$d cm.</string>
+    <string name="ParamHeightTo">Até %1$d cm.</string>
+    <string name="ParamHeightRange">%1$d-%2$d cm.</string>
+    <string name="ParamHairColor">Cor do cabelo</string>
+    <string name="MismatchGender">O seu gênero não coincide.</string>
+    <string name="MismatchAge">A sua idade não coincide.</string>
+    <string name="MismatchHeight">A sua altura não coincide.</string>
+    <string name="MismatchHairColor">A cor do seu cabelo não coincide.</string>
+    <string name="ApplyAnywaySuffix">Aplicar mesmo assim?</string>
+    <string name="MismatchMultipleApplyAnyway">Alguns parâmetros não coincidem. Aplicar mesmo assim?</string>
+    <string name="ApplyConfirmationShareInfo">Vamos partilhar com o organizador</string>
+    <string name="ApplyConfirmationParametersTitle">Parâmetros da candidatura</string>
+    <string name="PortfolioLinkTitle">LINK DO PORTFÓLIO</string>
+    <string name="FollowersOnlineText">%1$s seguidores</string>
+    <string name="SubmitApplicationTitle">ENVIAR CANDIDATURA</string>
+    <string name="SubmitButton">Enviar</string>
+    <string name="ParamWeight">Peso</string>
+    <string name="ParamBreastSize">Tamanho do busto</string>
+    <string name="ParamWaist">Cintura</string>
+    <string name="ParamHips">Quadril</string>
+    <string name="ParamShoesSize">Tamanho do sapato</string>
+    <string name="ParamHairLength">Comprimento do cabelo</string>
+    <string name="ParamEyeColor">Cor dos olhos</string>
+    <string name="ParamSkinColor">Cor da pele</string>
+    <string name="ParamRole">Função</string>
+
+    <string name="MismatchWeight">Seu peso não corresponde.</string>
+    <string name="MismatchBreastSize">O tamanho do seu busto não corresponde.</string>
+    <string name="MismatchWaist">Sua cintura não corresponde.</string>
+    <string name="MismatchHips">Seu quadril não corresponde.</string>
+    <string name="MismatchShoesSize">O tamanho do seu sapato não corresponde.</string>
+    <string name="MismatchHairLength">O comprimento do seu cabelo não corresponde.</string>
+    <string name="MismatchEyeColor">A cor dos seus olhos não corresponde.</string>
+    <string name="MismatchSkinColor">A cor da sua pele não corresponde.</string>
+    <string name="MismatchRole">Sua função não corresponde.</string>
+
+    <string name="ParamValueRange">%1$d-%2$d %3$s</string>
+    <string name="ParamValueFrom">De %1$d %2$s</string>
+    <string name="ParamValueTo">Até %1$d %2$s</string>
+    <string name="ParamValueRangeNoUnit">%1$d-%2$d</string>
+    <string name="ParamValueFromNoUnit">De %1$d</string>
+    <string name="ParamValueToNoUnit">Até %1$d</string>
+    <string name="ApplySuccessTitle">VOCÊ ESTÁ DENTRO!</string>
+    <string name="ApplySuccessDescription">Sua inscrição foi enviada. O organizador a analisará em breve.</string>
 </resources>

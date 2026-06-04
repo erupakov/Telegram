@@ -24,7 +24,8 @@ class EventDetailsViewModel(
         when (intent) {
             EventDetailsIntent.OnAddEventClicked -> {}
             is EventDetailsIntent.OnEventCardClicked -> {}
-            is EventDetailsIntent.OnEventCtaClicked -> {}
+            is EventDetailsIntent.OnEventCtaClicked -> handleCtaClicked(intent.eventId)
+            is EventDetailsIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             EventDetailsIntent.OnSearchClicked -> {}
             EventDetailsIntent.OnBackClicked -> sendEffect(Back)
             EventDetailsIntent.OnEditEventClick -> state.value.eventDetails?.id?.let { sendEffect(NavigateToEditEvent(it)) }
@@ -32,7 +33,81 @@ class EventDetailsViewModel(
             is EventDetailsIntent.OnPhotoClick -> sendEffect(NavigateToGallery(intent.items, intent.id))
             EventDetailsIntent.OnParamsClick -> sendEffect(NavigateToParams)
             is EventDetailsIntent.OnPrevEventClicked -> sendEffect(NavigateToPrevEvent(intent.eventId))
+            EventDetailsIntent.OnLikeClicked -> handleLikeClicked()
             EventDetailsIntent.OnLoad -> loadData()
+        }
+    }
+
+    private fun handleLikeClicked() {
+        val currentEvent = state.value.eventDetails ?: return
+        val isCurrentlyLiked = currentEvent.isLiked
+
+        // Optimistic update
+        setState {
+            copy(
+                eventDetails = currentEvent.copy(isLiked = !isCurrentlyLiked)
+            )
+        }
+
+        viewModelScope.launch {
+            val result = if (isCurrentlyLiked) {
+                DivoApi.eventRepository.unlikeEvent(currentEvent.id)
+            } else {
+                DivoApi.eventRepository.likeEvent(currentEvent.id)
+            }
+
+            if (result !is DivoResult.Success) {
+                // Revert optimistic update
+                setState {
+                    copy(
+                        eventDetails = currentEvent.copy(isLiked = isCurrentlyLiked)
+                    )
+                }
+                sendEffect(ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
+    private fun handleCtaClicked(eventId: Int) {
+        val currentEvent = state.value.eventDetails ?: return
+        if (currentEvent.id != eventId) return
+
+        val isCurrentlyApplied = currentEvent.isApplied
+
+        if (isCurrentlyApplied) {
+            sendEffect(ShowWithdrawConfirmation(eventId))
+        } else {
+            // Navigate to Apply Confirmation Screen
+            sendEffect(NavigateToApplyConfirmation(eventId))
+        }
+    }
+
+    private fun confirmWithdraw(eventId: Int) {
+        val currentEvent = state.value.eventDetails ?: return
+        if (currentEvent.id != eventId) return
+
+        // Unapply immediately
+        val newAppliesCount = currentEvent.appliesCount - 1
+        setState {
+            copy(
+                eventDetails = currentEvent.copy(isApplied = false, appliesCount = newAppliesCount)
+            )
+        }
+        DivoApi.eventRepository.notifyEventParticipationChanged(eventId, false, newAppliesCount)
+
+        viewModelScope.launch {
+            val result = DivoApi.eventRepository.unapplyEvent(eventId)
+
+            if (result !is DivoResult.Success) {
+                // Revert optimistic update
+                setState {
+                    copy(
+                        eventDetails = currentEvent.copy(isApplied = true, appliesCount = currentEvent.appliesCount)
+                    )
+                }
+                DivoApi.eventRepository.notifyEventParticipationChanged(eventId, true, currentEvent.appliesCount)
+                sendEffect(ShowError(result.getErrorMessage()))
+            }
         }
     }
 
@@ -43,6 +118,21 @@ class EventDetailsViewModel(
         viewModelScope.launch {
             DivoApi.eventRepository.eventsUpdatedFlow.collect {
                 loadData()
+            }
+        }
+        viewModelScope.launch {
+            DivoApi.eventRepository.eventParticipationFlow.collect { update ->
+                val currentEvent = state.value.eventDetails
+                if (currentEvent != null && currentEvent.id == update.eventId) {
+                    setState {
+                        copy(
+                            eventDetails = currentEvent.copy(
+                                isApplied = update.isApplied,
+                                appliesCount = update.appliesCount
+                            )
+                        )
+                    }
+                }
             }
         }
     }
@@ -137,7 +227,7 @@ class EventDetailsViewModel(
                 setState { copy(isLoading = true) }
                 val result = DivoApi.eventRepository.deleteEvent(id)
                 if (result is DivoResult.Success) {
-                    sendEffect(Back)
+                    sendEffect(EventDeleted)
                 } else {
                     setState { copy(isLoading = false) }
                     sendEffect(ShowError(result.getErrorMessage()))

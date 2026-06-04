@@ -11,9 +11,17 @@ data class Event(
     val description: String?,
     val date: String,
     val dateTo: String,
+    val applicationDeadline: String?,
+    val isPublic: Boolean = true,
+    val ndaRequired: Boolean = false,
     val city: String,
     val countryCode: String,
     val type: String?,
+    val typeId: Int? = null,
+    val paymentType: String?,
+    val paymentTypeId: Int? = null,
+    val modelAttributes: EventModelAttributes? = null,
+    val maxAttendees: Int?,
     val likesCount: Int,
     val appliesCount: Int,
     val isApplied: Boolean,
@@ -27,7 +35,8 @@ data class EventCreator(
     val fullName: String?,
     val photo: Photo?,
     val avatar: Photo?,
-    val roleLabel: String?
+    val roleLabel: String?,
+    val isVerified: Boolean = false
 )
 
 data class EventFile(

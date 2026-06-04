@@ -7,6 +7,9 @@ import org.telegram.divo.dal.dto.user.AddGalleryRequest
 import org.telegram.divo.dal.dto.user.AddToGalleryResponse
 import org.telegram.divo.dal.dto.user.AgencyModelsRequest
 import org.telegram.divo.dal.dto.user.AgencyModelsResponse
+import org.telegram.divo.dal.dto.user.AgencySearchRequest
+import org.telegram.divo.dal.dto.user.AgencySearchResponse
+import org.telegram.divo.dal.dto.user.AddAgencyModelRequest
 import org.telegram.divo.dal.dto.user.AppearancesResponse
 import org.telegram.divo.dal.dto.user.EngagementResponse
 import org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest
@@ -64,6 +67,23 @@ interface UserService {
         @Path("agencyId") agencyId: Int,
         @Body request: AgencyModelsRequest
     ): AgencyModelsResponse
+
+    @POST("agency/search")
+    suspend fun searchAgencyModels(
+        @Body request: AgencySearchRequest
+    ): AgencySearchResponse
+
+    @POST("agency/{userId}/models")
+    suspend fun addAgencyModel(
+        @Path("userId") userId: Int,
+        @Body request: AddAgencyModelRequest
+    ): EmptyResponse
+
+    @DELETE("agency/{agencyId}/models/{modelId}")
+    suspend fun deleteAgencyModel(
+        @Path("agencyId") agencyId: Int,
+        @Path("modelId") modelId: Int
+    ): EmptyResponse
 
     @Multipart
     @POST("file/upload-file")

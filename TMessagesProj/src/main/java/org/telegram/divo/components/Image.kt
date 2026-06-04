@@ -16,6 +16,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -38,10 +40,12 @@ fun TelegramPhotoBackground(
     photo: String?,
     modifier: Modifier = Modifier,
     isBlurSupported: Boolean = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S,
+    fallbackResId: Int? = null,
     onReady: () -> Unit = {},
 ) {
     val mainReady = remember { mutableStateOf(false) }
     val blurReady = remember { mutableStateOf(!isBlurSupported) }
+    var hasError by remember { mutableStateOf(false) }
 
     val onReadyCallback = rememberUpdatedState(onReady)
 
@@ -56,71 +60,85 @@ fun TelegramPhotoBackground(
         contentAlignment = Alignment.TopCenter
     ) {
 
-        DivoAsyncImage(
-            model = photo,
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            alignment = Alignment.TopCenter,
-            modifier = Modifier.fillMaxSize(),
-            onReady = { mainReady.value = true },
-            loadingContent = {
+        if (fallbackResId != null && (photo.isNullOrEmpty() || hasError)) {
+            Image(
+                painter = painterResource(fallbackResId),
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+            LaunchedEffect(Unit) {
+                mainReady.value = true
+                blurReady.value = true
+            }
+        } else {
+            DivoAsyncImage(
+                model = photo,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                alignment = Alignment.TopCenter,
+                modifier = Modifier.fillMaxSize(),
+                onReady = { mainReady.value = true },
+                onError = { hasError = true },
+                loadingContent = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.White)
+                    )
+                }
+            )
+
+            if (isBlurSupported) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.White)
-                )
-            }
-        )
+                        .graphicsLayer { compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
+                        .drawWithContent {
+                            drawContent()
 
-        if (isBlurSupported) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer { compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
-                    .drawWithContent {
-                        drawContent()
-
-                        drawRect(
-                            brush = verticalGradient(
-                                0.0f to Color.Transparent,
-                                0.6f to Color.Transparent,
-                                0.75f to Color.Black,
-                                1.0f to Color.Black
-                            ),
-                            blendMode = androidx.compose.ui.graphics.BlendMode.DstIn
-                        )
-                    }
-            ) {
-                DivoAsyncImage(
+                            drawRect(
+                                brush = verticalGradient(
+                                    0.0f to Color.Transparent,
+                                    0.6f to Color.Transparent,
+                                    0.75f to Color.Black,
+                                    1.0f to Color.Black
+                                ),
+                                blendMode = androidx.compose.ui.graphics.BlendMode.DstIn
+                            )
+                        }
+                ) {
+                    DivoAsyncImage(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .blur(35.dp),
+                        alignment = Alignment.TopCenter,
+                        model = photo,
+                        contentScale = ContentScale.Crop,
+                        onReady = { blurReady.value = true },
+                        loadingContent = {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(AppTheme.colors.backgroundLight.copy(0.6f))
+                            )
+                        }
+                    )
+                }
+            } else {
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .blur(35.dp),
-                    alignment = Alignment.TopCenter,
-                    model = photo,
-                    contentScale = ContentScale.FillWidth,
-                    onReady = { blurReady.value = true },
-                    loadingContent = {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(AppTheme.colors.backgroundLight.copy(0.6f))
+                        .background(
+                            verticalGradient(
+                                0.0f to Color.Transparent,
+                                0.6f to Color.Transparent,
+                                0.75f to Color.Black.copy(alpha = 0.3f),
+                                1.0f to Color.Black.copy(alpha = 0.6f)
+                            )
                         )
-                    }
                 )
             }
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        verticalGradient(
-                            0.0f to Color.Transparent,
-                            0.6f to Color.Transparent,
-                            0.75f to Color.Black.copy(alpha = 0.3f),
-                            1.0f to Color.Black.copy(alpha = 0.6f)
-                        )
-                    )
-            )
         }
 
         Box(
@@ -204,6 +222,14 @@ fun TelegramUserAvatarEditable(
                                     modifier = Modifier.size(placeholderIconSize),
                                 )
                             }
+                        },
+                        errorContent = {
+                            Image(
+                                painter = painterResource(R.drawable.divo_avatar_placeholder),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
                         }
                     )
                 } else {

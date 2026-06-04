@@ -2,14 +2,15 @@
 <resources>
     <!--divo view start-->
     <string name="DivoMainTabsModels">Модели</string>
-    <string name="DivoMainTabsEvents">Мероприятия</string>
+    <string name="DivoMainTabsEvents">События</string>
     <string name="DivoMainTabsChats">Чаты</string>
     <string name="DivoMainTabsSettings">Настройки</string>
     <string name="ButtonBack">Назад</string>
     <string name="ButtonCreate">Создать</string>
     <string name="ButtonSave">Сохранить</string>
     <string name="ButtonApply">Применить</string>
-    <string name="ButtonApplied">Применено</string>
+    <string name="ButtonApplied">Подано</string>
+    <string name="ButtonClosed">Закрыто</string>
     <string name="ButtonOk">ОК</string>
     <string name="ButtonCancel">Отмена</string>
     <string name="ButtonEdit">Редактировать</string>
@@ -207,6 +208,8 @@
     <string name="EventRequirements">Требования</string>
     <string name="EventEnterRequirements">Введите требования</string>
     <string name="EventNdaRequired">Требуется NDA</string>
+    <string name="EventRequired">Требуется</string>
+    <string name="EventNotRequired">Не требуется</string>
     <string name="EventApplicationDeadlineDate">Дата окончания приема заявок *</string>
     <string name="EventApplicationDeadlineTime">Время окончания приема заявок *</string>
     <string name="EventPaid">Оплачивается</string>
@@ -241,10 +244,47 @@
         <item quantity="other">%d участников</item>
     </plurals>
 
+    <string name="EventSearchPlaceholder">Поиск событий</string>
+    <string name="EventSearchNoResults">Нет событий по вашим фильтрам</string>
+    <string name="EventSearchNoResultsSubtitle">Попробуйте изменить параметры поиска или фильтры</string>
+    <string name="EventSearchClearFilters">Сбросить фильтры</string>
+    <string name="EventSearchEventsFound">событий найдено</string>
+    <string name="EventFilterTypeEvents">Тип событий</string>
+    <string name="EventFilterChooseEvent">Выберите событие</string>
+    <string name="EventFilterAge">Возраст (лет)</string>
+    <string name="EventFilterSelectAgeRange">Выберите возраст</string>
+    <string name="EventFilterPaidOnly">Только платные</string>
+    <string name="EventFilterAllRoles">Все роли</string>
+    <string name="EventFilterResetParameter">Сбросить параметр</string>
+
     <!--models screen-->
     <string name="Models">Модели</string>
     <string name="NewTalents">Новые лица</string>
     <string name="Agencies">Агентства</string>
+
+    <string name="DivoAgencyModelRepresentedBy">В данный момент модель
+представляет %1$s</string>
+    <string name="DivoAgencyModelAnotherAgency">другое агентство</string>
+    <string name="DivoAgencyModelRepresentedByDesc">Вы не можете добавить её в свой состав,
+пока она сотрудничает с другим агентством.</string>
+    <string name="DivoAgencyModelAddNoteTitle">Добавить личное сообщение</string>
+    <string name="DivoAgencyModelAddNoteHint">напр. Мы бы хотели видеть вас в наших кампаниях.</string>
+    <string name="DivoAgencyModelCancelRequestTitle">Отменить запрос к %1$s?</string>
+    <string name="DivoAgencyModelRemoveRosterTitle">Удалить %1$s из состава?</string>
+    <string name="DivoAgencyModelYesCancel">Да, отменить</string>
+    <string name="DivoAgencyModelYesRemove">Да, удалить</string>
+    <string name="DivoAgencyModelKeepRequest">Оставить запрос</string>
+    <string name="DivoAgencyModelKeepModel">Оставить модель</string>
+    <string name="DivoAgencyModelPending">Ожидает подтверждения</string>
+    <string name="DivoAgencyModelYearsOld">%1$d лет</string>
+    <string name="DivoAgencyModelHeight">Р %1$d</string>
+    <string name="DivoAgencyModelBreast">Г %1$s</string>
+    <string name="DivoAgencyModelWaist">Т %1$d</string>
+    <string name="DivoAgencyModelHips">Б %1$d</string>
+    <string name="DivoAgencyModelAddNoteDescription">Примечание: Добавление этой модели в ваш список позволяет вашему агентству отправлять ей эксклюзивные приватные приглашения на кастинги, управлять её бронированиями и официально представлять её в Divo.</string>
+    <string name="DivoAgencyModelAlreadyAdded">Уже добавлена</string>
+    <string name="DivoAgencyModelRepresentedByOther">Представляет другое агентство</string>
+
 
     <!--search screen-->
     <string name="FindSimilarProfiles">Найти похожие профили</string>
@@ -691,7 +731,7 @@
     <string name="YourNewEmail">Ваш новый адрес</string>
     <string name="YourLoginEmailChangedSuccess">Электронная почта изменена.</string>
     <string name="YourEmailCode">Код из письма</string>
-    <string name="YourEmailCodeInfo">Пожалуйста, введите код, который мы отправили на  %1$s, чтобы подтвердить свой адрес электронной почты.</string>
+    <string name="YourEmailCodeInfo">Пожалуйста, введите код, который мы отправили на %1$s, чтобы подтвердить свой адрес электронной почты.</string>
     <string name="YourEmailInfo">Пожалуйста, добавьте настоящий адрес электронной почты. Это единственный способ восстановить забытый пароль.</string>
     <string name="YourEmailSkip">Пропустить</string>
     <string name="YourEmailSkipWarning">Внимание</string>
@@ -839,4 +879,75 @@
     <string name="ErrorTelegramAuthFailed">Ошибка авторизации Telegram</string>
     <string name="ErrorDummyPhoneFailed">Не удалось получить номер для регистрации</string>
     <string name="ErrorUnexpected">Непредвиденная ошибка</string>
+    <string name="EventStatusApplicationsClosed">Подача закрыта</string>
+    <string name="EventStatusInProgress">Прямо сейчас</string>
+    <string name="EventStatusCompleted">Завершён</string>
+    <string name="EventStatusClosesIn">Закрывается через %1$s</string>
+    <string name="EventStatusDeadline">Дедлайн: %1$s</string>
+    <string name="EventTabMyEvents">Мои события</string>
+    <string name="EventTabAllEvents">Все события</string>
+    <string name="EventEmptyTitle">На данный момент нет предстоящих событий.</string>
+    <string name="EventEmptySubtitleAgency">Загляните позже или\nсоздайте новое.</string>
+    <string name="EventEmptySubtitle">Загляните позже.</string>
+    <string name="EventCreateButton">Создать событие</string>
+    <string name="EventSeenAll">Вы просмотрели все события</string>
+    <string name="EventSpotsLeft">Осталось мест: %1$d</string>
+
+    <string name="WithdrawApplicationTitle">Отозвать заявку?</string>
+    <string name="WithdrawApplicationMessage">Организатор будет уведомлен. Вы не сможете заново подать заявку на это событие.</string>
+    <string name="KeepApplicationButton">Оставить заявку</string>
+    <string name="YesWithdrawButton">Да, отозвать</string>
+    <string name="YouApplied">Вы подали заявку на это событие</string>
+    <string name="YouAppliedOn">Вы подали заявку %1$s</string>
+    <string name="WithdrawApplicationTextButton">ОТОЗВАТЬ ЗАЯВКУ</string>
+    <string name="ParamGender">Пол</string>
+    <string name="ParamAge">Возраст (лет)</string>
+    <string name="ParamAgeFrom">От %1$d лет</string>
+    <string name="ParamAgeTo">До %1$d лет</string>
+    <string name="ParamAgeRange">%1$d-%2$d лет</string>
+    <string name="ParamHeight">Рост</string>
+    <string name="ParamHeightFrom">От %1$d см.</string>
+    <string name="ParamHeightTo">До %1$d см.</string>
+    <string name="ParamHeightRange">%1$d-%2$d см.</string>
+    <string name="ParamHairColor">Цвет волос</string>
+    <string name="MismatchGender">Ваш пол не подходит.</string>
+    <string name="MismatchAge">Ваш возраст не подходит.</string>
+    <string name="MismatchHeight">Ваш рост не подходит.</string>
+    <string name="MismatchHairColor">Ваш цвет волос не подходит.</string>
+    <string name="ApplyAnywaySuffix">Все равно подать?</string>
+    <string name="MismatchMultipleApplyAnyway">Некоторые параметры не подходят. Все равно подать?</string>
+    <string name="ApplyConfirmationShareInfo">Мы передадим организатору</string>
+    <string name="ApplyConfirmationParametersTitle">Требования для участия</string>
+    <string name="PortfolioLinkTitle">ССЫЛКА НА ПОРТФОЛИО</string>
+    <string name="FollowersOnlineText">%1$s подписчиков</string>
+    <string name="SubmitApplicationTitle">ПОДАТЬ ЗАЯВКУ</string>
+    <string name="SubmitButton">Подать</string>
+    <string name="ParamWeight">Вес</string>
+    <string name="ParamBreastSize">Размер груди</string>
+    <string name="ParamWaist">Талия</string>
+    <string name="ParamHips">Бедра</string>
+    <string name="ParamShoesSize">Размер обуви</string>
+    <string name="ParamHairLength">Длина волос</string>
+    <string name="ParamEyeColor">Цвет глаз</string>
+    <string name="ParamSkinColor">Цвет кожи</string>
+    <string name="ParamRole">Роль</string>
+
+    <string name="MismatchWeight">Ваш вес не подходит.</string>
+    <string name="MismatchBreastSize">Ваш размер груди не подходит.</string>
+    <string name="MismatchWaist">Ваша талия не подходит.</string>
+    <string name="MismatchHips">Ваши бедра не подходят.</string>
+    <string name="MismatchShoesSize">Ваш размер обуви не подходит.</string>
+    <string name="MismatchHairLength">Ваша длина волос не подходит.</string>
+    <string name="MismatchEyeColor">Ваш цвет глаз не подходит.</string>
+    <string name="MismatchSkinColor">Ваш цвет кожи не подходит.</string>
+    <string name="MismatchRole">Ваша роль не подходит.</string>
+
+    <string name="ParamValueRange">%1$d-%2$d %3$s</string>
+    <string name="ParamValueFrom">От %1$d %2$s</string>
+    <string name="ParamValueTo">До %1$d %2$s</string>
+    <string name="ParamValueRangeNoUnit">%1$d-%2$d</string>
+    <string name="ParamValueFromNoUnit">От %1$d</string>
+    <string name="DivoRoleNone">Нет</string>
+    <string name="ApplySuccessTitle">ВЫ В ДЕЛЕ!</string>
+    <string name="ApplySuccessDescription">Ваша заявка отправлена. Организатор скоро ее рассмотрит.</string>
 </resources>

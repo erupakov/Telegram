@@ -192,12 +192,12 @@ enum class ParametersType(
 }
 
 fun ParametersType.numericFilterRange(): IntRange? = when (this) {
-    ParametersType.AGE -> 14..45
+    ParametersType.AGE -> 16..45
     ParametersType.HEIGHT -> 120..220
-    ParametersType.WEIGHT -> 30..200
+    ParametersType.WEIGHT -> 35..200
     ParametersType.WAIST -> 40..130
     ParametersType.HIPS -> 60..150
-    ParametersType.SHOE_SIZE -> 30..50
+    ParametersType.SHOE_SIZE -> 30..38
     ParametersType.BREAST_SIZE -> 65..130
     else -> null
 }

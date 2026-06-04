@@ -158,6 +158,46 @@ class UserRepository(
         ).toEntities()
     }
 
+    suspend fun searchAgencyModels(
+        query: String,
+        offset: Int,
+        limit: Int,
+        currentAgencyId: Int?
+    ): DivoResult<org.telegram.divo.common.PaginatedResult<org.telegram.divo.entity.AgencySearchModel>> = resultOf {
+        val res = service.searchAgencyModels(
+            org.telegram.divo.dal.dto.user.AgencySearchRequest(
+                name = query.takeIf { it.isNotBlank() },
+                offset = offset,
+                limit = limit
+            )
+        )
+        val entities = res.toEntities(currentAgencyId)
+        org.telegram.divo.common.PaginatedResult(
+            items = entities,
+            totalCount = res.data?.pagination?.meta?.totalCount ?: entities.size
+        )
+    }
+
+    suspend fun addAgencyModel(
+        userId: Int,
+        note: String? = null
+    ): DivoResult<Unit> = resultOf {
+        service.addAgencyModel(
+            userId = userId,
+            request = org.telegram.divo.dal.dto.user.AddAgencyModelRequest(note = note)
+        )
+    }
+
+    suspend fun deleteAgencyModel(
+        agencyId: Int,
+        modelId: Int
+    ): DivoResult<Unit> = resultOf {
+        service.deleteAgencyModel(
+            agencyId = agencyId,
+            modelId = modelId
+        )
+    }
+
     suspend fun upsertSocialNetwork(socialNetworkId: Int, nickname: String): DivoResult<Unit> = resultOf {
         service.upsertSocialNetwork(
             UpsertSocialNetworkRequest(socialNetworkId, nickname)

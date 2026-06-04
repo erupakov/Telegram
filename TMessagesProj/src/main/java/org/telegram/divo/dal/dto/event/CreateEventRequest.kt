@@ -21,18 +21,25 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
     fun blockNumericRangeToDto(type: ParametersType, raw: String): EventRangeDto {
         val bounds = checkNotNull(type.numericFilterRange())
         val (from, to) = resolveNumericBlockParamBounds(raw, bounds)
-        return EventRangeDto(from = from, to = to)
+        return EventRangeDto(from = from?.toDouble(), to = to?.toDouble())
     }
 
     fun mapRoleLabelToApiType(roleValue: String): List<String> {
         if (roleValue.isEmpty() || roleValue.contains("All", ignoreCase = true)) {
-            return listOf("model", "fun", "new_face")
+            return listOf(
+                org.telegram.divo.entity.RoleType.MODEL.value,
+                org.telegram.divo.entity.RoleType.FAN.value,
+                org.telegram.divo.entity.RoleType.NEW_FACE.value
+            )
         }
         return roleValue
             .split(",")
             .map { it.trim().lowercase().replace(" ", "_") }
             .map { role ->
-                if (role == "new_talent") "new_face" else role
+                when (role) {
+                    org.telegram.divo.entity.RoleType.NEW_TALENT.value -> org.telegram.divo.entity.RoleType.NEW_FACE.value
+                    else -> role
+                }
             }
             .filter { it.isNotEmpty() }
     }
@@ -44,13 +51,21 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
         return genderValue
             .split(",")
             .map { it.trim().lowercase() }
-            .filter { it.isNotEmpty() }
+            .mapNotNull { 
+                when(it) {
+                    "male" -> "male"
+                    "female" -> "female"
+                    else -> null
+                }
+            }
     }
 
     fun formatDateForApi(dateStr: String, timeStr: String, hoursOffset: Int = 0): String {
         val dateFormats = listOf(
             "d MMM yyyy",
             "dd MMM yyyy",
+            "d MMMM yyyy",
+            "dd MMMM yyyy",
             "yyyy-MM-dd",
             "dd.MM.yyyy",
             "dd/MM/yyyy"
@@ -67,7 +82,7 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
 
         for (format in dateFormats) {
             try {
-                val sdf = SimpleDateFormat(format, Locale.getDefault())
+                val sdf = SimpleDateFormat(format, org.telegram.divo.dal.network.DivoLanguageManager.getSystemLocale())
                 parsedDate = sdf.parse(dateStr)
                 if (parsedDate != null) break
             } catch (_: Exception) {}
@@ -75,7 +90,7 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
 
         for (format in timeFormats) {
             try {
-                val sdf = SimpleDateFormat(format, Locale.getDefault())
+                val sdf = SimpleDateFormat(format, org.telegram.divo.dal.network.DivoLanguageManager.getSystemLocale())
                 parsedTime = sdf.parse(timeStr)
                 if (parsedTime != null) break
             } catch (_: Exception) {}
@@ -97,6 +112,7 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
                 calendar.set(java.util.Calendar.MINUTE, timeCal.get(java.util.Calendar.MINUTE))
                 calendar.set(java.util.Calendar.SECOND, 0)
             }
+            calendar.add(java.util.Calendar.HOUR_OF_DAY, hoursOffset)
             val outputFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
             return outputFormat.format(calendar.time)
         }
@@ -117,10 +133,11 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
     }
 
     val formattedDate = formatDateForApi(eventDate, eventTime)
-    val formattedDateTo = if (deadlineDate.isNotEmpty()) {
+    val formattedDateTo = formatDateForApi(eventDate, eventTime, hoursOffset = 4)
+    val formattedDeadline = if (deadlineDate.isNotEmpty()) {
         formatDateForApi(deadlineDate, deadlineTime)
     } else {
-        ""
+        null
     }
 
     return CreateEventRequest(
@@ -128,7 +145,12 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
         description = eventDescription,
         typeId = selectedEventType?.id ?: 1, // FIXME: Add proper typeId mapping
         date = formattedDate,
-        dateTo = formattedDateTo,
+        dateTo = formattedDateTo, // Event doesn't have an end date in UI currently, so using start date + 4h
+        isPublic = isPublicEvent,
+        ndaRequired = isNdaRequired,
+        applicationDeadline = formattedDeadline,
+        maxAttendees = maxParticipants,
+        requirements = eventRequirements,
         address = CreateEventAddressRequest(
             street = "Some street", // FIXME: Add address fields to UI
             house = "100B",
@@ -146,7 +168,7 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
         },
         paymentType = selectedPaymentType?.id ?: 2,
         paymentFrequency = selectedPaymentFrequency?.id ?: 1,
-        cost = eventRate,
+        cost = eventRate.toIntOrNull() ?: 0,
         role = mapRoleLabelToApiType(role.value),
         gender = mapGenderLabelToApiType(gender.value),
         age = blockNumericRangeToDto(ParametersType.AGE, blockParams.find { it.type == ParametersType.AGE }?.value.orEmpty()),
@@ -170,11 +192,16 @@ class CreateEventRequest(
     @SerializedName("typeId") val typeId: Int,
     @SerializedName("date") val date: String,
     @SerializedName("dateTo") val dateTo: String,
+    @SerializedName("isPublic") val isPublic: Boolean,
+    @SerializedName("ndaRequired") val ndaRequired: Boolean,
+    @SerializedName("applicationDeadline") val applicationDeadline: String?,
+    @SerializedName("maxAttendees") val maxAttendees: Int,
+    @SerializedName("requirements") val requirements: String,
     @SerializedName("address") val address: CreateEventAddressRequest,
     @SerializedName("files") val files: List<CreateEventFileRequest>?,
     @SerializedName("paymentType") val paymentType: Int,
     @SerializedName("paymentFrequency") val paymentFrequency: Int,
-    @SerializedName("cost") val cost: String,
+    @SerializedName("cost") val cost: Int,
     @SerializedName("role") val role: List<String>,
     @SerializedName("gender") val gender: List<String>,
     @SerializedName("age") val age: EventRangeDto?,

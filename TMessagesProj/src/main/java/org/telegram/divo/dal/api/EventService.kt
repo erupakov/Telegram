@@ -3,6 +3,7 @@ package org.telegram.divo.dal.api
 import org.telegram.divo.dal.dto.common.EmptyResponse
 import org.telegram.divo.dal.dto.event.CreateEventRequest
 import org.telegram.divo.dal.dto.event.EventDetailsResponse
+import org.telegram.divo.dal.dto.event.EventIdRequest
 import org.telegram.divo.dal.dto.event.EventListRequest
 import org.telegram.divo.dal.dto.event.EventListResponse
 import org.telegram.divo.dal.dto.event.EventTypesResponse
@@ -25,9 +26,10 @@ interface EventService {
     suspend fun getEvent(@Path("id") id: Int): EventDetailsResponse
 
     @POST("event/apply")
-    suspend fun applyEvent(
-        @Query("id") id: Int
-    ): EmptyResponse
+    suspend fun applyEvent(@Body request: EventIdRequest): EmptyResponse
+
+    @POST("event/unapply")
+    suspend fun unapplyEvent(@Body request: EventIdRequest): EmptyResponse
 
     @POST("event/types")
     suspend fun getEventTypes(@Body request: EventListRequest): EventTypesResponse
@@ -43,6 +45,12 @@ interface EventService {
 
     @DELETE("event/{id}")
     suspend fun deleteEvent(@Path("id") id: Int): EmptyResponse
+
+    @POST("event/{id}/like")
+    suspend fun likeEvent(@Path("id") id: Int): EmptyResponse
+
+    @POST("event/{id}/unlike")
+    suspend fun unlikeEvent(@Path("id") id: Int): EmptyResponse
 
 }
 

@@ -19,6 +19,7 @@ import org.telegram.divo.screen.gallery.GalleryViewerScreen
 
 object EventParamsHolder {
     var params: EventModelAttributes? = null
+    var isNdaRequired: Boolean? = null
 }
 
 sealed class EventDetailsRoute(val route: String) {
@@ -27,6 +28,12 @@ sealed class EventDetailsRoute(val route: String) {
         fun createRoute(eventId: Int) = "detail/$eventId"
     }
     data object Params : EventDetailsRoute("params")
+    data class ApplyConfirmation(val eventId: Int) : EventDetailsRoute("apply_confirmation/$eventId") {
+        companion object {
+            const val ROUTE = "apply_confirmation/{eventId}"
+            fun createRoute(eventId: Int) = "apply_confirmation/$eventId"
+        }
+    }
 
     object GalleryViewer : EventDetailsRoute("gallery/{sourceType}") {
         const val ROUTE = "gallery/{sourceType}"
@@ -43,6 +50,7 @@ fun EventDetailsNavGraph(
     eventId: Int,
     isOwnProfile: Boolean = false,
     onNavigateToEditEvent: (Int) -> Unit = {},
+    onEventDeleted: () -> Unit = {},
     onNavigateBack: () -> Unit,
     onNavControllerReady: (NavController) -> Unit = {},
 ) {
@@ -76,13 +84,19 @@ fun EventDetailsNavGraph(
                     nav.navigate(EventDetailsRoute.GalleryViewer.createRoute(items, index))
                 },
                 onParamsClicked = {
-                    EventParamsHolder.params = eventDetailsViewModel.state.value.eventDetails?.modelAttributes
+                    val eventDetails = eventDetailsViewModel.state.value.eventDetails
+                    EventParamsHolder.params = eventDetails?.modelAttributes
+                    EventParamsHolder.isNdaRequired = eventDetails?.ndaRequired
                     nav.navigate(EventDetailsRoute.Params.route)
                 },
                 onEditEvent = onNavigateToEditEvent,
                 onPrevEventClicked = {
                     nav.navigate(EventDetailsRoute.Detail.createRoute(it))
                 },
+                onApplyConfirmation = {
+                    nav.navigate(EventDetailsRoute.ApplyConfirmation.createRoute(it))
+                },
+                onEventDeleted = onEventDeleted,
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }
@@ -116,12 +130,25 @@ fun EventDetailsNavGraph(
             DisposableEffect(Unit) {
                 onDispose {
                     EventParamsHolder.params = null
+                    EventParamsHolder.isNdaRequired = null
                 }
             }
 
             EventParametersScreen(
                 params = EventParamsHolder.params,
+                isNdaRequired = EventParamsHolder.isNdaRequired,
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
+            )
+        }
+        composable(
+            route = EventDetailsRoute.ApplyConfirmation.ROUTE,
+            arguments = listOf(navArgument("eventId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val applyEventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
+            org.telegram.divo.screen.apply_confirmation.ApplyConfirmationScreen(
+                eventId = applyEventId,
+                onBack = { nav.popBackStack() },
+                onSuccessDismiss = { nav.popBackStack() }
             )
         }
     }

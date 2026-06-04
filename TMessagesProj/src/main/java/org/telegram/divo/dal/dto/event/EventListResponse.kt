@@ -27,15 +27,21 @@ class EventDto(
     @SerializedName("title") val title: String?,
     @SerializedName("description") val description: String?,
     @SerializedName("type") val type: EventTypeDto?,
+    @SerializedName("paymentType") val paymentType: EventTypeDto?,
+    @SerializedName("maxAttendees") val maxAttendees: Int?,
     @SerializedName("likesCount") val likesCount: Int,
     @SerializedName("isApplied") val isApplied: Boolean,
     @SerializedName("appliesCount") val appliesCount: Int,
     @SerializedName("date") val date: String?,
     @SerializedName("dateTo") val dateTo: String?,
+    @SerializedName("applicationDeadline") val applicationDeadline: String?,
+    @SerializedName("isPublic") val isPublic: Boolean?,
+    @SerializedName("ndaRequired") val ndaRequired: Boolean?,
     @SerializedName("isLikedByUser") val isLikedByUser: Boolean,
     @SerializedName("creator") val creator: EventCreatorDto?,
     @SerializedName("files") val files: List<EventFileDto>?,
-    @SerializedName("address") val address: AgencyAddressDto?
+    @SerializedName("address") val address: AgencyAddressDto?,
+    @SerializedName("modelAttributes") val modelAttributes: EventModelAttributesDto?
 )
 
 class EventCreatorDto(
@@ -43,7 +49,8 @@ class EventCreatorDto(
     @SerializedName("fullName") val fullName: String?,
     @SerializedName("photo") val photo: PhotoDto?,
     @SerializedName("avatar") val avatar: PhotoDto?,
-    @SerializedName("roleLabel") val roleLabel: String?
+    @SerializedName("roleLabel") val roleLabel: String?,
+    @SerializedName("isVerified") val isVerified: Boolean?
 )
 
 class EventFileDto(
@@ -73,11 +80,19 @@ fun EventDto.toEntity() = Event(
     title = title,
     description = description,
     type = type?.title,
+    typeId = type?.id,
+    paymentType = paymentType?.title,
+    paymentTypeId = paymentType?.id,
+    modelAttributes = modelAttributes?.toEntity(),
+    maxAttendees = maxAttendees,
     likesCount = likesCount,
     appliesCount = appliesCount,
     isApplied = isApplied,
     date = date.orEmpty(),
     dateTo = dateTo.orEmpty(),
+    applicationDeadline = applicationDeadline,
+    isPublic = isPublic ?: true,
+    ndaRequired = ndaRequired ?: false,
     city = address?.city?.name.orEmpty(),
     countryCode = address?.city?.countryCode.orEmpty(),
     isLikedByUser = isLikedByUser,
@@ -90,7 +105,8 @@ fun EventCreatorDto.toEntity() = EventCreator(
     fullName = fullName,
     photo = photo?.toEntity(),
     avatar = avatar?.toEntity(),
-    roleLabel = roleLabel
+    roleLabel = roleLabel,
+    isVerified = isVerified ?: false
 )
 
 fun EventFileDto.toEntity() = EventFile(

@@ -86,4 +86,10 @@ class OffsetPaginator<T>(
     fun reset() {
         _state.value = PaginatorState()
     }
+
+    fun updateItem(predicate: (T) -> Boolean, updater: (T) -> T) {
+        val current = _state.value
+        val newItems = current.items.map { if (predicate(it)) updater(it) else it }
+        _state.value = current.copy(items = newItems)
+    }
 }

@@ -128,6 +128,8 @@ data class LocalCity(
     val id: Long,
     val name: String,
     val asciiName: String,
+    val alternateNames: String,
     val countryCode: String,
-    val population: Int
+    val population: Int,
+    val matchedName: String? = null
 )

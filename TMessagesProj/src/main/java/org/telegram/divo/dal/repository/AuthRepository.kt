@@ -1,5 +1,6 @@
 package org.telegram.divo.dal.repository
 
+import kotlinx.coroutines.flow.asSharedFlow
 import org.telegram.divo.dal.network.AccessTokenProvider
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
@@ -21,10 +22,14 @@ class AuthRepository(
     private val accessTokenProvider: AccessTokenProvider
 ) {
 
+    private val _authStateFlow = kotlinx.coroutines.flow.MutableSharedFlow<Boolean>(extraBufferCapacity = 1)
+    val authStateFlow = _authStateFlow.asSharedFlow()
+
     suspend fun login(request: LoginRequest): DivoResult<LoginResponse> {
         val result = resultOf { service.login(request) }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+            _authStateFlow.tryEmit(true)
         }
         return result
     }
@@ -34,6 +39,7 @@ class AuthRepository(
         if (result is DivoResult.Success) {
             val token = result.value.data?.accessToken ?: result.value.data?.token
             accessTokenProvider.setAccessToken(token)
+            _authStateFlow.tryEmit(true)
         }
         return result
     }
@@ -44,6 +50,7 @@ class AuthRepository(
         val result = resultOf { service.linkTelegramAccount(bearerToken, request) }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+            _authStateFlow.tryEmit(true)
         }
         return result
     }
@@ -52,6 +59,7 @@ class AuthRepository(
         val result = resultOf { service.loginSocial(request) }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+            _authStateFlow.tryEmit(true)
         }
         return result
     }
@@ -60,6 +68,7 @@ class AuthRepository(
         val result = resultOf { service.registrationSocial(request) }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+            _authStateFlow.tryEmit(true)
         }
         return result
     }
@@ -72,6 +81,7 @@ class AuthRepository(
         val result = resultOf { service.logout() }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(null)
+            _authStateFlow.tryEmit(false)
             kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
                 DivoApi.userRepository.clearCache()
             }

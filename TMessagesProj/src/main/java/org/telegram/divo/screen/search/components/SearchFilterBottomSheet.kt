@@ -241,7 +241,7 @@ fun SearchFilterBottomSheet(
                 )
                 Spacer(Modifier.height(16.dp))
                 CityField(
-                    text = draftCity?.name.orEmpty(),
+                    text = draftCity?.let { it.matchedName ?: it.name }.orEmpty(),
                     onClick = { showCitySheet = true }
                 )
 

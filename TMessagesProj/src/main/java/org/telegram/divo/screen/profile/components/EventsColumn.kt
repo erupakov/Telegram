@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.Image
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -151,6 +153,14 @@ private fun EventItem(
                     .size(60.dp)
                     .clip(CircleShape),
                 model = item.files.firstOrNull()?.fullUrl ?: item.creator?.avatar?.fullUrl,
+                errorContent = {
+                    Image(
+                        painter = painterResource(R.drawable.divo_event_placeholder),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             )
             Spacer(modifier = Modifier.width(10.dp))
             Column {
@@ -169,38 +179,49 @@ private fun EventItem(
                     style = AppTheme.typography.helveticaNeueRegular,
                     fontSize = 14.sp,
                     color = Color.Black.copy(0.6f),
-
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }
 
-//        if (isOwnProfile) {
-//            UIButtonNew(
-//                modifier = Modifier
-//                    .height(32.dp),
-//                text = stringResource(R.string.ButtonEdit),
-//                paddingTop = 0.dp,
-//                textStyle = AppTheme.typography.textButton.copy(
-//                    fontSize = 14.sp
-//                ),
-//                onClick = {}
-//            )
-//        }
-
-        if (isModel && !isOwnProfile) {
-            UIButtonNew(
-                modifier = Modifier
-                    .height(32.dp),
-                text = if (item.isApplied) stringResource(R.string.ButtonApplied) else stringResource(R.string.ButtonApply),
-                paddingTop = 0.dp,
-                leadingIcon =  if (item.isApplied) R.drawable.ic_divo_apply else null,
-                leadingIconTint = AppTheme.colors.textPrimary,
-                background = if (item.isApplied) AppTheme.colors.backgroundLight else AppTheme.colors.accentOrange,
-                textStyle = AppTheme.typography.textButton.copy(
-                    fontSize = 14.sp
-                ),
-                onClick = { if (!item.isApplied) onApplied(item.id) }
-            )
+        if (!isOwnProfile) {
+            if (item.isApplied) {
+                Row(
+                    modifier = Modifier
+                        .clickableWithoutRipple { onApplied(item.id) }
+                        .padding(horizontal = 4.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    androidx.compose.material3.Icon(
+                        painter = painterResource(R.drawable.ic_divo_apply),
+                        contentDescription = null,
+                        tint = AppTheme.colors.textPrimary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = stringResource(R.string.ButtonApplied),
+                        style = AppTheme.typography.textButton.copy(
+                            fontSize = 14.sp,
+                            color = AppTheme.colors.textPrimary
+                        )
+                    )
+                }
+            } else {
+                UIButtonNew(
+                    modifier = Modifier
+                        .height(32.dp),
+                    text = stringResource(R.string.ButtonApply),
+                    paddingTop = 0.dp,
+                    background = AppTheme.colors.accentOrange,
+                    textStyle = AppTheme.typography.textButton.copy(
+                        fontSize = 14.sp,
+                        color = AppTheme.colors.onBackground
+                    ),
+                    onClick = { onApplied(item.id) }
+                )
+            }
         }
     }
 }

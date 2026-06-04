@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -147,10 +148,16 @@ fun EventPreviewScreen(
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { action ->
-            if (action is Effect.ShowError) {
-                snackbarState.show(
-                    SnackbarEvent.Error(action.message)
-                )
+            when (action) {
+                is Effect.ShowError -> {
+                    snackbarState.show(
+                        SnackbarEvent.Error(action.message)
+                    )
+                }
+                is Effect.EventPublished -> {
+                    onPublish()
+                }
+                else -> {}
             }
         }
     }
@@ -166,15 +173,15 @@ fun EventPreviewScreen(
             modifier = Modifier.zIndex(3f),
             onNavigateBack = onBack,
             transitionProgress = transitionProgress,
-            isSolid = isSolid,
+            isSolid = true,
             titleContent = {
                 Text(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp),
                     text = stringResource(R.string.EventPreview).uppercase(),
                     style = AppTheme.typography.helveticaNeueLtCom,
-                    fontSize = 18.sp,
-                    color = AppTheme.colors.textPrimary,
+                    fontSize = 16.sp,
+                    color = Color.White,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
                 )
             },
             actionsContent = { _, buttonBgColor, iconColor, buttonBorderColor ->
@@ -239,7 +246,8 @@ fun EventPreviewScreen(
                         OrganizerCard(
                             avatarModel = state.currentUser.avatarUrl.ifBlank { state.currentUser.photoUrl.ifBlank { null } },
                             name = state.currentUser.fullName,
-                            status = "Online"
+                            status = "Online",
+                            isVerified = true
                         )
                     }
 
@@ -336,12 +344,16 @@ private fun PreviewHeader(
     engagementsAlpha: Float = 1f,
     onBack: () -> Unit,
 ) {
-    val statusBarTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() + 14.dp
+    val rawTopPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
+    var topPadding by remember { mutableStateOf(rawTopPadding) }
+    if (rawTopPadding > topPadding) {
+        topPadding = rawTopPadding
+    }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(1f)
+            .aspectRatio(0.9f)
     ) {
         val bgModel: String = state.galleryUris.firstOrNull()?.toString().orEmpty()
 
@@ -350,70 +362,120 @@ private fun PreviewHeader(
             modifier = Modifier.fillMaxSize()
         )
 
+        // Stats section – matches EventDetailsHeader.StatsSection
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = statusBarTop),
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(top = topPadding + 16.dp)
+                .graphicsLayer { alpha = engagementsAlpha }
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalAlignment = Alignment.End
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .graphicsLayer { alpha = engagementsAlpha },
-                horizontalAlignment = Alignment.End
+            // Space for fixed toolbar buttons
+            Spacer(Modifier.height(48.dp))
+
+            EngagementItem(
+                resId = R.drawable.ic_divo_favorite,
+                count = 0
+            )
+            Spacer(Modifier.height(10.dp))
+            EngagementItem(
+                resId = R.drawable.ic_divo_visibility,
+                count = 0
+            )
+            Spacer(Modifier.height(10.dp))
+            EngagementItem(
+                resId = R.drawable.ic_divo_bookmark_glass,
+                count = 0
+            )
+        }
+
+        // Content section – matches EventDetailsHeader.ContentSection
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(bottom = 6.dp),
+                horizontalArrangement = Arrangement.spacedBy(6.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // Space for fixed toolbar buttons
-                Spacer(Modifier.height(48.dp))
-                
-                EngagementItem(
-                    resId = R.drawable.ic_divo_favorite,
-                    count = 0
-                )
-                Spacer(Modifier.height(10.dp))
-                EngagementItem(
-                    resId = R.drawable.ic_divo_visibility,
-                    count = 0
-                )
-                Spacer(Modifier.height(10.dp))
-                EngagementItem(
-                    resId = R.drawable.ic_divo_bookmark_glass,
-                    count = 0
+                state.selectedEventType?.title?.let { typeTitle ->
+                    DivoChip(
+                        modifier = Modifier.height(27.dp),
+                        text = typeTitle,
+                        background = getEventTypeColor(state.selectedEventType.id, typeTitle),
+                        textColor = Color.White,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+                if (state.isPaid) {
+                    DivoChip(
+                        modifier = Modifier.height(27.dp),
+                        text = state.selectedPaymentType?.title ?: stringResource(R.string.EventPaid),
+                        resId = R.drawable.ic_divo_paid,
+                        background = Color.White.copy(alpha = 0.3f),
+                        textColor = Color.White,
+                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+            }
+            Text(
+                text = state.eventName.ifBlank { stringResource(R.string.EventName) },
+                style = AppTheme.typography.displayLarge,
+                color = AppTheme.colors.onBackground,
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(Modifier.height(4.dp))
+
+            val dateLabel = buildString {
+                if (state.eventDate.isNotBlank()) {
+                    append(state.eventDate.toMonthDayFormat())
+                    if (state.eventTime.isNotBlank()) {
+                        if (isNotEmpty()) append(" · ")
+                        append(state.eventTime)
+                    }
+                }
+                if (state.selectedCountries.isNotEmpty()) {
+                    if (isNotEmpty()) append(" · ")
+                    append("${state.selectedCountries.first().flag}")
+                }
+                if (state.isPaid && state.eventRate.isNotBlank()) {
+                    if (isNotEmpty()) append(" · ")
+                    append("$ ${state.eventRate}")
+                }
+            }
+            if (dateLabel.isNotBlank()) {
+                Text(
+                    text = dateLabel,
+                    style = AppTheme.typography.bodyMedium,
+                    color = AppTheme.colors.onBackground
                 )
             }
-
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 20.dp)
+            Spacer(Modifier.height(14.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    state.selectedEventType?.title?.let {
-                        DivoChip(
-                            text = it,
-                            contentPadding = PaddingValues(8.dp)
-                        )
-                    }
-                    if (state.isPaid) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (state.deadlineDate.isNotBlank()) {
                         RoundedGlassContainer(
-                            modifier = Modifier,
-                            height = 24.dp,
-                            space = 4.dp,
+                            height = 30.dp,
                             borderColor = AppTheme.colors.onBackground.copy(alpha = 0.2f),
-                            contentPadding = PaddingValues(start = 6.dp, end = 8.dp)
+                            contentPadding = PaddingValues(horizontal = 12.dp)
                         ) {
-                            Icon(
-                                modifier = Modifier.size(14.dp),
-                                painter = painterResource(R.drawable.ic_divo_paid),
-                                contentDescription = null,
-                                tint = AppTheme.colors.onBackground
-                            )
+                            val date = state.deadlineDate.toMonthDayFormat()
                             Text(
-                                modifier = Modifier.offset(y = 0.5.dp),
-                                text = stringResource(R.string.EventPaid),
-                                style = AppTheme.typography.helveticaNeueRegular,
+                                text = stringResource(R.string.ClosesDate, date),
+                                style = AppTheme.typography.bodyMedium,
                                 color = AppTheme.colors.onBackground,
-                                fontSize = 12.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
@@ -421,80 +483,22 @@ private fun PreviewHeader(
                     }
                 }
 
-                Spacer(Modifier.height(12.dp))
-
-                Text(
-                    text = state.eventName.ifBlank { stringResource(R.string.EventName) },
-                    style = AppTheme.typography.displayLarge,
-                    color = AppTheme.colors.onBackground
-                )
-
-                Spacer(Modifier.height(4.dp))
-
-                val dateLabel = buildString {
-                    if (state.eventDate.isNotBlank()) {
-                        append(state.eventDate.toMonthDayFormat())
-                        if (state.eventTime.isNotBlank()) {
-                            if (isNotEmpty()) append(" · ")
-                            append(state.eventTime)
-                        }
-                    }
-                    if (state.selectedCountries.isNotEmpty()) {
-                        if (isNotEmpty()) append(" · ")
-                        append("${state.selectedCountries.first().flag}")
-                    }
-                    if (state.isPaid && state.eventRate.isNotBlank()) {
-                        if (isNotEmpty()) append(" · ")
-                        append("$ ${state.eventRate}")
-                    }
-                }
-                Spacer(Modifier.height(6.dp))
-                if (dateLabel.isNotBlank()) {
+                RoundedGlassContainer(
+                    height = 36.dp,
+                    background = Color.White.copy(alpha = 0.8f),
+                    contentPadding = PaddingValues(horizontal = 12.dp)
+                ) {
                     Text(
-                        text = dateLabel,
-                        style = AppTheme.typography.bodyMedium,
-                        color = AppTheme.colors.onBackground
+                        text = stringResource(R.string.ApplyNowPreview),
+                        style = AppTheme.typography.helveticaNeueLtCom,
+                        color = Color.Black,
+                        fontSize = 13.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
-                Spacer(Modifier.height(9.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RoundedGlassContainer(
-                        modifier = Modifier,
-                        height = 30.dp,
-                        borderColor = AppTheme.colors.onBackground.copy(alpha = 0.2f),
-                        contentPadding = PaddingValues(start = 12.dp, end = 12.dp)
-                    ) {
-                        val date = state.deadlineDate.toMonthDayFormat()
-                        Text(
-                            text = stringResource(R.string.ClosesDate, date),
-                            style = AppTheme.typography.bodyMedium,
-                            color = AppTheme.colors.onBackground,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-
-                    RoundedGlassContainer(
-                        modifier = Modifier,
-                        height = 36.dp,
-                        borderColor = AppTheme.colors.backgroundLight,
-                        background = AppTheme.colors.backgroundLight,
-                        contentPadding = PaddingValues(start = 12.dp, end = 12.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.ApplyNowPreview),
-                            style = AppTheme.typography.bodyMedium,
-                            color = AppTheme.colors.textPrimary.copy(0.4f),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
             }
+            Spacer(Modifier.height(20.dp))
         }
     }
 }
@@ -560,6 +564,7 @@ private fun PreviewBottomBar(
 private fun EngagementItem(
     @DrawableRes resId: Int,
     count: Int,
+    tint: Color = AppTheme.colors.onBackground
 ) {
     RoundedGlassContainer(
         modifier = Modifier.width(56.dp),
@@ -571,7 +576,7 @@ private fun EngagementItem(
             modifier = Modifier.size(20.dp),
             painter = painterResource(resId),
             contentDescription = null,
-            tint = AppTheme.colors.onBackground
+            tint = tint
         )
         Text(
             modifier = Modifier.offset(y = 0.5.dp),
@@ -650,4 +655,24 @@ private fun Background(
                 )
         )
     }
+}
+
+private fun getEventTypeColor(typeId: Int?, type: String?): Color {
+    if (typeId != null) {
+        return when (typeId) {
+            1 -> Color(0xFF185FA5)
+            281 -> Color(0xFF0F6E56)
+            else -> generateColorForId(typeId)
+        }
+    }
+    return Color(0xFF185FA5)
+}
+
+private fun generateColorForId(id: Int): Color {
+    val colors = listOf(
+        Color(0xFF185FA5), Color(0xFF534AB7), Color(0xFF0F6E56),
+        Color(0xFF888780), Color(0xFFE8520A), Color(0xFFD81B60),
+        Color(0xFF8E24AA), Color(0xFF00897B), Color(0xFFF4511E)
+    )
+    return colors[id % colors.size]
 }
