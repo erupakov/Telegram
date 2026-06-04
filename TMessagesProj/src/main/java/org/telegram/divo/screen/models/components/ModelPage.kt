@@ -44,6 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.components.DivoAvatar
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.toCountryFlagEmoji
@@ -124,7 +125,16 @@ fun ModelPage(
                     .padding(start = 16.dp, top = 20.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
-                Column(Modifier.weight(1f)) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    DivoAvatar(
+                        imageUrl = feed.user.photoUrl,
+                        isOnline = feed.user.isOnline ?: false
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Column {
                     Text(
                         text = feed.user.fullName,
                         color = AppTheme.colors.textColor,
@@ -171,6 +181,7 @@ fun ModelPage(
                             )
                         }
                     }
+                }
                 }
 
                 Column {

@@ -28,6 +28,7 @@ data class UserInfo(
     val isPremium: Boolean = false,
     val isVerified: Boolean = false,
     val userRatingStatus: String = "",
+    val isOnline: Boolean? = false,
     val userSocialNetworks: List<UserSocialNetwork> = emptyList()
 ) {
     val displayName: String
