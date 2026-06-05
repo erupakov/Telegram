@@ -156,6 +156,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         if (!tgUser.username.isNullOrBlank()) {
                             additionalInfo[AdditionalInfoKeys.TELEGRAM_USERNAME] = tgUser.username
                         }
+                        additionalInfo[AdditionalInfoKeys.TELEGRAM_ACCESS_HASH] = tgUser.access_hash
                     }
 
                     // Branch: social registration vs regular registration
@@ -241,9 +242,15 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     // 2.5 TG Profile Photo Update
                     if (telegramPhotoFile != null) {
                         try {
-                            val inputFile = suspendCancellableCoroutine<org.telegram.tgnet.TLRPC.InputFile?> { continuation ->
-                                org.telegram.messenger.FileLoader.getInstance(state.value.currentAccount).uploadFile(telegramPhotoFile!!.absolutePath) { result ->
-                                    continuation.resume(result)
+                            val inputFile = kotlinx.coroutines.withTimeoutOrNull(15000) {
+                                suspendCancellableCoroutine<org.telegram.tgnet.TLRPC.InputFile?> { continuation ->
+                                    val path = telegramPhotoFile!!.absolutePath
+                                    org.telegram.messenger.FileLoader.getInstance(state.value.currentAccount).uploadFile(path) { result ->
+                                        if (continuation.isActive) continuation.resume(result)
+                                    }
+                                    continuation.invokeOnCancellation {
+                                        org.telegram.messenger.FileLoader.getInstance(state.value.currentAccount).cancelFileUpload(path, false)
+                                    }
                                 }
                             }
                             if (inputFile != null) {

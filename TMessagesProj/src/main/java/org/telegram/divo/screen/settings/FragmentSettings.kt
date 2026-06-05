@@ -54,6 +54,21 @@ class FragmentSettings : BaseFragment() {
                     onInnerNavControllerReady = { navController ->
                         profileNavController = navController
                     },
+                    onNavigateToChat = { tgId, tgHash, tgUsername ->
+                        val currentAccount = org.telegram.messenger.UserConfig.selectedAccount
+                        var user = org.telegram.messenger.MessagesController.getInstance(currentAccount).getUser(tgId)
+                        if (user == null) {
+                            user = org.telegram.tgnet.TLRPC.TL_user()
+                            user.id = tgId
+                            user.first_name = tgUsername ?: "User"
+                            user.username = tgUsername
+                            user.access_hash = tgHash ?: 0L
+                            org.telegram.messenger.MessagesController.getInstance(currentAccount).putUser(user, false)
+                        }
+                        val args = android.os.Bundle()
+                        args.putLong("user_id", tgId)
+                        presentFragment(org.telegram.ui.ChatActivity(args))
+                    },
                     navigateToLogout = {
                         val activity = parentActivity
                         if (activity != null) {

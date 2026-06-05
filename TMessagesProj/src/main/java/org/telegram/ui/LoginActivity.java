@@ -1823,13 +1823,25 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     TwoStepVerificationSetupActivity twoStepVerification = new TwoStepVerificationSetupActivity(TwoStepVerificationSetupActivity.TYPE_INTRO, null);
                     twoStepVerification.setBlockingAlert(otherwiseRelogin);
                     twoStepVerification.setFromRegistration(true);
-                    presentFragment(twoStepVerification, true);
+                    org.telegram.ui.ActionBar.INavigationLayout layout = parentLayout;
+                    if (layout != null) {
+                        layout.removeAllFragments();
+                        layout.presentFragment(twoStepVerification, false, true, true, false);
+                    } else {
+                        presentFragment(twoStepVerification, true);
+                    }
                 } else {
                     Bundle args = new Bundle();
                     args.putBoolean("afterSignup", afterSignup);
                     MainTabsActivity mainTabsActivity = new MainTabsActivity();
                     mainTabsActivity.prepareDialogsActivity(args);
-                    presentFragment(mainTabsActivity, true);
+                    org.telegram.ui.ActionBar.INavigationLayout layout = parentLayout;
+                    if (layout != null) {
+                        layout.removeAllFragments();
+                        layout.presentFragment(mainTabsActivity, false, true, true, false);
+                    } else {
+                        presentFragment(mainTabsActivity, true);
+                    }
                 }
 
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.mainUserInfoChanged);

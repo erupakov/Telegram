@@ -55,6 +55,9 @@ import org.telegram.divo.components.TelegramUserAvatarEditable
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.screen.work_history.WorkHistoryScreen
 import org.telegram.divo.screen.your_parameters.YourParametersScreen
+import org.telegram.divo.screen.reg_form.components.PlaceField
+import org.telegram.divo.screen.add_model.CountryPickerSheet
+import org.telegram.divo.screen.search.components.CityPickerSheet
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -228,6 +231,9 @@ fun EditMyProfileScreenView(
     var fName by rememberSaveable { mutableStateOf(uiState.fName) }
     var bio by rememberSaveable { mutableStateOf(uiState.bio) }
     var selectedAvatarUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    
+    var showCountrySheet by rememberSaveable { mutableStateOf(false) }
+    var showCitySheet by rememberSaveable { mutableStateOf(false) }
 
     val openGallery = rememberGalleryLauncher { uri ->
         selectedAvatarUri = uri
@@ -237,6 +243,58 @@ fun EditMyProfileScreenView(
     LaunchedEffect(uiState.fName, uiState.bio) {
         fName = uiState.fName
         bio = uiState.bio
+    }
+    
+    if (showCountrySheet) {
+        CountryPickerSheet(
+            list = uiState.allCountries,
+            selectedCountries = listOfNotNull(
+                uiState.allCountries.find { it.name == uiState.country }
+            ),
+            onDismiss = { showCountrySheet = false },
+            onPick = { selectedList ->
+                val country = selectedList.firstOrNull()
+                onIntent(
+                    EditMyProfileIntent.OnLocationChanged(
+                        country = country?.name ?: "",
+                        countryCode = country?.shortName ?: "",
+                        city = null
+                    )
+                )
+                showCountrySheet = false
+            }
+        )
+    }
+
+    if (showCitySheet) {
+        CityPickerSheet(
+            list = uiState.allCities,
+            selectedCity = uiState.city,
+            allCountries = uiState.allCountries,
+            selectedCountries = listOfNotNull(
+                uiState.allCountries.find { it.name == uiState.country }
+            ),
+            onDismiss = { showCitySheet = false },
+            onPick = { selectedCity ->
+                val matchedCountry = uiState.allCountries.find {
+                    it.shortName.equals(selectedCity?.countryCode, ignoreCase = true)
+                }
+                onIntent(
+                    EditMyProfileIntent.OnLocationChanged(
+                        city = selectedCity,
+                        country = if (uiState.country.isEmpty() && matchedCountry != null)
+                            matchedCountry.name
+                        else
+                            uiState.country,
+                        countryCode = if (uiState.countryCode.isEmpty() && matchedCountry != null)
+                            matchedCountry.shortName
+                        else
+                            uiState.countryCode
+                    )
+                )
+                showCitySheet = false
+            }
+        )
     }
 
     if (uiState.isLoading) {
@@ -300,6 +358,22 @@ fun EditMyProfileScreenView(
                 ),
                 horizontalContentPadding = 16.dp
             )
+            
+            Spacer(modifier = Modifier.size(16.dp))
+            
+            PlaceField(
+                text = uiState.country,
+                label = stringResource(R.string.CountryLabel),
+                onClick = { showCountrySheet = true }
+            )
+            
+            Spacer(modifier = Modifier.size(16.dp))
+            
+            PlaceField(
+                text = uiState.city?.let { it.matchedName ?: it.name }.orEmpty(),
+                label = stringResource(R.string.CityLabel),
+                onClick = { showCitySheet = true }
+            )
 
             Spacer(modifier = Modifier.size(20.dp))
 
@@ -318,9 +392,12 @@ fun EditMyProfileScreenView(
                     )
                 }
             } else {
+                val isCityRequiredButMissing = uiState.country.isNotEmpty() && uiState.city == null
+                
                 UIButtonNew(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                     text = stringResource(R.string.SaveEditProfileScreen),
+                    enabled = !isCityRequiredButMissing,
                     onClick = {
                         onIntent(
                             EditMyProfileIntent.OnSaveClicked(

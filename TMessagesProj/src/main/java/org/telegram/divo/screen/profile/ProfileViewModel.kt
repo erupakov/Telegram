@@ -223,6 +223,7 @@ class ProfileViewModel(
             is ProfileIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
             is ProfileIntent.OnFindSimilarProfiles -> sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
+            is ProfileIntent.OnSendDMClicked -> sendEffect(ProfileEffect.NavigateToChat(intent.telegramId, intent.telegramAccessHash, intent.telegramUsername))
             ProfileIntent.OnShowAppearances -> sendEffect(ShowAppearances)
             ProfileIntent.OnBackgroundReady -> setState { copy(hasBackgroundReady = true) }
             ProfileIntent.OnEventCreate -> sendEffect(NavigateToCreateEvent)

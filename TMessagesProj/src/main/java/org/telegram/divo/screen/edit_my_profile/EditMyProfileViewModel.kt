@@ -3,7 +3,16 @@ package org.telegram.divo.screen.edit_my_profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.screen.search.LocalCity
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.LocaleController
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
@@ -29,17 +38,41 @@ class EditMyProfileViewModel(
     fun getData() {
         viewModelScope.launch {
             setState { copy(isLoading = true) }
-            val result = DivoApi.userRepository.getCurrentUserInfo()
+            val userResultDeferred = async { DivoApi.userRepository.getCurrentUserInfo() }
+            val countriesDeferred = async(Dispatchers.IO) { loadCountriesFromAssets() }
+            val citiesDeferred = async(Dispatchers.IO) { loadCitiesFromAssets() }
+            
+            val result = userResultDeferred.await()
+            val allCountries = countriesDeferred.await()
+            val allCities = citiesDeferred.await()
 
             if (result is DivoResult.Success) {
                 val user = result.value
+                val matchedCountry = allCountries.find { it.shortName.equals(user.city?.countryCode, ignoreCase = true) }
+                val localCity = user.city?.let { c ->
+                    allCities.find { it.id == c.id.toLong() } ?: LocalCity(
+                        id = c.id.toLong(),
+                        name = c.name,
+                        asciiName = "",
+                        alternateNames = "",
+                        countryCode = c.countryCode ?: "",
+                        population = 0,
+                        matchedName = ""
+                    )
+                }
+                
                 setState {
                     copy(
                         fName = if (isModel) user.fullName else user.agency?.title ?: user.fullName,
                         bio = if (isModel) user.model?.description.orEmpty() else user.agency?.description.orEmpty(),
                         userFull = user,
                         avatarUrl = if (isModel) user.avatarUrl else user.agency?.photo?.fullUrl ?: user.avatarUrl,
-                        isLoading = false
+                        isLoading = false,
+                        allCountries = allCountries,
+                        allCities = allCities,
+                        city = localCity,
+                        country = matchedCountry?.name ?: "",
+                        countryCode = matchedCountry?.shortName ?: ""
                     )
                 }
             } else {
@@ -75,7 +108,8 @@ class EditMyProfileViewModel(
                         userInfo = userInfo.copy(
                             fullName = fNameRaw,
                             model = userInfo.model?.copy(description = aboutRaw),
-                            avatarUuid = uploadedUuid
+                            avatarUuid = uploadedUuid,
+                            city = state.value.city?.let { org.telegram.divo.entity.City(id = it.id.toInt(), name = it.name, countryCode = it.countryCode) } ?: userInfo.city
                         )
                     )
                 } else {
@@ -85,8 +119,14 @@ class EditMyProfileViewModel(
                             description = aboutRaw,
                             title = fNameRaw,
                             photo = if (uploadedUuid.isNotEmpty()) org.telegram.divo.entity.Photo(photoId = 0L, fileUuid = uploadedUuid) else agency.photo
-                        )
+                        ),
+                        // For agency we might also want to update the user's city in userInfo
                     )
+                    // The agency update doesn't take user city directly, it updates the agency. 
+                    // However we should probably update user Profile to save the city.
+                    DivoApi.userRepository.updateProfile(userInfo.copy(
+                        city = state.value.city?.let { org.telegram.divo.entity.City(id = it.id.toInt(), name = it.name, countryCode = it.countryCode) } ?: userInfo.city
+                    ))
                 }
 
                 when (result) {
@@ -131,6 +171,15 @@ class EditMyProfileViewModel(
             EditMyProfileIntent.OnLoad -> Unit
             is EditMyProfileIntent.OnSaveClicked -> {
                 updateProfile(intent.fName, intent.bio, intent.file)
+            }
+            is EditMyProfileIntent.OnLocationChanged -> {
+                setState {
+                    copy(
+                        country = intent.country,
+                        countryCode = intent.countryCode,
+                        city = intent.city
+                    )
+                }
             }
 
             is EditMyProfileIntent.OnAvatarUploaded -> {
@@ -288,6 +337,59 @@ class EditMyProfileViewModel(
         )
 
         sendEffect(Effect.NavigateBack)
+    }
+
+    private fun loadCountriesFromAssets(): List<LocalCountry> {
+        val list = mutableListOf<LocalCountry>()
+        try {
+            val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
+            val reader = BufferedReader(InputStreamReader(stream))
+            reader.forEachLine { line ->
+                val args = line.split(";")
+                if (args.size >= 3) {
+                    val code = args[0]
+                    val shortname = args[1]
+                    val defaultName = args[2]
+                    val locName = LocaleController.getCountryName(shortname)
+                    val name = if (!locName.isNullOrEmpty()) locName else defaultName
+                    val flag = LocaleController.getLanguageFlag(shortname)
+                    list.add(LocalCountry(code, shortname, name, flag))
+                }
+            }
+            reader.close()
+            stream.close()
+            list.sortBy { it.name }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return list
+    }
+
+    private fun loadCitiesFromAssets(): List<LocalCity> {
+        val cities = mutableListOf<LocalCity>()
+        try {
+            val stream = ApplicationLoader.applicationContext.assets.open("cities.txt")
+            stream.bufferedReader().forEachLine { line ->
+                val cols = line.split("\t")
+                if (cols.size > 14) {
+                    cities.add(
+                        LocalCity(
+                            id = cols[0].toLongOrNull() ?: return@forEachLine,
+                            name = cols[2],
+                            asciiName = cols[3],
+                            alternateNames = cols[4],
+                            countryCode = cols[8],
+                            population = cols[14].toIntOrNull() ?: 0,
+                            matchedName = ""
+                        )
+                    )
+                }
+            }
+            stream.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return cities
     }
 
     companion object {

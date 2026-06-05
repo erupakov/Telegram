@@ -105,6 +105,7 @@ fun ProfileScreen(
     onFindSimilarProfiles: (String) -> Unit,
     onNavigateToApplyConfirmation: (Int) -> Unit,
     onNavigateToAppearances: (PhysicalParams) -> Unit,
+    onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
 ) {
     val context = LocalContext.current
     val uiState = viewModel.state.collectAsState().value
@@ -154,6 +155,7 @@ fun ProfileScreen(
                     is ProfileEffect.NavigateToEditLinks -> onEditLinksClicked()
                     ProfileEffect.ShowAppearances -> onNavigateToAppearances(viewModel.state.value.physicalParams)
                     ProfileEffect.NavigateToCreateEvent -> onEventCreateClicked()
+                    is ProfileEffect.NavigateToChat -> onNavigateToChat(effect.telegramId, effect.telegramAccessHash, effect.telegramUsername)
                     ProfileEffect.AgencyModelAdded -> {
                         viewModel.setIntent(ProfileIntent.OnSelectAgencyModelForAdd(null))
                         viewModel.setIntent(ProfileIntent.OnToggleAgencySearch(false))
@@ -412,7 +414,11 @@ private fun ProfileScreenContent(
                             onIntent(ProfileIntent.OnStatsTabOpened(stat))
                         },
                         onSocialLinkClicked = { onIntent(ProfileIntent.OpenSocialLink(it)) },
-                        onSendDMClicked = { }, //TODO
+                        onSendDMClicked = { 
+                            uiState.userInfo.telegramId?.let { id -> 
+                                onIntent(ProfileIntent.OnSendDMClicked(id, uiState.userInfo.telegramAccessHash, uiState.userInfo.telegramUsername)) 
+                            } 
+                        },
                         onReady = { onIntent(ProfileIntent.OnBackgroundReady) }
                     )
                 }

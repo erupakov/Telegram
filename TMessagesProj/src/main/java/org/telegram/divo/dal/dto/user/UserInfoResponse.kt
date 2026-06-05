@@ -51,6 +51,7 @@ class UserDataDto(
     @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>,
     @SerializedName("customer") val customer: CustomerDto?,
     @SerializedName("agencyEmployee") val agencyEmployee: AgencyEmployeeDto?,
+    @SerializedName("telegramId") val telegramId: Long?,
     @SerializedName("additionalInfo") val additionalInfo: Map<String, Any?>? = null,
 )
 
@@ -161,6 +162,9 @@ fun UserDataDto.toEntity(): UserInfo {
         } else null
     }
 
+    val resolvedTgAccessHash = (info?.get(AdditionalInfoKeys.TELEGRAM_ACCESS_HASH) as? Number)?.toLong()
+    val resolvedTgUsername = info?.get(AdditionalInfoKeys.TELEGRAM_USERNAME) as? String
+
     return UserInfo(
         id = id,
         fullName = resolvedFullName,
@@ -190,6 +194,9 @@ fun UserDataDto.toEntity(): UserInfo {
         isPremium = isPremium,
         isVerified = isVerified ?: false,
         userRatingStatus = userRatingStatus.orEmpty(),
+        telegramId = telegramId,
+        telegramAccessHash = resolvedTgAccessHash,
+        telegramUsername = resolvedTgUsername,
         userSocialNetworks = userSocialNetworks.toEntities()
     )
 }

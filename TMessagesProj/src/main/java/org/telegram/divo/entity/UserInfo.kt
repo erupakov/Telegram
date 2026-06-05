@@ -29,6 +29,9 @@ data class UserInfo(
     val isVerified: Boolean = false,
     val userRatingStatus: String = "",
     val isOnline: Boolean? = false,
+    val telegramId: Long? = null,
+    val telegramAccessHash: Long? = null,
+    val telegramUsername: String? = null,
     val userSocialNetworks: List<UserSocialNetwork> = emptyList()
 ) {
     val displayName: String
