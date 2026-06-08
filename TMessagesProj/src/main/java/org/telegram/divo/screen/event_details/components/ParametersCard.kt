@@ -20,7 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.common.MeasuringUnits
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.labelRes
+import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.entity.EventModelAttributes
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -60,10 +63,14 @@ fun ParametersCard(
                         label = stringResource(R.string.LabelGender),
                         value = param.genders.joinToString(", ")
                     )
-                    val sep = if (param.weightFrom != null && param.weightTo != null) "-" else ""
                     ParameterItem(
-                        label = stringResource(R.string.LabelWeight),
-                        value = "${param.weightFrom}$sep${param.weightTo}"
+                        label = stringResource(ParametersType.WEIGHT.labelRes()),
+                        value = MeasuringUnits.formatStoredRange(
+                            ParametersType.WEIGHT,
+                            param.weightFrom,
+                            param.weightTo,
+                            param.measuringSystem,
+                        )
                     )
                 }
                 Spacer(Modifier.width(10.dp))
@@ -76,10 +83,14 @@ fun ParametersCard(
                             value = stringResource(R.string.AgeRange, param.ageFrom, param.ageTo)
                         )
                     }
-                    val sep = if (param.waistFrom != null && param.waistTo != null) "-" else ""
                     ParameterItem(
-                        label = stringResource(R.string.LabelWaist),
-                        value = "${param.waistFrom}$sep${param.waistTo}"
+                        label = stringResource(ParametersType.WAIST.labelRes()),
+                        value = MeasuringUnits.formatStoredRange(
+                            ParametersType.WAIST,
+                            param.waistFrom,
+                            param.waistTo,
+                            param.measuringSystem,
+                        )
                     )
                 }
             }
@@ -124,6 +135,8 @@ private fun ParameterItem(
                 color = AppTheme.colors.textPrimary,
                 lineHeight = 16.sp,
                 textAlign = TextAlign.End,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
         Divider()

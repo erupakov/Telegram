@@ -42,6 +42,27 @@ data class Gender(
     val id: String = "",
     val title: String = ""
 )
+
+fun mapGenderToEnglish(localizedGenders: String?): String? {
+    if (localizedGenders.isNullOrBlank()) return null
+    val context = org.telegram.messenger.ApplicationLoader.applicationContext
+    val array = context.resources.getStringArray(org.telegram.messenger.R.array.GenderItems)
+    
+    val maleLocalized = array.getOrNull(1)
+    val femaleLocalized = array.getOrNull(2)
+    
+    val items = localizedGenders.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+    
+    val mapped = items.map { item ->
+        when {
+            item.equals(maleLocalized, ignoreCase = true) || item.equals("male", ignoreCase = true) -> "male"
+            item.equals(femaleLocalized, ignoreCase = true) || item.equals("female", ignoreCase = true) -> "female"
+            else -> item.lowercase()
+        }
+    }
+    
+    return mapped.joinToString(",").takeIf { it.isNotEmpty() }
+}
 data class Model(
     val agency: Agency? = null,
     val education: String = "",

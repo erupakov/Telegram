@@ -34,8 +34,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.common.MeasuringUnits
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.labelRes
 import org.telegram.divo.common.utils.formattedAge
+import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.screen.profile.PhysicalParams
 import org.telegram.divo.style.AppTheme
@@ -125,19 +128,43 @@ fun AppearanceContent(
     val context = LocalContext.current
     var expanded by remember { mutableStateOf(false) }
 
+    val storedSystem = params.measuringSystem
     val allAvailableItems = buildList {
         if (params.gender.isNotEmpty()) add(stringResource(R.string.LabelGender) to params.gender)
         if (params.age.isNotEmpty()) add(stringResource(R.string.LabelAge) to params.age.formattedAge(context))
-        if (params.height > 0) add(stringResource(R.string.LabelHeight) to params.height.toString())
-        if (params.waist > 0) add(stringResource(R.string.LabelWaist) to params.waist.toString())
-        if (params.hips > 0) add(stringResource(R.string.LabelHips) to params.hips.toString())
-        if (params.shoeSize > 0) add(stringResource(R.string.LabelShoeSize) to params.shoeSize.toString())
+        if (params.height > 0) {
+            add(
+                stringResource(ParametersType.HEIGHT.labelRes()) to
+                    MeasuringUnits.formatStoredNumber(ParametersType.HEIGHT, params.height, storedSystem)
+            )
+        }
+        if (params.waist > 0) {
+            add(
+                stringResource(ParametersType.WAIST.labelRes()) to
+                    MeasuringUnits.formatStoredNumber(ParametersType.WAIST, params.waist, storedSystem)
+            )
+        }
+        if (params.hips > 0) {
+            add(
+                stringResource(ParametersType.HIPS.labelRes()) to
+                    MeasuringUnits.formatStoredNumber(ParametersType.HIPS, params.hips, storedSystem)
+            )
+        }
+        if (params.shoeSize > 0) {
+            add(
+                stringResource(ParametersType.SHOE_SIZE.labelRes()) to
+                    MeasuringUnits.formatStoredNumber(ParametersType.SHOE_SIZE, params.shoeSize, storedSystem)
+            )
+        }
         if (params.hairLength.isNotEmpty() && params.hairLength != "0") add(stringResource(R.string.LabelHairLength) to params.hairLength)
         if (params.hairColor.isNotEmpty()) add(stringResource(R.string.LabelHairColor) to params.hairColor)
         if (params.eyeColor.isNotEmpty()) add(stringResource(R.string.LabelEyeColor) to params.eyeColor)
         if (params.skinColor.isNotEmpty()) add(stringResource(R.string.LabelSkinColor) to params.skinColor)
         if (params.breastSize.isNotEmpty() && params.gender == stringResource(R.string.Female)) {
-            add(stringResource(R.string.LabelBreastSize) to params.breastSize)
+            add(
+                stringResource(ParametersType.BREAST_SIZE.labelRes()) to
+                    MeasuringUnits.formatStoredValue(ParametersType.BREAST_SIZE, params.breastSize, storedSystem)
+            )
         }
     }
 

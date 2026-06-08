@@ -92,12 +92,17 @@
     <string name="AllGendersLabel">Todos os gêneros</string>
     <string name="LabelAge">Idade</string>
     <string name="LabelHeight">Altura (cm)</string>
+    <string name="LabelHeightImperial">Altura (in)</string>
     <string name="LabelWaist">Cintura (cm)</string>
+    <string name="LabelWaistImperial">Cintura (in)</string>
     <string name="LabelHips">Quadril (cm)</string>
+    <string name="LabelHipsImperial">Quadril (in)</string>
     <string name="LabelWeight">Peso (kg)</string>
+    <string name="LabelWeightImperial">Peso (lb)</string>
     <string name="LabelShoeSize">Tamanho do calçado (EU)</string>
     <string name="LabelShoeSizeUS">Tamanho do calçado (US)</string>
     <string name="LabelBreastSize">Tamanho do busto</string>
+    <string name="LabelBreastSizeImperial">Tamanho do busto (in)</string>
     <string name="LabelHairColor">Cor do cabelo</string>
     <string name="LabelHairLength">Comprimento do cabelo</string>
     <string name="LabelEyeColor">Cor dos olhos</string>
@@ -383,6 +388,9 @@ enquanto ela estiver com outra agência.</string>
     <string name="PrivacyAndSecurityLabel">Privacidade e Segurança</string>
     <string name="DataAndStorageLabel">Dados e Armazenamento</string>
     <string name="AppearanceLabel">Aparência</string>
+    <string name="MeasuringSystemLabel">Sistema de medição</string>
+    <string name="MeasuringSystemMetric">Métrico</string>
+    <string name="MeasuringSystemImperial">Imperial</string>
     <string name="LogOutLabel">Sair</string>
 
     <!--onboarding screen-->

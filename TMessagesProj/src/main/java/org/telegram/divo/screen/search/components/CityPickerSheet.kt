@@ -149,9 +149,26 @@ fun CityPickerSheet(
                                     } else if (item.asciiName.lowercase().contains(query)) {
                                         item.asciiName
                                     } else if (item.alternateNames.lowercase().contains(query)) {
-                                        item.alternateNames.split(",")
-                                            .find { it.trim().lowercase().contains(query) }
-                                            ?.trim() ?: item.name
+                                        val alternates = item.alternateNames.split(",").map { it.trim() }
+                                        val cyrillicMatches = alternates.filter { 
+                                            it.matches(Regex("^[А-Яа-яЁё\\s-]+$")) && it.lowercase().contains(query) 
+                                        }
+                                        
+                                        if (cyrillicMatches.isNotEmpty()) {
+                                            val russianSuffixes = listOf("а", "я", "ь", "о", "е", "ск", "град", "бург", "ий", "ый", "ов", "ин", "ев", "во", "но")
+                                            cyrillicMatches.maxByOrNull { name ->
+                                                var score = 0
+                                                val lower = name.lowercase()
+                                                if (lower.startsWith(query)) score += 50
+                                                if (name.length == query.length + 1) score += 10
+                                                if (name.length == query.length + 2) score += 5
+                                                if (russianSuffixes.any { lower.endsWith(it) }) score += 20
+                                                if (name.contains(" ")) score -= 50
+                                                score
+                                            } ?: cyrillicMatches.first()
+                                        } else {
+                                            alternates.find { it.lowercase().contains(query) } ?: item.name
+                                        }
                                     } else {
                                         item.name
                                     }

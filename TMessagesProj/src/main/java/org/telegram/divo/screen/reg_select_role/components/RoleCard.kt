@@ -2,16 +2,13 @@ package org.telegram.divo.screen.reg_select_role.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.components.RadioCircle
 import org.telegram.divo.style.AppTheme
 
 @Composable
@@ -66,30 +64,6 @@ fun RoleCard(
                 text = description,
                 style = AppTheme.typography.bodyLarge,
                 color = AppTheme.colors.textPrimary.copy(0.8f),
-            )
-        }
-    }
-}
-
-@Composable
-private fun RadioCircle(selected: Boolean) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier
-            .padding(top = 3.dp)
-            .size(18.dp)
-            .clip(CircleShape)
-            .then(
-                if (selected) Modifier.background(AppTheme.colors.accentOrange)
-                else Modifier.border(1.dp, Color.LightGray, CircleShape)
-            )
-    ) {
-        if (selected) {
-            Box(
-                modifier = Modifier
-                    .size(6.dp)
-                    .clip(CircleShape)
-                    .background(Color.White)
             )
         }
     }

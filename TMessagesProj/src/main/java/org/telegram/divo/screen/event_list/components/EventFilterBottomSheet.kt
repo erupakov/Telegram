@@ -568,7 +568,7 @@ private fun EventTypePickerSheet(
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
                     .padding(bottom = 16.dp),
-                text = stringResource(R.string.EventFilterResetParameter),
+                text = stringResource(R.string.ButtonApply),
                 onClick = {
                     val selected = eventTypes.filter { it.id in selectedIds.value }
                     onPick(selected)

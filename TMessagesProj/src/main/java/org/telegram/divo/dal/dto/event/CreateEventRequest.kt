@@ -1,9 +1,10 @@
 package org.telegram.divo.dal.dto.event
 
 import com.google.gson.annotations.SerializedName
+import org.telegram.divo.common.DivoSettings
+import org.telegram.divo.common.numericFilterRange
+import org.telegram.divo.common.resolveNumericBlockParamBounds
 import org.telegram.divo.components.items.ParametersType
-import org.telegram.divo.components.items.numericFilterRange
-import org.telegram.divo.components.items.resolveNumericBlockParamBounds
 import org.telegram.divo.screen.event_create.State
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -19,8 +20,9 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
     }
 
     fun blockNumericRangeToDto(type: ParametersType, raw: String): EventRangeDto {
-        val bounds = checkNotNull(type.numericFilterRange())
-        val (from, to) = resolveNumericBlockParamBounds(raw, bounds)
+        val measuringSystem = DivoSettings.measuringSystem
+        val bounds = checkNotNull(type.numericFilterRange(measuringSystem))
+        val (from, to) = resolveNumericBlockParamBounds(raw, bounds, type, measuringSystem)
         return EventRangeDto(from = from?.toDouble(), to = to?.toDouble())
     }
 
@@ -45,19 +47,17 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
     }
 
     fun mapGenderLabelToApiType(genderValue: String): List<String> {
-        if (genderValue.isEmpty() || genderValue.contains("All", ignoreCase = true)) {
+        if (genderValue.isEmpty()) {
             return listOf("male", "female")
         }
-        return genderValue
-            .split(",")
-            .map { it.trim().lowercase() }
-            .mapNotNull { 
-                when(it) {
-                    "male" -> "male"
-                    "female" -> "female"
-                    else -> null
-                }
-            }
+        // Check if "All genders" is selected (first item in GenderItems array)
+        val context = org.telegram.messenger.ApplicationLoader.applicationContext
+        val allGendersLabel = context.resources.getStringArray(org.telegram.messenger.R.array.GenderItems).firstOrNull()
+        if (genderValue.equals(allGendersLabel, ignoreCase = true) || genderValue.contains("All", ignoreCase = true)) {
+            return listOf("male", "female")
+        }
+        val mapped = org.telegram.divo.entity.mapGenderToEnglish(genderValue)
+        return mapped?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() } ?: listOf("male", "female")
     }
 
     fun formatDateForApi(dateStr: String, timeStr: String, hoursOffset: Int = 0): String {
@@ -178,7 +178,7 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
         waist = blockNumericRangeToDto(ParametersType.WAIST, blockParams.find { it.type == ParametersType.WAIST }?.value.orEmpty()),
         hips = blockNumericRangeToDto(ParametersType.HIPS, blockParams.find { it.type == ParametersType.HIPS }?.value.orEmpty()),
         shoesSize = blockNumericRangeToDto(ParametersType.SHOE_SIZE, blockParams.find { it.type == ParametersType.SHOE_SIZE }?.value.orEmpty()),
-        measuringSystem = "metric", // FIXME: Add system selection
+        measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem, // Default to user setting
         hairColor = getAppearanceIds(hairColorOptions, hairColor.value),
         hairLength = getAppearanceIds(hairLengthOptions, hairLength.value),
         eyeColor = getAppearanceIds(eyeColorOptions, eyeColor.value),

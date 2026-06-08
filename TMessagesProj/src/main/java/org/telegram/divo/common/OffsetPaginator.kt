@@ -28,16 +28,20 @@ class OffsetPaginator<T>(
     private val _state = MutableStateFlow(PaginatorState<T>())
     val state: StateFlow<PaginatorState<T>> = _state.asStateFlow()
 
-    suspend fun loadInitial() {
+    suspend fun loadInitial(clearItems: Boolean = true) {
         if (_state.value.isLoading) return
 
         Log.d("MyTag", "Paginator: loadInitial start, limit=$limit")
-        _state.value = PaginatorState(isLoading = true)
+        _state.value = _state.value.copy(
+            isLoading = true,
+            items = if (clearItems) emptyList() else _state.value.items,
+            error = null
+        )
 
         try {
             val result = onLoad(0, limit)
             Log.d("MyTag", "Paginator: loadInitial success, items=${result.items.size}, totalCount=${result.totalCount}")
-            _state.value = PaginatorState(
+            _state.value = _state.value.copy(
                 items = result.items,
                 isLoading = false,
                 hasMore = result.items.size < result.totalCount,
@@ -47,7 +51,7 @@ class OffsetPaginator<T>(
             throw e
         } catch (e: Exception) {
             Log.d("MyTag", "Paginator: loadInitial error: ${e.message}")
-            _state.value = PaginatorState(
+            _state.value = _state.value.copy(
                 isLoading = false,
                 error = e.message ?: "Unknown error"
             )

@@ -165,7 +165,8 @@ data class PhysicalParams(
     val hairColor: String = "",
     val eyeColor: String = "",
     val skinColor: String = "",
-    val breastSize: String = ""
+    val breastSize: String = "",
+    val measuringSystem: String = "",
 )
 
 data class UserStatistic(

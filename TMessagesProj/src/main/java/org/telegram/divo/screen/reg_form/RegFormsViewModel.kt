@@ -147,7 +147,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (rawPhone.isNotBlank()) additionalInfo[AdditionalInfoKeys.PHONE] = rawPhone
                     additionalInfo[AdditionalInfoKeys.EMAIL] = email
                     additionalInfo[AdditionalInfoKeys.TIMEZONE] = java.util.TimeZone.getDefault().id
-                    additionalInfo[AdditionalInfoKeys.MEASURING_SYSTEM] = "metric"
+                    additionalInfo[AdditionalInfoKeys.MEASURING_SYSTEM] = org.telegram.divo.common.DivoSettings.measuringSystem
                     additionalInfo[AdditionalInfoKeys.SUB_ROLE] = data.subRole.name.lowercase()
                     if (mappedSubrole != null) additionalInfo[AdditionalInfoKeys.SUBROLE_MAPPED] = mappedSubrole
 
@@ -381,10 +381,10 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         fullName = fullName,
                         phone = rawPhone,
                         timezone = java.util.TimeZone.getDefault().id,
-                        gender = data.gender?.lowercase()?.takeIf { it.isNotBlank() },
+                        gender = org.telegram.divo.entity.mapGenderToEnglish(data.gender) ?: "female",
                         birthday = data.dateOfBirth ?: "",
                         geoCityId = resolvedCityId?.takeIf { it > 0 },
-                        measuringSystem = "metric",
+                        measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem,
                         subrole = mappedSubrole,
                         pushNotifications = true,
                         isRegistrationFinished = true,

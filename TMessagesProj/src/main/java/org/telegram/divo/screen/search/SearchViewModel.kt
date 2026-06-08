@@ -351,11 +351,8 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     }
 
     private fun State.buildModelParameters(): ModelParametersDto? {
-        val genderValues = gender.value
-            .split(",")
-            .map { it.trim().lowercase() }
-            .filter { it.isNotEmpty() }
-            .ifEmpty { null }
+        val genderValues = org.telegram.divo.entity.mapGenderToEnglish(gender.value)?.split(",")
+            ?.ifEmpty { null }
 
         fun resolveIds(param: ProfileParameter, options: List<AppearanceItem>): List<Int>? {
             if (param.value.isEmpty()) return null

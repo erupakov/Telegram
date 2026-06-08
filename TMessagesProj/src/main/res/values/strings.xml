@@ -94,12 +94,17 @@
     <string name="AllGendersLabel">All genders</string>
     <string name="LabelAge">Age</string>
     <string name="LabelHeight">Height (cm)</string>
+    <string name="LabelHeightImperial">Height (in)</string>
     <string name="LabelWaist">Waist (cm)</string>
+    <string name="LabelWaistImperial">Waist (in)</string>
     <string name="LabelHips">Hips (cm)</string>
+    <string name="LabelHipsImperial">Hips (in)</string>
     <string name="LabelWeight">Weight (kg)</string>
+    <string name="LabelWeightImperial">Weight (lb)</string>
     <string name="LabelShoeSize">Shoe size (EU)</string>
     <string name="LabelShoeSizeUS">Shoe size (US)</string>
     <string name="LabelBreastSize">Breast Size</string>
+    <string name="LabelBreastSizeImperial">Breast size (in)</string>
     <string name="LabelHairColor">Hair Color</string>
     <string name="LabelHairLength">Hair Length</string>
     <string name="LabelEyeColor">Eye Color</string>
@@ -385,6 +390,9 @@ while she is with another agency.</string>
     <string name="PrivacyAndSecurityLabel">Privacy and Security</string>
     <string name="DataAndStorageLabel">Data and Storage</string>
     <string name="AppearanceLabel">Appearance</string>
+    <string name="MeasuringSystemLabel">Measuring system</string>
+    <string name="MeasuringSystemMetric">Metric</string>
+    <string name="MeasuringSystemImperial">Imperial</string>
     <string name="LogOutLabel">Log out</string>
 
     <!--onboarding screen-->

@@ -92,12 +92,17 @@
     <string name="AllGendersLabel">所有性别</string>
     <string name="LabelAge">年龄</string>
     <string name="LabelHeight">身高 (cm)</string>
+    <string name="LabelHeightImperial">身高 (英寸)</string>
     <string name="LabelWaist">腰围 (cm)</string>
+    <string name="LabelWaistImperial">腰围 (英寸)</string>
     <string name="LabelHips">臀围 (cm)</string>
+    <string name="LabelHipsImperial">臀围 (英寸)</string>
     <string name="LabelWeight">体重 (kg)</string>
+    <string name="LabelWeightImperial">体重 (磅)</string>
     <string name="LabelShoeSize">鞋码 (EU)</string>
     <string name="LabelShoeSizeUS">鞋码 (US)</string>
     <string name="LabelBreastSize">罩杯尺寸</string>
+    <string name="LabelBreastSizeImperial">罩杯尺寸 (英寸)</string>
     <string name="LabelHairColor">发色</string>
     <string name="LabelHairLength">发长</string>
     <string name="LabelEyeColor">瞳色</string>
@@ -383,6 +388,9 @@
     <string name="PrivacyAndSecurityLabel">隐私与安全</string>
     <string name="DataAndStorageLabel">数据与存储</string>
     <string name="AppearanceLabel">外观</string>
+    <string name="MeasuringSystemLabel">测量系统</string>
+    <string name="MeasuringSystemMetric">公制</string>
+    <string name="MeasuringSystemImperial">英制</string>
     <string name="Language">语言</string>
     <string name="LogOutLabel">退出登录</string>
 

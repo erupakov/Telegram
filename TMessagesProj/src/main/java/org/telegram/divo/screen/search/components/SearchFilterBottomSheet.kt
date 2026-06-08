@@ -146,6 +146,7 @@ fun SearchFilterBottomSheet(
             initialValue = currentValue,
             iconClose = R.drawable.ic_divo_back,
             useNumericRangeUi = true,
+            valuesInMetric = true,
             onDismiss = { showParametersSheet = false },
             onSave = { selectedValue ->
                 currentParam?.let { paramType ->
@@ -262,6 +263,7 @@ fun SearchFilterBottomSheet(
                 if (showMoreParameters) {
                     ParametersBlock(
                         items = draftBlockParams,
+                        valuesInMetric = true,
                         onClick = { param -> openBottomSheet(param.type, null, param.value) }
                     )
                     Spacer(Modifier.height(16.dp))

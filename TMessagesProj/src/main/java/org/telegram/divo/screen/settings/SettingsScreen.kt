@@ -35,7 +35,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,17 +52,22 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.common.DivoSettings
 import org.telegram.divo.common.SnackbarEvent.*
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.components.RadioCircle
 import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.style.AppTheme
+import org.telegram.divo.style.DivoLocaleProvider
 import org.telegram.messenger.R
 
 @Composable
@@ -83,6 +90,8 @@ fun SettingsScreen(
 
     val dividerColor = Color(0x1A000000)
     val scrollState = rememberScrollState()
+
+    var showMeasuringSystemDialog by remember { mutableStateOf(false) }
 
     LifecycleResumeEffect(Unit) {
         onPauseOrDispose { }
@@ -150,8 +159,20 @@ fun SettingsScreen(
                 }
 
                 SettingsViewEffect.NavigateToLogout -> navigateToLogout()
+                SettingsViewEffect.ShowMeasuringSystemDialog -> showMeasuringSystemDialog = true
             }
         }
+    }
+
+    if (showMeasuringSystemDialog) {
+        MeasuringSystemDialog(
+            currentSystem = state.measuringSystem,
+            onApply = { newSystem ->
+                showMeasuringSystemDialog = false
+                viewModel.setIntent(SettingsViewIntent.OnChangeMeasuringSystem(newSystem))
+            },
+            onDismiss = { showMeasuringSystemDialog = false }
+        )
     }
 
     Scaffold(
@@ -280,6 +301,16 @@ fun SettingsScreen(
                         ),
                         viewModel = viewModel
                     )
+                    HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.MeasuringSystemLabel),
+                            iconResId = R.drawable.ic_divo_filter,
+                            intent = SettingsViewIntent.OnMeasuringSystemClicked
+                        ),
+                        value = if (state.measuringSystem == DivoSettings.SYSTEM_METRIC) stringResource(R.string.MeasuringSystemMetric) else stringResource(R.string.MeasuringSystemImperial),
+                        viewModel = viewModel,
+                    )
 //                    HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
 //                    SettingsItemRow(
 //                        item = SettingsItem(
@@ -305,6 +336,91 @@ fun SettingsScreen(
                 }
 
                 Spacer(Modifier.height(76.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun MeasuringSystemDialog(
+    currentSystem: String,
+    onApply: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var selectedSystem by remember { mutableStateOf(currentSystem) }
+
+    Dialog(onDismissRequest = onDismiss) {
+        androidx.compose.material3.Surface(
+            shape = RoundedCornerShape(28.dp),
+            color = AppTheme.colors.backgroundLight,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            DivoLocaleProvider {
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp)
+                ) {
+                    Spacer(Modifier.height(20.dp))
+                    Text(
+                        text = stringResource(R.string.MeasuringSystemLabel),
+                        style = AppTheme.typography.helveticaNeueLtCom.copy(fontWeight = FontWeight.Bold),
+                        fontSize = 20.sp,
+                        color = Color.Black,
+                        lineHeight = 24.sp
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickableWithoutRipple { selectedSystem = DivoSettings.SYSTEM_METRIC }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioCircle(selected = selectedSystem == DivoSettings.SYSTEM_METRIC)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            modifier = Modifier.offset(y = 2.dp),
+                            text = stringResource(R.string.MeasuringSystemMetric),
+                            style = AppTheme.typography.helveticaNeueRegular,
+                            fontSize = 18.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = AppTheme.colors.textPrimary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickableWithoutRipple { selectedSystem = DivoSettings.SYSTEM_IMPERIAL }
+                            .padding(vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioCircle(selected = selectedSystem == DivoSettings.SYSTEM_IMPERIAL)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            modifier = Modifier.offset(y = 2.dp),
+                            text = stringResource(R.string.MeasuringSystemImperial),
+                            style = AppTheme.typography.helveticaNeueRegular,
+                            fontSize = 18.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            color = AppTheme.colors.textPrimary
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(28.dp))
+                    UIButtonNew(
+                        text = stringResource(R.string.ButtonApply),
+                        height = 46.dp,
+                        modifier = Modifier.fillMaxWidth(),
+                        background = AppTheme.colors.buttonSecondary,
+                        onClick = { onApply(selectedSystem) }
+                    )
+                    Spacer(Modifier.height(12.dp))
+                }
             }
         }
     }
@@ -391,7 +507,7 @@ private fun ProfileRow(
             overflow = TextOverflow.Ellipsis,
         )
         Spacer(Modifier.height(10.dp))
-        if (phone.isNotEmpty() && !DivoApi.accessTokenProvider.isGoogleLogin()) {
+        if (phone.isNotEmpty() && !DivoApi.accessTokenProvider.isGoogleLogin() && !phone.startsWith("999")) {
             Text(
                 text = "+${phone}",
                 style = AppTheme.typography.helveticaNeueRegular,
@@ -496,7 +612,7 @@ private fun PromoCard(
 private fun SettingsItemRow(
     item: SettingsItem,
     viewModel: SettingsViewModel,
-
+    value: String? = null
 ) {
     Row(
         Modifier
@@ -517,6 +633,16 @@ private fun SettingsItemRow(
             overflow = TextOverflow.Ellipsis
         )
         Spacer(Modifier.weight(1f))
+        if (value != null) {
+            Text(
+                text = value,
+                style = AppTheme.typography.bodyLarge,
+                color = AppTheme.colors.textPrimary.copy(0.6f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(Modifier.width(8.dp))
+        }
         Icon(
             painter = painterResource(R.drawable.ic_divo_arrow_right_20),
             contentDescription = null,

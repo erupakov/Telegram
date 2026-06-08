@@ -85,12 +85,17 @@
     <string name="AllGendersLabel">Любой пол</string>
     <string name="LabelAge">Возраст</string>
     <string name="LabelHeight">Рост (см)</string>
+    <string name="LabelHeightImperial">Рост (дюйм)</string>
     <string name="LabelWaist">Талия (см)</string>
+    <string name="LabelWaistImperial">Талия (дюйм)</string>
     <string name="LabelHips">Бедра (см)</string>
+    <string name="LabelHipsImperial">Бедра (дюйм)</string>
     <string name="LabelWeight">Вес (кг)</string>
+    <string name="LabelWeightImperial">Вес (фунт)</string>
     <string name="LabelShoeSize">Размер обуви (EU)</string>
     <string name="LabelShoeSizeUS">Размер обуви (US)</string>
     <string name="LabelBreastSize">Размер груди</string>
+    <string name="LabelBreastSizeImperial">Размер груди (дюйм)</string>
     <string name="LabelHairColor">Цвет волос</string>
     <string name="LabelHairLength">Длина волос</string>
     <string name="LabelEyeColor">Цвет глаз</string>
@@ -388,6 +393,9 @@
     <string name="PrivacyAndSecurityLabel">Конфиденциальность и безопасность</string>
     <string name="DataAndStorageLabel">Данные и память</string>
     <string name="AppearanceLabel">Оформление</string>
+    <string name="MeasuringSystemLabel">Система мер</string>
+    <string name="MeasuringSystemMetric">Метрическая</string>
+    <string name="MeasuringSystemImperial">Имперская</string>
     <string name="Language">Язык</string>
     <string name="LogOutLabel">Выйти</string>
 

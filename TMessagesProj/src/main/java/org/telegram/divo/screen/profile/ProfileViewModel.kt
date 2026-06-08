@@ -477,11 +477,9 @@ class ProfileViewModel(
             val result = DivoApi.userRepository.addAgencyModel(userId, note)
             if (result is DivoResult.Success) {
                 // Refresh models list or update search status locally
-                agencyModelsPaginator.reset()
-                searchModelsPaginator.reset()
                 kotlinx.coroutines.joinAll(
-                    launch { agencyModelsPaginator.loadInitial() },
-                    launch { searchModelsPaginator.loadInitial() }
+                    launch { agencyModelsPaginator.loadInitial(clearItems = false) },
+                    launch { searchModelsPaginator.loadInitial(clearItems = false) }
                 )
                 sendEffect(ProfileEffect.AgencyModelAdded)
             } else {
@@ -496,10 +494,8 @@ class ProfileViewModel(
             val agencyId = state.value.userInfo.agency?.id ?: return@launch
             val result = DivoApi.userRepository.deleteAgencyModel(agencyId, modelId)
             if (result is DivoResult.Success) {
-                agencyModelsPaginator.reset()
-                agencyModelsPaginator.loadInitial()
-                searchModelsPaginator.reset()
-                searchModelsPaginator.loadInitial()
+                agencyModelsPaginator.loadInitial(clearItems = false)
+                searchModelsPaginator.loadInitial(clearItems = false)
             } else {
                 sendEffect(ShowError(result.getErrorMessage()))
             }
@@ -759,6 +755,10 @@ class ProfileViewModel(
     private fun mapPhysicalParams(user: UserInfo): PhysicalParams {
         val appearance = user.model?.appearance
 
+        val storedSystem = appearance?.measuringSystem
+            ?.takeIf { it.isNotBlank() }
+            ?: user.measuringSystem.takeIf { it.isNotBlank() }
+
         return PhysicalParams(
             gender = user.gender?.title.orEmpty(),
             age = user.birthday,
@@ -770,7 +770,8 @@ class ProfileViewModel(
             hairColor = appearance?.hairColor?.title.orEmpty(),
             eyeColor = appearance?.eyeColor?.title.orEmpty(),
             skinColor = appearance?.skinColor?.title.orEmpty(),
-            breastSize = appearance?.breastSize.orEmpty()
+            breastSize = appearance?.breastSize.orEmpty(),
+            measuringSystem = storedSystem.orEmpty(),
         )
     }
 
