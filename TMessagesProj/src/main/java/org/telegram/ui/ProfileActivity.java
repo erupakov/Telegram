@@ -3882,12 +3882,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (user == null) return;
                         ItemOptions itemOptions = ItemOptions.makeOptions(contentView, resourcesProvider, actionsView);
                         itemOptions.setGravity(Gravity.LEFT);
-                        itemOptions.add(R.drawable.msg_qrcode, getString(R.string.QrCode), () -> {
+                        //DIVO
+                        /*itemOptions.add(R.drawable.msg_qrcode, getString(R.string.QrCode), () -> {
                             Bundle args = new Bundle();
                             args.putLong("chat_id", chatId);
                             args.putLong("user_id", userId);
                             presentFragment(new QrActivity(args));
-                        });
+                        });*/
                         itemOptions.add(R.drawable.msg_copy, getString(R.string.ProfileCopyUsername), () -> {
                             AndroidUtilities.addToClipboard("@" + UserObject.getPublicUsername(user));
                         });
@@ -13226,7 +13227,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             detailCell.setImage(drawable, LocaleController.getString(R.string.GiftPremium));
                             detailCell.setImageClickListener(ProfileActivity.this::onTextDetailCellImageClicked);
                         }
-                    } else if (containsQr) {
+                    } else if (false /* DIVO containsQr */) {
                         Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.header_qr_24);
                         drawable.setColorFilter(new PorterDuffColorFilter(dontApplyPeerColor(getThemedColor(Theme.key_actionBarDefaultIcon), false), PorterDuff.Mode.MULTIPLY));
                         detailCell.setImage(drawable, LocaleController.getString(R.string.GetQRCode));

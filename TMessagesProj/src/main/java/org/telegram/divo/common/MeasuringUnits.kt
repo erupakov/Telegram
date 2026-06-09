@@ -197,10 +197,10 @@ fun ParametersType.numericFilterRange(measuringSystem: String = DivoSettings.mea
 private fun ParametersType.numericFilterRangeMetric(): IntRange? = when (this) {
     ParametersType.AGE -> 16..45
     ParametersType.HEIGHT -> 120..220
-    ParametersType.WEIGHT -> 35..200
+    ParametersType.WEIGHT -> 30..200
     ParametersType.WAIST -> 40..130
     ParametersType.HIPS -> 60..150
-    ParametersType.SHOE_SIZE -> 30..38
+    ParametersType.SHOE_SIZE -> 32..50
     ParametersType.BREAST_SIZE -> 65..130
     else -> null
 }
@@ -212,6 +212,7 @@ fun ParametersType.profilePickerRange(measuringSystem: String = DivoSettings.mea
         ParametersType.WAIST -> 40..130
         ParametersType.HIPS -> 60..150
         ParametersType.SHOE_SIZE -> 32..50
+        ParametersType.BREAST_SIZE -> 65..130
         else -> 0..250
     }.let { metricRange ->
         if (!MeasuringUnits.isImperial(measuringSystem) || !hasMeasurableUnits()) {
@@ -220,7 +221,8 @@ fun ParametersType.profilePickerRange(measuringSystem: String = DivoSettings.mea
             when (this) {
                 ParametersType.HEIGHT,
                 ParametersType.WAIST,
-                ParametersType.HIPS -> metricRange.mapRange { MeasuringUnits.cmToInches(it) }
+                ParametersType.HIPS,
+                ParametersType.BREAST_SIZE -> metricRange.mapRange { MeasuringUnits.cmToInches(it) }
                 ParametersType.WEIGHT -> metricRange.mapRange { MeasuringUnits.kgToLb(it) }
                 ParametersType.SHOE_SIZE -> metricRange.mapRange { MeasuringUnits.euShoeToUs(it) }
                 else -> metricRange

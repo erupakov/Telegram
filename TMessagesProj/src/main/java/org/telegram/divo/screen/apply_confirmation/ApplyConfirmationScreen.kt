@@ -36,6 +36,7 @@ import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.common.utils.toEventDisplayDate
 import org.telegram.divo.components.*
+import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.style.AppTheme
@@ -379,6 +380,7 @@ private fun formatRange(from: Int?, to: Int?, unit: String? = null): String {
 private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
     val attrs = event.modelAttributes ?: return
     val appearance = userInfo?.model?.appearance
+    val isImperial = org.telegram.divo.common.MeasuringUnits.isImperial()
 
     val rows = mutableListOf<ParamRowData>()
 
@@ -410,7 +412,9 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.heightFrom != null || attrs.heightTo != null) {
         val userHeight = appearance?.height
-        val reqHeightStr = formatRange(attrs.heightFrom, attrs.heightTo, "cm")
+        val displayFrom = attrs.heightFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.HEIGHT, it) else it }
+        val displayTo = attrs.heightTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.HEIGHT, it) else it }
+        val reqHeightStr = formatRange(displayFrom, displayTo, if (isImperial) "in" else "cm")
         val isMatch = userHeight != null && 
             (attrs.heightFrom == null || userHeight >= attrs.heightFrom) && 
             (attrs.heightTo == null || userHeight <= attrs.heightTo)
@@ -420,7 +424,9 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.weightFrom != null || attrs.weightTo != null) {
         val userWeight = appearance?.weight
-        val reqWeightStr = formatRange(attrs.weightFrom, attrs.weightTo, "kg")
+        val displayFrom = attrs.weightFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.WEIGHT, it) else it }
+        val displayTo = attrs.weightTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.WEIGHT, it) else it }
+        val reqWeightStr = formatRange(displayFrom, displayTo, if (isImperial) "lb" else "kg")
         val isMatch = userWeight != null && 
             (attrs.weightFrom == null || userWeight >= attrs.weightFrom) && 
             (attrs.weightTo == null || userWeight <= attrs.weightTo)
@@ -430,7 +436,9 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.breastSizeFrom != null || attrs.breastSizeTo != null) {
         val userBreastSize = appearance?.breastSize?.toFloatOrNull()
-        val reqBreastSizeStr = formatRange(attrs.breastSizeFrom, attrs.breastSizeTo, "cm")
+        val displayFrom = attrs.breastSizeFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.BREAST_SIZE, it) else it }
+        val displayTo = attrs.breastSizeTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.BREAST_SIZE, it) else it }
+        val reqBreastSizeStr = formatRange(displayFrom, displayTo, if (isImperial) "in" else "cm")
         val isMatch = userBreastSize != null && 
             (attrs.breastSizeFrom == null || userBreastSize >= attrs.breastSizeFrom) && 
             (attrs.breastSizeTo == null || userBreastSize <= attrs.breastSizeTo)
@@ -440,7 +448,9 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.waistFrom != null || attrs.waistTo != null) {
         val userWaist = appearance?.waist
-        val reqWaistStr = formatRange(attrs.waistFrom, attrs.waistTo, "cm")
+        val displayFrom = attrs.waistFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.WAIST, it) else it }
+        val displayTo = attrs.waistTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.WAIST, it) else it }
+        val reqWaistStr = formatRange(displayFrom, displayTo, if (isImperial) "in" else "cm")
         val isMatch = userWaist != null && 
             (attrs.waistFrom == null || userWaist >= attrs.waistFrom) && 
             (attrs.waistTo == null || userWaist <= attrs.waistTo)
@@ -450,7 +460,9 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.hipsFrom != null || attrs.hipsTo != null) {
         val userHips = appearance?.hips
-        val reqHipsStr = formatRange(attrs.hipsFrom, attrs.hipsTo, "cm")
+        val displayFrom = attrs.hipsFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.HIPS, it) else it }
+        val displayTo = attrs.hipsTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.HIPS, it) else it }
+        val reqHipsStr = formatRange(displayFrom, displayTo, if (isImperial) "in" else "cm")
         val isMatch = userHips != null && 
             (attrs.hipsFrom == null || userHips >= attrs.hipsFrom) && 
             (attrs.hipsTo == null || userHips <= attrs.hipsTo)
@@ -460,7 +472,9 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.shoesSizeFrom != null || attrs.shoesSizeTo != null) {
         val userShoesSize = appearance?.shoesSize
-        val reqShoesSizeStr = formatRange(attrs.shoesSizeFrom, attrs.shoesSizeTo)
+        val displayFrom = attrs.shoesSizeFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.SHOE_SIZE, it) else it }
+        val displayTo = attrs.shoesSizeTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.SHOE_SIZE, it) else it }
+        val reqShoesSizeStr = formatRange(displayFrom, displayTo, if (isImperial) "US" else "EU")
         val isMatch = userShoesSize != null && 
             (attrs.shoesSizeFrom == null || userShoesSize >= attrs.shoesSizeFrom) && 
             (attrs.shoesSizeTo == null || userShoesSize <= attrs.shoesSizeTo)

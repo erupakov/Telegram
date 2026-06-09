@@ -243,61 +243,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
 
                     // 2.5 TG Profile Photo Update
                     if (telegramPhotoFile != null) {
-                        try {
-                            val inputFile = kotlinx.coroutines.withTimeoutOrNull(15000) {
-                                suspendCancellableCoroutine<TLRPC.InputFile?> { continuation ->
-                                    val path = telegramPhotoFile.absolutePath
-                                    org.telegram.messenger.FileLoader.getInstance(state.value.currentAccount).uploadFile(path) { result ->
-                                        if (continuation.isActive) continuation.resume(result)
-                                    }
-                                    continuation.invokeOnCancellation {
-                                        org.telegram.messenger.FileLoader.getInstance(state.value.currentAccount).cancelFileUpload(path, false)
-                                    }
-                                }
-                            }
-                            if (inputFile != null) {
-                                val photoReq = TLRPC.TL_photos_uploadProfilePhoto().apply {
-                                    file = inputFile
-                                    flags = flags or 1
-                                }
-                                val photoResult = kotlinx.coroutines.withTimeoutOrNull(10000) {
-                                    suspendCancellableCoroutine<TLRPC.TL_photos_photo?> { continuation ->
-                                        val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(photoReq) { response, error ->
-                                            if (error == null && response is TLRPC.TL_photos_photo) {
-                                                continuation.resume(response)
-                                            } else {
-                                                continuation.resume(null)
-                                            }
-                                        }
-                                        continuation.invokeOnCancellation {
-                                            ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
-                                        }
-                                    }
-                                }
-                                if (photoResult != null) {
-                                    val uc = org.telegram.messenger.UserConfig.getInstance(state.value.currentAccount)
-                                    val currentUser = uc.currentUser
-                                    if (currentUser != null && photoResult.photo != null) {
-                                        val bigSize = org.telegram.messenger.FileLoader.getClosestPhotoSizeWithSize(photoResult.photo.sizes, 800)
-                                        val smallSize = org.telegram.messenger.FileLoader.getClosestPhotoSizeWithSize(photoResult.photo.sizes, 150)
-                                        if (smallSize != null && bigSize != null) {
-                                            if (currentUser.photo == null) {
-                                                currentUser.photo = TLRPC.TL_userProfilePhoto()
-                                            }
-                                            currentUser.photo.photo_id = photoResult.photo.id
-                                            currentUser.photo.photo_small = smallSize.location
-                                            currentUser.photo.photo_big = bigSize.location
-                                            currentUser.photo.dc_id = photoResult.photo.dc_id
-                                            uc.setCurrentUser(currentUser)
-                                            uc.saveConfig(true)
-                                        }
-                                    }
-                                    org.telegram.messenger.MessagesController.getInstance(state.value.currentAccount).putUsers(photoResult.users, false)
-                                }
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+                        org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatar(state.value.currentAccount, telegramPhotoFile)
                     }
 
                     // 3. Divo Link (REST)

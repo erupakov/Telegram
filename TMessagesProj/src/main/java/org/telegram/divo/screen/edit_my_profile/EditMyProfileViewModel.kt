@@ -90,7 +90,11 @@ class EditMyProfileViewModel(
 
                 val uploadedUuid = if (file != null) {
                     val uploadResult = file.fold(
-                        onSuccess = { DivoApi.userRepository.uploadPhoto(it) },
+                        onSuccess = { 
+                            // Update TG avatar as well
+                            org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatar(currentAccount, it)
+                            DivoApi.userRepository.uploadPhoto(it)
+                        },
                         onFailure = { DivoResult.UnknownError(it) }
                     )
                     if (uploadResult !is DivoResult.Success) {
@@ -109,7 +113,10 @@ class EditMyProfileViewModel(
                             fullName = fNameRaw,
                             model = userInfo.model?.copy(description = aboutRaw),
                             avatarUuid = uploadedUuid,
-                            city = state.value.city?.let { org.telegram.divo.entity.City(id = it.id.toInt(), name = it.name, countryCode = it.countryCode) } ?: userInfo.city
+                            city = state.value.city?.let {
+                                val isNewCity = it.id != userInfo.city?.id?.toLong()
+                                org.telegram.divo.entity.City(id = if (isNewCity) 0 else it.id.toInt(), name = it.name, countryCode = it.countryCode)
+                            } ?: userInfo.city
                         )
                     )
                 } else {
@@ -125,7 +132,10 @@ class EditMyProfileViewModel(
                     // The agency update doesn't take user city directly, it updates the agency. 
                     // However we should probably update user Profile to save the city.
                     DivoApi.userRepository.updateProfile(userInfo.copy(
-                        city = state.value.city?.let { org.telegram.divo.entity.City(id = it.id.toInt(), name = it.name, countryCode = it.countryCode) } ?: userInfo.city
+                        city = state.value.city?.let {
+                            val isNewCity = it.id != userInfo.city?.id?.toLong()
+                            org.telegram.divo.entity.City(id = if (isNewCity) 0 else it.id.toInt(), name = it.name, countryCode = it.countryCode)
+                        } ?: userInfo.city
                     ))
                 }
 
@@ -375,9 +385,9 @@ class EditMyProfileViewModel(
                     cities.add(
                         LocalCity(
                             id = cols[0].toLongOrNull() ?: return@forEachLine,
-                            name = cols[2],
-                            asciiName = cols[3],
-                            alternateNames = cols[4],
+                            name = cols[1],
+                            asciiName = cols[2],
+                            alternateNames = cols[3],
                             countryCode = cols[8],
                             population = cols[14].toIntOrNull() ?: 0,
                             matchedName = ""
