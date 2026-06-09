@@ -1,6 +1,7 @@
 package org.telegram.divo.screen.reg_form
 
 import android.os.Build
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,11 +21,13 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.dto.auth.RegistrationRequest
 import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
+import org.telegram.divo.dal.network.DivoAuthHelper
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.tgnet.tl.TL_account
 import java.io.BufferedReader
+import java.security.MessageDigest
 
 class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsEffect>() {
 
@@ -61,7 +64,6 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
     }
 
     private fun onContinue() {
-        logFormData()
         if (state.value.isLastStep) {
             setState { copy(isLoading = true) }
             val data = state.value.formData ?: return
@@ -188,7 +190,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         val regRequest = RegistrationRequest(
                             email = email,
                             role = mappedRole,
-                            password = "divo_${phone}",
+                            password = DivoAuthHelper.generatePassword(phone),
                             subrole = mappedSubrole,
                             deviceId = deviceId,
                             deviceType = deviceType,
@@ -243,8 +245,8 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (telegramPhotoFile != null) {
                         try {
                             val inputFile = kotlinx.coroutines.withTimeoutOrNull(15000) {
-                                suspendCancellableCoroutine<org.telegram.tgnet.TLRPC.InputFile?> { continuation ->
-                                    val path = telegramPhotoFile!!.absolutePath
+                                suspendCancellableCoroutine<TLRPC.InputFile?> { continuation ->
+                                    val path = telegramPhotoFile.absolutePath
                                     org.telegram.messenger.FileLoader.getInstance(state.value.currentAccount).uploadFile(path) { result ->
                                         if (continuation.isActive) continuation.resume(result)
                                     }
@@ -493,38 +495,6 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                 e.printStackTrace()
             }
         }
-    }
-
-    private fun logFormData() {
-        val data = state.value.formData ?: return
-        android.util.Log.d("RegForm", buildString {
-            appendLine("=== REGISTRATION FORM DATA ===")
-            appendLine("SubRole: ${data.subRole}")
-            appendLine("--- Common ---")
-            appendLine("First name: ${data.firstName}")
-            appendLine("Last name: ${data.lastName}")
-            appendLine("Date of birth: ${data.dateOfBirth}")
-            appendLine("Gender: ${data.gender}")
-            appendLine("Country: ${data.country}")
-            appendLine("City: ${data.city?.name}")
-            appendLine("--- Company ---")
-            appendLine("Company name: ${data.companyName}")
-            appendLine("Website URL: ${data.websiteUrl}")
-            appendLine("Contact role: ${data.contactRole}")
-            appendLine("Contact name: ${data.contactName}")
-            appendLine("Contact phone: ${data.contactPhone}")
-            appendLine("--- Creative / Professional ---")
-            appendLine("Specialisation: ${data.specialisation}")
-            appendLine("Instagram URL: ${data.instagramUrl}")
-            appendLine("Portfolio URL: ${data.portfolioUrl}")
-            appendLine("Agency name: ${data.agencyName}")
-            appendLine("--- Talent ---")
-            appendLine("Showreel URL: ${data.showreelUrl}")
-            appendLine("Casting profile URL: ${data.castingProfileUrl}")
-            appendLine("--- Photo ---")
-            appendLine("Photo URI: ${data.photoUri}")
-            appendLine("==============================")
-        })
     }
 
     private fun SubRole.toDivoRoleAndSubrole(): Pair<String, String?> {

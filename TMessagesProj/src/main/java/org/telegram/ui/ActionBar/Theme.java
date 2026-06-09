@@ -10167,16 +10167,20 @@ public class Theme {
         return createDefaultWallpaper(0, 0);
     }
 
+    //DIVO
     public static Drawable createDefaultWallpaper(int w, int h) {
-        MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(0xffdbddbb, 0xff6ba587, 0xffd5d88d, 0xff88b884, w != 0);
-        if (w <= 0 || h <= 0) {
-            w = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
-            h = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
-        }
-        motionBackgroundDrawable.setPatternBitmap(34, SvgHelper.getBitmap(R.raw.default_pattern, w, h, Color.BLACK));
-        motionBackgroundDrawable.setPatternColorFilter(motionBackgroundDrawable.getPatternColor());
-        return motionBackgroundDrawable;
+        return new ColorDrawable(0xFFF2E4DD);
     }
+//    public static Drawable createDefaultWallpaper(int w, int h) {
+//        MotionBackgroundDrawable motionBackgroundDrawable = new MotionBackgroundDrawable(0xffdbddbb, 0xff6ba587, 0xffd5d88d, 0xff88b884, w != 0);
+//        if (w <= 0 || h <= 0) {
+//            w = Math.min(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
+//            h = Math.max(AndroidUtilities.displaySize.x, AndroidUtilities.displaySize.y);
+//        }
+//        motionBackgroundDrawable.setPatternBitmap(34, SvgHelper.getBitmap(R.raw.default_pattern, w, h, Color.BLACK));
+//        motionBackgroundDrawable.setPatternColorFilter(motionBackgroundDrawable.getPatternColor());
+//        return motionBackgroundDrawable;
+//    }
 
     private static Bitmap loadScreenSizedBitmap(FileInputStream stream, int offset) {
         try {

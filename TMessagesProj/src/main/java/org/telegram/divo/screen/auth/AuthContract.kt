@@ -11,10 +11,6 @@ data class AuthViewState(
 ) : ViewState
 
 sealed class AuthViewIntent : ViewIntent {
-    data class Login(
-        val email: String,
-        val password: String,
-    ) : AuthViewIntent()
     data object GoogleSignIn : AuthViewIntent()
 }
 

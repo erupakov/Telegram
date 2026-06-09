@@ -1,11 +1,13 @@
 package org.telegram.divo.dal.network
 
 import android.os.Build
+import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.telegram.divo.dal.dto.auth.LoginRequest
+import java.security.MessageDigest
 
 object DivoAuthHelper {
 
@@ -24,11 +26,11 @@ object DivoAuthHelper {
             callback.onError("Phone number is empty")
             return Runnable {}
         }
-
+        Log.d("VideoGrid", generatePassword(phone))
         val job = CoroutineScope(Dispatchers.IO).launch {
             val cleanPhone = phone.replace("+", "").trim()
             val email = "$cleanPhone@divo.global"
-            val password = "divo_$cleanPhone"
+            val password = generatePassword(phone)
             val manufacturer = Build.MANUFACTURER.replaceFirstChar { it.uppercase() }
             val model = Build.MODEL ?: "Android Device"
             val deviceId = "$manufacturer $model"
@@ -57,5 +59,16 @@ object DivoAuthHelper {
             }
         }
         return Runnable { job.cancel() }
+    }
+
+    fun generatePassword(phoneDigits: String): String {
+        val source = "divo-stage-pw::$phoneDigits"
+
+        val hash = MessageDigest
+            .getInstance("SHA-256")
+            .digest(source.toByteArray())
+            .joinToString("") { "%02x".format(it) }
+
+        return "Dv9!${hash.take(20)}"
     }
 }
