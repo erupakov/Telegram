@@ -17,6 +17,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
                     setState {
                         copy(
                             userId = it.id,
+                            role = it.roleLabel,
                             userName = it.fullName,
                             avatarUrl = it.avatarUrl,
                             phoneNumber = it.phone,
@@ -45,7 +46,6 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             SettingsViewIntent.OnDataStorageClicked -> sendEffect(SettingsViewEffect.NavigateToDataStorage)
             SettingsViewIntent.OnAppearanceClicked -> sendEffect(SettingsViewEffect.NavigateToAppearance)
             SettingsViewIntent.OnLanguageClicked -> sendEffect(SettingsViewEffect.NavigateToLanguage)
-            SettingsViewIntent.OnQrCodeClicked -> sendEffect(SettingsViewEffect.ShowQrCode)
             SettingsViewIntent.OnRefresh -> loadUserData()
             SettingsViewIntent.OnLogoutClicked -> sendEffect(SettingsViewEffect.NavigateToLogout)
             SettingsViewIntent.OnMeasuringSystemClicked -> {

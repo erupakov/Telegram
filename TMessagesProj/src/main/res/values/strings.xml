@@ -11089,4 +11089,7 @@ while she is with another agency.</string>
     <string name="ApplySuccessDescription">Your application has been sent. The organiser will review it soon.</string>
     <string name="DivoCheckInternetConnection">Please check your internet connection</string>
     <string name="DivoActionSkip">Skip</string>
+    <string name="YourQrCode">Your QR Code</string>
+    <string name="ScanToProfile">Scan to go to profile</string>
+    <string name="DivoShareBtn">Share</string>
 </resources>

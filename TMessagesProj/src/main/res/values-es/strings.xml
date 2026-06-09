@@ -2001,4 +2001,7 @@ mientras esté con otra agencia.</string>
     <string name="ApplySuccessDescription">Tu solicitud ha sido enviada. El organizador la revisará pronto.</string>
     <string name="DivoCheckInternetConnection">Por favor, compruebe su conexión a internet</string>
     <string name="DivoActionSkip">Omitir</string>
+    <string name="YourQrCode">Tu código QR</string>
+    <string name="ScanToProfile">Escanea para ir al perfil</string>
+    <string name="DivoShareBtn">Compartir</string>
 </resources>

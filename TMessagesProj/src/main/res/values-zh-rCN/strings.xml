@@ -689,4 +689,7 @@
     <string name="ApplySuccessDescription">您的申请已发送，组织者将尽快审核。</string>
     <string name="DivoCheckInternetConnection">请检查您的互联网连接</string>
     <string name="DivoActionSkip">跳过</string>
+    <string name="YourQrCode">您的二维码</string>
+    <string name="ScanToProfile">扫码进入个人主页</string>
+    <string name="DivoShareBtn">分享</string>
 </resources>

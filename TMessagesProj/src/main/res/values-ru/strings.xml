@@ -960,4 +960,7 @@
     <string name="ApplySuccessDescription">Ваша заявка отправлена. Организатор скоро ее рассмотрит.</string>
     <string name="DivoCheckInternetConnection">Пожалуйста, проверьте подключение к интернету</string>
     <string name="DivoActionSkip">Пропустить</string>
+    <string name="YourQrCode">Ваш QR-код</string>
+    <string name="ScanToProfile">Отсканируйте, чтобы перейти в профиль</string>
+    <string name="DivoShareBtn">Поделиться</string>
 </resources>

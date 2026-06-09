@@ -1933,4 +1933,7 @@ enquanto ela estiver com outra agência.</string>
     <string name="ApplySuccessDescription">Sua inscrição foi enviada. O organizador a analisará em breve.</string>
     <string name="DivoCheckInternetConnection">Por favor, verifique sua conexão à internet</string>
     <string name="DivoActionSkip">Pular</string>
+    <string name="YourQrCode">Seu QR Code</string>
+    <string name="ScanToProfile">Digitalize para ir ao perfil</string>
+    <string name="DivoShareBtn">Compartilhar</string>
 </resources>

@@ -13,6 +13,7 @@ data class SettingsItem(
 
 data class SettingsViewState(
     val userId: Int = -1,
+    val role: String = "",
     val isModel: Boolean = false,
     val isLoading: Boolean = false,
     val avatarUrl: String = "",
@@ -32,7 +33,6 @@ sealed class SettingsViewIntent : ViewIntent {
     data object OnPrivacyClicked : SettingsViewIntent()
     data object OnDataStorageClicked : SettingsViewIntent()
     data object OnAppearanceClicked : SettingsViewIntent()
-    data object OnQrCodeClicked : SettingsViewIntent()
     data object OnLanguageClicked : SettingsViewIntent()
     data object OnRefresh : SettingsViewIntent()
     data object OnLogoutClicked : SettingsViewIntent()
@@ -53,7 +53,6 @@ sealed class SettingsViewEffect : ViewEffect {
     data object NavigateToAppearance : SettingsViewEffect()
     data object NavigateToLanguage : SettingsViewEffect()
     data object NavigateToLogout : SettingsViewEffect()
-    data object ShowQrCode : SettingsViewEffect()
     data object ShowMeasuringSystemDialog : SettingsViewEffect()
     data class ShowError(val message: String) : SettingsViewEffect()
 }
