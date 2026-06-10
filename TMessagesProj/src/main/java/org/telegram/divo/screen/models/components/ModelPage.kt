@@ -311,82 +311,80 @@ private fun CardBlurredBackground(
             modifier = Modifier.fillMaxSize(),
             model = imageUrl,
             contentScale = ContentScale.Crop,
-            onReady = {
-                isImageLoaded = true
-                onMainImageReady()
-            },
-            onError = { hasError = true }
+            onReady = onMainImageReady,
+            onError = { hasError = true },
+            loadingContent = { Box(Modifier.fillMaxSize()) }
         )
 
-        AnimatedVisibility(
-            visible = isImageLoaded,
-            enter = fadeIn()
-        ) {
-            if (isBlurSupported && feed.files.size > 1) {
-                Box(
+        if (isBlurSupported && feed.files.size > 1) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                    .drawWithContent {
+                        drawContent()
+
+                        val h = size.height
+                        val topBlurHeight = 94.dp.toPx()
+                        val bottomBlurHeight = 160.dp.toPx()
+
+                        drawRect(
+                            brush = Brush.verticalGradient(
+                                0.0f to Color.Black,
+                                (topBlurHeight / h) * 0.5f to Color.Black,
+                                (topBlurHeight / h) * 0.8f to Color.Black.copy(alpha = 0.5f),
+                                (topBlurHeight / h) to Color.Transparent,
+                                (1f - bottomBlurHeight / h) to Color.Transparent,
+                                (1f - (bottomBlurHeight / h) * 0.95f) to Color.Black.copy(alpha = 0.3f),
+                                (1f - (bottomBlurHeight / h) * 0.9f) to Color.Black.copy(alpha = 0.6f),
+                                (1f - (bottomBlurHeight / h) * 0.80f) to Color.Black.copy(alpha = 0.9f),
+                                (1f - (bottomBlurHeight / h) * 0.2f) to Color.Black,
+                                1.0f to Color.Black
+                            ),
+                            blendMode = BlendMode.DstIn
+                        )
+                    }
+            ) {
+                DivoAsyncImage(
                     modifier = Modifier
                         .fillMaxSize()
-                        .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-                        .drawWithContent {
-                            drawContent()
+                        .blur(35.dp),
+                    model = imageUrl,
+                    contentScale = ContentScale.Crop,
+                    onReady = onBlurImageReady,
+                    loadingContent = { Box(Modifier.fillMaxSize()) }
+                )
 
-                            val h = size.height
-                            val topBlurHeight = 94.dp.toPx()
-                            val bottomBlurHeight = 160.dp.toPx()
-
-                            drawRect(
-                                brush = Brush.verticalGradient(
-                                    0.0f to Color.Black,
-                                    (topBlurHeight / h) * 0.5f to Color.Black,
-                                    (topBlurHeight / h) * 0.8f to Color.Black.copy(alpha = 0.5f),
-                                    (topBlurHeight / h) to Color.Transparent,
-                                    (1f - bottomBlurHeight / h) to Color.Transparent,
-                                    (1f - (bottomBlurHeight / h) * 0.95f) to Color.Black.copy(alpha = 0.3f),
-                                    (1f - (bottomBlurHeight / h) * 0.9f) to Color.Black.copy(alpha = 0.6f),
-                                    (1f - (bottomBlurHeight / h) * 0.80f) to Color.Black.copy(alpha = 0.9f),
-                                    (1f - (bottomBlurHeight / h) * 0.2f) to Color.Black,
-                                    1.0f to Color.Black
-                                ),
-                                blendMode = BlendMode.DstIn
-                            )
-                        }
-                ) {
-                    DivoAsyncImage(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .blur(35.dp),
-                        model = imageUrl,
-                        contentScale = ContentScale.Crop,
-                        onReady = onBlurImageReady
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    0.0f to Color.Black.copy(alpha = 0.2f),
-                                    0.3f to Color.Transparent,
-                                    0.7f to Color.Transparent,
-                                    1.0f to Color.Black.copy(alpha = 0.3f)
-                                )
-                            )
-                    )
-                }
-            } else {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(
                             Brush.verticalGradient(
-                                0.0f to Color.Black.copy(alpha = 0.5f),
-                                0.2f to Color.Transparent,
+                                0.0f to Color.Black.copy(alpha = 0.2f),
+                                0.3f to Color.Transparent,
                                 0.7f to Color.Transparent,
-                                1.0f to Color.Black.copy(alpha = 0.7f)
+                                1.0f to Color.Black.copy(alpha = 0.3f)
                             )
                         )
                 )
-                onMainImageReady()
+            }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            0.0f to Color.Black.copy(alpha = 0.5f),
+                            0.2f to Color.Transparent,
+                            0.7f to Color.Transparent,
+                            1.0f to Color.Black.copy(alpha = 0.7f)
+                        )
+                    )
+            )
+            LaunchedEffect(Unit) {
+                if (isBlurSupported) {
+                    onBlurImageReady()
+                }
             }
         }
     }

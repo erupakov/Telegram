@@ -26,6 +26,9 @@ import org.telegram.divo.usecase.ToggleBookmarkUseCase
 import org.telegram.divo.usecase.ToggleLikeUseCase
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.R
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.UserConfig
+import org.telegram.messenger.DialogObject
 
 class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsViewEffect>() {
 
@@ -62,6 +65,14 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                     refresh()
                 }
             }
+        }
+    }
+
+    private val storiesObserver = NotificationCenter.NotificationCenterDelegate { id, _, _ ->
+        if (id == NotificationCenter.storiesUpdated || id == NotificationCenter.storiesReadUpdated || 
+            id == NotificationCenter.storiesListUpdated || id == NotificationCenter.uploadStoryProgress ||
+            id == NotificationCenter.fileUploaded || id == NotificationCenter.fileUploadFailed) {
+            updateStories()
         }
     }
 
@@ -116,11 +127,23 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         }
 
         NotificationCenter.getGlobalInstance().addObserver(languageObserver, NotificationCenter.reloadInterface)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).addObserver(storiesObserver, NotificationCenter.storiesUpdated)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).addObserver(storiesObserver, NotificationCenter.storiesReadUpdated)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).addObserver(storiesObserver, NotificationCenter.storiesListUpdated)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).addObserver(storiesObserver, NotificationCenter.uploadStoryProgress)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).addObserver(storiesObserver, NotificationCenter.fileUploaded)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).addObserver(storiesObserver, NotificationCenter.fileUploadFailed)
     }
 
     override fun onCleared() {
         super.onCleared()
         NotificationCenter.getGlobalInstance().removeObserver(languageObserver, NotificationCenter.reloadInterface)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(storiesObserver, NotificationCenter.storiesUpdated)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(storiesObserver, NotificationCenter.storiesReadUpdated)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(storiesObserver, NotificationCenter.storiesListUpdated)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(storiesObserver, NotificationCenter.uploadStoryProgress)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(storiesObserver, NotificationCenter.fileUploaded)
+        NotificationCenter.getInstance(UserConfig.selectedAccount).removeObserver(storiesObserver, NotificationCenter.fileUploadFailed)
     }
 
     private fun currentPaginator(): OffsetPaginator<FeedItem> = when (state.value.selectedTab) {
@@ -149,15 +172,15 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             return
         }
         setState { copy(isLoading = true) }
-        // TODO: Load stories from repository
-        // TODO: Load models for the initial tab from repository
         setState {
             copy(
                 isLoading = false,
-                stories = ModelsViewState.preview.stories,
                 models = ModelsViewState.preview.models
             )
         }
+        val account = UserConfig.selectedAccount
+        MessagesController.getInstance(account).getStoriesController().loadStories()
+        updateStories()
         viewModelScope.launch {
             listOf(
                 modelsPaginator,
@@ -175,6 +198,71 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         if (currentPaginator().state.value.items.isEmpty()) {
             loadFeed(loadMore = false)
         }
+    }
+
+    private fun updateStories() {
+        val account = UserConfig.selectedAccount
+        val controller = MessagesController.getInstance(account).getStoriesController()
+        
+        val dialogStories = controller.dialogListStories ?: emptyList()
+        val mappedStories = mutableListOf<Story>()
+        
+        val selfId = UserConfig.getInstance(account).clientUserId
+        var hasSelfStories = false
+
+        for (peerStories in dialogStories) {
+            val dialogId = DialogObject.getPeerDialogId(peerStories.peer)
+            val isSelf = dialogId == selfId
+            if (isSelf) {
+                hasSelfStories = true
+            }
+            
+            val userName = if (dialogId > 0) {
+                MessagesController.getInstance(account).getUser(dialogId)?.first_name ?: ""
+            } else {
+                MessagesController.getInstance(account).getChat(-dialogId)?.title ?: ""
+            }
+            
+            mappedStories.add(
+                Story(
+                    id = dialogId.toString(),
+                    dialogId = dialogId,
+                    imageUrl = null,
+                    userName = if (isSelf) org.telegram.messenger.LocaleController.getString(R.string.MyStory) else userName,
+                    watched = !controller.hasUnreadStories(dialogId),
+                    hasUnread = controller.hasUnreadStories(dialogId),
+                    hasStories = true,
+                    isSelf = isSelf,
+                    isLoading = controller.hasUploadingStories(dialogId),
+                    unreadCount = controller.getUnreadStoriesCount(dialogId),
+                    totalCount = peerStories.stories.size
+                )
+            )
+        }
+        
+        if (!hasSelfStories) {
+            mappedStories.add(0, Story(
+                id = selfId.toString(),
+                dialogId = selfId,
+                imageUrl = null,
+                userName = org.telegram.messenger.LocaleController.getString(R.string.AddStoryLabel),
+                watched = true,
+                hasUnread = false,
+                hasStories = false,
+                isSelf = true,
+                isLoading = controller.hasUploadingStories(selfId),
+                unreadCount = 0,
+                totalCount = 0
+            ))
+        } else {
+            val selfStoryIndex = mappedStories.indexOfFirst { it.isSelf }
+            if (selfStoryIndex > 0) {
+                val selfStory = mappedStories.removeAt(selfStoryIndex)
+                mappedStories.add(0, selfStory)
+            }
+        }
+        
+        setState { copy(stories = mappedStories) }
     }
 
     private fun loadFeed(loadMore: Boolean) {

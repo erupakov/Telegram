@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -37,12 +39,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -61,6 +68,14 @@ import org.telegram.divo.screen.models.Story
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.AndroidUtilities.lerp
 import org.telegram.messenger.R
+import androidx.compose.ui.viewinterop.AndroidView
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.UserConfig
+import org.telegram.messenger.AndroidUtilities
+import org.telegram.ui.Components.BackupImageView
+import org.telegram.ui.Components.AvatarDrawable
+import org.telegram.ui.LaunchActivity
+import org.telegram.ui.Stories.recorder.StoryRecorder
 
 @Composable
 fun AnimatedLargeStoriesOverlay(
@@ -116,11 +131,17 @@ fun AnimatedLargeStoriesOverlay(
 
     val baseY = statusBarHeight + 8.dp
 
-    val visibleStories = stories.filter { it.id != "0" }.take(3)
+    val account = UserConfig.selectedAccount
+
+    val visibleStories = if (stories.size == 1 && stories.first().isSelf) {
+        stories.take(1)
+    } else {
+        stories.filter { !it.isSelf }.take(3)
+    }
     val collapsedItemSize = 32.dp
     val collapsedOverlap = 12.dp
 
-    val collapsedGroupWidth = visibleStories.size * collapsedItemSize -
+    val collapsedGroupWidth = if (visibleStories.isEmpty()) 0.dp else visibleStories.size * collapsedItemSize -
             (visibleStories.size - 1) * collapsedOverlap
     val collapsedGroupStartX = (screenWidth - collapsedGroupWidth) / 2
 
@@ -139,7 +160,7 @@ fun AnimatedLargeStoriesOverlay(
 
             val expandedCenterX = 16.dp + (index * 80.dp) + 32.dp
 
-            val collapsedStories = stories.filter { it.id != "0" }.take(3)
+            val collapsedStories = visibleStories
             val collapsedIndex = collapsedStories.indexOfFirst { it.id == story.id }
             val isInCollapsedGroup = collapsedIndex != -1
 
@@ -160,7 +181,6 @@ fun AnimatedLargeStoriesOverlay(
 
 
             val circleAlpha = when {
-                story.id == "0" -> (1f - collapseFraction * 2f).coerceIn(0f, 1f)
                 isInCollapsedGroup -> 1f
                 else -> (1f - collapseFraction * 2f).coerceIn(0f, 1f)
             }
@@ -181,49 +201,133 @@ fun AnimatedLargeStoriesOverlay(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Box(
-                    Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
-                        .clickable { }
-                        .then(
-                            if (story.id == "0") Modifier.background(AppTheme.colors.onBackground)
-                            else Modifier.border(
-                                width = 3.dp,
-                                brush = Brush.horizontalGradient(
-                                    colors = listOf(Color(0xFF990000), Color(0xFF000000))
-                                ),
-                                shape = CircleShape
-                            )
-                        ),
+                    modifier = Modifier.size(64.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Card(
-                        modifier = Modifier
-                            .size(54.dp)
-                            .background(Color.White),
-                        shape = CircleShape
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape)
+                            .clickable { 
+                                val fragment = LaunchActivity.getLastFragment() ?: return@clickable
+                                if (story.isSelf && !story.hasStories) {
+                                    StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
+                                } else {
+                                    val peerIds = arrayListOf(story.dialogId)
+                                    fragment.getOrCreateStoryViewer().open(
+                                        fragment.context, null, peerIds, 0, null, null, null, false
+                                    )
+                                }
+                            }
+                            .then(
+                                if (story.isLoading) Modifier // No border while loading, spinner handles it
+                                else if (!story.hasStories) Modifier
+                                else Modifier.drawBehind {
+                                    val totalCount = story.totalCount.coerceAtLeast(1)
+                                    val unreadCount = story.unreadCount
+                                    val readCount = (totalCount - unreadCount).coerceAtLeast(0)
+                                    
+                                    val strokeWidth = 3.dp.toPx()
+                                    val gapAngle = if (totalCount > 1) 10f else 0f
+                                    val sweepAngle = (360f - (gapAngle * totalCount)) / totalCount
+                                    
+                                    val unreadBrush = Brush.horizontalGradient(colors = listOf(Color(0xFF990000), Color(0xFF000000)))
+                                    val readBrush = Brush.horizontalGradient(colors = listOf(Color.LightGray, Color.Gray))
+                                    
+                                    var startAngle = -90f
+                                    val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
+                                    val topLeft = Offset(strokeWidth / 2f, strokeWidth / 2f)
+                                    
+                                    for (i in 0 until readCount) {
+                                        drawArc(
+                                            brush = readBrush,
+                                            startAngle = startAngle,
+                                            sweepAngle = sweepAngle,
+                                            useCenter = false,
+                                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+                                            size = arcSize,
+                                            topLeft = topLeft
+                                        )
+                                        startAngle += sweepAngle + gapAngle
+                                    }
+                                    
+                                    for (i in 0 until unreadCount) {
+                                        drawArc(
+                                            brush = unreadBrush,
+                                            startAngle = startAngle,
+                                            sweepAngle = sweepAngle,
+                                            useCenter = false,
+                                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+                                            size = arcSize,
+                                            topLeft = topLeft
+                                        )
+                                        startAngle += sweepAngle + gapAngle
+                                    }
+                                }
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
+                        val avatarSize = if (story.hasStories || story.isLoading) 54.dp else 60.dp
+                        val avatarRadius = if (story.hasStories || story.isLoading) 27f else 30f
+
                         Box(
-                            modifier = Modifier.fillMaxSize().background(AppTheme.colors.onBackground),
+                            modifier = Modifier
+                                .size(avatarSize)
+                                .clip(CircleShape)
+                                .background(Color.White),
                             contentAlignment = Alignment.Center
                         ) {
-                            if (story.id == "0") {
-                                Icon(
-                                    modifier = Modifier.size(24.dp),
-                                    painter = rememberVectorPainter(Icons.Default.Add),
-                                    contentDescription = null,
-                                    tint = Color.Black,
-                                )
-                            } else {
-                                Image(
-                                    modifier = Modifier
-                                        .size(54.dp)
-                                        .background(Color(0xFFE7E7E8)),
-                                    painter = rememberAsyncImagePainter(story.imageUrl),
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
+                            AndroidView(
+                                factory = { ctx ->
+                                    BackupImageView(ctx).apply {
+                                        setRoundRadius(AndroidUtilities.dp(avatarRadius))
+                                    }
+                                },
+                                update = { view ->
+                                    val avatarDrawable = AvatarDrawable()
+                                    if (story.dialogId > 0) {
+                                        val user = MessagesController.getInstance(account).getUser(story.dialogId)
+                                        avatarDrawable.setInfo(account, user)
+                                        view.setForUserOrChat(user, avatarDrawable)
+                                    } else {
+                                        val chat = MessagesController.getInstance(account).getChat(-story.dialogId)
+                                        avatarDrawable.setInfo(account, chat)
+                                        view.setForUserOrChat(chat, avatarDrawable)
+                                    }
+                                },
+                                modifier = Modifier.size(avatarSize)
+                            )
+                        }
+
+                        if (story.isLoading) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.fillMaxSize(),
+                                color = Color(0xFF990000),
+                                strokeWidth = 3.dp
+                            )
+                        }
+                    }
+                    if (story.isSelf) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .offset(x = 0.dp, y = 0.dp)
+                                .size(20.dp)
+                                .background(Color.White, CircleShape)
+                                .clickable {
+                                    val fragment = LaunchActivity.getLastFragment() ?: return@clickable
+                                    StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
+                                }
+                                .padding(2.dp)
+                                .background(AppTheme.colors.onBackground, CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(12.dp),
+                                painter = rememberVectorPainter(Icons.Default.Add),
+                                contentDescription = null,
+                                tint = Color.Black
+                            )
                         }
                     }
                 }
@@ -231,11 +335,11 @@ fun AnimatedLargeStoriesOverlay(
                 Spacer(Modifier.height(6.dp))
 
                 Text(
-                    text = if (story.id == "0") stringResource(R.string.AddStoryLabel) else story.userName,
+                    text = story.userName,
                     fontSize = 11.5.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (story.id == "0") Color(0xFFB0B4BA) else Color.Black,
+                    color = if (story.isSelf && !story.hasStories) Color(0xFFB0B4BA) else Color.Black,
                     modifier = Modifier.graphicsLayer { alpha = textAlpha }
                 )
             }

@@ -261,7 +261,7 @@ fun ModelsHomeScreen(
 
             AnimatedLargeStoriesOverlay(
                 collapseFraction = collapseFraction,
-                stories = ModelsViewState.preview.stories,
+                stories = state.stories,
                 hazeState = hazeState
             )
 
