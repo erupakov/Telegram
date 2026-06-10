@@ -12,6 +12,7 @@ import java.io.File
 data class EventListViewState(
     val isModel: Boolean,
     val fName: String = "",
+    val lName: String = "",
     val bio: String = "",
     val avatarUrl: String = "",
     val userFull: UserInfo? = null,
@@ -25,7 +26,7 @@ data class EventListViewState(
 ) : ViewState
 
 sealed class EditMyProfileIntent : ViewIntent {
-    data class OnSaveClicked(val fName: String, val bio: String, val file: Result<File>?) :
+    data class OnSaveClicked(val fName: String, val lName: String, val bio: String, val file: Result<File>?) :
         EditMyProfileIntent()
         
     data class OnLocationChanged(val country: String, val countryCode: String, val city: LocalCity?) : EditMyProfileIntent()

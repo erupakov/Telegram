@@ -440,6 +440,14 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             GlassTabView tab = tabs[a];
             tab.setSelected(a == position, animated);
         }
+        //DIVO
+        if (getParentActivity() != null) {
+            if (position == POSITION_CHATS) {
+                getParentActivity().setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_USER);
+            } else {
+                getParentActivity().setRequestedOrientation(android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            }
+        }
     }
 
     public void switchToTabPosition(int position) {

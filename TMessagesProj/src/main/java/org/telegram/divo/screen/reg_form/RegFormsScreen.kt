@@ -50,6 +50,9 @@ fun RegFormsScreen(
     phoneNumber: String,
     firebaseUid: String? = null,
     googleEmail: String? = null,
+    googleFirstName: String? = null,
+    googleLastName: String? = null,
+    googlePhotoUrl: String? = null,
     viewModel: RegFormsViewModel = viewModel(),
     onFinished: (org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit,
     onBack: () -> Unit,
@@ -65,6 +68,9 @@ fun RegFormsScreen(
             phoneNumber = phoneNumber,
             firebaseUid = firebaseUid,
             googleEmail = googleEmail,
+            googleFirstName = googleFirstName,
+            googleLastName = googleLastName,
+            googlePhotoUrl = googlePhotoUrl,
         ))
     }
 

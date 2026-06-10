@@ -81,6 +81,9 @@ sealed class RegFormsIntent : ViewIntent {
         val phoneNumber: String,
         val firebaseUid: String? = null,
         val googleEmail: String? = null,
+        val googleFirstName: String? = null,
+        val googleLastName: String? = null,
+        val googlePhotoUrl: String? = null,
     ) : RegFormsIntent()
     data class OnFieldChanged(val update: RegistrationFormData.() -> RegistrationFormData) : RegFormsIntent()
     data object OnContinue : RegFormsIntent()

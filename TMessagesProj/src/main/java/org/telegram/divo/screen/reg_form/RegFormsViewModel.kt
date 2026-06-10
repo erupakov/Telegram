@@ -1,7 +1,7 @@
 package org.telegram.divo.screen.reg_form
 
 import android.os.Build
-import android.util.Log
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +46,12 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
         setState {
             copy(
                 steps = intent.subRole.formSteps(),
-                formData = RegistrationFormData(subRole = intent.subRole),
+                formData = RegistrationFormData(
+                    subRole = intent.subRole,
+                    firstName = intent.googleFirstName ?: "",
+                    lastName = intent.googleLastName ?: "",
+                    photoUri = intent.googlePhotoUrl?.let { Uri.parse(it) }
+                ),
                 currentAccount = intent.currentAccount,
                 phoneHash = intent.phoneHash,
                 phoneNumber = intent.phoneNumber,
@@ -76,21 +81,29 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     var uploadedPhotoUrl: String? = null
                     data.photoUri?.let { uri ->
                         try {
-                            val context = ApplicationLoader.applicationContext
-                            val inputStream = context.contentResolver.openInputStream(uri)
-                            if (inputStream != null) {
-                                val tempFile = java.io.File(context.cacheDir, "upload_avatar_${System.currentTimeMillis()}.jpg")
-                                val outputStream = java.io.FileOutputStream(tempFile)
-                                inputStream.copyTo(outputStream)
-                                inputStream.close()
-                                outputStream.close()
-                                
-                                val uploadResult = DivoApi.userRepository.uploadPhoto(tempFile)
-                                if (uploadResult is DivoResult.Success) {
-                                    uploadedPhotoUuid = uploadResult.value.uuid
-                                    uploadedPhotoUrl = uploadResult.value.fullUrl
+                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                val context = ApplicationLoader.applicationContext
+                                val inputStream = if (uri.scheme == "http" || uri.scheme == "https") {
+                                    val request = okhttp3.Request.Builder().url(uri.toString()).build()
+                                    val response = okhttp3.OkHttpClient().newCall(request).execute()
+                                    response.body?.byteStream()
+                                } else {
+                                    context.contentResolver.openInputStream(uri)
                                 }
-                                telegramPhotoFile = tempFile
+                                if (inputStream != null) {
+                                    val tempFile = java.io.File(context.cacheDir, "upload_avatar_${System.currentTimeMillis()}.jpg")
+                                    val outputStream = java.io.FileOutputStream(tempFile)
+                                    inputStream.copyTo(outputStream)
+                                    inputStream.close()
+                                    outputStream.close()
+                                    
+                                    val uploadResult = DivoApi.userRepository.uploadPhoto(tempFile)
+                                    if (uploadResult is DivoResult.Success) {
+                                        uploadedPhotoUuid = uploadResult.value.uuid
+                                        uploadedPhotoUrl = uploadResult.value.fullUrl
+                                    }
+                                    telegramPhotoFile = tempFile
+                                }
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -217,29 +230,11 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (firstName.isBlank()) {
                         firstName = "User"
                     }
-
-                    val req = TL_account.updateProfile().apply {
-                        flags = 1 or 2 // 1 = first_name, 2 = last_name
-                        first_name = firstName
-                        last_name = lastName
-                    }
-
-                    val profileUpdateResult = kotlinx.coroutines.withTimeoutOrNull(5000) {
-                        suspendCancellableCoroutine<TLRPC.User> { continuation ->
-                            val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(req) { response, error ->
-                                if (error != null) {
-                                    continuation.resumeWithException(RuntimeException(error.text))
-                                } else if (response is TLRPC.User) {
-                                    continuation.resume(response)
-                                } else {
-                                    continuation.resumeWithException(RuntimeException("Invalid response type"))
-                                }
-                            }
-                            continuation.invokeOnCancellation {
-                                ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
-                            }
-                        }
-                    }
+                    val profileUpdateResult = org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramName(
+                        currentAccount = state.value.currentAccount,
+                        firstName = firstName,
+                        lastName = lastName
+                    )
 
                     // 2.5 TG Profile Photo Update
                     if (telegramPhotoFile != null) {

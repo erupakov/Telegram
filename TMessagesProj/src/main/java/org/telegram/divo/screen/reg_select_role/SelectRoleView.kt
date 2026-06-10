@@ -18,6 +18,9 @@ class RoleSelectionView(context: Context, private val account: Int) : SlideView(
     private var currentPhoneHash by mutableStateOf("")
     private var currentFirebaseUid: String? by mutableStateOf(null)
     private var currentGoogleEmail: String? by mutableStateOf(null)
+    private var currentGoogleFirstName: String? by mutableStateOf(null)
+    private var currentGoogleLastName: String? by mutableStateOf(null)
+    private var currentGooglePhotoUrl: String? by mutableStateOf(null)
 
     var onBack: (() -> Unit)? = null
     var onFinish: ((org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit)? = null
@@ -34,6 +37,9 @@ class RoleSelectionView(context: Context, private val account: Int) : SlideView(
                     phoneNumber = currentPhone,
                     firebaseUid = currentFirebaseUid,
                     googleEmail = currentGoogleEmail,
+                    googleFirstName = currentGoogleFirstName,
+                    googleLastName = currentGoogleLastName,
+                    googlePhotoUrl = currentGooglePhotoUrl,
                     onNavControllerReady = { navController ->
                         this@RoleSelectionView.rolesNavController = navController
                     },
@@ -56,7 +62,32 @@ class RoleSelectionView(context: Context, private val account: Int) : SlideView(
             currentPhoneHash = params.getString("phoneHash", "")
             currentFirebaseUid = params.getString("firebaseUid")
             currentGoogleEmail = params.getString("googleEmail")
+            currentGoogleFirstName = params.getString("googleFirstName")
+            currentGoogleLastName = params.getString("googleLastName")
+            currentGooglePhotoUrl = params.getString("googlePhotoUrl")
         }
+    }
+
+    override fun saveStateParams(bundle: Bundle) {
+        super.saveStateParams(bundle)
+        bundle.putString("role_phoneFormated", currentPhone)
+        bundle.putString("role_phoneHash", currentPhoneHash)
+        bundle.putString("role_firebaseUid", currentFirebaseUid)
+        bundle.putString("role_googleEmail", currentGoogleEmail)
+        bundle.putString("role_googleFirstName", currentGoogleFirstName)
+        bundle.putString("role_googleLastName", currentGoogleLastName)
+        bundle.putString("role_googlePhotoUrl", currentGooglePhotoUrl)
+    }
+
+    override fun restoreStateParams(bundle: Bundle) {
+        super.restoreStateParams(bundle)
+        currentPhone = bundle.getString("role_phoneFormated", "")
+        currentPhoneHash = bundle.getString("role_phoneHash", "")
+        currentFirebaseUid = bundle.getString("role_firebaseUid")
+        currentGoogleEmail = bundle.getString("role_googleEmail")
+        currentGoogleFirstName = bundle.getString("role_googleFirstName")
+        currentGoogleLastName = bundle.getString("role_googleLastName")
+        currentGooglePhotoUrl = bundle.getString("role_googlePhotoUrl")
     }
 
     override fun getHeaderName(): String {

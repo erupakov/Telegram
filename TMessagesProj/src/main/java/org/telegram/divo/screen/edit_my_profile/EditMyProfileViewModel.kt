@@ -61,9 +61,14 @@ class EditMyProfileViewModel(
                     )
                 }
                 
+                val telegramUser = UserConfig.getInstance(currentAccount).currentUser
+                val firstName = telegramUser?.first_name ?: ""
+                val lastName = telegramUser?.last_name ?: ""
+
                 setState {
                     copy(
-                        fName = if (isModel) user.fullName else user.agency?.title ?: user.fullName,
+                        fName = firstName,
+                        lName = lastName,
                         bio = if (isModel) user.model?.description.orEmpty() else user.agency?.description.orEmpty(),
                         userFull = user,
                         avatarUrl = if (isModel) user.avatarUrl else user.agency?.photo?.fullUrl ?: user.avatarUrl,
@@ -82,7 +87,7 @@ class EditMyProfileViewModel(
         }
     }
 
-    private fun updateProfile(fNameRaw: String, aboutRaw: String, file: Result<File>?) {
+    private fun updateProfile(fNameRaw: String, lNameRaw: String, aboutRaw: String, file: Result<File>?) {
         viewModelScope.launch {
             val userInfo = state.value.userFull
             if (userInfo != null) {
@@ -107,10 +112,11 @@ class EditMyProfileViewModel(
                     userInfo.avatarUuid
                 }
                 val isModel = state.value.isModel
+                val fullNameStr = listOf(fNameRaw.trim(), lNameRaw.trim()).filter { it.isNotBlank() }.joinToString(" ")
                 val result = if (isModel) {
                     DivoApi.userRepository.updateProfile(
                         userInfo = userInfo.copy(
-                            fullName = fNameRaw,
+                            fullName = fullNameStr,
                             model = userInfo.model?.copy(description = aboutRaw),
                             avatarUuid = uploadedUuid,
                             city = state.value.city?.let {
@@ -124,7 +130,7 @@ class EditMyProfileViewModel(
                     DivoApi.userRepository.updateAgency(
                         agency = agency.copy(
                             description = aboutRaw,
-                            title = fNameRaw,
+                            title = fullNameStr,
                             photo = if (uploadedUuid.isNotEmpty()) org.telegram.divo.entity.Photo(photoId = 0L, fileUuid = uploadedUuid) else agency.photo
                         ),
                         // For agency we might also want to update the user's city in userInfo
@@ -141,6 +147,13 @@ class EditMyProfileViewModel(
 
                 when (result) {
                     is DivoResult.Success -> {
+                        // Update TG profile name as well
+                        org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramName(
+                            currentAccount = currentAccount,
+                            firstName = fNameRaw.trim(),
+                            lastName = lNameRaw.trim()
+                        )
+
                         setState { copy(isSaved = false) }
                         sendEffect(Effect.SaveSuccess)
                     }
@@ -180,7 +193,7 @@ class EditMyProfileViewModel(
         when (intent) {
             EditMyProfileIntent.OnLoad -> Unit
             is EditMyProfileIntent.OnSaveClicked -> {
-                updateProfile(intent.fName, intent.bio, intent.file)
+                updateProfile(intent.fName, intent.lName, intent.bio, intent.file)
             }
             is EditMyProfileIntent.OnLocationChanged -> {
                 setState {

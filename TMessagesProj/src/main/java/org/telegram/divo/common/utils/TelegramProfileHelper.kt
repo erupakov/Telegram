@@ -76,4 +76,40 @@ object TelegramProfileHelper {
             false
         }
     }
+
+    suspend fun updateTelegramName(currentAccount: Int, firstName: String, lastName: String): TLRPC.User? {
+        return try {
+            val req = org.telegram.tgnet.tl.TL_account.updateProfile().apply {
+                flags = 1 or 2 // 1 = first_name, 2 = last_name
+                first_name = firstName
+                last_name = lastName
+            }
+
+            val profileUpdateResult = kotlinx.coroutines.withTimeoutOrNull(5000) {
+                suspendCancellableCoroutine<TLRPC.User?> { continuation ->
+                    val reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req) { response, error ->
+                        if (error == null && response is TLRPC.User) {
+                            continuation.resume(response)
+                        } else {
+                            continuation.resume(null)
+                        }
+                    }
+                    continuation.invokeOnCancellation {
+                        ConnectionsManager.getInstance(currentAccount).cancelRequest(reqId, true)
+                    }
+                }
+            }
+
+            if (profileUpdateResult != null) {
+                val uc = UserConfig.getInstance(currentAccount)
+                uc.currentUser = profileUpdateResult
+                uc.saveConfig(true)
+                MessagesController.getInstance(currentAccount).putUser(profileUpdateResult, false)
+            }
+            profileUpdateResult
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 }
