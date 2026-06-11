@@ -289,7 +289,9 @@ public class CreateRtmpStreamBottomSheet extends BottomSheetWithRecyclerListView
 
             RLottieImageView imageView = new RLottieImageView(context);
             imageView.setAutoRepeat(true);
-            imageView.setAnimation(R.raw.utyan_streaming, 112, 112);
+//            imageView.setAnimation(R.raw.utyan_streaming, 112, 112);
+            //DIVO
+            imageView.setImageResource(R.drawable.divo_logo_content);
             imageView.playAnimation();
             addView(imageView, LayoutHelper.createLinear(112, 112, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 24, 0, 0));
 

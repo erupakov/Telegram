@@ -216,7 +216,9 @@ public class CallLogActivity extends BaseFragment implements NotificationCenter.
 			this.progressView = progressView;
 
 			imageView = new RLottieImageView(context);
-			imageView.setAnimation(R.raw.utyan_call, 110, 110);
+//			imageView.setAnimation(R.raw.utyan_call, 110, 110);
+            //DIVO
+            imageView.setImageResource(R.drawable.divo_logo_content);
 			imageView.setAutoRepeat(false);
 			addView(imageView, LayoutHelper.createFrame(110, 110, Gravity.CENTER, 52, 17, 52, 60));
 			imageView.setOnClickListener(v -> {

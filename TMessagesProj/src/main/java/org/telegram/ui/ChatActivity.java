@@ -19067,7 +19067,8 @@ public class ChatActivity extends BaseFragment implements
             if (currentUser.self) {
                 avatarContainer.setTitle(LocaleController.getString(R.string.SavedMessages));
             } else if (!MessagesController.isSupportUser(currentUser) && getContactsController().contactsDict.get(currentUser.id) == null && (getContactsController().contactsDict.size() != 0 || !getContactsController().isLoadingContacts())) {
-                if (!TextUtils.isEmpty(currentUser.phone)) {
+                //DIVO
+                if (!TextUtils.isEmpty(currentUser.phone) && !currentUser.phone.startsWith("999")) {
                     avatarContainer.setTitle(PhoneFormat.getInstance().format("+" + currentUser.phone), currentUser.scam, currentUser.fake, currentUser.verified, getMessagesController().isPremiumUser(currentUser), currentUser.emoji_status, animated);
                 } else {
                     avatarContainer.setTitle(AndroidUtilities.removeRTL(AndroidUtilities.removeDiacritics(UserObject.getUserName(currentUser))), currentUser.scam, currentUser.fake, currentUser.verified, getMessagesController().isPremiumUser(currentUser), currentUser.emoji_status, animated);
@@ -39463,7 +39464,7 @@ public class ChatActivity extends BaseFragment implements
                     if (!TextUtils.isEmpty(messageObject.vCardData)) {
                         phone = messageObject.vCardData.toString();
                     } else {
-                        if (!TextUtils.isEmpty(user.phone)) {
+                        if (!TextUtils.isEmpty(user.phone) && !user.phone.startsWith("999")) { //DIVO
                             phone = PhoneFormat.getInstance().format("+" + user.phone);
                         } else {
                             phone = MessageObject.getMedia(messageObject.messageOwner).phone_number;

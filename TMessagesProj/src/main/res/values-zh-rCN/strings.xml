@@ -614,7 +614,7 @@
     <string name="ErrorGoogleSignInFailed">Google登录失败</string>
     <string name="ErrorFirebaseAuthFailed">Firebase身份验证失败</string>
     <string name="ErrorProfileFetchFailed">获取个人资料失败或缺少电话号码</string>
-    <string name="ErrorTelegramAuthFailed">Telegram验证失败</string>
+    <string name="ErrorTelegramAuthFailed">Divo Global验证失败</string>
     <string name="ErrorDummyPhoneFailed">获取注册的虚拟电话失败</string>
     <string name="ErrorUnexpected">发生意外错误</string>
     <string name="EventStatusApplicationsClosed">申请已截止</string>

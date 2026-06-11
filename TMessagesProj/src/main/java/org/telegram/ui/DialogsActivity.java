@@ -3452,11 +3452,22 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
                 statusDrawable.center = true;
-                logoDrawable = context.getResources().getDrawable(R.drawable.telegram_logo_2).mutate();
-                logoDrawable.setBounds(0, dp(2), logoDrawable.getIntrinsicWidth(), dp(2) + logoDrawable.getIntrinsicHeight());
-                logoDrawable.setColorFilter(getThemedColor(Theme.key_telegram_color_dialogsLogo), PorterDuff.Mode.MULTIPLY);
-                SpannableStringBuilder ssb = new SpannableStringBuilder(getString(R.string.AppName));
-                ssb.setSpan(new ImageSpan(logoDrawable), 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                //DIVO
+                android.graphics.Typeface tf = AndroidUtilities.getTypeface("fonts/helvetica_neue_lt_com_77_bold_condensed.ttf");
+                SpannableStringBuilder ssb = new SpannableStringBuilder(getString(R.string.DivoMainTabsChats).toUpperCase());
+                ssb.setSpan(new org.telegram.ui.Components.TypefaceSpan(tf, AndroidUtilities.dp(24), 0xFF222222) {
+                    @Override
+                    public void updateMeasureState(android.text.TextPaint p) {
+                        super.updateMeasureState(p);
+                        p.baselineShift = AndroidUtilities.dp(8);
+                    }
+
+                    @Override
+                    public void updateDrawState(android.text.TextPaint tp) {
+                        super.updateDrawState(tp);
+                        tp.baselineShift = AndroidUtilities.dp(8);
+                    }
+                }, 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 actionBar.setTitle(ssb, statusDrawable);
                 updateStatus(UserConfig.getInstance(currentAccount).getCurrentUser(), false);
             }
@@ -5267,7 +5278,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         if (hasMainTabs) {
             actionBar.getTitlesContainer().setTranslationX(dp(4));
-            actionBar.setTitleColor(getThemedColor(Theme.key_telegram_color_dialogsLogo));
+            actionBar.setTitleColor(0xFF222222); //DIVO
         }
 
         if (folderId != 0) {
@@ -11565,7 +11576,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 dialogStoriesCell.updateColors();
             }
             if (logoDrawable != null) {
-                logoDrawable.setColorFilter(getThemedColor(Theme.key_telegram_color_dialogsLogo), PorterDuff.Mode.MULTIPLY);
+                logoDrawable.setColorFilter(0xFF222222, PorterDuff.Mode.MULTIPLY); //DIVO
             }
             if (actionModeCloseView != null) {
                 actionModeCloseView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));

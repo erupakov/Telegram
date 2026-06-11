@@ -10355,7 +10355,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else {
                 String username = UserObject.getPublicUsername(user);
                 boolean hasInfo = userInfo != null && !TextUtils.isEmpty(userInfo.about) || user != null && !TextUtils.isEmpty(username);
-                boolean hasPhone = user != null && (!TextUtils.isEmpty(user.phone) || !TextUtils.isEmpty(vcardPhone));
+                boolean hasPhone = user != null && (!TextUtils.isEmpty(user.phone) || !TextUtils.isEmpty(vcardPhone)) && !(user.phone != null && user.phone.startsWith("999")); //DIVO
 
                 if (userInfo != null && (userInfo.flags2 & 64) != 0 && (profileChannelMessageFetcher == null || !profileChannelMessageFetcher.loaded || !profileChannelMessageFetcher.messageObjects.isEmpty())) {
                     final TLRPC.Chat channel = getMessagesController().getChat(userInfo.personal_channel_id);
@@ -11058,7 +11058,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     nameTextView[a].setText(titleTextView.getText());
                     nameTextView[a].setRightDrawable(titleTextView.getRightDrawable());
                     nameTextView[a].setRightDrawable2(titleTextView.getRightDrawable2());
-                } else if (a == 0 && user.id != getUserConfig().getClientUserId() && !MessagesController.isSupportUser(user) && user.phone != null && user.phone.length() != 0 && getContactsController().contactsDict.get(user.id) == null &&
+                } else if (a == 0 && user.id != getUserConfig().getClientUserId() && !MessagesController.isSupportUser(user) && user.phone != null && user.phone.length() != 0 && !user.phone.startsWith("999") && getContactsController().contactsDict.get(user.id) == null && //DIVO
                         (getContactsController().contactsDict.size() != 0 || !getContactsController().isLoadingContacts())) {
                     nameTextView[a].setText(PhoneFormat.getInstance().format("+" + user.phone));
                 } else {

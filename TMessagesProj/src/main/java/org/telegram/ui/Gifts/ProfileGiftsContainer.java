@@ -474,7 +474,9 @@ public class ProfileGiftsContainer extends FrameLayout implements NotificationCe
                 emptyView1.addView(emptyView1Layout, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER));
 
                 BackupImageView emptyView1Image = new BackupImageView(getContext());
-                emptyView1Image.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, "utyan_empty", dp(120), dp(120)));
+//                emptyView1Image.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, "utyan_empty", dp(120), dp(120)));
+                //DIVO
+                emptyView1Image.setImageResource(R.drawable.divo_logo_content);
                 emptyView1Layout.addView(emptyView1Image, LayoutHelper.createLinear(120, 120, Gravity.CENTER_HORIZONTAL, 0, 0, 0, 0));
 
                 emptyView1Title = new TextView(getContext());

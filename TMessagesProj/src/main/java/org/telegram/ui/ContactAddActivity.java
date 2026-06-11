@@ -713,7 +713,12 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
 
     private String getPhone() {
         TLRPC.User user = getMessagesController().getUser(user_id);
-        return user != null && !TextUtils.isEmpty(user.phone) ? user.phone : phone;
+        //DIVO
+        String p = user != null && !TextUtils.isEmpty(user.phone) ? user.phone : phone;
+        if (p != null && p.startsWith("999")) {
+            return null;
+        }
+        return p;
     }
 
     public void didReceivedNotification(int id, int account, Object... args) {
