@@ -1136,4 +1136,21 @@
     <string name="PrivacyBioInfo">Вы можете детально настроить, кто сможет видеть вашу информацию "О себе".</string>
     <string name="PrivacyBioInfo3">Вы можете добавить пользователей или целые группы, которые не увидят вашу информацию "О себе".</string>
 
+    <string name="UploadingStory">Загрузка…</string>
+    <string name="FailedStory">Ошибка</string>
+    <string name="FailedToUploadStory">не удалось загрузить</string>
+    <string name="StoryError">Не удалось загрузить</string>
+    <string name="StoryEditing">Обновление…</string>
+    <string name="TryAgain">Повторить</string>
+    <string name="SelfStoryTitle">Моя история</string>
+
+    <string name="AllowReadCall">Пожалуйста, разрешите Divo Global принимать звонки, чтобы мы могли автоматически ввести код.</string>
+    <string name="AllowReadCallAndLog">Пожалуйста, разрешите Divo Global принимать звонки и читать историю звонков, чтобы мы могли автоматически ввести код.</string>
+    <string name="AllowReadCallLog">Пожалуйста, разрешите Divo Global читать историю звонков, чтобы мы могли автоматически ввести код.</string>
+    <string name="AllowFillNumber">Пожалуйста, разрешите Divo Global принимать звонки, чтобы мы могли автоматически подтвердить ваш номер телефона.</string>
+    <string name="UserRestricted">К сожалению, у вас нет прав на это действие.</string>
+    <string name="YouBlockedUser">К сожалению, вы не можете добавить этого пользователя или бота в группы, так как вы заблокировали его. Пожалуйста, разблокируйте его для продолжения.</string>
+    <string name="ContactsPermissionAlertContinue">Продолжить</string>
+    <string name="NotificationsPermissionContinue">Продолжить</string>
+    <string name="Continue">Продолжить</string>
 </resources>

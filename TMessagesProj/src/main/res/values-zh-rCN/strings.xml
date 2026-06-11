@@ -839,4 +839,21 @@
     <string name="PrivacyBioInfo">您可以精确限制谁能看到您的简介。</string>
     <string name="PrivacyBioInfo3">您可以添加无法看到您简介的用户或整个群组。</string>
 
+    <string name="UploadingStory">上传中…</string>
+    <string name="FailedStory">失败</string>
+    <string name="FailedToUploadStory">上传失败</string>
+    <string name="StoryError">无法上传</string>
+    <string name="StoryEditing">上传编辑…</string>
+    <string name="TryAgain">重试</string>
+    <string name="SelfStoryTitle">我的动态</string>
+
+    <string name="AllowReadCall">请允许 Divo Global 接听电话，以便我们为您自动输入验证码。</string>
+    <string name="AllowReadCallAndLog">请允许 Divo Global 接听电话并读取通话记录，以便我们为您自动输入验证码。</string>
+    <string name="AllowReadCallLog">请允许 Divo Global 读取通话记录，以便我们为您自动输入验证码。</string>
+    <string name="AllowFillNumber">请允许 Divo Global 接听电话，以便我们自动确认您的手机号码。</string>
+    <string name="UserRestricted">抱歉，您没有执行此操作的权限。</string>
+    <string name="YouBlockedUser">抱歉，您无法将此用户或机器人添加到群组，因为您已将其屏蔽。请解除屏蔽以继续。</string>
+    <string name="ContactsPermissionAlertContinue">继续</string>
+    <string name="NotificationsPermissionContinue">继续</string>
+    <string name="Continue">继续</string>
 </resources>

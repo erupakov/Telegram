@@ -523,7 +523,7 @@ private fun ConfirmModelAdditionBottomSheet(
                             Spacer(modifier = Modifier.width(8.dp))
 
                             val age = model.birthday?.toAge()
-                            val ageStr = age?.let { stringResource(R.string.DivoAgencyModelYearsOld, it) }
+                            val ageStr = age?.let { org.telegram.messenger.LocaleController.formatPluralString("Years", it) }
                             val locationStr = buildString {
                                 if (ageStr != null) append("$ageStr · ")
                                 val country = model.city?.countryName ?: ""

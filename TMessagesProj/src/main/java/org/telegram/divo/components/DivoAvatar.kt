@@ -31,10 +31,12 @@ import org.telegram.divo.style.AppTheme
 fun DivoAvatar(
     modifier: Modifier = Modifier,
     imageUrl: String?,
-    isOnline: Boolean = false
+    isOnline: Boolean = false,
+    showBorder: Boolean = true,
+    avatarSize: androidx.compose.ui.unit.Dp = 64.dp
 ) {
     Box(
-        modifier = modifier.size(64.dp)
+        modifier = modifier.size(avatarSize)
     ) {
         val onBackgroundColor = AppTheme.colors.onBackground
         
@@ -42,30 +44,32 @@ fun DivoAvatar(
             modifier = Modifier
                 .fillMaxSize()
                 .drawBehind {
-                    val strokeWidth = 2.dp.toPx()
+                    if (showBorder) {
+                        val strokeWidth = 2.dp.toPx()
 
-                    drawCircle(
-                        color = onBackgroundColor,
-                        radius = size.minDimension / 2f - strokeWidth / 2f,
-                        style = Stroke(width = strokeWidth)
-                    )
-                    
-                    // Левая часть с градиентом
-                    val gradient = Brush.linearGradient(
-                        colors = listOf(Color(0xFF180800), Color(0xFFFF5C02)),
-                        start = Offset(size.width / 2f, 0f),
-                        end = Offset(size.width / 2f, size.height)
-                    )
-                    
-                    drawArc(
-                        brush = gradient,
-                        startAngle = 90f,
-                        sweepAngle = 180f,
-                        useCenter = false,
-                        topLeft = Offset(strokeWidth / 2f, strokeWidth / 2f),
-                        size = Size(size.width - strokeWidth, size.height - strokeWidth),
-                        style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-                    )
+                        drawCircle(
+                            color = onBackgroundColor,
+                            radius = size.minDimension / 2f - strokeWidth / 2f,
+                            style = Stroke(width = strokeWidth)
+                        )
+                        
+                        // Левая часть с градиентом
+                        val gradient = Brush.linearGradient(
+                            colors = listOf(Color(0xFF180800), Color(0xFFFF5C02)),
+                            start = Offset(size.width / 2f, 0f),
+                            end = Offset(size.width / 2f, size.height)
+                        )
+                        
+                        drawArc(
+                            brush = gradient,
+                            startAngle = 90f,
+                            sweepAngle = 180f,
+                            useCenter = false,
+                            topLeft = Offset(strokeWidth / 2f, strokeWidth / 2f),
+                            size = Size(size.width - strokeWidth, size.height - strokeWidth),
+                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                        )
+                    }
                 }
         ) {
             DivoAsyncImage(

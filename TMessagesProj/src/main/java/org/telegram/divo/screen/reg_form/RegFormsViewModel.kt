@@ -235,6 +235,27 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         firstName = firstName,
                         lastName = lastName
                     )
+                    
+                    data.dateOfBirth?.let { dobString ->
+                        try {
+                            val parts = dobString.split("-")
+                            if (parts.size == 3) {
+                                val year = parts[0].toIntOrNull()
+                                val month = parts[1].toIntOrNull()
+                                val day = parts[2].toIntOrNull()
+                                if (year != null && month != null && day != null) {
+                                    org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramBirthday(
+                                        currentAccount = state.value.currentAccount,
+                                        year = year,
+                                        month = month,
+                                        day = day
+                                    )
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
 
                     // 2.5 TG Profile Photo Update
                     if (telegramPhotoFile != null) {

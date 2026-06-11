@@ -160,7 +160,7 @@ fun ModelPage(
 
                         feed.user.age?.let {
                             Text(
-                                text = "$it ${stringResource(R.string.YearsOld)}",
+                                text = org.telegram.messenger.LocaleController.formatPluralString("Years", it),
                                 style = AppTheme.typography.bodyMedium,
                                 color = AppTheme.colors.onBackground,
                             )

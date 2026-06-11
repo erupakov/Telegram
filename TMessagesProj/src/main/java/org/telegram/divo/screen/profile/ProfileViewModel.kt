@@ -178,6 +178,7 @@ class ProfileViewModel(
     override fun handleIntent(intent: ProfileIntent) {
         when (intent) {
             is ProfileIntent.OnLoad -> loadData()
+            is ProfileIntent.OnRefresh -> refreshData()
             is ProfileIntent.OpenSocialLink -> openLink(intent.socialNetworkType)
             is ProfileIntent.OnBackgroundPhotoSelected -> { changeBackground(intent.file) }
             is ProfileIntent.OnPortfolioPhotoSelected -> { uploadPhoto(intent.file) }
@@ -271,6 +272,56 @@ class ProfileViewModel(
                 observeEvents()
                 observeAgencyModelsPaginator()
                 observeSearchModelsPaginator()
+            }
+        }
+    }
+
+    private fun refreshData() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true, errorMessage = null) }
+            
+            if (isOwnProfile) {
+                val result = DivoApi.userRepository.getCurrentUserInfo(forceRefresh = true)
+                if (result !is DivoResult.Success) {
+                    setState { copy(isLoading = false, errorMessage = result.getErrorMessage()) }
+                } else {
+                    setState { copy(isLoading = false) } // The flow will automatically emit the new value
+                }
+            } else {
+                val userResult = DivoApi.userRepository.getUserById(state.value.userId)
+                if (userResult !is DivoResult.Success) {
+                    setState { copy(isLoading = false, errorMessage = userResult.getErrorMessage()) }
+                } else {
+                    val userData = userResult.value
+                    setState {
+                        copy(
+                            userInfo = userData,
+                            userId = userData.id,
+                            physicalParams = mapPhysicalParams(userData),
+                            isLoading = false
+                        )
+                    }
+                    if (userData.avatarId != 0L) {
+                        val similarResult = DivoApi.faceRecognitionRepository.searchSimilar(userData.avatarId)
+                        if (similarResult is DivoResult.Success) {
+                            setState { copy(similarProfiles = similarResult.value) }
+                        } else {
+                            setState { copy(similarProfiles = emptyList()) }
+                        }
+                    }
+                }
+            }
+
+            launch { portfolioPaginator.loadInitial() }
+            launch { videoPaginator.loadInitial() }
+            
+            if (!state.value.isModel) {
+                launch { eventPaginator.loadInitial() }
+                launch { agencyModelsPaginator.loadInitial() }
+                launch { searchModelsPaginator.loadInitial() }
+            }
+            if (engagementLoaded) {
+                loadEngagement()
             }
         }
     }

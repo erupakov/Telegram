@@ -24,12 +24,7 @@ fun String.formattedAge(context: Context, locale: Locale = DivoLanguageManager.g
         val birthDate = LocalDate.parse(this)
         val age = Period.between(birthDate, LocalDate.now()).years
 
-        val configuration = android.content.res.Configuration(context.resources.configuration)
-        configuration.setLocale(locale)
-        val localizedContext = context.createConfigurationContext(configuration)
-        val yearsOldStr = localizedContext.getString(R.string.YearsOld)
-
-        String.format(locale, "%d %s", age, yearsOldStr)
+        org.telegram.messenger.LocaleController.formatPluralString("Years", age)
     } catch (e: Exception) {
         ""
     }

@@ -177,6 +177,7 @@ data class UserStatistic(
 
 sealed class ProfileIntent : ViewIntent {
     data object OnLoad : ProfileIntent()
+    data object OnRefresh : ProfileIntent()
     object OnClearPortfolioUpload : ProfileIntent()
     class OnLoadMoreEngagementStats(
         val type: StatsType

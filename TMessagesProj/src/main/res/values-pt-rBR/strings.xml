@@ -1809,12 +1809,12 @@ Você pode usar o Divo Global em todos os seus dispositivos ao mesmo tempo e vá
     <string name="SecretLinkPreviewAlert">Ativar a prévia estendida de links em Chats Secretos? Note que a prévia é gerada nos servidores do Divo Global.</string>
     <string name="SecretChatContextBotAlert">Os bots inline são fornecidos por desenvolvedores terceiros. Para o bot funcionar, os símbolos que você digita depois do nome de usuário do bot são enviados para o respectivo desenvolvedor.</string>
     <string name="EditMessageError">Desculpe, você não pode editar essa mensagem.</string>
-    <string name="AllowReadCall">Permita o acesso às ligações ao Divo Global, assim podemos automaticamente adicionar o código para você.</string>
-    <string name="AllowReadCallAndLog">Por favor, permita que o Divo Global receba chamadas e leia o registro de chamadas para que possamos inserir automaticamente seu código para você.</string>
-    <string name="AllowReadCallLog">Por favor, permita que o Divo Global leia o registro de chamadas para inserir automaticamente o seu código para você.</string>
-    <string name="AllowFillNumber">Por favor, permita que o Divo Global receba chamadas. Assim podemos confirmar o seu número de telefone automaticamente.</string>
-    <string name="UserRestricted">Você não tem permissão para isso.</string>
-    <string name="YouBlockedUser">Desculpe, você bloqueou este usuário ou bot e por isso não pode adicioná-lo a grupos. Desbloqueie para prosseguir.</string>
+    <string name="AllowReadCall">Por favor, permita que o Divo Global receba chamadas para que possamos inserir automaticamente o seu código.</string>
+    <string name="AllowReadCallAndLog">Por favor, permita que o Divo Global receba chamadas e leia o histórico de chamadas para que possamos inserir automaticamente o seu código.</string>
+    <string name="AllowReadCallLog">Por favor, permita que o Divo Global leia o histórico de chamadas para que possamos inserir automaticamente o seu código.</string>
+    <string name="AllowFillNumber">Por favor, permita que o Divo Global receba chamadas para que possamos confirmar automaticamente o seu número de telefone.</string>
+    <string name="UserRestricted">Desculpe, você não tem permissão para fazer isso.</string>
+    <string name="YouBlockedUser">Desculpe, você não pode adicionar este usuário ou bot a grupos porque você os bloqueou. Desbloqueie para continuar.</string>
     <string name="AddAdminErrorNotAMember">Você não pode adicionar esse usuário como admin porque ele não é membro deste grupo e você não tem permissão para adicioná-lo.</string>
     <string name="AddAdminErrorBlacklisted">Você não pode adicionar esse usuário como admin porque ele está na lista de Usuários Removidos e você não tem permissão para desbani-lo.</string>
     <string name="AddUserErrorBlacklisted">Desculpe, você não pode adicionar essa pessoa, pois ela está na lista de Usuários Removidos e você não pode removê-la de lá.</string>
@@ -2151,4 +2151,13 @@ crie um novo.</string>
     <string name="PrivacyBioInfo">Você pode restringir quem pode ver sua biografia com precisão granular.</string>
     <string name="PrivacyBioInfo3">Você pode adicionar usuários ou grupos inteiros que não verão sua biografia.</string>
 
+    <string name="UploadingStory">Enviando…</string>
+    <string name="FailedStory">Falha</string>
+    <string name="FailedToUploadStory">falha ao enviar</string>
+    <string name="StoryError">Não foi possível enviar</string>
+    <string name="StoryEditing">Enviando edição…</string>
+    <string name="TryAgain">Tentar Novamente</string>
+    <string name="SelfStoryTitle">Minha História</string>
+    <string name="ContactsPermissionAlertContinue">Continuar</string>
+    <string name="NotificationsPermissionContinue">Continuar</string>
 </resources>

@@ -1487,12 +1487,12 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
             showGiftIconRow = rowCount++;
             showGiftIconInfoRow = rowCount++;
         }
-        if (rulesType == PRIVACY_RULES_TYPE_BIRTHDAY) {
-            TLRPC.UserFull userFull = getMessagesController().getUserFull(getUserConfig().getClientUserId());
-            if (userFull != null && userFull.birthday == null) {
-                setBirthdayRow = rowCount++;
-            }
-        }
+//        if (rulesType == PRIVACY_RULES_TYPE_BIRTHDAY) {
+//            TLRPC.UserFull userFull = getMessagesController().getUserFull(getUserConfig().getClientUserId());
+//            if (userFull != null && userFull.birthday == null) {
+//                setBirthdayRow = rowCount++;
+//            }
+//        }
         if (rulesType == PRIVACY_RULES_TYPE_FORWARDS) {
             messageRow = rowCount++;
         }

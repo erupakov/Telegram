@@ -185,7 +185,7 @@ fun ProfileScreen(
             isRefreshing = isRefreshing,
             onRefresh = {
                 isRefreshing = true
-                viewModel.setIntent(ProfileIntent.OnLoad)
+                viewModel.setIntent(ProfileIntent.OnRefresh)
             },
             modifier = Modifier.fillMaxSize(),
         ) {

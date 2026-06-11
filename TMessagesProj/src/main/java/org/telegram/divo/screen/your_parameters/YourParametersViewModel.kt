@@ -87,12 +87,42 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
         viewModelScope.launch {
             setState { copy(isSaving = true) }
 
+            val userInfo = state.value.toUserInfo()
             val result = DivoApi.userRepository.updateProfile(
-                userInfo = state.value.toUserInfo()
+                userInfo = userInfo
             )
 
             when (result) {
                 is DivoResult.Success -> {
+                    try {
+                        val birthdayStr = userInfo.birthday
+                        if (birthdayStr.isBlank()) {
+                            org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramBirthday(
+                                currentAccount = org.telegram.messenger.UserConfig.selectedAccount,
+                                year = null,
+                                month = null,
+                                day = null
+                            )
+                        } else {
+                            val parts = birthdayStr.split("-")
+                            if (parts.size == 3) {
+                                val year = parts[0].toIntOrNull()
+                                val month = parts[1].toIntOrNull()
+                                val day = parts[2].toIntOrNull()
+                                if (year != null && month != null && day != null) {
+                                    org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramBirthday(
+                                        currentAccount = org.telegram.messenger.UserConfig.selectedAccount,
+                                        year = year,
+                                        month = month,
+                                        day = day
+                                    )
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
                     setState { copy(isSaving = false) }
                     sendEffect(YourParametersEffect.SaveSuccess)
                 }

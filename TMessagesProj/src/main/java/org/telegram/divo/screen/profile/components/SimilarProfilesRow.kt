@@ -109,7 +109,7 @@ fun SimilarProfilesRow(
 
                             age?.let {
                                 Text(
-                                    text = "$it ${stringResource(R.string.YearsOld)}",
+                                    text = org.telegram.messenger.LocaleController.formatPluralString("Years", it),
                                     style = AppTheme.typography.helveticaNeueRegular,
                                     fontSize = 12.sp,
                                     color = AppTheme.colors.textPrimary,

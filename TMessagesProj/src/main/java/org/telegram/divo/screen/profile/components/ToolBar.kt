@@ -195,7 +195,11 @@ fun ToolBarContent(
                 Icon(
                     modifier = Modifier
                         .size(22.dp)
-                        .clickableWithoutRipple {  }, //TODO
+                        .clickableWithoutRipple { 
+                            val account = org.telegram.messenger.UserConfig.selectedAccount
+                            val fragment = org.telegram.ui.LaunchActivity.getLastFragment() ?: return@clickableWithoutRipple
+                            org.telegram.ui.Stories.recorder.StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
+                        },
                     painter = painterResource(R.drawable.ic_divo_rounded_plus),
                     contentDescription = null,
                     tint = buttonIconColor

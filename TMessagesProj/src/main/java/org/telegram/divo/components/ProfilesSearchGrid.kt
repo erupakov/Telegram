@@ -336,7 +336,7 @@ private fun ProfileItem(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(Modifier.height(2.dp))
-            val age = profile.age?.let { "${profile.age} ${context.getString(R.string.YearsOld)}" }
+            val age = profile.age?.let { org.telegram.messenger.LocaleController.formatPluralString("Years", it) }
             val countryCode = profile.countryCode?.toCountryFlagEmoji()
             val county = profile.country
             val sep = if (age != null && countryCode != null) " · " else ""
