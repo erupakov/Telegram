@@ -54,7 +54,8 @@
     <string name="SeeMore">查看更多</string>
     <string name="AddModel">添加模特</string>
     <string name="AgencyModelsEmpty">您的经纪公司暂无模特。</string>
-    <string name="AgencyModelsEmptyHint">点击下方按钮\n添加您的模特</string>
+    <string name="AgencyModelsEmptyHint">点击下方按钮
+添加您的模特</string>
     <string name="PremiumLabel">高级版</string>
     <string name="ReportThisProfile">举报此主页</string>
     <string name="BlockProfile">屏蔽用户</string>
@@ -78,7 +79,8 @@
     <string name="SearchModels">搜索模特</string>
     <string name="NoLikesYet">暂无点赞。</string>
     <string name="NothingSavedYet">暂无保存内容。</string>
-    <string name="NoProfileViewedYet">暂无\n浏览记录。</string>
+    <string name="NoProfileViewedYet">暂无
+浏览记录。</string>
     <string name="StatLikes">获赞</string>
     <string name="StatViews">浏览</string>
     <string name="StatSaves">收藏</string>
@@ -155,7 +157,8 @@
     <string name="EndDate">结束日期</string>
     <string name="AddWorkExperience">添加工作经历</string>
     <string name="WorkHistoryEmptyTitle">暂无工作经历</string>
-    <string name="WorkHistoryEmptySubtitle">点击下方按钮\n添加您的工作经历</string>
+    <string name="WorkHistoryEmptySubtitle">点击下方按钮
+添加您的工作经历</string>
     <string name="SaveChanges">保存更改</string>
     <string name="WorkExperienceSaved">工作经历添加成功</string>
     <string name="PresentLabel">至今</string>
@@ -184,7 +187,8 @@
     <string name="BookmarkSaved">已保存</string>
     <string name="BookmarkUnsaved">未保存</string>
     <string name="AddModelToYourRoster">将模特添加到您的名单</string>
-    <string name="StartTypingToSearchForModel">开始输入以\n搜索模特</string>
+    <string name="StartTypingToSearchForModel">开始输入以
+搜索模特</string>
 
     <!--events screen-->
     <string name="EventList">活动</string>
@@ -241,7 +245,8 @@
     <string name="DeleteEventDescription">此操作无法撤销，所有报名申请都将被取消。</string>
     <string name="DeleteEventConfirm">删除活动</string>
     <string name="ThereAreNoUpcomingEvents">目前没有即将到来的活动</string>
-    <string name="CheckBackLaterOrCreateEvents">请稍后查看或\n创建一个新活动</string>
+    <string name="CheckBackLaterOrCreateEvents">请稍后查看或
+创建一个新活动</string>
     <string name="ClosesDate">截止时间：%1$s</string>
     <string name="ViewApplications">查看报名申请</string>
     <string name="ApplyNowPreview">立即报名 (仅限预览)</string>
@@ -480,7 +485,8 @@
     <!-- Audience (E) -->
     <string name="SubRoleFan">爱好者</string>
 
-    <string name="QuizGetHiredTitle">您是哪一类的\n人才？</string>
+    <string name="QuizGetHiredTitle">您是哪一类的
+人才？</string>
     <string name="QuizGetHiredSubtitle">请如实回答 — 这有助于我们为您推送合适的机会</string>
     <string name="QuizSectionTalents">演艺/模特人才</string>
     <string name="QuizSectionCreative">创意工作者</string>
@@ -499,7 +505,8 @@
     <string name="QuizHiringTypeIndividualLabel">我是一名独立专家</string>
     <string name="QuizHiringTypeIndividualDescription">星探、经纪人、选角导演等…</string>
 
-    <string name="QuizCompanyTitle">哪一项最能描述\n您的公司？</string>
+    <string name="QuizCompanyTitle">哪一项最能描述
+您的公司？</string>
     <string name="QuizCompanySubtitle">选择最接近您业务的选项</string>
 
     <string name="SubRoleModelingAgencyDescription">我管理着一批模特并负责预订工作</string>
@@ -509,7 +516,8 @@
     <string name="SubRoleEventAgencyDescription">我组织活动、演出或促销推广</string>
     <string name="SubRoleMagazineDescription">我是出版物、媒体机构或数字编辑团队</string>
 
-    <string name="QuizIndustryTitle">您在行业内的\n职位是什么？</string>
+    <string name="QuizIndustryTitle">您在行业内的
+职位是什么？</string>
     <string name="QuizIndustrySubtitle">选择最符合您日常工作的选项</string>
     <string name="SubRoleScoutDescription">我为经纪公司或独立寻找新面孔</string>
     <string name="SubRoleBookerDescription">我在经纪公司负责管理模特的预订及合同谈判</string>
@@ -625,7 +633,8 @@
     <string name="EventTabMyEvents">我的活动</string>
     <string name="EventTabAllEvents">所有活动</string>
     <string name="EventEmptyTitle">目前没有即将举行的活动。</string>
-    <string name="EventEmptySubtitleAgency">稍后再来查看或\n创建新活动。</string>
+    <string name="EventEmptySubtitleAgency">稍后再来查看或
+创建新活动。</string>
     <string name="EventEmptySubtitle">稍后再来查看。</string>
     <string name="EventCreateButton">创建活动</string>
     <string name="EventSeenAll">您已查看所有活动</string>
@@ -693,4 +702,141 @@
     <string name="ScanToProfile">扫码进入个人主页</string>
     <string name="DivoShareBtn">分享</string>
     <string name="MyStory">我的故事</string>
+    <string name="SearchChats">搜索聊天</string>
+    <string name="NoContactsYet3">添加联系人</string>
+    <string name="NoContactsYet3Sub">您在 Divo Global 还没有联系人。要添加他们吗？</string>
+    <string name="SearchPeopleByUsername">按用户名搜索联系人</string>
+    <string name="AttachPhoto">照片</string>
+    <string name="AttachVideo">视频</string>
+    <string name="StoryPrivacyAlertTitle">分享快拍</string>
+    <string name="StoryPrivacyAlertSubtitle_one">选择谁可以看到您的快拍</string>
+    <string name="StoryPrivacyAlertSubtitle_other">选择谁可以看到您的快拍</string>
+    <string name="StoryPrivacyAlertSubtitleProfile">选择谁可以看到您的快拍</string>
+    <string name="StoryLivePrivacyAlertSubtitleProfile">选择谁可以看到您的直播</string>
+    <string name="StoryPrivacyOptionEveryone">所有人</string>
+    <string name="StoryPrivacyOptionContacts">联系人</string>
+    <string name="StoryPrivacyOptionContactsDetail">排除联系人</string>
+    <string name="StoryPrivacyOptionCloseFriends">密友</string>
+    <string name="StoryPrivacyOptionCloseFriendsDetail">编辑列表</string>
+    <string name="StoryPrivacyOptionSelectedContacts">选定的联系人</string>
+    <string name="StoryPrivacyOptionSelectedContactsDetail">编辑列表</string>
+    <string name="StoryPrivacyAlertCloseFriendsSubtitle">选择密友</string>
+    <string name="StoryPrivacyButtonSaveCloseFriends">保存列表</string>
+    <string name="RecorderNewStory">新快拍</string>
+    <string name="StoryPrivacyAlertSelectContactsTitle">选择联系人</string>
+    <string name="StoryPrivacyAlertSelectContactsSubtitle">选择联系人</string>
+    <string name="StoryPrivacyAlertCloseFriendsTitle">密友</string>
+    <string name="StoryPrivacyAlertExcludedContactsTitle">排除的联系人</string>
+    <string name="StoryPrivacyAlertExcludedContactsSubtitle">排除联系人</string>
+    <string name="StoryPrivacyButtonSave">保存设置</string>
+    <string name="StoryPrivacyButtonPost">发布快拍</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneTitle">所有人，除了…</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneSubtitle">排除联系人</string>
+    <string name="StoryBlockListEmpty">**选择**不会看到您快拍的人。</string>
+    <string name="StoryAllowScreenshots">允许截屏</string>
+    <string name="StoryKeep">保留在我的主页</string>
+    <string name="StoriesAlbum">相册</string>
+    <string name="StoriesAlbumNameAllStories">所有快拍</string>
+    <string name="StoriesAlbumTitleInputHint">标题</string>
+    <string name="StoriesAlbumAddAlbum">添加相册</string>
+    <string name="StoriesAlbumNewAlbum">新相册</string>
+    <string name="StoriesAlbumAddToAlbum">添加到相册</string>
+    <string name="StoryKeepInfo_one">即使在 %d 小时后过期，也将此快拍保留在您的主页上。隐私设置将适用。</string>
+    <string name="StoryKeepInfo_other">即使在 %d 小时后过期，也将此快拍保留在您的主页上。隐私设置将适用。</string>
+    <string name="StoryCollageRemoveGrid">点击移除网格</string>
+    <string name="StoriesSoundEnabled">快拍</string>
+    <string name="Reactions">回应</string>
+    <string name="NotificationReactions">回应</string>
+    <string name="ReactionsByEmotionChartTitle">回应</string>
+    <string name="NotificationsReactions">回应</string>
+    <string name="NotifyMeAbout">通知我关于…</string>
+    <string name="StoryLive">直播</string>
+    <string name="StoryPhoto">照片</string>
+    <string name="StoryVideo">视频</string>
+    <string name="StoryDraft">草稿</string>
+    <string name="StoryDraftsAlbum">草稿箱</string>
+    <string name="StoryKeepDraft">保留草稿</string>
+    <string name="StorySaveDraft">保存草稿</string>
+    <string name="StoryDeleteDraft">删除草稿</string>
+    <string name="ShowInChats">在聊天中显示</string>
+    <string name="ForwardedStory">转发的快拍</string>
+    <string name="NotifyMeAboutPrivate">私聊新消息</string>
+    <string name="NotifyMoreOptions">更多选项</string>
+    <string name="NotifyLessOptions">更少选项</string>
+    <string name="NotifyMeAboutGroups">群组新消息</string>
+    <string name="NotifyMeAboutChannels">频道新消息</string>
+    <string name="NotificationsStories">快拍</string>
+    <string name="NotifyMeAboutNewStories">新快拍</string>
+    <string name="NotifyMeAboutImportantStories">重要快拍</string>
+    <string name="StoryAutoExceptionsInfo">自动开启来自您最常联系的 5 位用户的快拍通知。</string>
+    <string name="ShowSenderNames">显示发送者姓名</string>
+    <string name="HideSenderNames">隐藏发送者姓名</string>
+    <string name="ShowSendersName">显示发送者姓名</string>
+    <string name="HideSendersName">隐藏发送者姓名</string>
+    <string name="NotificationShowSenderNames">显示发送者姓名</string>
+    <string name="NotifyMeAboutMessagesReactions">对我消息的回应</string>
+    <string name="NotifyMeAboutStoriesReactions">对我快拍的回应</string>
+    <string name="NotifyFromContacts">来自我的联系人</string>
+    <string name="NotifyFromEveryone">来自所有人</string>
+    <string name="InAppPopup">应用内弹窗</string>
+    <string name="InAppPopupInfo">在应用内显示弹窗通知。</string>
+    <string name="AutoDownloadStories">快拍</string>
+    <string name="NotificationStories">快拍</string>
+    <string name="DateOfBirth">出生日期</string>
+    <string name="SearchMessages">消息</string>
+    <string name="EventLogFilterSectionMessages">消息</string>
+    <string name="MessagesSettings">消息</string>
+    <string name="PrivacyMessages">消息</string>
+    <string name="MessagesChartTitle">消息</string>
+    <string name="MessagesOverview">消息</string>
+    <string name="NotificationReactionsMessages">消息</string>
+    <string name="StarsTransactionFloodskipNumberName">消息</string>
+    <string name="NotificationReactionsStories">快拍</string>
+    <string name="ProfileGifts">礼物</string>
+    <string name="UserBio">简介</string>
+    <string name="PrivacyBio">简介</string>
+    <string name="BioLimitTitle">简介</string>
+    <string name="StoryMusicProfileMusic">保存的音乐</string>
+    <string name="PrivacyMusic">保存的音乐</string>
+    <string name="PrivacyInvites">邀请</string>
+    <string name="PrivacyInvitesInfo">您可以限制哪些用户可以将您添加到群组和频道中。</string>
+    <string name="ProfileBirthday">出生日期</string>
+    <string name="EditProfileBirthdayTitle">出生日期</string>
+    <string name="EditProfileBirthdayText">出生日期</string>
+    <string name="PassportBirthdate">出生日期</string>
+    <string name="PrivacyBirthday">出生日期</string>
+
+    <string name="NotificationEnabled">已启用</string>
+    <string name="NotificationEnabledAutomatically">自动启用</string>
+    <string name="NotificationDisabled">已停用</string>
+    <string name="PrivacyLastSeenPremiumInfo">如果您订阅了 Premium，即使您向其他用户隐藏了您的最后上线和已读时间，您仍然可以看到他们的时间（除非他们进行了专门限制）。</string>
+    <string name="PrivacyMessagesContactsAndPremium">我的联系人和 Premium 用户</string>
+    <string name="PrivateMessagesChargePrice">消息收费</string>
+    <string name="PrivacyMessagesInfo">您可以将接收的消息限制为仅限联系人和 Premium 用户。
+
+**什么是 Divo Global Premium？**</string>
+    <string name="PrivacyMessagesTitle">谁能给我发送消息？</string>
+    <string name="PrivacyVoiceMessagesTitle">谁能给我发送语音消息？</string>
+    <string name="PrivacyBirthdaySet">您尚未输入出生日期。
+**添加我的生日 &gt;**</string>
+    <string name="PrivacyBirthdayTitle">谁能看到我的生日？</string>
+    <string name="PrivacyBirthdayInfo">您可以精确限制谁能看到您的生日。</string>
+    <string name="PrivacyBirthdayInfo3">您可以添加用户或整个群组作为例外，这些例外将覆盖上述设置。</string>
+    <string name="PrivacyGifts">礼物</string>
+    <string name="PrivacyGiftsTitle">自动显示来自以下人的礼物</string>
+    <string name="PrivacyGiftsInfo">选择特定发送者的礼物在展示到您的个人主页前，是否需要您的批准。</string>
+    <string name="PrivacyGiftsShowIcon">在聊天中显示礼物图标</string>
+    <string name="PrivacyGiftsShowIconInfo">在所有聊天的消息输入框中为双方显示 %s 礼物图标。</string>
+    <string name="PrivacyGiftsTypeHeader">接受的礼物类型</string>
+    <string name="PrivacyGiftsTypeUnlimited">无限制</string>
+    <string name="PrivacyGiftsTypeLimited">限量版</string>
+    <string name="PrivacyGiftsTypeUnique">独特</string>
+    <string name="PrivacyGiftsTypeFromChannels">来自频道</string>
+    <string name="PrivacyGiftsTypePremium">Premium 订阅</string>
+    <string name="PrivacyGiftsTypeInfo">选择您允许其他人向您发送的礼物类型。</string>
+    <string name="CustomShareGiftsInfo">您可以添加用户或整个群组作为例外，这些例外将覆盖上述设置。</string>
+    <string name="PrivacyBioTitle">谁能看到我的简介？</string>
+    <string name="PrivacyBioInfo">您可以精确限制谁能看到您的简介。</string>
+    <string name="PrivacyBioInfo3">您可以添加无法看到您简介的用户或整个群组。</string>
+
 </resources>

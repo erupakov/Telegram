@@ -3,8 +3,14 @@ package org.telegram.divo.screen.profile
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import androidx.navigation.NavController
+import org.telegram.divo.common.utils.FragmentLifecycleOwner
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import org.telegram.divo.style.setDivoContent
@@ -22,6 +28,12 @@ class FragmentProfileN : BaseFragment() {
         arguments?.getBoolean(ARG_OWN_PROFILE, false) ?: false
     }
     private var navController: NavController? = null
+    
+    private val composeLifecycleOwner = FragmentLifecycleOwner().apply {
+        onCreate()
+        onStart()
+        onResume()
+    }
 
     override fun createView(context: Context): View {
         actionBar.setAddToContainer(false)
@@ -41,40 +53,57 @@ class FragmentProfileN : BaseFragment() {
 //            imageUpdater?.setUser(user)
 //        }
 
-        return ComposeView(context).apply {
+        fragmentView = ComposeView(context).apply {
+            setViewTreeLifecycleOwner(composeLifecycleOwner)
+            setViewTreeViewModelStoreOwner(composeLifecycleOwner)
+            setViewTreeSavedStateRegistryOwner(composeLifecycleOwner)
+            setViewCompositionStrategy(object : androidx.compose.ui.platform.ViewCompositionStrategy {
+                override fun installFor(view: androidx.compose.ui.platform.AbstractComposeView): () -> Unit {
+                    return {} // Prevent disposal on detach
+                }
+            })
             setDivoContent {
-                ProfileNavGraph(
-                    userId = targetUserId,
-                    isOwnProfile = true,
-                    onNavControllerReady = { navController = it },
-                    onNavigateToChat = { tgId, tgHash, tgUsername ->
-                        val currentAccount = org.telegram.messenger.UserConfig.selectedAccount
-                        var user = org.telegram.messenger.MessagesController.getInstance(currentAccount).getUser(tgId)
-                        if (user == null) {
-                            user = org.telegram.tgnet.TLRPC.TL_user()
-                            user.id = tgId
-                            user.first_name = tgUsername ?: "User"
-                            user.username = tgUsername
-                            user.access_hash = tgHash ?: 0L
-                            org.telegram.messenger.MessagesController.getInstance(currentAccount).putUser(user, false)
-                        }
-                        val args = android.os.Bundle()
-                        args.putLong("user_id", tgId)
-                        presentFragment(org.telegram.ui.ChatActivity(args))
-                    },
-                    onNavigateBack = { finishFragment() }
-                )
+                CompositionLocalProvider(
+                    LocalOnBackPressedDispatcherOwner provides composeLifecycleOwner
+                ) {
+                    ProfileNavGraph(
+                        userId = targetUserId,
+                        isOwnProfile = true,
+                        onNavControllerReady = { navController = it },
+                        onNavigateToChat = { tgId, tgHash, tgUsername ->
+                            val currentAccount = org.telegram.messenger.UserConfig.selectedAccount
+                            var user = org.telegram.messenger.MessagesController.getInstance(currentAccount).getUser(tgId)
+                            if (user == null) {
+                                user = org.telegram.tgnet.TLRPC.TL_user()
+                                user.id = tgId
+                                user.first_name = tgUsername ?: "User"
+                                user.username = tgUsername
+                                user.access_hash = tgHash ?: 0L
+                                org.telegram.messenger.MessagesController.getInstance(currentAccount).putUser(user, false)
+                            }
+                            val args = android.os.Bundle()
+                            args.putLong("user_id", tgId)
+                            presentFragment(org.telegram.ui.ChatActivity(args))
+                        },
+                        onNavigateBack = { finishFragment() }
+                    )
+                }
             }
         }
+        return fragmentView
     }
 
     override fun onBackPressed(invoked: Boolean): Boolean {
-        val nav = navController
-        if (nav != null && nav.previousBackStackEntry != null) {
-            nav.popBackStack()
-            return false
+        if (composeLifecycleOwner.onBackPressed()) {
+            return false // Handled by Compose
         }
         return super.onBackPressed(invoked)
+    }
+
+    override fun onFragmentDestroy() {
+        super.onFragmentDestroy()
+        composeLifecycleOwner.onDestroy()
+        (fragmentView as? ComposeView)?.disposeComposition()
     }
 
 //    override fun didUploadPhoto(

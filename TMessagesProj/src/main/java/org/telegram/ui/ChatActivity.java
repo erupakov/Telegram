@@ -4352,9 +4352,15 @@ public class ChatActivity extends BaseFragment implements
             if (currentChat != null && !isTopic) {
                 viewAsTopics = headerItem.lazilyAddSubItem(view_as_topics, R.drawable.msg_topics, LocaleController.getString(R.string.TopicViewAsTopics));
             }
+            //DIVO
+            /*
             if (themeDelegate.isThemeChangeAvailable(true)) {
-                headerItem.lazilyAddSubItem(change_colors, R.drawable.msg_background, LocaleController.getString(R.string.SetWallpapers));
+                //DIVO
+                if (!(currentUser != null && currentUser.self) && chatMode != MODE_SAVED) {
+                    headerItem.lazilyAddSubItem(change_colors, R.drawable.msg_background, LocaleController.getString(R.string.SetWallpapers));
+                }
             }
+            */
             if (currentUser != null && currentUser.self && getDialogId() != UserObject.VERIFY) {
                 headerItem.lazilyAddSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
             }

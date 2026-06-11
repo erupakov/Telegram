@@ -35,6 +35,11 @@ class FragmentSettings : BaseFragment() {
         if (fragmentView != null) return fragmentView
         actionBar.setAddToContainer(false)
         fragmentView = ComposeView(context).apply {
+            setViewCompositionStrategy(object : androidx.compose.ui.platform.ViewCompositionStrategy {
+                override fun installFor(view: androidx.compose.ui.platform.AbstractComposeView): () -> Unit {
+                    return {} // Prevent disposal on detach
+                }
+            })
             setDivoContent {
                 SettingsNavGraph(
                     navigateToSavedMessages = { openSavedMessages() },
@@ -114,5 +119,10 @@ class FragmentSettings : BaseFragment() {
         }
 
         return super.onBackPressed(invoked)
+    }
+
+    override fun onFragmentDestroy() {
+        super.onFragmentDestroy()
+        (fragmentView as? ComposeView)?.disposeComposition()
     }
 }

@@ -54,7 +54,8 @@
     <string name="SeeMore">VER MAIS</string>
     <string name="AddModel">Adicionar modelo</string>
     <string name="AgencyModelsEmpty">Ainda não há modelos da sua agência.</string>
-    <string name="AgencyModelsEmptyHint">Clique no botão abaixo \n para adicionar seu modelo</string>
+    <string name="AgencyModelsEmptyHint">Clique no botão abaixo 
+ para adicionar seu modelo</string>
     <string name="PremiumLabel">Premium</string>
     <string name="ReportThisProfile">Denunciar este perfil</string>
     <string name="BlockProfile">Bloquear usuário</string>
@@ -78,7 +79,8 @@
     <string name="SearchModels">Buscar modelos</string>
     <string name="NoLikesYet">Nenhuma curtida ainda.</string>
     <string name="NothingSavedYet">Nada salvo ainda.</string>
-    <string name="NoProfileViewedYet">Nenhum perfil\nvisualizado ainda.</string>
+    <string name="NoProfileViewedYet">Nenhum perfil
+visualizado ainda.</string>
     <string name="StatLikes">CURTIDAS</string>
     <string name="StatViews">VISUALIZAÇÕES</string>
     <string name="StatSaves">SALVOS</string>
@@ -154,8 +156,10 @@
     <string name="StartDate">Data de início</string>
     <string name="EndDate">Data de término</string>
     <string name="AddWorkExperience">Adicionar experiência de trabalho</string>
-    <string name="WorkHistoryEmptyTitle">Ainda não há\nexperiência de trabalho</string>
-    <string name="WorkHistoryEmptySubtitle">Clique no botão abaixo\npara adicionar sua experiência de trabalho</string>
+    <string name="WorkHistoryEmptyTitle">Ainda não há
+experiência de trabalho</string>
+    <string name="WorkHistoryEmptySubtitle">Clique no botão abaixo
+para adicionar sua experiência de trabalho</string>
     <string name="SaveChanges">Salvar alterações</string>
     <string name="WorkExperienceSaved">Experiência de trabalho adicionada com sucesso</string>
     <string name="PresentLabel">Presente</string>
@@ -184,7 +188,8 @@
     <string name="BookmarkSaved">Salvo</string>
     <string name="BookmarkUnsaved">Não salvo</string>
     <string name="AddModelToYourRoster">Adicionar um modelo ao seu elenco</string>
-    <string name="StartTypingToSearchForModel">Comece a digitar para buscar\num modelo</string>
+    <string name="StartTypingToSearchForModel">Comece a digitar para buscar
+um modelo</string>
 
     <!--events screen-->
     <string name="EventList">Eventos</string>
@@ -241,7 +246,8 @@
     <string name="DeleteEventDescription">Esta ação não pode ser desfeita. Todas as inscrições serão canceladas.</string>
     <string name="DeleteEventConfirm">Excluir evento</string>
     <string name="ThereAreNoUpcomingEvents">Não há próximos eventos no momento</string>
-    <string name="CheckBackLaterOrCreateEvents">Volte mais tarde ou crie\num novo</string>
+    <string name="CheckBackLaterOrCreateEvents">Volte mais tarde ou crie
+um novo</string>
     <string name="ClosesDate">Encerra: %1$s</string>
     <string name="ViewApplications">Ver inscrições</string>
     <string name="ApplyNowPreview">Inscreva-se agora (apenas pré-visualização)</string>
@@ -479,7 +485,8 @@ enquanto ela estiver com outra agência.</string>
     <!-- Audience (E) -->
     <string name="SubRoleFan">Fã</string>
 
-    <string name="QuizGetHiredTitle">Que tipo de talento\nvocê é?</string>
+    <string name="QuizGetHiredTitle">Que tipo de talento
+você é?</string>
     <string name="QuizGetHiredSubtitle">Seja honesto — isso nos ajuda a mostrar as oportunidades certas</string>
     <string name="QuizSectionTalents">TALENTOS</string>
     <string name="QuizSectionCreative">CRIATIVOS</string>
@@ -498,7 +505,8 @@ enquanto ela estiver com outra agência.</string>
     <string name="QuizHiringTypeIndividualLabel">Sou um especialista individual</string>
     <string name="QuizHiringTypeIndividualDescription">Scout, booker, diretor de casting…</string>
 
-    <string name="QuizCompanyTitle">O que melhor descreve\nsua empresa?</string>
+    <string name="QuizCompanyTitle">O que melhor descreve
+sua empresa?</string>
     <string name="QuizCompanySubtitle">Escolha a opção que mais se aproxima do que você faz</string>
 
     <string name="SubRoleModelingAgencyDescription">Gerencio uma lista de modelos e cuido das reservas (bookings)</string>
@@ -508,7 +516,8 @@ enquanto ela estiver com outra agência.</string>
     <string name="SubRoleEventAgencyDescription">Organizo eventos, shows ou atividades promocionais</string>
     <string name="SubRoleMagazineDescription">Sou de uma publicação, veículo de mídia ou editorial digital</string>
 
-    <string name="QuizIndustryTitle">Qual é o seu papel\nna indústria?</string>
+    <string name="QuizIndustryTitle">Qual é o seu papel
+na indústria?</string>
     <string name="QuizIndustrySubtitle">Escolha a opção que melhor descreve o que você faz no dia a dia</string>
     <string name="SubRoleScoutDescription">Encontro novos rostos, de forma independente ou para uma agência</string>
     <string name="SubRoleBookerDescription">Gerencio reservas e negociações de modelos em uma agência</string>
@@ -614,7 +623,9 @@ enquanto ela estiver com outra agência.</string>
 
     <!--signin view-->
     <string name="YourPhone">Seu Número</string>
-    <string name="StartText">Por favor, confirme o código do\nseu país e digite o seu\nnúmero de telefone.</string>
+    <string name="StartText">Por favor, confirme o código do
+seu país e digite o seu
+número de telefone.</string>
     <string name="Country">País</string>
     <string name="YourNumber">Seu número</string>
     <string name="PhoneNumber">Número de telefone</string>
@@ -630,9 +641,17 @@ enquanto ela estiver com outra agência.</string>
     <string name="SyncContactsAdded">Contatos deste dispositivo foram adicionados à sua conta.</string>
     <string name="ConfirmCorrectNumber">Este é o número correto?</string>
     <string name="WrongNumberFormat">Formato incorreto</string>
-    <string name="ShortNumberInfo">O número inserido é muito curto para **%1$s**:\n\n**%2$s**\n\nPor favor, insira o número correto com o código do país.</string>
+    <string name="ShortNumberInfo">O número inserido é muito curto para **%1$s**:
+
+**%2$s**
+
+Por favor, insira o número correto com o código do país.</string>
     <string name="EditNumber">Editar número</string>
-    <string name="DidNotGetTheCodeInfo">Se você não recebeu o código por SMS ou chamada, por favor confira suas **configurações de dados móveis** e número de telefone:\n\n%1$s\n\nVocê pode tentar com outro número ou falar com o Suporte do Divo Global. Toque em **Ajuda** para enviar os detalhes técnicos que nos ajudarão a identificar o problema.</string>
+    <string name="DidNotGetTheCodeInfo">Se você não recebeu o código por SMS ou chamada, por favor confira suas **configurações de dados móveis** e número de telefone:
+
+%1$s
+
+Você pode tentar com outro número ou falar com o Suporte do Divo Global. Toque em **Ajuda** para enviar os detalhes técnicos que nos ajudarão a identificar o problema.</string>
     <string name="DidNotGetTheCodeHelpButton">Ajuda</string>
     <string name="DidNotGetTheCodeEditNumberButton">Editar número</string>
     <!--code enter view-->
@@ -644,7 +663,9 @@ enquanto ela estiver com outra agência.</string>
     <string name="SentFragmentCode">Obtenha o código para %1$s na seção Anonymous Numbers do Fragment.</string>
     <string name="SentSmsCodeTitle">Inserir código</string>
     <string name="OpenFragment">Abrir Fragment</string>
-    <string name="SentCallCode">Estamos ligando para o seu telefone **%1$s**.\n\nNão atenda. O Divo Global processará tudo automaticamente.</string>
+    <string name="SentCallCode">Estamos ligando para o seu telefone **%1$s**.
+
+Não atenda. O Divo Global processará tudo automaticamente.</string>
     <string name="SentCallOnly">Estamos ligando no seu **%1$s** para ditar o código.</string>
     <string name="CallText">O Divo Global te ligará em %1$d:%2$02d</string>
     <string name="SmsText">Vamos te enviar um SMS em %1$d:%2$02d</string>
@@ -657,15 +678,21 @@ enquanto ela estiver com outra agência.</string>
     <string name="DidNotGetTheCodeSms">Toque para enviar um SMS</string>
     <string name="DidNotGetTheCodeFragment">Obter código via Fragment</string>
     <string name="CancelAccountReset">Cancelar redefinição da conta</string>
-    <string name="CancelAccountResetInfo2">Alguém com acesso ao número **%1$s** solicitou apagar a sua conta do Divo Global e redefinir a sua senha de Verificação em Duas Etapas.\n\nSe não foi você, digite o código que acabamos de enviar via SMS. Você também pode cancelar isso *alterando o seu número de telefone*.</string>
+    <string name="CancelAccountResetInfo2">Alguém com acesso ao número **%1$s** solicitou apagar a sua conta do Divo Global e redefinir a sua senha de Verificação em Duas Etapas.
+
+Se não foi você, digite o código que acabamos de enviar via SMS. Você também pode cancelar isso *alterando o seu número de telefone*.</string>
     <string name="ResetAccount">Apagar conta</string>
-    <string name="ResetAccountInfo">Como a conta %1$s está ativa e protegida por uma senha, ela será apagada em 1 semana. Esse tempo é necessário por questões de segurança.\n\nVocê pode cancelar esse processo a qualquer momento.</string>
+    <string name="ResetAccountInfo">Como a conta %1$s está ativa e protegida por uma senha, ela será apagada em 1 semana. Esse tempo é necessário por questões de segurança.
+
+Você pode cancelar esse processo a qualquer momento.</string>
     <string name="ResetAccountStatus">Você poderá redefinir a sua conta em:</string>
     <string name="ResetAccountCancelledAlert">As suas tentativas recentes de redefinir esta conta foram canceladas pelo usuário ativo. Por favor, tente de novo em 7 dias.</string>
     <string name="CancelLinkExpired">O link expirou ou está inválido.</string>
     <string name="CancelLinkSuccessTitle">Sucesso!</string>
     <string name="CancelLinkSuccess">O processo de exclusão da sua conta %1$s foi cancelado. Você pode fechar esta janela agora.</string>
-    <string name="OtherLoginCode">Seu código de login é **%1$s**. Digite ele no app do Divo Global no qual você está tentando fazer o login.\n\nNão informe esse código para ninguém.</string>
+    <string name="OtherLoginCode">Seu código de login é **%1$s**. Digite ele no app do Divo Global no qual você está tentando fazer o login.
+
+Não informe esse código para ninguém.</string>
     <string name="SmsAvailableIn">Você pode pedir um SMS em %1$d:%2$02d</string>
     <string name="ResendSmsAvailableIn">Você pode pedir um novo SMS em %1$d:%2$02d</string>
     <string name="RequestSmsButton">Obter o código via SMS</string>
@@ -685,8 +712,12 @@ enquanto ela estiver com outra agência.</string>
     <string name="RegistrationProfileInfo">Dados do perfil</string>
     <!--widgets-->
     <string name="EditWidget">Editar Widget</string>
-    <string name="EditWidgetContactsInfo">Exibe atalhos dos seus chats mais importantes para acesso rápido.\n\nSe ninguém for selecionado, seus contatos mais frequentes serão exibidos neste widget.</string>
-    <string name="EditWidgetChatsInfo">Exibe a última mensagem dos chats que você escolher.\n\nSe nenhum chat for selecionado, seus chats mais recentes serão exibidos neste widget.</string>
+    <string name="EditWidgetContactsInfo">Exibe atalhos dos seus chats mais importantes para acesso rápido.
+
+Se ninguém for selecionado, seus contatos mais frequentes serão exibidos neste widget.</string>
+    <string name="EditWidgetChatsInfo">Exibe a última mensagem dos chats que você escolher.
+
+Se nenhum chat for selecionado, seus chats mais recentes serão exibidos neste widget.</string>
     <string name="WidgetPasscode2">Aviso: seus widgets mostrarão todas as mensagens recentes, mas sua senha será necessária para abrir o app e responder.</string>
     <string name="SearchForChats">Buscar por chats...</string>
     <string name="WidgetPreview">Prévia do widget</string>
@@ -697,7 +728,8 @@ enquanto ela estiver com outra agência.</string>
     <string name="WidgetLoggedOff">A conta foi removida.</string>
     <!--notification-->
     <string name="NotificationMessageGiftCode">%1$s te enviou um Código de Presente de %2$s de Divo Global Premium</string>
-    <string name="NotificationMessageGiveaway">%1$s te enviou um sorteio de %2$sx assinaturas do Premium de \n%3$sm</string>
+    <string name="NotificationMessageGiveaway">%1$s te enviou um sorteio de %2$sx assinaturas do Premium de 
+%3$sm</string>
     <string name="NotificationMessageChannelGiveaway">%1$s postou um sorteio de %2$s assinaturas do Premium de %3$s meses</string>
     <string name="NotificationMessageChatGiveaway">%1$s enviou um sorteio de %3$sx assinaturas Premium de %4$sm no grupo %2$s</string>
     <string name="NotificationPinnedGiveaway">%1$s fixou um sorteio</string>
@@ -779,7 +811,18 @@ enquanto ela estiver com outra agência.</string>
     <string name="NotificationGroupKickYou">%1$s removeu você do grupo %2$s</string>
     <string name="NotificationGroupLeftMember">%1$s saiu do grupo %2$s</string>
     <string name="NotificationContactJoined">%1$s entrou para o Divo Global!</string>
-    <string name="NotificationUnrecognizedDevice">%1$s,\nDetectamos que alguém acessou a sua conta a partir de um novo dispositivo em %2$s\n\nDispositivo: %3$s\nLocalização: %4$s\n\nSe não foi você, vá em Configurações &gt; Dispositivos e termine essa sessão.\n\nSe você acha que alguém acessou a sua conta sem a sua permissão, você pode habilitar a Verificação em Duas Etapas nas configurações de Privacidade e Segurança.\n\nAtenciosamente,\nEquipe do Divo Global.</string>
+    <string name="NotificationUnrecognizedDevice">%1$s,
+Detectamos que alguém acessou a sua conta a partir de um novo dispositivo em %2$s
+
+Dispositivo: %3$s
+Localização: %4$s
+
+Se não foi você, vá em Configurações &gt; Dispositivos e termine essa sessão.
+
+Se você acha que alguém acessou a sua conta sem a sua permissão, você pode habilitar a Verificação em Duas Etapas nas configurações de Privacidade e Segurança.
+
+Atenciosamente,
+Equipe do Divo Global.</string>
     <string name="NotificationContactNewPhoto">%1$s atualizou a foto do perfil</string>
     <string name="NotificationInvitedToGroupByLink">%1$s entrou para o grupo %2$s via link de convite</string>
     <string name="NotificationGroupFew">%1$s enviou %3$s ao grupo %2$s</string>
@@ -914,9 +957,9 @@ enquanto ela estiver com outra agência.</string>
     <string name="NoBlocked">Nenhum usuário bloqueado</string>
     <string name="Alert">Mostrar Notificações</string>
     <string name="MessagePreview">Prévias de Mensagens</string>
-    <string name="NotificationShowSenderNames">Mostrar Nome do Autor</string>
+    <string name="NotificationShowSenderNames">Mostrar nomes dos remetentes</string>
     <string name="StoryAutoExceptions">Exceções Automáticas</string>
-    <string name="StoryAutoExceptionsInfo">Ativa automaticamente notificações de stories dos seus 5 usuários mais frequentes.</string>
+    <string name="StoryAutoExceptionsInfo">Ativar automaticamente notificações de stories dos 5 usuários com quem você mais interage.</string>
     <string name="Sound">Som</string>
     <string name="InAppNotifications">Notificações no aplicativo</string>
     <string name="InAppSounds">Sons no Aplicativo</string>
@@ -1024,13 +1067,23 @@ enquanto ela estiver com outra agência.</string>
     <string name="Language">Idioma</string>
     <string name="LanguageCustom">Personalizado</string>
     <string name="LanguageTitle">Alterar idioma?</string>
-    <string name="LanguageAlert">Você irá aplicar um pacote de idioma (**%1$s**) que está %2$d%% concluído.\n\nIsso irá traduzir toda a interface. Você pode sugerir alterações na [plataforma de tradução].\n\nSe desejar, altere seu idioma novamente a qualquer momento nas Configurações.</string>
-    <string name="LanguageCustomAlert">Você irá aplicar um pacote de idioma (**%1$s**) que está %2$d%% concluído.\n\nIsso irá traduzir toda a interface. Você pode sugerir alterações na [plataforma de tradução].\n\nVocê pode alterar o idioma a qualquer momento nas Configurações.</string>
+    <string name="LanguageAlert">Você irá aplicar um pacote de idioma (**%1$s**) que está %2$d%% concluído.
+
+Isso irá traduzir toda a interface. Você pode sugerir alterações na [plataforma de tradução].
+
+Se desejar, altere seu idioma novamente a qualquer momento nas Configurações.</string>
+    <string name="LanguageCustomAlert">Você irá aplicar um pacote de idioma (**%1$s**) que está %2$d%% concluído.
+
+Isso irá traduzir toda a interface. Você pode sugerir alterações na [plataforma de tradução].
+
+Você pode alterar o idioma a qualquer momento nas Configurações.</string>
     <string name="LanguageUnknownTitle">Dados insuficientes</string>
     <string name="LanguageUnsupportedError">Idioma não encontrado.</string>
     <string name="LanguageSame">Você já está usando esse pacote de idiomas (**%1$s**). Você pode alterar seu idioma a qualquer momento em Configurações.</string>
     <string name="LanguageUnknownCustomAlert">Infelizmente esse pacote de idiomas personalizado (**%1$s**) não contém dados para o Divo Global no Android.</string>
-    <string name="AskAQuestionInfo">Por favor, note que o Suporte do Divo Global é feito por voluntários. Tentaremos responder o mais rápido possível, mas pode levar um tempo.\n\nDê uma olhada na página de <![CDATA[<a href=\"https://telegram.org/faq/pt-br#questoes-gerais\">Perguntas Frequentes</a>]]>: há dicas e soluções para a maioria dos <![CDATA[<a href=\"https://telegram.org/faq/pt-br#solucao-de-problemas\">problemas</a>]]>.</string>
+    <string name="AskAQuestionInfo">Por favor, note que o Suporte do Divo Global é feito por voluntários. Tentaremos responder o mais rápido possível, mas pode levar um tempo.
+
+Dê uma olhada na página de <![CDATA[<a href=\"https://telegram.org/faq/pt-br#questoes-gerais\">Perguntas Frequentes</a>]]>: há dicas e soluções para a maioria dos <![CDATA[<a href=\"https://telegram.org/faq/pt-br#solucao-de-problemas\">problemas</a>]]>.</string>
     <string name="AskButton">Perguntar</string>
     <string name="TelegramFAQ">Perguntas Frequentes</string>
     <string name="TelegramFaq">Perguntas Frequentes</string>
@@ -1041,7 +1094,8 @@ enquanto ela estiver com outra agência.</string>
     <string name="TelegramFaqUrl">https://telegram.org/faq/pt-br</string>
     <string name="PrivacyPolicy">Política de Privacidade</string>
     <string name="TermsOfService">Termos de Serviço</string>
-    <string name="TermsOfServiceLogin">Ao registrar-se, você aceita\nos *Termos de Serviço*.</string>
+    <string name="TermsOfServiceLogin">Ao registrar-se, você aceita
+os *Termos de Serviço*.</string>
     <string name="PrivacyPolicyUrl">https://telegram.org/privacy</string>
     <string name="TermsOfServiceUrl">https://telegram.org/tos</string>
     <string name="WebAppDisclaimerUrl">https://telegram.org/tos/mini-apps</string>
@@ -1171,7 +1225,9 @@ enquanto ela estiver com outra agência.</string>
     <string name="NotificationsDeleteAllExceptionTitle">Apagar todas as exceções</string>
     <string name="NotificationsDeleteAllExceptionAlert">Tem certeza de que deseja apagar todas as exceções?</string>
     <string name="NotificationsNewException">Nova Exceção</string>
-    <string name="NoExceptions">Esta seção irá listar todos os chats que possuem configurações que não são padrão.\n\nVocê pode personalizar notificações para um chat abrindo o perfil do mesmo e escolhendo \'Notificações\'.</string>
+    <string name="NoExceptions">Esta seção irá listar todos os chats que possuem configurações que não são padrão.
+
+Você pode personalizar notificações para um chat abrindo o perfil do mesmo e escolhendo \'Notificações\'.</string>
     <string name="SmartNotificationsInfo">%1$d / %2$s</string>
     <string name="SmartNotificationsDisabled">Desativar</string>
     <string name="SecretWebPage">Prévia de Links</string>
@@ -1311,7 +1367,9 @@ enquanto ela estiver com outra agência.</string>
     <string name="AuthAnotherClientInfo1">Baixe o Divo Global em *desktop.telegram.org* no seu computador.</string>
     <string name="AuthAnotherClientInfo2">Use o Divo Global Desktop para obter o código QR.</string>
     <string name="AuthAnotherClientInfo3">Escaneie o código QR para conectar à sua conta.</string>
-    <string name="AuthAnotherClientUrl">Esse código pode ser usado para permitir que alguém entre na sua conta do Divo Global.\n\nPara confirmar o login no Divo Global, acesse Configurações &gt; Dispositivos &gt; Ler Código QR e escaneie o código.</string>
+    <string name="AuthAnotherClientUrl">Esse código pode ser usado para permitir que alguém entre na sua conta do Divo Global.
+
+Para confirmar o login no Divo Global, acesse Configurações &gt; Dispositivos &gt; Ler Código QR e escaneie o código.</string>
     <string name="QRCodePermissionNoCameraWithHint">O **Divo Global** precisa de acesso à câmera para você escanear Códigos QR. Toque em Configurações &gt; Permissões, e ative a **Câmera**.</string>
     <string name="SetProfilePhoto">Definir Foto do Perfil</string>
     <string name="AppUpdate">Atualizar o Divo Global</string>
@@ -1320,15 +1378,17 @@ enquanto ela estiver com outra agência.</string>
     <string name="AppUpdateNow">Atualizar Agora</string>
     <string name="AppUpdateDownloadNow">Baixar Agora</string>
     <string name="AppUpdateRemindMeLater">Lembrar mais tarde</string>
-    <string name="AppUpdateChangelogEmpty">**O que há de novo?**\n\n• Correções de bugs e melhorias.</string>
+    <string name="AppUpdateChangelogEmpty">**O que há de novo?**
+
+• Correções de bugs e melhorias.</string>
     <string name="Permanent">Link Primário</string>
     <string name="LinkHashExpired">O link não está mais ativo</string>
     <string name="CancelForwardPrivate">O que deseja fazer com %1$s do seu chat com **%2$s**?</string>
     <string name="CancelForwardChat">O que deseja fazer com %1$s de **%2$s**?</string>
-    <string name="ShowSenderNames">Mostrar Nomes dos Autores</string>
-    <string name="HideSenderNames">Ocultar Nomes dos Autores</string>
-    <string name="ShowSendersName">Mostrar Nome do Autor</string>
-    <string name="HideSendersName">Ocultar Nome do Autor</string>
+    <string name="ShowSenderNames">Mostrar nomes dos remetentes</string>
+    <string name="HideSenderNames">Ocultar nomes dos remetentes</string>
+    <string name="ShowSendersName">Mostrar nome do remetente</string>
+    <string name="HideSendersName">Ocultar nome do remetente</string>
     <string name="ChatListSwipeGesture">Ação ao deslizar na lista de chats</string>
     <string name="ChatListSwipeGestureInfo">Escolha qual ação realizar quando você arrastar para a esquerda na lista de chats.</string>
     <string name="SwipeSettingsPin">Fixar</string>
@@ -1367,7 +1427,8 @@ enquanto ela estiver com outra agência.</string>
     <string name="SetAdditionalPasswordInfo">É possível configurar uma senha que será solicitada quando você entrar em um novo dispositivo, após o código recebido por SMS.</string>
     <string name="YourPassword">Sua senha</string>
     <string name="YourPasswordHeader">Sua senha</string>
-    <string name="YourPasswordRemember">Sua conta está protegida pela Verificação em Duas Etapas.\nVocê ainda lembra da sua senha?</string>
+    <string name="YourPasswordRemember">Sua conta está protegida pela Verificação em Duas Etapas.
+Você ainda lembra da sua senha?</string>
     <string name="YourPasswordRememberYes">Sim, com certeza</string>
     <string name="YourPasswordRememberNo">Não tenho certeza</string>
     <string name="PasswordOn">Ativada</string>
@@ -1397,7 +1458,9 @@ enquanto ela estiver com outra agência.</string>
     <string name="YourEmailInfo">Por favor, adicione seu email válido. Essa é a única forma de recuperar uma senha esquecida.</string>
     <string name="YourEmailSkip">Pular</string>
     <string name="YourEmailSkipWarning">Atenção</string>
-    <string name="YourEmailSkipWarningText">Espere, é sério.\n\nSe você esquecer a sua senha, perderá acesso à sua conta do Divo Global. Não terá uma forma de recuperar.</string>
+    <string name="YourEmailSkipWarningText">Espere, é sério.
+
+Se você esquecer a sua senha, perderá acesso à sua conta do Divo Global. Não terá uma forma de recuperar.</string>
     <string name="YourEmailAlmostThere">Quase lá!</string>
     <string name="YourEmailAlmostThereText">Por favor, verifique o seu email para completar a configuração da Verificação em Duas Etapas (não esqueça da pasta spam).</string>
     <string name="YourPasswordSuccess">Tudo certo!</string>
@@ -1443,7 +1506,9 @@ enquanto ela estiver com outra agência.</string>
     <string name="RestorePasswordResetIn">Você pode redefinir a senha em %1$s.</string>
     <string name="ResetPassword">Redefinir senha</string>
     <string name="RestoreEmailSentTitle">Código de recuperação</string>
-    <string name="RestoreEmailSent">Enviamos um código de recuperação para o e-mail fornecido:\n\n%1$s</string>
+    <string name="RestoreEmailSent">Enviamos um código de recuperação para o e-mail fornecido:
+
+%1$s</string>
     <string name="RestoreEmailSentInfo">Verifique seu email e digite o código de 6 dígitos que enviamos para desativar sua senha da nuvem.</string>
     <string name="RestoreEmailTrouble">Problemas ao acessar %1$s?</string>
     <string name="RestoreEmailTroubleNoEmail">Problemas ao acessar o seu email?</string>
@@ -1466,7 +1531,8 @@ enquanto ela estiver com outra agência.</string>
     <string name="VerificationCode">Código de Verificação</string>
     <string name="EnterCode">Digite o código</string>
     <string name="ResendCodeInfo">O código de verificação foi enviado para o seu email.</string>
-    <string name="EnabledPasswordText">Você ativou a Verificação em Duas Etapas.\nVocê precisará da senha que configurou aqui para fazer o login em sua conta do Divo Global.</string>
+    <string name="EnabledPasswordText">Você ativou a Verificação em Duas Etapas.
+Você precisará da senha que configurou aqui para fazer o login em sua conta do Divo Global.</string>
     <string name="AddEmailTitle">Escolha um email de login</string>
     <string name="AddEmailSubtitle">Você receberá os códigos de login do Divo Global por e-mail e não por SMS. Insira um e-mail ao qual você tenha acesso.</string>
     <string name="EnterNewEmail">Insira o Novo E-mail</string>
@@ -1669,7 +1735,11 @@ enquanto ela estiver com outra agência.</string>
     <string name="SendMessagesToText">Deseja enviar essa mensagem para **%1$s**?</string>
     <string name="SendGameToText">Deseja enviar esse jogo para **%1$s**?</string>
     <string name="SendContactToText">Deseja enviar esse contato para **%1$s**?</string>
-    <string name="AreYouSureLogout">Tem certeza de que desejar sair?\n\nIsso apagará todos os seus Chats Secretos.\n\nVocê pode usar o Divo Global em todos os seus dispositivos ao mesmo tempo e várias contas no mesmo app.</string>
+    <string name="AreYouSureLogout">Tem certeza de que desejar sair?
+
+Isso apagará todos os seus Chats Secretos.
+
+Você pode usar o Divo Global em todos os seus dispositivos ao mesmo tempo e várias contas no mesmo app.</string>
     <string name="DeleteFewChatsTitle">Apagar %1$s</string>
     <string name="ClearFewChatsTitle">Limpar %1$s</string>
     <string name="ClearCacheFewChatsTitle">Limpar cache para %1$s</string>
@@ -1770,12 +1840,20 @@ enquanto ela estiver com outra agência.</string>
     <string name="ErrorSendRestrictedPrivacyVoiceMessages">Desculpe, você não pode enviar mensagens de voz para esta pessoa devido às configurações de privacidade dela.</string>
     <string name="ErrorSendRestrictedPrivacyVideoMessages">Desculpe, você não pode enviar mensagens de vídeo para esta pessoa devido às configurações de privacidade dela.</string>
     <string name="UnableForward">Não pode encaminhar</string>
-    <string name="TosDecline">Sentimos muito, mas isso significa que você não pode se cadastrar no Divo Global.\n\nAo contrário de outros apps, não utilizamos seus dados para segmentação de anúncios ou outros fins comerciais. O Divo Global armazena apenas as informações necessárias para funcionar como um serviço em nuvem rico em recursos. Você pode ajustar como usamos seus dados (ex. apagar contatos sincronizados) nas configurações de Privacidade e Segurança.\n\nSe de forma geral você não concorda com os requisitos modestos do Divo Global, não poderemos oferecer nosso serviço.</string>
+    <string name="TosDecline">Sentimos muito, mas isso significa que você não pode se cadastrar no Divo Global.
+
+Ao contrário de outros apps, não utilizamos seus dados para segmentação de anúncios ou outros fins comerciais. O Divo Global armazena apenas as informações necessárias para funcionar como um serviço em nuvem rico em recursos. Você pode ajustar como usamos seus dados (ex. apagar contatos sincronizados) nas configurações de Privacidade e Segurança.
+
+Se de forma geral você não concorda com os requisitos modestos do Divo Global, não poderemos oferecer nosso serviço.</string>
     <string name="TosAgeTitle">Confirmação de Idade</string>
     <string name="PrivacyPolicyAndTerms">Política de Privacidade e Termos de Serviço</string>
     <string name="TosAgeText">Toque em Concordo para confirmar que você tem mais de %1$s anos.</string>
-    <string name="TosUpdateDecline">Infelizmente, não há outras opções. Ao contrário de outros aplicativos, o Divo Global não usa dados do usuário para direcionamento de anúncios ou outros fins comerciais. O Divo Global armazena apenas as informações necessárias para funcionar como um serviço de nuvem rico em recursos. Você pode ajustar como seus dados são usados nas configurações de Privacidade e Segurança.\n\nSe você não se sentir confortável com as necessidades modestas do Divo Global, não será possível fornecermos a você esse serviço.</string>
-    <string name="TosDeclineDeleteAccount">Atenção, isso apagará irreversivelmente sua conta do Divo Global e todos os dados armazenados na nuvem do Divo Global.\n\nImportante: em vez de perder tudo, você pode Cancelar agora e exportar seus dados primeiro. (Para fazer isso, abra o Divo Global Desktop atualizado e vá em Configurações &gt; Exportar Dados do Divo Global.)</string>
+    <string name="TosUpdateDecline">Infelizmente, não há outras opções. Ao contrário de outros aplicativos, o Divo Global não usa dados do usuário para direcionamento de anúncios ou outros fins comerciais. O Divo Global armazena apenas as informações necessárias para funcionar como um serviço de nuvem rico em recursos. Você pode ajustar como seus dados são usados nas configurações de Privacidade e Segurança.
+
+Se você não se sentir confortável com as necessidades modestas do Divo Global, não será possível fornecermos a você esse serviço.</string>
+    <string name="TosDeclineDeleteAccount">Atenção, isso apagará irreversivelmente sua conta do Divo Global e todos os dados armazenados na nuvem do Divo Global.
+
+Importante: em vez de perder tudo, você pode Cancelar agora e exportar seus dados primeiro. (Para fazer isso, abra o Divo Global Desktop atualizado e vá em Configurações &gt; Exportar Dados do Divo Global.)</string>
     <!--permissions-->
     <string name="PermissionStorageWithHint">O **Divo Global** precisa de acesso ao armazenamento para enviar e salvar fotos, vídeos, músicas e outros documentos. Toque em Configurações &gt; Permissões e ative **Arquivos e mídia**.</string>
     <string name="PermissionNoAudioWithHint">O **Divo Global** precisa de acesso ao seu microfone para enviar mensagens de voz. Toque em Configurações &gt; Permissões, e ative **Microfone**.</string>
@@ -1793,7 +1871,9 @@ enquanto ela estiver com outra agência.</string>
     <string name="PermissionDrawAboveOtherAppsGroupCall">O modo flutuante permite usar o recurso \"Aperte para Falar\" e também ver quem está falando até mesmo quando você estiver fora do Divo Global.</string>
     <string name="PermissionOpenSettings">Configurações</string>
     <string name="PermissionXiaomiLockscreen">Por favor, permita que o Divo Global seja mostrado na tela de bloqueio para que as chamadas possam funcionar corretamente.</string>
-    <string name="PermissionBackgroundLocation">Para enviar a sua localização ao vivo neste chat, o Divo Global precisa de acesso contínuo à sua localização, inclusive enquanto o app estiver em segundo plano.\n\nO Divo Global acessará a sua localização somente pela duração que você escolher e você pode parar de compartilhar a qualquer momento. Não usaremos a sua localização para nenhum outro motivo além de compartilhar neste chat.</string>
+    <string name="PermissionBackgroundLocation">Para enviar a sua localização ao vivo neste chat, o Divo Global precisa de acesso contínuo à sua localização, inclusive enquanto o app estiver em segundo plano.
+
+O Divo Global acessará a sua localização somente pela duração que você escolher e você pode parar de compartilhar a qualquer momento. Não usaremos a sua localização para nenhum outro motivo além de compartilhar neste chat.</string>
     <string name="PermissionDrawAboveOtherAppsTitle">Picture-in-Picture</string>
     <string name="PermissionDrawAboveOtherAppsGroupCallTitle">Chat de vídeo flutuante</string>
     <!--Intro view-->
@@ -1803,12 +1883,19 @@ enquanto ela estiver com outra agência.</string>
     <string name="Page4Title">Seguro</string>
     <string name="Page5Title">Poderoso</string>
     <string name="Page6Title">Baseado em Nuvem</string>
-    <string name="Page1Message">O aplicativo de mensagem mais **rápido** do mundo.\nÉ **gratuito** e **seguro**.</string>
+    <string name="Page1Message">O aplicativo de mensagem mais **rápido** do mundo.
+É **gratuito** e **seguro**.</string>
     <string name="Page2Message">O **Divo Global** entrega mensagens mais rápido que qualquer outro app.</string>
-    <string name="Page3Message">O **Divo Global** oferece espaço em\nnuvem ilimitado e gratuito para\nchats e mídias.</string>
-    <string name="Page4Message">O **Divo Global** mantém suas mensagens\nseguras contra ataques de hackers.</string>
-    <string name="Page5Message">O **Divo Global** não tem limites no\ntamanho das suas mídias e chats.</string>
-    <string name="Page6Message">O **Divo Global** permite que você\nacesse suas mensagens\nem vários dispositivos.</string>
+    <string name="Page3Message">O **Divo Global** oferece espaço em
+nuvem ilimitado e gratuito para
+chats e mídias.</string>
+    <string name="Page4Message">O **Divo Global** mantém suas mensagens
+seguras contra ataques de hackers.</string>
+    <string name="Page5Message">O **Divo Global** não tem limites no
+tamanho das suas mídias e chats.</string>
+    <string name="Page6Message">O **Divo Global** permite que você
+acesse suas mensagens
+em vários dispositivos.</string>
     <string name="StartMessaging">Comece a Conversar</string>
     <!--contacts shortcuts-->
     <string name="ContactShortcutMessage">Mensagem para %1$s</string>
@@ -1869,7 +1956,8 @@ enquanto ela estiver com outra agência.</string>
     <string name="EventTabMyEvents">Meus Eventos</string>
     <string name="EventTabAllEvents">Todos os Eventos</string>
     <string name="EventEmptyTitle">Não há eventos futuros no momento.</string>
-    <string name="EventEmptySubtitleAgency">Volte mais tarde ou\ncrie um novo.</string>
+    <string name="EventEmptySubtitleAgency">Volte mais tarde ou
+crie um novo.</string>
     <string name="EventEmptySubtitle">Volte mais tarde.</string>
     <string name="EventCreateButton">Criar Evento</string>
     <string name="EventSeenAll">Você viu todos os eventos</string>
@@ -1937,4 +2025,130 @@ enquanto ela estiver com outra agência.</string>
     <string name="ScanToProfile">Digitalize para ir ao perfil</string>
     <string name="DivoShareBtn">Compartilhar</string>
     <string name="MyStory">Minha história</string>
+    <string name="SearchChats">Buscar chats</string>
+    <string name="NoContactsYet3">Adicionar contatos</string>
+    <string name="NoContactsYet3Sub">Você ainda não tem contatos no Divo Global. Que tal adicioná-los?</string>
+    <string name="SearchPeopleByUsername">Buscar pessoas por nome de usuário</string>
+    <string name="StoryPrivacyAlertTitle">Compartilhar story</string>
+    <string name="StoryPrivacyAlertSubtitle_one">Escolha quem pode ver seu story</string>
+    <string name="StoryPrivacyAlertSubtitle_other">Escolha quem pode ver seu story</string>
+    <string name="StoryPrivacyAlertSubtitleProfile">Escolha quem pode ver seu story</string>
+    <string name="StoryLivePrivacyAlertSubtitleProfile">Escolha quem pode ver sua transmissão ao vivo</string>
+    <string name="StoryPrivacyOptionEveryone">Todos</string>
+    <string name="StoryPrivacyOptionContacts">Contatos</string>
+    <string name="StoryPrivacyOptionContactsDetail">excluir pessoas</string>
+    <string name="StoryPrivacyOptionCloseFriends">Melhores amigos</string>
+    <string name="StoryPrivacyOptionCloseFriendsDetail">editar lista</string>
+    <string name="StoryPrivacyOptionSelectedContacts">Contatos selecionados</string>
+    <string name="StoryPrivacyOptionSelectedContactsDetail">editar lista</string>
+    <string name="StoryPrivacyAlertCloseFriendsSubtitle">Escolher melhores amigos</string>
+    <string name="StoryPrivacyButtonSaveCloseFriends">Salvar lista</string>
+    <string name="RecorderNewStory">Novo story</string>
+    <string name="StoryPrivacyAlertSelectContactsTitle">Selecionar contatos</string>
+    <string name="StoryPrivacyAlertSelectContactsSubtitle">Escolher contatos</string>
+    <string name="StoryPrivacyAlertCloseFriendsTitle">Melhores amigos</string>
+    <string name="StoryPrivacyAlertExcludedContactsTitle">Contatos excluídos</string>
+    <string name="StoryPrivacyAlertExcludedContactsSubtitle">Excluir contatos</string>
+    <string name="StoryPrivacyButtonSave">Salvar configurações</string>
+    <string name="StoryPrivacyButtonPost">Publicar story</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneTitle">Todos, exceto…</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneSubtitle">Excluir contatos</string>
+    <string name="StoryBlockListEmpty">**Selecione pessoas** que não verão seus stories.</string>
+    <string name="StoryAllowScreenshots">Permitir capturas de tela</string>
+    <string name="StoryKeep">Manter no meu perfil</string>
+    <string name="StoriesAlbum">Álbum</string>
+    <string name="StoriesAlbumNameAllStories">Todos os stories</string>
+    <string name="StoriesAlbumTitleInputHint">Título</string>
+    <string name="StoriesAlbumAddAlbum">Adicionar álbum</string>
+    <string name="StoriesAlbumNewAlbum">Novo álbum</string>
+    <string name="StoriesAlbumAddToAlbum">Adicionar ao álbum</string>
+    <string name="StoryKeepInfo_one">Mantenha este story no seu perfil mesmo depois de expirar em %d hora. As configurações de privacidade serão aplicadas.</string>
+    <string name="StoryKeepInfo_other">Mantenha este story no seu perfil mesmo depois de expirar em %d horas. As configurações de privacidade serão aplicadas.</string>
+    <string name="StoryCollageRemoveGrid">Toque para remover a grade</string>
+    <string name="StoriesSoundEnabled">Stories</string>
+    <string name="Reactions">Reações</string>
+    <string name="NotificationReactions">Reações</string>
+    <string name="ReactionsByEmotionChartTitle">Reações</string>
+    <string name="NotifyMeAbout">Notificar-me sobre…</string>
+    <string name="StoryLive">Ao vivo</string>
+    <string name="StoryPhoto">Foto</string>
+    <string name="StoryVideo">Vídeo</string>
+    <string name="StoryDraft">Rascunho</string>
+    <string name="StoryDraftsAlbum">Rascunhos</string>
+    <string name="StoryKeepDraft">Manter rascunho</string>
+    <string name="StorySaveDraft">Salvar rascunho</string>
+    <string name="StoryDeleteDraft">Excluir rascunho</string>
+    <string name="ShowInChats">Mostrar nos chats</string>
+    <string name="ForwardedStory">Story encaminhado</string>
+    <string name="NotifyMeAboutPrivate">Novas mensagens em chats privados</string>
+    <string name="NotifyMoreOptions">Mais opções</string>
+    <string name="NotifyLessOptions">Menos opções</string>
+    <string name="NotifyMeAboutGroups">Novas mensagens em grupos</string>
+    <string name="NotifyMeAboutChannels">Novas mensagens em canais</string>
+    <string name="NotifyMeAboutNewStories">Novos stories</string>
+    <string name="NotifyMeAboutImportantStories">Stories importantes</string>
+    <string name="NotifyMeAboutMessagesReactions">Reações às minhas mensagens</string>
+    <string name="NotifyMeAboutStoriesReactions">Reações aos meus stories</string>
+    <string name="NotifyFromContacts">Dos meus contatos</string>
+    <string name="NotifyFromEveryone">De todos</string>
+    <string name="InAppPopup">Pop-ups no aplicativo</string>
+    <string name="InAppPopupInfo">Mostrar notificações pop-up no aplicativo.</string>
+    <string name="AutoDownloadStories">Stories</string>
+    <string name="NotificationStories">Stories</string>
+    <string name="DateOfBirth">Data de nascimento</string>
+    <string name="SearchMessages">Mensagens</string>
+    <string name="EventLogFilterSectionMessages">Mensagens</string>
+    <string name="PrivacyMessages">Mensagens</string>
+    <string name="MessagesChartTitle">Mensagens</string>
+    <string name="MessagesOverview">Mensagens</string>
+    <string name="NotificationReactionsMessages">Mensagens</string>
+    <string name="StarsTransactionFloodskipNumberName">Mensagens</string>
+    <string name="NotificationReactionsStories">Stories</string>
+    <string name="ProfileGifts">Presentes</string>
+    <string name="UserBio">Bio</string>
+    <string name="PrivacyBio">Bio</string>
+    <string name="BioLimitTitle">Bio</string>
+    <string name="StoryMusicProfileMusic">Música salva</string>
+    <string name="PrivacyMusic">Música salva</string>
+    <string name="PrivacyInvites">Convites</string>
+    <string name="PrivacyInvitesInfo">Você pode restringir quais usuários podem adicionar você a grupos e canais.</string>
+    <string name="ProfileBirthday">Data de nascimento</string>
+    <string name="EditProfileBirthdayTitle">Data de nascimento</string>
+    <string name="EditProfileBirthdayText">Data de nascimento</string>
+    <string name="PassportBirthdate">Data de nascimento</string>
+    <string name="PrivacyBirthday">Data de nascimento</string>
+
+    <string name="NotificationEnabled">Ativado</string>
+    <string name="NotificationEnabledAutomatically">Ativado automaticamente</string>
+    <string name="NotificationDisabled">Desativado</string>
+    <string name="PrivacyLastSeenPremiumInfo">Se você assinar o Premium, você verá o visto por último e o tempo de leitura de outros usuários mesmo que tenha ocultado os seus (a menos que eles os tenham restringido especificamente).</string>
+    <string name="PrivacyMessagesContactsAndPremium">Meus contatos e usuários Premium</string>
+    <string name="PrivateMessagesChargePrice">Cobrar por mensagens</string>
+    <string name="PrivacyMessagesInfo">Você pode restringir o recebimento de mensagens apenas para contatos e usuários Premium.
+
+**O que é o Divo Global Premium?**</string>
+    <string name="PrivacyMessagesTitle">Quem pode me enviar mensagens?</string>
+    <string name="PrivacyVoiceMessagesTitle">Quem pode me enviar mensagens de voz?</string>
+    <string name="PrivacyBirthdaySet">Você ainda não inseriu sua data de nascimento.
+**Adicionar meu aniversário &gt;**</string>
+    <string name="PrivacyBirthdayTitle">Quem pode ver meu aniversário?</string>
+    <string name="PrivacyBirthdayInfo">Você pode restringir quem pode ver o seu aniversário com precisão granular.</string>
+    <string name="PrivacyBirthdayInfo3">Você pode adicionar usuários ou grupos inteiros como exceções que substituirão as configurações acima.</string>
+    <string name="PrivacyGifts">Presentes</string>
+    <string name="PrivacyGiftsTitle">Exibir automaticamente os presentes de</string>
+    <string name="PrivacyGiftsInfo">Escolha se os presentes de remetentes específicos precisam da sua aprovação antes de ficarem visíveis para os outros no seu perfil.</string>
+    <string name="PrivacyGiftsShowIcon">Mostrar ícone de presente nos chats</string>
+    <string name="PrivacyGiftsShowIconInfo">Exibe o ícone de Presente %s no campo de entrada de mensagens para ambos os participantes em todos os chats.</string>
+    <string name="PrivacyGiftsTypeHeader">Tipos de presentes aceitos</string>
+    <string name="PrivacyGiftsTypeUnlimited">Ilimitado</string>
+    <string name="PrivacyGiftsTypeLimited">Edição Limitada</string>
+    <string name="PrivacyGiftsTypeUnique">Único</string>
+    <string name="PrivacyGiftsTypeFromChannels">Dos Canais</string>
+    <string name="PrivacyGiftsTypePremium">Assinatura Premium</string>
+    <string name="PrivacyGiftsTypeInfo">Escolha os tipos de presentes que você permite que outros lhe enviem.</string>
+    <string name="CustomShareGiftsInfo">Você pode adicionar usuários ou grupos inteiros como exceções que substituirão as configurações acima.</string>
+    <string name="PrivacyBioTitle">Quem pode ver minha biografia?</string>
+    <string name="PrivacyBioInfo">Você pode restringir quem pode ver sua biografia com precisão granular.</string>
+    <string name="PrivacyBioInfo3">Você pode adicionar usuários ou grupos inteiros que não verão sua biografia.</string>
+
 </resources>
