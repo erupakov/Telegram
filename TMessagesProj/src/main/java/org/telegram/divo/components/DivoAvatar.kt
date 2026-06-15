@@ -91,13 +91,17 @@ fun DivoAvatar(
         }
 
         if (isOnline) {
+            val badgeSize = 14.dp
+            val borderSize = 2.dp
+            val cornerOffset = avatarSize * 0.1465f - badgeSize / 2
+            
             Box(
                 modifier = Modifier
-                    .size(12.dp)
-                    .align(Alignment.TopStart)
-                    .offset(x = 48.dp, y = 48.dp)
+                    .size(badgeSize)
+                    .align(Alignment.BottomEnd)
+                    .offset(x = -cornerOffset, y = -cornerOffset)
                     .background(Color(0xFF1EDD4E), CircleShape)
-                    .border(2.dp, Color(0xFFE2E2E2), CircleShape)
+                    .border(borderSize, Color.White, CircleShape)
             )
         }
     }

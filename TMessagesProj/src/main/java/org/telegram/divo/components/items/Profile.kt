@@ -295,12 +295,14 @@ fun ProfileNameItem(
         center.addObserver(observer, org.telegram.messenger.NotificationCenter.storiesListUpdated)
         center.addObserver(observer, org.telegram.messenger.NotificationCenter.fileUploaded)
         center.addObserver(observer, org.telegram.messenger.NotificationCenter.fileUploadFailed)
+        center.addObserver(observer, org.telegram.messenger.NotificationCenter.updateInterfaces)
         
         onDispose {
             center.removeObserver(observer, org.telegram.messenger.NotificationCenter.storiesUpdated)
             center.removeObserver(observer, org.telegram.messenger.NotificationCenter.storiesListUpdated)
             center.removeObserver(observer, org.telegram.messenger.NotificationCenter.fileUploaded)
             center.removeObserver(observer, org.telegram.messenger.NotificationCenter.fileUploadFailed)
+            center.removeObserver(observer, org.telegram.messenger.NotificationCenter.updateInterfaces)
         }
     }
 
@@ -318,6 +320,15 @@ fun ProfileNameItem(
         isLoading = try { controller.hasUploadingStories(dialogId) } catch (e: Exception) { false }
         unreadCount = try { controller.getUnreadStoriesCount(dialogId) } catch (e: Exception) { 0 }
         totalCount = peerStories?.stories?.size ?: if (hasStories) 1 else 0
+    }
+    
+    var isOnlineReal = false
+    if (dialogId != 0L) {
+        val trigger = updateTrigger
+        val user = org.telegram.messenger.MessagesController.getInstance(account).getUser(dialogId)
+        if (user != null && user.status != null) {
+            isOnlineReal = user.status.expires > org.telegram.tgnet.ConnectionsManager.getInstance(account).currentTime
+        }
     }
 
     Row(
@@ -396,7 +407,7 @@ fun ProfileNameItem(
             ) {
                 DivoAvatar(
                     imageUrl = uiState.userInfo.avatarUrl,
-                    isOnline = uiState.userInfo.isOnline ?: false,
+                    isOnline = isOnlineReal,
                     showBorder = false,
                     avatarSize = 64.dp
                 )
