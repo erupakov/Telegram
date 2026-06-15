@@ -243,7 +243,7 @@ fun ModelsHomeScreen(
                 ModelsList(
                     tab = tab,
                     state = state,
-                    listState = listStates[tab]!!,
+                    listState = listStates.getValue(tab),
                     statusBarHeight = statusBarHeight,
                     cardHeight = cardHeight,
                     bottomInset = bottomInset,

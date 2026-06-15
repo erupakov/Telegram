@@ -55330,7 +55330,7 @@ public class TLRPC {
     }
 
     public static class TL_contacts_addContact extends TLObject {
-        public static final int constructor = 0xd9ba2e54;
+        public static final int constructor = 0xe8f463d0; // 0xd9ba2e54;
 
         public int flags;
         public boolean add_phone_privacy_exception;

@@ -10355,7 +10355,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else {
                 String username = UserObject.getPublicUsername(user);
                 boolean hasInfo = userInfo != null && !TextUtils.isEmpty(userInfo.about) || user != null && !TextUtils.isEmpty(username);
-                boolean hasPhone = user != null && (!TextUtils.isEmpty(user.phone) || !TextUtils.isEmpty(vcardPhone)) && !(user.phone != null && user.phone.startsWith("999")); //DIVO
+                boolean hasPhone = user != null && (!TextUtils.isEmpty(user.phone) || !TextUtils.isEmpty(vcardPhone)); // DIVO: removed 999 check to show 'Hidden' row
 
                 if (userInfo != null && (userInfo.flags2 & 64) != 0 && (profileChannelMessageFetcher == null || !profileChannelMessageFetcher.loaded || !profileChannelMessageFetcher.messageObjects.isEmpty())) {
                     final TLRPC.Chat channel = getMessagesController().getChat(userInfo.personal_channel_id);
@@ -13084,8 +13084,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             text = PhoneFormat.getInstance().format("+" + vcardPhone);
                             phoneNumber = vcardPhone;
                         } else if (user != null && !TextUtils.isEmpty(user.phone)) {
-                            text = PhoneFormat.getInstance().format("+" + user.phone);
-                            phoneNumber = user.phone;
+                            // DIVO: show "Hidden" for dummy numbers instead of formatting them
+                            if (user.phone.startsWith("999")) {
+                                text = LocaleController.getString(R.string.MobileHidden);
+                                phoneNumber = null;
+                            } else {
+                                text = PhoneFormat.getInstance().format("+" + user.phone);
+                                phoneNumber = user.phone;
+                            }
                         } else {
                             text = LocaleController.getString(R.string.PhoneHidden);
                             phoneNumber = null;

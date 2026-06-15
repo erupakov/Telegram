@@ -1578,11 +1578,12 @@ public class StoriesUtilities {
         }
 
         private void setColors(int color1, int color2, boolean animated) {
-            this.color1 = color1;
-            this.color2 = color2;
+            // DIVO
+            this.color1 = 0xFF990000;
+            this.color2 = 0xFF000000;
             if (!animated) {
-                this.animatedColor1.set(color1, true);
-                this.animatedColor2.set(color2, true);
+                this.animatedColor1.set(this.color1, true);
+                this.animatedColor2.set(this.color2, true);
             }
             if (invalidate != null) {
                 invalidate.run();
