@@ -46,6 +46,7 @@ class FeedlineUserDto(
     @SerializedName("weight") val weight: Float?,
     @SerializedName("emojiCounts") val emojiCounts: EmojiCountsDto?,
     @SerializedName("totalEmojisCount") val totalEmojisCount: Int?,
+    @SerializedName("followersCount") val followersCount: Int?,
 )
 
 class FeedlineFileDto(
@@ -94,6 +95,7 @@ fun FeedlineUserDto.toEntity() = FeedlineUser(
     weight = weight,
     emojiCounts = emojiCounts?.toEntity(),
     totalEmojisCount = totalEmojisCount ?: 0,
+    followersCount = followersCount ?: 0,
 )
 
 fun ModelParametersDto.toEntity() = ModelParameters(

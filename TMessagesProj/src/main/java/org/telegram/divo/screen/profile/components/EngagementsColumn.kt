@@ -34,14 +34,14 @@ fun EngagementsColumn(
 ) {
     Column(modifier = modifier) {
         val backgroundColor = AppTheme.colors.onBackground.copy(alpha = 0.3f)
-        val contentColor = if (uiState.userInfo.isFollowed) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+        val contentColor = if (uiState.userInfo.isLikedByUser) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
         val isFavorite = uiState.userInfo.isFavorite
 
         // LIKES
         RoundedGlassContainer(
             modifier = Modifier.width(63.dp),
             height = 30.dp,
-            background = if (uiState.userInfo.isFollowed) AppTheme.colors.onBackground else backgroundColor,
+            background = if (uiState.userInfo.isLikedByUser) AppTheme.colors.onBackground else backgroundColor,
             contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
             Row(
@@ -57,7 +57,7 @@ fun EngagementsColumn(
                             if (!uiState.isOwnProfile) Modifier.clickableWithoutRipple { onLikeClick() }
                             else Modifier
                         ),
-                    painter = if (uiState.userInfo.isFollowed) painterResource(drawable.ic_divo_favorite_selected) else painterResource(drawable.ic_divo_favorite),
+                    painter = if (uiState.userInfo.isLikedByUser) painterResource(drawable.ic_divo_favorite_selected) else painterResource(drawable.ic_divo_favorite),
                     contentDescription = null,
                     tint = contentColor,
                 )

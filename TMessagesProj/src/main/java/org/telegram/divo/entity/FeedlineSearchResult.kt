@@ -28,6 +28,7 @@ data class FeedlineUser(
     val age: Int?,
     val height: Float?,
     val weight: Float?,
+    val followersCount: Int,
     val emojiCounts: EmojiCounts?,
     val totalEmojisCount: Int,
 )

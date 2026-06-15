@@ -75,6 +75,7 @@ fun SearchScreen(
                 is Effect.NavigateToProfile -> onProfileClicked(it.user.id)
                 Effect.NavigateToFaceSearchHistory -> onNavigateToFaceSearchHistory()
                 is Effect.NavigateToSimilarProfiles -> { onNavigateToSimilarProfiles(it.photo, it.filters) }
+                is Effect.ActionChanged -> { } // Can be implemented if needed
             }
         }
     }
@@ -154,8 +155,8 @@ private fun SearchContent(
                     isLoading = state.isLoading,
                     isLoadingMore = state.isLoadingMore,
                     hasMore = state.hasMore,
-                    onMarkClicked = {  }, //TODO
-                    onLikeClicked = {  }, //TODO
+                    onMarkClicked = { onIntent(Intent.OnBookmarkClick(it, false)) },
+                    onLikeClicked = { onIntent(Intent.OnLikeClick(it, false)) },
                     onLoadMore = { onIntent(Intent.OnLoadMore) },
                     onProfileClicked = { onIntent(Intent.OnItemClicked(it, true)) }
                 ) {

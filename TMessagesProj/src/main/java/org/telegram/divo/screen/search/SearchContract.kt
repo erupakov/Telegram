@@ -101,6 +101,8 @@ sealed interface Intent : ViewIntent {
     data object OnResetFilters : Intent
     data object OnFaceSearchHistoryClicked : Intent
     data class OnSimilarProfilesClicked(val photo: String, val filters: String?) : Intent
+    data class OnLikeClick(val userId: Int, val isFrSearch: Boolean = false) : Intent
+    data class OnBookmarkClick(val userId: Int, val isFrSearch: Boolean = false) : Intent
 
     data class OnApplyFilters(
         val countries: List<LocalCountry>,
@@ -122,6 +124,7 @@ sealed interface Effect : ViewEffect {
     data class NavigateToProfile(val user: SearchedProfile) : Effect
     data object NavigateToFaceSearchHistory : Effect
     data class NavigateToSimilarProfiles(val photo: String, val filters: String?) : Effect
+    data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : Effect
 }
 
 data class LocalCity(

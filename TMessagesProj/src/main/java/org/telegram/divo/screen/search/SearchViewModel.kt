@@ -21,14 +21,20 @@ import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.search.Effect.*
+import org.telegram.divo.usecase.ToggleBookmarkUseCase
+import org.telegram.divo.usecase.ToggleLikeUseCase
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
+import org.telegram.messenger.R
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
 class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     private var searchFRJob: Job? = null
     private var searchJob: Job? = null
+
+    private val toggleLikeUseCase = ToggleLikeUseCase()
+    private val toggleBookmarkUseCase = ToggleBookmarkUseCase()
 
     private val searchFRPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
         when (val result = DivoApi.publicationRepository.searchFeeds(
@@ -142,6 +148,8 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             is Intent.OnSimilarProfilesClicked -> sendEffect(NavigateToSimilarProfiles(intent.photo, intent.filters))
             Intent.OnLoadMoreFR -> loadMoreFR()
             is Intent.OnQueryFRChanged -> onQueryFRChanged(intent.value)
+            is Intent.OnLikeClick -> onLikeClick(intent.userId, intent.isFrSearch)
+            is Intent.OnBookmarkClick -> onBookmarkClick(intent.userId, intent.isFrSearch)
         }
     }
 
@@ -245,6 +253,90 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     private fun loadMoreFR() {
         viewModelScope.launch {
             searchFRPaginator.loadMore()
+        }
+    }
+
+    private fun onLikeClick(userId: Int, isFrSearch: Boolean) {
+        val targetList = if (isFrSearch) state.value.searchResultsFR else state.value.searchResults
+        val targetItem = targetList.find { it.id == userId } ?: return
+        val feedId = targetItem.feedId ?: return
+        
+        fun updateAll(newLiked: Boolean, newCount: Int): List<SearchedProfile> {
+            return targetList.map {
+                if (it.id == userId) it.copy(isLiked = newLiked, likes = newCount)
+                else it
+            }
+        }
+
+        viewModelScope.launch {
+            toggleLikeUseCase.execute(
+                feedId = feedId,
+                isLiked = targetItem.isLiked,
+                currentCount = targetItem.likes,
+                onUpdate = { newLiked, newCount ->
+                    if (isFrSearch) {
+                        setState { copy(searchResultsFR = updateAll(newLiked, newCount)) }
+                    } else {
+                        setState { copy(searchResults = updateAll(newLiked, newCount)) }
+                    }
+                },
+                onRollback = {
+                    if (isFrSearch) {
+                        setState { copy(searchResultsFR = targetList) }
+                    } else {
+                        setState { copy(searchResults = targetList) }
+                    }
+                },
+                onSuccess = { newLiked ->
+                    sendEffect(Effect.ActionChanged(
+                        R.drawable.ic_divo_favorite_selected,
+                        if (newLiked) R.string.Liked else R.string.Unliked
+                    ))
+                },
+                onError = { sendEffect(Effect.ShowError(it)) }
+            )
+        }
+    }
+
+    private fun onBookmarkClick(userId: Int, isFrSearch: Boolean) {
+        val targetList = if (isFrSearch) state.value.searchResultsFR else state.value.searchResults
+        val targetItem = targetList.find { it.id == userId } ?: return
+
+        fun updateAll(newFavorite: Boolean, newCount: Int): List<SearchedProfile> {
+            return targetList.map {
+                if (it.id == userId) it.copy(isMarked = newFavorite, followersCount = newCount)
+                else it
+            }
+        }
+
+        viewModelScope.launch {
+            toggleBookmarkUseCase.execute(
+                userId = userId,
+                entity = targetItem.role,
+                isFavorite = targetItem.isMarked,
+                currentFollowersCount = targetItem.followersCount,
+                onUpdate = { newFavorite, newCount ->
+                    if (isFrSearch) {
+                        setState { copy(searchResultsFR = updateAll(newFavorite, newCount)) }
+                    } else {
+                        setState { copy(searchResults = updateAll(newFavorite, newCount)) }
+                    }
+                },
+                onRollback = {
+                    if (isFrSearch) {
+                        setState { copy(searchResultsFR = targetList) }
+                    } else {
+                        setState { copy(searchResults = targetList) }
+                    }
+                },
+                onSuccess = { newFavorite ->
+                    sendEffect(Effect.ActionChanged(
+                        R.drawable.ic_divo_bookmark_glass_selected,
+                        if (newFavorite) R.string.BookmarkSaved else R.string.BookmarkUnsaved
+                    ))
+                },
+                onError = { sendEffect(Effect.ShowError(it)) }
+            )
         }
     }
 
@@ -414,6 +506,8 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
 
     private fun FeedlineItem.toSearchedProfile() = SearchedProfile(
         id = this.id,
+        feedId = this.feedId,
+        role = this.user?.role.orEmpty(),
         name = this.user?.fullName.orEmpty(),
         age = this.user?.age,
         country = this.user?.city?.countryName,
@@ -421,6 +515,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         isMarked = this.isFavoriteByUser,
         likes = this.likesCount,
         isLiked = this.isLikedByUser,
+        followersCount = this.user?.followersCount ?: 0,
         photo = this.searchImageUrl.orEmpty(),
         index = null,
         isModel = org.telegram.divo.entity.RoleType.from(this.user?.role).isModel(),

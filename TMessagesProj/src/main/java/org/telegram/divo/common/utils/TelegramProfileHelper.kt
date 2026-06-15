@@ -12,10 +12,29 @@ import kotlin.coroutines.resume
 object TelegramProfileHelper {
 
     suspend fun updateTelegramAvatar(currentAccount: Int, photoFile: File): Boolean {
+        var tempFileToUpload: File? = null
         return try {
+            val fileToUpload = try {
+                val bitmap = org.telegram.messenger.ImageLoader.loadBitmap(photoFile.absolutePath, null, 800f, 800f, true)
+                if (bitmap != null) {
+                    val tempFile = File(org.telegram.messenger.ApplicationLoader.applicationContext.cacheDir, "avatar_tg_rotated_${System.currentTimeMillis()}.jpg")
+                    val os = java.io.FileOutputStream(tempFile)
+                    bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 87, os)
+                    os.close()
+                    bitmap.recycle()
+                    tempFileToUpload = tempFile
+                    tempFile
+                } else {
+                    photoFile
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                photoFile
+            }
+
             val inputFile = kotlinx.coroutines.withTimeoutOrNull(15000) {
                 suspendCancellableCoroutine<TLRPC.InputFile?> { continuation ->
-                    val path = photoFile.absolutePath
+                    val path = fileToUpload.absolutePath
                     FileLoader.getInstance(currentAccount).uploadFile(path) { result ->
                         if (continuation.isActive) continuation.resume(result)
                     }
@@ -74,6 +93,12 @@ object TelegramProfileHelper {
         } catch (e: Exception) {
             e.printStackTrace()
             false
+        } finally {
+            try {
+                tempFileToUpload?.delete()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
