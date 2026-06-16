@@ -196,23 +196,23 @@ fun ParametersType.numericFilterRange(measuringSystem: String = DivoSettings.mea
 
 private fun ParametersType.numericFilterRangeMetric(): IntRange? = when (this) {
     ParametersType.AGE -> 16..45
-    ParametersType.HEIGHT -> 120..220
-    ParametersType.WEIGHT -> 30..200
-    ParametersType.WAIST -> 40..130
-    ParametersType.HIPS -> 60..150
-    ParametersType.SHOE_SIZE -> 32..50
-    ParametersType.BREAST_SIZE -> 65..130
+    ParametersType.HEIGHT -> 120..218
+    ParametersType.WEIGHT -> 35..150
+    ParametersType.WAIST -> 58..130
+    ParametersType.HIPS -> 68..147
+    ParametersType.SHOE_SIZE -> 32..45
+    ParametersType.BREAST_SIZE -> 65..127
     else -> null
 }
 
 fun ParametersType.profilePickerRange(measuringSystem: String = DivoSettings.measuringSystem): IntRange =
     when (this) {
-        ParametersType.HEIGHT -> 120..220
-        ParametersType.WEIGHT -> 30..200
-        ParametersType.WAIST -> 40..130
-        ParametersType.HIPS -> 60..150
-        ParametersType.SHOE_SIZE -> 32..50
-        ParametersType.BREAST_SIZE -> 65..130
+        ParametersType.HEIGHT -> 120..218
+        ParametersType.WEIGHT -> 35..150
+        ParametersType.WAIST -> 58..130
+        ParametersType.HIPS -> 68..147
+        ParametersType.SHOE_SIZE -> 32..45
+        ParametersType.BREAST_SIZE -> 65..127
         else -> 0..250
     }.let { metricRange ->
         if (!MeasuringUnits.isImperial(measuringSystem) || !hasMeasurableUnits()) {

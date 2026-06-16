@@ -121,7 +121,7 @@ class SimilarProfilesViewModel(
             val type = object : TypeToken<List<SimilarFaceDto>>() {}.type
             val dtos: List<SimilarFaceDto> = Gson().fromJson(jsonToParse, type)
 
-            dtos.map { dto ->
+            dtos.distinctBy { it.userId }.map { dto ->
                 SearchedProfile(
                     id = dto.userId ?: -1,
                     name = dto.fullName.orEmpty(),

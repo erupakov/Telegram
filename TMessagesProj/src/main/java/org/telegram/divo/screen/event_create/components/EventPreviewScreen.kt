@@ -546,6 +546,7 @@ private fun PreviewBottomBar(
                 .weight(1f)
                 .height(56.dp),
             text = stringResource(R.string.ButtonEdit),
+            enabled = !isUploading,
             background = AppTheme.colors.buttonSecondary,
             leadingIcon = R.drawable.ic_divo_edit_24,
             leadingIconTint = AppTheme.colors.onBackground,
@@ -558,6 +559,7 @@ private fun PreviewBottomBar(
                 .height(56.dp),
             text = stringResource(R.string.EventPublish),
             enabled = !isUploading,
+            isLoading = isUploading,
             onClick = onPublish
         )
     }

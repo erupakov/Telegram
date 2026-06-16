@@ -221,7 +221,7 @@ fun SearchFilterBottomSheet(
                 Spacer(Modifier.height(16.dp))
                 ParameterItem(
                     param = draftRole.copy(value = if (draftRole.value.isEmpty()) stringResource(R.string.AllLabel) else draftRole.getFormatedOptions()),
-                    onClick = { openBottomSheet(draftRole.type, context.resources.getStringArray(R.array.ModelFunNewTalent).toList(), draftRole.value) }
+                    onClick = { openBottomSheet(draftRole.type, context.resources.getStringArray(R.array.ModelNewTalentAgency).toList(), draftRole.value) }
                 )
 
                 Spacer(Modifier.height(16.dp))

@@ -334,8 +334,14 @@ fun AnimatedLargeStoriesOverlay(
 
                 Spacer(Modifier.height(6.dp))
 
+                val text = if (story.isSelf) {
+                    org.telegram.messenger.LocaleController.getString(if (story.hasStories) R.string.MyStory else R.string.AddStoryLabel)
+                } else {
+                    story.userName
+                }
+
                 Text(
-                    text = story.userName,
+                    text = text,
                     fontSize = 11.5.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

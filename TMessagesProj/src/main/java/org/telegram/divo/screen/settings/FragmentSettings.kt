@@ -18,8 +18,20 @@ import org.telegram.ui.MainTabsActivityController
 import org.telegram.ui.NotificationsSettingsActivity
 import org.telegram.ui.PrivacySettingsActivity
 import org.telegram.ui.ThemeActivity
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
+import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import org.telegram.divo.common.utils.FragmentLifecycleOwner
 
 class FragmentSettings : BaseFragment() {
+
+    private val composeLifecycleOwner = FragmentLifecycleOwner().apply {
+        onCreate()
+        onStart()
+        onResume()
+    }
 
     private var settingsNavController: NavController? = null
     private var profileNavController: NavController? = null
@@ -35,12 +47,18 @@ class FragmentSettings : BaseFragment() {
         if (fragmentView != null) return fragmentView
         actionBar.setAddToContainer(false)
         fragmentView = ComposeView(context).apply {
+            setViewTreeLifecycleOwner(composeLifecycleOwner)
+            setViewTreeViewModelStoreOwner(composeLifecycleOwner)
+            setViewTreeSavedStateRegistryOwner(composeLifecycleOwner)
             setViewCompositionStrategy(object : androidx.compose.ui.platform.ViewCompositionStrategy {
                 override fun installFor(view: androidx.compose.ui.platform.AbstractComposeView): () -> Unit {
                     return {} // Prevent disposal on detach
                 }
             })
             setDivoContent {
+                CompositionLocalProvider(
+                    LocalOnBackPressedDispatcherOwner provides composeLifecycleOwner
+                ) {
                 SettingsNavGraph(
                     navigateToSavedMessages = { openSavedMessages() },
                     navigateToNotifications = { presentFragment(NotificationsSettingsActivity()) },
@@ -81,6 +99,7 @@ class FragmentSettings : BaseFragment() {
                         }
                     }
                 )
+                }
             }
         }
         return fragmentView
@@ -123,6 +142,7 @@ class FragmentSettings : BaseFragment() {
 
     override fun onFragmentDestroy() {
         super.onFragmentDestroy()
+        composeLifecycleOwner.onDestroy()
         (fragmentView as? ComposeView)?.disposeComposition()
     }
 }

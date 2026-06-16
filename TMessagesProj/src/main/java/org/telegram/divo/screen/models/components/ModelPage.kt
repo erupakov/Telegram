@@ -217,7 +217,7 @@ fun ModelPage(
                         }
                     }
                     Spacer(Modifier.height(10.dp))
-                    RoundedGlassContainer(
+                     RoundedGlassContainer(
                         modifier = Modifier.width(65.dp),
                         height = 30.dp,
                         background = AppTheme.colors.onBackground.copy(alpha = 0.3f),
@@ -240,25 +240,30 @@ fun ModelPage(
                     }
                     Spacer(Modifier.height(10.dp))
                     RoundedGlassContainer(
-                        modifier = Modifier.width(65.dp).clickableWithoutRipple { onBookmarkClick(feed.id) },
+                        modifier = Modifier.width(65.dp),
                         height = 30.dp,
                         background = if (feed.isFavorite) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
-                        Icon(
-                            modifier = Modifier.size(16.dp),
-                            painter = if (feed.isFavorite) painterResource(R.drawable.ic_divo_bookmark_glass_selected) else painterResource(R.drawable.ic_divo_bookmark_glass),
-                            contentDescription = null,
-                            tint = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
-                        )
-                        Spacer(Modifier.width(3.dp))
-                        Text(
-                            modifier = Modifier.offset(y = 1.dp),
-                            text = feed.user.followersCount.toShortString(),
-                            style = AppTheme.typography.helveticaNeueRegular,
-                            color = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
-                            fontSize = 12.sp
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickableWithoutRipple { onBookmarkClick(feed.user.id) }
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(16.dp),
+                                painter = if (feed.isFavorite) painterResource(R.drawable.ic_divo_bookmark_glass_selected) else painterResource(R.drawable.ic_divo_bookmark_glass),
+                                contentDescription = null,
+                                tint = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+                            )
+                            Spacer(Modifier.width(3.dp))
+                            Text(
+                                modifier = Modifier.offset(y = 1.dp),
+                                text = feed.user.followersCount.toShortString(),
+                                style = AppTheme.typography.helveticaNeueRegular,
+                                color = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+                                fontSize = 12.sp
+                            )
+                        }
                     }
                 }
             }

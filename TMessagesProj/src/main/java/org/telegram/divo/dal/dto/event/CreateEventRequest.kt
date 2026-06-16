@@ -40,6 +40,7 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
             .map { role ->
                 when (role) {
                     org.telegram.divo.entity.RoleType.NEW_TALENT.value -> org.telegram.divo.entity.RoleType.NEW_FACE.value
+                    "agency" -> org.telegram.divo.entity.RoleType.AGENCY.value
                     else -> role
                 }
             }

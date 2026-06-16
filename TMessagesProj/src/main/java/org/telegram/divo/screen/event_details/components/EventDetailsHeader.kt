@@ -142,87 +142,6 @@ private fun StatsSection(
 }
 
 @Composable
-private fun ButtonsSection(
-    modifier: Modifier = Modifier,
-    event: EventDetails?,
-    isOwnEvent: Boolean,
-    onMenuClicked: () -> Unit,
-    onBack: () -> Unit,
-    onLikeClicked: () -> Unit
-) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
-    Column(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            RoundedGlassButton(
-                onClick = onBack
-            )
-            RoundedGlassContainer(
-                space = 10.dp
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickableWithoutRipple {
-                            DivoSharingHelper.share(
-                                context = context,
-                                scope = scope,
-                                type = DivoShareType.EVENT,
-                                id = event?.id,
-                                customMessage = "${event?.title} - ${event?.creator?.roleLabel}",
-                                imageUrl = event?.creator?.photo?.fullUrl
-                            )
-                        },
-                    painter = painterResource(R.drawable.ic_divo_share_model),
-                    contentDescription = null,
-                    tint = AppTheme.colors.onBackground
-                )
-                if (isOwnEvent) {
-                    Icon(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickableWithoutRipple { onMenuClicked() },
-                        painter = painterResource(R.drawable.ic_ab_other),
-                        contentDescription = null,
-                        tint = AppTheme.colors.onBackground
-                    )
-                }
-            }
-        }
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.End
-        ) {
-            Spacer(Modifier.height(16.dp))
-            val isLiked = event?.isLiked == true
-            EngagementItem(
-                resId = if (isLiked) R.drawable.ic_divo_favorite_selected else R.drawable.ic_divo_favorite,
-                count = event?.appliesCount ?: 0,
-                tint = if (isLiked) AppTheme.colors.accentOrange else AppTheme.colors.onBackground,
-                onClick = onLikeClicked
-            )
-            Spacer(Modifier.height(10.dp))
-            EngagementItem(
-                resId = R.drawable.ic_divo_visibility,
-                count = event?.viewsCount ?: 0 //TODO понять что выводить
-            )
-            Spacer(Modifier.height(10.dp))
-            EngagementItem(
-                resId = R.drawable.ic_divo_bookmark_glass,
-                count = event?.userReachCount ?: 0 //TODO понять что выводить
-            )
-        }
-    }
-}
-
-@Composable
 private fun ContentSection(
     modifier: Modifier = Modifier,
     event: EventDetails?,
@@ -340,17 +259,7 @@ private fun ContentSection(
                         onClick = onCtaClicked
                     )
                 }
-                if (isOwnEvent) {
-                    UIButtonNew(
-                        text = stringResource(R.string.ViewApplications),
-                        textStyle = AppTheme.typography.helveticaNeueLtCom.copy(
-                            fontSize = 14.sp,
-                            color = AppTheme.colors.onBackground
-                        ),
-                        height = 36.dp,
-                        onClick = onEditEvent
-                    )
-                }
+
             }
         }
         Spacer(Modifier.height(20.dp))

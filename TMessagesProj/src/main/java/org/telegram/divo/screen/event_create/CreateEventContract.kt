@@ -73,8 +73,7 @@ data class State(
     val isThirdPageValid: Boolean
         get() = deadlineDate.isNotBlank() &&
                 deadlineTime.isNotBlank() &&
-                (!isPaid || eventRate.trim().isNotEmpty()) &&
-                galleryUris.drop(1).isNotEmpty()
+                (!isPaid || eventRate.trim().isNotEmpty())
 
     fun getDefaultBlockParams(): List<ProfileParameter> =
         listOf(

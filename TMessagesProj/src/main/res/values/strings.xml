@@ -370,11 +370,11 @@ while she is with another agency.</string>
         <item quantity="other">%d results</item>
     </plurals>
 
-    <string-array name="ModelFunNewTalent">
+    <string-array name="ModelNewTalentAgency">
         <item>All roles</item>
         <item>Model</item>
-        <item>Fun</item>
-        <item>New face</item>
+        <item>New talent</item>
+        <item>Agency</item>
     </string-array>
 
     <!--settings screen-->

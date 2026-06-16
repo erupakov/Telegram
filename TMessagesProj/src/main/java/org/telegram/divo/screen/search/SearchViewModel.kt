@@ -58,6 +58,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         val roleValues = s.role.value
             .split(",")
             .map { it.trim().lowercase().replace(" ", "_") }
+            .map { if (it == "agency") "agency_employee" else it }
             .filter { it.isNotEmpty() }
             .ifEmpty { null }
 
