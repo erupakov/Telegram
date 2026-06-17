@@ -313,8 +313,12 @@ while she is with another agency.</string>
     <string name="SimilarityScore">Results are sorted by visual similarity score</string>
     <string name="NoFaceDetected">No face detected</string>
     <string name="PleaseUsePhotoClearly">Please use a photo where a face is clearly visible — front-facing, well-lit, and unobstructed.</string>
-    <string name="MultipleFacesDetected">%d faces detected — tap one to search</string>
+    <plurals name="MultipleFacesDetected">
+        <item quantity="one">%d face detected — tap to search</item>
+        <item quantity="other">%d faces detected — tap one to search</item>
+    </plurals>
     <string name="ReadyToSearchFace">Face selected — ready to search</string>
+    <string name="DragToMovePhoto">Drag photo to explore</string>
     <string name="AvoidSunglasses">Avoid sunglasses, masks, or heavy cropping.</string>
     <string name="FullFacePhotos">Full-face photos work best — not side profiles.</string>
     <string name="AnalysingFacialFeatures">Analysing facial features..</string>

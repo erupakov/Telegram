@@ -316,8 +316,11 @@
     <string name="SimilarityScore">结果按视觉相似度排序</string>
     <string name="NoFaceDetected">未检测到人脸</string>
     <string name="PleaseUsePhotoClearly">请使用面部清晰可见的照片——正面、光线充足且无遮挡。</string>
-    <string name="MultipleFacesDetected">检测到 %d 张人脸 — 点击其中一张进行搜索</string>
+    <plurals name="MultipleFacesDetected">
+        <item quantity="other">检测到 %d 张人脸 — 点击其中一张进行搜索</item>
+    </plurals>
     <string name="ReadyToSearchFace">已选择人脸 — 准备搜索</string>
+    <string name="DragToMovePhoto">拖动照片以移动</string>
     <string name="AvoidSunglasses">避免佩戴墨镜、口罩或照片裁剪过度。</string>
     <string name="FullFacePhotos">全脸照片效果最佳 — 请勿使用侧脸照片。</string>
     <string name="AnalysingFacialFeatures">正在分析面部特征...</string>

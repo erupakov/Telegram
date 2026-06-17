@@ -317,8 +317,12 @@ mientras esté con otra agencia.</string>
     <string name="SimilarityScore">Los resultados se ordenan por puntuación de similitud visual</string>
     <string name="NoFaceDetected">No se ha detectado ninguna cara</string>
     <string name="PleaseUsePhotoClearly">Por favor, usa una foto donde la cara sea claramente visible — de frente, bien iluminada y sin obstrucciones.</string>
-    <string name="MultipleFacesDetected">%d caras detectadas — toca una para buscar</string>
+    <plurals name="MultipleFacesDetected">
+        <item quantity="one">%d cara detectada — toca para buscar</item>
+        <item quantity="other">%d caras detectadas — toca una para buscar</item>
+    </plurals>
     <string name="ReadyToSearchFace">Cara seleccionada — listo para buscar</string>
+    <string name="DragToMovePhoto">Arrastra para mover la foto</string>
     <string name="AvoidSunglasses">Evita gafas de sol, mascarillas o recortes muy grandes.</string>
     <string name="FullFacePhotos">Las fotos de cara completa funcionan mejor — no perfiles laterales.</string>
     <string name="AnalysingFacialFeatures">Analizando rasgos faciales...</string>

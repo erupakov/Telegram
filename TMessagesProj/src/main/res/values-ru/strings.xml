@@ -316,8 +316,14 @@
     <string name="SimilarityScore">Результаты отсортированы по проценту визуального сходства</string>
     <string name="NoFaceDetected">Лицо не распознано</string>
     <string name="PleaseUsePhotoClearly">Пожалуйста, используйте фото, на котором четко видно лицо — в анфас, с хорошим освещением и без помех.</string>
-    <string name="MultipleFacesDetected">Обнаружено %d лиц — нажмите на одно для поиска</string>
+    <plurals name="MultipleFacesDetected">
+        <item quantity="one">Обнаружено %d лицо — нажмите для поиска</item>
+        <item quantity="few">Обнаружено %d лица — нажмите на одно для поиска</item>
+        <item quantity="many">Обнаружено %d лиц — нажмите на одно для поиска</item>
+        <item quantity="other">Обнаружено %d лиц — нажмите на одно для поиска</item>
+    </plurals>
     <string name="ReadyToSearchFace">Лицо выбрано — готово к поиску</string>
+    <string name="DragToMovePhoto">Перемещайте фото</string>
     <string name="AvoidSunglasses">Избегайте солнцезащитных очков, масок или сильного кадрирования.</string>
     <string name="FullFacePhotos">Фотографии в анфас работают лучше всего — избегайте фото в профиль.</string>
     <string name="AnalysingFacialFeatures">Анализируем черты лица..</string>
