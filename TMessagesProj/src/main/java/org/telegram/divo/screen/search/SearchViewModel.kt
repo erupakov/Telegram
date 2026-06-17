@@ -67,7 +67,9 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             limit = limit,
             query = s.query,
             role = roleValues,
-            modelParameters = s.buildModelParameters()
+            modelParameters = s.buildModelParameters(),
+            geoCityId = s.resolvedGeoCityId,
+            countryCode = s.selectedCountries.firstOrNull()?.shortName
         )) {
             is DivoResult.Success -> {
                 val data = result.value
@@ -98,25 +100,37 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             }
             is Intent.OnSearchConfirmed -> setState { copy(isSearchConfirmed = true) }
             is Intent.OnApplyFilters -> {
-                setState {
-                    copy(
-                        isSearchConfirmed = true,
-                        selectedCountries = intent.countries,
-                        selectedCity = intent.city,
-                        role = intent.role,
-                        gender = intent.gender,
-                        hairLength = intent.hairLength,
-                        hairColor = intent.hairColor,
-                        eyeColor = intent.eyeColor,
-                        skinColor = intent.skinColor,
-                        blockParams = intent.blockParams
-                    )
-                }
-
                 searchJob?.cancel()
                 searchPaginator.reset()
                 viewModelScope.launch {
                     setState { copy(isLoading = true) }
+
+                    var newGeoCityId: Int? = null
+                    if (intent.city != null) {
+                        try {
+                            val geoResponse = DivoApi.geoService.searchByAddressName(intent.city.name)
+                            newGeoCityId = geoResponse.data?.firstOrNull()?.city?.id
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                    setState {
+                        copy(
+                            isSearchConfirmed = true,
+                            selectedCountries = intent.countries,
+                            selectedCity = intent.city,
+                            resolvedGeoCityId = newGeoCityId,
+                            role = intent.role,
+                            gender = intent.gender,
+                            hairLength = intent.hairLength,
+                            hairColor = intent.hairColor,
+                            eyeColor = intent.eyeColor,
+                            skinColor = intent.skinColor,
+                            blockParams = intent.blockParams
+                        )
+                    }
+
                     searchPaginator.loadInitial()
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
@@ -127,6 +141,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     copy(
                         selectedCountries = emptyList(),
                         selectedCity = null,
+                        resolvedGeoCityId = null,
                         role = ProfileParameter(ParametersType.ROLE, ""),
                         gender = ProfileParameter(ParametersType.GENDER, ""),
                         hairLength = ProfileParameter(ParametersType.HAIR_LENGTH, ""),

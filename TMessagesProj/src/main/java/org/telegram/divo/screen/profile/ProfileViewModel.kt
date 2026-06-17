@@ -18,6 +18,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.AgencySearchModelStatus
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserInfo
@@ -115,9 +116,9 @@ class ProfileViewModel(
                     val existing = currentAgencyModels.find { it.userId == searchModel.userId }
                     if (existing != null) {
                         if (existing.status == org.telegram.divo.entity.AgencyModelStatus.PENDING) {
-                            searchModel.copy(status = org.telegram.divo.entity.AgencySearchModelStatus.RequestPending)
+                            searchModel.copy(status = AgencySearchModelStatus.RequestPending)
                         } else {
-                            searchModel.copy(status = org.telegram.divo.entity.AgencySearchModelStatus.AlreadyAdded)
+                            searchModel.copy(status = AgencySearchModelStatus.AlreadyAdded)
                         }
                     } else {
                         searchModel
