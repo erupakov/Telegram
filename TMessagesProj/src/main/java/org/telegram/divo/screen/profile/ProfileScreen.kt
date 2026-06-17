@@ -600,8 +600,17 @@ private fun ProfileScreenContent(
             onEditBackgroundClicked = { openGalleryForBg() },
             onManageWorkExperienceClicked = { onIntent(ProfileIntent.OnShowWorkHistory) },
             onNavigateBack = { onIntent(ProfileIntent.OnNavigateBack) },
-            onFindSimilarProfiles = { onIntent(ProfileIntent.OnFindSimilarProfiles) }
+            onFindSimilarProfiles = { onIntent(ProfileIntent.OnFindSimilarProfiles) },
+            onReportProfile = { onIntent(ProfileIntent.OnReportProfileClicked) }
         )
+
+        if (uiState.showReportSheet && uiState.reportTypes != null) {
+            org.telegram.divo.screen.profile.components.ReportProfileBottomSheet(
+                reportTypes = uiState.reportTypes,
+                onDismissRequest = { onIntent(ProfileIntent.OnDismissReportSheet) },
+                onReportOptionSelected = { onIntent(ProfileIntent.OnReportOptionSelected(it)) }
+            )
+        }
 
         if (isTabsPinned && hasTabs) {
             Box(

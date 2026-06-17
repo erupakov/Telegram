@@ -110,7 +110,6 @@ fun ToolBarContent(
     onManageWorkExperienceClicked: () -> Unit = {},
     onFindSimilarProfiles: () -> Unit = {},
     onReportProfile: () -> Unit = {},
-    onBlockProfile: () -> Unit = {},
     isSolid: Boolean = false,
     transitionProgress: Float = 0f,
 ) {
@@ -123,8 +122,7 @@ fun ToolBarContent(
 
     val options = listOf(
         PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec),
-        PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report),
-        PopupMenuItem(R.string.BlockProfile, onBlockProfile, R.drawable.ic_divo_block),
+        PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report)
     )
 
     val editOptions = remember {

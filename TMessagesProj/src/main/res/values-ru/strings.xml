@@ -51,6 +51,7 @@
 чтобы добавить модель</string>
     <string name="PremiumLabel">Премиум</string>
     <string name="ReportThisProfile">Пожаловаться на профиль</string>
+    <string name="ReportSent">Жалоба отправлена</string>
     <string name="BlockProfile">Заблокировать пользователя</string>
     <string name="SearchByName">Поиск по имени или @нику</string>
     <string name="YearsOld">лет</string>

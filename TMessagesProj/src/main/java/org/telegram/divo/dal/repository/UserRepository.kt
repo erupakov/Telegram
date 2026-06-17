@@ -21,6 +21,7 @@ import org.telegram.divo.dal.dto.common.toEntities
 import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.dal.dto.user.AddGalleryRequest
 import org.telegram.divo.dal.dto.user.AgencyModelsRequest
+import org.telegram.divo.dal.dto.user.ReportProfileRequest
 import org.telegram.divo.dal.dto.user.UpdateProfileRequest
 import org.telegram.divo.dal.dto.user.UpsertSocialNetworkRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListRequest
@@ -329,6 +330,20 @@ class UserRepository(
 
     suspend fun getAppearances(): DivoResult<Appearances> = resultOf {
         service.getAppearances().data.toEntity()
+    }
+
+    suspend fun reportProfile(userId: Int, reportKey: String): DivoResult<Unit> = resultOf {
+        service.reportProfile(
+            ReportProfileRequest(
+                reportUserId = userId,
+                reportText = reportKey
+            )
+        )
+    }
+
+    suspend fun getFeedReportTypes(): DivoResult<Map<String, String>> = resultOf {
+        val data = DivoApi.dictionaryService.getFeedReportTypes().data
+        data.associate { it.id to it.title }
     }
 }
 

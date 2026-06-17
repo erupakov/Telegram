@@ -58,6 +58,7 @@
 添加您的模特</string>
     <string name="PremiumLabel">高级版</string>
     <string name="ReportThisProfile">举报此主页</string>
+    <string name="ReportSent">举报已发送</string>
     <string name="BlockProfile">屏蔽用户</string>
     <string name="SearchByName">按姓名或 @用户名 搜索</string>
     <string name="YearsOld">岁</string>

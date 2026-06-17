@@ -120,6 +120,11 @@ interface UserService {
 
     @GET("dictionary/appearances")
     suspend fun getAppearances(): AppearancesResponse
+
+    @POST("user/report")
+    suspend fun reportProfile(
+        @Body request: org.telegram.divo.dal.dto.user.ReportProfileRequest
+    ): EmptyResponse
 }
 
 

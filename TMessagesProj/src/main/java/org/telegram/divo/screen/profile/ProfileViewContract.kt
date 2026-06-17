@@ -62,6 +62,9 @@ data class ProfileViewState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
 
+    val reportTypes: Map<String, String>? = null,
+    val showReportSheet: Boolean = false,
+
     val portfolioLoading: Boolean = false,
     val mediaUploading: Boolean = false,
     val isLoadingAllUsers: Boolean = false,
@@ -220,6 +223,9 @@ sealed class ProfileIntent : ViewIntent {
     object OnFindSimilarProfiles : ProfileIntent()
     class OnSendDMClicked(val telegramId: Long, val telegramAccessHash: Long?, val telegramUsername: String?) : ProfileIntent()
     object OnEventCreate : ProfileIntent()
+    object OnReportProfileClicked : ProfileIntent()
+    object OnDismissReportSheet : ProfileIntent()
+    class OnReportOptionSelected(val reportKey: String) : ProfileIntent()
     object OnLoadMoreAgencyModels : ProfileIntent()
     class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
     data class OnCancelAgencyModelRequest(val modelId: Int) : ProfileIntent()

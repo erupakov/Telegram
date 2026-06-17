@@ -58,6 +58,7 @@
  para añadir a tu modelo</string>
     <string name="PremiumLabel">Premium</string>
     <string name="ReportThisProfile">Denunciar este perfil</string>
+    <string name="ReportSent">Reporte enviado</string>
     <string name="BlockProfile">Bloquear usuario</string>
     <string name="SearchByName">Buscar por nombre o @usuario</string>
     <string name="YearsOld">años</string>

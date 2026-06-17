@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--divo view start-->
     <string name="AppName">Divo</string>
@@ -59,6 +59,7 @@
     <string name="AgencyModelsEmptyHint">Click the button below \n to add your model</string>
     <string name="PremiumLabel">Premium</string>
     <string name="ReportThisProfile">Report this profile</string>
+    <string name="ReportSent">Report sent</string>
     <string name="BlockProfile">Block user</string>
     <string name="SearchByName">Search by name or @handle</string>
     <string name="YearsOld">y.o.</string>
