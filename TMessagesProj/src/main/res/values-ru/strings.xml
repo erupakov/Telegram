@@ -237,8 +237,15 @@
     <string name="EventApplied">Откликов: %d</string>
     <string name="EventMaxSpots">Макс. мест: %d</string>
     <string name="EditEvent">Редактировать мероприятие</string>
-    <string name="CloseApplicationsEvent">Закрыть прием заявок</string>
+
+    <string name="EventStatusApplicationsClosed">Подача закрыта</string>
+    <string name="EventStatusApplicationsClosedDate">Подача закрыта %1$s</string>
+    <string name="CloseApplicationsEvent">Закрыть подачу заявок</string>
+    <string name="CloseApplicationsTitle">Закрыть подачу заявок?</string>
+    <string name="CloseApplicationsDescription">Вы уверены, что хотите закрыть подачу заявок на \"%s\"? Никто больше не сможет подать заявку.</string>
     <string name="CancelEvent">Отменить мероприятие</string>
+    <string name="CancelEventTitle">Отменить мероприятие?</string>
+    <string name="CancelEventDescription">Вы уверены, что хотите отменить \"%s\"? Все заявки будут отозваны.</string>
     <string name="DeleteEvent">Удалить</string>
     <string name="DeleteEventTitle">Удалить \"%s\"?</string>
     <string name="DeleteEventDescription">Это действие нельзя отменить. Все заявки будут аннулированы.</string>
@@ -928,7 +935,6 @@
     <string name="ErrorTelegramAuthFailed">Ошибка авторизации Divo Global</string>
     <string name="ErrorDummyPhoneFailed">Не удалось получить номер для регистрации</string>
     <string name="ErrorUnexpected">Непредвиденная ошибка</string>
-    <string name="EventStatusApplicationsClosed">Подача закрыта</string>
     <string name="EventStatusInProgress">Прямо сейчас</string>
     <string name="EventStatusCompleted">Завершён</string>
     <string name="EventStatusClosesIn">Закрывается через %1$s</string>

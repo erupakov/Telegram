@@ -240,8 +240,15 @@ un modelo</string>
     <string name="EventApplied">%d aplicaron</string>
     <string name="EventMaxSpots">%d plazas máximas</string>
     <string name="EditEvent">Editar evento</string>
-    <string name="CloseApplicationsEvent">Cerrar solicitudes</string>
+
+    <string name="EventStatusApplicationsClosed">Inscripciones Cerradas</string>
+    <string name="EventStatusApplicationsClosedDate">Inscripciones Cerradas %1$s</string>
+    <string name="CloseApplicationsEvent">Cerrar inscripciones</string>
+    <string name="CloseApplicationsTitle">¿Cerrar inscripciones?</string>
+    <string name="CloseApplicationsDescription">¿Seguro que quieres cerrar las inscripciones para \"%s\"? Nadie más podrá inscribirse.</string>
     <string name="CancelEvent">Cancelar evento</string>
+    <string name="CancelEventTitle">¿Cancelar evento?</string>
+    <string name="CancelEventDescription">¿Seguro que quieres cancelar \"%s\"? Todas las solicitudes serán retiradas.</string>
     <string name="DeleteEvent">Eliminar</string>
     <string name="DeleteEventTitle">¿Eliminar \"%s\"?</string>
     <string name="DeleteEventDescription">Esta acción no se puede deshacer. Se cancelarán todas las solicitudes.</string>
@@ -2026,7 +2033,6 @@ mensajes desde múltiples dispositivos.</string>
     <string name="ErrorTelegramAuthFailed">Error de autenticación de Divo Global</string>
     <string name="ErrorDummyPhoneFailed">Error al obtener número temporal para el registro</string>
     <string name="ErrorUnexpected">Error inesperado</string>
-    <string name="EventStatusApplicationsClosed">Inscripciones Cerradas</string>
     <string name="EventStatusInProgress">En Progreso</string>
     <string name="EventStatusCompleted">Completado</string>
     <string name="EventStatusClosesIn">Cierra en %1$s</string>

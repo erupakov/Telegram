@@ -238,7 +238,13 @@
     <string name="EventMaxSpots">%d max spots</string>
     <string name="EditEvent">Edit event</string>
     <string name="CloseApplicationsEvent">Close applications</string>
+    <string name="CloseApplicationsTitle">Close applications?</string>
+    <string name="CloseApplicationsDescription">Are you sure you want to close applications for \"%s\"?</string>
     <string name="CancelEvent">Cancel event</string>
+    <string name="CancelEventTitle">Cancel event?</string>
+    <string name="CancelEventDescription">Are you sure you want to cancel \"%s\"? All applications will be withdrawn.</string>
+    <string name="EventStatusApplicationsClosed">Applications closed</string>
+    <string name="EventStatusApplicationsClosedDate">Applications closed %1$s</string>
     <string name="DeleteEvent">Delete</string>
     <string name="DeleteEventTitle">Delete \"%s\"?</string>
     <string name="DeleteEventDescription">This action cannot be undone. All applications will be cancelled.</string>
@@ -11021,7 +11027,6 @@ while she is with another agency.</string>
     <string name="ErrorTelegramAuthFailed">Divo Global Auth Failed</string>
     <string name="ErrorDummyPhoneFailed">Failed to fetch dummy phone for registration</string>
     <string name="ErrorUnexpected">Unexpected error</string>
-    <string name="EventStatusApplicationsClosed">Applications Closed</string>
     <string name="EventStatusInProgress">In Progress</string>
     <string name="EventStatusCompleted">Completed</string>
     <string name="EventStatusClosesIn">Closes in %1$s</string>

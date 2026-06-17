@@ -240,8 +240,15 @@ um modelo</string>
     <string name="EventApplied">%d inscritos</string>
     <string name="EventMaxSpots">%d vagas máx.</string>
     <string name="EditEvent">Editar evento</string>
+
+    <string name="EventStatusApplicationsClosed">Inscrições Encerradas</string>
+    <string name="EventStatusApplicationsClosedDate">Inscrições Encerradas %1$s</string>
     <string name="CloseApplicationsEvent">Encerrar inscrições</string>
+    <string name="CloseApplicationsTitle">Encerrar inscrições?</string>
+    <string name="CloseApplicationsDescription">Tem certeza de que deseja encerrar as inscrições para \"%s\"? Ninguém mais poderá se inscrever.</string>
     <string name="CancelEvent">Cancelar evento</string>
+    <string name="CancelEventTitle">Cancelar evento?</string>
+    <string name="CancelEventDescription">Tem certeza de que deseja cancelar \"%s\"? Todas as inscrições serão retiradas.</string>
     <string name="DeleteEvent">Excluir</string>
     <string name="DeleteEventTitle">Excluir \"%s\"?</string>
     <string name="DeleteEventDescription">Esta ação não pode ser desfeita. Todas as inscrições serão canceladas.</string>
@@ -1953,7 +1960,6 @@ em vários dispositivos.</string>
     <string name="ErrorTelegramAuthFailed">Falha na autenticação do Divo Global</string>
     <string name="ErrorDummyPhoneFailed">Falha ao obter telefone fictício para registro</string>
     <string name="ErrorUnexpected">Erro inesperado</string>
-    <string name="EventStatusApplicationsClosed">Inscrições Encerradas</string>
     <string name="EventStatusInProgress">Em Andamento</string>
     <string name="EventStatusCompleted">Concluído</string>
     <string name="EventStatusClosesIn">Encerra em %1$s</string>

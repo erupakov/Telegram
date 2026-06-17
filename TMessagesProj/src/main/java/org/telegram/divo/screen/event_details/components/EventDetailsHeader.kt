@@ -179,6 +179,7 @@ private fun ContentSection(
                     )
                 }
             }
+            Spacer(Modifier.height(2.dp))
             Text(
                 text = eventDetails.title.orEmpty(),
                 style = AppTheme.typography.displayLarge,
@@ -226,7 +227,7 @@ private fun ContentSection(
 
                 if (isModel) {
                     val isApplied = event.isApplied
-                    val isClosed = isEventClosed(event.date ?: "", event.dateTo ?: "", null)
+                    val isClosed = isEventClosed(event.date ?: "", event.dateTo ?: "", event.applicationDeadline)
                     val buttonTextId = when {
                         isApplied -> R.string.ButtonApplied
                         isClosed -> R.string.ButtonClosed
@@ -237,7 +238,7 @@ private fun ContentSection(
                         else -> null
                     }
                     val buttonBgColor = when {
-                        isClosed && !isApplied -> AppTheme.colors.buttonSecondary.copy(alpha = 0.2f)
+                        isClosed && !isApplied -> AppTheme.colors.onBackground
                         else -> AppTheme.colors.accentOrange
                     }
                     val buttonTextColor = when {
@@ -371,7 +372,7 @@ private fun Background(
     }
 }
 
-private fun isEventClosed(dateFrom: String, dateTo: String, applicationDeadline: String?): Boolean {
+internal fun isEventClosed(dateFrom: String, dateTo: String, applicationDeadline: String?): Boolean {
     val formatter = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
     val from = runCatching { formatter.parse(dateFrom) }.getOrNull() ?: return false
     val to = runCatching { formatter.parse(dateTo) }.getOrNull() ?: return false
@@ -416,8 +417,16 @@ private fun resolveEventStatus(
     return when {
         now.after(to) -> context.getString(R.string.EventStatusCompleted)
         now.after(from) && now.before(to) -> context.getString(R.string.EventStatusInProgress)
-        deadline != null && now.after(deadline) -> context.getString(R.string.EventStatusApplicationsClosed)
-        now.after(from) -> context.getString(R.string.EventStatusApplicationsClosed)
+        deadline != null && now.after(deadline) -> {
+            val locale = org.telegram.messenger.LocaleController.getInstance().currentLocale ?: java.util.Locale.getDefault()
+            val dateFormat = java.text.SimpleDateFormat("MMM dd", locale)
+            context.getString(R.string.EventStatusApplicationsClosedDate, dateFormat.format(deadline))
+        }
+        now.after(from) -> {
+            val locale = org.telegram.messenger.LocaleController.getInstance().currentLocale ?: java.util.Locale.getDefault()
+            val dateFormat = java.text.SimpleDateFormat("MMM dd", locale)
+            context.getString(R.string.EventStatusApplicationsClosedDate, dateFormat.format(from))
+        }
         else -> {
             val targetDate = deadline ?: from
             val diffMillis = targetDate.time - now.time

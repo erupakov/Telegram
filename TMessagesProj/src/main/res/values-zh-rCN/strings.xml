@@ -239,8 +239,15 @@
     <string name="EventApplied">%d 人已报名</string>
     <string name="EventMaxSpots">上限 %d 人</string>
     <string name="EditEvent">编辑活动</string>
-    <string name="CloseApplicationsEvent">停止报名</string>
+
+    <string name="EventStatusApplicationsClosed">申请已截止</string>
+    <string name="EventStatusApplicationsClosedDate">申请已截止 %1$s</string>
+    <string name="CloseApplicationsEvent">关闭申请</string>
+    <string name="CloseApplicationsTitle">关闭申请？</string>
+    <string name="CloseApplicationsDescription">您确定要关闭 \"%s\" 的申请吗？将不再有人能申请。</string>
     <string name="CancelEvent">取消活动</string>
+    <string name="CancelEventTitle">取消活动？</string>
+    <string name="CancelEventDescription">您确定要取消 \"%s\" 吗？所有已申请的人才将会收到通知。</string>
     <string name="DeleteEvent">删除</string>
     <string name="DeleteEventTitle">要删除 \"%s\" 吗？</string>
     <string name="DeleteEventDescription">此操作无法撤销，所有报名申请都将被取消。</string>
@@ -629,7 +636,6 @@
     <string name="ErrorTelegramAuthFailed">Divo Global验证失败</string>
     <string name="ErrorDummyPhoneFailed">获取注册的虚拟电话失败</string>
     <string name="ErrorUnexpected">发生意外错误</string>
-    <string name="EventStatusApplicationsClosed">申请已截止</string>
     <string name="EventStatusInProgress">进行中</string>
     <string name="EventStatusCompleted">已结束</string>
     <string name="EventStatusClosesIn">%1$s 后截止</string>

@@ -29,6 +29,8 @@ sealed class EventDetailsIntent : ViewIntent {
     data object OnAddEventClicked : EventDetailsIntent()
     data object OnBackClicked : EventDetailsIntent()
     data object OnEditEventClick : EventDetailsIntent()
+    data object OnCloseApplicationsConfirmed : EventDetailsIntent()
+    data object OnCancelEventConfirmed : EventDetailsIntent()
     data object OnDeleteEventConfirmed : EventDetailsIntent()
     data object OnParamsClick : EventDetailsIntent()
     data object OnLikeClicked : EventDetailsIntent()
@@ -48,5 +50,6 @@ sealed class EventDetailsEffect : ViewEffect {
     data object EventDeleted : EventDetailsEffect()
     data class NavigateToApplyConfirmation(val eventId: Int) : EventDetailsEffect()
     data class ShowWithdrawConfirmation(val eventId: Int) : EventDetailsEffect()
+    data object ApplicationsClosed : EventDetailsEffect()
     data class ShowError(val message: String) : EventDetailsEffect()
 }

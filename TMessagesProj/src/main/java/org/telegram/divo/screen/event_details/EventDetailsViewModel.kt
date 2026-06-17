@@ -29,6 +29,8 @@ class EventDetailsViewModel(
             EventDetailsIntent.OnSearchClicked -> {}
             EventDetailsIntent.OnBackClicked -> sendEffect(Back)
             EventDetailsIntent.OnEditEventClick -> state.value.eventDetails?.id?.let { sendEffect(NavigateToEditEvent(it)) }
+            EventDetailsIntent.OnCloseApplicationsConfirmed -> closeApplications()
+            EventDetailsIntent.OnCancelEventConfirmed -> cancelEvent()
             EventDetailsIntent.OnDeleteEventConfirmed -> deleteEvent()
             is EventDetailsIntent.OnPhotoClick -> sendEffect(NavigateToGallery(intent.items, intent.id))
             EventDetailsIntent.OnParamsClick -> sendEffect(NavigateToParams)
@@ -117,7 +119,7 @@ class EventDetailsViewModel(
         setIntent(EventDetailsIntent.OnLoad)
         viewModelScope.launch {
             DivoApi.eventRepository.eventsUpdatedFlow.collect {
-                loadData()
+                loadData(silent = true)
             }
         }
         viewModelScope.launch {
@@ -137,15 +139,15 @@ class EventDetailsViewModel(
         }
     }
 
-    fun loadData() {
-        loadEvent()
-        loadRoleInfo()
+    fun loadData(silent: Boolean = false) {
+        loadEvent(silent)
+        loadRoleInfo(silent)
         loadCurrentUserForOwnership()
     }
 
-    private fun loadEvent() {
+    private fun loadEvent(silent: Boolean) {
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            if (!silent) setState { copy(isLoading = true) }
             val result = DivoApi.eventRepository.getEvent(state.value.eventId)
 
             if (result is DivoResult.Success) {
@@ -185,9 +187,9 @@ class EventDetailsViewModel(
         }
     }
 
-    private fun loadRoleInfo() {
+    private fun loadRoleInfo(silent: Boolean) {
         viewModelScope.launch {
-            setState { copy(isRoleLoading = true) }
+            if (!silent) setState { copy(isRoleLoading = true) }
             val result = IsModelUserUseCase(DivoApi.userRepository).invoke()
 
             if (result is DivoResult.Success) {
@@ -224,12 +226,37 @@ class EventDetailsViewModel(
     private fun deleteEvent() {
         state.value.eventDetails?.id?.let { id ->
             viewModelScope.launch {
-                setState { copy(isLoading = true) }
                 val result = DivoApi.eventRepository.deleteEvent(id)
                 if (result is DivoResult.Success) {
                     sendEffect(EventDeleted)
                 } else {
-                    setState { copy(isLoading = false) }
+                    sendEffect(ShowError(result.getErrorMessage()))
+                }
+            }
+        }
+    }
+
+    private fun closeApplications() {
+        state.value.eventDetails?.id?.let { id ->
+            viewModelScope.launch {
+                val result = DivoApi.eventRepository.closeApplications(id)
+                if (result is DivoResult.Success) {
+                    setState { copy(eventDetails = result.value) }
+                    sendEffect(ApplicationsClosed)
+                } else {
+                    sendEffect(ShowError(result.getErrorMessage()))
+                }
+            }
+        }
+    }
+
+    private fun cancelEvent() {
+        state.value.eventDetails?.id?.let { id ->
+            viewModelScope.launch {
+                val result = DivoApi.eventRepository.cancelEvent(id)
+                if (result is DivoResult.Success) {
+                    sendEffect(EventDeleted)
+                } else {
                     sendEffect(ShowError(result.getErrorMessage()))
                 }
             }

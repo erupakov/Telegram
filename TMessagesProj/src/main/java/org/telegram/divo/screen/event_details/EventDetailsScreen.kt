@@ -65,8 +65,11 @@ import org.telegram.divo.components.TransparentToolBarBackground
 import org.telegram.divo.components.TransparentToolBarContent
 import org.telegram.divo.screen.event_details.components.AboutCard
 import org.telegram.divo.screen.event_details.components.CapacityCard
+import org.telegram.divo.screen.event_details.components.CancelEventConfirmationDialog
+import org.telegram.divo.screen.event_details.components.CloseApplicationsConfirmationDialog
 import org.telegram.divo.screen.event_details.components.DeleteEventConfirmationDialog
 import org.telegram.divo.screen.event_details.components.EventDetailsHeader
+import org.telegram.divo.screen.event_details.components.isEventClosed
 import org.telegram.divo.screen.event_details.components.OrganizerCard
 import org.telegram.divo.screen.event_details.components.ParametersCard
 import org.telegram.divo.screen.event_details.components.PreviousEvents
@@ -117,6 +120,11 @@ fun EventDetailsScreen(
                 is EventDetailsEffect.NavigateToApplyConfirmation -> onApplyConfirmation(action.eventId)
                 is EventDetailsEffect.ShowWithdrawConfirmation -> { withdrawEventId = action.eventId }
                 is EventDetailsEffect.NavigateToPrevEvent -> { onPrevEventClicked(action.id) }
+                EventDetailsEffect.ApplicationsClosed -> {
+                    snackbarState.show(
+                        SnackbarEvent.Success("Applications closed successfully")
+                    )
+                }
             }
         }
     }
@@ -205,6 +213,8 @@ private fun EventDetailsContent(
     var showMenu by remember { mutableStateOf(false) }
 
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var showCloseAppsDialog by remember { mutableStateOf(false) }
+    var showCancelDialog by remember { mutableStateOf(false) }
 
     if (showDeleteDialog) {
         DeleteEventConfirmationDialog(
@@ -213,6 +223,28 @@ private fun EventDetailsContent(
             onConfirm = {
                 showDeleteDialog = false
                 onIntent(EventDetailsIntent.OnDeleteEventConfirmed)
+            }
+        )
+    }
+
+    if (showCloseAppsDialog) {
+        CloseApplicationsConfirmationDialog(
+            eventName = uiState.eventDetails?.title.orEmpty(),
+            onDismissRequest = { showCloseAppsDialog = false },
+            onConfirm = {
+                showCloseAppsDialog = false
+                onIntent(EventDetailsIntent.OnCloseApplicationsConfirmed)
+            }
+        )
+    }
+
+    if (showCancelDialog) {
+        CancelEventConfirmationDialog(
+            eventName = uiState.eventDetails?.title.orEmpty(),
+            onDismissRequest = { showCancelDialog = false },
+            onConfirm = {
+                showCancelDialog = false
+                onIntent(EventDetailsIntent.OnCancelEventConfirmed)
             }
         )
     }
@@ -301,12 +333,20 @@ private fun EventDetailsContent(
             }
         )
 
-        val options = listOf(
-            PopupMenuItem(R.string.EditEvent, { onIntent(EventDetailsIntent.OnEditEventClick) }, R.drawable.ic_divo_edit_20),
-            PopupMenuItem(R.string.CloseApplicationsEvent, {}, R.drawable.ic_divo_close_20),
-            PopupMenuItem(R.string.CancelEvent, {}, R.drawable.ic_divo_report),
-            PopupMenuItem(R.string.DeleteEvent, { showDeleteDialog = true }, R.drawable.ic_divo_cart),
+        val options = mutableListOf<PopupMenuItem>()
+        options.add(PopupMenuItem(R.string.EditEvent, { onIntent(EventDetailsIntent.OnEditEventClick) }, R.drawable.ic_divo_edit_20))
+        
+        val isClosed = isEventClosed(
+            dateFrom = uiState.eventDetails?.date.orEmpty(),
+            dateTo = uiState.eventDetails?.dateTo.orEmpty(),
+            applicationDeadline = uiState.eventDetails?.applicationDeadline
         )
+        
+        if (!isClosed) {
+            options.add(PopupMenuItem(R.string.CloseApplicationsEvent, { showCloseAppsDialog = true; showMenu = false }, R.drawable.ic_divo_close_20))
+        }
+        options.add(PopupMenuItem(R.string.CancelEvent, { showCancelDialog = true; showMenu = false }, R.drawable.ic_divo_report))
+        options.add(PopupMenuItem(R.string.DeleteEvent, { showDeleteDialog = true; showMenu = false }, R.drawable.ic_divo_cart))
 
         DivoPopupMenu(
             visible = showMenu,
