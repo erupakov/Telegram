@@ -231,6 +231,7 @@ sealed class ProfileIntent : ViewIntent {
     data class OnCancelAgencyModelRequest(val modelId: Int) : ProfileIntent()
     data class OnToggleAgencySearch(val visible: Boolean) : ProfileIntent()
     class OnSelectAgencyModelForAdd(val model: AgencySearchModel?) : ProfileIntent()
+    object OnCreateChannelClicked : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
@@ -253,4 +254,5 @@ sealed class ProfileEffect : ViewEffect {
     object NavigateToCreateEvent : ProfileEffect()
     data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : ProfileEffect()
     object AgencyModelAdded : ProfileEffect()
+    class NavigateToCreateChannel(val id: String = java.util.UUID.randomUUID().toString()) : ProfileEffect()
 }

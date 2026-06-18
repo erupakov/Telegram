@@ -75,7 +75,7 @@
     <string name="ThereAreNoChannels">EN ESTE MOMENTO NO HAY CANALES</string>
     <string name="YouHaveNotCreatedChannels">Aún no has creado ningún canal</string>
     <string name="ThisAgencyHasNotCreatedChannels">Esta agencia aún no ha creado canales</string>
-    <string name="ThisModelHasNotCreatedChannels">Este modelo aún no ha creado canales</string>
+    <string name="ThisProfileHasNotCreatedChannels">Este perfil aún no ha creado canales</string>
     <string name="CreateNewChannel">Crear nuevo canal</string>
     <string name="SearchModels">Buscar modelos</string>
     <string name="NoLikesYet">Aún no hay me gusta.</string>

@@ -119,6 +119,7 @@ fun ProfileNavGraph(
     isOwnProfile: Boolean = false,
     onNavControllerReady: (NavController) -> Unit = {},
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
+    onNavigateToCreateChannel: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
 ) {
     val nav = rememberNavController()
@@ -191,7 +192,8 @@ fun ProfileNavGraph(
                     ParamsHolder.params = it
                     nav.navigate(ProfileRoute.Appearance.route)
                 },
-                onNavigateToChat = onNavigateToChat
+                onNavigateToChat = onNavigateToChat,
+                onNavigateToCreateChannel = onNavigateToCreateChannel
             )
         }
 

@@ -75,7 +75,7 @@
     <string name="ThereAreNoChannels">目前没有频道</string>
     <string name="YouHaveNotCreatedChannels">您尚未创建任何频道</string>
     <string name="ThisAgencyHasNotCreatedChannels">该机构尚未创建任何频道</string>
-    <string name="ThisModelHasNotCreatedChannels">该模特尚未创建任何频道</string>
+    <string name="ThisProfileHasNotCreatedChannels">该用户尚未创建任何频道</string>
     <string name="CreateNewChannel">创建新频道</string>
     <string name="SearchModels">搜索模特</string>
     <string name="NoLikesYet">暂无点赞。</string>

@@ -219,6 +219,7 @@ class ProfileViewModel(
             ProfileIntent.OnReportProfileClicked -> onReportProfileClicked()
             ProfileIntent.OnDismissReportSheet -> setState { copy(showReportSheet = false) }
             is ProfileIntent.OnReportOptionSelected -> reportProfile(intent.reportKey)
+            ProfileIntent.OnCreateChannelClicked -> sendEffect(ProfileEffect.NavigateToCreateChannel())
         }
     }
 

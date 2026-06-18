@@ -68,7 +68,7 @@
     <string name="ThereAreNoChannels">В НАСТОЯЩИЙ МОМЕНТ НЕТ КАНАЛОВ</string>
     <string name="YouHaveNotCreatedChannels">Вы еще не создали ни одного канала</string>
     <string name="ThisAgencyHasNotCreatedChannels">Это агентство еще не создало ни одного канала</string>
-    <string name="ThisModelHasNotCreatedChannels">Эта модель еще не создала ни одного канала</string>
+    <string name="ThisProfileHasNotCreatedChannels">Этот профиль еще не создал ни одного канала</string>
     <string name="CreateNewChannel">Создать новый канал</string>
     <string name="SearchModels">Поиск моделей</string>
     <string name="NoLikesYet">Пока нет лайков.</string>

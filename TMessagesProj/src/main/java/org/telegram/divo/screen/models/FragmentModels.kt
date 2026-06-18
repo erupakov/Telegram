@@ -80,6 +80,11 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
                             val args = android.os.Bundle()
                             args.putLong("user_id", tgId)
                             presentFragment(org.telegram.ui.ChatActivity(args))
+                        },
+                        onNavigateToCreateChannel = {
+                            val args = android.os.Bundle()
+                            args.putInt("step", 0)
+                            presentFragment(org.telegram.ui.ChannelCreateActivity(args))
                         }
                     )
                 }

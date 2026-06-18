@@ -106,6 +106,7 @@ fun ProfileScreen(
     onNavigateToApplyConfirmation: (Int) -> Unit,
     onNavigateToAppearances: (PhysicalParams) -> Unit,
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
+    onNavigateToCreateChannel: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val uiState = viewModel.state.collectAsState().value
@@ -160,6 +161,9 @@ fun ProfileScreen(
                         viewModel.setIntent(ProfileIntent.OnSelectAgencyModelForAdd(null))
                         viewModel.setIntent(ProfileIntent.OnToggleAgencySearch(false))
                         viewModel.setIntent(ProfileIntent.OnSearchModelsQueryChanged(""))
+                    }
+                    is ProfileEffect.NavigateToCreateChannel -> {
+                        onNavigateToCreateChannel()
                     }
                     is ProfileEffect.ActionChanged -> {
                         snackbarState.show(
@@ -509,7 +513,9 @@ private fun ProfileScreenContent(
                                     )
                                 }
                                 2 -> if (uiState.isModel) {
-                                    ChannelsContent(title = "Vogue Inside", isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp)
+                                    ChannelsContent(title = "Vogue Inside", isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, onAddChannel = { 
+                                        onIntent(ProfileIntent.OnCreateChannelClicked) 
+                                    })
                                 } else {
                                     AgencyModels(
                                         topPadding = totalTopPaddingDp,
@@ -535,7 +541,9 @@ private fun ProfileScreenContent(
                                         onSelectModelForAdd = { onIntent(ProfileIntent.OnSelectAgencyModelForAdd(it)) }
                                     )
                                 }
-                                3 -> ChannelsContent(title = "Vogue Inside", isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp)
+                                3 -> ChannelsContent(title = "Vogue Inside", isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, onAddChannel = { 
+                                    onIntent(ProfileIntent.OnCreateChannelClicked) 
+                                })
                                 else -> EventsColumn(
                                     topPadding = totalTopPaddingDp,
                                     events = uiState.events,

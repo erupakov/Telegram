@@ -76,6 +76,7 @@ fun ModelsNavGraph(
     onNavControllerReady: (NavController) -> Unit,
     onInnerNavControllerReady: (NavController?) -> Unit,
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
+    onNavigateToCreateChannel: () -> Unit = {},
 ) {
     val nav = rememberNavController()
 
@@ -117,6 +118,7 @@ fun ModelsNavGraph(
                 userId = userId,
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToChat = onNavigateToChat,
+                onNavigateToCreateChannel = onNavigateToCreateChannel,
                 onNavigateBack = { nav.popBackStack() }
             )
         }

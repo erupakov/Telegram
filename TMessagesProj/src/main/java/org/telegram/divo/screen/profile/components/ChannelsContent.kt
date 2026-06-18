@@ -77,7 +77,8 @@ fun ChannelsContent(
     isModel: Boolean,
     isOwnProfile: Boolean,
     isEvent: Boolean = false,
-    topPadding: Dp = 0.dp
+    topPadding: Dp = 0.dp,
+    onAddChannel: () -> Unit = {}
 ) {
     val mock = mockData.map { it.copy(followers = title) }
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
@@ -87,7 +88,7 @@ fun ChannelsContent(
             isOwnProfile = isOwnProfile,
             isModel = isModel,
             bottomPadding = bottomPadding,
-            onClick = {} //TODO
+            onClick = onAddChannel
         )
     } else {
         LazyColumn(
@@ -192,7 +193,7 @@ private fun EmptyChannels(
 ) {
     val textId = when {
         isOwnProfile -> R.string.YouHaveNotCreatedChannels
-        !isOwnProfile && isModel -> R.string.ThisModelHasNotCreatedChannels
+        !isOwnProfile && isModel -> R.string.ThisProfileHasNotCreatedChannels
         else -> R.string.ThisAgencyHasNotCreatedChannels
     }
 
