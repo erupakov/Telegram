@@ -44,10 +44,15 @@ class EventDetailsViewModel(
         val currentEvent = state.value.eventDetails ?: return
         val isCurrentlyLiked = currentEvent.isLiked
 
+        val newLikesCount = if (isCurrentlyLiked) currentEvent.likesCount - 1 else currentEvent.likesCount + 1
+
         // Optimistic update
         setState {
             copy(
-                eventDetails = currentEvent.copy(isLiked = !isCurrentlyLiked)
+                eventDetails = currentEvent.copy(
+                    isLiked = !isCurrentlyLiked,
+                    likesCount = newLikesCount
+                )
             )
         }
 
@@ -58,11 +63,21 @@ class EventDetailsViewModel(
                 DivoApi.eventRepository.likeEvent(currentEvent.id)
             }
 
-            if (result !is DivoResult.Success) {
+            if (result is DivoResult.Success) {
+                sendEffect(
+                    EventDetailsEffect.ActionChanged(
+                        resDrawableId = org.telegram.messenger.R.drawable.ic_divo_favorite_selected,
+                        resStringId = if (!isCurrentlyLiked) org.telegram.messenger.R.string.Liked else org.telegram.messenger.R.string.Unliked
+                    )
+                )
+            } else {
                 // Revert optimistic update
                 setState {
                     copy(
-                        eventDetails = currentEvent.copy(isLiked = isCurrentlyLiked)
+                        eventDetails = currentEvent.copy(
+                            isLiked = isCurrentlyLiked,
+                            likesCount = currentEvent.likesCount
+                        )
                     )
                 }
                 sendEffect(ShowError(result.getErrorMessage()))

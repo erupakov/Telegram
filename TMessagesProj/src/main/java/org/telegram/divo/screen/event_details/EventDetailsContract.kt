@@ -52,4 +52,5 @@ sealed class EventDetailsEffect : ViewEffect {
     data class ShowWithdrawConfirmation(val eventId: Int) : EventDetailsEffect()
     data object ApplicationsClosed : EventDetailsEffect()
     data class ShowError(val message: String) : EventDetailsEffect()
+    data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : EventDetailsEffect()
 }

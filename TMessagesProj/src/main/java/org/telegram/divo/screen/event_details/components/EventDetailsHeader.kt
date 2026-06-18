@@ -94,7 +94,8 @@ fun EventDetailsHeader(
             modifier = Modifier
                 .padding(top = topPadding + 16.dp)
                 .graphicsLayer { alpha = engagementsAlpha },
-            event = event
+            event = event,
+            onLikeClicked = onLikeClicked
         )
         ContentSection(
             modifier = Modifier
@@ -114,6 +115,7 @@ fun EventDetailsHeader(
 private fun StatsSection(
     modifier: Modifier = Modifier,
     event: EventDetails?,
+    onLikeClicked: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -124,9 +126,14 @@ private fun StatsSection(
         // Space for fixed toolbar buttons
         Spacer(Modifier.height(48.dp))
         
+        val isLiked = event?.isLiked == true
         EngagementItem(
-            resId = R.drawable.ic_divo_favorite,
-            count = event?.appliesCount ?: 0
+            resId = if (isLiked) R.drawable.ic_divo_favorite_selected else R.drawable.ic_divo_favorite,
+            count = event?.likesCount ?: 0,
+            tint = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+            textColor = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+            background = if (isLiked) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
+            onClick = onLikeClicked
         )
         Spacer(Modifier.height(10.dp))
         EngagementItem(
@@ -272,6 +279,8 @@ private fun EngagementItem(
     @DrawableRes resId: Int,
     count: Int,
     tint: Color = AppTheme.colors.onBackground,
+    textColor: Color = AppTheme.colors.onBackground,
+    background: Color = Color.White.copy(alpha = 0.3f),
     onClick: (() -> Unit)? = null
 ) {
     val baseModifier = Modifier.width(56.dp)
@@ -285,6 +294,7 @@ private fun EngagementItem(
         modifier = containerModifier,
         height = 30.dp,
         space = 4.dp,
+        background = background,
         contentPadding = PaddingValues(horizontal = 6.dp)
     ) {
         Icon(
@@ -297,7 +307,7 @@ private fun EngagementItem(
             modifier = Modifier.offset(y = 0.5.dp),
             text = count.toShortString(),
             style = AppTheme.typography.helveticaNeueRegular,
-            color = AppTheme.colors.onBackground,
+            color = textColor,
             fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis

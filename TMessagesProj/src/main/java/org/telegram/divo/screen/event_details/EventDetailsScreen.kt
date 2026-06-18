@@ -53,7 +53,6 @@ import org.telegram.divo.common.SnackbarEvent
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.DivoShareType
 import org.telegram.divo.common.utils.DivoSharingHelper
-import org.telegram.divo.common.utils.toEventDisplayDate
 import org.telegram.divo.common.utils.toEventShortDate
 import org.telegram.divo.components.DivoPopupMenu
 import org.telegram.divo.components.LottieProgressIndicator
@@ -64,17 +63,17 @@ import org.telegram.divo.components.StatusBarIconColorEffect
 import org.telegram.divo.components.TransparentToolBarBackground
 import org.telegram.divo.components.TransparentToolBarContent
 import org.telegram.divo.screen.event_details.components.AboutCard
-import org.telegram.divo.screen.event_details.components.CapacityCard
 import org.telegram.divo.screen.event_details.components.CancelEventConfirmationDialog
+import org.telegram.divo.screen.event_details.components.CapacityCard
 import org.telegram.divo.screen.event_details.components.CloseApplicationsConfirmationDialog
 import org.telegram.divo.screen.event_details.components.DeleteEventConfirmationDialog
 import org.telegram.divo.screen.event_details.components.EventDetailsHeader
-import org.telegram.divo.screen.event_details.components.isEventClosed
 import org.telegram.divo.screen.event_details.components.OrganizerCard
 import org.telegram.divo.screen.event_details.components.ParametersCard
 import org.telegram.divo.screen.event_details.components.PreviousEvents
 import org.telegram.divo.screen.event_details.components.RequirementsCard
 import org.telegram.divo.screen.event_details.components.ThumbnailRow
+import org.telegram.divo.screen.event_details.components.isEventClosed
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -95,6 +94,7 @@ fun EventDetailsScreen(
     onBack: () -> Unit,
 ) {
     val uiState = viewModel.state.collectAsState().value
+    val context = LocalContext.current
     val snackbarState = remember { AppSnackbarHostState() }
     val retryText = stringResource(R.string.RetryLabel)
     var isSolid by remember { mutableStateOf(false) }
@@ -123,6 +123,14 @@ fun EventDetailsScreen(
                 EventDetailsEffect.ApplicationsClosed -> {
                     snackbarState.show(
                         SnackbarEvent.Success("Applications closed successfully")
+                    )
+                }
+                is EventDetailsEffect.ActionChanged -> {
+                    snackbarState.show(
+                        SnackbarEvent.SuccessWithIcon(
+                            action.resDrawableId,
+                            context.getString(action.resStringId)
+                        )
                     )
                 }
             }
