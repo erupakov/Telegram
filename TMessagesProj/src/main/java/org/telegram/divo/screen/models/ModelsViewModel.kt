@@ -115,7 +115,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                     is UserActionEvent.LikeChanged -> setState {
                         copy(tabFeeds = tabFeeds.mapValues { (_, items) ->
                             items.map { item ->
-                                if (item.feedId == event.feedId)
+                                if (item.user.id == event.userId)
                                     item.copy(
                                         isLiked = event.isLiked,
                                         user = item.user.copy(likesCount = event.newLikesCount)
@@ -297,12 +297,12 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
 
         fun updateAll(newLiked: Boolean, newCount: Int): Map<Tab, List<FeedItem>> =
             state.value.tabFeeds.mapValues { (_, items) ->
-                items.map { if (it.feedId == feedId) it.copy(isLiked = newLiked, user = it.user.copy(likesCount = newCount)) else it }
+                items.map { if (it.user.id == targetItem.user.id) it.copy(isLiked = newLiked, user = it.user.copy(likesCount = newCount)) else it }
             }
 
         viewModelScope.launch {
             toggleLikeUseCase.execute(
-                feedId = feedId,
+                userId = targetItem.user.id,
                 isLiked = isLiked,
                 currentCount = targetItem.user.likesCount,
                 onUpdate = { newLiked, newCount -> setState { copy(tabFeeds = updateAll(newLiked, newCount)) } },

@@ -187,6 +187,7 @@ sealed class ProfileIntent : ViewIntent {
     ) : ProfileIntent()
     class OnStatsTabOpened(val type: StatsType) : ProfileIntent()
     object OnBookmarkClick : ProfileIntent()
+    object OnLikeClick : ProfileIntent()
 
     class OnPortfolioPhotoSelected(
         val file: Result<File>

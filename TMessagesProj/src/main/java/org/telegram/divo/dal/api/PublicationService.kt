@@ -10,7 +10,7 @@ import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
 import org.telegram.divo.dal.dto.publication.FeedlineSearchResponse
 import org.telegram.divo.dal.dto.publication.PublicationListRequest
 import org.telegram.divo.dal.dto.publication.PublicationListResponse
-import org.telegram.divo.dal.dto.publication.LikeRequest
+import org.telegram.divo.dal.dto.publication.UserLikeRequest
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.POST
@@ -46,11 +46,11 @@ interface PublicationService {
         @Path("id") id: Int
     ): EmptyResponse
 
-    @POST("feedline/like")
-    suspend fun likePost(@Body request: LikeRequest): EmptyResponse
+    @POST("user/like")
+    suspend fun likePost(@Body request: UserLikeRequest): EmptyResponse
 
-    @POST("feedline/unlike")
-    suspend fun unlikePost(@Body request: LikeRequest): EmptyResponse
+    @POST("user/unlike")
+    suspend fun unlikePost(@Body request: UserLikeRequest): EmptyResponse
 
     @POST("follower/follow")
     suspend fun markFavorite(@Body request: FollowRequest): EmptyResponse

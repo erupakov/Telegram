@@ -429,7 +429,7 @@ private fun ProfileScreenContent(
                         engagementsAlpha = engagementsAlpha,
                         onEditLinksClicked = { onIntent(ProfileIntent.OnEditLinksClicked) },
                         showWorkHistory = { onIntent(ProfileIntent.OnShowWorkHistory) },
-                        onLikeClick = { /* TODO: like the profile post */ },
+                        onLikeClick = { onIntent(ProfileIntent.OnLikeClick) },
                         onBookmarkClick = { onIntent(ProfileIntent.OnBookmarkClick) },
                         onStatsClicked = { stat ->
                             selectedStat = stat

@@ -12,7 +12,7 @@ import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.dto.publication.CreatePublicationFileRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
 import org.telegram.divo.dal.dto.publication.FollowRequest
-import org.telegram.divo.dal.dto.publication.LikeRequest
+import org.telegram.divo.dal.dto.publication.UserLikeRequest
 import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
 import org.telegram.divo.dal.dto.publication.ModelParametersDto
@@ -37,7 +37,7 @@ sealed class UserActionEvent {
     ) : UserActionEvent()
 
     data class LikeChanged(
-        val feedId: Int,
+        val userId: Int,
         val isLiked: Boolean,
         val newLikesCount: Int
     ) : UserActionEvent()
@@ -119,11 +119,11 @@ class PublicationRepository(
     }
 
     suspend fun likePost(id: Int): DivoResult<Unit> = resultOf {
-        service.likePost(LikeRequest(id))
+        service.likePost(UserLikeRequest(id))
     }
 
     suspend fun unlikePost(id: Int): DivoResult<Unit> = resultOf {
-        service.unlikePost(LikeRequest(id))
+        service.unlikePost(UserLikeRequest(id))
     }
 
     suspend fun markFavorite(id: Int): DivoResult<Unit> = resultOf {

@@ -286,7 +286,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
 
         viewModelScope.launch {
             toggleLikeUseCase.execute(
-                feedId = feedId,
+                userId = userId,
                 isLiked = targetItem.isLiked,
                 currentCount = targetItem.likes,
                 onUpdate = { newLiked, newCount ->

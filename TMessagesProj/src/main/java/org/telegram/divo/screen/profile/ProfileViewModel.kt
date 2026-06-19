@@ -51,6 +51,7 @@ class ProfileViewModel(
     private var engagementLoaded = false
 
     private val toggleBookmarkUseCase = ToggleBookmarkUseCase()
+    private val toggleLikeUseCase = org.telegram.divo.usecase.ToggleLikeUseCase()
 
     private val eventPaginator = GetEventListUseCase(creatorId = userId).paginator
 
@@ -211,6 +212,7 @@ class ProfileViewModel(
             is ProfileIntent.OnSearchModelsQueryChanged -> onSearchModelsQueryChanged(intent.query)
             ProfileIntent.OnLoadMoreAgencyModels -> viewModelScope.launch { agencyModelsPaginator.loadMore() }
             ProfileIntent.OnBookmarkClick -> toggleBookmark()
+            ProfileIntent.OnLikeClick -> toggleLike()
             is ProfileIntent.OnEventApplied -> applyEvent(intent.eventId)
             is ProfileIntent.OnAddAgencyModel -> addAgencyModel(intent.userId, intent.note)
             is ProfileIntent.OnCancelAgencyModelRequest -> cancelAgencyModelRequest(intent.modelId)
@@ -677,6 +679,36 @@ class ProfileViewModel(
                     sendEffect(ProfileEffect.ActionChanged(
                         resDrawableId = R.drawable.ic_divo_bookmark_glass_selected,
                         resStringId = if (newFavorite) R.string.BookmarkSaved else R.string.BookmarkUnsaved
+                    ))
+                },
+                onError = { sendEffect(ShowError(it)) }
+            )
+        }
+    }
+
+    private fun toggleLike() {
+        val info = state.value.userInfo
+
+        viewModelScope.launch {
+            toggleLikeUseCase.execute(
+                userId = info.id,
+                isLiked = info.isLikedByUser,
+                currentCount = info.statistic.likesCount,
+                onUpdate = { newLiked, newCount ->
+                    setState {
+                        copy(
+                            userInfo = userInfo.copy(
+                                isLikedByUser = newLiked,
+                                statistic = userInfo.statistic.copy(likesCount = newCount)
+                            )
+                        )
+                    }
+                },
+                onRollback = { setState { copy(userInfo = info) } },
+                onSuccess = { newLiked ->
+                    sendEffect(ProfileEffect.ActionChanged(
+                        resDrawableId = R.drawable.ic_divo_favorite_selected,
+                        resStringId = if (newLiked) R.string.Liked else R.string.Unliked
                     ))
                 },
                 onError = { sendEffect(ShowError(it)) }
