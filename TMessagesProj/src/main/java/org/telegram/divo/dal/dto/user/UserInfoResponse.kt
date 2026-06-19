@@ -74,9 +74,9 @@ class StatisticDto(
     @SerializedName("modelsCount") val modelsCount: Int
 )
 
-fun UserInfoResponse.toEntity(): UserInfo = data.toEntity()
+fun UserInfoResponse.toEntity(channels: List<org.telegram.divo.entity.UserChannel> = emptyList()): UserInfo = data.toEntity(channels)
 
-fun UserDataDto.toEntity(): UserInfo {
+fun UserDataDto.toEntity(channels: List<org.telegram.divo.entity.UserChannel> = emptyList()): UserInfo {
     val roleEnum = RoleType.from(role)
     val source = if (roleEnum.isModel()) photo else photo ?: agency?.photo
 
@@ -199,7 +199,8 @@ fun UserDataDto.toEntity(): UserInfo {
         telegramId = telegramId,
         telegramAccessHash = resolvedTgAccessHash,
         telegramUsername = resolvedTgUsername,
-        userSocialNetworks = userSocialNetworks.toEntities()
+        userSocialNetworks = userSocialNetworks.toEntities(),
+        channels = channels
     )
 }
 

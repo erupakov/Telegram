@@ -165,7 +165,7 @@ fun ToolBarContent(
         ) {
             TitleContent(
                 uiState = uiState,
-                isSolid = isSolid
+                transitionProgress = transitionProgress
             )
         }
 
@@ -234,24 +234,15 @@ fun ToolBarContent(
 private fun TitleContent(
     modifier: Modifier = Modifier,
     uiState: ProfileViewState,
-    isSolid: Boolean = false
+    transitionProgress: Float = 0f
 ) {
-    val animatable = remember { Animatable(0f) }
     val context = LocalContext.current
-    
-    LaunchedEffect(isSolid) {
-        animatable.animateTo(
-            targetValue = if (isSolid) 1f else 0f,
-            animationSpec = tween(if (isSolid) 200 else 100)
-        )
-    }
 
     Column(
         modifier = modifier
             .graphicsLayer {
-                val progress = animatable.value
-                alpha = progress
-                translationY = (1f - progress) * 15f
+                alpha = transitionProgress
+                translationY = (1f - transitionProgress) * 15f
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

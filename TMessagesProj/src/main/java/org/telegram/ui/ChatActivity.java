@@ -2588,6 +2588,31 @@ public class ChatActivity extends BaseFragment implements
         scrollToTopOnResume = arguments.getBoolean("scrollToTopOnResume", false);
         needRemovePreviousSameChatActivity = arguments.getBoolean("need_remove_previous_same_chat_activity", true);
         justCreatedChat = arguments.getBoolean("just_created_chat", false);
+        //DIVO--START
+        if (justCreatedChat && chatId != 0) {
+            TLRPC.Chat chat = getMessagesController().getChat(chatId);
+            if (chat != null && ChatObject.isChannel(chat) && !chat.megagroup) {
+                TLRPC.ChatFull chatFull = getMessagesController().getChatFull(chatId);
+                String inviteLink = null;
+                if (chatFull != null && chatFull.exported_invite instanceof TLRPC.TL_chatInviteExported) {
+                    inviteLink = ((TLRPC.TL_chatInviteExported) chatFull.exported_invite).link;
+                }
+                boolean hasPhoto = chat.photo != null && chat.photo.photo_small != null && !(chat.photo instanceof TLRPC.TL_chatPhotoEmpty);
+                String localAvatarPath = arguments.getString("local_avatar_path");
+                
+                if (localAvatarPath == null && hasPhoto && chat.photo.photo_big != null) {
+                    try {
+                        java.io.File file = org.telegram.messenger.FileLoader.getInstance(currentAccount).getPathToAttach(chat.photo.photo_big, true);
+                        if (file != null && file.exists()) {
+                            localAvatarPath = file.getAbsolutePath();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        //DIVO--END
         wallpaperRandomSeed = Utilities.random.nextLong();
         if (quickReplyShortcut != null) {
             QuickRepliesController.QuickReply quickReply = QuickRepliesController.getInstance(currentAccount).findReply(quickReplyShortcut);

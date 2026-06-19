@@ -60338,7 +60338,7 @@ public class TLRPC {
         public ArrayList<InputUser> users = new ArrayList<>();
 
         public TLObject deserializeResponse(InputSerializedData stream, int constructor, boolean exception) {
-            return TL_messages_invitedUsers.TLdeserialize(stream, constructor, exception);
+            return Updates.TLdeserialize(stream, constructor, exception);
         }
 
         public void serializeToStream(OutputSerializedData stream) {

@@ -220,18 +220,18 @@ sealed class ProfileIntent : ViewIntent {
     class OnProfileClicked(val profileId: Int) : ProfileIntent()
     class OnEventClicked(val eventId: Int) : ProfileIntent()
     class OnEventApplied(val eventId: Int) : ProfileIntent()
-    object OnFindSimilarProfiles : ProfileIntent()
     class OnSendDMClicked(val telegramId: Long, val telegramAccessHash: Long?, val telegramUsername: String?) : ProfileIntent()
     object OnEventCreate : ProfileIntent()
     object OnReportProfileClicked : ProfileIntent()
     object OnDismissReportSheet : ProfileIntent()
     class OnReportOptionSelected(val reportKey: String) : ProfileIntent()
     object OnLoadMoreAgencyModels : ProfileIntent()
-    class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
     data class OnCancelAgencyModelRequest(val modelId: Int) : ProfileIntent()
     data class OnToggleAgencySearch(val visible: Boolean) : ProfileIntent()
     class OnSelectAgencyModelForAdd(val model: AgencySearchModel?) : ProfileIntent()
     object OnCreateChannelClicked : ProfileIntent()
+    class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
+    object OnFindSimilarProfiles : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {

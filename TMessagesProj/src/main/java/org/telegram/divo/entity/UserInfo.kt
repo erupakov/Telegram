@@ -33,11 +33,19 @@ data class UserInfo(
     val telegramId: Long? = null,
     val telegramAccessHash: Long? = null,
     val telegramUsername: String? = null,
-    val userSocialNetworks: List<UserSocialNetwork> = emptyList()
+    val userSocialNetworks: List<UserSocialNetwork> = emptyList(),
+    val channels: List<UserChannel> = emptyList()
 ) {
     val displayName: String
         get() = if (role == RoleType.AGENCY) agency?.title?.takeIf { it.isNotBlank() } ?: fullName else fullName
 }
+
+data class UserChannel(
+    val id: Int,
+    val telegramChatId: Long,
+    val username: String?,
+    val inviteLink: String?
+)
 
 data class Gender(
     val id: String = "",

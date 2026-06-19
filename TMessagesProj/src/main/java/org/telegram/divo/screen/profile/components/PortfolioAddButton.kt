@@ -50,9 +50,11 @@ fun AnimatedPortfolioAddButton(
     pagerState: PagerState,
     showAddButton: Boolean,
     isUploading: Boolean,
+    isModel: Boolean,
     onMediaSelected: (Uri) -> Unit,
     onEventCreate: () -> Unit,
     onAddModel: () -> Unit = {},
+    onAddChannel: () -> Unit = {},
 ) {
     var frozenPage by remember { mutableIntStateOf(pagerState.currentPage) }
 
@@ -76,9 +78,11 @@ fun AnimatedPortfolioAddButton(
             PortfolioAddButton(
                 currentPage = frozenPage,
                 isUploading = isUploading,
+                isModel = isModel,
                 onMediaSelected = onMediaSelected,
                 onEventCreate = onEventCreate,
-                onAddModel = onAddModel
+                onAddModel = onAddModel,
+                onAddChannel = onAddChannel
             )
         }
     }
@@ -89,30 +93,35 @@ private fun PortfolioAddButton(
     modifier: Modifier = Modifier,
     currentPage: Int,
     isUploading: Boolean,
+    isModel: Boolean,
     onMediaSelected: (Uri) -> Unit,
     onEventCreate: () -> Unit,
     onAddModel: () -> Unit = {},
+    onAddChannel: () -> Unit = {},
 ) {
     val isEventPage = currentPage == 4
-    val isAgencyPage = currentPage == 2
+    val isChannelPage = if (isModel) currentPage == 2 else currentPage == 3
+    val isAgencyPage = !isModel && currentPage == 2
     val isVideo = currentPage == 1
 
-    val text = when (currentPage) {
-        0 -> stringResource(R.string.UploadPhotos)
-        1 -> stringResource(R.string.UploadVideos)
-        2 -> stringResource(R.string.AddModelToYourRoster)
+    val text = when {
+        currentPage == 0 -> stringResource(R.string.UploadPhotos)
+        currentPage == 1 -> stringResource(R.string.UploadVideos)
+        isAgencyPage -> stringResource(R.string.AddModelToYourRoster)
+        isChannelPage -> stringResource(R.string.CreateNewChannel)
         else -> stringResource(R.string.AddEvent)
     }
 
-    val iconRes = if (isEventPage || isAgencyPage) R.drawable.ic_divo_add else R.drawable.ic_divo_add_a_photo
+    val iconRes = if (isEventPage || isAgencyPage || isChannelPage) R.drawable.ic_divo_add else R.drawable.ic_divo_add_a_photo
 
-    val iconSize = if (isEventPage || isAgencyPage) 16.dp else 24.dp
+    val iconSize = if (isEventPage || isAgencyPage || isChannelPage) 16.dp else 24.dp
 
     val openGallery = rememberGalleryLauncher(isVideo) { uri -> onMediaSelected(uri) }
 
     val handleClick: () -> Unit = when {
         isEventPage -> onEventCreate
         isAgencyPage -> onAddModel
+        isChannelPage -> onAddChannel
         else -> openGallery
     }
 

@@ -621,6 +621,16 @@ while she is with another agency.</string>
     <string name="RegFormTfpHintDescription">TFP (Time For Portfolio) shoots are free collaborations with photographers. They\'ll build your portfolio fast. We\'ll show you how when you\'re in the app.</string>
 
     <string name="ButtonLetsGo">Let\'s go</string>
+
+    <string name="ProfileShowAsList">Show as list</string>
+    <string name="ProfileMessage">Message</string>
+    <string name="ProfileMute">Mute</string>
+    <string name="ProfileCall">Call</string>
+    <string name="ProfileVideo">Video</string>
+    <string name="ProfilePosts">Posts</string>
+    <string name="ProfileGift">Gift</string>
+    <string name="ProfileShare">Share</string>
+    <string name="ProfileLeave">Leave</string>
     <!--divo view end-->
 
 
@@ -11103,4 +11113,6 @@ while she is with another agency.</string>
     <string name="ScanToProfile">Scan to go to profile</string>
     <string name="DivoShareBtn">Share</string>
     <string name="DivoGlobalTitle">DIVO GLOBAL</string>
+    <string name="Followers_one">%1$d follower</string>
+    <string name="Followers_other">%1$d followers</string>
 </resources>

@@ -65,7 +65,7 @@
     <string name="AddYourParameters">Добавить параметры</string>
     <string name="AddWorkHistory">Добавить историю работы</string>
     <string name="ThereAreNoWorkExperienceYet">Опыт работы еще не добавлен</string>
-    <string name="ThereAreNoChannels">В НАСТОЯЩИЙ МОМЕНТ НЕТ КАНАЛОВ</string>
+    <string name="ThereAreNoChannels">НА ДАННЫЙ МОМЕНТ КАНАЛОВ НЕТ</string>
     <string name="YouHaveNotCreatedChannels">Вы еще не создали ни одного канала</string>
     <string name="ThisAgencyHasNotCreatedChannels">Это агентство еще не создало ни одного канала</string>
     <string name="ThisProfileHasNotCreatedChannels">Этот профиль еще не создал ни одного канала</string>
@@ -180,7 +180,7 @@
     <string name="CountryLabel">Страна</string>
     <string name="ProfileLink">Ссылка на профиль в Divo</string>
     <string name="NextStep">Следующий шаг</string>
-    <string name="AddStoryLabel">Добавить</string>
+    <string name="AddStoryLabel">Добавить историю</string>
     <string name="Liked">Понравилось</string>
     <string name="Unliked">Больше не нравится</string>
     <string name="BookmarkSaved">Сохранено</string>
@@ -636,6 +636,19 @@
     <string name="RegFormTfpHintDescription">TFP-съемки (Time For Portfolio) — это бесплатное сотрудничество с фотографами. Они помогут быстро собрать портфолио. Мы покажем вам, как это сделать, когда вы зайдете в приложение.</string>
 
     <string name="ButtonLetsGo">Поехали</string>
+
+    <string name="ChannelJoinNoCaps">Присоединиться</string>
+    <string name="ChannelMuteNoCaps">Убрать звук</string>
+    <string name="ChannelUnmuteNoCaps">Включить звук</string>
+    <string name="ProfileShowAsList">Показать списком</string>
+    <string name="ProfileMessage">Сообщение</string>
+    <string name="ProfileMute">Без звука</string>
+    <string name="ProfileCall">Позвонить</string>
+    <string name="ProfileVideo">Видео</string>
+    <string name="ProfilePosts">Посты</string>
+    <string name="ProfileGift">Подарок</string>
+    <string name="ProfileShare">Поделиться</string>
+    <string name="ProfileLeave">Покинуть</string>
     <!--divo view end-->
 
 
@@ -1166,4 +1179,30 @@
     <string name="ContactsPermissionAlertContinue">Продолжить</string>
     <string name="NotificationsPermissionContinue">Продолжить</string>
     <string name="Continue">Продолжить</string>
+    <string name="Followers_one">%1$d подписчик</string>
+    <string name="Followers_few">%1$d подписчика</string>
+    <string name="Followers_many">%1$d подписчиков</string>
+    <string name="Followers_other">%1$d подписчиков</string>
+    <string name="ProfileActionsLiveStream">Прямая трансляция</string>
+    <string name="StartVoipChannelTitle">Прямая трансляция</string>
+    <string name="VoipChannelVoiceChat">Прямая трансляция</string>
+    <string name="Mute">Без звука</string>
+    <string name="ProfileButtonMute">Без звука</string>
+    <string name="AddStory">Добавить историю</string>
+    <string name="ProfileActionsAddStory">Добавить историю</string>
+    <string name="ChannelSettingsTitle">Настройки канала</string>
+    <string name="ChannelAdminSettings">Настройки канала</string>
+    <string name="ChannelOpenDirect">Личные сообщения</string>
+    <string name="ChatMessageSuggestions">Личные сообщения</string>
+    <string name="PostSuggestions">Личные сообщения</string>
+    <string name="ChannelColorTitle2">Оформление</string>
+    <string name="ChangeChannelNameColor2">Оформление</string>
+    <string name="ChannelAutotranslation">Перевод сообщений</string>
+    <string name="StatisticsAndBoosts">Статистика и голоса</string>
+    <string name="ArchivedStories">Архив историй</string>
+    <string name="OpenChannelArchiveStories">Архив историй</string>
+    <string name="New">Новое</string>
+    <string name="Off">Выкл</string>
+    <string name="BoostLevelPlus_one">Уровень %d+</string>
+    <string name="BoostLevelPlus_other">Уровень %d+</string>
 </resources>

@@ -24,8 +24,16 @@ import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import org.telegram.divo.common.utils.FragmentLifecycleOwner
+import org.telegram.messenger.NotificationCenter
+import org.telegram.messenger.ChatObject
+import org.telegram.ui.Components.UndoView
+import org.telegram.ui.Components.LayoutHelper
+import android.widget.FrameLayout
+import android.view.Gravity
+import android.view.ViewGroup
+import org.telegram.messenger.MessagesController
 
-class FragmentSettings : BaseFragment() {
+class FragmentSettings : BaseFragment(), NotificationCenter.NotificationCenterDelegate {
 
     private val composeLifecycleOwner = FragmentLifecycleOwner().apply {
         onCreate()
@@ -43,10 +51,17 @@ class FragmentSettings : BaseFragment() {
         this.mainTabsController = controller
     }
 
+    private var undoView: UndoView? = null
+
+    override fun onFragmentCreate(): Boolean {
+        NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.needDeleteDialog)
+        return super.onFragmentCreate()
+    }
+
     override fun createView(context: Context): View {
         if (fragmentView != null) return fragmentView
         actionBar.setAddToContainer(false)
-        fragmentView = ComposeView(context).apply {
+        val composeView = ComposeView(context).apply {
             setViewTreeLifecycleOwner(composeLifecycleOwner)
             setViewTreeViewModelStoreOwner(composeLifecycleOwner)
             setViewTreeSavedStateRegistryOwner(composeLifecycleOwner)
@@ -107,7 +122,55 @@ class FragmentSettings : BaseFragment() {
                 }
             }
         }
+        
+        val container = FrameLayout(context)
+        container.addView(composeView, FrameLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, 
+            ViewGroup.LayoutParams.MATCH_PARENT
+        ))
+        
+        undoView = UndoView(context, this, false, null)
+        undoView?.elevation = 50f
+        container.addView(undoView, LayoutHelper.createFrame(
+            LayoutHelper.MATCH_PARENT, 
+            LayoutHelper.WRAP_CONTENT.toFloat(), 
+            Gravity.BOTTOM or Gravity.LEFT, 8f, 0f, 8f, 8f
+        ))
+        
+        fragmentView = container
         return fragmentView
+    }
+
+    override fun didReceivedNotification(id: Int, account: Int, vararg args: Any) {
+        if (id == NotificationCenter.needDeleteDialog) {
+            val dialogId = args[0] as Long
+            val user = args[1] as? org.telegram.tgnet.TLRPC.User
+            val chat = args[2] as? org.telegram.tgnet.TLRPC.Chat
+            val revoke = if (user != null && user.bot) false else args[3] as Boolean
+            val botBlock = if (user != null && user.bot) args[3] as Boolean else false
+
+            val deleteRunnable = Runnable {
+                if (chat != null) {
+                    if (ChatObject.isNotInChat(chat)) {
+                        MessagesController.getInstance(currentAccount).deleteDialog(dialogId, 0, revoke)
+                    } else {
+                        MessagesController.getInstance(currentAccount).deleteParticipantFromChat(-dialogId, MessagesController.getInstance(currentAccount).getUser(UserConfig.getInstance(currentAccount).clientUserId), null, revoke, revoke)
+                    }
+                } else {
+                    MessagesController.getInstance(currentAccount).deleteDialog(dialogId, 0, revoke)
+                    if (user != null && user.bot && botBlock) {
+                        MessagesController.getInstance(currentAccount).blockPeer(user.id)
+                    }
+                }
+                MessagesController.getInstance(currentAccount).checkIfFolderEmpty(0)
+            }
+
+            if (!ChatObject.isForum(chat)) {
+                undoView?.showWithAction(dialogId, if (revoke) UndoView.ACTION_DELETE else UndoView.ACTION_LEAVE, deleteRunnable)
+            } else {
+                deleteRunnable.run()
+            }
+        }
     }
 
     private fun openSavedMessages() {
@@ -147,6 +210,7 @@ class FragmentSettings : BaseFragment() {
 
     override fun onFragmentDestroy() {
         super.onFragmentDestroy()
+        NotificationCenter.getInstance(currentAccount).removeObserver(this, NotificationCenter.needDeleteDialog)
         composeLifecycleOwner.onDestroy()
         (fragmentView as? ComposeView)?.disposeComposition()
     }

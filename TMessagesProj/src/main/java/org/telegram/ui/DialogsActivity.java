@@ -2840,6 +2840,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             getNotificationCenter().addObserver(this, NotificationCenter.didUpdateConnectionState);
             getNotificationCenter().addObserver(this, NotificationCenter.onDownloadingFilesChanged);
             getNotificationCenter().addObserver(this, NotificationCenter.needDeleteDialog);
+            getNotificationCenter().addObserver(this, NotificationCenter.cancelUndoView); //DIVO
             getNotificationCenter().addObserver(this, NotificationCenter.folderBecomeEmpty);
             getNotificationCenter().addObserver(this, NotificationCenter.newSuggestionsAvailable);
             getNotificationCenter().addObserver(this, NotificationCenter.dialogsUnreadReactionsCounterChanged);
@@ -3010,6 +3011,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             getNotificationCenter().removeObserver(this, NotificationCenter.didUpdateConnectionState);
             getNotificationCenter().removeObserver(this, NotificationCenter.onDownloadingFilesChanged);
             getNotificationCenter().removeObserver(this, NotificationCenter.needDeleteDialog);
+            getNotificationCenter().removeObserver(this, NotificationCenter.cancelUndoView); //DIVO
             getNotificationCenter().removeObserver(this, NotificationCenter.folderBecomeEmpty);
             getNotificationCenter().removeObserver(this, NotificationCenter.newSuggestionsAvailable);
             getNotificationCenter().removeObserver(this, NotificationCenter.dialogsUnreadReactionsCounterChanged);
@@ -10442,6 +10444,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
             } else {
                 deleteRunnable.run();
+            }
+        } else if (id == NotificationCenter.cancelUndoView) {
+            if (undoView[0] != null) {
+                undoView[0].hide(false, 1);
             }
         } else if (id == NotificationCenter.folderBecomeEmpty) {
             int fid = (Integer) args[0];

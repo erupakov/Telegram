@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.profile.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -25,6 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,54 +36,25 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.shimmer
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
-data class Playlist(
-    val id: Int,
-    val url: String,
-    val label: String,
-    val followers: String,
-    val isPremium: Boolean
-)
-
-val mockData = listOf(
-    Playlist(0, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(1, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(2, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", true),
-    Playlist(3, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(4, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(5, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(6, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", true),
-    Playlist(7, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(8, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(9, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(10, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", true),
-    Playlist(11, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(12, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(13, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(14, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", true),
-    Playlist(15, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(16, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-    Playlist(17, "https://divostorage.s3.eu-central-1.amazonaws.com/files/jY5GsdMDH7QS9tbtkIn1RziaqC0iXHBmkevhmtWx_tempo_v17_375x500.jpg", "Vogue Inside", "1 342 followers", false),
-)
-
 @Composable
 fun ChannelsContent(
-    title: String,
+    channels: List<org.telegram.divo.entity.UserChannel>,
     isModel: Boolean,
     isOwnProfile: Boolean,
     isEvent: Boolean = false,
     topPadding: Dp = 0.dp,
+    isRefreshing: Boolean = false,
     onAddChannel: () -> Unit = {}
 ) {
-    val mock = mockData.map { it.copy(followers = title) }
     val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
 
-    if (true) {
+    if (channels.isEmpty()) {
         EmptyChannels(
             isOwnProfile = isOwnProfile,
             isModel = isModel,
@@ -91,6 +62,7 @@ fun ChannelsContent(
             onClick = onAddChannel
         )
     } else {
+        val context = androidx.compose.ui.platform.LocalContext.current
         LazyColumn(
             modifier = Modifier.fillMaxSize().background(AppTheme.colors.backgroundLight),
             contentPadding = PaddingValues(
@@ -100,13 +72,17 @@ fun ChannelsContent(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(
-                items = mock,
-                key = { it.id }
-            ) {
-                PlaylistItem(
-                    item = it,
+                items = channels,
+                key = { it.telegramChatId }
+            ) { channel ->
+                ChannelItem(
+                    channel = channel,
                     isEvent = isEvent,
-                    onClicked = {}
+                    isRefreshing = isRefreshing,
+                    onClicked = { 
+                        val link = channel.inviteLink ?: "https://t.me/${channel.username}"
+                        org.telegram.messenger.browser.Browser.openUrl(context, link)
+                    }
                 )
             }
         }
@@ -114,11 +90,150 @@ fun ChannelsContent(
 }
 
 @Composable
-private fun PlaylistItem(
-    item: Playlist,
+private fun ChannelItem(
+    channel: org.telegram.divo.entity.UserChannel,
     isEvent: Boolean,
-    onClicked: (Int) -> Unit,
+    isRefreshing: Boolean = false,
+    onClicked: () -> Unit,
 ) {
+    val account = org.telegram.messenger.UserConfig.selectedAccount
+    val initialChat = org.telegram.messenger.MessagesController.getInstance(account).getChat(channel.telegramChatId)
+    val initialChatFull = org.telegram.messenger.MessagesController.getInstance(account).getChatFull(channel.telegramChatId)
+
+    var chatTitle by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(initialChat?.title ?: channel.username ?: "Channel ${channel.telegramChatId}") }
+    var chatParticipants by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(initialChatFull?.participants_count ?: initialChat?.participants_count ?: 0) }
+    var chatObject by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf<org.telegram.tgnet.TLObject?>(initialChat) }
+
+    androidx.compose.runtime.DisposableEffect(channel.telegramChatId) {
+        val observer = org.telegram.messenger.NotificationCenter.NotificationCenterDelegate { id, _, args ->
+            if (id == org.telegram.messenger.NotificationCenter.updateInterfaces) {
+                val updatedChat = org.telegram.messenger.MessagesController.getInstance(account).getChat(channel.telegramChatId)
+                val updatedChatFull = org.telegram.messenger.MessagesController.getInstance(account).getChatFull(channel.telegramChatId)
+                if (updatedChat != null) {
+                    chatTitle = updatedChat.title
+                    chatParticipants = updatedChatFull?.participants_count ?: updatedChat.participants_count
+                    chatObject = updatedChat
+                }
+            } else if (id == org.telegram.messenger.NotificationCenter.chatInfoDidLoad) {
+                val chatFull = args[0] as? org.telegram.tgnet.TLRPC.ChatFull
+                if (chatFull != null && chatFull.id == channel.telegramChatId) {
+                    chatParticipants = chatFull.participants_count
+                }
+            }
+        }
+        
+        org.telegram.messenger.NotificationCenter.getInstance(account).addObserver(observer, org.telegram.messenger.NotificationCenter.updateInterfaces)
+        org.telegram.messenger.NotificationCenter.getInstance(account).addObserver(observer, org.telegram.messenger.NotificationCenter.chatInfoDidLoad)
+        
+        onDispose {
+            org.telegram.messenger.NotificationCenter.getInstance(account).removeObserver(observer, org.telegram.messenger.NotificationCenter.updateInterfaces)
+            org.telegram.messenger.NotificationCenter.getInstance(account).removeObserver(observer, org.telegram.messenger.NotificationCenter.chatInfoDidLoad)
+        }
+    }
+
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    androidx.compose.runtime.DisposableEffect(lifecycleOwner, channel.telegramChatId) {
+        val lifecycleObserver = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                val updatedChat = org.telegram.messenger.MessagesController.getInstance(account).getChat(channel.telegramChatId)
+                val updatedChatFull = org.telegram.messenger.MessagesController.getInstance(account).getChatFull(channel.telegramChatId)
+                if (updatedChat != null) {
+                    chatTitle = updatedChat.title
+                    chatParticipants = updatedChatFull?.participants_count ?: updatedChat.participants_count
+                    chatObject = updatedChat
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+        }
+    }
+
+
+    androidx.compose.runtime.LaunchedEffect(channel.telegramChatId, isRefreshing) {
+        if (initialChat == null || isRefreshing) {
+            if (!channel.username.isNullOrEmpty()) {
+                val req = org.telegram.tgnet.TLRPC.TL_contacts_resolveUsername()
+                req.username = channel.username
+                org.telegram.tgnet.ConnectionsManager.getInstance(account).sendRequest(req) { response, _ ->
+                    org.telegram.messenger.AndroidUtilities.runOnUIThread {
+                        if (response is org.telegram.tgnet.TLRPC.TL_contacts_resolvedPeer) {
+                            val resolvedChat = response.chats.firstOrNull { it.id == channel.telegramChatId } ?: response.chats.firstOrNull()
+                            if (resolvedChat != null) {
+                                org.telegram.messenger.MessagesController.getInstance(account).putChat(resolvedChat, false)
+                                chatTitle = resolvedChat.title
+                                chatParticipants = resolvedChat.participants_count
+                                chatObject = resolvedChat
+                                org.telegram.messenger.MessagesController.getInstance(account).loadFullChat(resolvedChat.id, 0, true)
+                            }
+                        }
+                    }
+                }
+            } else if (!channel.inviteLink.isNullOrEmpty()) {
+                val hash = channel.inviteLink.substringAfterLast("/+")
+                if (hash.isNotEmpty() && hash != channel.inviteLink) {
+                    val req = org.telegram.tgnet.TLRPC.TL_messages_checkChatInvite()
+                    req.hash = hash
+                    org.telegram.tgnet.ConnectionsManager.getInstance(account).sendRequest(req) { response, _ ->
+                        org.telegram.messenger.AndroidUtilities.runOnUIThread {
+                            if (response is org.telegram.tgnet.TLRPC.ChatInvite) {
+                                if (response is org.telegram.tgnet.TLRPC.TL_chatInviteAlready) {
+                                    org.telegram.messenger.MessagesController.getInstance(account).putChat(response.chat, false)
+                                    chatTitle = response.chat.title
+                                    chatParticipants = response.chat.participants_count
+                                    chatObject = response.chat
+                                    org.telegram.messenger.MessagesController.getInstance(account).loadFullChat(response.chat.id, 0, true)
+                                } else {
+                                    chatTitle = response.title
+                                    chatParticipants = response.participants_count
+                                    chatObject = response
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (initialChatFull == null) {
+            org.telegram.messenger.MessagesController.getInstance(account).loadFullChat(channel.telegramChatId, 0, true)
+        }
+    }
+
+    val displayFollowers = org.telegram.messenger.LocaleController.formatPluralStringSpaced("Followers", chatParticipants)
+
+    if (chatObject == null) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+                    .shimmer()
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Column {
+                Box(
+                    modifier = Modifier
+                        .size(120.dp, 16.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .shimmer()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Box(
+                    modifier = Modifier
+                        .size(80.dp, 14.dp)
+                        .clip(RoundedCornerShape(7.dp))
+                        .shimmer()
+                )
+            }
+        }
+        return
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -127,13 +242,39 @@ private fun PlaylistItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
-            modifier = Modifier.weight(1f).clickableWithoutRipple { onClicked(item.id) },
+            modifier = Modifier.weight(1f).clickableWithoutRipple { onClicked() },
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            DivoAsyncImage(
-                modifier = Modifier.size(60.dp).clip(CircleShape),
-                model = item.url,
-            )
+            Box(
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+                contentAlignment = Alignment.Center
+            ) {
+                androidx.compose.ui.viewinterop.AndroidView(
+                    factory = { ctx ->
+                        org.telegram.ui.Components.BackupImageView(ctx).apply {
+                            setRoundRadius(org.telegram.messenger.AndroidUtilities.dp(30f))
+                        }
+                    },
+                    update = { view ->
+                        if (chatObject != null) {
+                            val avatarDrawable = org.telegram.ui.Components.AvatarDrawable()
+                            if (chatObject is org.telegram.tgnet.TLRPC.Chat) {
+                                avatarDrawable.setInfo(account, chatObject as org.telegram.tgnet.TLRPC.Chat)
+                            } else if (chatObject is org.telegram.tgnet.TLRPC.ChatInvite) {
+                                val invite = chatObject as org.telegram.tgnet.TLRPC.ChatInvite
+                                avatarDrawable.setInfo(0L, invite.title ?: "", null)
+                            }
+                            view.setForUserOrChat(chatObject, avatarDrawable)
+                        } else {
+                            view.setImageDrawable(androidx.core.content.ContextCompat.getDrawable(view.context, org.telegram.messenger.R.drawable.divo_avatar_placeholder))
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
             Spacer(modifier = Modifier.width(10.dp))
             Column {
                 Row(
@@ -141,25 +282,17 @@ private fun PlaylistItem(
                 ) {
                     Text(
                         modifier = Modifier,
-                        text = item.label,
+                        text = chatTitle,
                         style = AppTheme.typography.helveticaNeueRegular,
                         fontSize = 16.sp,
                         color = Color.Black,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    if (item.isPremium && !isEvent) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Image(
-                            modifier = Modifier.size(16.dp).offset(y = (-3).dp),
-                            painter = painterResource(R.drawable.divo_pro_badge),
-                            contentDescription = null,
-                        )
-                    }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = item.followers,
+                    text = displayFollowers,
                     style = AppTheme.typography.helveticaNeueRegular,
                     fontSize = 14.sp,
                     color = Color.Black.copy(0.6f),

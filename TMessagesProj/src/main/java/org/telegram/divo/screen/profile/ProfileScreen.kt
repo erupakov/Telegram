@@ -10,14 +10,11 @@ import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -28,6 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -52,6 +50,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
 import dev.chrisbanes.haze.hazeSource
@@ -65,6 +64,7 @@ import org.telegram.divo.common.SnackbarEvent.Success
 import org.telegram.divo.common.SnackbarEvent.SuccessWithIcon
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
+import org.telegram.divo.components.StatusBarIconColorEffect
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.profile.components.AgencyModels
 import org.telegram.divo.screen.profile.components.AnimatedPortfolioAddButton
@@ -82,7 +82,6 @@ import org.telegram.divo.screen.profile.components.TabContainer
 import org.telegram.divo.screen.profile.components.ToolBarBackground
 import org.telegram.divo.screen.profile.components.ToolBarContent
 import org.telegram.divo.screen.profile.components.VideoGrid
-import org.telegram.divo.components.StatusBarIconColorEffect
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -96,6 +95,7 @@ fun ProfileScreen(
     ),
     onEditClicked: (Boolean, Int) -> Unit,
     onEditLinksClicked: () -> Unit = {},
+    onNavigateToCreateChannel: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
     showWorkHistory: (Int) -> Unit = {},
     onGalleryClicked: (Int, Boolean) -> Unit = { _, _ -> },
@@ -106,7 +106,6 @@ fun ProfileScreen(
     onNavigateToApplyConfirmation: (Int) -> Unit,
     onNavigateToAppearances: (PhysicalParams) -> Unit,
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
-    onNavigateToCreateChannel: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val uiState = viewModel.state.collectAsState().value
@@ -114,6 +113,26 @@ fun ProfileScreen(
     var withdrawEventId by remember { mutableStateOf<Int?>(null) }
 
     var isRefreshing by remember { mutableStateOf(false) }
+    var hasInitiallyResumed by remember { mutableStateOf(false) }
+
+    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
+                if (hasInitiallyResumed) {
+                    isRefreshing = true
+                    viewModel.setIntent(ProfileIntent.OnRefresh)
+                } else {
+                    hasInitiallyResumed = true
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     LaunchedEffect(uiState.isLoading) {
         if (!uiState.isLoading) isRefreshing = false
@@ -199,6 +218,7 @@ fun ProfileScreen(
                 if (uiState.errorMessage == null) {
                     ProfileScreenContent(
                         uiState = uiState,
+                        isRefreshing = isRefreshing,
                         onIntent = { intent ->
                             viewModel.setIntent(intent)
                         }
@@ -242,6 +262,7 @@ fun ProfileScreen(
 @Composable
 private fun ProfileScreenContent(
     uiState: ProfileViewState,
+    isRefreshing: Boolean,
     onIntent: (ProfileIntent) -> Unit
 ) {
     val pageCount = uiState.pageCount
@@ -347,21 +368,18 @@ private fun ProfileScreenContent(
     val transitionProgress by remember {
         derivedStateOf {
             val layoutInfo = lazyListState.layoutInfo
-            val firstVisibleIndex = layoutInfo.visibleItemsInfo.firstOrNull()?.index ?: 0
+            val firstItem = layoutInfo.visibleItemsInfo.firstOrNull()
 
-            if (firstVisibleIndex > 0) {
+            if (firstItem == null) {
+                0f
+            } else if (firstItem.index > 0) {
                 1f
             } else {
-                val tabsItem = layoutInfo.visibleItemsInfo.find { it.key == "empty_item" }
-                if (tabsItem != null) {
-                    val distance = tabsItem.offset - toolbarHeightPx
-                    when {
-                        distance <= 0f -> 1f
-                        distance >= fadeRangePx -> 0f
-                        else -> 1f - (distance / fadeRangePx)
-                    }
-                } else {
-                    0f
+                val distance = firstItem.size - lazyListState.firstVisibleItemScrollOffset - toolbarHeightPx
+                when {
+                    distance <= 0f -> 1f
+                    distance >= fadeRangePx -> 0f
+                    else -> 1f - (distance / fadeRangePx)
                 }
             }
         }
@@ -385,7 +403,8 @@ private fun ProfileScreenContent(
     val showAddButton = uiState.isOwnProfile && isPagerSectionVisible && when (currentPage) {
         0 -> uiState.userGalleryItems.isNotEmpty()
         1 -> uiState.videoItems.isNotEmpty()
-        2 -> !uiState.isModel && uiState.agencyModels.isNotEmpty()
+        2 -> if (uiState.isModel) uiState.userInfo.channels.isNotEmpty() else uiState.agencyModels.isNotEmpty()
+        3 -> if (!uiState.isModel) uiState.userInfo.channels.isNotEmpty() else false
         4 -> uiState.events.isNotEmpty()
         else -> false
     }
@@ -477,7 +496,8 @@ private fun ProfileScreenContent(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .nestedScroll(pagerNestedScrollConnection)
-                                .background(AppTheme.colors.backgroundLight),
+                                .background(AppTheme.colors.backgroundLight)
+                                .graphicsLayer { clip = true },
                         ) { page ->
                             when (page) {
                                 0 -> PortfolioGrid(
@@ -513,7 +533,7 @@ private fun ProfileScreenContent(
                                     )
                                 }
                                 2 -> if (uiState.isModel) {
-                                    ChannelsContent(title = "Vogue Inside", isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, onAddChannel = { 
+                                    ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, isRefreshing = isRefreshing, onAddChannel = {
                                         onIntent(ProfileIntent.OnCreateChannelClicked) 
                                     })
                                 } else {
@@ -541,7 +561,7 @@ private fun ProfileScreenContent(
                                         onSelectModelForAdd = { onIntent(ProfileIntent.OnSelectAgencyModelForAdd(it)) }
                                     )
                                 }
-                                3 -> ChannelsContent(title = "Vogue Inside", isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, onAddChannel = { 
+                                3 -> ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, isRefreshing = isRefreshing, onAddChannel = {
                                     onIntent(ProfileIntent.OnCreateChannelClicked) 
                                 })
                                 else -> EventsColumn(
@@ -557,24 +577,6 @@ private fun ProfileScreenContent(
                                     onEventApplied = { onIntent(ProfileIntent.OnEventApplied(it)) }
                                 )
                             }
-                        }
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .graphicsLayer {
-                                    alpha = if (isTabsPinned && hasTabs) 0f else 1f
-                                }
-                        ) {
-                            Spacer(Modifier.height(spacerPreDp))
-                            if (hasTabs) {
-                                TabContainer(
-                                    pagerState = pagerState,
-                                    destinations = uiState.destinationTabs,
-                                    tabWidth = 60.dp
-                                )
-                            }
-                            Spacer(Modifier.height(spacerPostDp))
                         }
                     }
                 }
@@ -620,11 +622,20 @@ private fun ProfileScreenContent(
             )
         }
 
-        if (isTabsPinned && hasTabs) {
+        if (hasTabs) {
+            val toolbarHeightPxLocal = with(density) { toolbarHeight.toPx() }
+            val tabsYOffsetPx = if (isTabsPinned) {
+                toolbarHeightPxLocal
+            } else {
+                lowerTabsOffsetPx
+            }
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = toolbarHeight)
+                    .graphicsLayer {
+                        translationY = tabsYOffsetPx
+                    }
                     .zIndex(3f)
             ) {
                 TabContainer(
@@ -647,7 +658,9 @@ private fun ProfileScreenContent(
                 }
             },
             onEventCreate = { onIntent(ProfileIntent.OnEventCreate) },
-            onAddModel = { onIntent(ProfileIntent.OnToggleAgencySearch(true)) }
+            onAddModel = { onIntent(ProfileIntent.OnToggleAgencySearch(true)) },
+            isModel = uiState.isModel,
+            onAddChannel = { onIntent(ProfileIntent.OnCreateChannelClicked) }
         )
     }
 }

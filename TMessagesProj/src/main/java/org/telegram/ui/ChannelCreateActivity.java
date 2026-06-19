@@ -377,6 +377,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
                                     AndroidUtilities.runOnUIThread(enableDoneLoading, 200);
                                     MessagesController.getInstance(currentAccount).updateChannelUserName(ChannelCreateActivity.this, chatId, lastCheckName, () -> {
                                         updateDoneProgress(false);
+                                        org.telegram.divo.common.utils.DivoChannelHelper.onChannelCreated(chatId, currentAccount, lastCheckName, null); //DIVO
                                         if (onFinishListener != null) {
                                             onFinishListener.run(ChannelCreateActivity.this, chatId);
                                         }
@@ -388,14 +389,20 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
                                     });
                                 }
                             }
-                        } else if (onFinishListener != null) {
-                            onFinishListener.run(ChannelCreateActivity.this, chatId);
+                        } else { //DIVO
+                            org.telegram.divo.common.utils.DivoChannelHelper.onChannelCreated(chatId, currentAccount, null, invite != null ? invite.link : null);
+                            if (onFinishListener != null) {
+                                onFinishListener.run(ChannelCreateActivity.this, chatId);
+                            }
                         }
                         if (onFinishListener == null) {
                             Bundle args = new Bundle();
                             args.putInt("step", 2);
                             args.putLong("chatId", chatId);
                             args.putInt("chatType", ChatObject.CHAT_TYPE_CHANNEL);
+                            if (arguments.containsKey("local_avatar_path")) {
+                                args.putString("local_avatar_path", arguments.getString("local_avatar_path"));
+                            }
                             presentFragment(new GroupCreateActivity(args), true);
                         }
                     }
@@ -1187,6 +1194,10 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
             bundle.putBoolean("canCreatePublic", canCreatePublic);
             if (forcePublic != null) {
                 bundle.putBoolean("forcePublic", forcePublic);
+            }
+            //DIVO
+            if (imageUpdater != null && imageUpdater.currentPicturePath != null) {
+                bundle.putString("local_avatar_path", imageUpdater.currentPicturePath);
             }
             if (inputPhoto != null || inputVideo != null || inputEmojiMarkup != null) {
                 MessagesController.getInstance(currentAccount).changeChatAvatar(chat_id, null, inputPhoto, inputVideo, inputEmojiMarkup, videoTimestamp, inputVideoPath, avatar, avatarBig, null);
