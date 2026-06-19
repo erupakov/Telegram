@@ -11,7 +11,7 @@ import org.telegram.divo.common.utils.ThumbnailProcessor
 import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.dto.publication.CreatePublicationFileRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
-import org.telegram.divo.dal.dto.publication.FavoriteRequest
+import org.telegram.divo.dal.dto.publication.FollowRequest
 import org.telegram.divo.dal.dto.publication.LikeRequest
 import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
@@ -126,12 +126,12 @@ class PublicationRepository(
         service.unlikePost(LikeRequest(id))
     }
 
-    suspend fun markFavorite(id: Int, entity: String): DivoResult<Unit> = resultOf {
-        service.markFavorite(FavoriteRequest(id, entity))
+    suspend fun markFavorite(id: Int): DivoResult<Unit> = resultOf {
+        service.markFavorite(FollowRequest(id))
     }
 
-    suspend fun unmarkFavorite(id: Int, entity: String): DivoResult<Unit> = resultOf {
-        service.unmarkFavorite(FavoriteRequest(id, entity))
+    suspend fun unmarkFavorite(id: Int): DivoResult<Unit> = resultOf {
+        service.unmarkFavorite(FollowRequest(id))
     }
 
     /** Вызывается из UseCase после успешного API-запроса */

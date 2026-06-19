@@ -328,8 +328,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         viewModelScope.launch {
             toggleBookmarkUseCase.execute(
                 userId = userId,
-                entity = targetItem.role,
-                isFavorite = targetItem.isMarked,
+                isFollowed = targetItem.isMarked,
                 currentFollowersCount = targetItem.followersCount,
                 onUpdate = { newFavorite, newCount ->
                     if (isFrSearch) {
@@ -528,7 +527,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         age = this.user?.age,
         country = this.user?.city?.countryName,
         countryCode = this.user?.city?.countryCode,
-        isMarked = this.isFavoriteByUser,
+        isMarked = this.isFollowedByUser,
         likes = this.likesCount,
         isLiked = this.isLikedByUser,
         followersCount = this.user?.followersCount ?: 0,

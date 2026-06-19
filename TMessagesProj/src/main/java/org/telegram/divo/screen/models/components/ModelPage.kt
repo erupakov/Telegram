@@ -242,7 +242,7 @@ fun ModelPage(
                     RoundedGlassContainer(
                         modifier = Modifier.width(65.dp),
                         height = 30.dp,
-                        background = if (feed.isFavorite) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
+                        background = if (feed.isFollowed) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Row(
@@ -251,16 +251,16 @@ fun ModelPage(
                         ) {
                             Icon(
                                 modifier = Modifier.size(16.dp),
-                                painter = if (feed.isFavorite) painterResource(R.drawable.ic_divo_bookmark_glass_selected) else painterResource(R.drawable.ic_divo_bookmark_glass),
+                                painter = if (feed.isFollowed) painterResource(R.drawable.ic_divo_bookmark_glass_selected) else painterResource(R.drawable.ic_divo_bookmark_glass),
                                 contentDescription = null,
-                                tint = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+                                tint = if (feed.isFollowed) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
                             )
                             Spacer(Modifier.width(3.dp))
                             Text(
                                 modifier = Modifier.offset(y = 1.dp),
                                 text = feed.user.followersCount.toShortString(),
                                 style = AppTheme.typography.helveticaNeueRegular,
-                                color = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+                                color = if (feed.isFollowed) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
                                 fontSize = 12.sp
                             )
                         }

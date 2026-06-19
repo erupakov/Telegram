@@ -660,14 +660,13 @@ class ProfileViewModel(
         viewModelScope.launch {
             toggleBookmarkUseCase.execute(
                 userId = info.id,
-                entity = info.role.value,
-                isFavorite = info.isFavorite,
+                isFollowed = info.isFollowed,
                 currentFollowersCount = info.statistic.followersCount,
                 onUpdate = { newFavorite, newCount ->
                     setState {
                         copy(
                             userInfo = userInfo.copy(
-                                isFavorite = newFavorite,
+                                isFollowed = newFavorite,
                                 statistic = userInfo.statistic.copy(followersCount = newCount)
                             )
                         )

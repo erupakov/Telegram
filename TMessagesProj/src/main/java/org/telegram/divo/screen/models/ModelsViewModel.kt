@@ -101,12 +101,14 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                     is UserActionEvent.BookmarkChanged -> setState {
                         copy(tabFeeds = tabFeeds.mapValues { (_, items) ->
                             items.map { item ->
-                                if (item.user.id == event.userId)
+                                if (item.user.id == event.userId) {
                                     item.copy(
-                                        isFavorite = event.isFavorite,
+                                        isFollowed = event.isFavorite,
                                         user = item.user.copy(followersCount = event.newFollowersCount)
                                     )
-                                else item
+                                } else {
+                                    item
+                                }
                             }
                         })
                     }
@@ -327,14 +329,13 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
 
         fun updateAll(newFavorite: Boolean, newCount: Int): Map<Tab, List<FeedItem>> =
             state.value.tabFeeds.mapValues { (_, items) ->
-                items.map { if (it.user.id == modelId) it.copy(isFavorite = newFavorite, user = it.user.copy(followersCount = newCount)) else it }
+                items.map { if (it.user.id == modelId) it.copy(isFollowed = newFavorite, user = it.user.copy(followersCount = newCount)) else it }
             }
 
         viewModelScope.launch {
             toggleBookmarkUseCase.execute(
                 userId = item.user.id,
-                entity = item.user.role.value,
-                isFavorite = item.isFavorite,
+                isFollowed = item.isFollowed,
                 currentFollowersCount = item.user.followersCount,
                 onUpdate = { newFavorite, newCount -> setState { copy(tabFeeds = updateAll(newFavorite, newCount)) } },
                 onRollback = { setState { copy(tabFeeds = savedState) } },

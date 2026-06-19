@@ -3,7 +3,7 @@ package org.telegram.divo.dal.api
 import org.telegram.divo.dal.dto.common.EmptyResponse
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationResponse
-import org.telegram.divo.dal.dto.publication.FavoriteRequest
+import org.telegram.divo.dal.dto.publication.FollowRequest
 import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedResponse
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
@@ -52,11 +52,11 @@ interface PublicationService {
     @POST("feedline/unlike")
     suspend fun unlikePost(@Body request: LikeRequest): EmptyResponse
 
-    @POST("favorite/mark")
-    suspend fun markFavorite(@Body request: FavoriteRequest): EmptyResponse
+    @POST("follower/follow")
+    suspend fun markFavorite(@Body request: FollowRequest): EmptyResponse
 
-    @POST("favorite/unmark")
-    suspend fun unmarkFavorite(@Body request: FavoriteRequest): EmptyResponse
+    @POST("follower/unfollow")
+    suspend fun unmarkFavorite(@Body request: FollowRequest): EmptyResponse
 }
 
 

@@ -21,35 +21,34 @@ class ToggleBookmarkUseCase(
 ) {
     suspend fun execute(
         userId: Int,
-        entity: String,
-        isFavorite: Boolean,
+        isFollowed: Boolean,
         currentFollowersCount: Int,
-        onUpdate: (newFavorite: Boolean, newFollowersCount: Int) -> Unit,
+        onUpdate: (newFollowed: Boolean, newFollowersCount: Int) -> Unit,
         onRollback: () -> Unit,
-        onSuccess: (newFavorite: Boolean) -> Unit,
+        onSuccess: (newFollowed: Boolean) -> Unit,
         onError: (String) -> Unit,
     ) {
-        val newFavorite = !isFavorite
-        val newCount = if (newFavorite) currentFollowersCount + 1
+        val newFollowed = !isFollowed
+        val newCount = if (newFollowed) currentFollowersCount + 1
                        else (currentFollowersCount - 1).coerceAtLeast(0)
 
-        onUpdate(newFavorite, newCount)
+        onUpdate(newFollowed, newCount)
 
-        val result = if (newFavorite) {
-            repository.markFavorite(userId, entity)
+        val result = if (newFollowed) {
+            repository.markFavorite(userId)
         } else {
-            repository.unmarkFavorite(userId, entity)
+            repository.unmarkFavorite(userId)
         }
 
         if (result is DivoResult.Success) {
             repository.emitEvent(
                 UserActionEvent.BookmarkChanged(
                     userId = userId,
-                    isFavorite = newFavorite,
+                    isFavorite = newFollowed,
                     newFollowersCount = newCount
                 )
             )
-            onSuccess(newFavorite)
+            onSuccess(newFollowed)
         } else {
             onRollback()
             onError(result.getErrorMessage())

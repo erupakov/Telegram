@@ -38,8 +38,8 @@ class FeedItemDto(
     val type: String,
     @SerializedName("isLikedByUser")
     val isLikedByUser: Boolean,
-    @SerializedName("isFavoriteByUser")
-    val isFavoriteByUser: Boolean,
+    @SerializedName("isFollowedByUser")
+    val isFollowedByUser: Boolean,
     @SerializedName("user")
     val user: UserDto,
     @SerializedName("files")
@@ -110,7 +110,7 @@ private fun FeedItemDto.toEntity(): FeedItem =
         entity = entity,
         type = type,
         isLiked = isLikedByUser,
-        isFavorite = isFavoriteByUser,
+        isFollowed = isFollowedByUser,
         user = user.toEntity(searchImage?.fullUrl),
         files = files.map { it.toEntity() },
         previewImage = searchImage?.toEntity() ?: FileModel(0, "", "", "", null, "")

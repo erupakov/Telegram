@@ -35,7 +35,7 @@ fun EngagementsColumn(
     Column(modifier = modifier) {
         val backgroundColor = AppTheme.colors.onBackground.copy(alpha = 0.3f)
         val contentColor = if (uiState.userInfo.isLikedByUser) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
-        val isFavorite = uiState.userInfo.isFavorite
+        val isFollowed = uiState.userInfo.isFollowed
 
         // LIKES
         RoundedGlassContainer(
@@ -117,13 +117,13 @@ fun EngagementsColumn(
         Spacer(Modifier.height(10.dp))
 
         // SAVES
-        val bookmarkIconRes = if (isFavorite) drawable.ic_divo_bookmark_glass_selected else drawable.ic_divo_bookmark_glass
-        val bookmarkColor = if (isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+        val bookmarkIconRes = if (isFollowed) drawable.ic_divo_bookmark_glass_selected else drawable.ic_divo_bookmark_glass
+        val bookmarkColor = if (isFollowed) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
 
         RoundedGlassContainer(
             modifier = Modifier.width(63.dp),
             height = 30.dp,
-            background = if (isFavorite) AppTheme.colors.onBackground else backgroundColor,
+            background = if (isFollowed) AppTheme.colors.onBackground else backgroundColor,
             contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
             Row(
