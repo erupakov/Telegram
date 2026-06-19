@@ -10,6 +10,8 @@ data class EventDetails(
     val appliedDate: String?,
     val isLiked: Boolean,
     val likesCount: Int,
+    val isFavourite: Boolean,
+    val favoritesCount: Int,
     val appliesCount: Int,
     val viewsCount: Int,
     val userReachCount: Int,

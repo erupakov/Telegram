@@ -392,6 +392,7 @@ private fun EventDetailsContent(
                         onEditEvent = { onIntent(EventDetailsIntent.OnEditEventClick) },
                         onCtaClicked = { uiState.eventDetails?.id?.let { onIntent(EventDetailsIntent.OnEventCtaClicked(it)) } },
                         onLikeClicked = { onIntent(EventDetailsIntent.OnLikeClicked) },
+                        onFavouriteClicked = { onIntent(EventDetailsIntent.OnFavouriteClicked) },
                     )
                 }
 

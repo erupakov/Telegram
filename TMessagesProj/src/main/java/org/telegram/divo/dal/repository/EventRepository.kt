@@ -98,5 +98,15 @@ class EventRepository(
     }.also {
         if (it is DivoResult.Success) _eventsUpdatedFlow.emit(Unit)
     }
+
+    suspend fun setFavourite(id: Int): DivoResult<Unit> = resultOf {
+        service.setFavourite(id)
+        Unit
+    }
+
+    suspend fun dropFavourite(id: Int): DivoResult<Unit> = resultOf {
+        service.dropFavourite(id)
+        Unit
+    }
 }
 

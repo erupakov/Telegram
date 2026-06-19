@@ -34,6 +34,7 @@ sealed class EventDetailsIntent : ViewIntent {
     data object OnDeleteEventConfirmed : EventDetailsIntent()
     data object OnParamsClick : EventDetailsIntent()
     data object OnLikeClicked : EventDetailsIntent()
+    data object OnFavouriteClicked : EventDetailsIntent()
     data class OnEventCardClicked(val eventId: Int) : EventDetailsIntent()
     data class OnEventCtaClicked(val eventId: Int) : EventDetailsIntent()
     data class ConfirmWithdraw(val id: Int) : EventDetailsIntent()

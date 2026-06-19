@@ -72,6 +72,7 @@ fun EventDetailsHeader(
     onEditEvent: () -> Unit,
     onCtaClicked: () -> Unit,
     onLikeClicked: () -> Unit,
+    onFavouriteClicked: () -> Unit,
 ) {
     val rawTopPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     var topPadding by remember { mutableStateOf(rawTopPadding) }
@@ -95,7 +96,8 @@ fun EventDetailsHeader(
                 .padding(top = topPadding + 16.dp)
                 .graphicsLayer { alpha = engagementsAlpha },
             event = event,
-            onLikeClicked = onLikeClicked
+            onLikeClicked = onLikeClicked,
+            onFavouriteClicked = onFavouriteClicked
         )
         ContentSection(
             modifier = Modifier
@@ -115,7 +117,8 @@ fun EventDetailsHeader(
 private fun StatsSection(
     modifier: Modifier = Modifier,
     event: EventDetails?,
-    onLikeClicked: () -> Unit
+    onLikeClicked: () -> Unit,
+    onFavouriteClicked: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -141,9 +144,14 @@ private fun StatsSection(
             count = event?.viewsCount ?: 0
         )
         Spacer(Modifier.height(10.dp))
+        val isFavourite = event?.isFavourite == true
         EngagementItem(
-            resId = R.drawable.ic_divo_bookmark_glass,
-            count = event?.userReachCount ?: 0
+            resId = if (isFavourite) R.drawable.ic_divo_bookmark_glass_selected else R.drawable.ic_divo_bookmark_glass,
+            count = event?.favoritesCount ?: 0,
+            tint = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+            textColor = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+            background = if (isFavourite) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
+            onClick = onFavouriteClicked
         )
     }
 }

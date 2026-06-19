@@ -17,6 +17,7 @@ class EventDetailsViewModel(
     private val isOwnProfile: Boolean
 ) : BaseViewModel<EventDetailsViewState, EventDetailsIntent, EventDetailsEffect>() {
     private var currentUserId: Int? = null
+    private val toggleEventFavouriteUseCase = org.telegram.divo.usecase.ToggleEventFavouriteUseCase()
 
     override fun createInitialState(): EventDetailsViewState = EventDetailsViewState(eventId, isOwnProfile)
 
@@ -36,7 +37,46 @@ class EventDetailsViewModel(
             EventDetailsIntent.OnParamsClick -> sendEffect(NavigateToParams)
             is EventDetailsIntent.OnPrevEventClicked -> sendEffect(NavigateToPrevEvent(intent.eventId))
             EventDetailsIntent.OnLikeClicked -> handleLikeClicked()
+            EventDetailsIntent.OnFavouriteClicked -> handleFavouriteClicked()
             EventDetailsIntent.OnLoad -> loadData()
+        }
+    }
+
+    private fun handleFavouriteClicked() {
+        val currentEvent = state.value.eventDetails ?: return
+        
+        viewModelScope.launch {
+            toggleEventFavouriteUseCase.execute(
+                eventId = currentEvent.id,
+                isFavourite = currentEvent.isFavourite,
+                currentCount = currentEvent.favoritesCount,
+                onUpdate = { newFavourite, newCount ->
+                    setState {
+                        copy(
+                            eventDetails = currentEvent.copy(
+                                isFavourite = newFavourite,
+                                favoritesCount = newCount
+                            )
+                        )
+                    }
+                },
+                onRollback = {
+                    setState {
+                        copy(
+                            eventDetails = currentEvent
+                        )
+                    }
+                },
+                onSuccess = { newFavourite ->
+                    sendEffect(
+                        EventDetailsEffect.ActionChanged(
+                            resDrawableId = org.telegram.messenger.R.drawable.ic_divo_bookmark_glass_selected,
+                            resStringId = if (newFavourite) org.telegram.messenger.R.string.BookmarkSaved else org.telegram.messenger.R.string.BookmarkUnsaved
+                        )
+                    )
+                },
+                onError = { sendEffect(ShowError(it)) }
+            )
         }
     }
 
