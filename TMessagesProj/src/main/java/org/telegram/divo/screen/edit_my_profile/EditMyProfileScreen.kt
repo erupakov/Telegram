@@ -210,12 +210,21 @@ fun EditMyProfileScreen(
                         )
                     }
                     ProfileDestination.EXPERIENCE -> {
-                        WorkHistoryScreen(
-                            userId = uiState.userFull?.id ?: -1,
-                            isOwnProfile = true,
-                            isFromEditScreen = true,
-                            onCreateClicked = onCreateWorkHistoryClicked
-                        )
+                        if (uiState.userFull != null) {
+                            WorkHistoryScreen(
+                                userId = uiState.userFull.id,
+                                isOwnProfile = true,
+                                isFromEditScreen = true,
+                                onCreateClicked = onCreateWorkHistoryClicked
+                            )
+                        } else {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                LottieProgressIndicator(
+                                    modifier = Modifier.size(32.dp),
+                                    color = AppTheme.colors.accentOrange
+                                )
+                            }
+                        }
                     }
                 }
             }

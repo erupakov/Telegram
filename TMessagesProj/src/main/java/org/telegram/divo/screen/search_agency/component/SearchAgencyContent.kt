@@ -87,7 +87,7 @@ fun SearchAgencyContent(
                     items = State.items,
                     isLoadingMore = State.isLoadingMoreAgencies,
                     hasMore = State.hasMoreAgencies,
-                    onClicked = { onIntent(Intent.OnSearchSelected(it)) },
+                    onClicked = { name, avatarUrl -> onIntent(Intent.OnSearchSelected(org.telegram.divo.dal.repository.AgencySelection(name, avatarUrl))) },
                     onLoadMore = { onIntent(Intent.OnLoadMore) }
                 )
             }
@@ -98,7 +98,7 @@ fun SearchAgencyContent(
                 .align(Alignment.BottomCenter)
                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
             enabled = State.query.isNotBlank() || State.agencyName.isNotBlank(),
-            onClick = { onIntent(Intent.OnSearchSelected(State.query)) }
+            onClick = { onIntent(Intent.OnSearchSelected(org.telegram.divo.dal.repository.AgencySelection(State.query, null))) }
         )
     }
 }
@@ -109,7 +109,7 @@ private fun SearchSuggestions(
     items: List<Agency>,
     isLoadingMore: Boolean,
     hasMore: Boolean,
-    onClicked: (String) -> Unit,
+    onClicked: (String, String?) -> Unit,
     onLoadMore: () -> Unit,
 ) {
     val listState = rememberLazyListState()
@@ -149,7 +149,7 @@ private fun SearchSuggestions(
             SuggestionItem(
                 avatarUrl = it.photo?.fullUrl.orEmpty(),
                 agencyName = it.title,
-                onClicked = { onClicked(it.title) }
+                onClicked = { onClicked(it.title, it.photo?.fullUrl) }
             )
         }
         if (isLoadingMore) {

@@ -228,6 +228,7 @@ class ProfileViewModel(
     private fun loadData() {
         viewModelScope.launch {
             loadUserProfile(isOwnProfile = isOwnProfile)
+            loadLatestWorkExperience(userId)
             val validState = state.first { it.userId > 0 && !it.isLoading && it.userInfo.role != RoleType.UNKNOWN }
             if (validState.userId <= 0) return@launch
 
@@ -245,6 +246,17 @@ class ProfileViewModel(
                 observeEvents()
                 observeAgencyModelsPaginator()
                 observeSearchModelsPaginator()
+            }
+        }
+    }
+
+    // TODO: (Hack) Remove when backend fixes it
+    private fun loadLatestWorkExperience(userId: Int) {
+        viewModelScope.launch {
+            val whResult = DivoApi.workHistory.getWorkHistory(userId)
+            if (whResult is DivoResult.Success) {
+                val latest = whResult.value.filter { it.id != -1 }.maxByOrNull { it.startDate }
+                setState { copy(latestWorkExperience = latest) }
             }
         }
     }
@@ -296,6 +308,7 @@ class ProfileViewModel(
             if (engagementLoaded) {
                 loadEngagement()
             }
+            loadLatestWorkExperience(state.value.userId)
         }
     }
 
@@ -882,6 +895,7 @@ class ProfileViewModel(
             gender = user.gender?.title.orEmpty(),
             age = user.birthday,
             height = appearance?.height ?: 0f,
+            weight = appearance?.weight ?: 0f,
             waist = appearance?.waist?.toInt() ?: 0,
             hips = appearance?.hips?.toInt() ?: 0,
             shoeSize = appearance?.shoesSize ?: 0f,

@@ -4,6 +4,7 @@ import org.telegram.divo.common.ViewEffect
 import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.entity.Agency
+import org.telegram.divo.dal.repository.AgencySelection
 
 data class State(
     val items: List<Agency> = emptyList(),
@@ -18,7 +19,7 @@ sealed interface Intent : ViewIntent {
     data object OnBackClicked : Intent
     data object OnLoadMore : Intent
     data class OnQueryChanged(val value: String) : Intent
-    data class OnSearchSelected(val value: String) : Intent
+    data class OnSearchSelected(val selection: AgencySelection) : Intent
 }
 
 sealed interface Effect : ViewEffect {

@@ -459,12 +459,25 @@ private fun ProfileScreenContent(
                 }
 
                 item(key = "info_pager") {
+                    // TODO: (Hack) Remove fallback to latestWorkExperience when backend fixes it
+                    val agency = uiState.userInfo.model?.agency ?: uiState.latestWorkExperience?.let { exp ->
+                        org.telegram.divo.entity.Agency(
+                            id = exp.agencyId ?: 0,
+                            title = exp.agencyName.orEmpty(),
+                            site = "",
+                            email = "",
+                            description = "",
+                            employeeTitle = "",
+                            photo = exp.agencyAvatarLink?.let { org.telegram.divo.entity.Photo(photoId = 0L, fullUrl = it) }
+                        )
+                    }
+
                     ProfileInfoPager(
                         isModel = uiState.isModel,
                         pagerInfoState = pagerInfoState,
                         bio = if (uiState.isModel) uiState.userInfo.model?.description.orEmpty() else uiState.userInfo.agency?.description.orEmpty(),
                         physicalParams = uiState.physicalParams,
-                        agency = uiState.userInfo.model?.agency,
+                        agency = agency,
                         isOwnProfile = uiState.isOwnProfile,
                         onWorkHistoryClicked = { onIntent(ProfileIntent.OnShowWorkHistory) },
                         onAppearanceClicked = { onIntent(ProfileIntent.OnShowAppearances) },

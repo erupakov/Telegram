@@ -38,7 +38,10 @@ class SimilarProfilesViewModel(
     private var pendingCountryShortNames: List<String> = emptyList()
     private var allProfiles: List<SearchedProfile> = emptyList()
 
-    override fun createInitialState(): State = State(imageUrl = imageUrl)
+    override fun createInitialState(): State = State(
+        imageUrl = imageUrl,
+        isHistoryMode = resultsJson == null
+    )
 
     override fun handleIntent(intent: Intent) {
         when (intent) {
@@ -128,9 +131,10 @@ class SimilarProfilesViewModel(
                     age = dto.birthday?.toAge(),
                     country = dto.countryName,
                     countryCode = dto.countryCode,
-                    isMarked = false,
-                    likes = 0,
-                    isLiked = false,
+                    isMarked = dto.isFollowedByUser ?: false,
+                    likes = dto.likedCount ?: 0,
+                    isLiked = dto.isLikedByUser ?: false,
+                    followersCount = dto.followersCount ?: 0,
                     photo = dto.image.orEmpty(),
                     index = dto.index,
                     isModel = RoleType.from(dto.role).isModel(),
@@ -182,62 +186,57 @@ class SimilarProfilesViewModel(
         }
     }
 
+    private val toggleLikeUseCase = org.telegram.divo.usecase.ToggleLikeUseCase()
+    private val toggleBookmarkUseCase = org.telegram.divo.usecase.ToggleBookmarkUseCase()
+
     private fun onLikeChange(id: Int) {
-        setState {
-            val updatedProfiles = profiles.map { profile ->
-                if (profile.id == id) {
-                    val newIsLiked = !profile.isLiked
-                    val newLikesCount = if (newIsLiked) profile.likes + 1 else profile.likes - 1
+        val targetProfile = state.value.profiles.find { it.id == id } ?: return
+        val savedProfiles = state.value.profiles
 
-                    profile.copy(
-                        isLiked = newIsLiked,
-                        likes = newLikesCount
-                    )
-                } else {
-                    profile
-                }
-            }
-
-            copy(profiles = updatedProfiles)
+        viewModelScope.launch {
+            toggleLikeUseCase.execute(
+                userId = targetProfile.id,
+                isLiked = targetProfile.isLiked,
+                currentCount = targetProfile.likes,
+                onUpdate = { newLiked, newCount ->
+                    setState {
+                        copy(profiles = profiles.map { if (it.id == id) it.copy(isLiked = newLiked, likes = newCount) else it })
+                    }
+                },
+                onRollback = {
+                    setState { copy(profiles = savedProfiles) }
+                },
+                onSuccess = { newLiked ->
+                    // Optinal effect if needed
+                },
+                onError = { sendEffect(ShowError(it)) }
+            )
         }
-
-        //TODO если запрос упадет надо будет откатить не забыть
-//        viewModelScope.launch {
-//            setState {
-//                val restoredProfiles = profiles.map { profile ->
-//                    if (profile.id == id) oldProfile else profile
-//                }
-//                copy(profiles = restoredProfiles)
-//            }
-//            sendEffect(Effect.ShowError("Не удалось поставить лайк. Проверьте интернет."))
-//        }
     }
 
     private fun onMarkChange(id: Int) {
-        val oldProfile = state.value.profiles.find { it.id == id } ?: return
-        setState {
-            val updatedProfiles = profiles.map { profile ->
-                if (profile.id == id) {
-                    profile.copy(isMarked = !profile.isMarked)
-                } else {
-                    profile
-                }
-            }
+        val targetProfile = state.value.profiles.find { it.id == id } ?: return
+        val savedProfiles = state.value.profiles
 
-            copy(profiles = updatedProfiles)
+        viewModelScope.launch {
+            toggleBookmarkUseCase.execute(
+                userId = targetProfile.id,
+                isFollowed = targetProfile.isMarked,
+                currentFollowersCount = targetProfile.followersCount,
+                onUpdate = { newFollowed, newCount ->
+                    setState {
+                        copy(profiles = profiles.map { if (it.id == id) it.copy(isMarked = newFollowed, followersCount = newCount) else it })
+                    }
+                },
+                onRollback = {
+                    setState { copy(profiles = savedProfiles) }
+                },
+                onSuccess = { newFollowed ->
+                    // Optional effect if needed
+                },
+                onError = { sendEffect(ShowError(it)) }
+            )
         }
-
-
-        //TODO если запрос упадет надо будет откатить не забыть
-//        viewModelScope.launch {
-//            setState {
-//                val restoredProfiles = profiles.map { profile ->
-//                    if (profile.id == id) oldProfile else profile
-//                }
-//                copy(profiles = restoredProfiles)
-//            }
-//            sendEffect(Effect.ShowError("Не удалось добавить в закладки"))
-//        }
     }
 
     private fun loadCountries() {

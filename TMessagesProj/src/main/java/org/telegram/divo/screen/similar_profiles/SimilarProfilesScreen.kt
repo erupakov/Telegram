@@ -166,6 +166,7 @@ private fun SimilarProfilesContent(
                 isLoading = false, //TODO
                 isLoadingMore = false, //TODO
                 hasMore = false, //TODO
+                showSocialStats = !uiState.isHistoryMode,
                 onMarkClicked = { onIntent(Intent.OnMarkChanged(it)) },
                 onLikeClicked = { onIntent(Intent.OnLikeChanged(it)) },
                 onProfileClicked = { onIntent(Intent.OnProfileClicked(it.id)) },

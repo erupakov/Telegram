@@ -28,6 +28,7 @@ data class User(
     val likesCount: Int,
     val viewsCount: Int,
     val followersCount: Int,
+    val isFollowed: Boolean = false,
     val age: Int?,
     val countryCode: String?,
     val countryName: String?,

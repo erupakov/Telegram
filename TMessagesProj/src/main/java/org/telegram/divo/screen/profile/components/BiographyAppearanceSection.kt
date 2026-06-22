@@ -129,41 +129,44 @@ fun AppearanceContent(
     var expanded by remember { mutableStateOf(false) }
 
     val storedSystem = params.measuringSystem
-    val allAvailableItems = buildList {
-        if (params.gender.isNotEmpty()) add(stringResource(R.string.LabelGender) to params.gender)
-        if (params.age.isNotEmpty()) add(stringResource(R.string.LabelAge) to params.age.formattedAge(context))
-        if (params.height > 0) {
-            add(
-                stringResource(ParametersType.HEIGHT.labelRes()) to
-                    MeasuringUnits.formatStoredNumber(ParametersType.HEIGHT, params.height, storedSystem)
-            )
-        }
-        if (params.waist > 0) {
-            add(
-                stringResource(ParametersType.WAIST.labelRes()) to
-                    MeasuringUnits.formatStoredNumber(ParametersType.WAIST, params.waist, storedSystem)
-            )
-        }
-        if (params.hips > 0) {
-            add(
-                stringResource(ParametersType.HIPS.labelRes()) to
-                    MeasuringUnits.formatStoredNumber(ParametersType.HIPS, params.hips, storedSystem)
-            )
-        }
-        if (params.shoeSize > 0) {
-            add(
-                stringResource(ParametersType.SHOE_SIZE.labelRes()) to
-                    MeasuringUnits.formatStoredNumber(ParametersType.SHOE_SIZE, params.shoeSize, storedSystem)
-            )
-        }
-        if (params.hairLength.isNotEmpty() && params.hairLength != "0") add(stringResource(R.string.LabelHairLength) to params.hairLength)
-        if (params.hairColor.isNotEmpty()) add(stringResource(R.string.LabelHairColor) to params.hairColor)
-        if (params.eyeColor.isNotEmpty()) add(stringResource(R.string.LabelEyeColor) to params.eyeColor)
-        if (params.skinColor.isNotEmpty()) add(stringResource(R.string.LabelSkinColor) to params.skinColor)
-        if (params.breastSize.isNotEmpty() && params.gender == stringResource(R.string.Female)) {
+    
+    val isAnyFilled = params.gender.isNotEmpty() || params.age.isNotEmpty() || params.height > 0 || 
+        params.weight > 0 || params.waist > 0 || params.hips > 0 || params.shoeSize > 0 || 
+        (params.hairLength.isNotEmpty() && params.hairLength != "0") || 
+        params.hairColor.isNotEmpty() || params.eyeColor.isNotEmpty() || params.skinColor.isNotEmpty() || params.breastSize.isNotEmpty()
+
+    val allAvailableItems = if (!isAnyFilled) emptyList() else buildList {
+        add(stringResource(R.string.LabelGender) to (params.gender.takeIf { it.isNotEmpty() } ?: "-"))
+        add(stringResource(R.string.LabelAge) to (params.age.takeIf { it.isNotEmpty() }?.formattedAge(context) ?: "-"))
+        add(
+            stringResource(ParametersType.HEIGHT.labelRes()) to
+                if (params.height > 0) MeasuringUnits.formatStoredNumber(ParametersType.HEIGHT, params.height, storedSystem) else "-"
+        )
+        add(
+            stringResource(ParametersType.WEIGHT.labelRes()) to
+                if (params.weight > 0) MeasuringUnits.formatStoredNumber(ParametersType.WEIGHT, params.weight, storedSystem) else "-"
+        )
+        add(
+            stringResource(ParametersType.WAIST.labelRes()) to
+                if (params.waist > 0) MeasuringUnits.formatStoredNumber(ParametersType.WAIST, params.waist, storedSystem) else "-"
+        )
+        add(
+            stringResource(ParametersType.HIPS.labelRes()) to
+                if (params.hips > 0) MeasuringUnits.formatStoredNumber(ParametersType.HIPS, params.hips, storedSystem) else "-"
+        )
+        add(
+            stringResource(ParametersType.SHOE_SIZE.labelRes()) to
+                if (params.shoeSize > 0) MeasuringUnits.formatStoredNumber(ParametersType.SHOE_SIZE, params.shoeSize, storedSystem) else "-"
+        )
+        add(stringResource(R.string.LabelHairLength) to if (params.hairLength.isNotEmpty() && params.hairLength != "0") params.hairLength else "-")
+        add(stringResource(R.string.LabelHairColor) to (params.hairColor.takeIf { it.isNotEmpty() } ?: "-"))
+        add(stringResource(R.string.LabelEyeColor) to (params.eyeColor.takeIf { it.isNotEmpty() } ?: "-"))
+        add(stringResource(R.string.LabelSkinColor) to (params.skinColor.takeIf { it.isNotEmpty() } ?: "-"))
+        
+        if (params.gender.equals(stringResource(R.string.Female), ignoreCase = true) || params.gender.equals("female", ignoreCase = true)) {
             add(
                 stringResource(ParametersType.BREAST_SIZE.labelRes()) to
-                    MeasuringUnits.formatStoredValue(ParametersType.BREAST_SIZE, params.breastSize, storedSystem)
+                    if (params.breastSize.isNotEmpty()) MeasuringUnits.formatStoredValue(ParametersType.BREAST_SIZE, params.breastSize, storedSystem) else "-"
             )
         }
     }

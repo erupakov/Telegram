@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -43,16 +42,15 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.components.DivoAvatar
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.common.utils.toShortString
+import org.telegram.divo.components.DivoAvatar
 import org.telegram.divo.components.DivoChip
 import org.telegram.divo.components.RoundedGlassContainer
 import org.telegram.divo.components.shimmer
@@ -191,7 +189,7 @@ fun ModelPage(
 
                 Column {
                     RoundedGlassContainer(
-                        modifier = Modifier.width(65.dp),
+                        modifier = Modifier.width(67.dp),
                         height = 30.dp,
                         background = if (feed.isLiked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
@@ -212,13 +210,15 @@ fun ModelPage(
                                 text = feed.user.likesCount.toShortString(),
                                 style = AppTheme.typography.helveticaNeueRegular,
                                 color = if (feed.isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
-                                fontSize = 12.sp
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
                     Spacer(Modifier.height(10.dp))
                      RoundedGlassContainer(
-                        modifier = Modifier.width(65.dp),
+                        modifier = Modifier.width(67.dp),
                         height = 30.dp,
                         background = AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
@@ -235,12 +235,14 @@ fun ModelPage(
                             text = feed.user.viewsCount.toShortString(),
                             style = AppTheme.typography.helveticaNeueRegular,
                             color = AppTheme.colors.onBackground,
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                     Spacer(Modifier.height(10.dp))
                     RoundedGlassContainer(
-                        modifier = Modifier.width(65.dp),
+                        modifier = Modifier.width(67.dp),
                         height = 30.dp,
                         background = if (feed.isFollowed) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
@@ -261,7 +263,9 @@ fun ModelPage(
                                 text = feed.user.followersCount.toShortString(),
                                 style = AppTheme.typography.helveticaNeueRegular,
                                 color = if (feed.isFollowed) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
-                                fontSize = 12.sp
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }

@@ -280,7 +280,7 @@ private fun WorkExperienceRow(
         Box(modifier = Modifier.size(60.dp), contentAlignment = Alignment.Center) {
             AgencyAvatar(
                 agencyName = agencyName,
-                avatarUrl = "",
+                avatarUrl = item.agencyAvatarLink,
                 modifier = Modifier.size(60.dp)
             )
 
@@ -311,7 +311,7 @@ private fun WorkExperienceRow(
             )
         }
 
-        if (isOwnProfile) {
+        if (isOwnProfile && item.id != -1) {
             Box {
                 IconButton(onClick = { menuExpanded = true }) {
                     Icon(

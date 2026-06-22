@@ -1,6 +1,5 @@
 package org.telegram.divo.common
 
-import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,7 +30,6 @@ class OffsetPaginator<T>(
     suspend fun loadInitial(clearItems: Boolean = true) {
         if (_state.value.isLoading) return
 
-        Log.d("MyTag", "Paginator: loadInitial start, limit=$limit")
         _state.value = _state.value.copy(
             isLoading = true,
             items = if (clearItems) emptyList() else _state.value.items,
@@ -40,7 +38,6 @@ class OffsetPaginator<T>(
 
         try {
             val result = onLoad(0, limit)
-            Log.d("MyTag", "Paginator: loadInitial success, items=${result.items.size}, totalCount=${result.totalCount}")
             _state.value = _state.value.copy(
                 items = result.items,
                 isLoading = false,
@@ -50,7 +47,6 @@ class OffsetPaginator<T>(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Log.d("MyTag", "Paginator: loadInitial error: ${e.message}")
             _state.value = _state.value.copy(
                 isLoading = false,
                 error = e.message ?: "Unknown error"
@@ -61,17 +57,14 @@ class OffsetPaginator<T>(
     suspend fun loadMore() {
         val current = _state.value
         if (current.isLoading || current.isLoadingMore || !current.hasMore) {
-            Log.d("MyTag", "Paginator: loadMore skipped (isLoading=${current.isLoading}, isLoadingMore=${current.isLoadingMore}, hasMore=${current.hasMore})")
             return
         }
-
-        Log.d("MyTag", "Paginator: loadMore start, offset=${current.currentOffset}, limit=$limit")
         _state.value = current.copy(isLoadingMore = true, error = null)
 
         try {
             val result = onLoad(current.currentOffset, limit)
             val allItems = current.items + result.items
-            Log.d("MyTag", "Paginator: loadMore success, newItems=${result.items.size}, total=${allItems.size}, totalCount=${result.totalCount}, hasMore=${allItems.size < result.totalCount}")
+
             _state.value = current.copy(
                 items = allItems,
                 isLoadingMore = false,
@@ -79,7 +72,6 @@ class OffsetPaginator<T>(
                 currentOffset = allItems.size
             )
         } catch (e: Exception) {
-            Log.d("MyTag", "Paginator: loadMore error: ${e.message}")
             _state.value = current.copy(
                 isLoadingMore = false,
                 error = e.message ?: "Unknown error"

@@ -26,6 +26,7 @@ data class ProfileViewState(
     val userId: Int = -1,
     val isOwnProfile: Boolean = false,
     val userInfo: UserInfo = UserInfo(),
+    val latestWorkExperience: org.telegram.divo.entity.WorkExperience? = null,
     val hasBackgroundReady: Boolean = false,
 
     val userGalleryItems: List<UserGalleryItem> = listOf(),
@@ -161,6 +162,7 @@ data class PhysicalParams(
     val gender: String = "",
     val age: String = "",
     val height: Float = 0f,
+    val weight: Float = 0f,
     val waist: Int = 0,
     val hips: Int = 0,
     val shoeSize: Float = 0f,

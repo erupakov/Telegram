@@ -56,7 +56,7 @@ class CreateWorkHistoryViewModel(
                 else createWorkExperience()
             }
             Intent.OnSearchSelected -> {
-                DivoApi.workHistory.selectAgency(state.value.agencyName)
+                DivoApi.workHistory.selectAgency(org.telegram.divo.dal.repository.AgencySelection(state.value.agencyName, state.value.avatarUrl))
                 sendEffect(Effect.NavigateToSearch)
             }
         }
@@ -148,8 +148,13 @@ class CreateWorkHistoryViewModel(
         viewModelScope.launch {
             DivoApi.workHistory.selectedAgency
                 .onStart { DivoApi.workHistory.clearSelectedAgency() }
-                .collect { agency ->
-                    setState { copy(agencyName = agency) }
+                .collect { agencySelection ->
+                    setState { 
+                        copy(
+                            agencyName = agencySelection?.name ?: "",
+                            avatarUrl = agencySelection?.avatarUrl ?: ""
+                        ) 
+                    }
                 }
         }
     }
