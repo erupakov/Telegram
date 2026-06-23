@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="AppName">Divo Global</string>
-    <string name="AppNameBeta">Divo Global Beta</string>
+    <string name="AppNameBeta">Divo Global</string>
     <string name="LanguageName">Nederlands</string>
     <string name="English">Engels</string>
     <string name="LanguageNameInEnglish">Dutch</string>
@@ -1085,3 +1085,4 @@
     <string name="RemindDayYearAt">\'Herinner op\' d MMM yyyy \'om\' HH:mm</string>
     <string name="BotsMenuTitle">Menu</string>
 </resources>
+

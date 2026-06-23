@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--divo view start-->
     <string name="AppName">Divo Global</string>
-    <string name="AppNameBeta">Divo Global Beta</string>
+    <string name="AppNameBeta">Divo Global</string>
     <string name="LanguageName">EspaГ±ol</string>
     <string name="English">InglГ©s</string>
     <string name="LanguageNameInEnglish">Spanish</string>
@@ -2280,3 +2280,4 @@ crea uno nuevo.</string>
     <string name="BoostLevelPlus_one">Nivel %d+</string>
     <string name="BoostLevelPlus_other">Nivel %d+</string>
 </resources>
+

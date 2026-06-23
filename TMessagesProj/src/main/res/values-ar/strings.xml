@@ -1,7 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="AppName">Divo Global</string>
-    <string name="AppNameBeta">Divo Global Beta</string>
+    <string name="AppNameBeta">Divo Global</string>
     <string name="LanguageName">Ш§Щ„Ш№Ш±ШЁЩЉШ©</string>
     <string name="English">Ш§Щ„ШҐЩ†Ш¬Щ„ЩЉШІЩЉШ©</string>
     <string name="LanguageNameInEnglish">Arabic</string>
@@ -1244,3 +1244,4 @@
     <string name="RemindDayAt">\'Ш°ЩѓЩ‘Ш±Щ†ЩЉ ШЁШЄШ§Ш±ЩЉШ®\' d MMM \'Ш№Щ†ШЇ\' HH:mm</string>
     <string name="RemindDayYearAt">\'Ш°ЩѓЩ‘Ш±Щ†ЩЉ ШЁШЄШ§Ш±ЩЉШ®\' d MMM yyyy \'Ш№Щ†ШЇ\' HH:mm</string>
 </resources>
+
