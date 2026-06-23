@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="AppName">Divo</string>
-    <string name="AppNameBeta">Divo Beta</string>
+    <string name="AppName">Divo Global</string>
+    <string name="AppNameBeta">Divo Global Beta</string>
     <string name="LanguageName">Nederlands</string>
     <string name="English">Engels</string>
     <string name="LanguageNameInEnglish">Dutch</string>
@@ -203,14 +203,14 @@
     <string name="NotificationGroupInvitedToCall">%1$s nodigde %3$s uit voor een videochat in %2$s</string>
     <string name="NotificationGroupInvitedYouToCall">%1$s nodigde je uit voor een videochat in %2$s</string>
     <string name="NotificationGroupCreatedCall">%1$s startte een videochat in %2$s</string>
-    <string name="NotificationGroupEndedCall">%1$s heeft de videochat in %2$s beëindigd</string>
+    <string name="NotificationGroupEndedCall">%1$s heeft de videochat in %2$s beГ«indigd</string>
     <string name="NotificationGroupAddSelf">%1$s is terug in de groep %2$s</string>
     <string name="NotificationGroupAddSelfMega">%1$s is nu lid van de groep %2$s</string>
     <string name="NotificationGroupKickMember">%1$s heeft %3$s verwijderd uit de groep %2$s</string>
     <string name="NotificationGroupKickYou">%1$s heeft je verwijderd uit de groep %2$s</string>
     <string name="NotificationGroupLeftMember">%1$s heeft de groep %2$s verlaten</string>
     <string name="NotificationContactJoined">%1$s zit nu op Divo Global!</string>
-    <string name="NotificationUnrecognizedDevice">%1$s,\nEr is op %2$s vanaf een nieuw apparaat op je account ingelogd.\n\nApparaat: %3$s\nLocatie: %4$s\n\nAls dit niet door jou is gedaan, kun je gaan naar Instellingen &gt; Apparaten en deze sessie beëindigen.\n\nAls je gelooft dat iemand zonder jouw toestemming op je account is ingelogd, kun je tweestapsverificatie inschakelen via Instellingen &gt; Privacy en veiligheid.\n\nMet vriendelijke groet,\nHet Divo Global-team</string>
+    <string name="NotificationUnrecognizedDevice">%1$s,\nEr is op %2$s vanaf een nieuw apparaat op je account ingelogd.\n\nApparaat: %3$s\nLocatie: %4$s\n\nAls dit niet door jou is gedaan, kun je gaan naar Instellingen &gt; Apparaten en deze sessie beГ«indigen.\n\nAls je gelooft dat iemand zonder jouw toestemming op je account is ingelogd, kun je tweestapsverificatie inschakelen via Instellingen &gt; Privacy en veiligheid.\n\nMet vriendelijke groet,\nHet Divo Global-team</string>
     <string name="NotificationContactNewPhoto">%1$s heeft zijn/haar profielfoto gewijzigd</string>
     <string name="NotificationInvitedToGroupByLink">%1$s is nu lid van de groep %2$s via uitnodigingslink</string>
     <string name="NotificationGroupFew">%1$s heeft %3$s naar de groep %2$s gestuurd</string>
@@ -293,7 +293,7 @@
     <string name="UsernameInvalidShortPurchase">De minimumlengte voor gebruikersnamen is normaliter 5 tekens. Echter, korte verzamelbare gebruikersnamen zoals deze staan momenteel te koop. **Lees meer...**</string>
     <string name="UsernameInvalidLong">Naam mag niet langer dan 32 tekens zijn.</string>
     <string name="UsernameInvalidStartNumber">Gebruikersnamen kunnen niet met een nummer beginnen.</string>
-    <string name="UsernameHelp">Je kunt een gebruikersnaam instellen op **Divo Global**. Op die manier kunnen anderen je vinden en contact met je opnemen zonder je telefoonnummer te kennen.\n\nJe kunt **a–z**, **0–9** en underscores gebruiken. De minimumlengte is **5** tekens.</string>
+    <string name="UsernameHelp">Je kunt een gebruikersnaam instellen op **Divo Global**. Op die manier kunnen anderen je vinden en contact met je opnemen zonder je telefoonnummer te kennen.\n\nJe kunt **aвЂ“z**, **0вЂ“9** en underscores gebruiken. De minimumlengte is **5** tekens.</string>
     <string name="UsernameHelpLink">Via deze link wordt een chat met jou geopend: %1$s</string>
     <string name="UsernameChecking">Gebruikersnaam controleren...</string>
     <string name="UsernameAvailable">%1$s is beschikbaar.</string>
@@ -378,7 +378,7 @@
     <string name="ChangeGroupAppearance">Uiterlijk</string>
     <string name="ChatBackground">Chatachtergrond</string>
     <string name="ResetChatBackgrounds">Chatachtergronden resetten</string>
-    <string name="ResetChatBackgroundsInfo">Alle geüploade achtergronden verwijderen en de voorgeïnstalleerde herstellen.</string>
+    <string name="ResetChatBackgroundsInfo">Alle geГјploade achtergronden verwijderen en de voorgeГЇnstalleerde herstellen.</string>
     <string name="ResetChatBackgroundsAlertTitle">Chatachtergronden resetten</string>
     <string name="ResetChatBackgroundsAlert">Weet je zeker dat je alle chatachtergronden wilt resetten?</string>
     <string name="DeleteChatBackgroundsAlert">Weet je zeker dat je de geselecteerde achtergronden wilt verwijderen?</string>
@@ -428,7 +428,7 @@
     <string name="Languages_one">%1$d taal</string>
     <string name="Languages_other">%1$d talen</string>
     <string name="ChooseLanguages">Talen kiezen</string>
-    <string name="TranslateMessagesInfo1">De vertaalknop zal verschijnen wanneer je één keer tikt op een bericht dat tekst bevat.</string>
+    <string name="TranslateMessagesInfo1">De vertaalknop zal verschijnen wanneer je Г©Г©n keer tikt op een bericht dat tekst bevat.</string>
     <string name="Language">Taal</string>
     <string name="LanguageCustom">Aangepast</string>
     <string name="LanguageTitle">Taal wijzigen?</string>
@@ -489,7 +489,7 @@
     <string name="AutoDownloadMedium">Middel</string>
     <string name="AutoDownloadHigh">Hoog</string>
     <string name="AutoDownloadCustom">Aangepast</string>
-    <string name="AutoDownloadPm">Privéberichten</string>
+    <string name="AutoDownloadPm">PrivГ©berichten</string>
     <string name="AutoDownloadGroups">Groepen</string>
     <string name="AutoDownloadPhotos">Foto\'s</string>
     <string name="AutoDownloadVideos">Video\'s</string>
@@ -579,7 +579,7 @@
     <string name="NotificationsDeleteAllExceptionTitle">Alle uitzonderingen wissen</string>
     <string name="NotificationsDeleteAllExceptionAlert">Weet je zeker dat je alle uitzonderingen wilt verwijderen?</string>
     <string name="NotificationsNewException">Nieuwe uitzondering</string>
-    <string name="NoExceptions">Hier vind je alle chats met niet-standaard berichtgevingsinstellingen.\n\nJe kunt de instellingen van een chat wijzigen door het profiel te openen en naar ‘Berichtgeving’ te gaan.</string>
+    <string name="NoExceptions">Hier vind je alle chats met niet-standaard berichtgevingsinstellingen.\n\nJe kunt de instellingen van een chat wijzigen door het profiel te openen en naar вЂBerichtgevingвЂ™ te gaan.</string>
     <string name="SmartNotificationsInfo">%1$d / %2$s</string>
     <string name="SmartNotificationsDisabled">Uitgeschakeld</string>
     <string name="SecretWebPage">Voorbeelden van links</string>
@@ -634,7 +634,7 @@
     <string name="ConnectingToProxyEnable">Inschakelen</string>
     <string name="LowDiskSpaceTitle">Let op</string>
     <string name="LowDiskSpaceMessage">Je opslagruimte begint vol te raken. Om ruimte te maken kun je Divo Global instellen om alleen recente media te cachen.</string>
-    <string name="LowDiskSpaceMessage2">Je apparaat heeft bijna geen vrije opslagruimte meer. Je kunt de cache-instellingen gebruiken om onnodige media te verwijderen — bestanden kunnen makkelijk opnieuw worden gedownload wanneer je ze weer nodig hebt.</string>
+    <string name="LowDiskSpaceMessage2">Je apparaat heeft bijna geen vrije opslagruimte meer. Je kunt de cache-instellingen gebruiken om onnodige media te verwijderen вЂ” bestanden kunnen makkelijk opnieuw worden gedownload wanneer je ze weer nodig hebt.</string>
     <string name="LowDiskSpaceButton">Cache beheren</string>
     <string name="AutodownloadContacts">Contacten</string>
     <string name="AutodownloadPrivateChats">Chats</string>
@@ -650,12 +650,12 @@
     <string name="AllAccounts">Alle accounts</string>
     <string name="ShowNotificationsForInfo">Uitschakelen als je alleen meldingen wilt ontvangen van het account dat je momenteel gebruikt.</string>
     <string name="NotificationsForChats">Meldingen voor chats</string>
-    <string name="NotificationsPrivateChats">Privéchats</string>
+    <string name="NotificationsPrivateChats">PrivГ©chats</string>
     <string name="NotificationsGroups">Groepen</string>
     <string name="NotificationsChannels">Kanalen</string>
     <string name="NotificationsStories">Verhalen</string>
     <string name="NotificationsReactions">Reacties</string>
-    <string name="NotificationsExceptionsAlert">Houd er rekening mee dat **%1$s** zijn uitgezonderd en niet door deze wijziging worden beïnvloed.</string>
+    <string name="NotificationsExceptionsAlert">Houd er rekening mee dat **%1$s** zijn uitgezonderd en niet door deze wijziging worden beГЇnvloed.</string>
     <string name="NotificationsExceptionsSingleAlert">**%1$s** is opgegeven als uitzondering, deze wijziging heeft geen effect op hem/haar.</string>
     <string name="ViewExceptions">Uitzonderingen weergeven</string>
     <string name="TapToChange">Tik om te wijzigen</string>
@@ -700,12 +700,12 @@
     <string name="QRCodePermissionNoCameraWithHint">**Divo Global** heeft toegang tot je camera nodig, zodat je QR-codes kunt scannen. Tik op Instellingen &gt; Machtigingen en schakel **Camera** aan.</string>
     <string name="SetProfilePhoto">Profielfoto instellen</string>
     <string name="AppUpdate">Update uitvoeren</string>
-    <string name="AppUpdateVersionAndSize">Versie %1$s • %2$s</string>
+    <string name="AppUpdateVersionAndSize">Versie %1$s вЂў %2$s</string>
     <string name="AppUpdateDownloading">Aan het downloaden... %1$d%%</string>
     <string name="AppUpdateNow">Update uitvoeren</string>
     <string name="AppUpdateDownloadNow">Nu downloaden</string>
     <string name="AppUpdateRemindMeLater">Herinner me later</string>
-    <string name="AppUpdateChangelogEmpty">**Wat is er nieuw?**\n\n• Probleemoplossingen en verbeteringen</string>
+    <string name="AppUpdateChangelogEmpty">**Wat is er nieuw?**\n\nвЂў Probleemoplossingen en verbeteringen</string>
     <string name="Permanent">Primaire link</string>
     <string name="LinkHashExpired">Link is niet meer actief</string>
     <string name="CancelForwardPrivate">Wat wil je met %1$s uit je chat met **%2$s** doen?</string>
@@ -960,7 +960,7 @@
     <string name="UnsaveMessagesTitle">%1$s uit opslag halen</string>
     <string name="DeleteSingleMessagesTitle">Bericht verwijderen</string>
     <string name="UnsaveSingleMessagesTitle">Bericht uit opslag halen</string>
-    <string name="DeleteMessagesTextGroupPart">Je kunt deze %1$s ook verwijderen bij alle groepsleden via de optie “verwijder voor iedereen”.</string>
+    <string name="DeleteMessagesTextGroupPart">Je kunt deze %1$s ook verwijderen bij alle groepsleden via de optie вЂњverwijder voor iedereenвЂќ.</string>
     <string name="DeleteMessagesTextGroup">Je kunt ook het %1$s dat je hebt gestuurd verwijderen bij de andere groepsleden via de \"Bericht intrekken\"-functie.</string>
     <string name="DeleteMessagesText">Je kunt ook het %1$s dat je hebt gestuurd verwijderen bij **%2$s**\' via de \"Bericht intrekken\"-functie.</string>
     <string name="AreYouSureUnsaveSingleMessage">Weet je zeker dat je dit bericht uit je bewaarde berichten wilt verwijderen?</string>
@@ -1014,11 +1014,11 @@
     <string name="ErrorSendRestrictedPrivacyVoiceMessages">Sorry, je kunt geen spraakberichten naar deze gebruiker sturen vanwege zijn/haar privacyinstellingen.</string>
     <string name="ErrorSendRestrictedPrivacyVideoMessages">Sorry, je kunt geen videoberichten naar deze gebruiker sturen vanwege zijn/haar privacyinstellingen.</string>
     <string name="UnableForward">Doorsturen niet mogelijk</string>
-    <string name="TosDecline">Helaas betekent dit dat jij je niet kunt aanmelden voor Divo Global.\n\nIn tegenstelling tot andere apps, gebruikt Divo Global de gegevens van \ngebruikers niet voor gerichte advertenties of andere commerciële \ndoeleinden. Divo Global slaat alleen de gegevens op die noodzakelijk zijn \nvoor het functioneren als een veelzijdige cloudservice. Je kunt \naanpassen hoe we jouw gegevens gebruiken (bijvoorbeeld gesynchroniseerde\n contacten verwijderen) in de Privacy- en Beveiligingsinstellingen.\n\nAls je niet akkoord gaat met de beperkte vereisten van Divo Global, kun je \ngeen gebruik maken van deze service.</string>
+    <string name="TosDecline">Helaas betekent dit dat jij je niet kunt aanmelden voor Divo Global.\n\nIn tegenstelling tot andere apps, gebruikt Divo Global de gegevens van \ngebruikers niet voor gerichte advertenties of andere commerciГ«le \ndoeleinden. Divo Global slaat alleen de gegevens op die noodzakelijk zijn \nvoor het functioneren als een veelzijdige cloudservice. Je kunt \naanpassen hoe we jouw gegevens gebruiken (bijvoorbeeld gesynchroniseerde\n contacten verwijderen) in de Privacy- en Beveiligingsinstellingen.\n\nAls je niet akkoord gaat met de beperkte vereisten van Divo Global, kun je \ngeen gebruik maken van deze service.</string>
     <string name="TosAgeTitle">Leeftijdsverificatie</string>
     <string name="PrivacyPolicyAndTerms">Privacybeleid en gebruiksvoorwaarden</string>
     <string name="TosAgeText">Tik op Akkoord om te bevestigen dat je %1$s of ouder bent.</string>
-    <string name="TosUpdateDecline">Er zijn helaas geen andere mogelijkheden. In tegenstelling tot veel andere apps, gebruik Divo Global de gegevens van onze gebruikers niet voor het tonen van gerichte advertenties of andere commerciële doeleinden. Divo Global slaat alleen de informatie op die het nodig heeft om te functioneren als een veelzijdige clouddienst. Je kunt zelf aanpassen hoe je gegevens worden gebruikt in de Privacy- en Beveiligingsinstellingen.\n\nAls je niet akkoord gaat met de beperkte vereisten van Divo Global, zullen we niet in staat zijn om je deze dienst aan te bieden.</string>
+    <string name="TosUpdateDecline">Er zijn helaas geen andere mogelijkheden. In tegenstelling tot veel andere apps, gebruik Divo Global de gegevens van onze gebruikers niet voor het tonen van gerichte advertenties of andere commerciГ«le doeleinden. Divo Global slaat alleen de informatie op die het nodig heeft om te functioneren als een veelzijdige clouddienst. Je kunt zelf aanpassen hoe je gegevens worden gebruikt in de Privacy- en Beveiligingsinstellingen.\n\nAls je niet akkoord gaat met de beperkte vereisten van Divo Global, zullen we niet in staat zijn om je deze dienst aan te bieden.</string>
     <string name="TosDeclineDeleteAccount">Waarschuwing: dit zal ervoor zorgen dat je Divo Global-account permanent wordt verwijderd, samen met alle data die je in de Divo Global-cloud hebt opgeslagen.\n\nBelangrijk: je kunt het proces nu annuleren en je gegevens exporteren voordat je jouw account verwijdert, zodat je niet alles kwijtraakt. (Om dit te doen, kun je de nieuwste versie van Divo Global Desktop openen en naar Instellingen &gt; Geavanceerd &gt; Divo Global-gegevens Exporteren gaan.)</string>
     <!--permissions-->
     <string name="PermissionStorageWithHint">**Divo Global** heeft toegang tot je opslag nodig, zodat je foto\'s, video\'s, muziek en andere bestanden kunt verzenden en opslaan. Tik op Instellingen &gt; Machtigingen en schakel **Bestanden en media** aan.</string>

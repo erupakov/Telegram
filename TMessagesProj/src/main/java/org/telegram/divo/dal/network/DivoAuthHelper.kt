@@ -1,7 +1,6 @@
 package org.telegram.divo.dal.network
 
 import android.os.Build
-import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -26,7 +25,7 @@ object DivoAuthHelper {
             callback.onError("Phone number is empty")
             return Runnable {}
         }
-        Log.d("VideoGrid", generatePassword(phone))
+
         val job = CoroutineScope(Dispatchers.IO).launch {
             val cleanPhone = phone.replace("+", "").trim()
             val email = "$cleanPhone@divo.global"

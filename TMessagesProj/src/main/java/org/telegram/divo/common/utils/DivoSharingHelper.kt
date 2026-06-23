@@ -79,7 +79,7 @@ object DivoSharingHelper {
             }
         }
 
-        val shareIntent = Intent.createChooser(sendIntent, "Поделиться...")
+        val shareIntent = Intent.createChooser(sendIntent, org.telegram.messenger.LocaleController.getString("ShareFile", org.telegram.messenger.R.string.ShareFile))
         context.startActivity(shareIntent)
     }
 }

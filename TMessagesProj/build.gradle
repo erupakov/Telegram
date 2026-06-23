@@ -161,6 +161,8 @@ android {
                 arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21' //, '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
             }
         }
+        buildConfigField "int", "APP_ID", getProps("TELEGRAM_APP_ID", "17349")
+        buildConfigField "String", "APP_HASH", "\"" + getProps("TELEGRAM_APP_HASH", "344583e45741c457fe1862106095a5eb") + "\""
     }
 
     buildTypes {
@@ -261,15 +263,20 @@ android {
 }
 
 
-def getProps(String propName) {
+def getProps(String propName, String defaultValue = "") {
+    def envVal = System.getenv(propName)
+    if (envVal != null && !envVal.isEmpty()) {
+        return envVal
+    }
     def propsFile = rootProject.file('local.properties')
     if (propsFile.exists()) {
         def props = new Properties()
         props.load(new FileInputStream(propsFile))
-        return props[propName]
-    } else {
-        return "";
+        if (props.containsKey(propName)) {
+            return props[propName]
+        }
     }
+    return defaultValue
 }
 
 task checkVisibility {

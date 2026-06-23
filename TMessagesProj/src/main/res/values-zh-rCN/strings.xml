@@ -1,128 +1,128 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--divo view start-->
-    <string name="AppName">Divo</string>
-    <string name="AppNameBeta">Divo Beta</string>
-    <string name="LanguageName">中文 (简体)</string>
-    <string name="English">英文</string>
+    <string name="AppName">Divo Global</string>
+    <string name="AppNameBeta">Divo Global Beta</string>
+    <string name="LanguageName">дё­ж–‡ (з®ЂдЅ“)</string>
+    <string name="English">и‹±ж–‡</string>
     <string name="LanguageNameInEnglish">Chinese (Simplified)</string>
     <string name="LanguageCode">zh</string>
-    <string name="ContinueOnThisLanguage">继续使用中文</string>
-    <string name="DivoMainTabsModels">模特</string>
-    <string name="DivoMainTabsEvents">活动</string>
-    <string name="DivoMainTabsChats">聊天</string>
-    <string name="DivoMainTabsSettings">设置</string>
-    <string name="ButtonBack">返回</string>
-    <string name="ButtonCreate">创建</string>
-    <string name="ButtonSave">保存</string>
-    <string name="ButtonApply">应用</string>
-    <string name="ButtonApplied">已申请</string>
-    <string name="ButtonClosed">已关闭</string>
-    <string name="ButtonOk">确定</string>
-    <string name="ButtonCancel">取消</string>
-    <string name="ButtonEdit">编辑</string>
-    <string name="ButtonDelete">删除</string>
-    <string name="ButtonContinue">继续</string>
-    <string name="ButtonDone">完成</string>
-    <string name="RetryLabel">重试</string>
-    <string name="YourPhoneLabel">您的手机</string>
-    <string name="ChooseCountryLabel">选择国家/地区</string>
-    <string name="SearchLabel">搜索</string>
+    <string name="ContinueOnThisLanguage">з»§з»­дЅїз”Ёдё­ж–‡</string>
+    <string name="DivoMainTabsModels">жЁЎз‰№</string>
+    <string name="DivoMainTabsEvents">жґ»еЉЁ</string>
+    <string name="DivoMainTabsChats">иЃЉе¤©</string>
+    <string name="DivoMainTabsSettings">и®ѕзЅ®</string>
+    <string name="ButtonBack">иї”е›ћ</string>
+    <string name="ButtonCreate">е€›е»є</string>
+    <string name="ButtonSave">дїќе­</string>
+    <string name="ButtonApply">еє”з”Ё</string>
+    <string name="ButtonApplied">е·Із”іиЇ·</string>
+    <string name="ButtonClosed">е·Іе…ій—­</string>
+    <string name="ButtonOk">зЎ®е®љ</string>
+    <string name="ButtonCancel">еЏ–ж¶€</string>
+    <string name="ButtonEdit">зј–иѕ‘</string>
+    <string name="ButtonDelete">е€ й™¤</string>
+    <string name="ButtonContinue">з»§з»­</string>
+    <string name="ButtonDone">е®Њж€ђ</string>
+    <string name="RetryLabel">й‡ЌиЇ•</string>
+    <string name="YourPhoneLabel">ж‚Ёзљ„ж‰‹жњє</string>
+    <string name="ChooseCountryLabel">йЂ‰ж‹©е›Ѕе®¶/ењ°еЊє</string>
+    <string name="SearchLabel">жђњзґў</string>
 
     <!--profile screen-->
-    <string name="SimilarProfiles">您可能对相似主页感兴趣</string>
-    <string name="UploadPhotos">上传您的照片</string>
-    <string name="UploadVideos">上传您的视频</string>
-    <string name="UploadingPhotos">正在上传照片…</string>
-    <string name="UploadingVideos">正在上传视频…</string>
-    <string name="AddEvent">添加活动</string>
-    <string name="MyLinks">我的链接</string>
-    <string name="EditLinks">编辑链接</string>
-    <string name="SendDM">发送私信</string>
-    <string name="Like">喜欢</string>
-    <string name="Viewed">已浏览</string>
-    <string name="Saved">保存</string>
-    <string name="LoadingModelsList">正在加载模特列表…</string>
-    <string name="EditProfile">编辑个人资料</string>
-    <string name="ChangeProfileBackground">更改主页背景</string>
-    <string name="EditSocialLinks">编辑社交链接</string>
-    <string name="ManageWorkExperience">管理工作经历</string>
-    <string name="Profile">我的主页</string>
-    <string name="CurrentAgency">当前经纪公司</string>
-    <string name="SeeHistory">查看历史记录</string>
-    <string name="SeeLess">收起</string>
-    <string name="SeeMore">查看更多</string>
-    <string name="AddModel">添加模特</string>
-    <string name="AgencyModelsEmpty">您的经纪公司暂无模特。</string>
-    <string name="AgencyModelsEmptyHint">点击下方按钮
-添加您的模特</string>
-    <string name="PremiumLabel">高级版</string>
-    <string name="ReportThisProfile">举报此主页</string>
-    <string name="ReportSent">举报已发送</string>
-    <string name="BlockProfile">屏蔽用户</string>
-    <string name="SearchByName">按姓名或 @用户名 搜索</string>
-    <string name="YearsOld">岁</string>
-    <string name="NotBio">该模特尚未填写简介</string>
-    <string name="NotAgencyBio">该机构尚未填写简介</string>
-    <string name="NotAppearance">尚未填写模特参数</string>
-    <string name="NotExperience">尚未添加工作经历</string>
-    <string name="FillInBio">填写简介</string>
-    <string name="ThereAreNoBioAddedYet">尚未添加简介</string>
-    <string name="ThereAreNoYourParametersYet">您尚未设置参数</string>
-    <string name="AddYourParameters">添加您的参数</string>
-    <string name="AddWorkHistory">添加工作记录</string>
-    <string name="ThereAreNoWorkExperienceYet">暂无工作经历</string>
-    <string name="ThereAreNoChannels">目前没有频道</string>
-    <string name="YouHaveNotCreatedChannels">您还没有创建任何频道</string>
-    <string name="ThisAgencyHasNotCreatedChannels">该机构还没有创建任何频道</string>
-    <string name="ThisProfileHasNotCreatedChannels">该资料还没有创建任何频道</string>
-    <string name="CreateNewChannel">创建新频道</string>
-    <string name="SearchModels">搜索模特</string>
-    <string name="NoLikesYet">暂无点赞。</string>
-    <string name="NothingSavedYet">暂无保存内容。</string>
-    <string name="NoProfileViewedYet">暂无
-浏览记录。</string>
-    <string name="StatLikes">获赞</string>
-    <string name="StatViews">浏览</string>
-    <string name="StatSaves">收藏</string>
+    <string name="SimilarProfiles">ж‚ЁеЏЇиѓЅеЇ№з›ёдјјдё»йЎµж„џе…ґи¶Ј</string>
+    <string name="UploadPhotos">дёЉдј ж‚Ёзљ„з…§з‰‡</string>
+    <string name="UploadVideos">дёЉдј ж‚Ёзљ„и§†йў‘</string>
+    <string name="UploadingPhotos">ж­ЈењЁдёЉдј з…§з‰‡вЂ¦</string>
+    <string name="UploadingVideos">ж­ЈењЁдёЉдј и§†йў‘вЂ¦</string>
+    <string name="AddEvent">ж·»еЉ жґ»еЉЁ</string>
+    <string name="MyLinks">ж€‘зљ„й“ѕжЋҐ</string>
+    <string name="EditLinks">зј–иѕ‘й“ѕжЋҐ</string>
+    <string name="SendDM">еЏ‘йЂЃз§ЃдїЎ</string>
+    <string name="Like">е–њж¬ў</string>
+    <string name="Viewed">е·ІжµЏи§€</string>
+    <string name="Saved">дїќе­</string>
+    <string name="LoadingModelsList">ж­ЈењЁеЉ иЅЅжЁЎз‰№е€—иЎЁвЂ¦</string>
+    <string name="EditProfile">зј–иѕ‘дёЄдєєиµ„ж–™</string>
+    <string name="ChangeProfileBackground">ж›ґж”№дё»йЎµиѓЊж™Ї</string>
+    <string name="EditSocialLinks">зј–иѕ‘з¤ѕдє¤й“ѕжЋҐ</string>
+    <string name="ManageWorkExperience">з®Ўзђ†е·ҐдЅњз»ЏеЋ†</string>
+    <string name="Profile">ж€‘зљ„дё»йЎµ</string>
+    <string name="CurrentAgency">еЅ“е‰Ќз»ЏзєЄе…¬еЏё</string>
+    <string name="SeeHistory">жџҐзњ‹еЋ†еЏІи®°еЅ•</string>
+    <string name="SeeLess">ж”¶иµ·</string>
+    <string name="SeeMore">жџҐзњ‹ж›ґе¤љ</string>
+    <string name="AddModel">ж·»еЉ жЁЎз‰№</string>
+    <string name="AgencyModelsEmpty">ж‚Ёзљ„з»ЏзєЄе…¬еЏёжљ‚ж— жЁЎз‰№гЂ‚</string>
+    <string name="AgencyModelsEmptyHint">з‚№е‡»дё‹ж–№жЊ‰й’®
+ж·»еЉ ж‚Ёзљ„жЁЎз‰№</string>
+    <string name="PremiumLabel">й«зє§з‰€</string>
+    <string name="ReportThisProfile">дёѕжЉҐж­¤дё»йЎµ</string>
+    <string name="ReportSent">дёѕжЉҐе·ІеЏ‘йЂЃ</string>
+    <string name="BlockProfile">е±Џи”Ѕз”Ёж€·</string>
+    <string name="SearchByName">жЊ‰е§“еђЌж€– @з”Ёж€·еђЌ жђњзґў</string>
+    <string name="YearsOld">еІЃ</string>
+    <string name="NotBio">иЇҐжЁЎз‰№е°љжњЄеЎ«е†™з®Ђд»‹</string>
+    <string name="NotAgencyBio">иЇҐжњєжћ„е°љжњЄеЎ«е†™з®Ђд»‹</string>
+    <string name="NotAppearance">е°љжњЄеЎ«е†™жЁЎз‰№еЏ‚ж•°</string>
+    <string name="NotExperience">е°љжњЄж·»еЉ е·ҐдЅњз»ЏеЋ†</string>
+    <string name="FillInBio">еЎ«е†™з®Ђд»‹</string>
+    <string name="ThereAreNoBioAddedYet">е°љжњЄж·»еЉ з®Ђд»‹</string>
+    <string name="ThereAreNoYourParametersYet">ж‚Ёе°љжњЄи®ѕзЅ®еЏ‚ж•°</string>
+    <string name="AddYourParameters">ж·»еЉ ж‚Ёзљ„еЏ‚ж•°</string>
+    <string name="AddWorkHistory">ж·»еЉ е·ҐдЅњи®°еЅ•</string>
+    <string name="ThereAreNoWorkExperienceYet">жљ‚ж— е·ҐдЅњз»ЏеЋ†</string>
+    <string name="ThereAreNoChannels">з›®е‰ЌжІЎжњ‰йў‘йЃ“</string>
+    <string name="YouHaveNotCreatedChannels">ж‚ЁиїжІЎжњ‰е€›е»єд»»дЅ•йў‘йЃ“</string>
+    <string name="ThisAgencyHasNotCreatedChannels">иЇҐжњєжћ„иїжІЎжњ‰е€›е»єд»»дЅ•йў‘йЃ“</string>
+    <string name="ThisProfileHasNotCreatedChannels">иЇҐиµ„ж–™иїжІЎжњ‰е€›е»єд»»дЅ•йў‘йЃ“</string>
+    <string name="CreateNewChannel">е€›е»єж–°йў‘йЃ“</string>
+    <string name="SearchModels">жђњзґўжЁЎз‰№</string>
+    <string name="NoLikesYet">жљ‚ж— з‚№иµћгЂ‚</string>
+    <string name="NothingSavedYet">жљ‚ж— дїќе­е†…е®№гЂ‚</string>
+    <string name="NoProfileViewedYet">жљ‚ж— 
+жµЏи§€и®°еЅ•гЂ‚</string>
+    <string name="StatLikes">иЋ·иµћ</string>
+    <string name="StatViews">жµЏи§€</string>
+    <string name="StatSaves">ж”¶и—Џ</string>
 
     <!--your parameters screen-->
-    <string name="ParametersSaved">参数已保存</string>
-    <string name="YourParameters">您的参数</string>
-    <string name="ResetParameter">重置参数</string>
-    <string name="SelectGender">选择性别</string>
-    <string name="LabelGender">性别</string>
-    <string name="AllGendersLabel">所有性别</string>
-    <string name="LabelAge">年龄</string>
-    <string name="LabelHeight">身高 (cm)</string>
-    <string name="LabelHeightImperial">身高 (英寸)</string>
-    <string name="LabelWaist">腰围 (cm)</string>
-    <string name="LabelWaistImperial">腰围 (英寸)</string>
-    <string name="LabelHips">臀围 (cm)</string>
-    <string name="LabelHipsImperial">臀围 (英寸)</string>
-    <string name="LabelWeight">体重 (kg)</string>
-    <string name="LabelWeightImperial">体重 (磅)</string>
-    <string name="LabelShoeSize">鞋码 (EU)</string>
-    <string name="LabelShoeSizeUS">鞋码 (US)</string>
-    <string name="LabelBreastSize">罩杯尺寸</string>
-    <string name="LabelBreastSizeImperial">罩杯尺寸 (英寸)</string>
-    <string name="LabelHairColor">发色</string>
-    <string name="LabelHairLength">发长</string>
-    <string name="LabelEyeColor">瞳色</string>
-    <string name="LabelSkinColor">肤色</string>
-    <string name="ChooseHairLength">选择发长</string>
-    <string name="ChooseHairColor">选择发色</string>
-    <string name="ChooseEyeColor">选择瞳色</string>
-    <string name="ChooseSkinColor">选择肤色</string>
-    <string name="ChooseBreastSize">选择罩杯尺寸</string>
-    <string name="ChoosePrefix">选择您的</string>
-    <string name="Female">女性</string>
-    <string name="NoBiographyAvailable">暂无简介</string>
+    <string name="ParametersSaved">еЏ‚ж•°е·Ідїќе­</string>
+    <string name="YourParameters">ж‚Ёзљ„еЏ‚ж•°</string>
+    <string name="ResetParameter">й‡ЌзЅ®еЏ‚ж•°</string>
+    <string name="SelectGender">йЂ‰ж‹©жЂ§е€«</string>
+    <string name="LabelGender">жЂ§е€«</string>
+    <string name="AllGendersLabel">ж‰Ђжњ‰жЂ§е€«</string>
+    <string name="LabelAge">е№ґйѕ„</string>
+    <string name="LabelHeight">иє«й« (cm)</string>
+    <string name="LabelHeightImperial">иє«й« (и‹±еЇё)</string>
+    <string name="LabelWaist">и…°е›ґ (cm)</string>
+    <string name="LabelWaistImperial">и…°е›ґ (и‹±еЇё)</string>
+    <string name="LabelHips">и‡Ђе›ґ (cm)</string>
+    <string name="LabelHipsImperial">и‡Ђе›ґ (и‹±еЇё)</string>
+    <string name="LabelWeight">дЅ“й‡Ќ (kg)</string>
+    <string name="LabelWeightImperial">дЅ“й‡Ќ (зЈ…)</string>
+    <string name="LabelShoeSize">йћ‹з Ѓ (EU)</string>
+    <string name="LabelShoeSizeUS">йћ‹з Ѓ (US)</string>
+    <string name="LabelBreastSize">зЅ©жќЇе°єеЇё</string>
+    <string name="LabelBreastSizeImperial">зЅ©жќЇе°єеЇё (и‹±еЇё)</string>
+    <string name="LabelHairColor">еЏ‘и‰І</string>
+    <string name="LabelHairLength">еЏ‘й•ї</string>
+    <string name="LabelEyeColor">зћіи‰І</string>
+    <string name="LabelSkinColor">и‚¤и‰І</string>
+    <string name="ChooseHairLength">йЂ‰ж‹©еЏ‘й•ї</string>
+    <string name="ChooseHairColor">йЂ‰ж‹©еЏ‘и‰І</string>
+    <string name="ChooseEyeColor">йЂ‰ж‹©зћіи‰І</string>
+    <string name="ChooseSkinColor">йЂ‰ж‹©и‚¤и‰І</string>
+    <string name="ChooseBreastSize">йЂ‰ж‹©зЅ©жќЇе°єеЇё</string>
+    <string name="ChoosePrefix">йЂ‰ж‹©ж‚Ёзљ„</string>
+    <string name="Female">еҐіжЂ§</string>
+    <string name="NoBiographyAvailable">жљ‚ж— з®Ђд»‹</string>
 
     <string-array name="GenderItems">
-        <item>所有性别</item>
-        <item>男性</item>
-        <item>女性</item>
+        <item>ж‰Ђжњ‰жЂ§е€«</item>
+        <item>з”·жЂ§</item>
+        <item>еҐіжЂ§</item>
     </string-array>
 
     <string-array name="BreastSizeItems">
@@ -136,770 +136,770 @@
     </string-array>
 
     <!--edit my profile screen-->
-    <string name="FullNameEditProfileScreen">全名</string>
-    <string name="BiographyPlaceholder">法国顶级模特…</string>
-    <string name="Biography">个人简介</string>
-    <string name="SaveEditProfileScreen">保存</string>
-    <string name="TabBiography">简介</string>
-    <string name="TabAppearance">外貌</string>
-    <string name="TabExperience">经历</string>
-    <string name="MyAgencyProfile">我的机构主页</string>
+    <string name="FullNameEditProfileScreen">е…ЁеђЌ</string>
+    <string name="BiographyPlaceholder">жі•е›ЅйЎ¶зє§жЁЎз‰№вЂ¦</string>
+    <string name="Biography">дёЄдєєз®Ђд»‹</string>
+    <string name="SaveEditProfileScreen">дїќе­</string>
+    <string name="TabBiography">з®Ђд»‹</string>
+    <string name="TabAppearance">е¤–иІЊ</string>
+    <string name="TabExperience">з»ЏеЋ†</string>
+    <string name="MyAgencyProfile">ж€‘зљ„жњєжћ„дё»йЎµ</string>
 
     <!--work experience screen-->
-    <string name="CreateExperience">创建经历</string>
-    <string name="EditExperience">编辑经历</string>
-    <string name="WorkExperience">工作经历</string>
-    <string name="WorkExperienceInfo">工作经历信息</string>
-    <string name="CurrentlyWorkingRole">我目前正在担任此职务</string>
-    <string name="CreateNewWorkExperience">创建新工作经历</string>
-    <string name="AgencyName">机构名称</string>
-    <string name="EnterAgencyName">输入机构名称</string>
-    <string name="StartDate">开始日期</string>
-    <string name="EndDate">结束日期</string>
-    <string name="AddWorkExperience">添加工作经历</string>
-    <string name="WorkHistoryEmptyTitle">暂无工作经历</string>
-    <string name="WorkHistoryEmptySubtitle">点击下方按钮
-添加您的工作经历</string>
-    <string name="SaveChanges">保存更改</string>
-    <string name="WorkExperienceSaved">工作经历添加成功</string>
-    <string name="PresentLabel">至今</string>
-    <string name="EndDateCannotBeEarly">结束日期不能早于开始日期</string>
+    <string name="CreateExperience">е€›е»єз»ЏеЋ†</string>
+    <string name="EditExperience">зј–иѕ‘з»ЏеЋ†</string>
+    <string name="WorkExperience">е·ҐдЅњз»ЏеЋ†</string>
+    <string name="WorkExperienceInfo">е·ҐдЅњз»ЏеЋ†дїЎжЃЇ</string>
+    <string name="CurrentlyWorkingRole">ж€‘з›®е‰Ќж­ЈењЁж‹…д»»ж­¤иЃЊеЉЎ</string>
+    <string name="CreateNewWorkExperience">е€›е»єж–°е·ҐдЅњз»ЏеЋ†</string>
+    <string name="AgencyName">жњєжћ„еђЌз§°</string>
+    <string name="EnterAgencyName">иѕ“е…Ґжњєжћ„еђЌз§°</string>
+    <string name="StartDate">ејЂе§‹ж—Ґжњџ</string>
+    <string name="EndDate">з»“жќџж—Ґжњџ</string>
+    <string name="AddWorkExperience">ж·»еЉ е·ҐдЅњз»ЏеЋ†</string>
+    <string name="WorkHistoryEmptyTitle">жљ‚ж— е·ҐдЅњз»ЏеЋ†</string>
+    <string name="WorkHistoryEmptySubtitle">з‚№е‡»дё‹ж–№жЊ‰й’®
+ж·»еЉ ж‚Ёзљ„е·ҐдЅњз»ЏеЋ†</string>
+    <string name="SaveChanges">дїќе­ж›ґж”№</string>
+    <string name="WorkExperienceSaved">е·ҐдЅњз»ЏеЋ†ж·»еЉ ж€ђеЉџ</string>
+    <string name="PresentLabel">и‡ід»Љ</string>
+    <string name="EndDateCannotBeEarly">з»“жќџж—ҐжњџдёЌиѓЅж—©дєЋејЂе§‹ж—Ґжњџ</string>
 
     <plurals name="work_years">
-        <item quantity="one">%d 年</item>
-        <item quantity="other">%d 年</item>
+        <item quantity="one">%d е№ґ</item>
+        <item quantity="other">%d е№ґ</item>
     </plurals>
     <plurals name="work_months">
-        <item quantity="one">%d 个月</item>
-        <item quantity="other">%d 个月</item>
+        <item quantity="one">%d дёЄжњ€</item>
+        <item quantity="other">%d дёЄжњ€</item>
     </plurals>
 
     <!--add model screen-->
-    <string name="AddNewModel">添加新模特</string>
-    <string name="AddModelDescription">填写模特详细信息以将他们添加到您的机构。您可以随时更新这些信息。</string>
-    <string name="PersonalData">个人资料</string>
-    <string name="FullName">全名</string>
-    <string name="CountryLabel">国家/地区</string>
-    <string name="ProfileLink">Divo 主页链接</string>
-    <string name="NextStep">下一步</string>
-    <string name="AddStoryLabel">添加快拍</string>
-    <string name="Liked">已赞</string>
-    <string name="Unliked">取消点赞</string>
-    <string name="BookmarkSaved">已保存</string>
-    <string name="BookmarkUnsaved">未保存</string>
-    <string name="AddModelToYourRoster">将模特添加到您的名单</string>
-    <string name="StartTypingToSearchForModel">开始输入以
-搜索模特</string>
+    <string name="AddNewModel">ж·»еЉ ж–°жЁЎз‰№</string>
+    <string name="AddModelDescription">еЎ«е†™жЁЎз‰№иЇ¦з»†дїЎжЃЇд»Ґе°†д»–д»¬ж·»еЉ е€°ж‚Ёзљ„жњєжћ„гЂ‚ж‚ЁеЏЇд»ҐйљЏж—¶ж›ґж–°иї™дє›дїЎжЃЇгЂ‚</string>
+    <string name="PersonalData">дёЄдєєиµ„ж–™</string>
+    <string name="FullName">е…ЁеђЌ</string>
+    <string name="CountryLabel">е›Ѕе®¶/ењ°еЊє</string>
+    <string name="ProfileLink">Divo дё»йЎµй“ѕжЋҐ</string>
+    <string name="NextStep">дё‹дёЂж­Ґ</string>
+    <string name="AddStoryLabel">ж·»еЉ еї«ж‹Ќ</string>
+    <string name="Liked">е·Іиµћ</string>
+    <string name="Unliked">еЏ–ж¶€з‚№иµћ</string>
+    <string name="BookmarkSaved">е·Ідїќе­</string>
+    <string name="BookmarkUnsaved">жњЄдїќе­</string>
+    <string name="AddModelToYourRoster">е°†жЁЎз‰№ж·»еЉ е€°ж‚Ёзљ„еђЌеЌ•</string>
+    <string name="StartTypingToSearchForModel">ејЂе§‹иѕ“е…Ґд»Ґ
+жђњзґўжЁЎз‰№</string>
 
     <!--events screen-->
-    <string name="EventList">活动</string>
-    <string name="OrganizationLabel">组织机构</string>
-    <string name="ParametersForApplying">报名条件</string>
-    <string name="AgeRange">%1$d-%2$d 岁</string>
-    <string name="PreviousEvents">往期活动</string>
-    <string name="CountdownFormat">%1$d天 : %2$d小时 : %3$d分</string>
-    <string name="CountdownStarted">已开始</string>
-    <string name="CountdownFinished">已结束</string>
-    <string name="NoEventsYet">暂无活动</string>
-    <string name="CreateEvent">创建活动</string>
-    <string name="EventType">活动类型</string>
-    <string name="EventName">活动名称 *</string>
-    <string name="EventDescription">描述 *</string>
-    <string name="EventDescriptionAbout">活动详情</string>
-    <string name="EventDate">活动日期 *</string>
-    <string name="EventTime">活动时间 *</string>
-    <string name="EventDatePlaceholder">2000年1月1日</string>
+    <string name="EventList">жґ»еЉЁ</string>
+    <string name="OrganizationLabel">з»„з»‡жњєжћ„</string>
+    <string name="ParametersForApplying">жЉҐеђЌжќЎд»¶</string>
+    <string name="AgeRange">%1$d-%2$d еІЃ</string>
+    <string name="PreviousEvents">еѕЂжњџжґ»еЉЁ</string>
+    <string name="CountdownFormat">%1$dе¤© : %2$dе°Џж—¶ : %3$dе€†</string>
+    <string name="CountdownStarted">е·ІејЂе§‹</string>
+    <string name="CountdownFinished">е·Із»“жќџ</string>
+    <string name="NoEventsYet">жљ‚ж— жґ»еЉЁ</string>
+    <string name="CreateEvent">е€›е»єжґ»еЉЁ</string>
+    <string name="EventType">жґ»еЉЁз±»ећ‹</string>
+    <string name="EventName">жґ»еЉЁеђЌз§° *</string>
+    <string name="EventDescription">жЏЏиї° *</string>
+    <string name="EventDescriptionAbout">жґ»еЉЁиЇ¦жѓ…</string>
+    <string name="EventDate">жґ»еЉЁж—Ґжњџ *</string>
+    <string name="EventTime">жґ»еЉЁж—¶й—ґ *</string>
+    <string name="EventDatePlaceholder">2000е№ґ1жњ€1ж—Ґ</string>
     <string name="EventTimePlaceholder">00:00</string>
-    <string name="EventChooseCountry">选择国家/地区</string>
-    <string name="EventContinue">继续</string>
-    <string name="EventStepProgress">第 %1$d/%2$d 步</string>
-    <string name="EventWhoCanApply">报名要求</string>
-    <string name="EventMaxParticipants">人数上限</string>
-    <string name="EventSelectMaxParticipants">选择人数上限</string>
-    <string name="EventChooseTalent">选择特长</string>
-    <string name="EventChooseAnEvent">选择一个活动</string>
-    <string name="EventRequirements">活动要求</string>
-    <string name="EventEnterRequirements">输入活动要求</string>
-    <string name="EventNdaRequired">需要签署保密协议(NDA)</string>
-    <string name="EventRequired">必需</string>
-    <string name="EventNotRequired">非必需</string>
-    <string name="EventApplicationDeadlineDate">报名截止日期*</string>
-    <string name="EventApplicationDeadlineTime">报名截止时间*</string>
-    <string name="EventPaid">是否有酬劳</string>
-    <string name="EventRate">薪酬</string>
+    <string name="EventChooseCountry">йЂ‰ж‹©е›Ѕе®¶/ењ°еЊє</string>
+    <string name="EventContinue">з»§з»­</string>
+    <string name="EventStepProgress">з¬¬ %1$d/%2$d ж­Ґ</string>
+    <string name="EventWhoCanApply">жЉҐеђЌи¦Ѓж±‚</string>
+    <string name="EventMaxParticipants">дєєж•°дёЉй™ђ</string>
+    <string name="EventSelectMaxParticipants">йЂ‰ж‹©дєєж•°дёЉй™ђ</string>
+    <string name="EventChooseTalent">йЂ‰ж‹©з‰№й•ї</string>
+    <string name="EventChooseAnEvent">йЂ‰ж‹©дёЂдёЄжґ»еЉЁ</string>
+    <string name="EventRequirements">жґ»еЉЁи¦Ѓж±‚</string>
+    <string name="EventEnterRequirements">иѕ“е…Ґжґ»еЉЁи¦Ѓж±‚</string>
+    <string name="EventNdaRequired">йњЂи¦Ѓз­ѕзЅІдїќеЇ†еЌЏи®®(NDA)</string>
+    <string name="EventRequired">еї…йњЂ</string>
+    <string name="EventNotRequired">йќћеї…йњЂ</string>
+    <string name="EventApplicationDeadlineDate">жЉҐеђЌж€Єж­ўж—Ґжњџ*</string>
+    <string name="EventApplicationDeadlineTime">жЉҐеђЌж€Єж­ўж—¶й—ґ*</string>
+    <string name="EventPaid">жЇеђ¦жњ‰й…¬еЉі</string>
+    <string name="EventRate">и–Єй…¬</string>
     <string name="EventRatePlaceholder">100</string>
-    <string name="EventPublicEvent">公开活动</string>
-    <string name="EventVisibleToAllUsers">对所有用户可见</string>
-    <string name="EventPhotoGallery">活动图库</string>
-    <string name="EventUploadEventPhotos">上传活动照片</string>
-    <string name="EventPreview">预览</string>
-    <string name="EventPublish">发布活动</string>
-    <string name="EventUploadingPhotos">正在上传照片...</string>
-    <string name="EventParametersForApplying">报名条件</string>
-    <string name="EventApplied">%d 人已报名</string>
-    <string name="EventMaxSpots">上限 %d 人</string>
-    <string name="EditEvent">编辑活动</string>
+    <string name="EventPublicEvent">е…¬ејЂжґ»еЉЁ</string>
+    <string name="EventVisibleToAllUsers">еЇ№ж‰Ђжњ‰з”Ёж€·еЏЇи§Ѓ</string>
+    <string name="EventPhotoGallery">жґ»еЉЁе›ѕеє“</string>
+    <string name="EventUploadEventPhotos">дёЉдј жґ»еЉЁз…§з‰‡</string>
+    <string name="EventPreview">йў„и§€</string>
+    <string name="EventPublish">еЏ‘еёѓжґ»еЉЁ</string>
+    <string name="EventUploadingPhotos">ж­ЈењЁдёЉдј з…§з‰‡...</string>
+    <string name="EventParametersForApplying">жЉҐеђЌжќЎд»¶</string>
+    <string name="EventApplied">%d дєєе·ІжЉҐеђЌ</string>
+    <string name="EventMaxSpots">дёЉй™ђ %d дєє</string>
+    <string name="EditEvent">зј–иѕ‘жґ»еЉЁ</string>
 
-    <string name="EventStatusApplicationsClosed">申请已截止</string>
-    <string name="EventStatusApplicationsClosedDate">申请已截止 %1$s</string>
-    <string name="CloseApplicationsEvent">关闭申请</string>
-    <string name="CloseApplicationsTitle">关闭申请？</string>
-    <string name="CloseApplicationsDescription">您确定要关闭 \"%s\" 的申请吗？将不再有人能申请。</string>
-    <string name="CancelEvent">取消活动</string>
-    <string name="CancelEventTitle">取消活动？</string>
-    <string name="CancelEventDescription">您确定要取消 \"%s\" 吗？所有已申请的人才将会收到通知。</string>
-    <string name="DeleteEvent">删除</string>
-    <string name="DeleteEventTitle">要删除 \"%s\" 吗？</string>
-    <string name="DeleteEventDescription">此操作无法撤销，所有报名申请都将被取消。</string>
-    <string name="DeleteEventConfirm">删除活动</string>
-    <string name="ThereAreNoUpcomingEvents">目前没有即将到来的活动</string>
-    <string name="CheckBackLaterOrCreateEvents">请稍后查看或
-创建一个新活动</string>
-    <string name="ClosesDate">截止时间：%1$s</string>
-    <string name="ViewApplications">查看报名申请</string>
-    <string name="ApplyNowPreview">立即报名 (仅限预览)</string>
+    <string name="EventStatusApplicationsClosed">з”іиЇ·е·Іж€Єж­ў</string>
+    <string name="EventStatusApplicationsClosedDate">з”іиЇ·е·Іж€Єж­ў %1$s</string>
+    <string name="CloseApplicationsEvent">е…ій—­з”іиЇ·</string>
+    <string name="CloseApplicationsTitle">е…ій—­з”іиЇ·пјџ</string>
+    <string name="CloseApplicationsDescription">ж‚ЁзЎ®е®љи¦Ѓе…ій—­ \"%s\" зљ„з”іиЇ·еђ—пјџе°†дёЌе†Ќжњ‰дєєиѓЅз”іиЇ·гЂ‚</string>
+    <string name="CancelEvent">еЏ–ж¶€жґ»еЉЁ</string>
+    <string name="CancelEventTitle">еЏ–ж¶€жґ»еЉЁпјџ</string>
+    <string name="CancelEventDescription">ж‚ЁзЎ®е®љи¦ЃеЏ–ж¶€ \"%s\" еђ—пјџж‰Ђжњ‰е·Із”іиЇ·зљ„дєєж‰Ќе°†дјљж”¶е€°йЂљзџҐгЂ‚</string>
+    <string name="DeleteEvent">е€ й™¤</string>
+    <string name="DeleteEventTitle">и¦Ѓе€ й™¤ \"%s\" еђ—пјџ</string>
+    <string name="DeleteEventDescription">ж­¤ж“ЌдЅњж— жі•ж’¤й”ЂпјЊж‰Ђжњ‰жЉҐеђЌз”іиЇ·йѓЅе°†иў«еЏ–ж¶€гЂ‚</string>
+    <string name="DeleteEventConfirm">е€ й™¤жґ»еЉЁ</string>
+    <string name="ThereAreNoUpcomingEvents">з›®е‰ЌжІЎжњ‰еЌіе°†е€°жќҐзљ„жґ»еЉЁ</string>
+    <string name="CheckBackLaterOrCreateEvents">иЇ·зЁЌеђЋжџҐзњ‹ж€–
+е€›е»єдёЂдёЄж–°жґ»еЉЁ</string>
+    <string name="ClosesDate">ж€Єж­ўж—¶й—ґпјљ%1$s</string>
+    <string name="ViewApplications">жџҐзњ‹жЉҐеђЌз”іиЇ·</string>
+    <string name="ApplyNowPreview">з«‹еЌіжЉҐеђЌ (д»…й™ђйў„и§€)</string>
     <plurals name="ParticipantsCount">
-        <item quantity="one">%d 名参与者</item>
-        <item quantity="other">%d 名参与者</item>
+        <item quantity="one">%d еђЌеЏ‚дёЋиЂ…</item>
+        <item quantity="other">%d еђЌеЏ‚дёЋиЂ…</item>
     </plurals>
 
-    <string name="EventSearchPlaceholder">搜索活动</string>
-    <string name="EventSearchNoResults">没有符合您过滤条件的活动</string>
-    <string name="EventSearchNoResultsSubtitle">请尝试调整搜索或过滤条件</string>
-    <string name="EventSearchClearFilters">清除过滤器</string>
-    <string name="EventSearchEventsFound">个活动找到</string>
-    <string name="EventFilterTypeEvents">活动类型</string>
-    <string name="EventFilterChooseEvent">选择一个活动</string>
-    <string name="EventFilterAge">年龄 (岁)</string>
-    <string name="EventFilterSelectAgeRange">选择年龄范围</string>
-    <string name="EventFilterPaidOnly">仅限付费</string>
-    <string name="EventFilterAllRoles">所有角色</string>
-    <string name="EventFilterResetParameter">重置参数</string>
+    <string name="EventSearchPlaceholder">жђњзґўжґ»еЉЁ</string>
+    <string name="EventSearchNoResults">жІЎжњ‰з¬¦еђ€ж‚Ёиї‡ж»¤жќЎд»¶зљ„жґ»еЉЁ</string>
+    <string name="EventSearchNoResultsSubtitle">иЇ·е°ќиЇ•и°ѓж•ґжђњзґўж€–иї‡ж»¤жќЎд»¶</string>
+    <string name="EventSearchClearFilters">жё…й™¤иї‡ж»¤е™Ё</string>
+    <string name="EventSearchEventsFound">дёЄжґ»еЉЁж‰ѕе€°</string>
+    <string name="EventFilterTypeEvents">жґ»еЉЁз±»ећ‹</string>
+    <string name="EventFilterChooseEvent">йЂ‰ж‹©дёЂдёЄжґ»еЉЁ</string>
+    <string name="EventFilterAge">е№ґйѕ„ (еІЃ)</string>
+    <string name="EventFilterSelectAgeRange">йЂ‰ж‹©е№ґйѕ„иЊѓе›ґ</string>
+    <string name="EventFilterPaidOnly">д»…й™ђд»иґ№</string>
+    <string name="EventFilterAllRoles">ж‰Ђжњ‰и§’и‰І</string>
+    <string name="EventFilterResetParameter">й‡ЌзЅ®еЏ‚ж•°</string>
 
     <!--models screen-->
-    <string name="Models">模特</string>
-    <string name="NewTalents">新面孔</string>
-    <string name="Agencies">机构</string>
+    <string name="Models">жЁЎз‰№</string>
+    <string name="NewTalents">ж–°йќўе­”</string>
+    <string name="Agencies">жњєжћ„</string>
 
-    <string name="DivoAgencyModelRepresentedBy">该模特目前由
-%1$s 代表</string>
-    <string name="DivoAgencyModelAnotherAgency">其他机构</string>
-    <string name="DivoAgencyModelRepresentedByDesc">当她与其他机构合作时，
-您无法将其添加到您的名单中。</string>
-    <string name="DivoAgencyModelAddNoteTitle">添加个人备注</string>
-    <string name="DivoAgencyModelAddNoteHint">例如：我们很希望在我们的活动中代表您。</string>
-    <string name="DivoAgencyModelCancelRequestTitle">取消对 %1$s 的请求？</string>
-    <string name="DivoAgencyModelRemoveRosterTitle">从您的名单中移除 %1$s？</string>
-    <string name="DivoAgencyModelYesCancel">是，取消</string>
-    <string name="DivoAgencyModelYesRemove">是，移除</string>
-    <string name="DivoAgencyModelKeepRequest">保留请求</string>
-    <string name="DivoAgencyModelKeepModel">保留模特</string>
-    <string name="DivoAgencyModelPending">等待确认中</string>
-    <string name="DivoAgencyModelYearsOld">%1$d 岁</string>
-    <string name="DivoAgencyModelHeight">身高 %1$d</string>
-    <string name="DivoAgencyModelBreast">胸围 %1$s</string>
-    <string name="DivoAgencyModelWaist">腰围 %1$d</string>
-    <string name="DivoAgencyModelHips">臀围 %1$d</string>
-    <string name="DivoAgencyModelAddNoteDescription">注意：将此模特添加到您的名单中后，您的机构可以向其发送独家私人通告，管理其预订，并在 Divo 上正式代表她。</string>
-    <string name="DivoAgencyModelAlreadyAdded">已添加</string>
-    <string name="DivoAgencyModelRepresentedByOther">由其他机构代表</string>
+    <string name="DivoAgencyModelRepresentedBy">иЇҐжЁЎз‰№з›®е‰Ќз”±
+%1$s д»ЈиЎЁ</string>
+    <string name="DivoAgencyModelAnotherAgency">е…¶д»–жњєжћ„</string>
+    <string name="DivoAgencyModelRepresentedByDesc">еЅ“еҐ№дёЋе…¶д»–жњєжћ„еђ€дЅњж—¶пјЊ
+ж‚Ёж— жі•е°†е…¶ж·»еЉ е€°ж‚Ёзљ„еђЌеЌ•дё­гЂ‚</string>
+    <string name="DivoAgencyModelAddNoteTitle">ж·»еЉ дёЄдєєе¤‡жіЁ</string>
+    <string name="DivoAgencyModelAddNoteHint">дѕ‹е¦‚пјљж€‘д»¬еѕ€еёЊжњ›ењЁж€‘д»¬зљ„жґ»еЉЁдё­д»ЈиЎЁж‚ЁгЂ‚</string>
+    <string name="DivoAgencyModelCancelRequestTitle">еЏ–ж¶€еЇ№ %1$s зљ„иЇ·ж±‚пјџ</string>
+    <string name="DivoAgencyModelRemoveRosterTitle">д»Ћж‚Ёзљ„еђЌеЌ•дё­з§»й™¤ %1$sпјџ</string>
+    <string name="DivoAgencyModelYesCancel">жЇпјЊеЏ–ж¶€</string>
+    <string name="DivoAgencyModelYesRemove">жЇпјЊз§»й™¤</string>
+    <string name="DivoAgencyModelKeepRequest">дїќз•™иЇ·ж±‚</string>
+    <string name="DivoAgencyModelKeepModel">дїќз•™жЁЎз‰№</string>
+    <string name="DivoAgencyModelPending">з­‰еѕ…зЎ®и®¤дё­</string>
+    <string name="DivoAgencyModelYearsOld">%1$d еІЃ</string>
+    <string name="DivoAgencyModelHeight">иє«й« %1$d</string>
+    <string name="DivoAgencyModelBreast">иѓёе›ґ %1$s</string>
+    <string name="DivoAgencyModelWaist">и…°е›ґ %1$d</string>
+    <string name="DivoAgencyModelHips">и‡Ђе›ґ %1$d</string>
+    <string name="DivoAgencyModelAddNoteDescription">жіЁж„Џпјље°†ж­¤жЁЎз‰№ж·»еЉ е€°ж‚Ёзљ„еђЌеЌ•дё­еђЋпјЊж‚Ёзљ„жњєжћ„еЏЇд»Ґеђ‘е…¶еЏ‘йЂЃз‹¬е®¶з§ЃдєєйЂље‘ЉпјЊз®Ўзђ†е…¶йў„и®ўпјЊе№¶ењЁ Divo дёЉж­ЈејЏд»ЈиЎЁеҐ№гЂ‚</string>
+    <string name="DivoAgencyModelAlreadyAdded">е·Іж·»еЉ </string>
+    <string name="DivoAgencyModelRepresentedByOther">з”±е…¶д»–жњєжћ„д»ЈиЎЁ</string>
 
 
     <!--search screen-->
-    <string name="FindSimilarProfiles">寻找相似主页</string>
-    <string name="UploadPhoto">上传照片以寻找外貌相似的模特</string>
-    <string name="TakePhoto">拍照</string>
-    <string name="ChooseFromLibrary">从相册选择</string>
-    <string name="UseDivoPhoto">使用 DIVO 头像</string>
-    <string name="FaceSearchTitle">人脸搜索如何工作</string>
-    <string name="FaceSearchDescriptionFirst">我们会分析您的照片以寻找外貌相似的 DIVO 主页。您的照片仅用于此次搜索，不会被存储或分享。</string>
-    <string name="FaceSearchDescriptionSecond">结果根据视觉相似度排序。您可以使用过滤器进一步缩小位置、角色等范围。</string>
-    <string name="FaceSearchConfirm">知道了，开始搜索</string>
-    <string name="CameraPermissionTitle">需要相机权限</string>
-    <string name="CameraPermissionDescription">为了拍摄照片进行人脸搜索，请允许访问相机。您可以在应用设置中开启。</string>
-    <string name="OpenSettings">打开设置</string>
-    <string name="FaceSearch">人脸搜索</string>
-    <string name="ChangePhoto">更改照片</string>
-    <string name="SimilarityScore">结果按视觉相似度排序</string>
-    <string name="NoFaceDetected">未检测到人脸</string>
-    <string name="PleaseUsePhotoClearly">请使用面部清晰可见的照片——正面、光线充足且无遮挡。</string>
+    <string name="FindSimilarProfiles">еЇ»ж‰ѕз›ёдјјдё»йЎµ</string>
+    <string name="UploadPhoto">дёЉдј з…§з‰‡д»ҐеЇ»ж‰ѕе¤–иІЊз›ёдјјзљ„жЁЎз‰№</string>
+    <string name="TakePhoto">ж‹Ќз…§</string>
+    <string name="ChooseFromLibrary">д»Ћз›ёе†ЊйЂ‰ж‹©</string>
+    <string name="UseDivoPhoto">дЅїз”Ё DIVO е¤ґеѓЏ</string>
+    <string name="FaceSearchTitle">дєєи„ёжђњзґўе¦‚дЅ•е·ҐдЅњ</string>
+    <string name="FaceSearchDescriptionFirst">ж€‘д»¬дјље€†жћђж‚Ёзљ„з…§з‰‡д»ҐеЇ»ж‰ѕе¤–иІЊз›ёдјјзљ„ DIVO дё»йЎµгЂ‚ж‚Ёзљ„з…§з‰‡д»…з”ЁдєЋж­¤ж¬ЎжђњзґўпјЊдёЌдјљиў«е­е‚Ёж€–е€†дє«гЂ‚</string>
+    <string name="FaceSearchDescriptionSecond">з»“жћњж №жЌ®и§†и§‰з›ёдјјеє¦жЋ’еєЏгЂ‚ж‚ЁеЏЇд»ҐдЅїз”Ёиї‡ж»¤е™Ёиї›дёЂж­Ґзј©е°ЏдЅЌзЅ®гЂЃи§’и‰Із­‰иЊѓе›ґгЂ‚</string>
+    <string name="FaceSearchConfirm">зџҐйЃ“дє†пјЊејЂе§‹жђњзґў</string>
+    <string name="CameraPermissionTitle">йњЂи¦Ѓз›ёжњєжќѓй™ђ</string>
+    <string name="CameraPermissionDescription">дёєдє†ж‹Ќж‘„з…§з‰‡иї›иЎЊдєєи„ёжђњзґўпјЊиЇ·е…Ѓи®ёи®їй—®з›ёжњєгЂ‚ж‚ЁеЏЇд»ҐењЁеє”з”Ёи®ѕзЅ®дё­ејЂеђЇгЂ‚</string>
+    <string name="OpenSettings">ж‰“ејЂи®ѕзЅ®</string>
+    <string name="FaceSearch">дєєи„ёжђњзґў</string>
+    <string name="ChangePhoto">ж›ґж”№з…§з‰‡</string>
+    <string name="SimilarityScore">з»“жћњжЊ‰и§†и§‰з›ёдјјеє¦жЋ’еєЏ</string>
+    <string name="NoFaceDetected">жњЄжЈЂжµ‹е€°дєєи„ё</string>
+    <string name="PleaseUsePhotoClearly">иЇ·дЅїз”ЁйќўйѓЁжё…ж™°еЏЇи§Ѓзљ„з…§з‰‡вЂ”вЂ”ж­ЈйќўгЂЃе…‰зєїе……и¶ідё”ж— йЃ®жЊЎгЂ‚</string>
     <plurals name="MultipleFacesDetected">
-        <item quantity="other">检测到 %d 张人脸 — 点击其中一张进行搜索</item>
+        <item quantity="other">жЈЂжµ‹е€° %d еј дєєи„ё вЂ” з‚№е‡»е…¶дё­дёЂеј иї›иЎЊжђњзґў</item>
     </plurals>
-    <string name="ReadyToSearchFace">已选择人脸 — 准备搜索</string>
-    <string name="DragToMovePhoto">拖动照片以移动</string>
-    <string name="AvoidSunglasses">避免佩戴墨镜、口罩或照片裁剪过度。</string>
-    <string name="FullFacePhotos">全脸照片效果最佳 — 请勿使用侧脸照片。</string>
-    <string name="AnalysingFacialFeatures">正在分析面部特征...</string>
-    <string name="NoResultsFound">未找到结果</string>
-    <string name="TryAdjustingYourFilters">尝试调整您的过滤器</string>
-    <string name="CityLabel">城市</string>
-    <string name="CitiesLabel">城市</string>
-    <string name="CountriesLabel">国家/地区</string>
-    <string name="SuggestedCities">推荐城市</string>
-    <string name="NoItemsFound">未找到 %1$s</string>
-    <string name="TryDifferent">尝试其他 %1$s</string>
-    <string name="AllColorsLabel">所有颜色</string>
-    <string name="AllLengthsLabel">所有长度</string>
-    <string name="ForLabel">用于</string>
-    <string name="RecentFaceSearches">最近的人脸搜索</string>
-    <string name="Found">找到</string>
-    <string name="NoFilters">无过滤器</string>
-    <string name="SeeAll">查看全部</string>
+    <string name="ReadyToSearchFace">е·ІйЂ‰ж‹©дєєи„ё вЂ” е‡†е¤‡жђњзґў</string>
+    <string name="DragToMovePhoto">ж‹–еЉЁз…§з‰‡д»Ґз§»еЉЁ</string>
+    <string name="AvoidSunglasses">йЃїе…ЌдЅ©ж€ґеўЁй•њгЂЃеЏЈзЅ©ж€–з…§з‰‡иЈЃе‰Єиї‡еє¦гЂ‚</string>
+    <string name="FullFacePhotos">е…Ёи„ёз…§з‰‡ж•€жћњжњЂдЅі вЂ” иЇ·е‹їдЅїз”Ёдѕ§и„ёз…§з‰‡гЂ‚</string>
+    <string name="AnalysingFacialFeatures">ж­ЈењЁе€†жћђйќўйѓЁз‰№еѕЃ...</string>
+    <string name="NoResultsFound">жњЄж‰ѕе€°з»“жћњ</string>
+    <string name="TryAdjustingYourFilters">е°ќиЇ•и°ѓж•ґж‚Ёзљ„иї‡ж»¤е™Ё</string>
+    <string name="CityLabel">еџЋеё‚</string>
+    <string name="CitiesLabel">еџЋеё‚</string>
+    <string name="CountriesLabel">е›Ѕе®¶/ењ°еЊє</string>
+    <string name="SuggestedCities">жЋЁиЌђеџЋеё‚</string>
+    <string name="NoItemsFound">жњЄж‰ѕе€° %1$s</string>
+    <string name="TryDifferent">е°ќиЇ•е…¶д»– %1$s</string>
+    <string name="AllColorsLabel">ж‰Ђжњ‰йўњи‰І</string>
+    <string name="AllLengthsLabel">ж‰Ђжњ‰й•їеє¦</string>
+    <string name="ForLabel">з”ЁдєЋ</string>
+    <string name="RecentFaceSearches">жњЂиї‘зљ„дєєи„ёжђњзґў</string>
+    <string name="Found">ж‰ѕе€°</string>
+    <string name="NoFilters">ж— иї‡ж»¤е™Ё</string>
+    <string name="SeeAll">жџҐзњ‹е…ЁйѓЁ</string>
     <plurals name="ResultFor">
-        <item quantity="one">个结果</item>
-        <item quantity="other">个结果</item>
+        <item quantity="one">дёЄз»“жћњ</item>
+        <item quantity="other">дёЄз»“жћњ</item>
     </plurals>
 
     <!--similar profiles screen-->
-    <string name="SimilarProfilesTitle">相似主页</string>
-    <string name="FaceSearchHistoryTitle">人脸搜索历史</string>
-    <string name="ClearAll">清除全部</string>
-    <string name="ResultsWithSimilarity">%1$s · 相似度 %2$d%%+</string>
-    <string name="SortedBy">排序方式：</string>
-    <string name="SimilarityFormat">%1$d%% 匹配</string>
-    <string name="FilterResults">过滤结果</string>
-    <string name="ButtonReset">重置</string>
-    <string name="MinimumSimilarity">最低相似度</string>
-    <string name="HigherValuesShow">数值越高匹配越精确，但结果较少</string>
-    <string name="AnyLabel">不限</string>
-    <string name="RoleLabel">角色</string>
-    <string name="AllLabel">所有角色</string>
-    <string name="CountriesValue">所有国家/地区</string>
-    <string name="MoreParameters">更多参数</string>
-    <string name="LessParameters">收起参数</string>
-    <string name="ApplyFilter">应用过滤器</string>
-    <string name="SortedByMatch">匹配度</string>
-    <string name="SortedByFilters">过滤条件：</string>
-    <string name="Model">模特</string>
-    <string name="Agency">机构</string>
-    <string name="NewTalent">新面孔</string>
+    <string name="SimilarProfilesTitle">з›ёдјјдё»йЎµ</string>
+    <string name="FaceSearchHistoryTitle">дєєи„ёжђњзґўеЋ†еЏІ</string>
+    <string name="ClearAll">жё…й™¤е…ЁйѓЁ</string>
+    <string name="ResultsWithSimilarity">%1$s В· з›ёдјјеє¦ %2$d%%+</string>
+    <string name="SortedBy">жЋ’еєЏж–№ејЏпјљ</string>
+    <string name="SimilarityFormat">%1$d%% еЊ№й…Ќ</string>
+    <string name="FilterResults">иї‡ж»¤з»“жћњ</string>
+    <string name="ButtonReset">й‡ЌзЅ®</string>
+    <string name="MinimumSimilarity">жњЂдЅЋз›ёдјјеє¦</string>
+    <string name="HigherValuesShow">ж•°еЂји¶Љй«еЊ№й…Ќи¶ЉзІѕзЎ®пјЊдЅ†з»“жћњиѕѓе°‘</string>
+    <string name="AnyLabel">дёЌй™ђ</string>
+    <string name="RoleLabel">и§’и‰І</string>
+    <string name="AllLabel">ж‰Ђжњ‰и§’и‰І</string>
+    <string name="CountriesValue">ж‰Ђжњ‰е›Ѕе®¶/ењ°еЊє</string>
+    <string name="MoreParameters">ж›ґе¤љеЏ‚ж•°</string>
+    <string name="LessParameters">ж”¶иµ·еЏ‚ж•°</string>
+    <string name="ApplyFilter">еє”з”Ёиї‡ж»¤е™Ё</string>
+    <string name="SortedByMatch">еЊ№й…Ќеє¦</string>
+    <string name="SortedByFilters">иї‡ж»¤жќЎд»¶пјљ</string>
+    <string name="Model">жЁЎз‰№</string>
+    <string name="Agency">жњєжћ„</string>
+    <string name="NewTalent">ж–°йќўе­”</string>
     <plurals name="ProfilesFound">
-        <item quantity="one">找到 %d 个主页</item>
-        <item quantity="other">找到 %d 个主页</item>
+        <item quantity="one">ж‰ѕе€° %d дёЄдё»йЎµ</item>
+        <item quantity="other">ж‰ѕе€° %d дёЄдё»йЎµ</item>
     </plurals>
 
     <plurals name="ResultsCount">
-        <item quantity="one">%d 个结果</item>
-        <item quantity="other">%d 个结果</item>
+        <item quantity="one">%d дёЄз»“жћњ</item>
+        <item quantity="other">%d дёЄз»“жћњ</item>
     </plurals>
 
     <string-array name="ModelFunNewTalent">
-        <item>所有角色</item>
-        <item>模特</item>
-        <item>爱好者</item>
-        <item>新面孔</item>
+        <item>ж‰Ђжњ‰и§’и‰І</item>
+        <item>жЁЎз‰№</item>
+        <item>з€±еҐЅиЂ…</item>
+        <item>ж–°йќўе­”</item>
     </string-array>
 
     <!--settings screen-->
-    <string name="SettingsTitle">设置</string>
-    <string name="EditBtn">编辑</string>
-    <string name="PromoCardHeadline">在时尚界大放异彩</string>
-    <string name="PromoCardBody">作为模特发布您的主页，参与选角；或作为经纪公司发布活动 — 成为全球时尚网络的一员。</string>
-    <string name="PromoCardBtn">了解更多</string>
-    <string name="SetUsernameLabel">设置用户名</string>
-    <string name="FillYourParametersLabel">填写您的参数</string>
-    <string name="SavedMessagesLabel">收藏的消息</string>
-    <string name="NotificationsAndSoundsLabel">通知与声音</string>
-    <string name="PrivacyAndSecurityLabel">隐私与安全</string>
-    <string name="DataAndStorageLabel">数据与存储</string>
-    <string name="AppearanceLabel">外观</string>
-    <string name="MeasuringSystemLabel">测量系统</string>
-    <string name="MeasuringSystemMetric">公制</string>
-    <string name="MeasuringSystemImperial">英制</string>
-    <string name="Language">语言</string>
-    <string name="LogOutLabel">退出登录</string>
+    <string name="SettingsTitle">и®ѕзЅ®</string>
+    <string name="EditBtn">зј–иѕ‘</string>
+    <string name="PromoCardHeadline">ењЁж—¶е°љз•Ње¤§ж”ѕеј‚еЅ©</string>
+    <string name="PromoCardBody">дЅњдёєжЁЎз‰№еЏ‘еёѓж‚Ёзљ„дё»йЎµпјЊеЏ‚дёЋйЂ‰и§’пј›ж€–дЅњдёєз»ЏзєЄе…¬еЏёеЏ‘еёѓжґ»еЉЁ вЂ” ж€ђдёєе…Ёзђѓж—¶е°љзЅ‘з»њзљ„дёЂе‘гЂ‚</string>
+    <string name="PromoCardBtn">дє†и§Јж›ґе¤љ</string>
+    <string name="SetUsernameLabel">и®ѕзЅ®з”Ёж€·еђЌ</string>
+    <string name="FillYourParametersLabel">еЎ«е†™ж‚Ёзљ„еЏ‚ж•°</string>
+    <string name="SavedMessagesLabel">ж”¶и—Џзљ„ж¶€жЃЇ</string>
+    <string name="NotificationsAndSoundsLabel">йЂљзџҐдёЋеЈ°йџі</string>
+    <string name="PrivacyAndSecurityLabel">йљђз§ЃдёЋе®‰е…Ё</string>
+    <string name="DataAndStorageLabel">ж•°жЌ®дёЋе­е‚Ё</string>
+    <string name="AppearanceLabel">е¤–и§‚</string>
+    <string name="MeasuringSystemLabel">жµ‹й‡Џзі»з»џ</string>
+    <string name="MeasuringSystemMetric">е…¬е€¶</string>
+    <string name="MeasuringSystemImperial">и‹±е€¶</string>
+    <string name="Language">иЇ­иЁЂ</string>
+    <string name="LogOutLabel">йЂЂе‡єз™»еЅ•</string>
 
     <!--onboarding screen-->
-    <string name="OnboardingTitleGetSeenByTheRightPeople">被对的人看见</string>
-    <string name="OnboardingSubtitleGetSeenByTheRightPeople">专业的个人主页，让正在寻找合适人才的经纪公司和品牌一眼看到您</string>
-    <string name="OnboardingTitleRealCastingsRealOpportunities">真实的试镜。真正的机会。</string>
-    <string name="OnboardingSubtitleRealCastingsRealOpportunities">申请来自机构和品牌的经过验证的工作 — 没有中间商，无需猜测。</string>
-    <string name="OnboardingTitleDiscoveredFasterWithAI">AI 助力，更快被发掘。</string>
-    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO的 AI 为人才和品牌进行最佳匹配 — 让机会主动找上门。</string>
-    <string name="OnboardingEnterCode">输入验证码</string>
-    <string name="WelcomeToDivo">欢迎来到 DIVO</string>
-    <string name="SignOrCreateAccount">登录或创建您的账户</string>
-    <string name="ContinueWithPhoneNumber">使用手机号码继续</string>
-    <string name="OnboardingOrLabel">或</string>
-    <string name="OnboardingSignInWithGoogle">使用 Google 登录</string>
-    <string name="OnboardingSignInWithApple">使用 Apple 登录</string>
-    <string name="TermsPrefix">继续即表示您同意我们的</string>
-    <string name="OnboardingAnd">及</string>
-    <string name="OnboardingTermsOfService">服务条款</string>
-    <string name="OnboardingPrivacyPolicy">隐私政策</string>
-    <string name="OptionGetHiredTitle">我想找工作</string>
-    <string name="OptionLookingForTalentTitle">我在寻找人才</string>
-    <string name="OptionHereToFollowTitle">我只是来关注动态的</string>
-    <string name="OptionGetHiredSubtitle">模特、表演者、创意工作者</string>
-    <string name="OptionLookingForTalentSubtitle">机构、品牌、星探、经纪人</string>
-    <string name="OptionHereToFollowSubtitle">时尚及创作者的粉丝</string>
-    <string name="QuizStepProgress">第 %1$d 题，共 %2$d 题</string>
-    <string name="RegStepProgress">第 %1$d 步，共 %2$d 步</string>
-    <string name="RoleResultSoundsRight">听起来不错 — 让我们开始吧</string>
-    <string name="RoleResultChooseDifferentRole">选择其他身份</string>
+    <string name="OnboardingTitleGetSeenByTheRightPeople">иў«еЇ№зљ„дєєзњ‹и§Ѓ</string>
+    <string name="OnboardingSubtitleGetSeenByTheRightPeople">дё“дёљзљ„дёЄдєєдё»йЎµпјЊи®©ж­ЈењЁеЇ»ж‰ѕеђ€йЂ‚дєєж‰Ќзљ„з»ЏзєЄе…¬еЏёе’Ње“Ѓз‰ЊдёЂзњјзњ‹е€°ж‚Ё</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">зњџе®ћзљ„иЇ•й•њгЂ‚зњџж­Јзљ„жњєдјљгЂ‚</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">з”іиЇ·жќҐи‡Єжњєжћ„е’Ње“Ѓз‰Њзљ„з»Џиї‡йЄЊиЇЃзљ„е·ҐдЅњ вЂ” жІЎжњ‰дё­й—ґе•†пјЊж— йњЂзЊњжµ‹гЂ‚</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">AI еЉ©еЉ›пјЊж›ґеї«иў«еЏ‘жЋгЂ‚</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVOзљ„ AI дёєдєєж‰Ќе’Ње“Ѓз‰Њиї›иЎЊжњЂдЅіеЊ№й…Ќ вЂ” и®©жњєдјљдё»еЉЁж‰ѕдёЉй—ЁгЂ‚</string>
+    <string name="OnboardingEnterCode">иѕ“е…ҐйЄЊиЇЃз Ѓ</string>
+    <string name="WelcomeToDivo">ж¬ўиїЋжќҐе€° DIVO</string>
+    <string name="SignOrCreateAccount">з™»еЅ•ж€–е€›е»єж‚Ёзљ„иґ¦ж€·</string>
+    <string name="ContinueWithPhoneNumber">дЅїз”Ёж‰‹жњєеЏ·з Ѓз»§з»­</string>
+    <string name="OnboardingOrLabel">ж€–</string>
+    <string name="OnboardingSignInWithGoogle">дЅїз”Ё Google з™»еЅ•</string>
+    <string name="OnboardingSignInWithApple">дЅїз”Ё Apple з™»еЅ•</string>
+    <string name="TermsPrefix">з»§з»­еЌіиЎЁз¤єж‚ЁеђЊж„Џж€‘д»¬зљ„</string>
+    <string name="OnboardingAnd">еЏЉ</string>
+    <string name="OnboardingTermsOfService">жњЌеЉЎжќЎж¬ѕ</string>
+    <string name="OnboardingPrivacyPolicy">йљђз§Ѓж”їз­–</string>
+    <string name="OptionGetHiredTitle">ж€‘жѓіж‰ѕе·ҐдЅњ</string>
+    <string name="OptionLookingForTalentTitle">ж€‘ењЁеЇ»ж‰ѕдєєж‰Ќ</string>
+    <string name="OptionHereToFollowTitle">ж€‘еЏЄжЇжќҐе…іжіЁеЉЁжЂЃзљ„</string>
+    <string name="OptionGetHiredSubtitle">жЁЎз‰№гЂЃиЎЁжј”иЂ…гЂЃе€›ж„Џе·ҐдЅњиЂ…</string>
+    <string name="OptionLookingForTalentSubtitle">жњєжћ„гЂЃе“Ѓз‰ЊгЂЃжџжЋўгЂЃз»ЏзєЄдєє</string>
+    <string name="OptionHereToFollowSubtitle">ж—¶е°љеЏЉе€›дЅњиЂ…зљ„зІ‰дёќ</string>
+    <string name="QuizStepProgress">з¬¬ %1$d йўпјЊе…± %2$d йў</string>
+    <string name="RegStepProgress">з¬¬ %1$d ж­ҐпјЊе…± %2$d ж­Ґ</string>
+    <string name="RoleResultSoundsRight">еђ¬иµ·жќҐдёЌй”™ вЂ” и®©ж€‘д»¬ејЂе§‹еђ§</string>
+    <string name="RoleResultChooseDifferentRole">йЂ‰ж‹©е…¶д»–иє«д»Ѕ</string>
 
-    <string name="RoleResultTitleFashionFan">您是一位时尚爱好者</string>
-    <string name="RoleResultDescriptionFashionFan">您将能够关注您喜爱的模特和创作者，发现新面孔，并与时尚界保持联系。</string>
+    <string name="RoleResultTitleFashionFan">ж‚ЁжЇдёЂдЅЌж—¶е°љз€±еҐЅиЂ…</string>
+    <string name="RoleResultDescriptionFashionFan">ж‚Ёе°†иѓЅе¤џе…іжіЁж‚Ёе–њз€±зљ„жЁЎз‰№е’Ње€›дЅњиЂ…пјЊеЏ‘зЋ°ж–°йќўе­”пјЊе№¶дёЋж—¶е°љз•ЊдїќжЊЃиЃ”зі»гЂ‚</string>
 
-    <string name="RoleResultTitleModel">您是一位专业模特</string>
-    <string name="RoleResultDescriptionModel">您的主页将用于展示您的作品集，并直接将您与寻找资深人才的机构和品牌联系起来。</string>
+    <string name="RoleResultTitleModel">ж‚ЁжЇдёЂдЅЌдё“дёљжЁЎз‰№</string>
+    <string name="RoleResultDescriptionModel">ж‚Ёзљ„дё»йЎµе°†з”ЁдєЋе±•з¤єж‚Ёзљ„дЅње“Ѓй›†пјЊе№¶з›ґжЋҐе°†ж‚ЁдёЋеЇ»ж‰ѕиµ„ж·±дєєж‰Ќзљ„жњєжћ„е’Ње“Ѓз‰ЊиЃ”зі»иµ·жќҐгЂ‚</string>
 
-    <string name="RoleResultTitleRisingTalent">您是一位明日之星</string>
-    <string name="RoleResultDescriptionRisingTalent">您的主页将帮助您建立作品集、获得曝光并拿下您的第一次试镜机会 — 包括与摄影师和造型师合作的免费互勉拍摄 (TFP)。</string>
+    <string name="RoleResultTitleRisingTalent">ж‚ЁжЇдёЂдЅЌжЋж—Ґд№‹жџ</string>
+    <string name="RoleResultDescriptionRisingTalent">ж‚Ёзљ„дё»йЎµе°†её®еЉ©ж‚Ёе»єз«‹дЅње“Ѓй›†гЂЃиЋ·еѕ—ж›ќе…‰е№¶ж‹їдё‹ж‚Ёзљ„з¬¬дёЂж¬ЎиЇ•й•њжњєдјљ вЂ” еЊ…ж‹¬дёЋж‘„еЅ±её€е’ЊйЂ ећ‹её€еђ€дЅњзљ„е…Ќиґ№дє’е‹‰ж‹Ќж‘„ (TFP)гЂ‚</string>
 
-    <string name="RoleResultTitleActor">您是一位演员</string>
-    <string name="RoleResultDescriptionActor">您的主页将把您与正在为广告、时尚短片和现场活动寻找演员的品牌及机构联系起来。</string>
+    <string name="RoleResultTitleActor">ж‚ЁжЇдёЂдЅЌжј”е‘</string>
+    <string name="RoleResultDescriptionActor">ж‚Ёзљ„дё»йЎµе°†жЉЉж‚ЁдёЋж­ЈењЁдёєе№їе‘ЉгЂЃж—¶е°љзџ­з‰‡е’ЊзЋ°ењєжґ»еЉЁеЇ»ж‰ѕжј”е‘зљ„е“Ѓз‰ЊеЏЉжњєжћ„иЃ”зі»иµ·жќҐгЂ‚</string>
 
-    <string name="RoleResultTitleDancer">您是一位舞者</string>
-    <string name="RoleResultDescriptionDancer">您的主页将把您与各种寻求各类舞蹈人才的演出、宣传和活动联系起来。</string>
+    <string name="RoleResultTitleDancer">ж‚ЁжЇдёЂдЅЌи€ћиЂ…</string>
+    <string name="RoleResultDescriptionDancer">ж‚Ёзљ„дё»йЎµе°†жЉЉж‚ЁдёЋеђ„з§ЌеЇ»ж±‚еђ„з±»и€ћи№€дєєж‰Ќзљ„жј”е‡єгЂЃе®Јдј е’Њжґ»еЉЁиЃ”зі»иµ·жќҐгЂ‚</string>
 
-    <string name="RoleResultTitlePerformer">您是一位表演者</string>
-    <string name="RoleResultDescriptionPerformer">您的主页将把您与寻找现场表演人才的时尚活动、品牌宣传及创意项目联系起来。</string>
+    <string name="RoleResultTitlePerformer">ж‚ЁжЇдёЂдЅЌиЎЁжј”иЂ…</string>
+    <string name="RoleResultDescriptionPerformer">ж‚Ёзљ„дё»йЎµе°†жЉЉж‚ЁдёЋеЇ»ж‰ѕзЋ°ењєиЎЁжј”дєєж‰Ќзљ„ж—¶е°љжґ»еЉЁгЂЃе“Ѓз‰Ње®Јдј еЏЉе€›ж„ЏйЎ№з›®иЃ”зі»иµ·жќҐгЂ‚</string>
 
-    <string name="RoleResultTitleCreativeProfessional">您是一位创意专业人士</string>
-    <string name="RoleResultDescriptionCreativeProfessional">您的主页将展示您的作品集，让您发布项目，并在市场的供需两端与模特、品牌及机构建立联系。</string>
+    <string name="RoleResultTitleCreativeProfessional">ж‚ЁжЇдёЂдЅЌе€›ж„Џдё“дёљдєєеЈ«</string>
+    <string name="RoleResultDescriptionCreativeProfessional">ж‚Ёзљ„дё»йЎµе°†е±•з¤єж‚Ёзљ„дЅње“Ѓй›†пјЊи®©ж‚ЁеЏ‘еёѓйЎ№з›®пјЊе№¶ењЁеё‚ењєзљ„дѕ›йњЂдё¤з«ЇдёЋжЁЎз‰№гЂЃе“Ѓз‰ЊеЏЉжњєжћ„е»єз«‹иЃ”зі»гЂ‚</string>
 
-    <string name="RoleResultTitleFindTalent">您来这里是为了寻找人才</string>
-    <string name="RoleResultDescriptionFindTalent">无论您是全球性经纪公司还是本土品牌，您的主页都将用于搜索、发布试镜，并直接与模特和创意人员取得联系。</string>
+    <string name="RoleResultTitleFindTalent">ж‚ЁжќҐиї™й‡ЊжЇдёєдє†еЇ»ж‰ѕдєєж‰Ќ</string>
+    <string name="RoleResultDescriptionFindTalent">ж— и®єж‚ЁжЇе…ЁзђѓжЂ§з»ЏзєЄе…¬еЏёиїжЇжњ¬ењџе“Ѓз‰ЊпјЊж‚Ёзљ„дё»йЎµйѓЅе°†з”ЁдєЋжђњзґўгЂЃеЏ‘еёѓиЇ•й•њпјЊе№¶з›ґжЋҐдёЋжЁЎз‰№е’Ње€›ж„Џдєєе‘еЏ–еѕ—иЃ”зі»гЂ‚</string>
 
-    <string name="RoleResultTitleIndustryProfessional">您是一位业内专业人士</string>
-    <string name="RoleResultDescriptionIndustryProfessional">您的主页将赋予您直接访问 DIVO 人才库的权限，享受高级搜索工具及选角工作流 — 专为专业人士的真实工作习惯而打造。</string>
+    <string name="RoleResultTitleIndustryProfessional">ж‚ЁжЇдёЂдЅЌдёље†…дё“дёљдєєеЈ«</string>
+    <string name="RoleResultDescriptionIndustryProfessional">ж‚Ёзљ„дё»йЎµе°†иµ‹дє€ж‚Ёз›ґжЋҐи®їй—® DIVO дєєж‰Ќеє“зљ„жќѓй™ђпјЊдє«еЏ—й«зє§жђњзґўе·Ґе…·еЏЉйЂ‰и§’е·ҐдЅњжµЃ вЂ” дё“дёєдё“дёљдєєеЈ«зљ„зњџе®ће·ҐдЅњд№ жѓЇиЂЊж‰“йЂ гЂ‚</string>
 
     <!-- Companies (A) -->
-    <string name="SubRoleModelingAgency">模特经纪公司</string>
-    <string name="SubRoleFashionBrand">时尚品牌</string>
-    <string name="SubRoleBeautyBrand">美妆品牌</string>
-    <string name="SubRoleBrandOrBusiness">品牌或企业</string>
-    <string name="SubRoleEventAgency">活动策划公司</string>
-    <string name="SubRoleMagazine">杂志或媒体</string>
+    <string name="SubRoleModelingAgency">жЁЎз‰№з»ЏзєЄе…¬еЏё</string>
+    <string name="SubRoleFashionBrand">ж—¶е°ље“Ѓз‰Њ</string>
+    <string name="SubRoleBeautyBrand">зѕЋе¦†е“Ѓз‰Њ</string>
+    <string name="SubRoleBrandOrBusiness">е“Ѓз‰Њж€–дјЃдёљ</string>
+    <string name="SubRoleEventAgency">жґ»еЉЁз­–е€’е…¬еЏё</string>
+    <string name="SubRoleMagazine">жќ‚еї—ж€–еЄ’дЅ“</string>
     <!-- Industry Pros (B) -->
-    <string name="SubRoleScout">星探</string>
-    <string name="SubRoleBooker">经纪人</string>
-    <string name="SubRoleCastingDirector">选角导演</string>
-    <string name="SubRoleTalentManager">艺人经纪人</string>
+    <string name="SubRoleScout">жџжЋў</string>
+    <string name="SubRoleBooker">з»ЏзєЄдєє</string>
+    <string name="SubRoleCastingDirector">йЂ‰и§’еЇјжј”</string>
+    <string name="SubRoleTalentManager">и‰єдєєз»ЏзєЄдєє</string>
     <!-- Creative (C) -->
-    <string name="SubRolePhotographer">摄影师</string>
-    <string name="SubRoleStylist">造型师</string>
-    <string name="SubRoleMakeupArtist">化妆师</string>
-    <string name="SubRoleHairStylist">发型师</string>
-    <string name="SubRoleVideographer">摄像师</string>
-    <string name="SubRoleCreativeDirector">创意总监</string>
-    <string name="SubRoleFashionDesigner">时装设计师</string>
-    <string name="SubRoleStudio">工作室</string>
+    <string name="SubRolePhotographer">ж‘„еЅ±её€</string>
+    <string name="SubRoleStylist">йЂ ећ‹её€</string>
+    <string name="SubRoleMakeupArtist">еЊ–е¦†её€</string>
+    <string name="SubRoleHairStylist">еЏ‘ећ‹её€</string>
+    <string name="SubRoleVideographer">ж‘„еѓЏеё€</string>
+    <string name="SubRoleCreativeDirector">е€›ж„ЏжЂ»з›‘</string>
+    <string name="SubRoleFashionDesigner">ж—¶иЈ…и®ѕи®Ўеё€</string>
+    <string name="SubRoleStudio">е·ҐдЅње®¤</string>
     <!-- Talent (D) -->
-    <string name="SubRoleModel">模特</string>
-    <string name="SubRoleNewTalent">新面孔</string>
-    <string name="SubRoleActor">演员</string>
-    <string name="SubRoleDancer">舞者</string>
-    <string name="SubRoleSingerOrPerformer">歌手或表演者</string>
+    <string name="SubRoleModel">жЁЎз‰№</string>
+    <string name="SubRoleNewTalent">ж–°йќўе­”</string>
+    <string name="SubRoleActor">жј”е‘</string>
+    <string name="SubRoleDancer">и€ћиЂ…</string>
+    <string name="SubRoleSingerOrPerformer">ж­Њж‰‹ж€–иЎЁжј”иЂ…</string>
     <!-- Audience (E) -->
-    <string name="SubRoleFan">爱好者</string>
+    <string name="SubRoleFan">з€±еҐЅиЂ…</string>
 
-    <string name="QuizGetHiredTitle">您是哪一类的
-人才？</string>
-    <string name="QuizGetHiredSubtitle">请如实回答 — 这有助于我们为您推送合适的机会</string>
-    <string name="QuizSectionTalents">演艺/模特人才</string>
-    <string name="QuizSectionCreative">创意工作者</string>
+    <string name="QuizGetHiredTitle">ж‚ЁжЇе“ЄдёЂз±»зљ„
+дєєж‰Ќпјџ</string>
+    <string name="QuizGetHiredSubtitle">иЇ·е¦‚е®ће›ћз­” вЂ” иї™жњ‰еЉ©дєЋж€‘д»¬дёєж‚ЁжЋЁйЂЃеђ€йЂ‚зљ„жњєдјљ</string>
+    <string name="QuizSectionTalents">жј”и‰є/жЁЎз‰№дєєж‰Ќ</string>
+    <string name="QuizSectionCreative">е€›ж„Џе·ҐдЅњиЂ…</string>
 
-    <string name="QuizModelExperienceTitle">您是否有专业的模特经验并签约了经纪公司？</string>
-    <string name="QuizModelExperienceSubtitle">这有助于我们从第一天起为您匹配合适的试镜</string>
-    <string name="QuizModelExperienceYesLabel">是</string>
-    <string name="QuizModelExperienceYesDescription">我有作品集，并且目前正在与经纪公司合作（或曾经合作过）</string>
-    <string name="QuizModelExperienceNoLabel">还没</string>
-    <string name="QuizModelExperienceNoDescription">我的事业刚起步，还没有签约经纪公司</string>
+    <string name="QuizModelExperienceTitle">ж‚ЁжЇеђ¦жњ‰дё“дёљзљ„жЁЎз‰№з»ЏйЄЊе№¶з­ѕзє¦дє†з»ЏзєЄе…¬еЏёпјџ</string>
+    <string name="QuizModelExperienceSubtitle">иї™жњ‰еЉ©дєЋж€‘д»¬д»Ћз¬¬дёЂе¤©иµ·дёєж‚ЁеЊ№й…Ќеђ€йЂ‚зљ„иЇ•й•њ</string>
+    <string name="QuizModelExperienceYesLabel">жЇ</string>
+    <string name="QuizModelExperienceYesDescription">ж€‘жњ‰дЅње“Ѓй›†пјЊе№¶дё”з›®е‰Ќж­ЈењЁдёЋз»ЏзєЄе…¬еЏёеђ€дЅњпј€ж€–ж›ѕз»Џеђ€дЅњиї‡пј‰</string>
+    <string name="QuizModelExperienceNoLabel">иїжІЎ</string>
+    <string name="QuizModelExperienceNoDescription">ж€‘зљ„дє‹дёље€љиµ·ж­ҐпјЊиїжІЎжњ‰з­ѕзє¦з»ЏзєЄе…¬еЏё</string>
 
-    <string name="QuizHiringTypeTitle">您的工作方式是？</string>
-    <string name="QuizHiringTypeSubtitle">这有助于我们为您设置合适的主页类型</string>
-    <string name="QuizHiringTypeCompanyLabel">我代表一家公司</string>
-    <string name="QuizHiringTypeCompanyDescription">机构、品牌、媒体或工作室</string>
-    <string name="QuizHiringTypeIndividualLabel">我是一名独立专家</string>
-    <string name="QuizHiringTypeIndividualDescription">星探、经纪人、选角导演等…</string>
+    <string name="QuizHiringTypeTitle">ж‚Ёзљ„е·ҐдЅњж–№ејЏжЇпјџ</string>
+    <string name="QuizHiringTypeSubtitle">иї™жњ‰еЉ©дєЋж€‘д»¬дёєж‚Ёи®ѕзЅ®еђ€йЂ‚зљ„дё»йЎµз±»ећ‹</string>
+    <string name="QuizHiringTypeCompanyLabel">ж€‘д»ЈиЎЁдёЂе®¶е…¬еЏё</string>
+    <string name="QuizHiringTypeCompanyDescription">жњєжћ„гЂЃе“Ѓз‰ЊгЂЃеЄ’дЅ“ж€–е·ҐдЅње®¤</string>
+    <string name="QuizHiringTypeIndividualLabel">ж€‘жЇдёЂеђЌз‹¬з«‹дё“е®¶</string>
+    <string name="QuizHiringTypeIndividualDescription">жџжЋўгЂЃз»ЏзєЄдєєгЂЃйЂ‰и§’еЇјжј”з­‰вЂ¦</string>
 
-    <string name="QuizCompanyTitle">哪一项最能描述
-您的公司？</string>
-    <string name="QuizCompanySubtitle">选择最接近您业务的选项</string>
+    <string name="QuizCompanyTitle">е“ЄдёЂйЎ№жњЂиѓЅжЏЏиї°
+ж‚Ёзљ„е…¬еЏёпјџ</string>
+    <string name="QuizCompanySubtitle">йЂ‰ж‹©жњЂжЋҐиї‘ж‚ЁдёљеЉЎзљ„йЂ‰йЎ№</string>
 
-    <string name="SubRoleModelingAgencyDescription">我管理着一批模特并负责预订工作</string>
-    <string name="SubRoleFashionBrandDescription">我的品牌涉及时尚：服装、鞋履或配饰</string>
-    <string name="SubRoleBeautyBrandDescription">我从事美妆行业：化妆品、护肤品或香水</string>
-    <string name="SubRoleBrandOrBusinessDescription">我是寻找模特的商家：餐厅、酒店、零售商或任何其他公司</string>
-    <string name="SubRoleEventAgencyDescription">我组织活动、演出或促销推广</string>
-    <string name="SubRoleMagazineDescription">我是出版物、媒体机构或数字编辑团队</string>
+    <string name="SubRoleModelingAgencyDescription">ж€‘з®Ўзђ†зќЂдёЂж‰№жЁЎз‰№е№¶иґџиґЈйў„и®ўе·ҐдЅњ</string>
+    <string name="SubRoleFashionBrandDescription">ж€‘зљ„е“Ѓз‰Њж¶‰еЏЉж—¶е°љпјљжњЌиЈ…гЂЃйћ‹е±Ґж€–й…ЌйҐ°</string>
+    <string name="SubRoleBeautyBrandDescription">ж€‘д»Ћдє‹зѕЋе¦†иЎЊдёљпјљеЊ–е¦†е“ЃгЂЃжЉ¤и‚¤е“Ѓж€–й¦™ж°ґ</string>
+    <string name="SubRoleBrandOrBusinessDescription">ж€‘жЇеЇ»ж‰ѕжЁЎз‰№зљ„е•†е®¶пјљй¤ђеЋ…гЂЃй…’еє—гЂЃй›¶е”®е•†ж€–д»»дЅ•е…¶д»–е…¬еЏё</string>
+    <string name="SubRoleEventAgencyDescription">ж€‘з»„з»‡жґ»еЉЁгЂЃжј”е‡єж€–дїѓй”ЂжЋЁе№ї</string>
+    <string name="SubRoleMagazineDescription">ж€‘жЇе‡єз‰€з‰©гЂЃеЄ’дЅ“жњєжћ„ж€–ж•°е­—зј–иѕ‘е›ўйџ</string>
 
-    <string name="QuizIndustryTitle">您在行业内的
-职位是什么？</string>
-    <string name="QuizIndustrySubtitle">选择最符合您日常工作的选项</string>
-    <string name="SubRoleScoutDescription">我为经纪公司或独立寻找新面孔</string>
-    <string name="SubRoleBookerDescription">我在经纪公司负责管理模特的预订及合同谈判</string>
-    <string name="SubRoleCastingDirectorDescription">我为特定项目负责选角：走秀、广告或电影</string>
-    <string name="SubRoleTalentManagerDescription">我作为独立艺人的代理并负责管理他们的职业生涯</string>
+    <string name="QuizIndustryTitle">ж‚ЁењЁиЎЊдёље†…зљ„
+иЃЊдЅЌжЇд»Ђд№€пјџ</string>
+    <string name="QuizIndustrySubtitle">йЂ‰ж‹©жњЂз¬¦еђ€ж‚Ёж—Ґеёёе·ҐдЅњзљ„йЂ‰йЎ№</string>
+    <string name="SubRoleScoutDescription">ж€‘дёєз»ЏзєЄе…¬еЏёж€–з‹¬з«‹еЇ»ж‰ѕж–°йќўе­”</string>
+    <string name="SubRoleBookerDescription">ж€‘ењЁз»ЏзєЄе…¬еЏёиґџиґЈз®Ўзђ†жЁЎз‰№зљ„йў„и®ўеЏЉеђ€еђЊи°€е€¤</string>
+    <string name="SubRoleCastingDirectorDescription">ж€‘дёєз‰№е®љйЎ№з›®иґџиґЈйЂ‰и§’пјљиµ°з§ЂгЂЃе№їе‘Љж€–з”µеЅ±</string>
+    <string name="SubRoleTalentManagerDescription">ж€‘дЅњдёєз‹¬з«‹и‰єдєєзљ„д»Јзђ†е№¶иґџиґЈз®Ўзђ†д»–д»¬зљ„иЃЊдёљз”џж¶Ї</string>
 
     <!--reg forms-->
-    <string name="RegFormCompanyInfoTitle">告诉我们关于您的公司信息</string>
-    <string name="RegFormProfessionalIdentityTitle">您的职业身份</string>
-    <string name="RegFormCreativeIdentityTitle">您的创意身份</string>
-    <string name="RegFormStudioDetailsTitle">您的工作室详情</string>
-    <string name="RegFormYourIdentityTitle">您的身份</string>
-    <string name="RegFormFanIdentityTitle">自我介绍</string>
-    <string name="RegFormCompanyName">公司 / 组织名称 *</string>
-    <string name="RegFormFirstName">名字 *</string>
-    <string name="RegFormLastName">姓氏 *</string>
-    <string name="RegFormStudioName">工作室 / 场地名称 *</string>
-    <string name="RegFormDateOfBirth">出生日期</string>
-    <string name="RegFormDateOfBirthPlaceholder">选择日期</string>
-    <string name="RegFormGender">选择性别</string>
-    <string name="RegFormWhereAreYouBased">您在哪里办公/居住？</string>
-    <string name="RegFormPersonalDetails">个人信息</string>
-    <string name="RegFormContactDetails">联系方式</string>
-    <string name="RegFormLocation">位置</string>
-    <string name="RegFormWebsiteOrInstagram">网站或 Instagram</string>
-    <string name="RegFormContactName">联系人姓名</string>
-    <string name="RegFormContactPhone">联系电话或电子邮件</string>
-    <string name="RegFormSpecialisation">选择专业领域</string>
-    <string name="RegFormSpecialisationLabel">专业领域</string>
-    <string name="RegFormWebsiteOrInstagramHint">用于辅助身份验证</string>
-    <string name="RegFormContactNameHint">负责管理预订的人</string>
-    <string name="RegFormContactPhoneHint">用于预订咨询</string>
+    <string name="RegFormCompanyInfoTitle">е‘ЉиЇ‰ж€‘д»¬е…ідєЋж‚Ёзљ„е…¬еЏёдїЎжЃЇ</string>
+    <string name="RegFormProfessionalIdentityTitle">ж‚Ёзљ„иЃЊдёљиє«д»Ѕ</string>
+    <string name="RegFormCreativeIdentityTitle">ж‚Ёзљ„е€›ж„Џиє«д»Ѕ</string>
+    <string name="RegFormStudioDetailsTitle">ж‚Ёзљ„е·ҐдЅње®¤иЇ¦жѓ…</string>
+    <string name="RegFormYourIdentityTitle">ж‚Ёзљ„иє«д»Ѕ</string>
+    <string name="RegFormFanIdentityTitle">и‡Єж€‘д»‹з»Ќ</string>
+    <string name="RegFormCompanyName">е…¬еЏё / з»„з»‡еђЌз§° *</string>
+    <string name="RegFormFirstName">еђЌе­— *</string>
+    <string name="RegFormLastName">е§“ж°Џ *</string>
+    <string name="RegFormStudioName">е·ҐдЅње®¤ / ењєењ°еђЌз§° *</string>
+    <string name="RegFormDateOfBirth">е‡єз”џж—Ґжњџ</string>
+    <string name="RegFormDateOfBirthPlaceholder">йЂ‰ж‹©ж—Ґжњџ</string>
+    <string name="RegFormGender">йЂ‰ж‹©жЂ§е€«</string>
+    <string name="RegFormWhereAreYouBased">ж‚ЁењЁе“Єй‡ЊеЉће…¬/е±…дЅЏпјџ</string>
+    <string name="RegFormPersonalDetails">дёЄдєєдїЎжЃЇ</string>
+    <string name="RegFormContactDetails">иЃ”зі»ж–№ејЏ</string>
+    <string name="RegFormLocation">дЅЌзЅ®</string>
+    <string name="RegFormWebsiteOrInstagram">зЅ‘з«™ж€– Instagram</string>
+    <string name="RegFormContactName">иЃ”зі»дєєе§“еђЌ</string>
+    <string name="RegFormContactPhone">иЃ”зі»з”µиЇќж€–з”µе­ђй‚®д»¶</string>
+    <string name="RegFormSpecialisation">йЂ‰ж‹©дё“дёљйў†еџџ</string>
+    <string name="RegFormSpecialisationLabel">дё“дёљйў†еџџ</string>
+    <string name="RegFormWebsiteOrInstagramHint">з”ЁдєЋиѕ…еЉ©иє«д»ЅйЄЊиЇЃ</string>
+    <string name="RegFormContactNameHint">иґџиґЈз®Ўзђ†йў„и®ўзљ„дєє</string>
+    <string name="RegFormContactPhoneHint">з”ЁдєЋйў„и®ўе’ЁиЇў</string>
 
     <string-array name="ActorSpecialisations">
-        <item>电影</item>
-        <item>戏剧</item>
-        <item>商业广告</item>
-        <item>配音</item>
-        <item>电视</item>
-        <item>其他</item>
+        <item>з”µеЅ±</item>
+        <item>ж€Џе‰§</item>
+        <item>е•†дёље№їе‘Љ</item>
+        <item>й…Ќйџі</item>
+        <item>з”µи§†</item>
+        <item>е…¶д»–</item>
     </string-array>
 
     <string-array name="DancerSpecialisations">
-        <item>现代舞</item>
-        <item>芭蕾</item>
-        <item>嘻哈/街舞</item>
-        <item>国标舞</item>
-        <item>商业舞蹈</item>
-        <item>拉丁舞</item>
-        <item>爵士舞</item>
-        <item>其他</item>
+        <item>зЋ°д»Ји€ћ</item>
+        <item>иЉ­и•ѕ</item>
+        <item>е»е“€/иЎ—и€ћ</item>
+        <item>е›Ѕж ‡и€ћ</item>
+        <item>е•†дёљи€ћи№€</item>
+        <item>ж‹‰дёЃи€ћ</item>
+        <item>з€µеЈ«и€ћ</item>
+        <item>е…¶д»–</item>
     </string-array>
 
     <string-array name="SingerSpecialisations">
-        <item>流行乐 (Pop)</item>
-        <item>节奏蓝调 (R&amp;B)</item>
-        <item>爵士乐</item>
-        <item>古典乐</item>
-        <item>音乐剧</item>
-        <item>歌剧</item>
-        <item>其他</item>
+        <item>жµЃиЎЊд№ђ (Pop)</item>
+        <item>иЉ‚еҐЏи“ќи°ѓ (R&amp;B)</item>
+        <item>з€µеЈ«д№ђ</item>
+        <item>еЏ¤е…ёд№ђ</item>
+        <item>йџід№ђе‰§</item>
+        <item>ж­Ње‰§</item>
+        <item>е…¶д»–</item>
     </string-array>
 
-    <string name="RegFormVerificationContact">验证与联系方式</string>
-    <string name="RegFormProfessionalLinks">职业链接</string>
-    <string name="RegFormAddYourPortfolio">添加您的作品集</string>
-    <string name="RegFormPortfolioSubtitle">推荐 — 这将帮助客户更快找到您的作品</string>
-    <string name="RegFormWebsiteUrl">网站链接 URL</string>
-    <string name="RegFormWebsiteUrlHint">帮助验证您的帐户</string>
-    <string name="RegFormContactFirstName">联系人名字</string>
-    <string name="RegFormContactLastName">联系人姓氏</string>
-    <string name="RegFormContactRole">联系人职务 / 头衔</string>
-    <string name="RegFormAgencyOrganisation">机构 / 组织</string>
-    <string name="RegFormCurrentOrLastAgency">目前或最近合作的经纪公司</string>
-    <string name="RegFormAgencyHintPro">您的经纪公司将会收到一条确认请求</string>
-    <string name="RegFormAgencyHintModel">添加您的经纪公司以获得官方认证徽章</string>
-    <string name="RegFormInstagramHandle">Instagram 用户名</string>
-    <string name="RegFormInstagramHint">帮助您更快地被发掘</string>
-    <string name="RegFormPortfolioUrl">Instagram / 作品集链接 URL</string>
-    <string name="RegFormPortfolioUrlHint">分享您的 Instagram、Behance、个人网站或任何作品集链接</string>
-    <string name="RegFormShowreelUrl">个人作品集视频 / 演示视频 URL</string>
-    <string name="RegFormCastingProfileUrl">Instagram / 选角主页 URL</string>
+    <string name="RegFormVerificationContact">йЄЊиЇЃдёЋиЃ”зі»ж–№ејЏ</string>
+    <string name="RegFormProfessionalLinks">иЃЊдёљй“ѕжЋҐ</string>
+    <string name="RegFormAddYourPortfolio">ж·»еЉ ж‚Ёзљ„дЅње“Ѓй›†</string>
+    <string name="RegFormPortfolioSubtitle">жЋЁиЌђ вЂ” иї™е°†её®еЉ©е®ўж€·ж›ґеї«ж‰ѕе€°ж‚Ёзљ„дЅње“Ѓ</string>
+    <string name="RegFormWebsiteUrl">зЅ‘з«™й“ѕжЋҐ URL</string>
+    <string name="RegFormWebsiteUrlHint">её®еЉ©йЄЊиЇЃж‚Ёзљ„еёђж€·</string>
+    <string name="RegFormContactFirstName">иЃ”зі»дєєеђЌе­—</string>
+    <string name="RegFormContactLastName">иЃ”зі»дєєе§“ж°Џ</string>
+    <string name="RegFormContactRole">иЃ”зі»дєєиЃЊеЉЎ / е¤ґиЎ”</string>
+    <string name="RegFormAgencyOrganisation">жњєжћ„ / з»„з»‡</string>
+    <string name="RegFormCurrentOrLastAgency">з›®е‰Ќж€–жњЂиї‘еђ€дЅњзљ„з»ЏзєЄе…¬еЏё</string>
+    <string name="RegFormAgencyHintPro">ж‚Ёзљ„з»ЏзєЄе…¬еЏёе°†дјљж”¶е€°дёЂжќЎзЎ®и®¤иЇ·ж±‚</string>
+    <string name="RegFormAgencyHintModel">ж·»еЉ ж‚Ёзљ„з»ЏзєЄе…¬еЏёд»ҐиЋ·еѕ—е®ж–№и®¤иЇЃеѕЅз« </string>
+    <string name="RegFormInstagramHandle">Instagram з”Ёж€·еђЌ</string>
+    <string name="RegFormInstagramHint">её®еЉ©ж‚Ёж›ґеї«ењ°иў«еЏ‘жЋ</string>
+    <string name="RegFormPortfolioUrl">Instagram / дЅње“Ѓй›†й“ѕжЋҐ URL</string>
+    <string name="RegFormPortfolioUrlHint">е€†дє«ж‚Ёзљ„ InstagramгЂЃBehanceгЂЃдёЄдєєзЅ‘з«™ж€–д»»дЅ•дЅње“Ѓй›†й“ѕжЋҐ</string>
+    <string name="RegFormShowreelUrl">дёЄдєєдЅње“Ѓй›†и§†йў‘ / жј”з¤єи§†йў‘ URL</string>
+    <string name="RegFormCastingProfileUrl">Instagram / йЂ‰и§’дё»йЎµ URL</string>
 
-    <string name="RegFormAddLogoOrPhoto">添加您的标志(Logo)或头像</string>
-    <string name="RegFormAddProfilePhoto">添加您的头像</string>
-    <string name="RegFormProfilePhotoSubtitle">请使用清晰的本人照片，您随时可以更新。</string>
-    <string name="RegFormModelPhotoSubtitle">请使用清晰的正面照，您随时可以更新。</string>
-    <string name="RegFormShowYourMainSpace">展示您的主要场地/空间</string>
-    <string name="RegFormStudioPhotoSubtitle">客户希望看到他们正在预订怎样的场地</string>
-    <string name="RegFormShowTheWorld">向世界展示您是谁</string>
+    <string name="RegFormAddLogoOrPhoto">ж·»еЉ ж‚Ёзљ„ж ‡еї—(Logo)ж€–е¤ґеѓЏ</string>
+    <string name="RegFormAddProfilePhoto">ж·»еЉ ж‚Ёзљ„е¤ґеѓЏ</string>
+    <string name="RegFormProfilePhotoSubtitle">иЇ·дЅїз”Ёжё…ж™°зљ„жњ¬дєєз…§з‰‡пјЊж‚ЁйљЏж—¶еЏЇд»Ґж›ґж–°гЂ‚</string>
+    <string name="RegFormModelPhotoSubtitle">иЇ·дЅїз”Ёжё…ж™°зљ„ж­Јйќўз…§пјЊж‚ЁйљЏж—¶еЏЇд»Ґж›ґж–°гЂ‚</string>
+    <string name="RegFormShowYourMainSpace">е±•з¤єж‚Ёзљ„дё»и¦Ѓењєењ°/з©єй—ґ</string>
+    <string name="RegFormStudioPhotoSubtitle">е®ўж€·еёЊжњ›зњ‹е€°д»–д»¬ж­ЈењЁйў„и®ўжЂЋж ·зљ„ењєењ°</string>
+    <string name="RegFormShowTheWorld">еђ‘дё–з•Ње±•з¤єж‚ЁжЇи°Ѓ</string>
 
-    <string name="RegFormUploadLogo">上传 Logo 或拍照</string>
-    <string name="RegFormUploadPhoto">从相册上传或拍照</string>
-    <string name="RegFormAnyFileFormat">支持任何文件格式</string>
+    <string name="RegFormUploadLogo">дёЉдј  Logo ж€–ж‹Ќз…§</string>
+    <string name="RegFormUploadPhoto">д»Ћз›ёе†ЊдёЉдј ж€–ж‹Ќз…§</string>
+    <string name="RegFormAnyFileFormat">ж”ЇжЊЃд»»дЅ•ж–‡д»¶ж јејЏ</string>
 
-    <string name="RegFormTfpHintTitle">您的第一步：寻找一次互勉 (TFP) 拍摄</string>
-    <string name="RegFormTfpHintDescription">互勉拍摄 (TFP) 是指与摄影师的免费合作。这能帮助您快速丰富作品集。当您进入应用后，我们会告诉您该如何操作。</string>
+    <string name="RegFormTfpHintTitle">ж‚Ёзљ„з¬¬дёЂж­ҐпјљеЇ»ж‰ѕдёЂж¬Ўдє’е‹‰ (TFP) ж‹Ќж‘„</string>
+    <string name="RegFormTfpHintDescription">дє’е‹‰ж‹Ќж‘„ (TFP) жЇжЊ‡дёЋж‘„еЅ±её€зљ„е…Ќиґ№еђ€дЅњгЂ‚иї™иѓЅеё®еЉ©ж‚Ёеї«йЂџдё°еЇЊдЅње“Ѓй›†гЂ‚еЅ“ж‚Ёиї›е…Ґеє”з”ЁеђЋпјЊж€‘д»¬дјље‘ЉиЇ‰ж‚ЁиЇҐе¦‚дЅ•ж“ЌдЅњгЂ‚</string>
 
-    <string name="ButtonLetsGo">开始吧</string>
+    <string name="ButtonLetsGo">ејЂе§‹еђ§</string>
     <!--divo view end-->
-    <string name="ErrorGoogleNoAccount">未在此设备上找到Google帐户。请在设备设置中添加一个。</string>
-    <string name="ErrorGoogleSignInFailed">Google登录失败</string>
-    <string name="ErrorFirebaseAuthFailed">Firebase身份验证失败</string>
-    <string name="ErrorProfileFetchFailed">获取个人资料失败或缺少电话号码</string>
-    <string name="ErrorTelegramAuthFailed">Divo Global验证失败</string>
-    <string name="ErrorDummyPhoneFailed">获取注册的虚拟电话失败</string>
-    <string name="ErrorUnexpected">发生意外错误</string>
-    <string name="EventStatusInProgress">进行中</string>
-    <string name="EventStatusCompleted">已结束</string>
-    <string name="EventStatusClosesIn">%1$s 后截止</string>
-    <string name="EventStatusDeadline">截止日期: %1$s</string>
-    <string name="EventTabMyEvents">我的活动</string>
-    <string name="EventTabAllEvents">所有活动</string>
-    <string name="EventEmptyTitle">目前没有即将举行的活动。</string>
-    <string name="EventEmptySubtitleAgency">稍后再来查看或
-创建新活动。</string>
-    <string name="EventEmptySubtitle">稍后再来查看。</string>
-    <string name="EventCreateButton">创建活动</string>
-    <string name="EventSeenAll">您已查看所有活动</string>
-    <string name="EventSpotsLeft">剩余 %1$d 个名额</string>
-    <string name="WithdrawApplicationTitle">撤回申请？</string>
-    <string name="WithdrawApplicationMessage">主办方将会收到通知。您将无法再次申请此活动。</string>
-    <string name="KeepApplicationButton">保留申请</string>
-    <string name="YesWithdrawButton">是的，撤回</string>
-    <string name="YouApplied">您已申请此活动</string>
-    <string name="YouAppliedOn">您于 %1$s 申请</string>
-    <string name="WithdrawApplicationTextButton">撤回申请</string>
-    <string name="ParamGender">性别</string>
-    <string name="ParamAge">年龄（岁）</string>
-    <string name="ParamAgeFrom">从 %1$d 岁</string>
-    <string name="ParamAgeTo">最多 %1$d 岁</string>
-    <string name="ParamAgeRange">%1$d-%2$d 岁</string>
-    <string name="ParamHeight">身高</string>
-    <string name="ParamHeightFrom">从 %1$d 厘米</string>
-    <string name="ParamHeightTo">最多 %1$d 厘米</string>
-    <string name="ParamHeightRange">%1$d-%2$d 厘米</string>
-    <string name="ParamHairColor">头发颜色</string>
-    <string name="MismatchGender">您的性别不符合。</string>
-    <string name="MismatchAge">您的年龄不符合。</string>
-    <string name="MismatchHeight">您的身高不符合。</string>
-    <string name="MismatchHairColor">您的头发颜色不符合。</string>
-    <string name="ApplyAnywaySuffix">仍然申请？</string>
-    <string name="MismatchMultipleApplyAnyway">某些参数不符合。仍然申请？</string>
-    <string name="ApplyConfirmationShareInfo">我们将与主办方分享</string>
-    <string name="ApplyConfirmationParametersTitle">申请参数</string>
-    <string name="PortfolioLinkTitle">作品集链接</string>
-    <string name="FollowersOnlineText">%1$s 粉丝</string>
-    <string name="SubmitApplicationTitle">提交申请</string>
-    <string name="SubmitButton">提交</string>
-    <string name="ParamWeight">体重</string>
-    <string name="ParamBreastSize">胸围</string>
-    <string name="ParamWaist">腰围</string>
-    <string name="ParamHips">臀围</string>
-    <string name="ParamShoesSize">鞋码</string>
-    <string name="ParamHairLength">头发长度</string>
-    <string name="ParamEyeColor">眼睛颜色</string>
-    <string name="ParamSkinColor">肤色</string>
-    <string name="ParamRole">角色</string>
+    <string name="ErrorGoogleNoAccount">жњЄењЁж­¤и®ѕе¤‡дёЉж‰ѕе€°Googleеёђж€·гЂ‚иЇ·ењЁи®ѕе¤‡и®ѕзЅ®дё­ж·»еЉ дёЂдёЄгЂ‚</string>
+    <string name="ErrorGoogleSignInFailed">Googleз™»еЅ•е¤±иґҐ</string>
+    <string name="ErrorFirebaseAuthFailed">Firebaseиє«д»ЅйЄЊиЇЃе¤±иґҐ</string>
+    <string name="ErrorProfileFetchFailed">иЋ·еЏ–дёЄдєєиµ„ж–™е¤±иґҐж€–зјєе°‘з”µиЇќеЏ·з Ѓ</string>
+    <string name="ErrorTelegramAuthFailed">Divo GlobalйЄЊиЇЃе¤±иґҐ</string>
+    <string name="ErrorDummyPhoneFailed">иЋ·еЏ–жіЁе†Њзљ„и™љж‹џз”µиЇќе¤±иґҐ</string>
+    <string name="ErrorUnexpected">еЏ‘з”џж„Џе¤–й”™иЇЇ</string>
+    <string name="EventStatusInProgress">иї›иЎЊдё­</string>
+    <string name="EventStatusCompleted">е·Із»“жќџ</string>
+    <string name="EventStatusClosesIn">%1$s еђЋж€Єж­ў</string>
+    <string name="EventStatusDeadline">ж€Єж­ўж—Ґжњџ: %1$s</string>
+    <string name="EventTabMyEvents">ж€‘зљ„жґ»еЉЁ</string>
+    <string name="EventTabAllEvents">ж‰Ђжњ‰жґ»еЉЁ</string>
+    <string name="EventEmptyTitle">з›®е‰ЌжІЎжњ‰еЌіе°†дёѕиЎЊзљ„жґ»еЉЁгЂ‚</string>
+    <string name="EventEmptySubtitleAgency">зЁЌеђЋе†ЌжќҐжџҐзњ‹ж€–
+е€›е»єж–°жґ»еЉЁгЂ‚</string>
+    <string name="EventEmptySubtitle">зЁЌеђЋе†ЌжќҐжџҐзњ‹гЂ‚</string>
+    <string name="EventCreateButton">е€›е»єжґ»еЉЁ</string>
+    <string name="EventSeenAll">ж‚Ёе·ІжџҐзњ‹ж‰Ђжњ‰жґ»еЉЁ</string>
+    <string name="EventSpotsLeft">е‰©дЅ™ %1$d дёЄеђЌйўќ</string>
+    <string name="WithdrawApplicationTitle">ж’¤е›ћз”іиЇ·пјџ</string>
+    <string name="WithdrawApplicationMessage">дё»еЉћж–№е°†дјљж”¶е€°йЂљзџҐгЂ‚ж‚Ёе°†ж— жі•е†Ќж¬Ўз”іиЇ·ж­¤жґ»еЉЁгЂ‚</string>
+    <string name="KeepApplicationButton">дїќз•™з”іиЇ·</string>
+    <string name="YesWithdrawButton">жЇзљ„пјЊж’¤е›ћ</string>
+    <string name="YouApplied">ж‚Ёе·Із”іиЇ·ж­¤жґ»еЉЁ</string>
+    <string name="YouAppliedOn">ж‚ЁдєЋ %1$s з”іиЇ·</string>
+    <string name="WithdrawApplicationTextButton">ж’¤е›ћз”іиЇ·</string>
+    <string name="ParamGender">жЂ§е€«</string>
+    <string name="ParamAge">е№ґйѕ„пј€еІЃпј‰</string>
+    <string name="ParamAgeFrom">д»Ћ %1$d еІЃ</string>
+    <string name="ParamAgeTo">жњЂе¤љ %1$d еІЃ</string>
+    <string name="ParamAgeRange">%1$d-%2$d еІЃ</string>
+    <string name="ParamHeight">иє«й«</string>
+    <string name="ParamHeightFrom">д»Ћ %1$d еЋз±і</string>
+    <string name="ParamHeightTo">жњЂе¤љ %1$d еЋз±і</string>
+    <string name="ParamHeightRange">%1$d-%2$d еЋз±і</string>
+    <string name="ParamHairColor">е¤ґеЏ‘йўњи‰І</string>
+    <string name="MismatchGender">ж‚Ёзљ„жЂ§е€«дёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchAge">ж‚Ёзљ„е№ґйѕ„дёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchHeight">ж‚Ёзљ„иє«й«дёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchHairColor">ж‚Ёзљ„е¤ґеЏ‘йўњи‰ІдёЌз¬¦еђ€гЂ‚</string>
+    <string name="ApplyAnywaySuffix">д»Ќз„¶з”іиЇ·пјџ</string>
+    <string name="MismatchMultipleApplyAnyway">жџђдє›еЏ‚ж•°дёЌз¬¦еђ€гЂ‚д»Ќз„¶з”іиЇ·пјџ</string>
+    <string name="ApplyConfirmationShareInfo">ж€‘д»¬е°†дёЋдё»еЉћж–№е€†дє«</string>
+    <string name="ApplyConfirmationParametersTitle">з”іиЇ·еЏ‚ж•°</string>
+    <string name="PortfolioLinkTitle">дЅње“Ѓй›†й“ѕжЋҐ</string>
+    <string name="FollowersOnlineText">%1$s зІ‰дёќ</string>
+    <string name="SubmitApplicationTitle">жЏђдє¤з”іиЇ·</string>
+    <string name="SubmitButton">жЏђдє¤</string>
+    <string name="ParamWeight">дЅ“й‡Ќ</string>
+    <string name="ParamBreastSize">иѓёе›ґ</string>
+    <string name="ParamWaist">и…°е›ґ</string>
+    <string name="ParamHips">и‡Ђе›ґ</string>
+    <string name="ParamShoesSize">йћ‹з Ѓ</string>
+    <string name="ParamHairLength">е¤ґеЏ‘й•їеє¦</string>
+    <string name="ParamEyeColor">зњјзќ›йўњи‰І</string>
+    <string name="ParamSkinColor">и‚¤и‰І</string>
+    <string name="ParamRole">и§’и‰І</string>
 
-    <string name="MismatchWeight">您的体重不符合。</string>
-    <string name="MismatchBreastSize">您的胸围不符合。</string>
-    <string name="MismatchWaist">您的腰围不符合。</string>
-    <string name="MismatchHips">您的臀围不符合。</string>
-    <string name="MismatchShoesSize">您的鞋码不符合。</string>
-    <string name="MismatchHairLength">您的头发长度不符合。</string>
-    <string name="MismatchEyeColor">您的眼睛颜色不符合。</string>
-    <string name="MismatchSkinColor">您的肤色不符合。</string>
-    <string name="MismatchRole">您的角色不符合。</string>
+    <string name="MismatchWeight">ж‚Ёзљ„дЅ“й‡ЌдёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchBreastSize">ж‚Ёзљ„иѓёе›ґдёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchWaist">ж‚Ёзљ„и…°е›ґдёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchHips">ж‚Ёзљ„и‡Ђе›ґдёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchShoesSize">ж‚Ёзљ„йћ‹з ЃдёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchHairLength">ж‚Ёзљ„е¤ґеЏ‘й•їеє¦дёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchEyeColor">ж‚Ёзљ„зњјзќ›йўњи‰ІдёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchSkinColor">ж‚Ёзљ„и‚¤и‰ІдёЌз¬¦еђ€гЂ‚</string>
+    <string name="MismatchRole">ж‚Ёзљ„и§’и‰ІдёЌз¬¦еђ€гЂ‚</string>
 
     <string name="ParamValueRange">%1$d-%2$d %3$s</string>
-    <string name="ParamValueFrom">从 %1$d %2$s</string>
-    <string name="ParamValueTo">到 %1$d %2$s</string>
+    <string name="ParamValueFrom">д»Ћ %1$d %2$s</string>
+    <string name="ParamValueTo">е€° %1$d %2$s</string>
     <string name="ParamValueRangeNoUnit">%1$d-%2$d</string>
-    <string name="ParamValueFromNoUnit">从 %1$d</string>
-    <string name="ParamValueToNoUnit">到 %1$d</string>
-    <string name="ApplySuccessTitle">申请已提交！</string>
-    <string name="ApplySuccessDescription">您的申请已发送，组织者将尽快审核。</string>
-    <string name="DivoCheckInternetConnection">请检查您的互联网连接</string>
-    <string name="DivoActionSkip">跳过</string>
-    <string name="YourQrCode">您的二维码</string>
-    <string name="ScanToProfile">扫码进入个人主页</string>
-    <string name="DivoShareBtn">分享</string>
-    <string name="MyStory">我的故事</string>
-    <string name="SearchChats">搜索聊天</string>
-    <string name="NoContactsYet3">添加联系人</string>
-    <string name="NoContactsYet3Sub">您在 Divo Global 还没有联系人。要添加他们吗？</string>
-    <string name="SearchPeopleByUsername">按用户名搜索联系人</string>
-    <string name="AttachPhoto">照片</string>
-    <string name="AttachVideo">视频</string>
-    <string name="StoryPrivacyAlertTitle">分享快拍</string>
-    <string name="StoryPrivacyAlertSubtitle_one">选择谁可以看到您的快拍</string>
-    <string name="StoryPrivacyAlertSubtitle_other">选择谁可以看到您的快拍</string>
-    <string name="StoryPrivacyAlertSubtitleProfile">选择谁可以看到您的快拍</string>
-    <string name="StoryLivePrivacyAlertSubtitleProfile">选择谁可以看到您的直播</string>
-    <string name="StoryPrivacyOptionEveryone">所有人</string>
-    <string name="StoryPrivacyOptionContacts">联系人</string>
-    <string name="StoryPrivacyOptionContactsDetail">排除联系人</string>
-    <string name="StoryPrivacyOptionCloseFriends">密友</string>
-    <string name="StoryPrivacyOptionCloseFriendsDetail">编辑列表</string>
-    <string name="StoryPrivacyOptionSelectedContacts">选定的联系人</string>
-    <string name="StoryPrivacyOptionSelectedContactsDetail">编辑列表</string>
-    <string name="StoryPrivacyAlertCloseFriendsSubtitle">选择密友</string>
-    <string name="StoryPrivacyButtonSaveCloseFriends">保存列表</string>
-    <string name="RecorderNewStory">新快拍</string>
-    <string name="StoryPrivacyAlertSelectContactsTitle">选择联系人</string>
-    <string name="StoryPrivacyAlertSelectContactsSubtitle">选择联系人</string>
-    <string name="StoryPrivacyAlertCloseFriendsTitle">密友</string>
-    <string name="StoryPrivacyAlertExcludedContactsTitle">排除的联系人</string>
-    <string name="StoryPrivacyAlertExcludedContactsSubtitle">排除联系人</string>
-    <string name="StoryPrivacyButtonSave">保存设置</string>
-    <string name="StoryPrivacyButtonPost">发布快拍</string>
-    <string name="StoryPrivacyAlertExcludeFromEveryoneTitle">所有人，除了…</string>
-    <string name="StoryPrivacyAlertExcludeFromEveryoneSubtitle">排除联系人</string>
-    <string name="StoryBlockListEmpty">**选择**不会看到您快拍的人。</string>
-    <string name="StoryAllowScreenshots">允许截屏</string>
-    <string name="StoryKeep">保留在我的主页</string>
-    <string name="StoriesAlbum">相册</string>
-    <string name="StoriesAlbumNameAllStories">所有快拍</string>
-    <string name="StoriesAlbumTitleInputHint">标题</string>
-    <string name="StoriesAlbumAddAlbum">添加相册</string>
-    <string name="StoriesAlbumNewAlbum">新相册</string>
-    <string name="StoriesAlbumAddToAlbum">添加到相册</string>
-    <string name="StoryKeepInfo_one">即使在 %d 小时后过期，也将此快拍保留在您的主页上。隐私设置将适用。</string>
-    <string name="StoryKeepInfo_other">即使在 %d 小时后过期，也将此快拍保留在您的主页上。隐私设置将适用。</string>
-    <string name="StoryCollageRemoveGrid">点击移除网格</string>
-    <string name="StoriesSoundEnabled">快拍</string>
-    <string name="Reactions">回应</string>
-    <string name="NotificationReactions">回应</string>
-    <string name="ReactionsByEmotionChartTitle">回应</string>
-    <string name="NotificationsReactions">回应</string>
-    <string name="NotifyMeAbout">通知我关于…</string>
-    <string name="StoryLive">直播</string>
-    <string name="StoryPhoto">照片</string>
-    <string name="StoryVideo">视频</string>
-    <string name="StoryDraft">草稿</string>
-    <string name="StoryDraftsAlbum">草稿箱</string>
-    <string name="StoryKeepDraft">保留草稿</string>
-    <string name="StorySaveDraft">保存草稿</string>
-    <string name="StoryDeleteDraft">删除草稿</string>
-    <string name="ShowInChats">在聊天中显示</string>
-    <string name="ForwardedStory">转发的快拍</string>
-    <string name="NotifyMeAboutPrivate">私聊新消息</string>
-    <string name="NotifyMoreOptions">更多选项</string>
-    <string name="NotifyLessOptions">更少选项</string>
-    <string name="NotifyMeAboutGroups">群组新消息</string>
-    <string name="NotifyMeAboutChannels">频道新消息</string>
-    <string name="NotificationsStories">快拍</string>
-    <string name="NotifyMeAboutNewStories">新快拍</string>
-    <string name="NotifyMeAboutImportantStories">重要快拍</string>
-    <string name="StoryAutoExceptionsInfo">自动开启来自您最常联系的 5 位用户的快拍通知。</string>
-    <string name="ShowSenderNames">显示发送者姓名</string>
-    <string name="HideSenderNames">隐藏发送者姓名</string>
-    <string name="ShowSendersName">显示发送者姓名</string>
-    <string name="HideSendersName">隐藏发送者姓名</string>
-    <string name="NotificationShowSenderNames">显示发送者姓名</string>
-    <string name="NotifyMeAboutMessagesReactions">对我消息的回应</string>
-    <string name="NotifyMeAboutStoriesReactions">对我快拍的回应</string>
-    <string name="NotifyFromContacts">来自我的联系人</string>
-    <string name="NotifyFromEveryone">来自所有人</string>
-    <string name="InAppPopup">应用内弹窗</string>
-    <string name="InAppPopupInfo">在应用内显示弹窗通知。</string>
-    <string name="AutoDownloadStories">快拍</string>
-    <string name="NotificationStories">快拍</string>
-    <string name="DateOfBirth">出生日期</string>
-    <string name="SearchMessages">消息</string>
-    <string name="EventLogFilterSectionMessages">消息</string>
-    <string name="MessagesSettings">消息</string>
-    <string name="PrivacyMessages">消息</string>
-    <string name="MessagesChartTitle">消息</string>
-    <string name="MessagesOverview">消息</string>
-    <string name="NotificationReactionsMessages">消息</string>
-    <string name="StarsTransactionFloodskipNumberName">消息</string>
-    <string name="NotificationReactionsStories">快拍</string>
-    <string name="ProfileGifts">礼物</string>
-    <string name="UserBio">简介</string>
-    <string name="PrivacyBio">简介</string>
-    <string name="BioLimitTitle">简介</string>
-    <string name="StoryMusicProfileMusic">保存的音乐</string>
-    <string name="PrivacyMusic">保存的音乐</string>
-    <string name="PrivacyInvites">邀请</string>
-    <string name="PrivacyInvitesInfo">您可以限制哪些用户可以将您添加到群组和频道中。</string>
-    <string name="ProfileBirthday">出生日期</string>
-    <string name="EditProfileBirthdayTitle">出生日期</string>
-    <string name="EditProfileBirthdayText">出生日期</string>
-    <string name="PassportBirthdate">出生日期</string>
-    <string name="PrivacyBirthday">出生日期</string>
+    <string name="ParamValueFromNoUnit">д»Ћ %1$d</string>
+    <string name="ParamValueToNoUnit">е€° %1$d</string>
+    <string name="ApplySuccessTitle">з”іиЇ·е·ІжЏђдє¤пјЃ</string>
+    <string name="ApplySuccessDescription">ж‚Ёзљ„з”іиЇ·е·ІеЏ‘йЂЃпјЊз»„з»‡иЂ…е°†е°Ѕеї«е®Ўж ёгЂ‚</string>
+    <string name="DivoCheckInternetConnection">иЇ·жЈЂжџҐж‚Ёзљ„дє’иЃ”зЅ‘иїћжЋҐ</string>
+    <string name="DivoActionSkip">и·іиї‡</string>
+    <string name="YourQrCode">ж‚Ёзљ„дєЊз»ґз Ѓ</string>
+    <string name="ScanToProfile">ж‰«з Ѓиї›е…ҐдёЄдєєдё»йЎµ</string>
+    <string name="DivoShareBtn">е€†дє«</string>
+    <string name="MyStory">ж€‘зљ„ж•…дє‹</string>
+    <string name="SearchChats">жђњзґўиЃЉе¤©</string>
+    <string name="NoContactsYet3">ж·»еЉ иЃ”зі»дєє</string>
+    <string name="NoContactsYet3Sub">ж‚ЁењЁ Divo Global иїжІЎжњ‰иЃ”зі»дєєгЂ‚и¦Ѓж·»еЉ д»–д»¬еђ—пјџ</string>
+    <string name="SearchPeopleByUsername">жЊ‰з”Ёж€·еђЌжђњзґўиЃ”зі»дєє</string>
+    <string name="AttachPhoto">з…§з‰‡</string>
+    <string name="AttachVideo">и§†йў‘</string>
+    <string name="StoryPrivacyAlertTitle">е€†дє«еї«ж‹Ќ</string>
+    <string name="StoryPrivacyAlertSubtitle_one">йЂ‰ж‹©и°ЃеЏЇд»Ґзњ‹е€°ж‚Ёзљ„еї«ж‹Ќ</string>
+    <string name="StoryPrivacyAlertSubtitle_other">йЂ‰ж‹©и°ЃеЏЇд»Ґзњ‹е€°ж‚Ёзљ„еї«ж‹Ќ</string>
+    <string name="StoryPrivacyAlertSubtitleProfile">йЂ‰ж‹©и°ЃеЏЇд»Ґзњ‹е€°ж‚Ёзљ„еї«ж‹Ќ</string>
+    <string name="StoryLivePrivacyAlertSubtitleProfile">йЂ‰ж‹©и°ЃеЏЇд»Ґзњ‹е€°ж‚Ёзљ„з›ґж’­</string>
+    <string name="StoryPrivacyOptionEveryone">ж‰Ђжњ‰дєє</string>
+    <string name="StoryPrivacyOptionContacts">иЃ”зі»дєє</string>
+    <string name="StoryPrivacyOptionContactsDetail">жЋ’й™¤иЃ”зі»дєє</string>
+    <string name="StoryPrivacyOptionCloseFriends">еЇ†еЏ‹</string>
+    <string name="StoryPrivacyOptionCloseFriendsDetail">зј–иѕ‘е€—иЎЁ</string>
+    <string name="StoryPrivacyOptionSelectedContacts">йЂ‰е®љзљ„иЃ”зі»дєє</string>
+    <string name="StoryPrivacyOptionSelectedContactsDetail">зј–иѕ‘е€—иЎЁ</string>
+    <string name="StoryPrivacyAlertCloseFriendsSubtitle">йЂ‰ж‹©еЇ†еЏ‹</string>
+    <string name="StoryPrivacyButtonSaveCloseFriends">дїќе­е€—иЎЁ</string>
+    <string name="RecorderNewStory">ж–°еї«ж‹Ќ</string>
+    <string name="StoryPrivacyAlertSelectContactsTitle">йЂ‰ж‹©иЃ”зі»дєє</string>
+    <string name="StoryPrivacyAlertSelectContactsSubtitle">йЂ‰ж‹©иЃ”зі»дєє</string>
+    <string name="StoryPrivacyAlertCloseFriendsTitle">еЇ†еЏ‹</string>
+    <string name="StoryPrivacyAlertExcludedContactsTitle">жЋ’й™¤зљ„иЃ”зі»дєє</string>
+    <string name="StoryPrivacyAlertExcludedContactsSubtitle">жЋ’й™¤иЃ”зі»дєє</string>
+    <string name="StoryPrivacyButtonSave">дїќе­и®ѕзЅ®</string>
+    <string name="StoryPrivacyButtonPost">еЏ‘еёѓеї«ж‹Ќ</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneTitle">ж‰Ђжњ‰дєєпјЊй™¤дє†вЂ¦</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneSubtitle">жЋ’й™¤иЃ”зі»дєє</string>
+    <string name="StoryBlockListEmpty">**йЂ‰ж‹©**дёЌдјљзњ‹е€°ж‚Ёеї«ж‹Ќзљ„дєєгЂ‚</string>
+    <string name="StoryAllowScreenshots">е…Ѓи®ёж€Єе±Џ</string>
+    <string name="StoryKeep">дїќз•™ењЁж€‘зљ„дё»йЎµ</string>
+    <string name="StoriesAlbum">з›ёе†Њ</string>
+    <string name="StoriesAlbumNameAllStories">ж‰Ђжњ‰еї«ж‹Ќ</string>
+    <string name="StoriesAlbumTitleInputHint">ж ‡йў</string>
+    <string name="StoriesAlbumAddAlbum">ж·»еЉ з›ёе†Њ</string>
+    <string name="StoriesAlbumNewAlbum">ж–°з›ёе†Њ</string>
+    <string name="StoriesAlbumAddToAlbum">ж·»еЉ е€°з›ёе†Њ</string>
+    <string name="StoryKeepInfo_one">еЌідЅїењЁ %d е°Џж—¶еђЋиї‡жњџпјЊд№џе°†ж­¤еї«ж‹Ќдїќз•™ењЁж‚Ёзљ„дё»йЎµдёЉгЂ‚йљђз§Ѓи®ѕзЅ®е°†йЂ‚з”ЁгЂ‚</string>
+    <string name="StoryKeepInfo_other">еЌідЅїењЁ %d е°Џж—¶еђЋиї‡жњџпјЊд№џе°†ж­¤еї«ж‹Ќдїќз•™ењЁж‚Ёзљ„дё»йЎµдёЉгЂ‚йљђз§Ѓи®ѕзЅ®е°†йЂ‚з”ЁгЂ‚</string>
+    <string name="StoryCollageRemoveGrid">з‚№е‡»з§»й™¤зЅ‘ж ј</string>
+    <string name="StoriesSoundEnabled">еї«ж‹Ќ</string>
+    <string name="Reactions">е›ћеє”</string>
+    <string name="NotificationReactions">е›ћеє”</string>
+    <string name="ReactionsByEmotionChartTitle">е›ћеє”</string>
+    <string name="NotificationsReactions">е›ћеє”</string>
+    <string name="NotifyMeAbout">йЂљзџҐж€‘е…ідєЋвЂ¦</string>
+    <string name="StoryLive">з›ґж’­</string>
+    <string name="StoryPhoto">з…§з‰‡</string>
+    <string name="StoryVideo">и§†йў‘</string>
+    <string name="StoryDraft">иЌ‰зЁї</string>
+    <string name="StoryDraftsAlbum">иЌ‰зЁїз®±</string>
+    <string name="StoryKeepDraft">дїќз•™иЌ‰зЁї</string>
+    <string name="StorySaveDraft">дїќе­иЌ‰зЁї</string>
+    <string name="StoryDeleteDraft">е€ й™¤иЌ‰зЁї</string>
+    <string name="ShowInChats">ењЁиЃЉе¤©дё­жѕз¤є</string>
+    <string name="ForwardedStory">иЅ¬еЏ‘зљ„еї«ж‹Ќ</string>
+    <string name="NotifyMeAboutPrivate">з§ЃиЃЉж–°ж¶€жЃЇ</string>
+    <string name="NotifyMoreOptions">ж›ґе¤љйЂ‰йЎ№</string>
+    <string name="NotifyLessOptions">ж›ґе°‘йЂ‰йЎ№</string>
+    <string name="NotifyMeAboutGroups">зѕ¤з»„ж–°ж¶€жЃЇ</string>
+    <string name="NotifyMeAboutChannels">йў‘йЃ“ж–°ж¶€жЃЇ</string>
+    <string name="NotificationsStories">еї«ж‹Ќ</string>
+    <string name="NotifyMeAboutNewStories">ж–°еї«ж‹Ќ</string>
+    <string name="NotifyMeAboutImportantStories">й‡Ќи¦Ѓеї«ж‹Ќ</string>
+    <string name="StoryAutoExceptionsInfo">и‡ЄеЉЁејЂеђЇжќҐи‡Єж‚ЁжњЂеёёиЃ”зі»зљ„ 5 дЅЌз”Ёж€·зљ„еї«ж‹ЌйЂљзџҐгЂ‚</string>
+    <string name="ShowSenderNames">жѕз¤єеЏ‘йЂЃиЂ…е§“еђЌ</string>
+    <string name="HideSenderNames">йљђи—ЏеЏ‘йЂЃиЂ…е§“еђЌ</string>
+    <string name="ShowSendersName">жѕз¤єеЏ‘йЂЃиЂ…е§“еђЌ</string>
+    <string name="HideSendersName">йљђи—ЏеЏ‘йЂЃиЂ…е§“еђЌ</string>
+    <string name="NotificationShowSenderNames">жѕз¤єеЏ‘йЂЃиЂ…е§“еђЌ</string>
+    <string name="NotifyMeAboutMessagesReactions">еЇ№ж€‘ж¶€жЃЇзљ„е›ћеє”</string>
+    <string name="NotifyMeAboutStoriesReactions">еЇ№ж€‘еї«ж‹Ќзљ„е›ћеє”</string>
+    <string name="NotifyFromContacts">жќҐи‡Єж€‘зљ„иЃ”зі»дєє</string>
+    <string name="NotifyFromEveryone">жќҐи‡Єж‰Ђжњ‰дєє</string>
+    <string name="InAppPopup">еє”з”Ёе†…еј№зЄ—</string>
+    <string name="InAppPopupInfo">ењЁеє”з”Ёе†…жѕз¤єеј№зЄ—йЂљзџҐгЂ‚</string>
+    <string name="AutoDownloadStories">еї«ж‹Ќ</string>
+    <string name="NotificationStories">еї«ж‹Ќ</string>
+    <string name="DateOfBirth">е‡єз”џж—Ґжњџ</string>
+    <string name="SearchMessages">ж¶€жЃЇ</string>
+    <string name="EventLogFilterSectionMessages">ж¶€жЃЇ</string>
+    <string name="MessagesSettings">ж¶€жЃЇ</string>
+    <string name="PrivacyMessages">ж¶€жЃЇ</string>
+    <string name="MessagesChartTitle">ж¶€жЃЇ</string>
+    <string name="MessagesOverview">ж¶€жЃЇ</string>
+    <string name="NotificationReactionsMessages">ж¶€жЃЇ</string>
+    <string name="StarsTransactionFloodskipNumberName">ж¶€жЃЇ</string>
+    <string name="NotificationReactionsStories">еї«ж‹Ќ</string>
+    <string name="ProfileGifts">з¤јз‰©</string>
+    <string name="UserBio">з®Ђд»‹</string>
+    <string name="PrivacyBio">з®Ђд»‹</string>
+    <string name="BioLimitTitle">з®Ђд»‹</string>
+    <string name="StoryMusicProfileMusic">дїќе­зљ„йџід№ђ</string>
+    <string name="PrivacyMusic">дїќе­зљ„йџід№ђ</string>
+    <string name="PrivacyInvites">й‚ЂиЇ·</string>
+    <string name="PrivacyInvitesInfo">ж‚ЁеЏЇд»Ґй™ђе€¶е“Єдє›з”Ёж€·еЏЇд»Ґе°†ж‚Ёж·»еЉ е€°зѕ¤з»„е’Њйў‘йЃ“дё­гЂ‚</string>
+    <string name="ProfileBirthday">е‡єз”џж—Ґжњџ</string>
+    <string name="EditProfileBirthdayTitle">е‡єз”џж—Ґжњџ</string>
+    <string name="EditProfileBirthdayText">е‡єз”џж—Ґжњџ</string>
+    <string name="PassportBirthdate">е‡єз”џж—Ґжњџ</string>
+    <string name="PrivacyBirthday">е‡єз”џж—Ґжњџ</string>
 
-    <string name="NotificationEnabled">已启用</string>
-    <string name="NotificationEnabledAutomatically">自动启用</string>
-    <string name="NotificationDisabled">已停用</string>
-    <string name="PrivacyLastSeenPremiumInfo">如果您订阅了 Premium，即使您向其他用户隐藏了您的最后上线和已读时间，您仍然可以看到他们的时间（除非他们进行了专门限制）。</string>
-    <string name="PrivacyMessagesContactsAndPremium">我的联系人和 Premium 用户</string>
-    <string name="PrivateMessagesChargePrice">消息收费</string>
-    <string name="PrivacyMessagesInfo">您可以将接收的消息限制为仅限联系人和 Premium 用户。
+    <string name="NotificationEnabled">е·ІеђЇз”Ё</string>
+    <string name="NotificationEnabledAutomatically">и‡ЄеЉЁеђЇз”Ё</string>
+    <string name="NotificationDisabled">е·ІеЃњз”Ё</string>
+    <string name="PrivacyLastSeenPremiumInfo">е¦‚жћњж‚Ёи®ўй…дє† PremiumпјЊеЌідЅїж‚Ёеђ‘е…¶д»–з”Ёж€·йљђи—Џдє†ж‚Ёзљ„жњЂеђЋдёЉзєїе’Ње·ІиЇ»ж—¶й—ґпјЊж‚Ёд»Ќз„¶еЏЇд»Ґзњ‹е€°д»–д»¬зљ„ж—¶й—ґпј€й™¤йќћд»–д»¬иї›иЎЊдє†дё“й—Ёй™ђе€¶пј‰гЂ‚</string>
+    <string name="PrivacyMessagesContactsAndPremium">ж€‘зљ„иЃ”зі»дєєе’Њ Premium з”Ёж€·</string>
+    <string name="PrivateMessagesChargePrice">ж¶€жЃЇж”¶иґ№</string>
+    <string name="PrivacyMessagesInfo">ж‚ЁеЏЇд»Ґе°†жЋҐж”¶зљ„ж¶€жЃЇй™ђе€¶дёєд»…й™ђиЃ”зі»дєєе’Њ Premium з”Ёж€·гЂ‚
 
-**什么是 Divo Global Premium？**</string>
-    <string name="PrivacyMessagesTitle">谁能给我发送消息？</string>
-    <string name="PrivacyVoiceMessagesTitle">谁能给我发送语音消息？</string>
-    <string name="PrivacyBirthdaySet">您尚未输入出生日期。
-**添加我的生日 &gt;**</string>
-    <string name="PrivacyBirthdayTitle">谁能看到我的生日？</string>
-    <string name="PrivacyBirthdayInfo">您可以精确限制谁能看到您的生日。</string>
-    <string name="PrivacyBirthdayInfo3">您可以添加用户或整个群组作为例外，这些例外将覆盖上述设置。</string>
-    <string name="PrivacyGifts">礼物</string>
-    <string name="PrivacyGiftsTitle">自动显示来自以下人的礼物</string>
-    <string name="PrivacyGiftsInfo">选择特定发送者的礼物在展示到您的个人主页前，是否需要您的批准。</string>
-    <string name="PrivacyGiftsShowIcon">在聊天中显示礼物图标</string>
-    <string name="PrivacyGiftsShowIconInfo">在所有聊天的消息输入框中为双方显示 %s 礼物图标。</string>
-    <string name="PrivacyGiftsTypeHeader">接受的礼物类型</string>
-    <string name="PrivacyGiftsTypeUnlimited">无限制</string>
-    <string name="PrivacyGiftsTypeLimited">限量版</string>
-    <string name="PrivacyGiftsTypeUnique">独特</string>
-    <string name="PrivacyGiftsTypeFromChannels">来自频道</string>
-    <string name="PrivacyGiftsTypePremium">Premium 订阅</string>
-    <string name="PrivacyGiftsTypeInfo">选择您允许其他人向您发送的礼物类型。</string>
-    <string name="CustomShareGiftsInfo">您可以添加用户或整个群组作为例外，这些例外将覆盖上述设置。</string>
-    <string name="PrivacyBioTitle">谁能看到我的简介？</string>
-    <string name="PrivacyBioInfo">您可以精确限制谁能看到您的简介。</string>
-    <string name="PrivacyBioInfo3">您可以添加无法看到您简介的用户或整个群组。</string>
+**д»Ђд№€жЇ Divo Global Premiumпјџ**</string>
+    <string name="PrivacyMessagesTitle">и°ЃиѓЅз»™ж€‘еЏ‘йЂЃж¶€жЃЇпјџ</string>
+    <string name="PrivacyVoiceMessagesTitle">и°ЃиѓЅз»™ж€‘еЏ‘йЂЃиЇ­йџіж¶€жЃЇпјџ</string>
+    <string name="PrivacyBirthdaySet">ж‚Ёе°љжњЄиѕ“е…Ґе‡єз”џж—ҐжњџгЂ‚
+**ж·»еЉ ж€‘зљ„з”џж—Ґ &gt;**</string>
+    <string name="PrivacyBirthdayTitle">и°ЃиѓЅзњ‹е€°ж€‘зљ„з”џж—Ґпјџ</string>
+    <string name="PrivacyBirthdayInfo">ж‚ЁеЏЇд»ҐзІѕзЎ®й™ђе€¶и°ЃиѓЅзњ‹е€°ж‚Ёзљ„з”џж—ҐгЂ‚</string>
+    <string name="PrivacyBirthdayInfo3">ж‚ЁеЏЇд»Ґж·»еЉ з”Ёж€·ж€–ж•ґдёЄзѕ¤з»„дЅњдёєдѕ‹е¤–пјЊиї™дє›дѕ‹е¤–е°†и¦†з›–дёЉиї°и®ѕзЅ®гЂ‚</string>
+    <string name="PrivacyGifts">з¤јз‰©</string>
+    <string name="PrivacyGiftsTitle">и‡ЄеЉЁжѕз¤єжќҐи‡Єд»Ґдё‹дєєзљ„з¤јз‰©</string>
+    <string name="PrivacyGiftsInfo">йЂ‰ж‹©з‰№е®љеЏ‘йЂЃиЂ…зљ„з¤јз‰©ењЁе±•з¤єе€°ж‚Ёзљ„дёЄдєєдё»йЎµе‰ЌпјЊжЇеђ¦йњЂи¦Ѓж‚Ёзљ„ж‰№е‡†гЂ‚</string>
+    <string name="PrivacyGiftsShowIcon">ењЁиЃЉе¤©дё­жѕз¤єз¤јз‰©е›ѕж ‡</string>
+    <string name="PrivacyGiftsShowIconInfo">ењЁж‰Ђжњ‰иЃЉе¤©зљ„ж¶€жЃЇиѕ“е…ҐжЎ†дё­дёєеЏЊж–№жѕз¤є %s з¤јз‰©е›ѕж ‡гЂ‚</string>
+    <string name="PrivacyGiftsTypeHeader">жЋҐеЏ—зљ„з¤јз‰©з±»ећ‹</string>
+    <string name="PrivacyGiftsTypeUnlimited">ж— й™ђе€¶</string>
+    <string name="PrivacyGiftsTypeLimited">й™ђй‡Џз‰€</string>
+    <string name="PrivacyGiftsTypeUnique">з‹¬з‰№</string>
+    <string name="PrivacyGiftsTypeFromChannels">жќҐи‡Єйў‘йЃ“</string>
+    <string name="PrivacyGiftsTypePremium">Premium и®ўй…</string>
+    <string name="PrivacyGiftsTypeInfo">йЂ‰ж‹©ж‚Ёе…Ѓи®ёе…¶д»–дєєеђ‘ж‚ЁеЏ‘йЂЃзљ„з¤јз‰©з±»ећ‹гЂ‚</string>
+    <string name="CustomShareGiftsInfo">ж‚ЁеЏЇд»Ґж·»еЉ з”Ёж€·ж€–ж•ґдёЄзѕ¤з»„дЅњдёєдѕ‹е¤–пјЊиї™дє›дѕ‹е¤–е°†и¦†з›–дёЉиї°и®ѕзЅ®гЂ‚</string>
+    <string name="PrivacyBioTitle">и°ЃиѓЅзњ‹е€°ж€‘зљ„з®Ђд»‹пјџ</string>
+    <string name="PrivacyBioInfo">ж‚ЁеЏЇд»ҐзІѕзЎ®й™ђе€¶и°ЃиѓЅзњ‹е€°ж‚Ёзљ„з®Ђд»‹гЂ‚</string>
+    <string name="PrivacyBioInfo3">ж‚ЁеЏЇд»Ґж·»еЉ ж— жі•зњ‹е€°ж‚Ёз®Ђд»‹зљ„з”Ёж€·ж€–ж•ґдёЄзѕ¤з»„гЂ‚</string>
 
-    <string name="UploadingStory">上传中…</string>
-    <string name="FailedStory">失败</string>
-    <string name="FailedToUploadStory">上传失败</string>
-    <string name="StoryError">无法上传</string>
-    <string name="StoryEditing">上传编辑…</string>
-    <string name="TryAgain">重试</string>
-    <string name="SelfStoryTitle">我的动态</string>
+    <string name="UploadingStory">дёЉдј дё­вЂ¦</string>
+    <string name="FailedStory">е¤±иґҐ</string>
+    <string name="FailedToUploadStory">дёЉдј е¤±иґҐ</string>
+    <string name="StoryError">ж— жі•дёЉдј </string>
+    <string name="StoryEditing">дёЉдј зј–иѕ‘вЂ¦</string>
+    <string name="TryAgain">й‡ЌиЇ•</string>
+    <string name="SelfStoryTitle">ж€‘зљ„еЉЁжЂЃ</string>
 
-    <string name="AllowReadCall">请允许 Divo Global 接听电话，以便我们为您自动输入验证码。</string>
-    <string name="AllowReadCallAndLog">请允许 Divo Global 接听电话并读取通话记录，以便我们为您自动输入验证码。</string>
-    <string name="AllowReadCallLog">请允许 Divo Global 读取通话记录，以便我们为您自动输入验证码。</string>
-    <string name="AllowFillNumber">请允许 Divo Global 接听电话，以便我们自动确认您的手机号码。</string>
-    <string name="UserRestricted">抱歉，您没有执行此操作的权限。</string>
-    <string name="YouBlockedUser">抱歉，您无法将此用户或机器人添加到群组，因为您已将其屏蔽。请解除屏蔽以继续。</string>
-    <string name="ContactsPermissionAlertContinue">继续</string>
-    <string name="NotificationsPermissionContinue">继续</string>
-    <string name="Continue">继续</string>
-    <string name="ChannelJoinNoCaps">加入频道</string>
-    <string name="ChannelMuteNoCaps">静音</string>
-    <string name="ChannelUnmuteNoCaps">取消静音</string>
-    <string name="ProfileShowAsList">以列表显示</string>
-    <string name="ProfileMessage">发消息</string>
-    <string name="ProfileMute">静音</string>
-    <string name="ProfileCall">语音通话</string>
-    <string name="ProfileVideo">视频通话</string>
-    <string name="ProfilePosts">帖子</string>
-    <string name="ProfileGift">礼物</string>
-    <string name="ProfileShare">分享</string>
-    <string name="ProfileLeave">离开频道</string>
-    <string name="Followers_one">%1$d 粉丝</string>
-    <string name="Followers_other">%1$d 粉丝</string>
-    <string name="ProfileActionsLiveStream">直播</string>
-    <string name="StartVoipChannelTitle">直播</string>
-    <string name="VoipChannelVoiceChat">直播</string>
-    <string name="Mute">静音</string>
-    <string name="ProfileButtonMute">静音</string>
-    <string name="AddStory">添加快拍</string>
-    <string name="ProfileActionsAddStory">添加快拍</string>
-    <string name="ChannelSettingsTitle">频道设置</string>
-    <string name="ChannelAdminSettings">频道设置</string>
-    <string name="ChannelOpenDirect">私信</string>
-    <string name="ChatMessageSuggestions">私信</string>
-    <string name="PostSuggestions">私信</string>
-    <string name="ChannelColorTitle2">外观</string>
-    <string name="ChangeChannelNameColor2">外观</string>
-    <string name="ChannelAutotranslation">自动翻译消息</string>
-    <string name="StatisticsAndBoosts">统计与加成</string>
-    <string name="ArchivedStories">归档的快拍</string>
-    <string name="OpenChannelArchiveStories">归档的快拍</string>
-    <string name="New">新</string>
-    <string name="Off">关闭</string>
-    <string name="BoostLevelPlus_one">等级 %d+</string>
-    <string name="BoostLevelPlus_other">等级 %d+</string>
+    <string name="AllowReadCall">иЇ·е…Ѓи®ё Divo Global жЋҐеђ¬з”µиЇќпјЊд»Ґдѕїж€‘д»¬дёєж‚Ёи‡ЄеЉЁиѕ“е…ҐйЄЊиЇЃз ЃгЂ‚</string>
+    <string name="AllowReadCallAndLog">иЇ·е…Ѓи®ё Divo Global жЋҐеђ¬з”µиЇќе№¶иЇ»еЏ–йЂљиЇќи®°еЅ•пјЊд»Ґдѕїж€‘д»¬дёєж‚Ёи‡ЄеЉЁиѕ“е…ҐйЄЊиЇЃз ЃгЂ‚</string>
+    <string name="AllowReadCallLog">иЇ·е…Ѓи®ё Divo Global иЇ»еЏ–йЂљиЇќи®°еЅ•пјЊд»Ґдѕїж€‘д»¬дёєж‚Ёи‡ЄеЉЁиѕ“е…ҐйЄЊиЇЃз ЃгЂ‚</string>
+    <string name="AllowFillNumber">иЇ·е…Ѓи®ё Divo Global жЋҐеђ¬з”µиЇќпјЊд»Ґдѕїж€‘д»¬и‡ЄеЉЁзЎ®и®¤ж‚Ёзљ„ж‰‹жњєеЏ·з ЃгЂ‚</string>
+    <string name="UserRestricted">жЉ±ж­‰пјЊж‚ЁжІЎжњ‰ж‰§иЎЊж­¤ж“ЌдЅњзљ„жќѓй™ђгЂ‚</string>
+    <string name="YouBlockedUser">жЉ±ж­‰пјЊж‚Ёж— жі•е°†ж­¤з”Ёж€·ж€–жњєе™Ёдєєж·»еЉ е€°зѕ¤з»„пјЊе› дёєж‚Ёе·Іе°†е…¶е±Џи”ЅгЂ‚иЇ·и§Јй™¤е±Џи”Ѕд»Ґз»§з»­гЂ‚</string>
+    <string name="ContactsPermissionAlertContinue">з»§з»­</string>
+    <string name="NotificationsPermissionContinue">з»§з»­</string>
+    <string name="Continue">з»§з»­</string>
+    <string name="ChannelJoinNoCaps">еЉ е…Ґйў‘йЃ“</string>
+    <string name="ChannelMuteNoCaps">йќ™йџі</string>
+    <string name="ChannelUnmuteNoCaps">еЏ–ж¶€йќ™йџі</string>
+    <string name="ProfileShowAsList">д»Ґе€—иЎЁжѕз¤є</string>
+    <string name="ProfileMessage">еЏ‘ж¶€жЃЇ</string>
+    <string name="ProfileMute">йќ™йџі</string>
+    <string name="ProfileCall">иЇ­йџійЂљиЇќ</string>
+    <string name="ProfileVideo">и§†йў‘йЂљиЇќ</string>
+    <string name="ProfilePosts">её–е­ђ</string>
+    <string name="ProfileGift">з¤јз‰©</string>
+    <string name="ProfileShare">е€†дє«</string>
+    <string name="ProfileLeave">з¦»ејЂйў‘йЃ“</string>
+    <string name="Followers_one">%1$d зІ‰дёќ</string>
+    <string name="Followers_other">%1$d зІ‰дёќ</string>
+    <string name="ProfileActionsLiveStream">з›ґж’­</string>
+    <string name="StartVoipChannelTitle">з›ґж’­</string>
+    <string name="VoipChannelVoiceChat">з›ґж’­</string>
+    <string name="Mute">йќ™йџі</string>
+    <string name="ProfileButtonMute">йќ™йџі</string>
+    <string name="AddStory">ж·»еЉ еї«ж‹Ќ</string>
+    <string name="ProfileActionsAddStory">ж·»еЉ еї«ж‹Ќ</string>
+    <string name="ChannelSettingsTitle">йў‘йЃ“и®ѕзЅ®</string>
+    <string name="ChannelAdminSettings">йў‘йЃ“и®ѕзЅ®</string>
+    <string name="ChannelOpenDirect">з§ЃдїЎ</string>
+    <string name="ChatMessageSuggestions">з§ЃдїЎ</string>
+    <string name="PostSuggestions">з§ЃдїЎ</string>
+    <string name="ChannelColorTitle2">е¤–и§‚</string>
+    <string name="ChangeChannelNameColor2">е¤–и§‚</string>
+    <string name="ChannelAutotranslation">и‡ЄеЉЁзї»иЇ‘ж¶€жЃЇ</string>
+    <string name="StatisticsAndBoosts">з»џи®ЎдёЋеЉ ж€ђ</string>
+    <string name="ArchivedStories">еЅ’жЎЈзљ„еї«ж‹Ќ</string>
+    <string name="OpenChannelArchiveStories">еЅ’жЎЈзљ„еї«ж‹Ќ</string>
+    <string name="New">ж–°</string>
+    <string name="Off">е…ій—­</string>
+    <string name="BoostLevelPlus_one">з­‰зє§ %d+</string>
+    <string name="BoostLevelPlus_other">з­‰зє§ %d+</string>
 </resources>
