@@ -37,7 +37,7 @@ jobs:
         env:
           TELEGRAM_APP_ID: ${{ secrets.TELEGRAM_APP_ID }}
           TELEGRAM_APP_HASH: ${{ secrets.TELEGRAM_APP_HASH }}
-        run: ./gradlew assembleAfatDebug
+        run: ./gradlew :TMessagesProj_App:assembleAfatDebug
 
       - name: Upload Debug APK to Firebase
         if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
@@ -67,7 +67,7 @@ jobs:
           RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-        run: ./gradlew assembleAfatRelease bundleAfatRelease
+        run: ./gradlew :TMessagesProj_App:assembleAfatRelease :TMessagesProj_App:bundleAfatRelease
 
       - name: Upload Release AAB to Artifacts
         if: github.base_ref == 'master' || github.ref == 'refs/heads/master'
