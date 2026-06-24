@@ -2,7 +2,7 @@ name: PR Check
 
 on:
   pull_request:
-    branches: [ "dev", "release", "master" ]
+    branches: [ "dev", "release/*", "master" ]
 
 jobs:
   build:
