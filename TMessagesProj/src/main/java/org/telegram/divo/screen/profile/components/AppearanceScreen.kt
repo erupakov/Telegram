@@ -25,10 +25,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.common.MeasuringUnits
+import org.telegram.divo.common.labelRes
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.common.utils.toDateFloat
+import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.entity.EventModelAttributes
 import org.telegram.divo.screen.profile.PhysicalParams
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -74,6 +76,7 @@ fun AppearanceScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             params?.let {
+                val storedSystem = params.measuringSystem
                 ParameterItem(
                     label = stringResource(R.string.LabelGender),
                     value = params.gender.ifBlank { "-" }
@@ -84,12 +87,12 @@ fun AppearanceScreen(
                     value = age?.toString() ?: "-"
                 )
                 ParameterItem(
-                    label = stringResource(R.string.LabelHeight),
-                    value = if (params.height != 0f) params.height.toString() else "-"
+                    label = stringResource(ParametersType.HEIGHT.labelRes()),
+                    value = MeasuringUnits.formatStoredNumber(ParametersType.HEIGHT, params.height, storedSystem, "-")
                 )
                 ParameterItem(
-                    label = stringResource(R.string.LabelHips),
-                    value = if (params.hips != 0) params.hips.toString() else "-"
+                    label = stringResource(ParametersType.HIPS.labelRes()),
+                    value = MeasuringUnits.formatStoredNumber(ParametersType.HIPS, params.hips, storedSystem, "-")
                 )
                 ParameterItem(
                     label = stringResource(R.string.LabelHairLength),
@@ -100,16 +103,19 @@ fun AppearanceScreen(
                     value = params.eyeColor.ifBlank { "-" }
                 )
                 ParameterItem(
-                    label = stringResource(R.string.LabelBreastSize),
-                    value = params.breastSize.ifBlank { "-" }
+                    label = stringResource(ParametersType.BREAST_SIZE.labelRes()),
+                    value = params.breastSize
+                        .takeIf { it.isNotBlank() }
+                        ?.let { MeasuringUnits.formatStoredValue(ParametersType.BREAST_SIZE, it, storedSystem) }
+                        ?: "-"
                 )
                 ParameterItem(
-                    label = stringResource(R.string.LabelWaist),
-                    value = if (params.waist != 0) params.waist.toString() else "-"
+                    label = stringResource(ParametersType.WAIST.labelRes()),
+                    value = MeasuringUnits.formatStoredNumber(ParametersType.WAIST, params.waist, storedSystem, "-")
                 )
                 ParameterItem(
-                    label = stringResource(R.string.LabelShoeSize),
-                    value = if (params.shoeSize != 0f) params.shoeSize.toString() else "-"
+                    label = stringResource(ParametersType.SHOE_SIZE.labelRes()),
+                    value = MeasuringUnits.formatStoredNumber(ParametersType.SHOE_SIZE, params.shoeSize, storedSystem, "-")
                 )
                 ParameterItem(
                     label = stringResource(R.string.LabelHairColor),

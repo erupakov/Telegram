@@ -40,6 +40,7 @@ import java.util.Locale
 @Composable
 fun EventDatePickerSheet(
     initialDate: String = "",
+    maxDate: String = "",
     onDismiss: () -> Unit,
     onDateSelected: (String) -> Unit,
 ) {
@@ -49,7 +50,23 @@ fun EventDatePickerSheet(
     val todayDay   = now.get(Calendar.DAY_OF_MONTH)
 
     val allMonths = (1..12).map { Month.of(it).getDisplayName(TextStyle.FULL, DivoLanguageManager.getSystemLocale()) }
-    val yearsList = (todayYear..todayYear + 10).map { it.toString() }
+    val maxCalendar = remember(maxDate) {
+        if (maxDate.isNotBlank()) {
+            try {
+                val sdf = java.text.SimpleDateFormat("dd.MM.yyyy", Locale.US)
+                val date = sdf.parse(maxDate)
+                if (date != null) {
+                    val cal = Calendar.getInstance()
+                    cal.time = date
+                    return@remember cal
+                }
+            } catch (e: Exception) {}
+        }
+        null
+    }
+
+    val maxYear = maxCalendar?.get(Calendar.YEAR) ?: (todayYear + 10)
+    val yearsList = (todayYear..maxYear).map { it.toString() }
 
     val parsedCalendar = remember(initialDate) {
         val cal = Calendar.getInstance()
@@ -63,55 +80,92 @@ fun EventDatePickerSheet(
         cal
     }
 
-    var selectedMonthIndex by remember {
-        mutableIntStateOf(parsedCalendar.get(Calendar.MONTH))
-    }
-
     var selectedYearIndex by remember {
         val y = parsedCalendar.get(Calendar.YEAR)
         mutableIntStateOf(yearsList.indexOf(y.toString()).coerceAtLeast(0))
     }
 
-    val daysInMonth by remember(selectedMonthIndex, selectedYearIndex) {
+    val minMonthForSelectedYear by remember(selectedYearIndex) {
         derivedStateOf {
-            Calendar.getInstance().apply {
-                set(Calendar.YEAR, yearsList[selectedYearIndex].toInt())
-                set(Calendar.MONTH, selectedMonthIndex)
-            }.getActualMaximum(Calendar.DAY_OF_MONTH)
+            val selYear = yearsList.getOrNull(selectedYearIndex)?.toIntOrNull() ?: todayYear
+            if (selYear == todayYear) todayMonth else 0
         }
     }
 
-    val daysList by remember(daysInMonth) {
-        derivedStateOf { (1..daysInMonth).map { it.toString() } }
+    val monthsList by remember(selectedYearIndex, maxCalendar, minMonthForSelectedYear) {
+        derivedStateOf {
+            val selYear = yearsList.getOrNull(selectedYearIndex)?.toIntOrNull() ?: todayYear
+            val maxMonth = if (maxCalendar != null && selYear == maxCalendar.get(Calendar.YEAR)) {
+                maxCalendar.get(Calendar.MONTH)
+            } else {
+                11
+            }
+            if (minMonthForSelectedYear <= maxMonth) {
+                (minMonthForSelectedYear..maxMonth).map { Month.of(it + 1).getDisplayName(TextStyle.FULL, DivoLanguageManager.getSystemLocale()) }
+            } else {
+                listOf(Month.of(minMonthForSelectedYear + 1).getDisplayName(TextStyle.FULL, DivoLanguageManager.getSystemLocale()))
+            }
+        }
+    }
+
+    var selectedMonthIndex by remember {
+        val m = parsedCalendar.get(Calendar.MONTH)
+        val selYear = parsedCalendar.get(Calendar.YEAR)
+        val minM = if (selYear == todayYear) todayMonth else 0
+        mutableIntStateOf((m - minM).coerceAtLeast(0))
+    }
+
+    LaunchedEffect(monthsList) {
+        if (selectedMonthIndex >= monthsList.size) {
+            selectedMonthIndex = (monthsList.size - 1).coerceAtLeast(0)
+        }
+    }
+
+    val actualSelectedMonth by remember(minMonthForSelectedYear, selectedMonthIndex) {
+        derivedStateOf { minMonthForSelectedYear + selectedMonthIndex }
+    }
+
+    val minDayForSelected by remember(selectedYearIndex, actualSelectedMonth) {
+        derivedStateOf {
+            val selYear = yearsList.getOrNull(selectedYearIndex)?.toIntOrNull() ?: todayYear
+            if (selYear == todayYear && actualSelectedMonth == todayMonth) todayDay else 1
+        }
+    }
+
+    val daysList by remember(actualSelectedMonth, selectedYearIndex, maxCalendar, minDayForSelected) {
+        derivedStateOf {
+            val selYear = yearsList.getOrNull(selectedYearIndex)?.toIntOrNull() ?: todayYear
+            
+            val actualMax = Calendar.getInstance().apply {
+                set(Calendar.YEAR, selYear)
+                set(Calendar.MONTH, actualSelectedMonth)
+            }.getActualMaximum(Calendar.DAY_OF_MONTH)
+
+            val maxDay = if (maxCalendar != null && selYear == maxCalendar.get(Calendar.YEAR) && actualSelectedMonth == maxCalendar.get(Calendar.MONTH)) {
+                minOf(actualMax, maxCalendar.get(Calendar.DAY_OF_MONTH))
+            } else {
+                actualMax
+            }
+
+            if (minDayForSelected <= maxDay) {
+                (minDayForSelected..maxDay).map { it.toString() }
+            } else {
+                listOf(minDayForSelected.toString())
+            }
+        }
     }
 
     var selectedDayIndex by remember {
-        mutableIntStateOf((parsedCalendar.get(Calendar.DAY_OF_MONTH) - 1).coerceIn(0, 30))
+        val d = parsedCalendar.get(Calendar.DAY_OF_MONTH)
+        val selYear = parsedCalendar.get(Calendar.YEAR)
+        val selMonth = parsedCalendar.get(Calendar.MONTH)
+        val minD = if (selYear == todayYear && selMonth == todayMonth) todayDay else 1
+        mutableIntStateOf((d - minD).coerceAtLeast(0))
     }
 
-    LaunchedEffect(daysInMonth) {
-        if (selectedDayIndex >= daysInMonth) {
-            selectedDayIndex = daysInMonth - 1
-        }
-    }
-
-    val isDateValid by remember(selectedYearIndex, selectedMonthIndex, selectedDayIndex, daysList) {
-        derivedStateOf {
-            val selYear  = yearsList[selectedYearIndex].toInt()
-            val selMonth = selectedMonthIndex
-            val selDay   = daysList.getOrNull(selectedDayIndex)?.toIntOrNull() ?: 1
-            val selected = Calendar.getInstance().apply {
-                set(Calendar.YEAR, selYear)
-                set(Calendar.MONTH, selMonth)
-                set(Calendar.DAY_OF_MONTH, selDay)
-                set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-            }
-            val today = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 0); set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0); set(Calendar.MILLISECOND, 0)
-            }
-            !selected.before(today)
+    LaunchedEffect(daysList) {
+        if (selectedDayIndex >= daysList.size) {
+            selectedDayIndex = (daysList.size - 1).coerceAtLeast(0)
         }
     }
 
@@ -120,13 +174,13 @@ fun EventDatePickerSheet(
     DivoBottomSheet(
         title = stringResource(R.string.EventDate),
         iconClose = R.drawable.ic_divo_back,
-        isApplyEnable = isDateValid,
+        isApplyEnable = daysList.isNotEmpty() && monthsList.isNotEmpty(),
         contentPadding = PaddingValues(horizontal = 16.dp),
         onDismiss = onDismiss,
         onSave = {
-            val day = (selectedDayIndex + 1).toString().padStart(2, '0')
-            val month = (selectedMonthIndex + 1).toString().padStart(2, '0')
-            val year = yearsList[selectedYearIndex]
+            val day = (minDayForSelected + selectedDayIndex).toString().padStart(2, '0')
+            val month = (actualSelectedMonth + 1).toString().padStart(2, '0')
+            val year = yearsList.getOrNull(selectedYearIndex) ?: todayYear.toString()
             onDateSelected("$day.$month.$year")
         }
     ) {
@@ -156,17 +210,17 @@ fun EventDatePickerSheet(
                 ) {
                     DivoWheelPicker(
                         modifier = Modifier.weight(2f),
-                        items = allMonths,
-                        initialIndex = selectedMonthIndex,
+                        items = monthsList,
+                        initialIndex = selectedMonthIndex.coerceIn(0, maxOf(0, monthsList.size - 1)),
                         itemHeight = itemHeight,
-                        isCyclic = true,
+                        isCyclic = false,
                         onItemSelected = { index, _ -> selectedMonthIndex = index }
                     )
 
                     DivoWheelPicker(
                         modifier = Modifier.weight(1f),
                         items = daysList,
-                        initialIndex = selectedDayIndex.coerceIn(0, daysList.size - 1),
+                        initialIndex = selectedDayIndex.coerceIn(0, maxOf(0, daysList.size - 1)),
                         itemHeight = itemHeight,
                         isCyclic = false,
                         onItemSelected = { index, _ -> selectedDayIndex = index }

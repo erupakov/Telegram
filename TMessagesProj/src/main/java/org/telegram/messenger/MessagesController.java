@@ -14202,7 +14202,8 @@ public class MessagesController extends BaseController implements NotificationCe
                         putUsers(res.updates.users, false);
                         putChats(res.updates.chats, false);
                         if (res.updates.chats != null && !res.updates.chats.isEmpty()) {
-                            getNotificationCenter().postNotificationName(NotificationCenter.chatDidCreated, res.updates.chats.get(0).id);
+                            long createdChatId = res.updates.chats.get(0).id; //DIVO
+                            getNotificationCenter().postNotificationName(NotificationCenter.chatDidCreated, createdChatId); //DIVO
                             AlertsCreator.checkRestrictedInviteUsers(currentAccount, res.updates.chats.get(0), res);
                         } else {
                             getNotificationCenter().postNotificationName(NotificationCenter.chatDidFailCreate);
@@ -14242,7 +14243,8 @@ public class MessagesController extends BaseController implements NotificationCe
                     putUsers(updates.users, false);
                     putChats(updates.chats, false);
                     if (updates.chats != null && !updates.chats.isEmpty()) {
-                        getNotificationCenter().postNotificationName(NotificationCenter.chatDidCreated, updates.chats.get(0).id);
+                        TLRPC.Chat newChat = updates.chats.get(0);
+                        getNotificationCenter().postNotificationName(NotificationCenter.chatDidCreated, newChat.id);
                     } else {
                         getNotificationCenter().postNotificationName(NotificationCenter.chatDidFailCreate);
                     }
@@ -14396,13 +14398,13 @@ public class MessagesController extends BaseController implements NotificationCe
                 AndroidUtilities.runOnUIThread(() -> AlertsCreator.processError(currentAccount, error, fragment, req, true));
                 return;
             }
-            if (response instanceof TLRPC.TL_messages_invitedUsers) {
-                TLRPC.TL_messages_invitedUsers res = (TLRPC.TL_messages_invitedUsers) response;
-                processUpdates(res.updates, false);
+            //DIVO
+            if (response instanceof TLRPC.Updates) {
+                TLRPC.Updates res = (TLRPC.Updates) response;
+                processUpdates(res, false);
                 AndroidUtilities.runOnUIThread(() -> {
-                    putUsers(res.updates.users, false);
-                    putChats(res.updates.chats, false);
-                    AlertsCreator.checkRestrictedInviteUsers(currentAccount, getChat(chatId), res);
+                    putUsers(res.users, false);
+                    putChats(res.chats, false);
                 });
             }
         });

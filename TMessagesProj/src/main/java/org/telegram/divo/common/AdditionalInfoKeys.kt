@@ -34,4 +34,5 @@ object AdditionalInfoKeys {
     const val SUBROLE_MAPPED = "subrole"
     const val TELEGRAM_ID = "telegramId"
     const val TELEGRAM_USERNAME = "telegramUsername"
+    const val TELEGRAM_ACCESS_HASH = "telegramAccessHash"
 }

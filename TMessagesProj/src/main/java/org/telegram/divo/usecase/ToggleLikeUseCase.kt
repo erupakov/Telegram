@@ -19,7 +19,7 @@ class ToggleLikeUseCase(
     private val repository: PublicationRepository = DivoApi.publicationRepository,
 ) {
     suspend fun execute(
-        feedId: Int,
+        userId: Int,
         isLiked: Boolean,
         currentCount: Int,
         onUpdate: (newLiked: Boolean, newCount: Int) -> Unit,
@@ -33,15 +33,15 @@ class ToggleLikeUseCase(
         onUpdate(newLiked, newCount)
 
         val result = if (newLiked) {
-            repository.likePost(feedId)
+            repository.likePost(userId)
         } else {
-            repository.unlikePost(feedId)
+            repository.unlikePost(userId)
         }
 
         if (result is DivoResult.Success) {
             repository.emitEvent(
                 UserActionEvent.LikeChanged(
-                    feedId = feedId,
+                    userId = userId,
                     isLiked = newLiked,
                     newLikesCount = newCount
                 )

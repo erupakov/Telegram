@@ -238,6 +238,12 @@ public class CodeFieldContainer extends LinearLayout {
                                 codeField[n + 1].requestFocus();
                             }
                             if ((n == length - 1 || n == length - 2 && len >= 2) && getCode().length() == length) {
+                                //DIVO--START
+                                for (int i = 0; i < codeField.length; i++) {
+                                    codeField[i].clearFocus();
+                                }
+                                AndroidUtilities.hideKeyboard(CodeFieldContainer.this);
+                                //DIVO--END
                                 processNextPressed();
                             }
                         }

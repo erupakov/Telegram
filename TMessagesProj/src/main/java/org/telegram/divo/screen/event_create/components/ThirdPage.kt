@@ -170,6 +170,7 @@ fun ThirdPage(
     if (showDeadlineDateSheet) {
         EventDatePickerSheet(
             initialDate = state.deadlineDate,
+            maxDate = state.eventDate,
             onDismiss = { showDeadlineDateSheet = false },
             onDateSelected = { date ->
                 onIntent(Intent.OnDeadlineDateChanged(date))

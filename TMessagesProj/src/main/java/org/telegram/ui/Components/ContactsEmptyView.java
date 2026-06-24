@@ -47,8 +47,11 @@ public class ContactsEmptyView extends LinearLayout {
         setOrientation(LinearLayout.VERTICAL);
 
         stickerView = new BackupImageView(context);
-        drawable = new LoadingStickerDrawable(stickerView, svg, dp(110), dp(110));
-        stickerView.setImageDrawable(drawable);
+//        drawable = new LoadingStickerDrawable(stickerView, svg, dp(110), dp(110));
+//        stickerView.setImageDrawable(drawable);
+        //DIVO
+        drawable = null;
+        stickerView.setImageResource(R.drawable.divo_logo_content);
         if (!AndroidUtilities.isTablet()) {
             addView(stickerView, LayoutHelper.createLinear(110, 110, Gravity.CENTER_HORIZONTAL | Gravity.TOP));
         }
@@ -99,7 +102,9 @@ public class ContactsEmptyView extends LinearLayout {
     }
 
     private void setSticker() {
-        stickerView.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, "utyan_empty", dp(110), dp(110)));
+//        stickerView.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, "utyan_empty", dp(110), dp(110)));
+        //DIVO
+        stickerView.setImageResource(R.drawable.divo_logo_content);
     }
 
     @Override

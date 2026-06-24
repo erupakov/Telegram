@@ -40,7 +40,7 @@ object GoogleSignInHelper {
         fun onSuccess(authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization)
         /** User NOT found on backend — need to go through registration form.
          *  [firebaseUid], [email], [dummyPhone], and [authResponse] should be passed to the registration flow. */
-        fun onUserNotFound(firebaseUid: String, email: String, dummyPhone: String, authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization)
+        fun onUserNotFound(firebaseUid: String, email: String, dummyPhone: String, authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization, firstName: String?, lastName: String?, photoUrl: String?)
         fun onError(error: String)
         fun onCancelled()
     }
@@ -64,11 +64,12 @@ object GoogleSignInHelper {
         val job = CoroutineScope(Dispatchers.Main).launch {
             try {
                 // Step 1: Get Google ID Token via Credential Manager
-                val googleIdToken = getGoogleIdToken(context)
-                if (googleIdToken == null) {
+                val googleIdTokenCredential = getGoogleIdToken(context)
+                if (googleIdTokenCredential == null) {
                     callback.onError(context.getString(R.string.ErrorGoogleSignInFailed))
                     return@launch
                 }
+                val googleIdToken = googleIdTokenCredential.idToken
 
                 // Step 2: Sign in to Firebase with Google credential
                 val firebaseUser = signInToFirebase(googleIdToken)
@@ -143,7 +144,7 @@ object GoogleSignInHelper {
                     
                     withContext(Dispatchers.Main) {
                         if (authResponse != null) {
-                            callback.onUserNotFound(uid, email, newDummyPhone, authResponse)
+                            callback.onUserNotFound(uid, email, newDummyPhone, authResponse, googleIdTokenCredential.givenName, googleIdTokenCredential.familyName, googleIdTokenCredential.profilePictureUri?.toString())
                         } else {
                             callback.onError(context.getString(R.string.ErrorTelegramAuthFailed))
                         }
@@ -244,7 +245,7 @@ object GoogleSignInHelper {
     /**
      * Step 1: Present Google account picker and get the ID token.
      */
-    private suspend fun getGoogleIdToken(context: Context): String? {
+    private suspend fun getGoogleIdToken(context: Context): GoogleIdTokenCredential? {
         val credentialManager = CredentialManager.create(context)
 
         val googleIdOption = GetSignInWithGoogleOption.Builder(WEB_CLIENT_ID)
@@ -259,8 +260,7 @@ object GoogleSignInHelper {
             request = request,
         )
 
-        val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(result.credential.data)
-        return googleIdTokenCredential.idToken
+        return GoogleIdTokenCredential.createFrom(result.credential.data)
     }
 
     /**

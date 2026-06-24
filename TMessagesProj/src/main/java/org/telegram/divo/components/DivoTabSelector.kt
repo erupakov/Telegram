@@ -66,7 +66,8 @@ fun DivoTabSelector(
     cornerRadius: Dp = 99.dp,
     innerPadding: Dp = 2.dp,
     horizontalPadding: Dp = 16.dp,
-    tabWidth: Dp? = null, // null = старое поведение, задай Dp для фикс. ширины
+    tabWidth: Dp? = null,
+    fraction: Float? = null,
     animationSpec: AnimationSpec<Float> = spring(stiffness = Spring.StiffnessMediumLow),
     onTabSelected: (Int) -> Unit,
 ) {
@@ -95,10 +96,11 @@ fun DivoTabSelector(
                     else Modifier.fillMaxWidth(if (tabs.isNotEmpty()) 1f / tabs.size else 1f)
                 )
                 .graphicsLayer {
+                    val currentFraction = fraction ?: animatedFraction
                     translationX = if (tabWidth != null) {
-                        with(density) { tabWidth.toPx() } * animatedFraction
+                        with(density) { tabWidth.toPx() } * currentFraction
                     } else {
-                        size.width * animatedFraction
+                        size.width * currentFraction
                     }
                 }
                 .shadow(

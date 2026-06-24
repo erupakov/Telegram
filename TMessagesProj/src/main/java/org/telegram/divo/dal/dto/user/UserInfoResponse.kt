@@ -45,12 +45,14 @@ class UserDataDto(
     @SerializedName("statistic") val statistic: StatisticDto,
     @SerializedName("isFavorite") val isFavorite: Boolean,
     @SerializedName("isFollowed") val isFollowed: Boolean,
+    @SerializedName("isLikedByUser") val isLikedByUser: Boolean?,
     @SerializedName("is_premium") val isPremium: Boolean,
     @SerializedName("isVerified") val isVerified: Boolean?,
     @SerializedName("userRatingStatus") val userRatingStatus: String?,
     @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>,
     @SerializedName("customer") val customer: CustomerDto?,
     @SerializedName("agencyEmployee") val agencyEmployee: AgencyEmployeeDto?,
+    @SerializedName("telegramId") val telegramId: Long?,
     @SerializedName("additionalInfo") val additionalInfo: Map<String, Any?>? = null,
 )
 
@@ -72,9 +74,9 @@ class StatisticDto(
     @SerializedName("modelsCount") val modelsCount: Int
 )
 
-fun UserInfoResponse.toEntity(): UserInfo = data.toEntity()
+fun UserInfoResponse.toEntity(channels: List<org.telegram.divo.entity.UserChannel> = emptyList()): UserInfo = data.toEntity(channels)
 
-fun UserDataDto.toEntity(): UserInfo {
+fun UserDataDto.toEntity(channels: List<org.telegram.divo.entity.UserChannel> = emptyList()): UserInfo {
     val roleEnum = RoleType.from(role)
     val source = if (roleEnum.isModel()) photo else photo ?: agency?.photo
 
@@ -161,6 +163,9 @@ fun UserDataDto.toEntity(): UserInfo {
         } else null
     }
 
+    val resolvedTgAccessHash = (info?.get(AdditionalInfoKeys.TELEGRAM_ACCESS_HASH) as? Number)?.toLong()
+    val resolvedTgUsername = info?.get(AdditionalInfoKeys.TELEGRAM_USERNAME) as? String
+
     return UserInfo(
         id = id,
         fullName = resolvedFullName,
@@ -187,10 +192,15 @@ fun UserDataDto.toEntity(): UserInfo {
         statistic = statistic.toEntity(),
         isFavorite = isFavorite,
         isFollowed = isFollowed,
+        isLikedByUser = isLikedByUser ?: false,
         isPremium = isPremium,
         isVerified = isVerified ?: false,
         userRatingStatus = userRatingStatus.orEmpty(),
-        userSocialNetworks = userSocialNetworks.toEntities()
+        telegramId = telegramId,
+        telegramAccessHash = resolvedTgAccessHash,
+        telegramUsername = resolvedTgUsername,
+        userSocialNetworks = userSocialNetworks.toEntities(),
+        channels = channels
     )
 }
 

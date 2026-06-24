@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -55,6 +56,9 @@ import org.telegram.divo.components.TelegramUserAvatarEditable
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.screen.work_history.WorkHistoryScreen
 import org.telegram.divo.screen.your_parameters.YourParametersScreen
+import org.telegram.divo.screen.reg_form.components.PlaceField
+import org.telegram.divo.screen.add_model.CountryPickerSheet
+import org.telegram.divo.screen.search.components.CityPickerSheet
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -206,12 +210,21 @@ fun EditMyProfileScreen(
                         )
                     }
                     ProfileDestination.EXPERIENCE -> {
-                        WorkHistoryScreen(
-                            userId = uiState.userFull?.id ?: -1,
-                            isOwnProfile = true,
-                            isFromEditScreen = true,
-                            onCreateClicked = onCreateWorkHistoryClicked
-                        )
+                        if (uiState.userFull != null) {
+                            WorkHistoryScreen(
+                                userId = uiState.userFull.id,
+                                isOwnProfile = true,
+                                isFromEditScreen = true,
+                                onCreateClicked = onCreateWorkHistoryClicked
+                            )
+                        } else {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                LottieProgressIndicator(
+                                    modifier = Modifier.size(32.dp),
+                                    color = AppTheme.colors.accentOrange
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -226,29 +239,91 @@ fun EditMyProfileScreenView(
     onIntent: (EditMyProfileIntent) -> Unit = {},
 ) {
     var fName by rememberSaveable { mutableStateOf(uiState.fName) }
+    var lName by rememberSaveable { mutableStateOf(uiState.lName) }
     var bio by rememberSaveable { mutableStateOf(uiState.bio) }
     var selectedAvatarUri by rememberSaveable { mutableStateOf<Uri?>(null) }
+    
+    var showCountrySheet by rememberSaveable { mutableStateOf(false) }
+    var showCitySheet by rememberSaveable { mutableStateOf(false) }
 
     val openGallery = rememberGalleryLauncher { uri ->
         selectedAvatarUri = uri
     }
     val context = LocalContext.current
 
-    LaunchedEffect(uiState.fName, uiState.bio) {
+    LaunchedEffect(uiState.fName, uiState.lName, uiState.bio) {
         fName = uiState.fName
+        lName = uiState.lName
         bio = uiState.bio
+    }
+    
+    if (showCountrySheet) {
+        CountryPickerSheet(
+            list = uiState.allCountries,
+            selectedCountries = listOfNotNull(
+                uiState.allCountries.find { it.name == uiState.country }
+            ),
+            onDismiss = { showCountrySheet = false },
+            onPick = { selectedList ->
+                val country = selectedList.firstOrNull()
+                onIntent(
+                    EditMyProfileIntent.OnLocationChanged(
+                        country = country?.name ?: "",
+                        countryCode = country?.shortName ?: "",
+                        city = null
+                    )
+                )
+                showCountrySheet = false
+            }
+        )
+    }
+
+    if (showCitySheet) {
+        CityPickerSheet(
+            list = uiState.allCities,
+            selectedCity = uiState.city,
+            allCountries = uiState.allCountries,
+            selectedCountries = listOfNotNull(
+                uiState.allCountries.find { it.name == uiState.country }
+            ),
+            onDismiss = { showCitySheet = false },
+            onPick = { selectedCity ->
+                val matchedCountry = uiState.allCountries.find {
+                    it.shortName.equals(selectedCity?.countryCode, ignoreCase = true)
+                }
+                onIntent(
+                    EditMyProfileIntent.OnLocationChanged(
+                        city = selectedCity,
+                        country = if (uiState.country.isEmpty() && matchedCountry != null)
+                            matchedCountry.name
+                        else
+                            uiState.country,
+                        countryCode = if (uiState.countryCode.isEmpty() && matchedCountry != null)
+                            matchedCountry.shortName
+                        else
+                            uiState.countryCode
+                    )
+                )
+                showCitySheet = false
+            }
+        )
     }
 
     if (uiState.isLoading) {
         EditMyProfileLoadingContent(uiState.isModel)
     } else {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .imePadding()
         ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
 
             key(uiState.avatarUrl, selectedAvatarUri) {
                 TelegramUserAvatarEditable(
@@ -266,9 +341,26 @@ fun EditMyProfileScreenView(
                 modifier = Modifier.padding(top = 32.dp),
                 value = fName,
                 onValueChange = { fName = it },
-                placeholder = stringResource(R.string.FullNameEditProfileScreen),
+                placeholder = stringResource(R.string.EditProfileFirstName),
                 trailingIcon = if (fName.isNotBlank()) R.drawable.ic_divo_clear else null,
                 onTrailingIconClick = { fName = "" },
+                backgroundColor = AppTheme.colors.onBackground,
+                cornerRadius = 41.dp,
+                placeholderColor = AppTheme.colors.textPrimary.copy(0.6f),
+                textStyle = AppTheme.typography.bodyLarge.copy(
+                    color = AppTheme.colors.textPrimary
+                ),
+                horizontalContentPadding = 16.dp,
+                verticalContentPadding = 16.dp
+            )
+
+            DivoTextField(
+                modifier = Modifier.padding(top = 16.dp),
+                value = lName,
+                onValueChange = { lName = it },
+                placeholder = stringResource(R.string.EditProfileLastName),
+                trailingIcon = if (lName.isNotBlank()) R.drawable.ic_divo_clear else null,
+                onTrailingIconClick = { lName = "" },
                 backgroundColor = AppTheme.colors.onBackground,
                 cornerRadius = 41.dp,
                 placeholderColor = AppTheme.colors.textPrimary.copy(0.6f),
@@ -300,36 +392,67 @@ fun EditMyProfileScreenView(
                 ),
                 horizontalContentPadding = 16.dp
             )
+            
+            Spacer(modifier = Modifier.size(16.dp))
+            
+            PlaceField(
+                text = uiState.country,
+                label = stringResource(R.string.CountryLabel),
+                onClick = { showCountrySheet = true }
+            )
+            
+            Spacer(modifier = Modifier.size(16.dp))
+            
+            PlaceField(
+                text = uiState.city?.let { it.matchedName ?: it.name }.orEmpty(),
+                label = stringResource(R.string.CityLabel),
+                onClick = { showCitySheet = true }
+            )
 
-            Spacer(modifier = Modifier.size(20.dp))
+            Spacer(modifier = Modifier.size(100.dp))
+            } // End of scrollable Column
 
-            if (uiState.isSaved) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .clip(RoundedCornerShape(99.dp))
-                        .background(AppTheme.colors.accentOrange),
-                    contentAlignment = Alignment.Center
-                ) {
-                    LottieProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        color = Color.White
-                    )
-                }
-            } else {
-                UIButtonNew(
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
-                    text = stringResource(R.string.SaveEditProfileScreen),
-                    onClick = {
-                        onIntent(
-                            EditMyProfileIntent.OnSaveClicked(
-                                fName = fName,
-                                bio = bio,
-                                file = selectedAvatarUri?.let { context.uriToFile(it) }
-                            )
+            // Fixed bottom area
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (uiState.isSaved) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .clip(RoundedCornerShape(99.dp))
+                            .background(AppTheme.colors.accentOrange),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        LottieProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White
                         )
-                    })
+                    }
+                } else {
+                    val isCityRequiredButMissing = uiState.country.isNotEmpty() && uiState.city == null
+                    
+                    UIButtonNew(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(R.string.SaveEditProfileScreen),
+                        enabled = !isCityRequiredButMissing,
+                        onClick = {
+                            onIntent(
+                                EditMyProfileIntent.OnSaveClicked(
+                                    fName = fName,
+                                    lName = lName,
+                                    bio = bio,
+                                    file = selectedAvatarUri?.let { context.uriToFile(it) }
+                                )
+                            )
+                        })
+                }
             }
         }
     }

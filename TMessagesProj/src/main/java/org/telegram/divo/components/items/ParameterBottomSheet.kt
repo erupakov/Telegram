@@ -46,7 +46,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.common.DivoSettings
+import org.telegram.divo.common.MeasuringUnits
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.labelRes
+import org.telegram.divo.common.numericFilterRange
+import org.telegram.divo.common.profilePickerRange
+import org.telegram.divo.common.resolveNumericBlockParamBounds
 import org.telegram.divo.components.DivoRangeSlider
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.style.AppTheme
@@ -65,14 +71,16 @@ fun ParameterBottomSheet(
     initialValue: String = "",
     iconClose: Int = R.drawable.ic_divo_back,
     useNumericRangeUi: Boolean = false,
+    valuesInMetric: Boolean = false,
     onDismiss: () -> Unit,
     onSave: (String) -> Unit,
     onDelete: () -> Unit
 ) {
+    val measuringSystem = DivoSettings.measuringSystem
     val isDatePicker = paramType == ParametersType.BIRTHDAY
     val isAgePicker = paramType == ParametersType.AGE
-    val numericFilterBounds = remember(paramType, useNumericRangeUi, options) {
-        if (useNumericRangeUi && options.isNullOrEmpty()) paramType?.numericFilterRange() else null
+    val numericFilterBounds = remember(paramType, useNumericRangeUi, options, measuringSystem) {
+        if (useNumericRangeUi && options.isNullOrEmpty()) paramType?.numericFilterRange(measuringSystem) else null
     }
     val isNumericRangePicker = numericFilterBounds != null && !isDatePicker && !isAgePicker
 
@@ -103,25 +111,17 @@ fun ParameterBottomSheet(
         }
     }
 
-    val integerParts = remember(paramType) {
-        val range = when (paramType) {
-            ParametersType.HEIGHT -> 120..220
-            ParametersType.WEIGHT -> 30..200
-            ParametersType.WAIST -> 40..130
-            ParametersType.HIPS -> 60..150
-            ParametersType.SHOE_SIZE -> 32..50
-            else -> 0..250
+    val integerParts = remember(paramType, measuringSystem) {
+        paramType?.profilePickerRange(measuringSystem)?.map { it.toString() }.orEmpty()
+    }
+    var selectedIntPart by remember(initialValue, integerParts, paramType, measuringSystem, valuesInMetric) {
+        val displayValue = if (valuesInMetric && paramType != null) {
+            MeasuringUnits.convertRangeForDisplay(paramType, initialValue, measuringSystem)
+        } else {
+            initialValue
         }
-        range.map { it.toString() }
-    }
-    val decimalParts = remember { (0..9).map { it.toString() } }
-
-    var selectedIntPart by remember(initialValue, integerParts) {
-        val parsed = initialValue.substringBefore(".").takeIf { it.isNotEmpty() }
-        mutableStateOf(parsed.takeIf { integerParts.contains(it) } ?: integerParts[integerParts.size / 2])
-    }
-    var selectedDecPart by remember(initialValue) {
-        mutableStateOf(if (initialValue.contains(".")) initialValue.substringAfter(".") else "0")
+        val parsed = displayValue.substringBefore(".").takeIf { it.isNotEmpty() }
+        mutableStateOf(parsed.takeIf { integerParts.contains(it) } ?: integerParts.getOrElse(integerParts.size / 2) { "0" })
     }
 
     var selectedOptions by remember(initialValue, options) {
@@ -136,20 +136,29 @@ fun ParameterBottomSheet(
         )
     }
 
-    val numericRangeInitial = remember(initialValue, numericFilterBounds) {
-        if (numericFilterBounds != null) resolveNumericBlockParamBounds(initialValue, numericFilterBounds)
-        else 0 to 0
+    val numericRangeInitial = remember(initialValue, numericFilterBounds, paramType, measuringSystem, valuesInMetric) {
+        if (numericFilterBounds != null) {
+            resolveNumericBlockParamBounds(
+                initialValue = initialValue,
+                bounds = numericFilterBounds,
+                type = paramType,
+                measuringSystem = measuringSystem,
+                valuesInMetric = valuesInMetric,
+            )
+        } else {
+            0 to 0
+        }
     }
-    var selectedMinNumeric by remember(initialValue, numericFilterBounds, paramType) {
+    var selectedMinNumeric by remember(initialValue, numericFilterBounds, paramType, measuringSystem, valuesInMetric) {
         mutableIntStateOf(numericRangeInitial.first)
     }
-    var selectedMaxNumeric by remember(initialValue, numericFilterBounds, paramType) {
+    var selectedMaxNumeric by remember(initialValue, numericFilterBounds, paramType, measuringSystem, valuesInMetric) {
         mutableIntStateOf(numericRangeInitial.second)
     }
 
     DivoBottomSheet(
         sheetState = sheetState,
-        title = paramType?.titleRes?.let { stringResource(it) }.orEmpty(),
+        title = paramType?.labelRes(measuringSystem)?.let { stringResource(it) }.orEmpty(),
         iconClose = iconClose,
         onDismiss = onDismiss,
         contentPadding = PaddingValues(horizontal = 16.dp),
@@ -157,11 +166,22 @@ fun ParameterBottomSheet(
             if (isAgePicker) {
                 onSave("$selectedMinAge-$selectedMaxAge")
             } else if (isNumericRangePicker) {
-                onSave("$selectedMinNumeric-$selectedMaxNumeric")
+                val displayRange = "$selectedMinNumeric-$selectedMaxNumeric"
+                val savedRange = if (valuesInMetric && paramType != null) {
+                    MeasuringUnits.convertRangeToMetric(paramType, displayRange, measuringSystem)
+                } else {
+                    displayRange
+                }
+                onSave(savedRange)
             } else if (isDatePicker) {
                 onSave("$selectedYear-$selectedMonth-$selectedDay")
             } else if (options.isNullOrEmpty()) {
-                onSave("$selectedIntPart.$selectedDecPart")
+                val savedValue = if (valuesInMetric && paramType != null) {
+                    MeasuringUnits.convertRangeToMetric(paramType, selectedIntPart, measuringSystem)
+                } else {
+                    selectedIntPart
+                }
+                onSave(savedValue)
             } else {
                 val defaultOption = options.firstOrNull()
                 if (isMultiSelect && selectedOptions == setOf(defaultOption)) {
@@ -288,15 +308,6 @@ fun ParameterBottomSheet(
                                 isCyclic = true,
                                 modifier = Modifier.width(70.dp),
                                 onItemSelected = { _, item -> selectedIntPart = item }
-                            )
-
-                            DivoWheelPicker(
-                                items = decimalParts,
-                                initialIndex = decimalParts.indexOf(selectedDecPart)
-                                    .coerceAtLeast(0),
-                                isCyclic = true,
-                                modifier = Modifier.width(70.dp),
-                                onItemSelected = { _, item -> selectedDecPart = item }
                             )
                         }
                     }

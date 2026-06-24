@@ -25,7 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import org.telegram.divo.common.MeasuringUnits
 import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.labelRes
 import org.telegram.divo.common.utils.formatWeird
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.style.AppTheme
@@ -35,6 +37,7 @@ import org.telegram.messenger.R
 fun ParametersBlock(
     items: List<ProfileParameter>,
     onClick: (ProfileParameter) -> Unit,
+    valuesInMetric: Boolean = false,
 ) {
     val context = LocalContext.current
 
@@ -57,7 +60,7 @@ fun ParametersBlock(
                     modifier = Modifier
                         .weight(0.4f)
                         .padding(top = 2.dp),
-                    text = stringResource(item.type.titleRes),
+                    text = stringResource(item.type.labelRes()),
                     style = AppTheme.typography.bodyLarge,
                     color = AppTheme.colors.textPrimary,
                     maxLines = 1,
@@ -80,7 +83,12 @@ fun ParametersBlock(
                         text = if (item.type == ParametersType.BIRTHDAY) {
                             item.value.formattedAge(context).substringBefore(" ")
                         } else {
-                            item.value.formatWeird()
+                            val displayValue = if (valuesInMetric) {
+                                MeasuringUnits.convertRangeForDisplay(item.type, item.value)
+                            } else {
+                                item.value
+                            }
+                            displayValue.formatWeird()
                         },
                         style = AppTheme.typography.bodyMedium,
                         color = AppTheme.colors.textPrimary.copy(0.6f),
@@ -189,36 +197,6 @@ enum class ParametersType(
     COUNTRY(R.string.CountryLabel),
     ROLE(R.string.RoleLabel),
     SPECIALISATION(R.string.RegFormSpecialisationLabel)
-}
-
-fun ParametersType.numericFilterRange(): IntRange? = when (this) {
-    ParametersType.AGE -> 16..45
-    ParametersType.HEIGHT -> 120..220
-    ParametersType.WEIGHT -> 35..200
-    ParametersType.WAIST -> 40..130
-    ParametersType.HIPS -> 60..150
-    ParametersType.SHOE_SIZE -> 30..38
-    ParametersType.BREAST_SIZE -> 65..130
-    else -> null
-}
-
-fun resolveNumericBlockParamBounds(initialValue: String, bounds: IntRange): Pair<Int, Int> {
-    if (initialValue.isBlank()) return bounds.first to bounds.last
-    if ("-" in initialValue) {
-        val parts = initialValue.split("-").map { it.trim().toIntOrNull() ?: return bounds.first to bounds.last }
-        return if (parts.size >= 2) {
-            parts[0].coerceIn(bounds) to parts[1].coerceIn(bounds)
-        } else {
-            bounds.first to bounds.last
-        }
-    }
-    val single = initialValue.toDoubleOrNull()?.toInt() ?: initialValue.toIntOrNull()
-    return if (single != null) {
-        val v = single.coerceIn(bounds)
-        v to v
-    } else {
-        bounds.first to bounds.last
-    }
 }
 
 @Preview

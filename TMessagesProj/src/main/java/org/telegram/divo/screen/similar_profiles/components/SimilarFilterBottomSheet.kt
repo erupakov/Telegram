@@ -178,21 +178,22 @@ fun SimilarFilterBottomSheet(
                 Spacer(Modifier.height(16.dp))
                 ParameterItem(
                     param = draftRole.copy(value = if (draftRole.value.isEmpty()) stringResource(R.string.AllLabel) else uiState.getFormatedRoles(draftRole)),
-                    onClick = { openBottomSheet(draftRole.type, context.resources.getStringArray(R.array.ModelFunNewTalent).toList(), draftRole.value) }
+                    onClick = { openBottomSheet(draftRole.type, context.resources.getStringArray(R.array.ModelNewTalentAgency).toList(), draftRole.value) }
                 )
                 Spacer(Modifier.height(16.dp))
 
-                if (!uiState.isModel && !showMoreParameters) {
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            modifier = Modifier.clickableWithoutRipple { showMoreParameters = true},
-                            text = stringResource(R.string.MoreParameters),
-                            style = AppTheme.typography.helveticaNeueRegular,
-                            fontSize = 15.sp,
-                            color = AppTheme.colors.accentOrange
-                        )
-                    }
-                }
+//TODO
+//                if (!uiState.isModel && !showMoreParameters) {
+//                    Box(modifier = Modifier.fillMaxWidth()) {
+//                        Text(
+//                            modifier = Modifier.clickableWithoutRipple { showMoreParameters = true},
+//                            text = stringResource(R.string.MoreParameters),
+//                            style = AppTheme.typography.helveticaNeueRegular,
+//                            fontSize = 15.sp,
+//                            color = AppTheme.colors.accentOrange
+//                        )
+//                    }
+//                }
 
                 if (showMoreParameters) {
                     ParametersBlock(

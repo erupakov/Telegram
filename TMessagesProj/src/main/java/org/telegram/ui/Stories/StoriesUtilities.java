@@ -759,9 +759,9 @@ public class StoriesUtilities {
             storiesGradientTools[i].isDiagonal = true;
             storiesGradientTools[i].isRotate = true;
             if (isDialogCell) {
-                storiesGradientTools[i].setColors(Theme.getColor(Theme.key_stories_circle_dialog1), Theme.getColor(Theme.key_stories_circle_dialog2));
+                storiesGradientTools[i].setColors(0xFF990000, 0xFF000000); //DIVO
             } else {
-                storiesGradientTools[i].setColors(Theme.getColor(Theme.key_stories_circle1), Theme.getColor(Theme.key_stories_circle2));
+                storiesGradientTools[i].setColors(0xFF990000, 0xFF000000); //DIVO
             }
             storiesGradientTools[i].paint.setStrokeWidth(AndroidUtilities.dpf2(2f));
             storiesGradientTools[i].paint.setStyle(Paint.Style.STROKE);
@@ -771,16 +771,16 @@ public class StoriesUtilities {
 
     public static void updateColors() {
         if (closeFriendsGradientTools != null) {
-            closeFriendsGradientTools.setColors(Theme.getColor(Theme.key_stories_circle_closeFriends1), Theme.getColor(Theme.key_stories_circle_closeFriends2));
+            closeFriendsGradientTools.setColors(0xFF990000, 0xFF000000); //DIVO
         }
         if (liveGradientTools != null) {
-            liveGradientTools.setColors(Theme.getColor(Theme.key_stories_circle_live1), Theme.getColor(Theme.key_stories_circle_live2));
+            liveGradientTools.setColors(0xFF990000, 0xFF000000); //DIVO
         }
         if (storiesGradientTools[0] != null) {
-            storiesGradientTools[0].setColors(Theme.getColor(Theme.key_stories_circle_dialog1), Theme.getColor(Theme.key_stories_circle_dialog2));
+            storiesGradientTools[0].setColors(0xFF990000, 0xFF000000); //DIVO
         }
         if (storiesGradientTools[1] != null) {
-            storiesGradientTools[1].setColors(Theme.getColor(Theme.key_stories_circle1), Theme.getColor(Theme.key_stories_circle2));
+            storiesGradientTools[1].setColors(0xFF990000, 0xFF000000); //DIVO
         }
         if (errorGradientTools != null) {
             int orange = Theme.getColor(Theme.key_color_orange);
@@ -795,7 +795,7 @@ public class StoriesUtilities {
             closeFriendsGradientTools = new GradientTools();
             closeFriendsGradientTools.isDiagonal = true;
             closeFriendsGradientTools.isRotate = true;
-            closeFriendsGradientTools.setColors(Theme.getColor(Theme.key_stories_circle_closeFriends1), Theme.getColor(Theme.key_stories_circle_closeFriends2));
+            closeFriendsGradientTools.setColors(0xFF990000, 0xFF000000); //DIVO
             closeFriendsGradientTools.paint.setStrokeWidth(AndroidUtilities.dpf2(2f));
             closeFriendsGradientTools.paint.setStyle(Paint.Style.STROKE);
             closeFriendsGradientTools.paint.setStrokeCap(Paint.Cap.ROUND);
@@ -809,7 +809,7 @@ public class StoriesUtilities {
             liveGradientTools = new GradientTools();
             liveGradientTools.isDiagonal = true;
             liveGradientTools.isRotate = true;
-            liveGradientTools.setColors(Theme.getColor(Theme.key_stories_circle_live1), Theme.getColor(Theme.key_stories_circle_live2));
+            liveGradientTools.setColors(0xFF990000, 0xFF000000); //DIVO
             liveGradientTools.paint.setStrokeWidth(AndroidUtilities.dpf2(2f));
             liveGradientTools.paint.setStyle(Paint.Style.STROKE);
             liveGradientTools.paint.setStrokeCap(Paint.Cap.ROUND);
@@ -1578,11 +1578,12 @@ public class StoriesUtilities {
         }
 
         private void setColors(int color1, int color2, boolean animated) {
-            this.color1 = color1;
-            this.color2 = color2;
+            // DIVO
+            this.color1 = 0xFF990000;
+            this.color2 = 0xFF000000;
             if (!animated) {
-                this.animatedColor1.set(color1, true);
-                this.animatedColor2.set(color2, true);
+                this.animatedColor1.set(this.color1, true);
+                this.animatedColor2.set(this.color2, true);
             }
             if (invalidate != null) {
                 invalidate.run();

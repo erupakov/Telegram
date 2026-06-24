@@ -3,10 +3,6 @@ package org.telegram.divo.common
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -17,10 +13,14 @@ import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import coil.ImageLoader
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import okhttp3.OkHttpClient
+import okhttp3.Protocol
 import org.telegram.divo.components.shimmer
 import org.telegram.divo.style.AppTheme
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun DivoAsyncImage(
@@ -71,9 +71,13 @@ private fun ImageCore(
     loadingContent: (@Composable () -> Unit)?,
     errorContent: (@Composable () -> Unit)?,
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val imageLoader = CoilSingleton.getImageLoader(context)
+
     Box(modifier = modifier) {
         SubcomposeAsyncImage(
             model = model,
+            imageLoader = imageLoader,
             contentDescription = contentDescription,
             contentScale = contentScale,
             alignment = alignment,
@@ -94,7 +98,7 @@ private fun ImageCore(
                     )
                 }
             },
-            error = {
+            error = { errorState ->
                 LaunchedEffect(Unit) {
                     onError()
                     onReady()
@@ -120,5 +124,30 @@ private fun ImageCore(
                 SubcomposeAsyncImageContent()
             }
         )
+    }
+}
+
+private object CoilSingleton {
+    @Volatile
+    private var instance: ImageLoader? = null
+
+    fun getImageLoader(context: android.content.Context): ImageLoader {
+        return instance ?: synchronized(this) {
+            instance ?: ImageLoader.Builder(context.applicationContext)
+                .okHttpClient {
+                    OkHttpClient.Builder()
+                        .connectTimeout(20, TimeUnit.SECONDS)
+                        .readTimeout(20, TimeUnit.SECONDS)
+                        .addInterceptor { chain ->
+                            val request = chain.request().newBuilder()
+                                .header("User-Agent", "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Mobile Safari/537.36")
+                                .header("Accept", "image/webp,image/apng,image/*,*/*;q=0.8")
+                                .build()
+                            chain.proceed(request)
+                        }
+                        .build()
+                }
+                .build().also { instance = it }
+        }
     }
 }

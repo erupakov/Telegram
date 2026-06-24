@@ -20,8 +20,8 @@ class AuthFragment : BaseFragment() {
                         val loginActivity = LoginActivity().setGoogleLoginSuccess(authResponse)
                         presentFragment(loginActivity, false, true)
                     },
-                    onGoogleUserNotFound = { uid, email, dummyPhone, authResponse ->
-                        val loginActivity = LoginActivity().setGoogleRegistrationParams(uid, email, dummyPhone, authResponse, true)
+                    onGoogleUserNotFound = { uid, email, dummyPhone, authResponse, firstName, lastName, photoUrl ->
+                        val loginActivity = LoginActivity().setGoogleRegistrationParams(uid, email, dummyPhone, authResponse, true, firstName, lastName, photoUrl)
                         presentFragment(loginActivity, false)
                     }
                 )

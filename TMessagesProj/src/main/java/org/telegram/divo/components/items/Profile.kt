@@ -10,9 +10,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
@@ -47,6 +49,16 @@ import org.telegram.divo.components.DivoAvatar
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.material3.CircularProgressIndicator
+import org.telegram.divo.common.clickableWithoutRipple
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
 
 
 @Preview
@@ -259,14 +271,155 @@ fun ProfileNameItem(
 ) {
     val context = LocalContext.current
 
+    val account = org.telegram.messenger.UserConfig.selectedAccount
+    val controller = org.telegram.messenger.MessagesController.getInstance(account).storiesController
+    val dialogId = if (uiState.isOwnProfile) {
+        org.telegram.messenger.UserConfig.getInstance(account).clientUserId
+    } else {
+        uiState.userInfo.telegramId ?: 0L
+    }
+
+    var totalCount = 0
+    var unreadCount = 0
+    var hasStories = false
+    var isLoading = false
+    
+    var updateTrigger by remember { mutableStateOf(0) }
+
+    DisposableEffect(account) {
+        val observer = org.telegram.messenger.NotificationCenter.NotificationCenterDelegate { _, _, _ ->
+            updateTrigger++
+        }
+        val center = org.telegram.messenger.NotificationCenter.getInstance(account)
+        center.addObserver(observer, org.telegram.messenger.NotificationCenter.storiesUpdated)
+        center.addObserver(observer, org.telegram.messenger.NotificationCenter.storiesListUpdated)
+        center.addObserver(observer, org.telegram.messenger.NotificationCenter.fileUploaded)
+        center.addObserver(observer, org.telegram.messenger.NotificationCenter.fileUploadFailed)
+        center.addObserver(observer, org.telegram.messenger.NotificationCenter.updateInterfaces)
+        
+        onDispose {
+            center.removeObserver(observer, org.telegram.messenger.NotificationCenter.storiesUpdated)
+            center.removeObserver(observer, org.telegram.messenger.NotificationCenter.storiesListUpdated)
+            center.removeObserver(observer, org.telegram.messenger.NotificationCenter.fileUploaded)
+            center.removeObserver(observer, org.telegram.messenger.NotificationCenter.fileUploadFailed)
+            center.removeObserver(observer, org.telegram.messenger.NotificationCenter.updateInterfaces)
+        }
+    }
+
+    if (dialogId != 0L) {
+        val trigger = updateTrigger // read to subscribe to state changes
+        val peerStories = try { 
+            controller.dialogListStories?.find { org.telegram.messenger.DialogObject.getPeerDialogId(it.peer) == dialogId }
+        } catch (e: Exception) { null }
+
+        if (uiState.isOwnProfile) {
+            hasStories = try { controller.hasSelfStories() } catch (e: Exception) { false }
+        } else {
+            hasStories = try { controller.hasStories(dialogId) } catch (e: Exception) { false }
+        }
+        isLoading = try { controller.hasUploadingStories(dialogId) } catch (e: Exception) { false }
+        unreadCount = try { controller.getUnreadStoriesCount(dialogId) } catch (e: Exception) { 0 }
+        totalCount = peerStories?.stories?.size ?: if (hasStories) 1 else 0
+    }
+    
+    var isOnlineReal = false
+    if (dialogId != 0L) {
+        val trigger = updateTrigger
+        val user = org.telegram.messenger.MessagesController.getInstance(account).getUser(dialogId)
+        if (user != null && user.status != null) {
+            isOnlineReal = user.status.expires > org.telegram.tgnet.ConnectionsManager.getInstance(account).currentTime
+        }
+    }
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        DivoAvatar(
-            imageUrl = uiState.userInfo.avatarUrl,
-            isOnline = uiState.userInfo.isOnline ?: false
-        )
+        Box(
+            modifier = Modifier.size(64.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .requiredSize(if (hasStories || isLoading) 68.dp else 64.dp)
+                    .clickableWithoutRipple {
+                        val fragment = org.telegram.ui.LaunchActivity.getLastFragment() ?: return@clickableWithoutRipple
+                        if (uiState.isOwnProfile && !hasStories) {
+                            org.telegram.ui.Stories.recorder.StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
+                        } else if (dialogId != 0L) {
+                            val peerIds = arrayListOf(dialogId)
+                            fragment.getOrCreateStoryViewer().open(
+                                fragment.context, null, peerIds, 0, null, null, null, false
+                            )
+                        }
+                    }
+                    .then(
+                        if (isLoading) Modifier
+                        else if (!hasStories) Modifier
+                        else Modifier.drawBehind {
+                            val strokeWidth = 3.dp.toPx()
+                            val gapAngle = if (totalCount > 1) 10f else 0f
+                            val safeTotalCount = totalCount.coerceAtLeast(1)
+                            val sweepAngle = (360f - (gapAngle * safeTotalCount)) / safeTotalCount
+
+                            val unreadBrush = Brush.horizontalGradient(
+                                colors = listOf(Color(0xFF990000), Color(0xFF000000))
+                            )
+                            val readBrush = Brush.horizontalGradient(
+                                colors = listOf(Color.LightGray, Color.Gray)
+                            )
+
+                            var startAngle = -90f
+                            val arcSize = Size(size.width - strokeWidth, size.height - strokeWidth)
+                            val topLeft = Offset(strokeWidth / 2f, strokeWidth / 2f)
+
+                            val safeUnreadCount = unreadCount.coerceAtMost(safeTotalCount)
+                            val readCount = (safeTotalCount - safeUnreadCount).coerceAtLeast(0)
+
+                            for (i in 0 until readCount) {
+                                drawArc(
+                                    brush = readBrush,
+                                    startAngle = startAngle,
+                                    sweepAngle = sweepAngle,
+                                    useCenter = false,
+                                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+                                    size = arcSize,
+                                    topLeft = topLeft
+                                )
+                                startAngle += sweepAngle + gapAngle
+                            }
+
+                            for (i in 0 until safeUnreadCount) {
+                                drawArc(
+                                    brush = unreadBrush,
+                                    startAngle = startAngle,
+                                    sweepAngle = sweepAngle,
+                                    useCenter = false,
+                                    style = Stroke(width = strokeWidth, cap = StrokeCap.Round),
+                                    size = arcSize,
+                                    topLeft = topLeft
+                                )
+                                startAngle += sweepAngle + gapAngle
+                            }
+                        }
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                DivoAvatar(
+                    imageUrl = uiState.userInfo.avatarUrl,
+                    isOnline = isOnlineReal,
+                    showBorder = false,
+                    avatarSize = 64.dp
+                )
+                if (isLoading) {
+                    androidx.compose.material.CircularProgressIndicator(
+                        modifier = Modifier.fillMaxSize(),
+                        color = Color(0xFF990000),
+                        strokeWidth = 3.dp
+                    )
+                }
+            }
+        }
         Spacer(Modifier.width(12.dp))
         Column(Modifier.weight(1f)) {
             Row(

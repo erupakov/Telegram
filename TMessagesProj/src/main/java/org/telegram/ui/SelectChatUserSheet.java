@@ -195,7 +195,9 @@ public class SelectChatUserSheet extends BottomSheetWithRecyclerListView {
             }
         };
         final BackupImageView emptyImageView = new BackupImageView(context);
-        emptyImageView.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, "utyan_empty", dp(130), dp(130)));
+//        emptyImageView.setImageDrawable(new RLottieDrawable(R.raw.utyan_empty, "utyan_empty", dp(130), dp(130)));
+        //DIVO
+        emptyImageView.setImageResource(R.drawable.divo_logo_content);
         emptySearchView.addView(emptyImageView, LayoutHelper.createFrame(130, 130, Gravity.CENTER));
 
         admins = new ParticipantsList(currentAccount, chat.id, new TLRPC.TL_channelParticipantsAdmins()).listen(this::update);

@@ -41,8 +41,6 @@ fun RoleSelectionScreen(
     onBack: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsState()
-    // LoginActivity не включает edge-to-edge, поэтому WindowInsets недоступны в ComposeView.
-    // Читаем реальные значения из AndroidUtilities напрямую (так же делает OnboardingScreen).
     val statusBarHeight = if (AndroidUtilities.isTablet()) 0 else AndroidUtilities.statusBarHeight
     val navBarHeight = AndroidUtilities.navigationBarHeight
 

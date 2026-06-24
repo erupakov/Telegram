@@ -300,16 +300,6 @@ fun RoundedGlassContainer(
     }
 }
 
-fun mountRoundedButton(
-    composeView: androidx.compose.ui.platform.ComposeView,
-    onClick: () -> Unit
-) {
-    composeView.setDivoContent {
-        RoundedButton(onClick = onClick)
-    }
-}
-
-
 
 
 

@@ -21,7 +21,7 @@ class SearchAgencyViewModel : BaseViewModel<State, Intent, Effect>() {
     }
 
     override fun createInitialState(): State = State(
-        query = DivoApi.workHistory.selectedAgency.value
+        query = DivoApi.workHistory.selectedAgency.value?.name ?: ""
     )
 
     override fun handleIntent(intent: Intent) {
@@ -29,7 +29,7 @@ class SearchAgencyViewModel : BaseViewModel<State, Intent, Effect>() {
             Intent.OnBackClicked -> sendEffect(Effect.NavigateBack)
             is Intent.OnQueryChanged -> onQueryChanged(intent.value)
             is Intent.OnSearchSelected -> {
-                DivoApi.workHistory.selectAgency(intent.value)
+                DivoApi.workHistory.selectAgency(intent.selection)
                 sendEffect(Effect.NavigateBack)
             }
             is Intent.OnLoadMore -> viewModelScope.launch { agencyPaginator.loadMore() }

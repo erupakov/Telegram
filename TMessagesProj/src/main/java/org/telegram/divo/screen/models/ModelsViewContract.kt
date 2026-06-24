@@ -9,9 +9,16 @@ import org.telegram.tgnet.TLRPC
 
 data class Story(
     val id: String,
-    val imageUrl: String,
+    val dialogId: Long,
+    val imageUrl: String?,
     val userName: String,
     val watched: Boolean = false,
+    val hasUnread: Boolean = false,
+    val hasStories: Boolean = false,
+    val isSelf: Boolean = false,
+    val isLoading: Boolean = false,
+    val unreadCount: Int = 0,
+    val totalCount: Int = 0,
 )
 
 data class Model(
@@ -48,9 +55,14 @@ data class ModelsViewState(
             stories = List(5) { index ->
                 Story(
                     id = "$index",
+                    dialogId = index.toLong(),
                     imageUrl = "https://randomuser.me/api/portraits/women/5$index.jpg",
                     userName = "User $index",
-                    watched = false
+                    watched = false,
+                    hasUnread = true,
+                    hasStories = true,
+                    isSelf = index == 0,
+                    isLoading = false
                 )
             },
             selectedTab = Tab.MODELS,

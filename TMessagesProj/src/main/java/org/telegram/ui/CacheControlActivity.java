@@ -1848,7 +1848,9 @@ public class CacheControlActivity extends BaseFragment implements NotificationCe
 
             imageView = new RLottieImageView(context);
             imageView.setAutoRepeat(true);
-            imageView.setAnimation(R.raw.utyan_cache, 150, 150);
+//            imageView.setAnimation(R.raw.utyan_cache, 150, 150);
+            //DIVO
+            imageView.setImageResource(R.drawable.divo_logo_content);
             addView(imageView, LayoutHelper.createFrame(150, 150, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 16, 0, 0));
             imageView.playAnimation();
 

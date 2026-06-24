@@ -1487,12 +1487,12 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
             showGiftIconRow = rowCount++;
             showGiftIconInfoRow = rowCount++;
         }
-        if (rulesType == PRIVACY_RULES_TYPE_BIRTHDAY) {
-            TLRPC.UserFull userFull = getMessagesController().getUserFull(getUserConfig().getClientUserId());
-            if (userFull != null && userFull.birthday == null) {
-                setBirthdayRow = rowCount++;
-            }
-        }
+//        if (rulesType == PRIVACY_RULES_TYPE_BIRTHDAY) {
+//            TLRPC.UserFull userFull = getMessagesController().getUserFull(getUserConfig().getClientUserId());
+//            if (userFull != null && userFull.birthday == null) {
+//                setBirthdayRow = rowCount++;
+//            }
+//        }
         if (rulesType == PRIVACY_RULES_TYPE_FORWARDS) {
             messageRow = rowCount++;
         }
@@ -2004,6 +2004,8 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                                 privacyCell.setText(LocaleController.getString(R.string.PrivacyPhoneInfo3));
                             } else {
                                 SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+                                //DIVO
+                                /*
                                 String phoneLinkStr = String.format(Locale.ENGLISH, "https://t.me/+%s", getUserConfig().getClientPhone());
                                 SpannableString phoneLink = new SpannableString(phoneLinkStr);
                                 phoneLink.setSpan(new ClickableSpan() {
@@ -2015,12 +2017,16 @@ public class PrivacyControlActivity extends BaseFragment implements Notification
                                         BulletinFactory.of(PrivacyControlActivity.this).createCopyLinkBulletin(LocaleController.getString(R.string.LinkCopied), getResourceProvider()).show();
                                     }
                                 }, 0, phoneLinkStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                                */
 
-                                spannableStringBuilder.append(LocaleController.getString(R.string.PrivacyPhoneInfo))
+                                spannableStringBuilder.append(LocaleController.getString(R.string.PrivacyPhoneInfo));
+                                        //DIVO
+                                        /*
                                         .append("\n\n")
                                         .append(LocaleController.getString(R.string.PrivacyPhoneInfo4))
                                         .append("\n")
                                         .append(phoneLink);
+                                        */
 
                                 privacyCell.setText(spannableStringBuilder);
                             }

@@ -17,6 +17,7 @@ class EventDetailsViewModel(
     private val isOwnProfile: Boolean
 ) : BaseViewModel<EventDetailsViewState, EventDetailsIntent, EventDetailsEffect>() {
     private var currentUserId: Int? = null
+    private val toggleEventFavouriteUseCase = org.telegram.divo.usecase.ToggleEventFavouriteUseCase()
 
     override fun createInitialState(): EventDetailsViewState = EventDetailsViewState(eventId, isOwnProfile)
 
@@ -29,12 +30,53 @@ class EventDetailsViewModel(
             EventDetailsIntent.OnSearchClicked -> {}
             EventDetailsIntent.OnBackClicked -> sendEffect(Back)
             EventDetailsIntent.OnEditEventClick -> state.value.eventDetails?.id?.let { sendEffect(NavigateToEditEvent(it)) }
+            EventDetailsIntent.OnCloseApplicationsConfirmed -> closeApplications()
+            EventDetailsIntent.OnCancelEventConfirmed -> cancelEvent()
             EventDetailsIntent.OnDeleteEventConfirmed -> deleteEvent()
             is EventDetailsIntent.OnPhotoClick -> sendEffect(NavigateToGallery(intent.items, intent.id))
             EventDetailsIntent.OnParamsClick -> sendEffect(NavigateToParams)
             is EventDetailsIntent.OnPrevEventClicked -> sendEffect(NavigateToPrevEvent(intent.eventId))
             EventDetailsIntent.OnLikeClicked -> handleLikeClicked()
+            EventDetailsIntent.OnFavouriteClicked -> handleFavouriteClicked()
             EventDetailsIntent.OnLoad -> loadData()
+        }
+    }
+
+    private fun handleFavouriteClicked() {
+        val currentEvent = state.value.eventDetails ?: return
+        
+        viewModelScope.launch {
+            toggleEventFavouriteUseCase.execute(
+                eventId = currentEvent.id,
+                isFavourite = currentEvent.isFavourite,
+                currentCount = currentEvent.favoritesCount,
+                onUpdate = { newFavourite, newCount ->
+                    setState {
+                        copy(
+                            eventDetails = currentEvent.copy(
+                                isFavourite = newFavourite,
+                                favoritesCount = newCount
+                            )
+                        )
+                    }
+                },
+                onRollback = {
+                    setState {
+                        copy(
+                            eventDetails = currentEvent
+                        )
+                    }
+                },
+                onSuccess = { newFavourite ->
+                    sendEffect(
+                        EventDetailsEffect.ActionChanged(
+                            resDrawableId = org.telegram.messenger.R.drawable.ic_divo_bookmark_glass_selected,
+                            resStringId = if (newFavourite) org.telegram.messenger.R.string.BookmarkSaved else org.telegram.messenger.R.string.BookmarkUnsaved
+                        )
+                    )
+                },
+                onError = { sendEffect(ShowError(it)) }
+            )
         }
     }
 
@@ -42,10 +84,15 @@ class EventDetailsViewModel(
         val currentEvent = state.value.eventDetails ?: return
         val isCurrentlyLiked = currentEvent.isLiked
 
+        val newLikesCount = if (isCurrentlyLiked) currentEvent.likesCount - 1 else currentEvent.likesCount + 1
+
         // Optimistic update
         setState {
             copy(
-                eventDetails = currentEvent.copy(isLiked = !isCurrentlyLiked)
+                eventDetails = currentEvent.copy(
+                    isLiked = !isCurrentlyLiked,
+                    likesCount = newLikesCount
+                )
             )
         }
 
@@ -56,11 +103,21 @@ class EventDetailsViewModel(
                 DivoApi.eventRepository.likeEvent(currentEvent.id)
             }
 
-            if (result !is DivoResult.Success) {
+            if (result is DivoResult.Success) {
+                sendEffect(
+                    EventDetailsEffect.ActionChanged(
+                        resDrawableId = org.telegram.messenger.R.drawable.ic_divo_favorite_selected,
+                        resStringId = if (!isCurrentlyLiked) org.telegram.messenger.R.string.Liked else org.telegram.messenger.R.string.Unliked
+                    )
+                )
+            } else {
                 // Revert optimistic update
                 setState {
                     copy(
-                        eventDetails = currentEvent.copy(isLiked = isCurrentlyLiked)
+                        eventDetails = currentEvent.copy(
+                            isLiked = isCurrentlyLiked,
+                            likesCount = currentEvent.likesCount
+                        )
                     )
                 }
                 sendEffect(ShowError(result.getErrorMessage()))
@@ -117,7 +174,7 @@ class EventDetailsViewModel(
         setIntent(EventDetailsIntent.OnLoad)
         viewModelScope.launch {
             DivoApi.eventRepository.eventsUpdatedFlow.collect {
-                loadData()
+                loadData(silent = true)
             }
         }
         viewModelScope.launch {
@@ -137,15 +194,15 @@ class EventDetailsViewModel(
         }
     }
 
-    fun loadData() {
-        loadEvent()
-        loadRoleInfo()
+    fun loadData(silent: Boolean = false) {
+        loadEvent(silent)
+        loadRoleInfo(silent)
         loadCurrentUserForOwnership()
     }
 
-    private fun loadEvent() {
+    private fun loadEvent(silent: Boolean) {
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            if (!silent) setState { copy(isLoading = true) }
             val result = DivoApi.eventRepository.getEvent(state.value.eventId)
 
             if (result is DivoResult.Success) {
@@ -185,9 +242,9 @@ class EventDetailsViewModel(
         }
     }
 
-    private fun loadRoleInfo() {
+    private fun loadRoleInfo(silent: Boolean) {
         viewModelScope.launch {
-            setState { copy(isRoleLoading = true) }
+            if (!silent) setState { copy(isRoleLoading = true) }
             val result = IsModelUserUseCase(DivoApi.userRepository).invoke()
 
             if (result is DivoResult.Success) {
@@ -224,12 +281,37 @@ class EventDetailsViewModel(
     private fun deleteEvent() {
         state.value.eventDetails?.id?.let { id ->
             viewModelScope.launch {
-                setState { copy(isLoading = true) }
                 val result = DivoApi.eventRepository.deleteEvent(id)
                 if (result is DivoResult.Success) {
                     sendEffect(EventDeleted)
                 } else {
-                    setState { copy(isLoading = false) }
+                    sendEffect(ShowError(result.getErrorMessage()))
+                }
+            }
+        }
+    }
+
+    private fun closeApplications() {
+        state.value.eventDetails?.id?.let { id ->
+            viewModelScope.launch {
+                val result = DivoApi.eventRepository.closeApplications(id)
+                if (result is DivoResult.Success) {
+                    setState { copy(eventDetails = result.value) }
+                    sendEffect(ApplicationsClosed)
+                } else {
+                    sendEffect(ShowError(result.getErrorMessage()))
+                }
+            }
+        }
+    }
+
+    private fun cancelEvent() {
+        state.value.eventDetails?.id?.let { id ->
+            viewModelScope.launch {
+                val result = DivoApi.eventRepository.cancelEvent(id)
+                if (result is DivoResult.Success) {
+                    sendEffect(EventDeleted)
+                } else {
                     sendEffect(ShowError(result.getErrorMessage()))
                 }
             }

@@ -38,6 +38,8 @@ class EventDto(
     @SerializedName("isPublic") val isPublic: Boolean?,
     @SerializedName("ndaRequired") val ndaRequired: Boolean?,
     @SerializedName("isLikedByUser") val isLikedByUser: Boolean,
+    @SerializedName("isFavourite") val isFavourite: Boolean?,
+    @SerializedName("favoritesCount") val favoritesCount: Int?,
     @SerializedName("creator") val creator: EventCreatorDto?,
     @SerializedName("files") val files: List<EventFileDto>?,
     @SerializedName("address") val address: AgencyAddressDto?,
@@ -96,6 +98,8 @@ fun EventDto.toEntity() = Event(
     city = address?.city?.name.orEmpty(),
     countryCode = address?.city?.countryCode.orEmpty(),
     isLikedByUser = isLikedByUser,
+    isFavourite = isFavourite ?: false,
+    favoritesCount = favoritesCount ?: 0,
     creator = creator?.toEntity(),
     files = files?.map { it.toEntity() } ?: emptyList(),
 )

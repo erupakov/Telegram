@@ -29,7 +29,7 @@ class FeedlineItemDto(
     @SerializedName("type") val type: String?,
     @SerializedName("likesCount") val likesCount: Int?,
     @SerializedName("isLikedByUser") val isLikedByUser: Boolean?,
-    @SerializedName("isFavoriteByUser") val isFavoriteByUser: Boolean?,
+    @SerializedName("isFollowedByUser") val isFollowedByUser: Boolean?,
     @SerializedName("user") val user: FeedlineUserDto?,
     @SerializedName("files") val files: List<FeedlineFileDto>?,
     @SerializedName("searchImage") val searchImage: FeedlineFileDto?,
@@ -46,6 +46,7 @@ class FeedlineUserDto(
     @SerializedName("weight") val weight: Float?,
     @SerializedName("emojiCounts") val emojiCounts: EmojiCountsDto?,
     @SerializedName("totalEmojisCount") val totalEmojisCount: Int?,
+    @SerializedName("followersCount") val followersCount: Int?,
 )
 
 class FeedlineFileDto(
@@ -77,7 +78,7 @@ fun FeedlineItemDto.toEntity() = FeedlineItem(
     type = type,
     likesCount = likesCount ?: 0,
     isLikedByUser = isLikedByUser ?: false,
-    isFavoriteByUser = isFavoriteByUser ?: false,
+    isFollowedByUser = isFollowedByUser ?: false,
     user = user?.toEntity(),
     files = files?.mapNotNull { it.fullUrl } ?: emptyList(),
     searchImageUrl = searchImage?.fullUrl
@@ -94,6 +95,7 @@ fun FeedlineUserDto.toEntity() = FeedlineUser(
     weight = weight,
     emojiCounts = emojiCounts?.toEntity(),
     totalEmojisCount = totalEmojisCount ?: 0,
+    followersCount = followersCount ?: 0,
 )
 
 fun ModelParametersDto.toEntity() = ModelParameters(

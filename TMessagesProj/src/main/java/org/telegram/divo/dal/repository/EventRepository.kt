@@ -83,5 +83,30 @@ class EventRepository(
         service.unlikeEvent(id)
         Unit
     }
+
+    suspend fun closeApplications(id: Int): DivoResult<EventDetails> = resultOf {
+        service.closeApplications(id)
+    }.map {
+        requireNotNull(it.toEntity()) { it.message ?: "Failed to close applications" }
+    }.also {
+        if (it is DivoResult.Success) _eventsUpdatedFlow.emit(Unit)
+    }
+
+    suspend fun cancelEvent(id: Int): DivoResult<Unit> = resultOf {
+        service.cancelEvent(id)
+        Unit
+    }.also {
+        if (it is DivoResult.Success) _eventsUpdatedFlow.emit(Unit)
+    }
+
+    suspend fun setFavourite(id: Int): DivoResult<Unit> = resultOf {
+        service.setFavourite(id)
+        Unit
+    }
+
+    suspend fun dropFavourite(id: Int): DivoResult<Unit> = resultOf {
+        service.dropFavourite(id)
+        Unit
+    }
 }
 

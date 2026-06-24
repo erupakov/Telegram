@@ -52,8 +52,8 @@ public class ActionBarAnimatedSubtitleOverlayContainer extends FrameLayout imple
         }
 
         final SimpleTextViewReplaceable overlayTextView = new SimpleTextViewReplaceable(getContext());
-        overlayTextView.setTextColor(Theme.getColor(Theme.key_telegram_color_dialogsLogo, resourcesProvider));
-        overlayTextView.setLinkTextColor(Theme.getColor(Theme.key_telegram_color_dialogsLogo, resourcesProvider));
+        overlayTextView.setTextColor(0xFF222222); //DIVO
+        overlayTextView.setLinkTextColor(0xFF222222); //DIVO
         overlayTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         overlayTextView.setAlpha(0);
         overlayTextView.setText(text);
@@ -78,8 +78,8 @@ public class ActionBarAnimatedSubtitleOverlayContainer extends FrameLayout imple
 
     public void updateColors() {
         for (ListAnimator.Entry<SimpleTextViewReplaceable> entry : titleOverlayAnimator) {
-            entry.item.setTextColor(Theme.getColor(Theme.key_telegram_color_dialogsLogo, resourcesProvider));
-            entry.item.setLinkTextColor(Theme.getColor(Theme.key_telegram_color_dialogsLogo, resourcesProvider));
+            entry.item.setTextColor(0xFF222222); //DIVO
+            entry.item.setLinkTextColor(0xFF222222); //DIVO
         }
     }
 

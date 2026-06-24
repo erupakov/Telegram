@@ -25,20 +25,53 @@ data class UserInfo(
     val statistic: Statistic = Statistic(),
     val isFavorite: Boolean = false,
     val isFollowed: Boolean = false,
+    val isLikedByUser: Boolean = false,
     val isPremium: Boolean = false,
     val isVerified: Boolean = false,
     val userRatingStatus: String = "",
     val isOnline: Boolean? = false,
-    val userSocialNetworks: List<UserSocialNetwork> = emptyList()
+    val telegramId: Long? = null,
+    val telegramAccessHash: Long? = null,
+    val telegramUsername: String? = null,
+    val userSocialNetworks: List<UserSocialNetwork> = emptyList(),
+    val channels: List<UserChannel> = emptyList()
 ) {
     val displayName: String
         get() = if (role == RoleType.AGENCY) agency?.title?.takeIf { it.isNotBlank() } ?: fullName else fullName
 }
 
+data class UserChannel(
+    val id: Int,
+    val telegramChatId: Long,
+    val username: String?,
+    val inviteLink: String?
+)
+
 data class Gender(
     val id: String = "",
     val title: String = ""
 )
+
+fun mapGenderToEnglish(localizedGenders: String?): String? {
+    if (localizedGenders.isNullOrBlank()) return null
+    val context = org.telegram.messenger.ApplicationLoader.applicationContext
+    val array = context.resources.getStringArray(org.telegram.messenger.R.array.GenderItems)
+    
+    val maleLocalized = array.getOrNull(1)
+    val femaleLocalized = array.getOrNull(2)
+    
+    val items = localizedGenders.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+    
+    val mapped = items.map { item ->
+        when {
+            item.equals(maleLocalized, ignoreCase = true) || item.equals("male", ignoreCase = true) -> "male"
+            item.equals(femaleLocalized, ignoreCase = true) || item.equals("female", ignoreCase = true) -> "female"
+            else -> item.lowercase()
+        }
+    }
+    
+    return mapped.joinToString(",").takeIf { it.isNotEmpty() }
+}
 data class Model(
     val agency: Agency? = null,
     val education: String = "",

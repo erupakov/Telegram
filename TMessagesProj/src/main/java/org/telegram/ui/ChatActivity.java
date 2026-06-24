@@ -2588,6 +2588,31 @@ public class ChatActivity extends BaseFragment implements
         scrollToTopOnResume = arguments.getBoolean("scrollToTopOnResume", false);
         needRemovePreviousSameChatActivity = arguments.getBoolean("need_remove_previous_same_chat_activity", true);
         justCreatedChat = arguments.getBoolean("just_created_chat", false);
+        //DIVO--START
+        if (justCreatedChat && chatId != 0) {
+            TLRPC.Chat chat = getMessagesController().getChat(chatId);
+            if (chat != null && ChatObject.isChannel(chat) && !chat.megagroup) {
+                TLRPC.ChatFull chatFull = getMessagesController().getChatFull(chatId);
+                String inviteLink = null;
+                if (chatFull != null && chatFull.exported_invite instanceof TLRPC.TL_chatInviteExported) {
+                    inviteLink = ((TLRPC.TL_chatInviteExported) chatFull.exported_invite).link;
+                }
+                boolean hasPhoto = chat.photo != null && chat.photo.photo_small != null && !(chat.photo instanceof TLRPC.TL_chatPhotoEmpty);
+                String localAvatarPath = arguments.getString("local_avatar_path");
+                
+                if (localAvatarPath == null && hasPhoto && chat.photo.photo_big != null) {
+                    try {
+                        java.io.File file = org.telegram.messenger.FileLoader.getInstance(currentAccount).getPathToAttach(chat.photo.photo_big, true);
+                        if (file != null && file.exists()) {
+                            localAvatarPath = file.getAbsolutePath();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        //DIVO--END
         wallpaperRandomSeed = Utilities.random.nextLong();
         if (quickReplyShortcut != null) {
             QuickRepliesController.QuickReply quickReply = QuickRepliesController.getInstance(currentAccount).findReply(quickReplyShortcut);
@@ -4352,9 +4377,15 @@ public class ChatActivity extends BaseFragment implements
             if (currentChat != null && !isTopic) {
                 viewAsTopics = headerItem.lazilyAddSubItem(view_as_topics, R.drawable.msg_topics, LocaleController.getString(R.string.TopicViewAsTopics));
             }
+            //DIVO
+            /*
             if (themeDelegate.isThemeChangeAvailable(true)) {
-                headerItem.lazilyAddSubItem(change_colors, R.drawable.msg_background, LocaleController.getString(R.string.SetWallpapers));
+                //DIVO
+                if (!(currentUser != null && currentUser.self) && chatMode != MODE_SAVED) {
+                    headerItem.lazilyAddSubItem(change_colors, R.drawable.msg_background, LocaleController.getString(R.string.SetWallpapers));
+                }
             }
+            */
             if (currentUser != null && currentUser.self && getDialogId() != UserObject.VERIFY) {
                 headerItem.lazilyAddSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
             }
@@ -19067,7 +19098,8 @@ public class ChatActivity extends BaseFragment implements
             if (currentUser.self) {
                 avatarContainer.setTitle(LocaleController.getString(R.string.SavedMessages));
             } else if (!MessagesController.isSupportUser(currentUser) && getContactsController().contactsDict.get(currentUser.id) == null && (getContactsController().contactsDict.size() != 0 || !getContactsController().isLoadingContacts())) {
-                if (!TextUtils.isEmpty(currentUser.phone)) {
+                //DIVO
+                if (!TextUtils.isEmpty(currentUser.phone) && !currentUser.phone.startsWith("999")) {
                     avatarContainer.setTitle(PhoneFormat.getInstance().format("+" + currentUser.phone), currentUser.scam, currentUser.fake, currentUser.verified, getMessagesController().isPremiumUser(currentUser), currentUser.emoji_status, animated);
                 } else {
                     avatarContainer.setTitle(AndroidUtilities.removeRTL(AndroidUtilities.removeDiacritics(UserObject.getUserName(currentUser))), currentUser.scam, currentUser.fake, currentUser.verified, getMessagesController().isPremiumUser(currentUser), currentUser.emoji_status, animated);
@@ -39463,7 +39495,7 @@ public class ChatActivity extends BaseFragment implements
                     if (!TextUtils.isEmpty(messageObject.vCardData)) {
                         phone = messageObject.vCardData.toString();
                     } else {
-                        if (!TextUtils.isEmpty(user.phone)) {
+                        if (!TextUtils.isEmpty(user.phone) && !user.phone.startsWith("999")) { //DIVO
                             phone = PhoneFormat.getInstance().format("+" + user.phone);
                         } else {
                             phone = MessageObject.getMedia(messageObject.messageOwner).phone_number;

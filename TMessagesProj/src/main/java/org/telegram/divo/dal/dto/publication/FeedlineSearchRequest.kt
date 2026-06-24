@@ -26,7 +26,11 @@ class FeedlineSearchRequest(
     @SerializedName("modelsOnly")
     val modelsOnly: Boolean? = null,
     @SerializedName("modelParameters")
-    val modelParameters: ModelParametersDto? = null
+    val modelParameters: ModelParametersDto? = null,
+    @SerializedName("geoCityId")
+    val geoCityId: Int? = null,
+    @SerializedName("countryCode")
+    val countryCode: String? = null
 )
 
 class ModelParametersDto(

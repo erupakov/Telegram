@@ -1,6 +1,7 @@
 package org.telegram.divo.screen.reg_form
 
 import android.os.Build
+import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,11 +21,13 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.dto.auth.RegistrationRequest
 import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
+import org.telegram.divo.dal.network.DivoAuthHelper
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.tgnet.tl.TL_account
 import java.io.BufferedReader
+import java.security.MessageDigest
 
 class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsEffect>() {
 
@@ -43,7 +46,12 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
         setState {
             copy(
                 steps = intent.subRole.formSteps(),
-                formData = RegistrationFormData(subRole = intent.subRole),
+                formData = RegistrationFormData(
+                    subRole = intent.subRole,
+                    firstName = intent.googleFirstName ?: "",
+                    lastName = intent.googleLastName ?: "",
+                    photoUri = intent.googlePhotoUrl?.let { Uri.parse(it) }
+                ),
                 currentAccount = intent.currentAccount,
                 phoneHash = intent.phoneHash,
                 phoneNumber = intent.phoneNumber,
@@ -61,7 +69,6 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
     }
 
     private fun onContinue() {
-        logFormData()
         if (state.value.isLastStep) {
             setState { copy(isLoading = true) }
             val data = state.value.formData ?: return
@@ -74,21 +81,29 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     var uploadedPhotoUrl: String? = null
                     data.photoUri?.let { uri ->
                         try {
-                            val context = ApplicationLoader.applicationContext
-                            val inputStream = context.contentResolver.openInputStream(uri)
-                            if (inputStream != null) {
-                                val tempFile = java.io.File(context.cacheDir, "upload_avatar_${System.currentTimeMillis()}.jpg")
-                                val outputStream = java.io.FileOutputStream(tempFile)
-                                inputStream.copyTo(outputStream)
-                                inputStream.close()
-                                outputStream.close()
-                                
-                                val uploadResult = DivoApi.userRepository.uploadPhoto(tempFile)
-                                if (uploadResult is DivoResult.Success) {
-                                    uploadedPhotoUuid = uploadResult.value.uuid
-                                    uploadedPhotoUrl = uploadResult.value.fullUrl
+                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                val context = ApplicationLoader.applicationContext
+                                val inputStream = if (uri.scheme == "http" || uri.scheme == "https") {
+                                    val request = okhttp3.Request.Builder().url(uri.toString()).build()
+                                    val response = okhttp3.OkHttpClient().newCall(request).execute()
+                                    response.body?.byteStream()
+                                } else {
+                                    context.contentResolver.openInputStream(uri)
                                 }
-                                telegramPhotoFile = tempFile
+                                if (inputStream != null) {
+                                    val tempFile = java.io.File(context.cacheDir, "upload_avatar_${System.currentTimeMillis()}.jpg")
+                                    val outputStream = java.io.FileOutputStream(tempFile)
+                                    inputStream.copyTo(outputStream)
+                                    inputStream.close()
+                                    outputStream.close()
+                                    
+                                    val uploadResult = DivoApi.userRepository.uploadPhoto(tempFile)
+                                    if (uploadResult is DivoResult.Success) {
+                                        uploadedPhotoUuid = uploadResult.value.uuid
+                                        uploadedPhotoUrl = uploadResult.value.fullUrl
+                                    }
+                                    telegramPhotoFile = tempFile
+                                }
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -98,7 +113,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     // 1. Divo Registration (REST)
                     val tgUser = org.telegram.messenger.UserConfig.getInstance(state.value.currentAccount).currentUser
 
-                    val rawPhone = tgUser?.phone ?: state.value.phoneNumber
+                    val rawPhone = tgUser?.phone?.takeIf { it.isNotBlank() } ?: state.value.phoneNumber
                     val phone = rawPhone.replace("+", "").trim()
 
                     val firebaseUid = state.value.firebaseUid
@@ -119,7 +134,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (data.firstName.isNotBlank()) additionalInfo[AdditionalInfoKeys.FIRST_NAME] = data.firstName
                     if (data.lastName.isNotBlank()) additionalInfo[AdditionalInfoKeys.LAST_NAME] = data.lastName
                     if (!data.dateOfBirth.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.DATE_OF_BIRTH] = data.dateOfBirth
-                    if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = data.gender
+                    if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = data.gender.lowercase(java.util.Locale.US)
                     if (data.country.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY] = data.country
                     if (data.countryCode.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY_CODE] = data.countryCode
                     if (data.city != null) additionalInfo[AdditionalInfoKeys.CITY] = data.city.name
@@ -147,7 +162,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (rawPhone.isNotBlank()) additionalInfo[AdditionalInfoKeys.PHONE] = rawPhone
                     additionalInfo[AdditionalInfoKeys.EMAIL] = email
                     additionalInfo[AdditionalInfoKeys.TIMEZONE] = java.util.TimeZone.getDefault().id
-                    additionalInfo[AdditionalInfoKeys.MEASURING_SYSTEM] = "metric"
+                    additionalInfo[AdditionalInfoKeys.MEASURING_SYSTEM] = org.telegram.divo.common.DivoSettings.measuringSystem
                     additionalInfo[AdditionalInfoKeys.SUB_ROLE] = data.subRole.name.lowercase()
                     if (mappedSubrole != null) additionalInfo[AdditionalInfoKeys.SUBROLE_MAPPED] = mappedSubrole
 
@@ -156,6 +171,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         if (!tgUser.username.isNullOrBlank()) {
                             additionalInfo[AdditionalInfoKeys.TELEGRAM_USERNAME] = tgUser.username
                         }
+                        additionalInfo[AdditionalInfoKeys.TELEGRAM_ACCESS_HASH] = tgUser.access_hash
                     }
 
                     // Branch: social registration vs regular registration
@@ -187,7 +203,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         val regRequest = RegistrationRequest(
                             email = email,
                             role = mappedRole,
-                            password = "divo_${phone}",
+                            password = DivoAuthHelper.generatePassword(phone),
                             subrole = mappedSubrole,
                             deviceId = deviceId,
                             deviceType = deviceType,
@@ -214,72 +230,26 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (firstName.isBlank()) {
                         firstName = "User"
                     }
-
-                    val req = TL_account.updateProfile().apply {
-                        flags = 1 or 2 // 1 = first_name, 2 = last_name
-                        first_name = firstName
-                        last_name = lastName
-                    }
-
-                    val profileUpdateResult = suspendCancellableCoroutine { continuation ->
-                        val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(req) { response, error ->
-                            if (error != null) {
-                                continuation.resumeWithException(RuntimeException(error.text))
-                            } else if (response is TLRPC.User) {
-                                continuation.resume(response)
-                            } else {
-                                continuation.resumeWithException(RuntimeException("Invalid response type"))
-                            }
-                        }
-                        continuation.invokeOnCancellation {
-                            ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
-                        }
-                    }
-
-                    // 2.5 TG Profile Photo Update
-                    if (telegramPhotoFile != null) {
+                    val profileUpdateResult = org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramName(
+                        currentAccount = state.value.currentAccount,
+                        firstName = firstName,
+                        lastName = lastName
+                    )
+                    
+                    data.dateOfBirth?.let { dobString ->
                         try {
-                            val inputFile = suspendCancellableCoroutine<org.telegram.tgnet.TLRPC.InputFile?> { continuation ->
-                                org.telegram.messenger.FileLoader.getInstance(state.value.currentAccount).uploadFile(telegramPhotoFile!!.absolutePath) { result ->
-                                    continuation.resume(result)
-                                }
-                            }
-                            if (inputFile != null) {
-                                val photoReq = TLRPC.TL_photos_uploadProfilePhoto().apply {
-                                    file = inputFile
-                                    flags = flags or 1
-                                }
-                                val photoResult = suspendCancellableCoroutine<TLRPC.TL_photos_photo?> { continuation ->
-                                    val reqId = ConnectionsManager.getInstance(state.value.currentAccount).sendRequest(photoReq) { response, error ->
-                                        if (error == null && response is TLRPC.TL_photos_photo) {
-                                            continuation.resume(response)
-                                        } else {
-                                            continuation.resume(null)
-                                        }
-                                    }
-                                    continuation.invokeOnCancellation {
-                                        ConnectionsManager.getInstance(state.value.currentAccount).cancelRequest(reqId, true)
-                                    }
-                                }
-                                if (photoResult != null) {
-                                    val uc = org.telegram.messenger.UserConfig.getInstance(state.value.currentAccount)
-                                    val currentUser = uc.currentUser
-                                    if (currentUser != null && photoResult.photo != null) {
-                                        val bigSize = org.telegram.messenger.FileLoader.getClosestPhotoSizeWithSize(photoResult.photo.sizes, 800)
-                                        val smallSize = org.telegram.messenger.FileLoader.getClosestPhotoSizeWithSize(photoResult.photo.sizes, 150)
-                                        if (smallSize != null && bigSize != null) {
-                                            if (currentUser.photo == null) {
-                                                currentUser.photo = TLRPC.TL_userProfilePhoto()
-                                            }
-                                            currentUser.photo.photo_id = photoResult.photo.id
-                                            currentUser.photo.photo_small = smallSize.location
-                                            currentUser.photo.photo_big = bigSize.location
-                                            currentUser.photo.dc_id = photoResult.photo.dc_id
-                                            uc.setCurrentUser(currentUser)
-                                            uc.saveConfig(true)
-                                        }
-                                    }
-                                    org.telegram.messenger.MessagesController.getInstance(state.value.currentAccount).putUsers(photoResult.users, false)
+                            val parts = dobString.split("-")
+                            if (parts.size == 3) {
+                                val year = parts[0].toIntOrNull()
+                                val month = parts[1].toIntOrNull()
+                                val day = parts[2].toIntOrNull()
+                                if (year != null && month != null && day != null) {
+                                    org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramBirthday(
+                                        currentAccount = state.value.currentAccount,
+                                        year = year,
+                                        month = month,
+                                        day = day
+                                    )
                                 }
                             }
                         } catch (e: Exception) {
@@ -287,8 +257,13 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         }
                     }
 
+                    // 2.5 TG Profile Photo Update
+                    if (telegramPhotoFile != null) {
+                        org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatar(state.value.currentAccount, telegramPhotoFile)
+                    }
+
                     // 3. Divo Link (REST)
-                    val tgUserId = profileUpdateResult.id
+                    val tgUserId = profileUpdateResult?.id ?: tgUser?.id ?: 0L
 
                     val linkRequest = TelegramLinkRequest(
                         divoUserId = divoUserId,
@@ -370,10 +345,10 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         fullName = fullName,
                         phone = rawPhone,
                         timezone = java.util.TimeZone.getDefault().id,
-                        gender = data.gender?.lowercase()?.takeIf { it.isNotBlank() },
+                        gender = org.telegram.divo.entity.mapGenderToEnglish(data.gender) ?: "female",
                         birthday = data.dateOfBirth ?: "",
-                        geoCityId = resolvedCityId,
-                        measuringSystem = "metric",
+                        geoCityId = resolvedCityId?.takeIf { it > 0 },
+                        measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem,
                         subrole = mappedSubrole,
                         pushNotifications = true,
                         isRegistrationFinished = true,
@@ -391,7 +366,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     }
 
                     val dummyAuth = TLRPC.TL_auth_authorization().apply {
-                        user = profileUpdateResult
+                        user = profileUpdateResult ?: tgUser
                     }
                     sendEffect(RegFormsEffect.FinishRegistration(dummyAuth))
                 } catch (e: Exception) {
@@ -484,38 +459,6 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
         }
     }
 
-    private fun logFormData() {
-        val data = state.value.formData ?: return
-        android.util.Log.d("RegForm", buildString {
-            appendLine("=== REGISTRATION FORM DATA ===")
-            appendLine("SubRole: ${data.subRole}")
-            appendLine("--- Common ---")
-            appendLine("First name: ${data.firstName}")
-            appendLine("Last name: ${data.lastName}")
-            appendLine("Date of birth: ${data.dateOfBirth}")
-            appendLine("Gender: ${data.gender}")
-            appendLine("Country: ${data.country}")
-            appendLine("City: ${data.city?.name}")
-            appendLine("--- Company ---")
-            appendLine("Company name: ${data.companyName}")
-            appendLine("Website URL: ${data.websiteUrl}")
-            appendLine("Contact role: ${data.contactRole}")
-            appendLine("Contact name: ${data.contactName}")
-            appendLine("Contact phone: ${data.contactPhone}")
-            appendLine("--- Creative / Professional ---")
-            appendLine("Specialisation: ${data.specialisation}")
-            appendLine("Instagram URL: ${data.instagramUrl}")
-            appendLine("Portfolio URL: ${data.portfolioUrl}")
-            appendLine("Agency name: ${data.agencyName}")
-            appendLine("--- Talent ---")
-            appendLine("Showreel URL: ${data.showreelUrl}")
-            appendLine("Casting profile URL: ${data.castingProfileUrl}")
-            appendLine("--- Photo ---")
-            appendLine("Photo URI: ${data.photoUri}")
-            appendLine("==============================")
-        })
-    }
-
     private fun SubRole.toDivoRoleAndSubrole(): Pair<String, String?> {
         return when (this) {
             SubRole.MODELING_AGENCY -> RoleType.AGENCY.value to null //"owner"
@@ -525,10 +468,10 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
             SubRole.SCOUT -> RoleType.AGENCY.value to null //"scout"
             SubRole.BOOKER -> RoleType.AGENCY.value to null //"booker"
             SubRole.CASTING_DIRECTOR, SubRole.TALENT_MANAGER -> RoleType.AGENCY.value to null //"agent"
-            SubRole.PHOTOGRAPHER -> RoleType.CUSTOMER.value to null //"photographer"
-            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> RoleType.CUSTOMER.value to null //"stylist"
-            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> RoleType.CUSTOMER.value to null //"media"
-            SubRole.STUDIO -> RoleType.CUSTOMER.value to null //"place"
+            SubRole.PHOTOGRAPHER -> RoleType.NEW_FACE.value to null //"photographer"
+            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> RoleType.NEW_FACE.value to null //"stylist"
+            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> RoleType.NEW_FACE.value to null //"media"
+            SubRole.STUDIO -> RoleType.NEW_FACE.value to null //"place"
             SubRole.MODEL -> RoleType.MODEL.value to null
             SubRole.NEW_TALENT, SubRole.ACTOR, SubRole.DANCER, SubRole.SINGER -> RoleType.NEW_FACE.value to null
             SubRole.FAN -> RoleType.FAN.value to null //"fan"

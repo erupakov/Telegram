@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import org.telegram.divo.common.DivoAsyncImage
@@ -259,7 +260,7 @@ private fun ModelConflictDialog(
     val agencyName =
         (conflictModel.status as? AgencySearchModelStatus.RepresentedByOther)?.agencyName
             ?: stringResource(R.string.DivoAgencyModelAnotherAgency)
-    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = onDismiss) {
         androidx.compose.material3.Surface(
             shape = RoundedCornerShape(28.dp),
             color = AppTheme.colors.backgroundLight,
@@ -522,7 +523,7 @@ private fun ConfirmModelAdditionBottomSheet(
                             Spacer(modifier = Modifier.width(8.dp))
 
                             val age = model.birthday?.toAge()
-                            val ageStr = age?.let { stringResource(R.string.DivoAgencyModelYearsOld, it) }
+                            val ageStr = age?.let { org.telegram.messenger.LocaleController.formatPluralString("Years", it) }
                             val locationStr = buildString {
                                 if (ageStr != null) append("$ageStr · ")
                                 val country = model.city?.countryName ?: ""

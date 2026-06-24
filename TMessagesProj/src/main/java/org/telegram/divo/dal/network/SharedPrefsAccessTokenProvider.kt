@@ -2,6 +2,8 @@ package org.telegram.divo.dal.network
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
 
 import org.telegram.messenger.UserConfig
 import androidx.core.content.edit
@@ -11,14 +13,55 @@ private const val KEY_ACCESS_TOKEN = "access_token"
 private const val KEY_IS_GOOGLE_LOGIN = "is_google_login"
 
 /**
- * Simple SharedPreferences-based implementation of [AccessTokenProvider].
+ * EncryptedSharedPreferences-based implementation of [AccessTokenProvider].
  */
 class SharedPrefsAccessTokenProvider(
     val context: Context
 ) : AccessTokenProvider {
 
+    private val masterKey by lazy {
+        MasterKey.Builder(context.applicationContext)
+            .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+            .build()
+    }
+
+    private var cachedAccount: Int = -1
+    private var cachedPrefs: SharedPreferences? = null
+
     private val prefs: SharedPreferences
-        get() = context.applicationContext.getSharedPreferences(PREFS_NAME_PREFIX + UserConfig.selectedAccount, Context.MODE_PRIVATE)
+        get() {
+            val account = UserConfig.selectedAccount
+            val currentPrefs = cachedPrefs
+            
+            if (account == cachedAccount && currentPrefs != null) {
+                return currentPrefs
+            }
+            
+            val newPrefs = try {
+                EncryptedSharedPreferences.create(
+                    context.applicationContext,
+                    PREFS_NAME_PREFIX + account,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+            } catch (e: Exception) {
+                // In case of keystore corruption, fallback or clear data
+                context.applicationContext.getSharedPreferences(PREFS_NAME_PREFIX + account, Context.MODE_PRIVATE).edit { clear() }
+                EncryptedSharedPreferences.create(
+                    context.applicationContext,
+                    PREFS_NAME_PREFIX + account,
+                    masterKey,
+                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+                )
+            }
+            
+            cachedPrefs = newPrefs
+            cachedAccount = account
+            
+            return newPrefs
+        }
 
     override fun getAccessToken(): String? = prefs.getString(KEY_ACCESS_TOKEN, null)
 

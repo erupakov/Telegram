@@ -26,6 +26,7 @@ data class ProfileViewState(
     val userId: Int = -1,
     val isOwnProfile: Boolean = false,
     val userInfo: UserInfo = UserInfo(),
+    val latestWorkExperience: org.telegram.divo.entity.WorkExperience? = null,
     val hasBackgroundReady: Boolean = false,
 
     val userGalleryItems: List<UserGalleryItem> = listOf(),
@@ -61,6 +62,9 @@ data class ProfileViewState(
 
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+
+    val reportTypes: Map<String, String>? = null,
+    val showReportSheet: Boolean = false,
 
     val portfolioLoading: Boolean = false,
     val mediaUploading: Boolean = false,
@@ -158,6 +162,7 @@ data class PhysicalParams(
     val gender: String = "",
     val age: String = "",
     val height: Float = 0f,
+    val weight: Float = 0f,
     val waist: Int = 0,
     val hips: Int = 0,
     val shoeSize: Float = 0f,
@@ -165,7 +170,8 @@ data class PhysicalParams(
     val hairColor: String = "",
     val eyeColor: String = "",
     val skinColor: String = "",
-    val breastSize: String = ""
+    val breastSize: String = "",
+    val measuringSystem: String = "",
 )
 
 data class UserStatistic(
@@ -176,12 +182,14 @@ data class UserStatistic(
 
 sealed class ProfileIntent : ViewIntent {
     data object OnLoad : ProfileIntent()
+    data object OnRefresh : ProfileIntent()
     object OnClearPortfolioUpload : ProfileIntent()
     class OnLoadMoreEngagementStats(
         val type: StatsType
     ) : ProfileIntent()
     class OnStatsTabOpened(val type: StatsType) : ProfileIntent()
     object OnBookmarkClick : ProfileIntent()
+    object OnLikeClick : ProfileIntent()
 
     class OnPortfolioPhotoSelected(
         val file: Result<File>
@@ -215,13 +223,18 @@ sealed class ProfileIntent : ViewIntent {
     class OnProfileClicked(val profileId: Int) : ProfileIntent()
     class OnEventClicked(val eventId: Int) : ProfileIntent()
     class OnEventApplied(val eventId: Int) : ProfileIntent()
-    object OnFindSimilarProfiles : ProfileIntent()
+    class OnSendDMClicked(val telegramId: Long, val telegramAccessHash: Long?, val telegramUsername: String?) : ProfileIntent()
     object OnEventCreate : ProfileIntent()
+    object OnReportProfileClicked : ProfileIntent()
+    object OnDismissReportSheet : ProfileIntent()
+    class OnReportOptionSelected(val reportKey: String) : ProfileIntent()
     object OnLoadMoreAgencyModels : ProfileIntent()
-    class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
     data class OnCancelAgencyModelRequest(val modelId: Int) : ProfileIntent()
     data class OnToggleAgencySearch(val visible: Boolean) : ProfileIntent()
     class OnSelectAgencyModelForAdd(val model: AgencySearchModel?) : ProfileIntent()
+    object OnCreateChannelClicked : ProfileIntent()
+    class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
+    object OnFindSimilarProfiles : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
@@ -239,8 +252,10 @@ sealed class ProfileEffect : ViewEffect {
     class NavigateToApplyConfirmation(val eventId: Int) : ProfileEffect()
     class ShowWithdrawConfirmation(val eventId: Int) : ProfileEffect()
     class NavigateToFindSimilarProfiles(val photoUrl: String) : ProfileEffect()
+    class NavigateToChat(val telegramId: Long, val telegramAccessHash: Long?, val telegramUsername: String?) : ProfileEffect()
     object NavigateToEditLinks : ProfileEffect()
     object NavigateToCreateEvent : ProfileEffect()
     data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : ProfileEffect()
     object AgencyModelAdded : ProfileEffect()
+    class NavigateToCreateChannel(val id: String = java.util.UUID.randomUUID().toString()) : ProfileEffect()
 }

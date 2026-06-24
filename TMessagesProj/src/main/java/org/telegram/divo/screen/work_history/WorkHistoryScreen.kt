@@ -143,13 +143,14 @@ private fun WorkHistoryScreenView(
 
             if (state.experiences.isEmpty() && !state.isLoading) {
                 WorkHistoryEmpty(
-                    modifier = Modifier,
+                    modifier = Modifier
+                        .then(if (isFromEditScreen) Modifier.padding(bottom = 32.dp) else Modifier),
                     isOwnProfile = isOwnProfile,
                     isFromEditScreen = isFromEditScreen,
                     onCreateClicked = { onIntent(Intent.OnCreateClicked) }
                 )
             } else if (state.isLoading) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(modifier = Modifier.fillMaxSize().then(if (isFromEditScreen) Modifier.padding(bottom = 32.dp) else Modifier), contentAlignment = Alignment.Center) {
                     LottieProgressIndicator(color = AppTheme.colors.backgroundDark)
                 }
             } else {
@@ -223,7 +224,7 @@ private fun WorkHistoryEmpty(
             Spacer(Modifier.height(16.dp))
             TextTitle(
                 text = stringResource(R.string.WorkHistoryEmptyTitle).uppercase(),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 textAlign = TextAlign.Center
             )
             if (isOwnProfile) {
@@ -279,7 +280,7 @@ private fun WorkExperienceRow(
         Box(modifier = Modifier.size(60.dp), contentAlignment = Alignment.Center) {
             AgencyAvatar(
                 agencyName = agencyName,
-                avatarUrl = "",
+                avatarUrl = item.agencyAvatarLink,
                 modifier = Modifier.size(60.dp)
             )
 
@@ -310,7 +311,7 @@ private fun WorkExperienceRow(
             )
         }
 
-        if (isOwnProfile) {
+        if (isOwnProfile && item.id != -1) {
             Box {
                 IconButton(onClick = { menuExpanded = true }) {
                     Icon(

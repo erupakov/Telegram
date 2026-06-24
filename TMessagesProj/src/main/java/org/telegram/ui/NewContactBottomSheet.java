@@ -1134,6 +1134,10 @@ public class NewContactBottomSheet extends BottomSheet implements AdapterView.On
     }
 
     public NewContactBottomSheet setInitialPhoneNumber(String value, boolean withCountryCode) {
+        //DIVO
+        if (value != null && (value.startsWith("999") || value.startsWith("+999"))) {
+            return this;
+        }
         initialPhoneNumber = value;
         initialPhoneNumberWithCountryCode = withCountryCode;
 
