@@ -8,6 +8,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout Code
@@ -29,6 +31,13 @@ jobs:
         run: |
           echo "$GOOGLE_SERVICES_BASE64" | base64 --decode > TMessagesProj_App/google-services.json
 
+      - name: Extract App Version
+        id: extract_version
+        run: |
+          APP_VERSION=$(grep 'APP_VERSION_NAME' gradle.properties | cut -d'=' -f2)
+          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+          echo "TAG_NAME=v${APP_VERSION}-b${{ github.run_number }}" >> $GITHUB_ENV
+
       # ==========================================
       # DEBUG
       # ==========================================
@@ -39,14 +48,35 @@ jobs:
           TELEGRAM_APP_HASH: ${{ secrets.TELEGRAM_APP_HASH }}
         run: ./gradlew :TMessagesProj_App:assembleAfatDebug
 
-      - name: Upload Debug APK to Firebase
+      - name: Create Git Tag (Debug)
         if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git tag ${{ env.TAG_NAME }}-debug
+          git push origin ${{ env.TAG_NAME }}-debug
+
+      - name: Upload Debug APK to GitHub Artifacts
+        if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
+        uses: actions/upload-artifact@v4
         with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-          groups: testers
-          file: TMessagesProj_App/build/outputs/apk/afat/debug/Divo-Global.apk
+          name: divo-debug-apk-${{ env.TAG_NAME }}
+          path: TMessagesProj_App/build/outputs/apk/afat/debug/Divo-Global.apk
+
+      - name: Send Debug APK to Telegram
+        if: github.base_ref == 'dev' || github.ref == 'refs/heads/dev'
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🛠 **Divo Global (Debug)**
+            Версия: ${{ env.APP_VERSION }} (Билд #${{ github.run_number }})
+            Тег: ${{ env.TAG_NAME }}-debug
+            Ветка: ${{ github.ref_name }}
+            
+            📥 **Скачать APK (Artifacts):**
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
       # ==========================================
       # RELEASE
@@ -69,18 +99,36 @@ jobs:
           RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
         run: ./gradlew :TMessagesProj_App:assembleAfatRelease :TMessagesProj_App:bundleAfatRelease
 
-      - name: Upload Release AAB to Artifacts
+      - name: Create Git Tag (Release)
         if: github.base_ref == 'master' || github.ref == 'refs/heads/master'
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-bundle
-          path: TMessagesProj_App/build/outputs/bundle/afatRelease/*.aab
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git tag ${{ env.TAG_NAME }}-release
+          git push origin ${{ env.TAG_NAME }}-release
 
-      - name: Upload Release APK to Firebase
+      - name: Create GitHub Release
         if: github.base_ref == 'master' || github.ref == 'refs/heads/master'
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        uses: softprops/action-gh-release@v1
         with:
-          appId: ${{ secrets.FIREBASE_APP_ID }}
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-          groups: testers
-          file: TMessagesProj_App/build/outputs/apk/afat/release/Divo-Global.apk
+          tag_name: ${{ env.TAG_NAME }}-release
+          name: Release ${{ env.TAG_NAME }}
+          files: |
+            TMessagesProj_App/build/outputs/apk/afat/release/Divo-Global.apk
+            TMessagesProj_App/build/outputs/bundle/afatRelease/*.aab
+          prerelease: false
+
+      - name: Send Release APK to Telegram
+        if: github.base_ref == 'master' || github.ref == 'refs/heads/master'
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_CHAT_ID }}
+          token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          message: |
+            🚀 **Divo Global (Release)**
+            Версия: ${{ env.APP_VERSION }} (Билд #${{ github.run_number }})
+            Тег: ${{ env.TAG_NAME }}-release
+            Ветка: ${{ github.ref_name }}
+            
+            📥 **Скачать APK и AAB (GitHub Releases):**
+            https://github.com/${{ github.repository }}/releases/tag/${{ env.TAG_NAME }}-release
