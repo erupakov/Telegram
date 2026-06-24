@@ -232,33 +232,33 @@ public class UserInfoActivity extends UniversalFragment implements NotificationC
         } else {
             items.add(InfoCell.Factory.of(INFO_USERNAME, R.drawable.menu_username_set, getString(R.string.AddUsername), null, 0).accent());
         }
-        birthdayRow = items.size();
-        if (birthday != null) {
-            items.add(InfoCell.Factory.of(INFO_BIRTHDAY, R.drawable.menu_birthday, birthdayString(birthday), getString(R.string.ContactBirthday), 0));
-        } else {
-            items.add(InfoCell.Factory.of(INFO_BIRTHDAY, R.drawable.menu_birthday, getString(R.string.AddBirthday), null, 0).accent());
-        }
-        if (!getContactsController().getLoadingPrivacyInfo(ContactsController.PRIVACY_RULES_TYPE_BIRTHDAY)) {
-            ArrayList<TLRPC.PrivacyRule> rules = getContactsController().getPrivacyRules(ContactsController.PRIVACY_RULES_TYPE_BIRTHDAY);
-            if (rules != null && birthdayInfo == null) {
-                String string = getString(R.string.EditProfileBirthdayInfoContacts);
-                if (!rules.isEmpty()) {
-                    for (int i = 0; i < rules.size(); ++i) {
-                        if (rules.get(i) instanceof TLRPC.TL_privacyValueAllowContacts) {
-                            string = getString(R.string.EditProfileBirthdayInfoContacts);
-                            break;
-                        }
-                        if (rules.get(i) instanceof TLRPC.TL_privacyValueAllowAll || rules.get(i) instanceof TLRPC.TL_privacyValueDisallowAll) {
-                            string = getString(R.string.EditProfileBirthdayInfo);
-                        }
-                    }
-                }
-                birthdayInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(string, () -> {
-                    presentFragment(new PrivacyControlActivity(PrivacyControlActivity.PRIVACY_RULES_TYPE_BIRTHDAY));
-                }), true);
-            }
-        }
-        items.add(UItem.asShadow(birthdayInfo));
+//        birthdayRow = items.size();
+//        if (birthday != null) {
+//            items.add(InfoCell.Factory.of(INFO_BIRTHDAY, R.drawable.menu_birthday, birthdayString(birthday), getString(R.string.ContactBirthday), 0));
+//        } else {
+//            items.add(InfoCell.Factory.of(INFO_BIRTHDAY, R.drawable.menu_birthday, getString(R.string.AddBirthday), null, 0).accent());
+//        }
+//        if (!getContactsController().getLoadingPrivacyInfo(ContactsController.PRIVACY_RULES_TYPE_BIRTHDAY)) {
+//            ArrayList<TLRPC.PrivacyRule> rules = getContactsController().getPrivacyRules(ContactsController.PRIVACY_RULES_TYPE_BIRTHDAY);
+//            if (rules != null && birthdayInfo == null) {
+//                String string = getString(R.string.EditProfileBirthdayInfoContacts);
+//                if (!rules.isEmpty()) {
+//                    for (int i = 0; i < rules.size(); ++i) {
+//                        if (rules.get(i) instanceof TLRPC.TL_privacyValueAllowContacts) {
+//                            string = getString(R.string.EditProfileBirthdayInfoContacts);
+//                            break;
+//                        }
+//                        if (rules.get(i) instanceof TLRPC.TL_privacyValueAllowAll || rules.get(i) instanceof TLRPC.TL_privacyValueDisallowAll) {
+//                            string = getString(R.string.EditProfileBirthdayInfo);
+//                        }
+//                    }
+//                }
+//                birthdayInfo = AndroidUtilities.replaceArrows(AndroidUtilities.replaceSingleTag(string, () -> {
+//                    presentFragment(new PrivacyControlActivity(PrivacyControlActivity.PRIVACY_RULES_TYPE_BIRTHDAY));
+//                }), true);
+//            }
+//        }
+//        items.add(UItem.asShadow(birthdayInfo));
 
         items.add(UItem.asHeader(getString(R.string.EditProfileName)));
         firstNameRow = items.size();

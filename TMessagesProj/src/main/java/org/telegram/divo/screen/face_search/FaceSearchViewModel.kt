@@ -267,7 +267,7 @@ class FaceSearchViewModel(
         age = this.user?.age,
         country = this.user?.city?.countryName,
         countryCode = this.user?.city?.countryCode,
-        isMarked = this.isFavoriteByUser,
+        isMarked = this.isFollowedByUser,
         likes = this.likesCount,
         isLiked = this.isLikedByUser,
         photo = this.searchImageUrl.orEmpty(),

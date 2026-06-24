@@ -47,9 +47,11 @@
     <string name="SeeMore">ПОДРОБНЕЕ</string>
     <string name="AddModel">Добавить модель</string>
     <string name="AgencyModelsEmpty">В вашем агентстве пока нет моделей.</string>
-    <string name="AgencyModelsEmptyHint">Нажмите кнопку ниже,\nчтобы добавить модель</string>
+    <string name="AgencyModelsEmptyHint">Нажмите кнопку ниже,
+чтобы добавить модель</string>
     <string name="PremiumLabel">Премиум</string>
     <string name="ReportThisProfile">Пожаловаться на профиль</string>
+    <string name="ReportSent">Жалоба отправлена</string>
     <string name="BlockProfile">Заблокировать пользователя</string>
     <string name="SearchByName">Поиск по имени или @нику</string>
     <string name="YearsOld">лет</string>
@@ -63,15 +65,16 @@
     <string name="AddYourParameters">Добавить параметры</string>
     <string name="AddWorkHistory">Добавить историю работы</string>
     <string name="ThereAreNoWorkExperienceYet">Опыт работы еще не добавлен</string>
-    <string name="ThereAreNoChannels">В НАСТОЯЩИЙ МОМЕНТ НЕТ КАНАЛОВ</string>
+    <string name="ThereAreNoChannels">НА ДАННЫЙ МОМЕНТ КАНАЛОВ НЕТ</string>
     <string name="YouHaveNotCreatedChannels">Вы еще не создали ни одного канала</string>
     <string name="ThisAgencyHasNotCreatedChannels">Это агентство еще не создало ни одного канала</string>
-    <string name="ThisModelHasNotCreatedChannels">Эта модель еще не создала ни одного канала</string>
+    <string name="ThisProfileHasNotCreatedChannels">Этот профиль еще не создал ни одного канала</string>
     <string name="CreateNewChannel">Создать новый канал</string>
     <string name="SearchModels">Поиск моделей</string>
     <string name="NoLikesYet">Пока нет лайков.</string>
     <string name="NothingSavedYet">Пока ничего не сохранено.</string>
-    <string name="NoProfileViewedYet">Профили\nеще не просмотрены.</string>
+    <string name="NoProfileViewedYet">Профили
+еще не просмотрены.</string>
     <string name="StatLikes">ЛАЙКИ</string>
     <string name="StatViews">ПРОСМОТРЕНО</string>
     <string name="StatSaves">СОХРАНЕНО</string>
@@ -85,12 +88,17 @@
     <string name="AllGendersLabel">Любой пол</string>
     <string name="LabelAge">Возраст</string>
     <string name="LabelHeight">Рост (см)</string>
+    <string name="LabelHeightImperial">Рост (дюйм)</string>
     <string name="LabelWaist">Талия (см)</string>
+    <string name="LabelWaistImperial">Талия (дюйм)</string>
     <string name="LabelHips">Бедра (см)</string>
+    <string name="LabelHipsImperial">Бедра (дюйм)</string>
     <string name="LabelWeight">Вес (кг)</string>
+    <string name="LabelWeightImperial">Вес (фунт)</string>
     <string name="LabelShoeSize">Размер обуви (EU)</string>
     <string name="LabelShoeSizeUS">Размер обуви (US)</string>
     <string name="LabelBreastSize">Размер груди</string>
+    <string name="LabelBreastSizeImperial">Размер груди (дюйм)</string>
     <string name="LabelHairColor">Цвет волос</string>
     <string name="LabelHairLength">Длина волос</string>
     <string name="LabelEyeColor">Цвет глаз</string>
@@ -142,8 +150,10 @@
     <string name="StartDate">Дата начала</string>
     <string name="EndDate">Дата окончания</string>
     <string name="AddWorkExperience">Добавить опыт работы</string>
-    <string name="WorkHistoryEmptyTitle">Опыт работы\nпока не добавлен</string>
-    <string name="WorkHistoryEmptySubtitle">Нажмите кнопку ниже,\nчтобы добавить опыт работы</string>
+    <string name="WorkHistoryEmptyTitle">Опыт работы
+пока не добавлен</string>
+    <string name="WorkHistoryEmptySubtitle">Нажмите кнопку ниже,
+чтобы добавить опыт работы</string>
     <string name="SaveChanges">Сохранить изменения</string>
     <string name="WorkExperienceSaved">Опыт работы успешно добавлен</string>
     <string name="PresentLabel">По настоящее время</string>
@@ -170,13 +180,14 @@
     <string name="CountryLabel">Страна</string>
     <string name="ProfileLink">Ссылка на профиль в Divo</string>
     <string name="NextStep">Следующий шаг</string>
-    <string name="AddStoryLabel">Добавить</string>
+    <string name="AddStoryLabel">Добавить историю</string>
     <string name="Liked">Понравилось</string>
     <string name="Unliked">Больше не нравится</string>
     <string name="BookmarkSaved">Сохранено</string>
     <string name="BookmarkUnsaved">Удалено из сохраненного</string>
     <string name="AddModelToYourRoster">Добавить модель в ваш список</string>
-    <string name="StartTypingToSearchForModel">Начните вводить текст\nдля поиска модели</string>
+    <string name="StartTypingToSearchForModel">Начните вводить текст
+для поиска модели</string>
 
     <!--events screen-->
     <string name="EventList">Мероприятия</string>
@@ -226,14 +237,22 @@
     <string name="EventApplied">Откликов: %d</string>
     <string name="EventMaxSpots">Макс. мест: %d</string>
     <string name="EditEvent">Редактировать мероприятие</string>
-    <string name="CloseApplicationsEvent">Закрыть прием заявок</string>
+
+    <string name="EventStatusApplicationsClosed">Подача закрыта</string>
+    <string name="EventStatusApplicationsClosedDate">Подача закрыта %1$s</string>
+    <string name="CloseApplicationsEvent">Закрыть подачу заявок</string>
+    <string name="CloseApplicationsTitle">Закрыть подачу заявок?</string>
+    <string name="CloseApplicationsDescription">Вы уверены, что хотите закрыть подачу заявок на \"%s\"? Никто больше не сможет подать заявку.</string>
     <string name="CancelEvent">Отменить мероприятие</string>
+    <string name="CancelEventTitle">Отменить мероприятие?</string>
+    <string name="CancelEventDescription">Вы уверены, что хотите отменить \"%s\"? Все заявки будут отозваны.</string>
     <string name="DeleteEvent">Удалить</string>
     <string name="DeleteEventTitle">Удалить \"%s\"?</string>
     <string name="DeleteEventDescription">Это действие нельзя отменить. Все заявки будут аннулированы.</string>
     <string name="DeleteEventConfirm">Удалить мероприятие</string>
     <string name="ThereAreNoUpcomingEvents">В настоящий момент нет предстоящих мероприятий</string>
-    <string name="CheckBackLaterOrCreateEvents">Зайдите позже или создайте\nновое</string>
+    <string name="CheckBackLaterOrCreateEvents">Зайдите позже или создайте
+новое</string>
     <string name="ClosesDate">Закрывается: %1$s</string>
     <string name="ViewApplications">Посмотреть заявки</string>
     <string name="ApplyNowPreview">Подать заявку (только предпросмотр)</string>
@@ -304,8 +323,14 @@
     <string name="SimilarityScore">Результаты отсортированы по проценту визуального сходства</string>
     <string name="NoFaceDetected">Лицо не распознано</string>
     <string name="PleaseUsePhotoClearly">Пожалуйста, используйте фото, на котором четко видно лицо — в анфас, с хорошим освещением и без помех.</string>
-    <string name="MultipleFacesDetected">Обнаружено %d лиц — нажмите на одно для поиска</string>
+    <plurals name="MultipleFacesDetected">
+        <item quantity="one">Обнаружено %d лицо — нажмите для поиска</item>
+        <item quantity="few">Обнаружено %d лица — нажмите на одно для поиска</item>
+        <item quantity="many">Обнаружено %d лиц — нажмите на одно для поиска</item>
+        <item quantity="other">Обнаружено %d лиц — нажмите на одно для поиска</item>
+    </plurals>
     <string name="ReadyToSearchFace">Лицо выбрано — готово к поиску</string>
+    <string name="DragToMovePhoto">Перемещайте фото</string>
     <string name="AvoidSunglasses">Избегайте солнцезащитных очков, масок или сильного кадрирования.</string>
     <string name="FullFacePhotos">Фотографии в анфас работают лучше всего — избегайте фото в профиль.</string>
     <string name="AnalysingFacialFeatures">Анализируем черты лица..</string>
@@ -388,6 +413,9 @@
     <string name="PrivacyAndSecurityLabel">Конфиденциальность и безопасность</string>
     <string name="DataAndStorageLabel">Данные и память</string>
     <string name="AppearanceLabel">Оформление</string>
+    <string name="MeasuringSystemLabel">Система мер</string>
+    <string name="MeasuringSystemMetric">Метрическая</string>
+    <string name="MeasuringSystemImperial">Имперская</string>
     <string name="Language">Язык</string>
     <string name="LogOutLabel">Выйти</string>
 
@@ -496,7 +524,8 @@
     <string name="QuizHiringTypeIndividualLabel">Я частный специалист</string>
     <string name="QuizHiringTypeIndividualDescription">Скаут, букер, кастинг-директор…</string>
 
-    <string name="QuizCompanyTitle">Что лучше всего описывает\nвашу компанию?</string>
+    <string name="QuizCompanyTitle">Что лучше всего описывает
+вашу компанию?</string>
     <string name="QuizCompanySubtitle">Выберите вариант, который ближе всего к тому, чем вы занимаетесь</string>
 
     <string name="SubRoleModelingAgencyDescription">Я управляю списком моделей и занимаюсь букингом</string>
@@ -506,7 +535,8 @@
     <string name="SubRoleEventAgencyDescription">Я организую мероприятия, шоу или промо-акции</string>
     <string name="SubRoleMagazineDescription">Я представляю издание, СМИ или цифровое медиа</string>
 
-    <string name="QuizIndustryTitle">Какова ваша роль\nв индустрии?</string>
+    <string name="QuizIndustryTitle">Какова ваша роль
+в индустрии?</string>
     <string name="QuizIndustrySubtitle">Выберите вариант, который лучше всего описывает вашу повседневную работу</string>
     <string name="SubRoleScoutDescription">Я ищу новые лица, независимо или для агентства</string>
     <string name="SubRoleBookerDescription">Я занимаюсь букингом и переговорами для моделей в агентстве</string>
@@ -606,11 +636,24 @@
     <string name="RegFormTfpHintDescription">TFP-съемки (Time For Portfolio) — это бесплатное сотрудничество с фотографами. Они помогут быстро собрать портфолио. Мы покажем вам, как это сделать, когда вы зайдете в приложение.</string>
 
     <string name="ButtonLetsGo">Поехали</string>
+
+    <string name="ChannelJoinNoCaps">Присоединиться</string>
+    <string name="ChannelMuteNoCaps">Убрать звук</string>
+    <string name="ChannelUnmuteNoCaps">Включить звук</string>
+    <string name="ProfileShowAsList">Показать списком</string>
+    <string name="ProfileMessage">Сообщение</string>
+    <string name="ProfileMute">Без звука</string>
+    <string name="ProfileCall">Позвонить</string>
+    <string name="ProfileVideo">Видео</string>
+    <string name="ProfilePosts">Посты</string>
+    <string name="ProfileGift">Подарок</string>
+    <string name="ProfileShare">Поделиться</string>
+    <string name="ProfileLeave">Покинуть</string>
     <!--divo view end-->
 
 
-    <string name="AppName">Divo</string>
-    <string name="AppNameBeta">Divo Beta</string>
+    <string name="AppName">Divo Global</string>
+    <string name="AppNameBeta">Divo Global</string>
     <string name="LanguageName">Русский</string>
     <string name="English">Английский</string>
     <string name="LanguageNameInEnglish">Russian</string>
@@ -634,23 +677,33 @@
     <string name="SyncContactsAdded">Контакты с этого устройства были добавлены к Вашему аккаунту.</string>
     <string name="ConfirmCorrectNumber">Правильно ли указан номер?</string>
     <string name="WrongNumberFormat">Некорректный формат</string>
-    <string name="ShortNumberInfo">Указанный номер слишком короткий для региона **%1$s**:\n\n**%2$s**\n\nУбедитесь, что правильно указываете номер. Он должен начинаться с кода страны.</string>
+    <string name="ShortNumberInfo">Указанный номер слишком короткий для региона **%1$s**:
+
+**%2$s**
+
+Убедитесь, что правильно указываете номер. Он должен начинаться с кода страны.</string>
     <string name="EditNumber">Изменить номер</string>
-    <string name="DidNotGetTheCodeInfo">Если Вы не получили звонок или SMS с кодом, проверьте настройки сотовой связи и указанный Вами номер:\n\n**%1$s**\n\nЕсли это не помогло, Вы можете указать другой номер телефона или связаться с командой поддержки Telegram. Чтобы сообщить нам о проблеме и отправить техническую информацию для диагностики, нажмите **Помощь**.</string>
+    <string name="DidNotGetTheCodeInfo">Если Вы не получили звонок или SMS с кодом, проверьте настройки сотовой связи и указанный Вами номер:
+
+**%1$s**
+
+Если это не помогло, Вы можете указать другой номер телефона или связаться с командой поддержки Divo Global. Чтобы сообщить нам о проблеме и отправить техническую информацию для диагностики, нажмите **Помощь**.</string>
     <string name="DidNotGetTheCodeHelpButton">Помощь</string>
     <string name="DidNotGetTheCodeEditNumberButton">Другой номер</string>
     <!--code enter view-->
     <string name="YourCode">Проверка телефона</string>
     <string name="SentSmsCode">Мы отправили SMS с кодом проверки на Ваш телефон **%1$s**.</string>
-    <string name="SentAppCode">Мы отправили код в приложение **Telegram** на другом Вашем устройстве.</string>
-    <string name="SentAppCodeWithPhone">Мы отправили код через **Telegram** на другое устройство, где авторизован %1$s.</string>
-    <string name="SentAppCodeTitle">Проверьте сообщения в Telegram</string>
+    <string name="SentAppCode">Мы отправили код в приложение **Divo Global** на другом Вашем устройстве.</string>
+    <string name="SentAppCodeWithPhone">Мы отправили код через **Divo Global** на другое устройство, где авторизован %1$s.</string>
+    <string name="SentAppCodeTitle">Проверьте сообщения в Divo Global</string>
     <string name="SentFragmentCode">Получите код для %1$s в разделе Anonymous Numbers платформы Fragment.</string>
     <string name="SentSmsCodeTitle">Введите код</string>
     <string name="OpenFragment">Перейти к Fragment</string>
-    <string name="SentCallCode">Наш робот звонит на номер **%1$s**.\n\nОтвечать на звонок не требуется, Telegram автоматически получит код для входа.</string>
+    <string name="SentCallCode">Наш робот звонит на номер **%1$s**.
+
+Отвечать на звонок не требуется, Divo Global автоматически получит код для входа.</string>
     <string name="SentCallOnly">Мы звоним Вам по номеру **%1$s**, чтобы продиктовать код.</string>
-    <string name="CallText">Telegram позвонит Вам через %1$d:%2$02d</string>
+    <string name="CallText">Divo Global позвонит Вам через %1$d:%2$02d</string>
     <string name="SmsText">Мы отправим Вам SMS через %1$d:%2$02d</string>
     <string name="Calling">Звоним вам...</string>
     <string name="SendingSms">Отправка SMS...</string>
@@ -661,16 +714,22 @@
     <string name="DidNotGetTheCodeSms">Отправить код через SMS</string>
     <string name="DidNotGetTheCodeFragment">Получить код на платформе Fragment</string>
     <string name="CancelAccountReset">Отмена сброса аккаунта</string>
-    <string name="CancelAccountResetInfo2">Кто-то с доступом к **%1$s** запросил удаление Вашего аккаунта Telegram и сброс пароля двухэтапной аутентификации.\n\nЕсли это были не Вы, введите код из SMS, отправленного на Ваш номер. Вы также можете отменить удаление, *изменив номер телефона*.</string>
+    <string name="CancelAccountResetInfo2">Кто-то с доступом к **%1$s** запросил удаление Вашего аккаунта Divo Global и сброс пароля двухэтапной аутентификации.
+
+Если это были не Вы, введите код из SMS, отправленного на Ваш номер. Вы также можете отменить удаление, *изменив номер телефона*.</string>
     <string name="ResetAccount">Сброс аккаунта</string>
-    <string name="ResetAccountInfo">Поскольку аккаунт **%1$s** используется и защищён паролем, в целях безопасности мы удалим его только через неделю.\n\nВы можете передумать и остановить отсчёт в любой момент.</string>
+    <string name="ResetAccountInfo">Поскольку аккаунт **%1$s** используется и защищён паролем, в целях безопасности мы удалим его только через неделю.
+
+Вы можете передумать и остановить отсчёт в любой момент.</string>
     <string name="ResetAccountStatus">Вы сможете сбросить свой аккаунт через:</string>
     <string name="ResetAccountCancelledAlert">Ваши недавние попытки сбросить аккаунт были отменены его активным пользователем. Попробовать снова можно через 7 дней.</string>
     <string name="ResetAccountButton">СБРОСИТЬ АККАУНТ</string>
     <string name="CancelLinkExpired">Ссылка неверна или устарела.</string>
     <string name="CancelLinkSuccessTitle">Готово</string>
     <string name="CancelLinkSuccess">Удаление аккаунта %1$s отменено. Это окно можно закрыть.</string>
-    <string name="OtherLoginCode">Ваш код для входа: **%1$s**. Укажите его в приложении Telegram, в котором хотите зайти в свой аккаунт.\n\nНикому не передавайте этот код.</string>
+    <string name="OtherLoginCode">Ваш код для входа: **%1$s**. Укажите его в приложении Divo Global, в котором хотите зайти в свой аккаунт.
+
+Никому не передавайте этот код.</string>
     <string name="SmsAvailableIn">Вы сможете запросить SMS через %1$d:%2$02d</string>
     <string name="ResendSmsAvailableIn">Вы сможете повторно запросить SMS через %1$d:%2$02d</string>
     <string name="RequestSmsButton">Получить SMS с кодом</string>
@@ -701,7 +760,8 @@
     <string name="SetAdditionalPasswordInfo">Вы можете установить пароль, который будет запрашиваться при входе с нового устройства в дополнение к коду из SMS.</string>
     <string name="YourPassword">Пароль</string>
     <string name="YourPasswordHeader">Пароль</string>
-    <string name="YourPasswordRemember">Ваша учётная запись защищена двухэтапной аутентификацией.\nВы помните свой пароль?</string>
+    <string name="YourPasswordRemember">Ваша учётная запись защищена двухэтапной аутентификацией.
+Вы помните свой пароль?</string>
     <string name="YourPasswordRememberYes">Помню, спасибо</string>
     <string name="YourPasswordRememberNo">Хочу убедиться</string>
     <string name="PasswordOn">Вкл.</string>
@@ -726,7 +786,7 @@
     <string name="PleaseEnterNewSecondPasswordHint">Повторите новый пароль</string>
     <string name="RecoveryEmail">Электронная почта</string>
     <string name="RecoveryEmailTitle">Электронная почта</string>
-    <string name="RecoveryEmailSubtitle">Вы можете задать адрес электронной почты для сброса пароля и восстановления доступа к своему аккаунту в Telegram.</string>
+    <string name="RecoveryEmailSubtitle">Вы можете задать адрес электронной почты для сброса пароля и восстановления доступа к своему аккаунту в Divo Global.</string>
     <string name="YourEmail">Адрес электронной почты</string>
     <string name="YourNewEmail">Ваш новый адрес</string>
     <string name="YourLoginEmailChangedSuccess">Электронная почта изменена.</string>
@@ -735,7 +795,9 @@
     <string name="YourEmailInfo">Пожалуйста, добавьте настоящий адрес электронной почты. Это единственный способ восстановить забытый пароль.</string>
     <string name="YourEmailSkip">Пропустить</string>
     <string name="YourEmailSkipWarning">Внимание</string>
-    <string name="YourEmailSkipWarningText">Это важно.\n\nЕсли Вы забудете пароль, Вы навсегда потеряете доступ к своему аккаунту. Восстановить его будет невозможно.</string>
+    <string name="YourEmailSkipWarningText">Это важно.
+
+Если Вы забудете пароль, Вы навсегда потеряете доступ к своему аккаунту. Восстановить его будет невозможно.</string>
     <string name="YourEmailAlmostThere">Почти готово!</string>
     <string name="YourEmailAlmostThereText">Пожалуйста, проверьте почту (не забудьте о папке со спамом), чтобы завершить установку облачного пароля.</string>
     <string name="YourPasswordSuccess">Готово!</string>
@@ -756,7 +818,7 @@
     <string name="CancelPasswordResetNo">НЕТ</string>
     <string name="CancelReset">Отменить сброс</string>
     <string name="CancelEmailQuestionTitle">Прервать установку</string>
-    <string name="TurnPasswordOffPassport">Все данные, сохранённые в Вашем Telegram Passport, будут потеряны.</string>
+    <string name="TurnPasswordOffPassport">Все данные, сохранённые в Вашем Divo Global Passport, будут потеряны.</string>
     <string name="PasswordHint">Подсказка</string>
     <string name="PasswordHintDescription">Если хотите, укажите подсказку для пароля.</string>
     <string name="PasswordHintPlaceholder">Подсказка</string>
@@ -783,7 +845,9 @@
     <string name="RestorePasswordResetIn">%1$s до возможности сбросить пароль</string>
     <string name="ResetPassword">Сбросить пароль</string>
     <string name="RestoreEmailSentTitle">Код для восстановления</string>
-    <string name="RestoreEmailSent">Мы отправили код восстановления на указанный Вами адрес электронной почты:\n\n%1$s</string>
+    <string name="RestoreEmailSent">Мы отправили код восстановления на указанный Вами адрес электронной почты:
+
+%1$s</string>
     <string name="RestoreEmailSentInfo">Пожалуйста, проверьте почту и введите 6-значный код, который мы на неё отправили.</string>
     <string name="RestoreEmailTrouble">Нет доступа к %1$s?</string>
     <string name="RestoreEmailTroubleNoEmail">Нет доступа к электронной почте?</string>
@@ -807,9 +871,10 @@
     <string name="VerificationCode">Код подтверждения</string>
     <string name="EnterCode">Ввести код</string>
     <string name="ResendCodeInfo">На Ваш email отправлен код подтверждения.</string>
-    <string name="EnabledPasswordText">Установлен облачный пароль.\nВам нужно будет вводить его для входа в свой аккаунт в Telegram.</string>
+    <string name="EnabledPasswordText">Установлен облачный пароль.
+Вам нужно будет вводить его для входа в свой аккаунт в Divo Global.</string>
     <string name="AddEmailTitle">Укажите почту для входа</string>
-    <string name="AddEmailSubtitle">Вы будете получать коды для входа в Telegram на адрес электронной почты, а не через SMS. Пожалуйста, введите адрес, к которому у Вас есть доступ.</string>
+    <string name="AddEmailSubtitle">Вы будете получать коды для входа в Divo Global на адрес электронной почты, а не через SMS. Пожалуйста, введите адрес, к которому у Вас есть доступ.</string>
     <string name="EnterNewEmail">Укажите новый адрес</string>
     <string name="VerificationCodeSubtitle">Проверьте почту %1$s (не забудьте о папке со спамом) и введите код, который получили в письме.</string>
     <string name="CheckYourEmail">Проверьте почту</string>
@@ -818,18 +883,22 @@
     <string name="CheckYourNewEmailSubtitle">Введите код, который пришёл на указанный Вами адрес %1$s.</string>
     <string name="LoginOrSingInWithGoogle">или</string>
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Divo Global</string>
     <string name="Page2Title">Быстрый</string>
     <string name="Page3Title">Бесплатный</string>
     <string name="Page4Title">Безопасный</string>
     <string name="Page5Title">Мощный</string>
     <string name="Page6Title">Облачный</string>
-    <string name="Page1Message">Самый **быстрый** мессенджер в мире.\n**Бесплатный** и **безопасный**.</string>
-    <string name="Page2Message">**Telegram** доставляет сообщения быстрее\nлюбого другого приложения.</string>
-    <string name="Page3Message">**Telegram** предоставляет бесплатное безлимитное облачное хранилище для чатов и медиа.\n</string>
-    <string name="Page4Message">**Telegram** защищает Вашу переписку от злоумышленников.</string>
-    <string name="Page5Message">**Telegram** не ограничивает размер\n Ваших медиафайлов и чатов.</string>
-    <string name="Page6Message">В **Telegram** можно переписываться с любого количества устройств.</string>
+    <string name="Page1Message">Самый **быстрый** мессенджер в мире.
+**Бесплатный** и **безопасный**.</string>
+    <string name="Page2Message">**Divo Global** доставляет сообщения быстрее
+любого другого приложения.</string>
+    <string name="Page3Message">**Divo Global** предоставляет бесплатное безлимитное облачное хранилище для чатов и медиа.
+</string>
+    <string name="Page4Message">**Divo Global** защищает Вашу переписку от злоумышленников.</string>
+    <string name="Page5Message">**Divo Global** не ограничивает размер
+ Ваших медиафайлов и чатов.</string>
+    <string name="Page6Message">В **Divo Global** можно переписываться с любого количества устройств.</string>
     <string name="StartMessaging">Начать общение</string>
     <!--date formatters-->
     <string name="formatterBoostExpired">dd MMM yyyy</string>
@@ -876,10 +945,9 @@
     <string name="ErrorGoogleSignInFailed">Ошибка авторизации через Google</string>
     <string name="ErrorFirebaseAuthFailed">Ошибка аутентификации Firebase</string>
     <string name="ErrorProfileFetchFailed">Не удалось получить профиль или отсутствует телефон</string>
-    <string name="ErrorTelegramAuthFailed">Ошибка авторизации Telegram</string>
+    <string name="ErrorTelegramAuthFailed">Ошибка авторизации Divo Global</string>
     <string name="ErrorDummyPhoneFailed">Не удалось получить номер для регистрации</string>
     <string name="ErrorUnexpected">Непредвиденная ошибка</string>
-    <string name="EventStatusApplicationsClosed">Подача закрыта</string>
     <string name="EventStatusInProgress">Прямо сейчас</string>
     <string name="EventStatusCompleted">Завершён</string>
     <string name="EventStatusClosesIn">Закрывается через %1$s</string>
@@ -887,7 +955,8 @@
     <string name="EventTabMyEvents">Мои события</string>
     <string name="EventTabAllEvents">Все события</string>
     <string name="EventEmptyTitle">На данный момент нет предстоящих событий.</string>
-    <string name="EventEmptySubtitleAgency">Загляните позже или\nсоздайте новое.</string>
+    <string name="EventEmptySubtitleAgency">Загляните позже или
+создайте новое.</string>
     <string name="EventEmptySubtitle">Загляните позже.</string>
     <string name="EventCreateButton">Создать событие</string>
     <string name="EventSeenAll">Вы просмотрели все события</string>
@@ -950,4 +1019,196 @@
     <string name="DivoRoleNone">Нет</string>
     <string name="ApplySuccessTitle">ВЫ В ДЕЛЕ!</string>
     <string name="ApplySuccessDescription">Ваша заявка отправлена. Организатор скоро ее рассмотрит.</string>
+    <string name="DivoCheckInternetConnection">Пожалуйста, проверьте подключение к интернету</string>
+    <string name="DivoActionSkip">Пропустить</string>
+    <string name="YourQrCode">Ваш QR-код</string>
+    <string name="ScanToProfile">Отсканируйте, чтобы перейти в профиль</string>
+    <string name="DivoShareBtn">Поделиться</string>
+    <string name="MyStory">Моя история</string>
+    <string name="SearchChats">Поиск чатов</string>
+    <string name="NoContactsYet3">Добавить контакты</string>
+    <string name="NoContactsYet3Sub">У вас еще нет контактов в Divo Global. Хотите добавить их?</string>
+    <string name="SearchPeopleByUsername">Поиск людей по имени пользователя</string>
+    <string name="AttachPhoto">Фото</string>
+    <string name="AttachVideo">Видео</string>
+    <string name="StoryPrivacyAlertTitle">Поделиться историей</string>
+    <string name="StoryPrivacyAlertSubtitle_one">Выберите, кто может видеть вашу историю</string>
+    <string name="StoryPrivacyAlertSubtitle_other">Выберите, кто может видеть вашу историю</string>
+    <string name="StoryPrivacyAlertSubtitleProfile">Выберите, кто может видеть вашу историю</string>
+    <string name="StoryLivePrivacyAlertSubtitleProfile">Выберите, кто может видеть вашу трансляцию</string>
+    <string name="StoryPrivacyOptionEveryone">Все</string>
+    <string name="StoryPrivacyOptionContacts">Контакты</string>
+    <string name="StoryPrivacyOptionContactsDetail">исключить людей</string>
+    <string name="StoryPrivacyOptionCloseFriends">Близкие друзья</string>
+    <string name="StoryPrivacyOptionCloseFriendsDetail">изменить список</string>
+    <string name="StoryPrivacyOptionSelectedContacts">Выбранные контакты</string>
+    <string name="StoryPrivacyOptionSelectedContactsDetail">изменить список</string>
+    <string name="StoryPrivacyAlertCloseFriendsSubtitle">Выберите близких друзей</string>
+    <string name="StoryPrivacyButtonSaveCloseFriends">Сохранить список</string>
+    <string name="RecorderNewStory">Новая история</string>
+    <string name="StoryPrivacyAlertSelectContactsTitle">Выбрать контакты</string>
+    <string name="StoryPrivacyAlertSelectContactsSubtitle">Выберите контакты</string>
+    <string name="StoryPrivacyAlertCloseFriendsTitle">Близкие друзья</string>
+    <string name="StoryPrivacyAlertExcludedContactsTitle">Исключенные контакты</string>
+    <string name="StoryPrivacyAlertExcludedContactsSubtitle">Исключить контакты</string>
+    <string name="StoryPrivacyButtonSave">Сохранить настройки</string>
+    <string name="StoryPrivacyButtonPost">Опубликовать историю</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneTitle">Все, кроме…</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneSubtitle">Исключить контакты</string>
+    <string name="StoryBlockListEmpty">**Выберите людей**, которые не увидят ваши истории.</string>
+    <string name="StoryAllowScreenshots">Разрешить снимки экрана</string>
+    <string name="StoryKeep">Оставить на моей странице</string>
+    <string name="StoriesAlbum">Альбом</string>
+    <string name="StoriesAlbumNameAllStories">Все истории</string>
+    <string name="StoriesAlbumTitleInputHint">Название</string>
+    <string name="StoriesAlbumAddAlbum">Добавить альбом</string>
+    <string name="StoriesAlbumNewAlbum">Новый альбом</string>
+    <string name="StoriesAlbumAddToAlbum">Добавить в альбом</string>
+    <string name="StoryKeepInfo_one">Оставить эту историю на вашей странице даже после ее истечения через %d час. Настройки приватности будут сохранены.</string>
+    <string name="StoryKeepInfo_other">Оставить эту историю на вашей странице даже после ее истечения через %d часов. Настройки приватности будут сохранены.</string>
+    <string name="StoryCollageRemoveGrid">Нажмите, чтобы убрать сетку</string>
+    <string name="StoriesSoundEnabled">Истории</string>
+    <string name="Reactions">Реакции</string>
+    <string name="NotificationReactions">Реакции</string>
+    <string name="ReactionsByEmotionChartTitle">Реакции</string>
+    <string name="NotificationsReactions">Реакции</string>
+    <string name="NotifyMeAbout">Уведомлять меня о…</string>
+    <string name="StoryLive">Прямой эфир</string>
+    <string name="StoryPhoto">Фото</string>
+    <string name="StoryVideo">Видео</string>
+    <string name="StoryDraft">Черновик</string>
+    <string name="StoryDraftsAlbum">Черновики</string>
+    <string name="StoryKeepDraft">Оставить черновик</string>
+    <string name="StorySaveDraft">Сохранить черновик</string>
+    <string name="StoryDeleteDraft">Удалить черновик</string>
+    <string name="ShowInChats">Показывать в чатах</string>
+    <string name="ForwardedStory">Пересланная история</string>
+    <string name="NotifyMeAboutPrivate">Новые сообщения в личных чатах</string>
+    <string name="NotifyMoreOptions">Больше настроек</string>
+    <string name="NotifyLessOptions">Меньше настроек</string>
+    <string name="NotifyMeAboutGroups">Новые сообщения в группах</string>
+    <string name="NotifyMeAboutChannels">Новые сообщения в каналах</string>
+    <string name="NotificationsStories">Истории</string>
+    <string name="NotifyMeAboutNewStories">Новые истории</string>
+    <string name="NotifyMeAboutImportantStories">Важные истории</string>
+    <string name="StoryAutoExceptionsInfo">Автоматически включить уведомления об историях от 5 пользователей, с которыми вы чаще всего общаетесь.</string>
+    <string name="ShowSenderNames">Показывать имена отправителей</string>
+    <string name="HideSenderNames">Скрывать имена отправителей</string>
+    <string name="ShowSendersName">Показывать имя отправителя</string>
+    <string name="HideSendersName">Скрывать имя отправителя</string>
+    <string name="NotificationShowSenderNames">Показывать имена отправителей</string>
+    <string name="NotifyMeAboutMessagesReactions">Реакции на мои сообщения</string>
+    <string name="NotifyMeAboutStoriesReactions">Реакции на мои истории</string>
+    <string name="NotifyFromContacts">От моих контактов</string>
+    <string name="NotifyFromEveryone">От всех</string>
+    <string name="InAppPopup">Всплывающее окно</string>
+    <string name="InAppPopupInfo">Показывать всплывающие уведомления в приложении.</string>
+    <string name="AutoDownloadStories">Истории</string>
+    <string name="NotificationStories">Истории</string>
+    <string name="DateOfBirth">Дата рождения</string>
+    <string name="SearchMessages">Сообщения</string>
+    <string name="EventLogFilterSectionMessages">Сообщения</string>
+    <string name="MessagesSettings">Сообщения</string>
+    <string name="PrivacyMessages">Сообщения</string>
+    <string name="MessagesChartTitle">Сообщения</string>
+    <string name="MessagesOverview">Сообщения</string>
+    <string name="NotificationReactionsMessages">Сообщения</string>
+    <string name="StarsTransactionFloodskipNumberName">Сообщения</string>
+    <string name="NotificationReactionsStories">Истории</string>
+    <string name="ProfileGifts">Подарки</string>
+    <string name="UserBio">О себе</string>
+    <string name="PrivacyBio">О себе</string>
+    <string name="BioLimitTitle">О себе</string>
+    <string name="StoryMusicProfileMusic">Сохраненная музыка</string>
+    <string name="PrivacyMusic">Сохраненная музыка</string>
+    <string name="PrivacyInvites">Приглашения</string>
+    <string name="PrivacyInvitesInfo">Вы можете ограничить круг пользователей, которые могут добавлять вас в группы и каналы.</string>
+    <string name="ProfileBirthday">Дата рождения</string>
+    <string name="EditProfileBirthdayTitle">Дата рождения</string>
+    <string name="EditProfileBirthdayText">Дата рождения</string>
+    <string name="PassportBirthdate">Дата рождения</string>
+    <string name="PrivacyBirthday">Дата рождения</string>
+
+    <string name="NotificationEnabled">Включено</string>
+    <string name="NotificationEnabledAutomatically">Включено автоматически</string>
+    <string name="NotificationDisabled">Выключено</string>
+    <string name="PrivacyLastSeenPremiumInfo">Если у вас есть подписка Premium, вы будете видеть время последнего онлайна и прочтения других пользователей, даже если скрыли свое (если только они не ограничили это специально).</string>
+    <string name="PrivacyMessagesContactsAndPremium">Мои контакты и Premium-пользователи</string>
+    <string name="PrivateMessagesChargePrice">Плата за сообщения</string>
+    <string name="PrivacyMessagesInfo">Вы можете ограничить входящие сообщения, разрешив их только контактам и Premium-пользователям.
+
+**Что такое Divo Global Premium?**</string>
+    <string name="PrivacyMessagesTitle">Кто может писать мне сообщения?</string>
+    <string name="PrivacyVoiceMessagesTitle">Кто может отправлять мне голосовые сообщения?</string>
+    <string name="PrivacyBirthdaySet">Вы еще не указали дату рождения.
+**Указать дату рождения &gt;**</string>
+    <string name="PrivacyBirthdayTitle">Кто видит мою дату рождения?</string>
+    <string name="PrivacyBirthdayInfo">Вы можете детально настроить, кто сможет видеть вашу дату рождения.</string>
+    <string name="PrivacyBirthdayInfo3">Вы можете добавить пользователей или целые группы в качестве исключений, которые будут иметь приоритет над настройками выше.</string>
+    <string name="PrivacyGifts">Подарки</string>
+    <string name="PrivacyGiftsTitle">Автоматически отображать подарки от</string>
+    <string name="PrivacyGiftsInfo">Выберите, будут ли подарки от определенных отправителей требовать вашего подтверждения перед отображением в профиле.</string>
+    <string name="PrivacyGiftsShowIcon">Показывать значок подарка в чатах</string>
+    <string name="PrivacyGiftsShowIconInfo">Показывать значок %s Подарка в поле ввода сообщения для обоих участников во всех чатах.</string>
+    <string name="PrivacyGiftsTypeHeader">Принимаемые типы подарков</string>
+    <string name="PrivacyGiftsTypeUnlimited">Неограниченные</string>
+    <string name="PrivacyGiftsTypeLimited">Ограниченная серия</string>
+    <string name="PrivacyGiftsTypeUnique">Уникальные</string>
+    <string name="PrivacyGiftsTypeFromChannels">Из каналов</string>
+    <string name="PrivacyGiftsTypePremium">Подписка Premium</string>
+    <string name="PrivacyGiftsTypeInfo">Выберите типы подарков, которые другие пользователи могут вам отправлять.</string>
+    <string name="CustomShareGiftsInfo">Вы можете добавить пользователей или целые группы в качестве исключений, которые будут иметь приоритет над настройками выше.</string>
+    <string name="PrivacyBioTitle">Кто видит мою информацию "О себе"?</string>
+    <string name="PrivacyBioInfo">Вы можете детально настроить, кто сможет видеть вашу информацию "О себе".</string>
+    <string name="PrivacyBioInfo3">Вы можете добавить пользователей или целые группы, которые не увидят вашу информацию "О себе".</string>
+
+    <string name="UploadingStory">Загрузка…</string>
+    <string name="FailedStory">Ошибка</string>
+    <string name="FailedToUploadStory">не удалось загрузить</string>
+    <string name="StoryError">Не удалось загрузить</string>
+    <string name="StoryEditing">Обновление…</string>
+    <string name="TryAgain">Повторить</string>
+    <string name="SelfStoryTitle">Моя история</string>
+
+    <string name="AllowReadCall">Пожалуйста, разрешите Divo Global принимать звонки, чтобы мы могли автоматически ввести код.</string>
+    <string name="AllowReadCallAndLog">Пожалуйста, разрешите Divo Global принимать звонки и читать историю звонков, чтобы мы могли автоматически ввести код.</string>
+    <string name="AllowReadCallLog">Пожалуйста, разрешите Divo Global читать историю звонков, чтобы мы могли автоматически ввести код.</string>
+    <string name="AllowFillNumber">Пожалуйста, разрешите Divo Global принимать звонки, чтобы мы могли автоматически подтвердить ваш номер телефона.</string>
+    <string name="UserRestricted">К сожалению, у вас нет прав на это действие.</string>
+    <string name="YouBlockedUser">К сожалению, вы не можете добавить этого пользователя или бота в группы, так как вы заблокировали его. Пожалуйста, разблокируйте его для продолжения.</string>
+    <string name="ContactsPermissionAlertContinue">Продолжить</string>
+    <string name="NotificationsPermissionContinue">Продолжить</string>
+    <string name="Continue">Продолжить</string>
+    <string name="Followers_one">%1$d подписчик</string>
+    <string name="Followers_few">%1$d подписчика</string>
+    <string name="Followers_many">%1$d подписчиков</string>
+    <string name="Followers_other">%1$d подписчиков</string>
+    <string name="ProfileActionsLiveStream">Прямая трансляция</string>
+    <string name="StartVoipChannelTitle">Прямая трансляция</string>
+    <string name="VoipChannelVoiceChat">Прямая трансляция</string>
+    <string name="Mute">Без звука</string>
+    <string name="ProfileButtonMute">Без звука</string>
+    <string name="AddStory">Добавить историю</string>
+    <string name="ProfileActionsAddStory">Добавить историю</string>
+    <string name="ChannelSettingsTitle">Настройки канала</string>
+    <string name="ChannelAdminSettings">Настройки канала</string>
+    <string name="ChannelOpenDirect">Личные сообщения</string>
+    <string name="ChatMessageSuggestions">Личные сообщения</string>
+    <string name="PostSuggestions">Личные сообщения</string>
+    <string name="ChannelColorTitle2">Оформление</string>
+    <string name="ChangeChannelNameColor2">Оформление</string>
+    <string name="ChannelAutotranslation">Перевод сообщений</string>
+    <string name="StatisticsAndBoosts">Статистика и голоса</string>
+    <string name="ArchivedStories">Архив историй</string>
+    <string name="OpenChannelArchiveStories">Архив историй</string>
+    <string name="New">Новое</string>
+    <string name="Off">Выкл</string>
+    <string name="BoostLevelPlus_one">Уровень %d+</string>
+    <string name="BoostLevelPlus_other">Уровень %d+</string>
+<string name="NotificationsPermissionAlertTitle">Включить уведомления</string>
+    <string name="NotificationsPermissionAlertSubtitle">Пожалуйста, разрешите Divo Global отправлять вам уведомления, чтобы оставаться на связи с друзьями и близкими.</string>
+    <string name="NotificationsPermissionAlert1">Получайте уведомления о новых сообщениях</string>
+    <string name="NotificationsPermissionAlert2">Узнавайте, когда вас упоминают в группах</string>
+    <string name="NotificationsPermissionAlert3">Отключайте звук для определенных чатов и типов чатов</string>
+    <string name="NotificationsPermissionSettings">Открыть настройки</string>
 </resources>

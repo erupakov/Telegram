@@ -18,7 +18,11 @@ class SimilarFaceDto(
     @SerializedName("rank") val rank: Int?,
     @SerializedName("role") val role: String?,
     @SerializedName("score") val score: Double?,
-    @SerializedName("user_id") val userId: Int?
+    @SerializedName("user_id") val userId: Int?,
+    @SerializedName("followersCount") val followersCount: Int?,
+    @SerializedName("isFollowedByUser") val isFollowedByUser: Boolean?,
+    @SerializedName("likedCount") val likedCount: Int?,
+    @SerializedName("isLikedByUser") val isLikedByUser: Boolean?
 )
 
 fun SimilarFaceDto.toEntity() = SimilarFace(
@@ -31,7 +35,11 @@ fun SimilarFaceDto.toEntity() = SimilarFace(
     rank = rank ?: 0,
     role = role.orEmptyIfNullString(),
     score = score ?: 0.0,
-    userId = userId ?: 0
+    userId = userId ?: 0,
+    followersCount = followersCount ?: 0,
+    isFollowedByUser = isFollowedByUser ?: false,
+    likedCount = likedCount ?: 0,
+    isLikedByUser = isLikedByUser ?: false
 )
 
 private fun String?.orEmptyIfNullString(): String {

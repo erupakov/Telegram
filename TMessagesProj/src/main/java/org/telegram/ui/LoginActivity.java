@@ -479,13 +479,20 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private boolean forceRoleSelection;
     private TLRPC.TL_auth_authorization googleAuthResponse;
     private boolean isGoogleFlow;
+    private String googleFirstName;//DIVO
+    private String googleLastName;//DIVO
+    private String googlePhotoUrl;//DIVO
 
-    public LoginActivity setGoogleRegistrationParams(String firebaseUid, String email, String dummyPhone, TLRPC.TL_auth_authorization authResponse, boolean autoLogin) {
+    //DIVO
+    public LoginActivity setGoogleRegistrationParams(String firebaseUid, String email, String dummyPhone, TLRPC.TL_auth_authorization authResponse, boolean autoLogin, String firstName, String lastName, String photoUrl) {
         this.googleFirebaseUid = firebaseUid;
         this.googleEmail = email;
         this.googleDummyPhone = dummyPhone;
         this.googleAuthResponse = authResponse;
         this.googleAutoLogin = autoLogin;
+        this.googleFirstName = firstName;
+        this.googleLastName = lastName;
+        this.googlePhotoUrl = photoUrl;
         this.isGoogleFlow = true;
         forceRoleSelection = true;
         return this;
@@ -497,6 +504,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         return this;
     }
 
+    private String initialRoleSelectionPhone;
+
     public LoginActivity() {
         super();
     }
@@ -507,8 +516,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         newAccount = true;
     }
 
-    public LoginActivity startInRoleSelection() {
+    public LoginActivity startInRoleSelection(String phone) {
         forceRoleSelection = true;
+        initialRoleSelectionPhone = phone;
         return this;
     }
 
@@ -782,6 +792,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         if (savedInstanceState != null) {
             currentViewNum = savedInstanceState.getInt("currentViewNum", 0);
             syncContacts = savedInstanceState.getInt("syncContacts", 1) == 1;
+            //DIVO
+            if (!isGoogleFlow && savedInstanceState.containsKey("isGoogleFlow")) isGoogleFlow = savedInstanceState.getBoolean("isGoogleFlow", false);
+            if (!googleAutoLogin && savedInstanceState.containsKey("googleAutoLogin")) googleAutoLogin = savedInstanceState.getBoolean("googleAutoLogin", false);
+            if (!forceRoleSelection && savedInstanceState.containsKey("forceRoleSelection")) forceRoleSelection = savedInstanceState.getBoolean("forceRoleSelection", false);
+            if (googleFirebaseUid == null && savedInstanceState.containsKey("googleFirebaseUid")) googleFirebaseUid = savedInstanceState.getString("googleFirebaseUid");
+            if (googleEmail == null && savedInstanceState.containsKey("googleEmail")) googleEmail = savedInstanceState.getString("googleEmail");
+            if (googleDummyPhone == null && savedInstanceState.containsKey("googleDummyPhone")) googleDummyPhone = savedInstanceState.getString("googleDummyPhone");
+            if (googleFirstName == null && savedInstanceState.containsKey("googleFirstName")) googleFirstName = savedInstanceState.getString("googleFirstName");
+            if (googleLastName == null && savedInstanceState.containsKey("googleLastName")) googleLastName = savedInstanceState.getString("googleLastName");
+            if (googlePhotoUrl == null && savedInstanceState.containsKey("googlePhotoUrl")) googlePhotoUrl = savedInstanceState.getString("googlePhotoUrl");
+
             if (currentViewNum >= VIEW_CODE_MESSAGE && currentViewNum <= VIEW_CODE_CALL) {
                 int time = savedInstanceState.getInt("open");
                 if (time != 0 && Math.abs(System.currentTimeMillis() / 1000 - time) >= 24 * 60 * 60) {
@@ -905,6 +926,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }
             }
             if (currentViewNum == a) {
+                if (a == VIEW_REGISTER && initialRoleSelectionPhone != null) {
+                    Bundle b = new Bundle();
+                    b.putString("phoneFormated", initialRoleSelectionPhone);
+                    //DIVO
+                    if (googleFirebaseUid != null) b.putString("firebaseUid", googleFirebaseUid);
+                    if (googleEmail != null) b.putString("googleEmail", googleEmail);
+                    if (googleFirstName != null) b.putString("googleFirstName", googleFirstName);
+                    if (googleLastName != null) b.putString("googleLastName", googleLastName);
+                    if (googlePhotoUrl != null) b.putString("googlePhotoUrl", googlePhotoUrl);
+
+                    v.setParams(b, false);
+                }
                 backButtonView.setVisibility(v.needBackButton() || newAccount || activityMode == MODE_CHANGE_PHONE_NUMBER ? View.VISIBLE : View.GONE);
                 v.setVisibility(View.VISIBLE);
                 v.onShow();
@@ -1685,6 +1718,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
             params.putString("firebaseUid", googleFirebaseUid);
             params.putString("googleEmail", googleEmail);
+            //DIVO
+            if (googleFirstName != null) params.putString("googleFirstName", googleFirstName);
+            if (googleLastName != null) params.putString("googleLastName", googleLastName);
+            if (googlePhotoUrl != null) params.putString("googlePhotoUrl", googlePhotoUrl);
             if (googleDummyPhone != null) {
                 params.putString("phoneFormated", googleDummyPhone);
             }
@@ -1776,6 +1813,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             Bundle bundle = new Bundle();
             bundle.putInt("currentViewNum", currentViewNum);
             bundle.putInt("syncContacts", syncContacts ? 1 : 0);
+            //DIVO
+            bundle.putBoolean("isGoogleFlow", isGoogleFlow);
+            bundle.putBoolean("googleAutoLogin", googleAutoLogin);
+            bundle.putBoolean("forceRoleSelection", forceRoleSelection);
+            if (googleFirebaseUid != null) bundle.putString("googleFirebaseUid", googleFirebaseUid);
+            if (googleEmail != null) bundle.putString("googleEmail", googleEmail);
+            if (googleDummyPhone != null) bundle.putString("googleDummyPhone", googleDummyPhone);
+            if (googleFirstName != null) bundle.putString("googleFirstName", googleFirstName);
+            if (googleLastName != null) bundle.putString("googleLastName", googleLastName);
+            if (googlePhotoUrl != null) bundle.putString("googlePhotoUrl", googlePhotoUrl);
+
             for (int a = 0; a <= currentViewNum; a++) {
                 SlideView v = views[a];
                 if (v != null) {
@@ -1815,13 +1863,25 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     TwoStepVerificationSetupActivity twoStepVerification = new TwoStepVerificationSetupActivity(TwoStepVerificationSetupActivity.TYPE_INTRO, null);
                     twoStepVerification.setBlockingAlert(otherwiseRelogin);
                     twoStepVerification.setFromRegistration(true);
-                    presentFragment(twoStepVerification, true);
+                    org.telegram.ui.ActionBar.INavigationLayout layout = parentLayout;
+                    if (layout != null) {
+                        layout.removeAllFragments();
+                        layout.presentFragment(twoStepVerification, false, true, true, false);
+                    } else {
+                        presentFragment(twoStepVerification, true);
+                    }
                 } else {
                     Bundle args = new Bundle();
                     args.putBoolean("afterSignup", afterSignup);
                     MainTabsActivity mainTabsActivity = new MainTabsActivity();
                     mainTabsActivity.prepareDialogsActivity(args);
-                    presentFragment(mainTabsActivity, true);
+                    org.telegram.ui.ActionBar.INavigationLayout layout = parentLayout;
+                    if (layout != null) {
+                        layout.removeAllFragments();
+                        layout.presentFragment(mainTabsActivity, false, true, true, false);
+                    } else {
+                        presentFragment(mainTabsActivity, true);
+                    }
                 }
 
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.mainUserInfoChanged);
@@ -1880,7 +1940,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         if (res.user != null && res.user.phone != null) {
             if (isGoogleFlow) {
                 if (forceRoleSelection) {
-                    setPage(VIEW_REGISTER, true, null, true);
+                    Bundle b = new Bundle();
+                    if (res.user.phone != null) b.putString("phoneFormated", res.user.phone);
+                    setPage(VIEW_REGISTER, true, b, true);
                 } else {
                     needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
                 }
@@ -1910,7 +1972,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 if (divoAuthProgressDialog != null) {
                                     try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
                                 }
-                                setPage(VIEW_REGISTER, true, null, true);
+                                Bundle b = new Bundle();
+                                if (res.user.phone != null) b.putString("phoneFormated", res.user.phone);
+                                setPage(VIEW_REGISTER, true, b, true);
                             }
 
                             @Override
@@ -3491,7 +3555,23 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             phoneInputData.phoneNumber = "+" + codeField.getText() + " " + phoneField.getText();
             phoneInputData.country = currentCountry;
             phoneInputData.patterns = phoneFormatMap.get(codeField.getText().toString());
-            int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+            //DIVO--START
+            final int[] reqId = new int[1];
+            Runnable timeoutRunnable = () -> {
+                if (nextPressed) {
+                    ConnectionsManager.getInstance(currentAccount).cancelRequest(reqId[0], true);
+                    nextPressed = false;
+                    needHideProgress(false);
+                    if (slideViewsContainer != null) {
+                        BulletinFactory.of(slideViewsContainer, null).createErrorBulletin(LocaleController.getString("DivoCheckInternetConnection", R.string.DivoCheckInternetConnection)).show();
+                    }
+                }
+            };
+            AndroidUtilities.runOnUIThread(timeoutRunnable, 20000);
+
+            reqId[0] = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                AndroidUtilities.cancelRunOnUIThread(timeoutRunnable);
+                //DIVO--END
                 nextPressed = false;
                 if (error == null) {
                     if (response instanceof TLRPC.TL_auth_sentCodeSuccess) {
@@ -3558,7 +3638,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     needHideProgress(false);
                 }
             }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagTryDifferentDc | ConnectionsManager.RequestFlagEnableUnauthorized);
-            needShowProgress(reqId);
+            needShowProgress(reqId[0]);
         }
 
         private boolean numberFilled;

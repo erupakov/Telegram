@@ -26,6 +26,8 @@ data class Event(
     val appliesCount: Int,
     val isApplied: Boolean,
     val isLikedByUser: Boolean,
+    val isFavourite: Boolean = false,
+    val favoritesCount: Int = 0,
     val creator: EventCreator?,
     val files: List<EventFile>,
 )

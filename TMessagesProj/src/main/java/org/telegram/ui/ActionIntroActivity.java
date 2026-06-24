@@ -565,23 +565,27 @@ public class ActionIntroActivity extends BaseFragment implements LocationControl
         switch (currentType) {
             case ACTION_TYPE_CHANNEL_CREATE: {
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                imageView.setAnimation(R.raw.channel_create, 200, 200);
+//                imageView.setAnimation(R.raw.channel_create, 200, 200);
+                //DIVO
+                imageView.setImageResource(R.drawable.divo_logo_content);
                 titleTextView.setText(LocaleController.getString(R.string.ChannelAlertTitle));
                 descriptionText.setText(LocaleController.getString(R.string.ChannelAlertText));
                 buttonTextView.setText(LocaleController.getString(R.string.ChannelAlertCreate2));
-                imageView.playAnimation();
+//                imageView.playAnimation();
                 flickerButton = true;
                 break;
             }
             case ACTION_TYPE_SET_PASSCODE: {
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                imageView.setAnimation(R.raw.utyan_passcode, 200, 200);
+//                imageView.setAnimation(R.raw.utyan_passcode, 200, 200);
+                //DIVO
+                imageView.setImageResource(R.drawable.divo_logo_content);
                 imageView.setFocusable(false);
                 imageView.setOnClickListener(v -> {
-                    if (!imageView.getAnimatedDrawable().isRunning()) {
-                        imageView.getAnimatedDrawable().setCurrentFrame(0, false);
-                        imageView.playAnimation();
-                    }
+//                    if (!imageView.getAnimatedDrawable().isRunning()) {
+//                        imageView.getAnimatedDrawable().setCurrentFrame(0, false);
+//                        imageView.playAnimation();
+//                    }
                 });
                 titleTextView.setText(LocaleController.getString(R.string.Passcode));
                 descriptionText.setText(LocaleController.getString(R.string.ChangePasscodeInfoShort));
@@ -602,12 +606,14 @@ public class ActionIntroActivity extends BaseFragment implements LocationControl
             case ACTION_TYPE_CHANGE_PHONE_NUMBER: {
                 subtitleTextView.setVisibility(View.VISIBLE);
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                imageView.setAnimation(R.raw.utyan_change_number, 200, 200);
+//                imageView.setAnimation(R.raw.utyan_change_number, 200, 200);
+                //DIVO
+                imageView.setImageResource(R.drawable.divo_logo_content);
                 imageView.setOnClickListener(v -> {
-                    if (!imageView.getAnimatedDrawable().isRunning()) {
-                        imageView.getAnimatedDrawable().setCurrentFrame(0, false);
-                        imageView.playAnimation();
-                    }
+//                    if (!imageView.getAnimatedDrawable().isRunning()) {
+//                        imageView.getAnimatedDrawable().setCurrentFrame(0, false);
+//                        imageView.playAnimation();
+//                    }
                 });
 
                 UserConfig userConfig = getUserConfig();

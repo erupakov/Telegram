@@ -72,6 +72,7 @@ fun EventDetailsHeader(
     onEditEvent: () -> Unit,
     onCtaClicked: () -> Unit,
     onLikeClicked: () -> Unit,
+    onFavouriteClicked: () -> Unit,
 ) {
     val rawTopPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     var topPadding by remember { mutableStateOf(rawTopPadding) }
@@ -94,7 +95,9 @@ fun EventDetailsHeader(
             modifier = Modifier
                 .padding(top = topPadding + 16.dp)
                 .graphicsLayer { alpha = engagementsAlpha },
-            event = event
+            event = event,
+            onLikeClicked = onLikeClicked,
+            onFavouriteClicked = onFavouriteClicked
         )
         ContentSection(
             modifier = Modifier
@@ -114,6 +117,8 @@ fun EventDetailsHeader(
 private fun StatsSection(
     modifier: Modifier = Modifier,
     event: EventDetails?,
+    onLikeClicked: () -> Unit,
+    onFavouriteClicked: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -124,9 +129,14 @@ private fun StatsSection(
         // Space for fixed toolbar buttons
         Spacer(Modifier.height(48.dp))
         
+        val isLiked = event?.isLiked == true
         EngagementItem(
-            resId = R.drawable.ic_divo_favorite,
-            count = event?.appliesCount ?: 0
+            resId = if (isLiked) R.drawable.ic_divo_favorite_selected else R.drawable.ic_divo_favorite,
+            count = event?.likesCount ?: 0,
+            tint = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+            textColor = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+            background = if (isLiked) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
+            onClick = onLikeClicked
         )
         Spacer(Modifier.height(10.dp))
         EngagementItem(
@@ -134,91 +144,15 @@ private fun StatsSection(
             count = event?.viewsCount ?: 0
         )
         Spacer(Modifier.height(10.dp))
+        val isFavourite = event?.isFavourite == true
         EngagementItem(
-            resId = R.drawable.ic_divo_bookmark_glass,
-            count = event?.userReachCount ?: 0
+            resId = if (isFavourite) R.drawable.ic_divo_bookmark_glass_selected else R.drawable.ic_divo_bookmark_glass,
+            count = event?.favoritesCount ?: 0,
+            tint = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+            textColor = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+            background = if (isFavourite) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
+            onClick = onFavouriteClicked
         )
-    }
-}
-
-@Composable
-private fun ButtonsSection(
-    modifier: Modifier = Modifier,
-    event: EventDetails?,
-    isOwnEvent: Boolean,
-    onMenuClicked: () -> Unit,
-    onBack: () -> Unit,
-    onLikeClicked: () -> Unit
-) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-
-    Column(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            RoundedGlassButton(
-                onClick = onBack
-            )
-            RoundedGlassContainer(
-                space = 10.dp
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickableWithoutRipple {
-                            DivoSharingHelper.share(
-                                context = context,
-                                scope = scope,
-                                type = DivoShareType.EVENT,
-                                id = event?.id,
-                                customMessage = "${event?.title} - ${event?.creator?.roleLabel}",
-                                imageUrl = event?.creator?.photo?.fullUrl
-                            )
-                        },
-                    painter = painterResource(R.drawable.ic_divo_share_model),
-                    contentDescription = null,
-                    tint = AppTheme.colors.onBackground
-                )
-                if (isOwnEvent) {
-                    Icon(
-                        modifier = Modifier
-                            .size(24.dp)
-                            .clickableWithoutRipple { onMenuClicked() },
-                        painter = painterResource(R.drawable.ic_ab_other),
-                        contentDescription = null,
-                        tint = AppTheme.colors.onBackground
-                    )
-                }
-            }
-        }
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.End
-        ) {
-            Spacer(Modifier.height(16.dp))
-            val isLiked = event?.isLiked == true
-            EngagementItem(
-                resId = if (isLiked) R.drawable.ic_divo_favorite_selected else R.drawable.ic_divo_favorite,
-                count = event?.appliesCount ?: 0,
-                tint = if (isLiked) AppTheme.colors.accentOrange else AppTheme.colors.onBackground,
-                onClick = onLikeClicked
-            )
-            Spacer(Modifier.height(10.dp))
-            EngagementItem(
-                resId = R.drawable.ic_divo_visibility,
-                count = event?.viewsCount ?: 0 //TODO понять что выводить
-            )
-            Spacer(Modifier.height(10.dp))
-            EngagementItem(
-                resId = R.drawable.ic_divo_bookmark_glass,
-                count = event?.userReachCount ?: 0 //TODO понять что выводить
-            )
-        }
     }
 }
 
@@ -260,6 +194,7 @@ private fun ContentSection(
                     )
                 }
             }
+            Spacer(Modifier.height(2.dp))
             Text(
                 text = eventDetails.title.orEmpty(),
                 style = AppTheme.typography.displayLarge,
@@ -307,7 +242,7 @@ private fun ContentSection(
 
                 if (isModel) {
                     val isApplied = event.isApplied
-                    val isClosed = isEventClosed(event.date ?: "", event.dateTo ?: "", null)
+                    val isClosed = isEventClosed(event.date ?: "", event.dateTo ?: "", event.applicationDeadline)
                     val buttonTextId = when {
                         isApplied -> R.string.ButtonApplied
                         isClosed -> R.string.ButtonClosed
@@ -318,7 +253,7 @@ private fun ContentSection(
                         else -> null
                     }
                     val buttonBgColor = when {
-                        isClosed && !isApplied -> AppTheme.colors.buttonSecondary.copy(alpha = 0.2f)
+                        isClosed && !isApplied -> AppTheme.colors.onBackground
                         else -> AppTheme.colors.accentOrange
                     }
                     val buttonTextColor = when {
@@ -340,17 +275,7 @@ private fun ContentSection(
                         onClick = onCtaClicked
                     )
                 }
-                if (isOwnEvent) {
-                    UIButtonNew(
-                        text = stringResource(R.string.ViewApplications),
-                        textStyle = AppTheme.typography.helveticaNeueLtCom.copy(
-                            fontSize = 14.sp,
-                            color = AppTheme.colors.onBackground
-                        ),
-                        height = 36.dp,
-                        onClick = onEditEvent
-                    )
-                }
+
             }
         }
         Spacer(Modifier.height(20.dp))
@@ -362,6 +287,8 @@ private fun EngagementItem(
     @DrawableRes resId: Int,
     count: Int,
     tint: Color = AppTheme.colors.onBackground,
+    textColor: Color = AppTheme.colors.onBackground,
+    background: Color = Color.White.copy(alpha = 0.3f),
     onClick: (() -> Unit)? = null
 ) {
     val baseModifier = Modifier.width(56.dp)
@@ -375,6 +302,7 @@ private fun EngagementItem(
         modifier = containerModifier,
         height = 30.dp,
         space = 4.dp,
+        background = background,
         contentPadding = PaddingValues(horizontal = 6.dp)
     ) {
         Icon(
@@ -387,7 +315,7 @@ private fun EngagementItem(
             modifier = Modifier.offset(y = 0.5.dp),
             text = count.toShortString(),
             style = AppTheme.typography.helveticaNeueRegular,
-            color = AppTheme.colors.onBackground,
+            color = textColor,
             fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -462,7 +390,7 @@ private fun Background(
     }
 }
 
-private fun isEventClosed(dateFrom: String, dateTo: String, applicationDeadline: String?): Boolean {
+internal fun isEventClosed(dateFrom: String, dateTo: String, applicationDeadline: String?): Boolean {
     val formatter = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
     val from = runCatching { formatter.parse(dateFrom) }.getOrNull() ?: return false
     val to = runCatching { formatter.parse(dateTo) }.getOrNull() ?: return false
@@ -507,8 +435,16 @@ private fun resolveEventStatus(
     return when {
         now.after(to) -> context.getString(R.string.EventStatusCompleted)
         now.after(from) && now.before(to) -> context.getString(R.string.EventStatusInProgress)
-        deadline != null && now.after(deadline) -> context.getString(R.string.EventStatusApplicationsClosed)
-        now.after(from) -> context.getString(R.string.EventStatusApplicationsClosed)
+        deadline != null && now.after(deadline) -> {
+            val locale = org.telegram.messenger.LocaleController.getInstance().currentLocale ?: java.util.Locale.getDefault()
+            val dateFormat = java.text.SimpleDateFormat("MMM dd", locale)
+            context.getString(R.string.EventStatusApplicationsClosedDate, dateFormat.format(deadline))
+        }
+        now.after(from) -> {
+            val locale = org.telegram.messenger.LocaleController.getInstance().currentLocale ?: java.util.Locale.getDefault()
+            val dateFormat = java.text.SimpleDateFormat("MMM dd", locale)
+            context.getString(R.string.EventStatusApplicationsClosedDate, dateFormat.format(from))
+        }
         else -> {
             val targetDate = deadline ?: from
             val diffMillis = targetDate.time - now.time

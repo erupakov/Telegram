@@ -528,8 +528,10 @@ public class LivePlayerView extends FrameLayout implements RendererCommon.Render
             super.setVisibility(visibility);
             if (visibility == View.VISIBLE) {
                 if (!hasSetImage) {
-                    final RLottieDrawable drawable = new RLottieDrawable(R.raw.utyan_empty2, "utyan_empty2", dp(130), dp(130));
-                    imageView.setImageDrawable(drawable);
+//                    final RLottieDrawable drawable = new RLottieDrawable(R.raw.utyan_empty2, "utyan_empty2", dp(130), dp(130));
+//                    imageView.setImageDrawable(drawable);
+                    //DIVO
+                    imageView.setImageResource(R.drawable.divo_logo_content);
                     hasSetImage = true;
                 }
             }

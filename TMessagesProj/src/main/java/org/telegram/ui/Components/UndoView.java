@@ -54,6 +54,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.SavedMessagesController;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
@@ -99,6 +100,7 @@ public class UndoView extends FrameLayout {
     private ArrayList<Long> currentDialogIds;
     private Runnable currentActionRunnable;
     private Runnable currentCancelRunnable;
+    private Runnable fallbackRunnable = () -> hide(true, 1); //DIVO
 
     private long lastUpdateTime;
 
@@ -302,6 +304,10 @@ public class UndoView extends FrameLayout {
                 return;
             }
             hide(false, 1);
+            //DIVO
+            if (currentAction == ACTION_DELETE || currentAction == ACTION_LEAVE || currentAction == ACTION_CLEAR || currentAction == ACTION_DELETE_FEW || currentAction == ACTION_CLEAR_FEW) {
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.cancelUndoView);
+            }
         });
 
         undoImageView = new ImageView(context);
@@ -400,6 +406,7 @@ public class UndoView extends FrameLayout {
             }
             currentCancelRunnable = null;
         }
+        AndroidUtilities.cancelRunOnUIThread(fallbackRunnable); //DIVO
         if (currentAction == ACTION_CLEAR || currentAction == ACTION_DELETE || currentAction == ACTION_LEAVE || currentAction == ACTION_CLEAR_FEW || currentAction == ACTION_DELETE_FEW) {
             for (int a = 0; a < currentDialogIds.size(); a++) {
                 long did = currentDialogIds.get(a);
@@ -1586,6 +1593,8 @@ public class UndoView extends FrameLayout {
             animatorSet.setDuration(180);
             animatorSet.start();
         }
+        AndroidUtilities.cancelRunOnUIThread(fallbackRunnable); //DIVO
+        AndroidUtilities.runOnUIThread(fallbackRunnable, timeLeft + 1000); //DIVO
     }
 
     private int enterOffsetMargin = AndroidUtilities.dp(8);
@@ -1700,6 +1709,9 @@ public class UndoView extends FrameLayout {
         lastUpdateTime = newTime;
         if (timeLeft <= 0) {
             hide(true, hideAnimationType);
+        } else { //DIVO
+            AndroidUtilities.cancelRunOnUIThread(fallbackRunnable);
+            AndroidUtilities.runOnUIThread(fallbackRunnable, timeLeft + 1000);
         }
 
         if (currentAction != ACTION_PREVIEW_MEDIA_DESELECTED) {

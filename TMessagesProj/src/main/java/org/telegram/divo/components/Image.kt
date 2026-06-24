@@ -2,6 +2,8 @@ package org.telegram.divo.components
 
 import android.net.Uri
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -89,55 +91,63 @@ fun TelegramPhotoBackground(
                 }
             )
 
-            if (isBlurSupported) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .graphicsLayer { compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
-                        .drawWithContent {
-                            drawContent()
-
-                            drawRect(
-                                brush = verticalGradient(
-                                    0.0f to Color.Transparent,
-                                    0.6f to Color.Transparent,
-                                    0.75f to Color.Black,
-                                    1.0f to Color.Black
-                                ),
-                                blendMode = androidx.compose.ui.graphics.BlendMode.DstIn
-                            )
-                        }
-                ) {
-                    DivoAsyncImage(
+            AnimatedVisibility(
+                visible = mainReady.value,
+                enter = fadeIn()
+            ) {
+                if (isBlurSupported) {
+                    Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .blur(35.dp),
-                        alignment = Alignment.TopCenter,
-                        model = photo,
-                        contentScale = ContentScale.Crop,
-                        onReady = { blurReady.value = true },
-                        loadingContent = {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(AppTheme.colors.backgroundLight.copy(0.6f))
-                            )
-                        }
-                    )
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            verticalGradient(
-                                0.0f to Color.Transparent,
-                                0.6f to Color.Transparent,
-                                0.75f to Color.Black.copy(alpha = 0.3f),
-                                1.0f to Color.Black.copy(alpha = 0.6f)
-                            )
+                            .graphicsLayer { compositingStrategy = androidx.compose.ui.graphics.CompositingStrategy.Offscreen }
+                            .drawWithContent {
+                                drawContent()
+
+                                drawRect(
+                                    brush = verticalGradient(
+                                        0.0f to Color.Transparent,
+                                        0.6f to Color.Transparent,
+                                        0.75f to Color.Black,
+                                        1.0f to Color.Black
+                                    ),
+                                    blendMode = androidx.compose.ui.graphics.BlendMode.DstIn
+                                )
+                            }
+                    ) {
+                        DivoAsyncImage(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .blur(35.dp),
+                            alignment = Alignment.TopCenter,
+                            model = photo,
+                            contentScale = ContentScale.Crop,
+                            onReady = { blurReady.value = true },
+                            loadingContent = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(AppTheme.colors.backgroundLight.copy(0.6f))
+                                )
+                            }
                         )
-                )
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                verticalGradient(
+                                    0.0f to Color.Transparent,
+                                    0.6f to Color.Transparent,
+                                    0.75f to Color.Black.copy(alpha = 0.3f),
+                                    1.0f to Color.Black.copy(alpha = 0.6f)
+                                )
+                            )
+                    )
+                    LaunchedEffect(Unit) {
+                        blurReady.value = true
+                    }
+                }
             }
         }
 

@@ -308,7 +308,9 @@ public class ClearHistoryAlert extends BottomSheet {
         } else {
             RLottieImageView lottieImageView = new RLottieImageView(context);
             lottieImageView.setAutoRepeat(false);
-            lottieImageView.setAnimation(R.raw.utyan_private, 120, 120);
+//            lottieImageView.setAnimation(R.raw.utyan_private, 120, 120);
+            //DIVO
+            lottieImageView.setImageResource(R.drawable.divo_logo_content);
             lottieImageView.setPadding(0, AndroidUtilities.dp(20), 0, 0);
             lottieImageView.playAnimation();
             linearLayout.addView(lottieImageView, LayoutHelper.createLinear(160, 160, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 17, 0, 17, 0));

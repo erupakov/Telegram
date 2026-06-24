@@ -10,5 +10,8 @@ interface DictionaryService {
 
     @GET("dictionary/payments")
     suspend fun getPayments(): PaymentsResponse
+
+    @GET("dictionary/feed-report-types")
+    suspend fun getFeedReportTypes(): org.telegram.divo.dal.dto.user.ReportTypesResponse
 }
 

@@ -79,6 +79,7 @@ fun ProfilesSearchGrid(
     isLoading: Boolean,
     isLoadingMore: Boolean,
     hasMore: Boolean,
+    showSocialStats: Boolean = true,
     onMarkClicked: (Int) -> Unit,
     onLikeClicked: (Int) -> Unit,
     onProfileClicked: (SearchedProfile) -> Unit,
@@ -128,6 +129,7 @@ fun ProfilesSearchGrid(
             ) {
                 ProfileItem(
                     profile = it,
+                    showSocialStats = showSocialStats,
                     onMarkClicked = { onMarkClicked(it.id) },
                     onLikeClicked = { onLikeClicked(it.id) },
                     onProfileClicked = { onProfileClicked(it) },
@@ -153,6 +155,7 @@ fun ProfilesSearchGrid(
 @Composable
 private fun ProfileItem(
     profile: SearchedProfile,
+    showSocialStats: Boolean = true,
     onMarkClicked: () -> Unit,
     onLikeClicked: () -> Unit,
     onProfileClicked: () -> Unit,
@@ -253,7 +256,7 @@ private fun ProfileItem(
                 RoundedGlassContainer(
                     space = 10.dp,
                     height = 22.dp,
-                    background = if (profile.isMarked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.2f),
+                    background = if (showSocialStats && profile.isMarked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.2f),
                     contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
                     Icon(
@@ -271,31 +274,34 @@ private fun ProfileItem(
                             },
                         painter = painterResource(R.drawable.ic_divo_share_model),
                         contentDescription = null,
-                        tint = if (profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+                        tint = if (showSocialStats && profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
                     )
-                    Icon(
-                        modifier = Modifier
-                            .size(16.dp)
-                            .clickableWithoutRipple { onMarkClicked() },
-                        painter = painterResource(if (profile.isMarked) R.drawable.ic_divo_bookmark_glass_selected else R.drawable.ic_divo_bookmark_glass),
-                        contentDescription = null,
-                        tint = if (profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
-                    )
+                    if (showSocialStats) {
+                        Icon(
+                            modifier = Modifier
+                                .size(16.dp)
+                                .clickableWithoutRipple { onMarkClicked() },
+                            painter = painterResource(if (profile.isMarked) R.drawable.ic_divo_bookmark_glass_selected else R.drawable.ic_divo_bookmark_glass),
+                            contentDescription = null,
+                            tint = if (profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+                        )
+                    }
                 }
             }
 
             Spacer(Modifier.height(10.dp))
 
-            Box(Modifier.fillMaxWidth()) {
-                RoundedGlassContainer(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .clickableWithoutRipple { onLikeClicked() },
-                    height = 22.dp,
-                    space = 4.dp,
-                    background = if (profile.isLiked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.2f),
-                    contentPadding = PaddingValues(horizontal = 6.dp)
-                ) {
+            if (showSocialStats) {
+                Box(Modifier.fillMaxWidth()) {
+                    RoundedGlassContainer(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .clickableWithoutRipple { onLikeClicked() },
+                        height = 22.dp,
+                        space = 4.dp,
+                        background = if (profile.isLiked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.2f),
+                        contentPadding = PaddingValues(horizontal = 6.dp)
+                    ) {
                     Icon(
                         modifier = Modifier.size(12.dp),
                         painter = painterResource(if (profile.isLiked) R.drawable.ic_divo_favorite_selected else R.drawable.ic_divo_favorite),
@@ -312,6 +318,7 @@ private fun ProfileItem(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
+            }
             }
 
         }
@@ -336,7 +343,7 @@ private fun ProfileItem(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(Modifier.height(2.dp))
-            val age = profile.age?.let { "${profile.age} ${context.getString(R.string.YearsOld)}" }
+            val age = profile.age?.let { org.telegram.messenger.LocaleController.formatPluralString("Years", it) }
             val countryCode = profile.countryCode?.toCountryFlagEmoji()
             val county = profile.country
             val sep = if (age != null && countryCode != null) " · " else ""

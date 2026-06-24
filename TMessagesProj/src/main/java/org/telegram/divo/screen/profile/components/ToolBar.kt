@@ -110,7 +110,6 @@ fun ToolBarContent(
     onManageWorkExperienceClicked: () -> Unit = {},
     onFindSimilarProfiles: () -> Unit = {},
     onReportProfile: () -> Unit = {},
-    onBlockProfile: () -> Unit = {},
     isSolid: Boolean = false,
     transitionProgress: Float = 0f,
 ) {
@@ -123,8 +122,7 @@ fun ToolBarContent(
 
     val options = listOf(
         PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec),
-        PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report),
-        PopupMenuItem(R.string.BlockProfile, onBlockProfile, R.drawable.ic_divo_block),
+        PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report)
     )
 
     val editOptions = remember {
@@ -167,7 +165,7 @@ fun ToolBarContent(
         ) {
             TitleContent(
                 uiState = uiState,
-                isSolid = isSolid
+                transitionProgress = transitionProgress
             )
         }
 
@@ -195,7 +193,11 @@ fun ToolBarContent(
                 Icon(
                     modifier = Modifier
                         .size(22.dp)
-                        .clickableWithoutRipple {  }, //TODO
+                        .clickableWithoutRipple { 
+                            val account = org.telegram.messenger.UserConfig.selectedAccount
+                            val fragment = org.telegram.ui.LaunchActivity.getLastFragment() ?: return@clickableWithoutRipple
+                            org.telegram.ui.Stories.recorder.StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
+                        },
                     painter = painterResource(R.drawable.ic_divo_rounded_plus),
                     contentDescription = null,
                     tint = buttonIconColor
@@ -232,24 +234,15 @@ fun ToolBarContent(
 private fun TitleContent(
     modifier: Modifier = Modifier,
     uiState: ProfileViewState,
-    isSolid: Boolean = false
+    transitionProgress: Float = 0f
 ) {
-    val animatable = remember { Animatable(0f) }
     val context = LocalContext.current
-    
-    LaunchedEffect(isSolid) {
-        animatable.animateTo(
-            targetValue = if (isSolid) 1f else 0f,
-            animationSpec = tween(if (isSolid) 200 else 100)
-        )
-    }
 
     Column(
         modifier = modifier
             .graphicsLayer {
-                val progress = animatable.value
-                alpha = progress
-                translationY = (1f - progress) * 15f
+                alpha = transitionProgress
+                translationY = (1f - transitionProgress) * 15f
             },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

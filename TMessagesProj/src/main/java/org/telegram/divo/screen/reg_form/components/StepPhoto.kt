@@ -28,7 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.screen.reg_form.RegFormsIntent
 import org.telegram.divo.screen.reg_form.RegistrationFormData
@@ -82,47 +82,15 @@ fun StepPhoto(
             contentAlignment = Alignment.Center
         ) {
             if (formData.photoUri != null) {
-                AsyncImage(
+                DivoAsyncImage(
                     model = formData.photoUri,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
+                    contentScale = ContentScale.Crop,
+                    errorContent = { UploadPlaceholder(config) }
                 )
             } else {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Box(
-                        modifier = Modifier
-                            .size(68.dp)
-                            .clip(CircleShape)
-                            .background(AppTheme.colors.backgroundLight),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            modifier = Modifier.size(24.dp),
-                            painter = painterResource(
-                                if (config.isLogo) R.drawable.ic_divo_upload_logo
-                                else R.drawable.ic_divo_upload_photo
-                            ),
-                            tint = AppTheme.colors.textPrimary,
-                            contentDescription = null
-                        )
-                    }
-                    Spacer(Modifier.height(24.dp))
-                    Text(
-                        text = stringResource(
-                            if (config.isLogo) R.string.RegFormUploadLogo
-                            else R.string.RegFormUploadPhoto
-                        ),
-                        style = AppTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                        color = AppTheme.colors.textPrimary
-                    )
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        text = stringResource(R.string.RegFormAnyFileFormat),
-                        style = AppTheme.typography.bodyMedium,
-                        color = AppTheme.colors.textPrimary.copy(0.8f)
-                    )
-                }
+                UploadPlaceholder(config)
             }
         }
 
@@ -149,6 +117,44 @@ private fun TfpHintBlock() {
         style = AppTheme.typography.bodyMedium,
         color = AppTheme.colors.textPrimary.copy(0.8f)
     )
+}
+
+@Composable
+private fun UploadPlaceholder(config: StepPhotoConfig) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(
+            modifier = Modifier
+                .size(68.dp)
+                .clip(CircleShape)
+                .background(AppTheme.colors.backgroundLight),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(
+                    if (config.isLogo) R.drawable.ic_divo_upload_logo
+                    else R.drawable.ic_divo_upload_photo
+                ),
+                tint = AppTheme.colors.textPrimary,
+                contentDescription = null
+            )
+        }
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = stringResource(
+                if (config.isLogo) R.string.RegFormUploadLogo
+                else R.string.RegFormUploadPhoto
+            ),
+            style = AppTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+            color = AppTheme.colors.textPrimary
+        )
+        Spacer(Modifier.height(10.dp))
+        Text(
+            text = stringResource(R.string.RegFormAnyFileFormat),
+            style = AppTheme.typography.bodyMedium,
+            color = AppTheme.colors.textPrimary.copy(0.8f)
+        )
+    }
 }
 
 data class StepPhotoConfig(

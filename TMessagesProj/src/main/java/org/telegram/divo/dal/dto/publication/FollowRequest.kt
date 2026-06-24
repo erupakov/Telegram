@@ -2,9 +2,7 @@ package org.telegram.divo.dal.dto.publication
 
 import com.google.gson.annotations.SerializedName
 
-class FavoriteRequest(
+class FollowRequest(
     @SerializedName("id")
-    val id: Int,
-    @SerializedName("entity")
-    val entity: String
+    val id: Int
 )

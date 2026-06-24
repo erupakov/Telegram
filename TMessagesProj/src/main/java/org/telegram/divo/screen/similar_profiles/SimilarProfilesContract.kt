@@ -24,6 +24,7 @@ data class State(
 
     val role: ProfileParameter = ProfileParameter(ParametersType.ROLE, ""),
     val blockParams: List<ProfileParameter> = listOf(),
+    val isHistoryMode: Boolean = false,
 ) : ViewState {
 
     val topMatches: Int

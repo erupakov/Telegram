@@ -21,8 +21,8 @@ class GetFeedUseCase(
             offset = offset,
             limit = lim,
             role = role,
-            subscribedOnly = subscribedOnly,
-            modelsOnly = modelsOnly,
+//            subscribedOnly = subscribedOnly,
+//            modelsOnly = modelsOnly,
         )
         when (val result = repository.getFeed(request)) {
             is DivoResult.Success -> PaginatedResult(

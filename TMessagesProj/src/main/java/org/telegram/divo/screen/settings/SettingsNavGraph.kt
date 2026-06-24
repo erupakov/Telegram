@@ -34,6 +34,8 @@ fun SettingsNavGraph(
     navigateToLogout: () -> Unit,
     onNavControllerReady: (NavController) -> Unit,
     onInnerNavControllerReady: (NavController?) -> Unit,
+    onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
+    onNavigateToCreateChannel: () -> Unit = {},
 ) {
     val nav = rememberNavController()
 
@@ -68,6 +70,8 @@ fun SettingsNavGraph(
                 userId = userId,
                 isOwnProfile = true,
                 onNavControllerReady = { onInnerNavControllerReady(it) },
+                onNavigateToChat = onNavigateToChat,
+                onNavigateToCreateChannel = onNavigateToCreateChannel,
                 onNavigateBack = { nav.popBackStack() }
             )
         }

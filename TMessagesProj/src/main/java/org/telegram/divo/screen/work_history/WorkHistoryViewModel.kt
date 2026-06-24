@@ -39,9 +39,29 @@ class WorkHistoryViewModel(
         viewModelScope.launch {
             setState { copy(isLoading = true) }
             val result = DivoApi.workHistory.getWorkHistory(userId)
+            
+            // TODO: (Hack) Remove when backend fixes it
+            val userResult = DivoApi.userRepository.getUserById(userId)
+            val agency = (userResult as? org.telegram.divo.dal.network.DivoResult.Success)?.value?.model?.agency
+
             setState { copy(isLoading = false) }
             if (result !is DivoResult.Success) {
                 sendEffect(Effect.ShowError(result.getErrorMessage()))
+            } else {
+                val list = result.value.toMutableList()
+                if (agency != null && agency.title.isNotBlank()) {
+                    list.add(0, org.telegram.divo.entity.WorkExperience(
+                        id = -1,
+                        agencyId = agency.id,
+                        agencyName = agency.title,
+                        agencyDisplayName = agency.title,
+                        startDate = java.time.LocalDate.now().toString(),
+                        endDate = null,
+                        isCurrent = true,
+                        agencyAvatarLink = agency.photo?.fullUrl
+                    ))
+                }
+                setState { copy(experiences = list) }
             }
         }
     }

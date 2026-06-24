@@ -61,20 +61,9 @@ fun EventsNavGraph(
         startDestination = EventRoute.Events.route
     ) {
         composable(EventRoute.Events.route) { entry ->
-            // Observe refresh signal from CreateEvent / EditEvent
-            val needsRefresh = entry.savedStateHandle.get<Boolean>("needsRefresh") == true
-            if (needsRefresh) {
-                entry.savedStateHandle.remove<Boolean>("needsRefresh")
-            }
             val viewModel: EventListViewModel = viewModel(
                 viewModelStoreOwner = LocalContext.current.findActivity() as ViewModelStoreOwner
             )
-
-            LaunchedEffect(needsRefresh) {
-                if (needsRefresh) {
-                    viewModel.loadData()
-                }
-            }
 
             EventListScreen(
                 viewModel = viewModel,
@@ -156,8 +145,6 @@ fun EventsNavGraph(
                     nav.navigate(EventRoute.EventPreview.route)
                 },
                 onEventPublished = {
-                    nav.getBackStackEntry(EventRoute.Events.route)
-                        .savedStateHandle["needsRefresh"] = true
                     nav.popBackStack(EventRoute.Events.route, inclusive = false)
                 }
             )
@@ -172,8 +159,6 @@ fun EventsNavGraph(
             EventPreviewScreen(
                 viewModel = sharedViewModel,
                 onPublish = {
-                    nav.getBackStackEntry(EventRoute.Events.route)
-                        .savedStateHandle["needsRefresh"] = true
                     nav.popBackStack(EventRoute.Events.route, inclusive = false)
                 },
                 onBack = { nav.popBackStack() }
@@ -191,7 +176,6 @@ fun EventsNavGraph(
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToEditEvent = { nav.navigate(EventRoute.CreateEvent.createRoute(it)) },
                 onEventDeleted = {
-                    nav.getBackStackEntry(EventRoute.Events.route).savedStateHandle["needsRefresh"] = true
                     nav.popBackStack()
                 },
                 onNavigateBack = { nav.popBackStack() },

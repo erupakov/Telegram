@@ -13,7 +13,7 @@ data class FeedlineItem(
     val type: String?,
     val likesCount: Int,
     val isLikedByUser: Boolean,
-    val isFavoriteByUser: Boolean,
+    val isFollowedByUser: Boolean,
     val user: FeedlineUser?,
     val files: List<String>,
     val searchImageUrl: String?
@@ -28,6 +28,7 @@ data class FeedlineUser(
     val age: Int?,
     val height: Float?,
     val weight: Float?,
+    val followersCount: Int,
     val emojiCounts: EmojiCounts?,
     val totalEmojisCount: Int,
 )

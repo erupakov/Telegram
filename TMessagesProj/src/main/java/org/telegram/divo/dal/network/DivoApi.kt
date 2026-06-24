@@ -9,7 +9,6 @@ import org.telegram.divo.dal.api.GeoService
 import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.api.SystemService
 import org.telegram.divo.dal.api.UserService
-import org.telegram.divo.dal.api.WalletService
 import org.telegram.divo.dal.api.WorkHistory
 import org.telegram.divo.dal.db.AppDatabase
 import org.telegram.divo.dal.db.dao.FaceRecognitionDao
@@ -19,7 +18,6 @@ import org.telegram.divo.dal.repository.FaceRecognitionRepository
 import org.telegram.divo.dal.repository.PaymentRepository
 import org.telegram.divo.dal.repository.PublicationRepository
 import org.telegram.divo.dal.repository.UserRepository
-import org.telegram.divo.dal.repository.WalletRepository
 import org.telegram.divo.dal.repository.WorkHistoryRepository
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.UserConfig
@@ -85,11 +83,6 @@ object DivoApi {
     val faceRecognitionRepository by lazy {
         val service = retrofit.create(FaceRecognitionService::class.java)
         FaceRecognitionRepository(faceRecognitionDao, service)
-    }
-
-    val walletRepository: WalletRepository by lazy {
-        val service = retrofit.create(WalletService::class.java)
-        WalletRepository(service)
     }
 
     val systemService: SystemService by lazy {

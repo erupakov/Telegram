@@ -571,7 +571,9 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken();
                 if (android.text.TextUtils.isEmpty(token)) {
                     // Divo token is missing (registration not finished)
-                    actionBarLayout.addFragmentToStack(new LoginActivity().startInRoleSelection());
+                    TLRPC.User currentUser = UserConfig.getInstance(currentAccount).getCurrentUser();
+                    String userPhone = currentUser != null ? currentUser.phone : null;
+                    actionBarLayout.addFragmentToStack(new LoginActivity().startInRoleSelection(userPhone));
                 } else {
                     MainTabsActivity mainTabsActivity = new MainTabsActivity();
                     actionBarLayout.addFragmentToStack(mainTabsActivity);

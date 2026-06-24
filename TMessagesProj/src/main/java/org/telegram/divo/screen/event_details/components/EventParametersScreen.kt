@@ -27,7 +27,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.common.MeasuringUnits
+import org.telegram.divo.common.labelRes
 import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.entity.EventModelAttributes
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -88,15 +91,23 @@ fun EventParametersScreen(
                         value = stringResource(R.string.AgeRange, params.ageFrom, params.ageTo)
                     )
                 }
-                val sep = if (params?.weightFrom != null && params.weightTo != null) "-" else ""
                 ParameterItem(
-                    label = stringResource(R.string.LabelWeight),
-                    value = "${params?.weightFrom}$sep${params?.weightTo}"
+                    label = stringResource(ParametersType.WEIGHT.labelRes()),
+                    value = MeasuringUnits.formatStoredRange(
+                        ParametersType.WEIGHT,
+                        params?.weightFrom,
+                        params?.weightTo,
+                        params?.measuringSystem,
+                    )
                 )
-                val sepHeight = if (params?.heightFrom != null && params.heightTo != null) "-" else ""
                 ParameterItem(
-                    label = stringResource(R.string.LabelHeight),
-                    value = "${params?.heightFrom}$sepHeight${params?.heightTo}"
+                    label = stringResource(ParametersType.HEIGHT.labelRes()),
+                    value = MeasuringUnits.formatStoredRange(
+                        ParametersType.HEIGHT,
+                        params?.heightFrom,
+                        params?.heightTo,
+                        params?.measuringSystem,
+                    )
                 )
                 ParameterItem(
                     label = stringResource(R.string.LabelHairLength),
@@ -106,29 +117,45 @@ fun EventParametersScreen(
                     label = stringResource(R.string.LabelEyeColor),
                     value = params?.eyeColors?.joinToString(", ").orEmpty()
                 )
-                val sepBreast = if (params?.breastSizeFrom != null && params.breastSizeTo != null) "-" else ""
                 ParameterItem(
-                    label = stringResource(R.string.LabelBreastSize),
-                    value = "${params?.breastSizeFrom}$sepBreast${params?.breastSizeTo}"
+                    label = stringResource(ParametersType.BREAST_SIZE.labelRes()),
+                    value = MeasuringUnits.formatStoredRange(
+                        ParametersType.BREAST_SIZE,
+                        params?.breastSizeFrom,
+                        params?.breastSizeTo,
+                        params?.measuringSystem,
+                    )
                 )
-                val waistSep = if (params?.waistFrom != null && params.waistTo != null) "-" else ""
                 ParameterItem(
-                    label = stringResource(R.string.LabelWaist),
-                    value = "${params?.waistFrom}$waistSep${params?.waistTo}"
+                    label = stringResource(ParametersType.WAIST.labelRes()),
+                    value = MeasuringUnits.formatStoredRange(
+                        ParametersType.WAIST,
+                        params?.waistFrom,
+                        params?.waistTo,
+                        params?.measuringSystem,
+                    )
                 )
-                val sepShoe = if (params?.shoesSizeFrom != null && params.shoesSizeTo != null) "-" else ""
                 ParameterItem(
-                    label = stringResource(R.string.LabelShoeSizeUS),
-                    value = "${params?.shoesSizeFrom}$sepShoe${params?.shoesSizeTo}"
+                    label = stringResource(ParametersType.SHOE_SIZE.labelRes()),
+                    value = MeasuringUnits.formatStoredRange(
+                        ParametersType.SHOE_SIZE,
+                        params?.shoesSizeFrom,
+                        params?.shoesSizeTo,
+                        params?.measuringSystem,
+                    )
                 )
                 ParameterItem(
                     label = stringResource(R.string.LabelHairColor),
                     value = params?.hairColors?.joinToString(", ").orEmpty()
                 )
-                val sepHips = if (params?.hipsFrom != null && params?.hipsTo != null) "-" else ""
                 ParameterItem(
-                    label = stringResource(R.string.LabelHips),
-                    value = "${params?.hipsFrom}$sepHips${params?.hipsTo}"
+                    label = stringResource(ParametersType.HIPS.labelRes()),
+                    value = MeasuringUnits.formatStoredRange(
+                        ParametersType.HIPS,
+                        params?.hipsFrom,
+                        params?.hipsTo,
+                        params?.measuringSystem,
+                    )
                 )
     
                 ParameterItem(

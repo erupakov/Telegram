@@ -138,6 +138,7 @@ public class NotificationCenter {
     public static final int stickersImportProgressChanged = totalEvents++;
     public static final int stickersImportComplete = totalEvents++;
     public static final int dialogDeleted = totalEvents++;
+    public static final int cancelUndoView = totalEvents++; //DIVO
     public static final int webViewResultSent = totalEvents++;
     public static final int voiceTranscriptionUpdate = totalEvents++;
     public static final int animatedEmojiDocumentLoaded = totalEvents++;

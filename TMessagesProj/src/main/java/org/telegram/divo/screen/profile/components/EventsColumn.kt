@@ -152,7 +152,7 @@ private fun EventItem(
                 modifier = Modifier
                     .size(60.dp)
                     .clip(CircleShape),
-                model = item.files.firstOrNull()?.fullUrl ?: item.creator?.avatar?.fullUrl,
+                model = item.files.firstOrNull()?.fullUrl ?: item.creator?.avatar?.fullUrl ?: item.creator?.photo?.fullUrl,
                 errorContent = {
                     Image(
                         painter = painterResource(R.drawable.divo_event_placeholder),

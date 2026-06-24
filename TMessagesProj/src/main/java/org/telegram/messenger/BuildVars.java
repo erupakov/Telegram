@@ -26,14 +26,14 @@ public class BuildVars {
     public static boolean NO_SCOPED_STORAGE = Build.VERSION.SDK_INT <= 29;
     public static String BUILD_VERSION_STRING = BuildConfig.BUILD_VERSION_STRING;
 
-    public static int APP_ID = 17349;
-    public static String APP_HASH = "344583e45741c457fe1862106095a5eb";
+    public static int APP_ID = BuildConfig.APP_ID;
+    public static String APP_HASH = BuildConfig.APP_HASH;
 
     // SafetyNet key for Google Identity SDK, set it to empty to disable
-    public static String SAFETYNET_KEY = "AIzaSyDqt8P-7F7CPCseMkOiVRgb1LY8RN1bvH8";
-    public static String PLAYSTORE_APP_URL = "https://play.google.com/store/apps/details?id=org.telegram.messenger";
+    public static String SAFETYNET_KEY = "";
+    public static String PLAYSTORE_APP_URL = "https://play.google.com/store/apps/details?id=com.android.divo2";
     public static String HUAWEI_STORE_URL = "https://appgallery.huawei.com/app/C101184875";
-    public static String GOOGLE_AUTH_CLIENT_ID = "760348033671-81kmi3pi84p11ub8hp9a1funsv0rn2p9.apps.googleusercontent.com";
+    public static String GOOGLE_AUTH_CLIENT_ID = "121062802243-9hajm212lfu3cpejssjgtkbpqb3j4jlp.apps.googleusercontent.com";
 
     public static String HUAWEI_APP_ID = "101184875";
 

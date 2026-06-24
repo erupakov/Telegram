@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -21,6 +23,7 @@ import org.telegram.divo.dal.dto.common.toEntities
 import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.dal.dto.user.AddGalleryRequest
 import org.telegram.divo.dal.dto.user.AgencyModelsRequest
+import org.telegram.divo.dal.dto.user.ReportProfileRequest
 import org.telegram.divo.dal.dto.user.UpdateProfileRequest
 import org.telegram.divo.dal.dto.user.UpsertSocialNetworkRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListRequest
@@ -49,7 +52,7 @@ class UserRepository(
     private val service: UserService,
     private val prefs: android.content.SharedPreferences,
     private val accountIndex: Int
-) {
+) : org.telegram.messenger.NotificationCenter.NotificationCenterDelegate {
     private companion object {
         const val KEY_AVATAR_URL = "cached_avatar_url"
         const val KEY_USER_ID = "cached_user_id"
@@ -66,7 +69,10 @@ class UserRepository(
         if (savedId != 0 && savedUrl != null) {
             _currentUserCache.value = UserInfo(id = savedId, avatarUrl = savedUrl)
         }
+        NotificationCenter.getInstance(accountIndex).addObserver(this, org.telegram.messenger.NotificationCenter.dialogDeleted)
     }
+
+    private val pendingDeletions = mutableSetOf<Int>()
 
     private val _galleryCache = MutableStateFlow<Map<Int, UserGalleryList>>(emptyMap())
 
@@ -76,24 +82,84 @@ class UserRepository(
                 if (it.fullName.isNotEmpty()) return@resultOf it
             }
         }
-        service.getCurrentUserInfo().toEntity().also { updateCacheAndPersist(it) }
+        val cachedId = _currentUserCache.value?.id?.takeIf { it > 0 } ?: prefs.getInt(KEY_USER_ID, 0)
+        
+        if (cachedId > 0) {
+            coroutineScope {
+                val userInfoDeferred = async { service.getCurrentUserInfo() }
+                val channelsDeferred = async {
+                    try { 
+                        val entities = service.getChannels(cachedId).data?.items?.toEntities() ?: emptyList()
+                        entities.filter { it.id !in pendingDeletions }
+                    } catch (e: Exception) { emptyList() }
+                }
+                userInfoDeferred.await().toEntity(channelsDeferred.await()).also { updateCacheAndPersist(it) }
+            }
+        } else {
+            val userInfo = service.getCurrentUserInfo()
+            val channels = try { 
+                val entities = service.getChannels(userInfo.data.id).data?.items?.toEntities() ?: emptyList()
+                entities.filter { it.id !in pendingDeletions }
+            } catch (e: Exception) { emptyList() }
+            userInfo.toEntity(channels).also { updateCacheAndPersist(it) }
+        }
     }
 
     suspend fun getUserById(userId: Int): DivoResult<UserInfo> = resultOf {
-        service.getUserById(userId).toEntity()
+        coroutineScope {
+            val userInfoDeferred = async { service.getUserById(userId) }
+            val channelsDeferred = async {
+                try { 
+                    val entities = service.getChannels(userId).data?.items?.toEntities() ?: emptyList()
+                    entities.filter { it.id !in pendingDeletions }
+                } catch (e: Exception) { emptyList() }
+            }
+            userInfoDeferred.await().toEntity(channelsDeferred.await())
+        }
+    }
+
+    suspend fun addChannel(telegramChatId: Long, username: String?, inviteLink: String?): DivoResult<Unit> = resultOf {
+        service.addChannel(
+            org.telegram.divo.dal.dto.user.AddChannelRequest(
+                telegramChatId = telegramChatId,
+                username = username,
+                inviteLink = inviteLink
+            )
+        )
+        getCurrentUserInfo(forceRefresh = true)
+    }
+
+    suspend fun deleteChannel(channelId: Int): DivoResult<Unit> = resultOf {
+        pendingDeletions.add(channelId)
+        try {
+            service.deleteChannel(channelId)
+        } finally {
+            pendingDeletions.remove(channelId)
+            getCurrentUserInfo(forceRefresh = true)
+        }
     }
 
     suspend fun updateProfile(
         userInfo: UserInfo
     ): DivoResult<UserInfo> = resultOf {
-        service.updateProfile(
+        var resolvedCityId = userInfo.city?.id?.takeIf { it > 0 }
+        if (resolvedCityId == null && userInfo.city?.name?.isNotBlank() == true) {
+            try {
+                val geoResponse = DivoApi.geoService.searchByAddressName(userInfo.city.name)
+                resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        val result = service.updateProfile(
             UpdateProfileRequest(
                 fullName = userInfo.fullName,
                 phone = userInfo.phone,
                 timezone = TimeZone.getDefault().id,
-                gender = userInfo.gender?.id,
+                gender = userInfo.gender?.id?.lowercase(java.util.Locale.US),
                 birthday = userInfo.birthday,
-                geoCityId = userInfo.city?.id,
+                geoCityId = resolvedCityId?.takeIf { it > 0 },
                 measuringSystem = userInfo.measuringSystem,
                 subrole = userInfo.subrole,
                 pushNotifications = userInfo.pushNotifications,
@@ -104,14 +170,16 @@ class UserRepository(
                 agency = userInfo.agency?.toDto(),
                 customer = userInfo.customer?.toDto()
             )
-        ).toEntity()
-            .also { updateCacheAndPersist(it) }
+        )
+        val existingChannels = _currentUserCache.value?.channels ?: emptyList()
+        result.toEntity(existingChannels).also { updateCacheAndPersist(it) }
     }
 
     suspend fun updateProfile(
         request: UpdateProfileRequest
     ): DivoResult<UserInfo> = resultOf {
-        service.updateProfile(request).toEntity()
+        val existingChannels = _currentUserCache.value?.channels ?: emptyList()
+        service.updateProfile(request).toEntity(existingChannels)
             .also { updateCacheAndPersist(it) }
     }
 
@@ -144,7 +212,7 @@ class UserRepository(
             agency.toDto()
         )
 
-        service.getCurrentUserInfo().toEntity().also { updateCacheAndPersist(it) }
+        getCurrentUserInfo(forceRefresh = true)
     }
 
     suspend fun getAgencyModels(
@@ -202,7 +270,7 @@ class UserRepository(
         service.upsertSocialNetwork(
             UpsertSocialNetworkRequest(socialNetworkId, nickname)
         )
-        service.getCurrentUserInfo().toEntity().also { updateCacheAndPersist(it) }
+        getCurrentUserInfo(forceRefresh = true)
     }
 
     fun fetchUserInfoInBackground() {
@@ -319,6 +387,41 @@ class UserRepository(
 
     suspend fun getAppearances(): DivoResult<Appearances> = resultOf {
         service.getAppearances().data.toEntity()
+    }
+
+    suspend fun reportProfile(userId: Int, reportKey: String): DivoResult<Unit> = resultOf {
+        service.reportProfile(
+            ReportProfileRequest(
+                reportUserId = userId,
+                reportText = reportKey
+            )
+        )
+    }
+
+    suspend fun getFeedReportTypes(): DivoResult<Map<String, String>> = resultOf {
+        val data = DivoApi.dictionaryService.getFeedReportTypes().data
+        data.associate { it.id to it.title }
+    }
+
+    override fun didReceivedNotification(id: Int, account: Int, vararg args: Any?) {
+        if (id == NotificationCenter.dialogDeleted) {
+            val did = args[0] as? Long ?: return
+            if (did < 0) {
+                val chatId = -did
+                val currentUser = _currentUserCache.value
+                if (currentUser != null) {
+                    val matchingChannel = currentUser.channels.find { it.telegramChatId == chatId }
+                    if (matchingChannel != null) {
+                        _currentUserCache.value = currentUser.copy(
+                            channels = currentUser.channels.filter { it.telegramChatId != chatId }
+                        )
+                        scope.launch {
+                            deleteChannel(matchingChannel.id)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

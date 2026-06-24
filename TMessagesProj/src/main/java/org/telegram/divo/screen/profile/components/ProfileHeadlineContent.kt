@@ -110,19 +110,46 @@ fun ProfileHeadlineContent(
             Column(
                 modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)
             ) {
-                ProfileNameItem(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    uiState
-                )
+                val hasDM = uiState.userInfo.telegramId != null && uiState.userInfo.telegramAccessHash != null
 
-                if (!uiState.isOwnProfile) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    ProfileNameItem(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp, end = if (!uiState.isOwnProfile && !hasDM) 64.dp else 16.dp),
+                        uiState
+                    )
+                    
+                    if (!uiState.isOwnProfile && !hasDM) {
+                        RoundedGlassButton(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .padding(end = 16.dp),
+                            resId = R.drawable.ic_divo_share_model,
+                            iconSize = 24.dp,
+                            onClick = {
+                                val user = uiState.userInfo
+                                DivoSharingHelper.share(
+                                    context = context,
+                                    scope = scope,
+                                    type = DivoShareType.PROFILE,
+                                    id = user.id,
+                                    customMessage = "${user.displayName} - ${user.roleLabel}",
+                                    imageUrl = user.photoUrl
+                                )
+                            }
+                        )
+                    }
+                }
+
+                if (!uiState.isOwnProfile && hasDM) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     ) {
                         RoundedGlassContainer(
                             height = 40.dp,
-                            background = Color.Red, //AppTheme.colors.onBackground.copy(alpha = 0.3f)
+                            background = AppTheme.colors.onBackground.copy(alpha = 0.3f),
                             contentPadding = PaddingValues(horizontal = 14.dp)
                         ) {
                             Row(
@@ -145,6 +172,7 @@ fun ProfileHeadlineContent(
                                 )
                             }
                         }
+                        
                         Spacer(Modifier.weight(1f))
                         RoundedGlassButton(
                             resId = R.drawable.ic_divo_share_model,

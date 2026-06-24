@@ -20,6 +20,44 @@ public class ThemeColors {
     public static int[] createDefaultColors() {
         int[] defaultColors = new int[Theme.colorsCount];
 
+        //DIVO
+        // --- ИСКОРЕНЯЕМ ЗЕЛЕНЬ: ЧАСЫ И ГАЛОЧКИ ---
+        defaultColors[key_chat_outTimeText] = 0xFFFF772D;
+        defaultColors[key_chat_outTimeSelectedText] = 0xFFFF772D;
+        defaultColors[key_chat_outSentCheck] = 0xFFFF772D;
+        defaultColors[key_chat_outSentCheckSelected] = 0xFFFF772D;
+        defaultColors[key_chat_outSentCheckRead] = 0xFFFF772D;
+        defaultColors[key_chat_outSentCheckReadSelected] = 0xFFFF772D;
+        defaultColors[key_chat_outSentClock] = 0xFFFF772D;
+        defaultColors[key_chat_outSentClockSelected] = 0xFFFF772D;
+
+        // --- КНОПКИ РАСШИФРОВКИ (A->a) И PLAY (Круг оранжевый, иконка белая) ---
+        defaultColors[key_chat_outAudioProgress] = 0xFFFF772D;
+        defaultColors[key_chat_outAudioSelectedProgress] = 0xFFFF772D;
+        defaultColors[key_chat_outMediaIcon] = 0xffffffff;
+        defaultColors[key_chat_outMediaIconSelected] = 0xffffffff;
+        defaultColors[key_chat_outLoader] = 0xFFFF772D;
+        defaultColors[key_chat_outLoaderSelected] = 0xFFFF772D;
+
+        // --- ОПРОСЫ И ПОЛЗУНКИ ---
+        // Эти ключи отвечают за фон опросов, линию проигрывания и правильные ответы
+        defaultColors[key_chat_outAudioSeekbarFill] = 0xFFFF772D;
+        defaultColors[key_chat_outVoiceSeekbarFill] = 0xFFFF772D;
+        defaultColors[key_chat_outPollCorrectAnswer] = 0xFFFF772D;
+
+        // --- ГЛАЗОК ПРОСМОТРОВ И МЕНЮ ---
+        defaultColors[key_chat_outViews] = 0xFFFF772D;
+        defaultColors[key_chat_outViewsSelected] = 0xFFFF772D;
+        defaultColors[key_chat_outMenu] = 0xFFFF772D;
+        defaultColors[key_chat_outMenuSelected] = 0xFFFF772D;
+
+        // --- ОСТАЛЬНЫЕ МЕЛОЧИ В ВАШИХ СООБЩЕНИЯХ ---
+        defaultColors[key_chat_outInstant] = 0xFFFF772D; // Молния Instant view
+        defaultColors[key_chat_outLocationIcon] = 0xFFFF772D; // Иконка геолокации
+        defaultColors[key_chat_outContactBackground] = 0xFFFF772D; // Контакты
+        defaultColors[key_chat_outAudioDurationText] = 0xFFFF772D; // Длительность аудио
+        defaultColors[key_chat_outFileInfoText] = 0xFFFF772D; // Размер файла
+
         defaultColors[key_wallpaperFileOffset] = 0;
         defaultColors[key_dialogBackground] = 0xffffffff;
         defaultColors[key_dialogBackgroundGray] = 0xfff0f0f0;
@@ -222,6 +260,8 @@ public class ThemeColors {
         defaultColors[key_actionBarDefaultArchivedSearch] = DEFAULT_BLACK_TEXT;
         defaultColors[key_actionBarDefaultArchivedSearchPlaceholder] = 0xff838c96;
 
+        defaultColors[key_chat_wallpaper] = 0xFFF2E4DD; //DIVO
+
         defaultColors[key_chats_onlineCircle] = 0xff4bcb1c;
         defaultColors[key_chats_unreadCounter] = TELEGRAM_COLOR;
         defaultColors[key_chats_unreadCounterMuted] = 0xffBEC3C7;
@@ -249,9 +289,9 @@ public class ThemeColors {
         defaultColors[key_chats_date_bold] = 0xff919395;
         defaultColors[key_chats_pinnedOverlay] = 0x08000000;
         defaultColors[key_chats_tabletSelectedOverlay] = 0x0f000000;
-        defaultColors[key_chats_sentCheck] = 0xff46aa36;
-        defaultColors[key_chats_sentReadCheck] = 0xff46aa36;
-        defaultColors[key_chats_sentClock] = 0xff75bd5e;
+        defaultColors[key_chats_sentCheck] = 0xFFFF772D; //DIVO
+        defaultColors[key_chats_sentReadCheck] = 0xFFFF772D; //DIVO
+        defaultColors[key_chats_sentClock] = 0xFFFF772D; //DIVO
         defaultColors[key_chats_sentError] = 0xffd55252;
         defaultColors[key_chats_sentErrorIcon] = 0xffffffff;
         defaultColors[key_chats_verifiedBackground] = 0xff33a8e6;
@@ -291,7 +331,7 @@ public class ThemeColors {
         defaultColors[key_chat_attachPollBackground] = 0xfff2c04b;
 
         defaultColors[key_chat_inPollCorrectAnswer] = 0xff60c255;
-        defaultColors[key_chat_outPollCorrectAnswer] = 0xff60c255;
+        //defaultColors[key_chat_outPollCorrectAnswer] = 0xff60c255;
         defaultColors[key_chat_inPollWrongAnswer] = 0xffeb6060;
         defaultColors[key_chat_outPollWrongAnswer] = 0xffeb6060;
 
@@ -303,14 +343,14 @@ public class ThemeColors {
         defaultColors[key_chat_inBubble] = 0xffffffff;
         defaultColors[key_chat_inBubbleSelected] = 0xffecf7fd;
         defaultColors[key_chat_inBubbleShadow] = 0xff1d3753;
-        defaultColors[key_chat_outBubble] = 0xffefffde;
-        defaultColors[key_chat_outBubbleGradientSelectedOverlay] = 0x14000000;
-        defaultColors[key_chat_outBubbleSelected] = 0xffd9f7c5;
-        defaultColors[key_chat_outBubbleShadow] = 0xff1e750c;
+        defaultColors[key_chat_outBubble] = 0xffffffff; //DIVO
+        defaultColors[key_chat_outBubbleSelected] = 0xffecf7fd; //DIVO
+        defaultColors[key_chat_outBubbleShadow] = 0xff1d3753; //DIVO
+        defaultColors[key_chat_outBubbleSelectedOverlay] = 0x14000000; //DIVO
+        defaultColors[key_chat_outBubbleGradientSelectedOverlay] = 0x14000000; //DIVO
         defaultColors[key_chat_inMediaIcon] = 0xffffffff;
         defaultColors[key_chat_inMediaIconSelected] = 0xffeff8fe;
-        defaultColors[key_chat_outMediaIcon] = 0xffefffde;
-        defaultColors[key_chat_outMediaIconSelected] = 0xffe1f8cf;
+
         defaultColors[key_chat_messageTextIn] = 0xff000000;
         defaultColors[key_chat_messageTextOut] = 0xff000000;
         defaultColors[key_chat_messageLinkIn] = 0xff2678b6;
@@ -319,27 +359,22 @@ public class ThemeColors {
         defaultColors[key_chat_serviceLink] = 0xffffffff;
         defaultColors[key_chat_serviceIcon] = 0xffffffff;
         defaultColors[key_chat_mediaTimeBackground] = 0x66000000;
-        defaultColors[key_chat_outSentCheck] = 0xff5db050;
-        defaultColors[key_chat_outSentCheckSelected] = 0xff5db050;
-        defaultColors[key_chat_outSentCheckRead] = 0xff5db050;
-        defaultColors[key_chat_outSentCheckReadSelected] = 0xff5db050;
-        defaultColors[key_chat_outSentClock] = 0xff75bd5e;
-        defaultColors[key_chat_outSentClockSelected] = 0xff75bd5e;
+
         defaultColors[key_chat_inSentClock] = 0xffa1aab3;
         defaultColors[key_chat_inSentClockSelected] = 0xff93bdca;
         defaultColors[key_chat_mediaSentCheck] = 0xffffffff;
         defaultColors[key_chat_mediaSentClock] = 0xffffffff;
         defaultColors[key_chat_inViews] = 0xffa1aab3;
         defaultColors[key_chat_inViewsSelected] = 0xff93bdca;
-        defaultColors[key_chat_outViews] = 0xff6eb257;
-        defaultColors[key_chat_outViewsSelected] = 0xff6eb257;
+        //defaultColors[key_chat_outViews] = 0xff6eb257;
+        //defaultColors[key_chat_outViewsSelected] = 0xff6eb257;
         defaultColors[key_chat_mediaViews] = 0xffffffff;
         defaultColors[key_chat_inMenu] = 0xffb6bdc5;
         defaultColors[key_chat_inMenuSelected] = 0xff98c1ce;
-        defaultColors[key_chat_outMenu] = 0xff91ce7e;
-        defaultColors[key_chat_outMenuSelected] = 0xff91ce7e;
+        //defaultColors[key_chat_outMenu] = 0xff91ce7e;
+        //defaultColors[key_chat_outMenuSelected] = 0xff91ce7e;
         defaultColors[key_chat_mediaMenu] = 0xffffffff;
-        defaultColors[key_chat_outInstant] = 0xff55ab4f;
+        //defaultColors[key_chat_outInstant] = 0xff55ab4f;
         defaultColors[key_chat_outInstantSelected] = 0xff489943;
         defaultColors[key_chat_inInstant] = TELEGRAM_COLOR_TEXT;
         defaultColors[key_chat_inInstantSelected] = 0xff3079b5;
@@ -361,23 +396,29 @@ public class ThemeColors {
         defaultColors[key_chat_outViaBotNameText] = 0xff55ab4f;
         defaultColors[key_chat_stickerViaBotNameText] = 0xffffffff;
         defaultColors[key_chat_inReplyLine] = 0xff599fd8;
-        defaultColors[key_chat_outReplyLine] = 0xff6eb969;
-        defaultColors[key_chat_outReplyLine2] = 0xff40A920;
+
+        // ---DIVO ЦВЕТ ЛИНИИ ОТВЕТА НА СООБЩЕНИЕ ---
+        defaultColors[key_chat_outReplyLine] = 0xFFFF772D;
+        defaultColors[key_chat_outReplyLine2] = 0xFFFF772D;
+        defaultColors[key_chat_outReplyNameText] = 0xFFFF772D;
+        defaultColors[key_chat_outReplyMessageText] = 0xff000000;
+        defaultColors[key_chat_outReplyMediaMessageText] = 0xffa1aab3;
+
         defaultColors[key_chat_stickerReplyLine] = 0xffffffff;
         defaultColors[key_chat_inReplyNameText] = TELEGRAM_COLOR_TEXT;
-        defaultColors[key_chat_outReplyNameText] = 0xff55ab4f;
         defaultColors[key_chat_stickerReplyNameText] = 0xffffffff;
         defaultColors[key_chat_inReplyMessageText] = 0xff000000;
-        defaultColors[key_chat_outReplyMessageText] = 0xff000000;
         defaultColors[key_chat_inReplyMediaMessageText] = 0xffa1aab3;
-        defaultColors[key_chat_outReplyMediaMessageText] = 0xff65b05b;
         defaultColors[key_chat_inReplyMediaMessageSelectedText] = 0xff89b4c1;
         defaultColors[key_chat_outReplyMediaMessageSelectedText] = 0xff65b05b;
         defaultColors[key_chat_stickerReplyMessageText] = 0xffffffff;
         defaultColors[key_chat_inPreviewLine] = 0xff70b4e8;
-        defaultColors[key_chat_outPreviewLine] = 0xff88c97b;
+
+        // ---DIVO ПРЕДПРОСМОТР ССЫЛОК ---
+        defaultColors[key_chat_outPreviewLine] = 0xFFFF772D;
+        defaultColors[key_chat_outSiteNameText] = 0xFFFF772D;
+
         defaultColors[key_chat_inSiteNameText] = TELEGRAM_COLOR_TEXT;
-        defaultColors[key_chat_outSiteNameText] = 0xff55ab4f;
         defaultColors[key_chat_inContactNameText] = 0xff4e9ad4;
         defaultColors[key_chat_outContactNameText] = 0xff55ab4f;
         defaultColors[key_chat_inContactPhoneText] = 0xff2f3438;
@@ -386,9 +427,7 @@ public class ThemeColors {
         defaultColors[key_chat_outContactPhoneSelectedText] = 0xff354234;
         defaultColors[key_chat_mediaProgress] = 0xffffffff;
         defaultColors[key_chat_inAudioProgress] = 0xffffffff;
-        defaultColors[key_chat_outAudioProgress] = 0xffefffde;
         defaultColors[key_chat_inAudioSelectedProgress] = 0xffeff8fe;
-        defaultColors[key_chat_outAudioSelectedProgress] = 0xffe1f8cf;
         defaultColors[key_chat_mediaTimeText] = 0xffffffff;
         defaultColors[key_chat_inAdminText] = 0xffc0c6cb;
         defaultColors[key_chat_inAdminSelectedText] = 0xff89b4c1;
@@ -396,16 +435,16 @@ public class ThemeColors {
         defaultColors[key_chat_outAdminSelectedText] = 0xff70b15c;
         defaultColors[key_chat_inTimeText] = 0xffa1aab3;
         defaultColors[key_chat_inTimeSelectedText] = 0xff89b4c1;
-        defaultColors[key_chat_outTimeText] = 0xff70b15c;
-        defaultColors[key_chat_outTimeSelectedText] = 0xff70b15c;
         defaultColors[key_chat_inAudioPerformerText] = 0xff2f3438;
         defaultColors[key_chat_inAudioPerformerSelectedText] = 0xff2f3438;
-        defaultColors[key_chat_outAudioPerformerText] = 0xff354234;
         defaultColors[key_chat_outAudioPerformerSelectedText] = 0xff354234;
         defaultColors[key_chat_inAudioTitleText] = 0xff4e9ad4;
-        defaultColors[key_chat_outAudioTitleText] = 0xff55ab4f;
+
+        //DIVO Текст внутри аудио (Названия и исполнитель)
+        defaultColors[key_chat_outAudioTitleText] = 0xFFFF772D;
+        defaultColors[key_chat_outAudioPerformerText] = 0xff2f3438;
+
         defaultColors[key_chat_inAudioDurationText] = 0xffa1aab3;
-        defaultColors[key_chat_outAudioDurationText] = 0xff65b05b;
         defaultColors[key_chat_inAudioDurationSelectedText] = 0xff89b4c1;
         defaultColors[key_chat_outAudioDurationSelectedText] = 0xff65b05b;
         defaultColors[key_chat_inAudioSeekbar] = 0xffe4eaf0;
@@ -415,27 +454,27 @@ public class ThemeColors {
         defaultColors[key_chat_inAudioSeekbarSelected] = 0xffbcdee8;
         defaultColors[key_chat_outAudioSeekbarSelected] = 0xffa9dd96;
         defaultColors[key_chat_inAudioSeekbarFill] = TELEGRAM_COLOR;
-        defaultColors[key_chat_outAudioSeekbarFill] = 0xff78c272;
         defaultColors[key_chat_inVoiceSeekbar] = 0xffdee5eb;
-        defaultColors[key_chat_outVoiceSeekbar] = 0xffbbe3ac;
         defaultColors[key_chat_inVoiceSeekbarSelected] = 0xffbcdee8;
-        defaultColors[key_chat_outVoiceSeekbarSelected] = 0xffa9dd96;
+        defaultColors[key_chat_outVoiceSeekbar] = 0xffdee5eb; //DIVO
+        defaultColors[key_chat_outVoiceSeekbarSelected] = 0xffbcdee8; //DIVO
         defaultColors[key_chat_inVoiceSeekbarFill] = TELEGRAM_COLOR;
-        defaultColors[key_chat_outVoiceSeekbarFill] = 0xff78c272;
         defaultColors[key_chat_inFileProgress] = 0xffebf0f5;
-        defaultColors[key_chat_outFileProgress] = 0xffdaf5c3;
         defaultColors[key_chat_inFileProgressSelected] = 0xffcbeaf6;
-        defaultColors[key_chat_outFileProgressSelected] = 0xffc5eca7;
         defaultColors[key_chat_inFileNameText] = 0xff4e9ad4;
-        defaultColors[key_chat_outFileNameText] = 0xff55ab4f;
         defaultColors[key_chat_inFileInfoText] = 0xffa1aab3;
-        defaultColors[key_chat_outFileInfoText] = 0xff65b05b;
         defaultColors[key_chat_inFileInfoSelectedText] = 0xff89b4c1;
         defaultColors[key_chat_outFileInfoSelectedText] = 0xff65b05b;
         defaultColors[key_chat_inFileBackground] = 0xffebf0f5;
-        defaultColors[key_chat_outFileBackground] = 0xffdaf5c3;
+
+        // ---DIVO ЦВЕТА ФАЙЛОВ И ДОКУМЕНТОВ ---
+        defaultColors[key_chat_outFileBackground] = 0xffebf0f5;
+        defaultColors[key_chat_outFileBackgroundSelected] = 0xffcbeaf6;
+        defaultColors[key_chat_outFileProgress] = 0xffebf0f5;
+        defaultColors[key_chat_outFileProgressSelected] = 0xffcbeaf6;
+        defaultColors[key_chat_outFileNameText] = 0xFFFF772D;
+
         defaultColors[key_chat_inFileBackgroundSelected] = 0xffcbeaf6;
-        defaultColors[key_chat_outFileBackgroundSelected] = 0xffc5eca7;
         defaultColors[key_chat_inVenueInfoText] = 0xffa1aab3;
         defaultColors[key_chat_outVenueInfoText] = 0xff65b05b;
         defaultColors[key_chat_inVenueInfoSelectedText] = 0xff89b4c1;
@@ -468,10 +507,10 @@ public class ThemeColors {
         defaultColors[key_chat_unreadMessagesStartBackground] = 0xffffffff;
         defaultColors[key_chat_inLocationBackground] = 0xffebf0f5;
         defaultColors[key_chat_inLocationIcon] = 0xffa2b5c7;
-        defaultColors[key_chat_outLocationIcon] = 0xff87bf78;
+        //defaultColors[key_chat_outLocationIcon] = 0xff87bf78;
         defaultColors[key_chat_inContactBackground] = TELEGRAM_COLOR;
         defaultColors[key_chat_inContactIcon] = 0xffffffff;
-        defaultColors[key_chat_outContactBackground] = 0xff78c272;
+        //defaultColors[key_chat_outContactBackground] = 0xff78c272;
         defaultColors[key_chat_outContactIcon] = 0xffefffde;
         defaultColors[key_chat_searchPanelIcons] = 0xff676a6f;
         defaultColors[key_chat_searchPanelText] = 0xff676a6f;
@@ -520,8 +559,7 @@ public class ThemeColors {
         defaultColors[key_chat_addContact] = TELEGRAM_COLOR_TEXT;
         defaultColors[key_chat_inLoader] = TELEGRAM_COLOR;
         defaultColors[key_chat_inLoaderSelected] = 0xff65abe0;
-        defaultColors[key_chat_outLoader] = 0xff78c272;
-        defaultColors[key_chat_outLoaderSelected] = 0xff6ab564;
+
         defaultColors[key_chat_inLoaderPhoto] = 0xffa2b8c8;
         defaultColors[key_chat_mediaLoaderPhoto] = 0x66000000;
         defaultColors[key_chat_mediaLoaderPhotoSelected] = 0x7f000000;
@@ -756,7 +794,7 @@ public class ThemeColors {
         defaultColors[key_voipgroup_windowBackgroundWhiteInputField] = 0xffdbdbdb;
         defaultColors[key_voipgroup_windowBackgroundWhiteInputFieldActivated] = TELEGRAM_COLOR;
 
-        defaultColors[key_chat_outReactionButtonBackground] = 0xff78c272;
+        defaultColors[key_chat_outReactionButtonBackground] = 0xFFFF772D; //DIVO
         defaultColors[key_chat_inReactionButtonBackground] = TELEGRAM_COLOR;
         defaultColors[key_chat_inReactionButtonText] = TELEGRAM_COLOR_TEXT;
         defaultColors[key_chat_outReactionButtonText] = 0xff55ab4f;

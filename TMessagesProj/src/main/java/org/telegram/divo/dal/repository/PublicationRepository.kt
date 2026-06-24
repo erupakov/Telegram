@@ -11,8 +11,8 @@ import org.telegram.divo.common.utils.ThumbnailProcessor
 import org.telegram.divo.dal.api.PublicationService
 import org.telegram.divo.dal.dto.publication.CreatePublicationFileRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
-import org.telegram.divo.dal.dto.publication.FavoriteRequest
-import org.telegram.divo.dal.dto.publication.LikeRequest
+import org.telegram.divo.dal.dto.publication.FollowRequest
+import org.telegram.divo.dal.dto.publication.UserLikeRequest
 import org.telegram.divo.dal.dto.publication.FeedRequestDto
 import org.telegram.divo.dal.dto.publication.FeedlineSearchRequest
 import org.telegram.divo.dal.dto.publication.ModelParametersDto
@@ -37,7 +37,7 @@ sealed class UserActionEvent {
     ) : UserActionEvent()
 
     data class LikeChanged(
-        val feedId: Int,
+        val userId: Int,
         val isLiked: Boolean,
         val newLikesCount: Int
     ) : UserActionEvent()
@@ -73,6 +73,8 @@ class PublicationRepository(
         subscribedOnly: Boolean? = null,
         modelsOnly: Boolean? = null,
         modelParameters: ModelParametersDto? = null,
+        geoCityId: Int? = null,
+        countryCode: String? = null,
     ): DivoResult<FeedlineSearchResult> = resultOf {
         service.searchFeedline(
             FeedlineSearchRequest(
@@ -88,6 +90,8 @@ class PublicationRepository(
                 subscribedOnly = subscribedOnly,
                 modelsOnly = modelsOnly,
                 modelParameters = modelParameters,
+                geoCityId = geoCityId,
+                countryCode = countryCode
             )
         ).toEntities()
     }
@@ -115,19 +119,19 @@ class PublicationRepository(
     }
 
     suspend fun likePost(id: Int): DivoResult<Unit> = resultOf {
-        service.likePost(LikeRequest(id))
+        service.likePost(UserLikeRequest(id))
     }
 
     suspend fun unlikePost(id: Int): DivoResult<Unit> = resultOf {
-        service.unlikePost(LikeRequest(id))
+        service.unlikePost(UserLikeRequest(id))
     }
 
-    suspend fun markFavorite(id: Int, entity: String): DivoResult<Unit> = resultOf {
-        service.markFavorite(FavoriteRequest(id, entity))
+    suspend fun markFavorite(id: Int): DivoResult<Unit> = resultOf {
+        service.markFavorite(FollowRequest(id))
     }
 
-    suspend fun unmarkFavorite(id: Int, entity: String): DivoResult<Unit> = resultOf {
-        service.unmarkFavorite(FavoriteRequest(id, entity))
+    suspend fun unmarkFavorite(id: Int): DivoResult<Unit> = resultOf {
+        service.unmarkFavorite(FollowRequest(id))
     }
 
     /** Вызывается из UseCase после успешного API-запроса */

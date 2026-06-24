@@ -8,4 +8,5 @@ data class WorkExperience(
     val startDate: String,
     val endDate: String?,
     val isCurrent: Boolean,
+    val agencyAvatarLink: String? = null,
 )

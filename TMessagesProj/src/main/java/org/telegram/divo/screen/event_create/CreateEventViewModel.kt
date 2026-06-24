@@ -135,17 +135,33 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
 
     private fun State.copyFromEvent(eventId: Int, event: EventDetails): State {
         val eventDate = event.date.orEmpty()
-        val deadlineDate = event.dateTo.orEmpty()
-        val datePart = eventDate.substringBefore(" ", eventDate)
-        val timePart = eventDate.substringAfter(" ", "")
-        val deadlineDatePart = deadlineDate.substringBefore(" ", deadlineDate)
-        val deadlineTimePart = deadlineDate.substringAfter(" ", "")
+        val deadlineDate = event.applicationDeadline.orEmpty()
+        fun formatDateFromApi(apiDateStr: String): Pair<String, String> {
+            if (apiDateStr.isBlank()) return "" to ""
+            try {
+                val sdfIn = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
+                val date = sdfIn.parse(apiDateStr) ?: return "" to ""
+                val sdfOutDate = java.text.SimpleDateFormat("dd.MM.yyyy", java.util.Locale.US)
+                val sdfOutTime = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+                return sdfOutDate.format(date) to sdfOutTime.format(date).uppercase(java.util.Locale.US)
+            } catch (e: Exception) {
+                return apiDateStr.substringBefore(" ", "") to apiDateStr.substringAfter(" ", "")
+            }
+        }
+
+        val (datePart, timePart) = formatDateFromApi(eventDate)
+        val (deadlineDatePart, deadlineTimePart) = formatDateFromApi(deadlineDate)
 
         val sortedFiles = event.files.sortedBy { it.order }
         val gallery = sortedFiles.map { Uri.parse(it.fullUrl) }
 
-        fun rangeToStr(from: Int?, to: Int?) = if (from != null && to != null) "$from-$to" else ""
         val attrs = event.modelAttributes
+        val storedSystem = org.telegram.divo.common.MeasuringUnits.resolveStoredSystem(attrs?.measuringSystem)
+        fun rangeToStr(type: ParametersType, from: Int?, to: Int?): String {
+            if (from == null && to == null) return ""
+            return org.telegram.divo.common.MeasuringUnits.formatStoredRange(type, from, to, storedSystem)
+        }
+
         val roleValue = attrs?.roles?.joinToString(", ") ?: ""
         val genderValue = attrs?.genders?.joinToString(", ") ?: ""
         val hairLengthValue = attrs?.hairLengths?.joinToString(", ") ?: ""
@@ -173,13 +189,13 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             eyeColor = eyeColor.copy(value = eyeColorValue),
             skinColor = skinColor.copy(value = skinColorValue),
             blockParams = listOf(
-                ProfileParameter(ParametersType.AGE, rangeToStr(attrs?.ageFrom, attrs?.ageTo)),
-                ProfileParameter(ParametersType.HEIGHT, rangeToStr(attrs?.heightFrom, attrs?.heightTo)),
-                ProfileParameter(ParametersType.WEIGHT, rangeToStr(attrs?.weightFrom, attrs?.weightTo)),
-                ProfileParameter(ParametersType.WAIST, rangeToStr(attrs?.waistFrom, attrs?.waistTo)),
-                ProfileParameter(ParametersType.HIPS, rangeToStr(attrs?.hipsFrom, attrs?.hipsTo)),
-                ProfileParameter(ParametersType.SHOE_SIZE, rangeToStr(attrs?.shoesSizeFrom, attrs?.shoesSizeTo)),
-                ProfileParameter(ParametersType.BREAST_SIZE, rangeToStr(attrs?.breastSizeFrom, attrs?.breastSizeTo))
+                ProfileParameter(ParametersType.AGE, rangeToStr(ParametersType.AGE, attrs?.ageFrom, attrs?.ageTo)),
+                ProfileParameter(ParametersType.HEIGHT, rangeToStr(ParametersType.HEIGHT, attrs?.heightFrom, attrs?.heightTo)),
+                ProfileParameter(ParametersType.WEIGHT, rangeToStr(ParametersType.WEIGHT, attrs?.weightFrom, attrs?.weightTo)),
+                ProfileParameter(ParametersType.WAIST, rangeToStr(ParametersType.WAIST, attrs?.waistFrom, attrs?.waistTo)),
+                ProfileParameter(ParametersType.HIPS, rangeToStr(ParametersType.HIPS, attrs?.hipsFrom, attrs?.hipsTo)),
+                ProfileParameter(ParametersType.SHOE_SIZE, rangeToStr(ParametersType.SHOE_SIZE, attrs?.shoesSizeFrom, attrs?.shoesSizeTo)),
+                ProfileParameter(ParametersType.BREAST_SIZE, rangeToStr(ParametersType.BREAST_SIZE, attrs?.breastSizeFrom, attrs?.breastSizeTo))
             ),
             galleryUris = gallery,
             existingGalleryFiles = sortedFiles,

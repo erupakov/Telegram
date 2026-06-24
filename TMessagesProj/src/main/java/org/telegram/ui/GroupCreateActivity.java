@@ -1310,6 +1310,10 @@ public class GroupCreateActivity extends BaseFragment implements NotificationCen
                 Bundle args2 = new Bundle();
                 args2.putLong("chat_id", chatId);
                 args2.putBoolean("just_created_chat", true);
+                //DIVO
+                if (arguments != null && arguments.containsKey("local_avatar_path")) {
+                    args2.putString("local_avatar_path", arguments.getString("local_avatar_path"));
+                }
                 presentFragment(new ChatActivity(args2), true);
             } else {
                 if (!doneButtonVisible) {

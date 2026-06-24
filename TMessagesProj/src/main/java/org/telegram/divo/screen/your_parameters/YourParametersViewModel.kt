@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.DivoSettings
+import org.telegram.divo.common.MeasuringUnits
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.dal.network.DivoApi
@@ -85,12 +87,42 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
         viewModelScope.launch {
             setState { copy(isSaving = true) }
 
+            val userInfo = state.value.toUserInfo()
             val result = DivoApi.userRepository.updateProfile(
-                userInfo = state.value.toUserInfo()
+                userInfo = userInfo
             )
 
             when (result) {
                 is DivoResult.Success -> {
+                    try {
+                        val birthdayStr = userInfo.birthday
+                        if (birthdayStr.isBlank()) {
+                            org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramBirthday(
+                                currentAccount = org.telegram.messenger.UserConfig.selectedAccount,
+                                year = null,
+                                month = null,
+                                day = null
+                            )
+                        } else {
+                            val parts = birthdayStr.split("-")
+                            if (parts.size == 3) {
+                                val year = parts[0].toIntOrNull()
+                                val month = parts[1].toIntOrNull()
+                                val day = parts[2].toIntOrNull()
+                                if (year != null && month != null && day != null) {
+                                    org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramBirthday(
+                                        currentAccount = org.telegram.messenger.UserConfig.selectedAccount,
+                                        year = year,
+                                        month = month,
+                                        day = day
+                                    )
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
                     setState { copy(isSaving = false) }
                     sendEffect(YourParametersEffect.SaveSuccess)
                 }
@@ -125,15 +157,40 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
         }
     }
 
-    private fun UserInfo.mapToBlockParams(): List<ProfileParameter> =
-        listOf(
+    private fun UserInfo.mapToBlockParams(): List<ProfileParameter> {
+        val currentSystem = DivoSettings.measuringSystem
+        val storedSystem = model?.appearance?.measuringSystem
+            ?.takeIf { it.isNotBlank() }
+            ?: measuringSystem.takeIf { it.isNotBlank() }
+            ?: currentSystem
+
+        fun convert(type: ParametersType, raw: String): String =
+            MeasuringUnits.convertBetweenSystems(type, raw, storedSystem, currentSystem)
+
+        return listOf(
             ProfileParameter(ParametersType.BIRTHDAY, birthday),
-            ProfileParameter(ParametersType.HEIGHT, model?.appearance?.height?.let { "$it" }.orEmpty()),
-            ProfileParameter(ParametersType.WEIGHT, model?.appearance?.weight?.let { "$it" }.orEmpty()),
-            ProfileParameter(ParametersType.WAIST, model?.appearance?.waist?.let { "$it" }.orEmpty()),
-            ProfileParameter(ParametersType.HIPS, model?.appearance?.hips?.let { "$it" }.orEmpty()),
-            ProfileParameter(ParametersType.SHOE_SIZE, model?.appearance?.shoesSize?.let { "$it" }.orEmpty()),
+            ProfileParameter(
+                ParametersType.HEIGHT,
+                model?.appearance?.height?.let { convert(ParametersType.HEIGHT, "$it") }.orEmpty()
+            ),
+            ProfileParameter(
+                ParametersType.WEIGHT,
+                model?.appearance?.weight?.let { convert(ParametersType.WEIGHT, "$it") }.orEmpty()
+            ),
+            ProfileParameter(
+                ParametersType.WAIST,
+                model?.appearance?.waist?.let { convert(ParametersType.WAIST, "$it") }.orEmpty()
+            ),
+            ProfileParameter(
+                ParametersType.HIPS,
+                model?.appearance?.hips?.let { convert(ParametersType.HIPS, "$it") }.orEmpty()
+            ),
+            ProfileParameter(
+                ParametersType.SHOE_SIZE,
+                model?.appearance?.shoesSize?.let { convert(ParametersType.SHOE_SIZE, "$it") }.orEmpty()
+            ),
         )
+    }
 
     private fun YourParametersViewState.toUserInfo(): UserInfo {
         val appearance = user.model?.appearance
@@ -152,11 +209,14 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
         val parsedShoesSize = shoesSizeStr?.toFloatOrNull()
 
         val updatedUserInfo = user.copy(
-            gender = gender?.let { Gender(id = it.value.lowercase(), title = it.value) },
+            gender = gender?.let { 
+                val engId = org.telegram.divo.entity.mapGenderToEnglish(it.value) ?: "female"
+                Gender(id = engId, title = it.value) 
+            },
             birthday = BIRTHDAYStr.orEmpty(),
             model = (user.model ?: org.telegram.divo.entity.Model()).copy(
                 appearance = (appearance ?: org.telegram.divo.entity.Appearance()).copy(
-                    measuringSystem = appearance?.measuringSystem ?: user.measuringSystem.takeIf { it.isNotBlank() } ?: "metric",
+                    measuringSystem = DivoSettings.measuringSystem,
                     height = parsedHeight,
                     weight = parsedWeight,
                     waist = parsedWaist,

@@ -13,7 +13,7 @@ data class FeedItem(
     val entity: String,
     val type: String,
     val isLiked: Boolean,
-    val isFavorite: Boolean,
+    val isFollowed: Boolean,
     val user: User,
     val files: List<FileModel>,
     val previewImage: FileModel
@@ -28,6 +28,7 @@ data class User(
     val likesCount: Int,
     val viewsCount: Int,
     val followersCount: Int,
+    val isFollowed: Boolean = false,
     val age: Int?,
     val countryCode: String?,
     val countryName: String?,

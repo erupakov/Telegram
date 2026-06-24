@@ -7,9 +7,14 @@ package org.telegram.divo.dal.network
  */
 object DivoApiConfig {
 
-    const val WEB_URL: String = "https://api.divo.fashion/"
+    const val WEB_URL: String = "https://t.divo.global/"
 
-    const val BASE_URL: String = "https://api-stage.divo.fashion/api/"
+    val BASE_URL: String
+        get() = if (org.telegram.messenger.BuildVars.DEBUG_VERSION) {
+            "https://api-stage.divo.fashion/api/"
+        } else {
+            "https://api.divo.fashion/v2/"
+        }
 
     /**
      * Network timeouts (in seconds).

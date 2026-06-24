@@ -16,16 +16,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.utils.getFormatedOptions
 import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.items.ParameterBottomSheet
 import org.telegram.divo.components.items.ParameterItem
 import org.telegram.divo.components.items.ParametersBlock
 import org.telegram.divo.components.items.ParametersType
-import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.screen.event_create.Intent
 import org.telegram.divo.screen.event_create.State
 import org.telegram.divo.style.AppTheme
@@ -70,7 +67,7 @@ fun SecondPage(
             onClick = {
                 openSheet(
                     ParametersType.ROLE,
-                    context.resources.getStringArray(R.array.ModelFunNewTalent).toList(),
+                    context.resources.getStringArray(R.array.ModelNewTalentAgency).toList(),
                     state.role.value
                 )
             }

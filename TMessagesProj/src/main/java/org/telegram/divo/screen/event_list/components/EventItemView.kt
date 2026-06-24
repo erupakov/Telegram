@@ -131,7 +131,7 @@ fun EventItemView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     DivoAsyncImage(
-                        model = event.creator?.avatar?.fullUrl,
+                        model = event.creator?.avatar?.fullUrl ?: event.creator?.photo?.fullUrl,
                         modifier = Modifier
                             .size(20.dp)
                             .clip(androidx.compose.foundation.shape.CircleShape),

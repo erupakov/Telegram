@@ -3882,12 +3882,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (user == null) return;
                         ItemOptions itemOptions = ItemOptions.makeOptions(contentView, resourcesProvider, actionsView);
                         itemOptions.setGravity(Gravity.LEFT);
-                        itemOptions.add(R.drawable.msg_qrcode, getString(R.string.QrCode), () -> {
+                        //DIVO
+                        /*itemOptions.add(R.drawable.msg_qrcode, getString(R.string.QrCode), () -> {
                             Bundle args = new Bundle();
                             args.putLong("chat_id", chatId);
                             args.putLong("user_id", userId);
                             presentFragment(new QrActivity(args));
-                        });
+                        });*/
                         itemOptions.add(R.drawable.msg_copy, getString(R.string.ProfileCopyUsername), () -> {
                             AndroidUtilities.addToClipboard("@" + UserObject.getPublicUsername(user));
                         });
@@ -10354,7 +10355,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             } else {
                 String username = UserObject.getPublicUsername(user);
                 boolean hasInfo = userInfo != null && !TextUtils.isEmpty(userInfo.about) || user != null && !TextUtils.isEmpty(username);
-                boolean hasPhone = user != null && (!TextUtils.isEmpty(user.phone) || !TextUtils.isEmpty(vcardPhone));
+                boolean hasPhone = user != null && (!TextUtils.isEmpty(user.phone) || !TextUtils.isEmpty(vcardPhone)); // DIVO: removed 999 check to show 'Hidden' row
 
                 if (userInfo != null && (userInfo.flags2 & 64) != 0 && (profileChannelMessageFetcher == null || !profileChannelMessageFetcher.loaded || !profileChannelMessageFetcher.messageObjects.isEmpty())) {
                     final TLRPC.Chat channel = getMessagesController().getChat(userInfo.personal_channel_id);
@@ -11057,7 +11058,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     nameTextView[a].setText(titleTextView.getText());
                     nameTextView[a].setRightDrawable(titleTextView.getRightDrawable());
                     nameTextView[a].setRightDrawable2(titleTextView.getRightDrawable2());
-                } else if (a == 0 && user.id != getUserConfig().getClientUserId() && !MessagesController.isSupportUser(user) && user.phone != null && user.phone.length() != 0 && getContactsController().contactsDict.get(user.id) == null &&
+                } else if (a == 0 && user.id != getUserConfig().getClientUserId() && !MessagesController.isSupportUser(user) && user.phone != null && user.phone.length() != 0 && !user.phone.startsWith("999") && getContactsController().contactsDict.get(user.id) == null && //DIVO
                         (getContactsController().contactsDict.size() != 0 || !getContactsController().isLoadingContacts())) {
                     nameTextView[a].setText(PhoneFormat.getInstance().format("+" + user.phone));
                 } else {
@@ -13083,8 +13084,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             text = PhoneFormat.getInstance().format("+" + vcardPhone);
                             phoneNumber = vcardPhone;
                         } else if (user != null && !TextUtils.isEmpty(user.phone)) {
-                            text = PhoneFormat.getInstance().format("+" + user.phone);
-                            phoneNumber = user.phone;
+                            // DIVO: show "Hidden" for dummy numbers instead of formatting them
+                            if (user.phone.startsWith("999")) {
+                                text = LocaleController.getString(R.string.MobileHidden);
+                                phoneNumber = null;
+                            } else {
+                                text = PhoneFormat.getInstance().format("+" + user.phone);
+                                phoneNumber = user.phone;
+                            }
                         } else {
                             text = LocaleController.getString(R.string.PhoneHidden);
                             phoneNumber = null;
@@ -13226,7 +13233,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             detailCell.setImage(drawable, LocaleController.getString(R.string.GiftPremium));
                             detailCell.setImageClickListener(ProfileActivity.this::onTextDetailCellImageClicked);
                         }
-                    } else if (containsQr) {
+                    } else if (false /* DIVO containsQr */) {
                         Drawable drawable = ContextCompat.getDrawable(detailCell.getContext(), R.drawable.header_qr_24);
                         drawable.setColorFilter(new PorterDuffColorFilter(dontApplyPeerColor(getThemedColor(Theme.key_actionBarDefaultIcon), false), PorterDuff.Mode.MULTIPLY));
                         detailCell.setImage(drawable, LocaleController.getString(R.string.GetQRCode));

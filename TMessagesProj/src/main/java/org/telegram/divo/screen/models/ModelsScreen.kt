@@ -243,7 +243,7 @@ fun ModelsHomeScreen(
                 ModelsList(
                     tab = tab,
                     state = state,
-                    listState = listStates[tab]!!,
+                    listState = listStates.getValue(tab),
                     statusBarHeight = statusBarHeight,
                     cardHeight = cardHeight,
                     bottomInset = bottomInset,
@@ -261,7 +261,7 @@ fun ModelsHomeScreen(
 
             AnimatedLargeStoriesOverlay(
                 collapseFraction = collapseFraction,
-                stories = ModelsViewState.preview.stories,
+                stories = state.stories,
                 hazeState = hazeState
             )
 
@@ -279,6 +279,7 @@ fun ModelsHomeScreen(
                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                     tabs = remember { Tab.entries.map { TabConfig(it.name, it.displayResId) } },
                     selectedIndex = pagerState.currentPage,
+                    fraction = (pagerState.currentPage + pagerState.currentPageOffsetFraction).coerceIn(0f, (Tab.entries.size - 1).toFloat()),
                     onTabSelected = { index ->
                         scope.launch {
                             val targetTab = Tab.entries[index]

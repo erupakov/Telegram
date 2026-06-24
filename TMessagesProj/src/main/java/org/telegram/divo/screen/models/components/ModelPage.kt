@@ -42,16 +42,15 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.components.DivoAvatar
 import org.telegram.divo.common.DivoAsyncImage
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.common.utils.toShortString
+import org.telegram.divo.components.DivoAvatar
 import org.telegram.divo.components.DivoChip
 import org.telegram.divo.components.RoundedGlassContainer
 import org.telegram.divo.components.shimmer
@@ -96,7 +95,7 @@ fun ModelPage(
                 .graphicsLayer { alpha = bgAlpha }
         ) {
             CardBlurredBackground(
-                imageUrl = feed.files.firstOrNull()?.url,
+                feed = feed,
                 isBlurSupported = isBlurSupported,
                 isModel = feed.user.role.isModel(),
                 onMainImageReady = { readyCount++ },
@@ -159,7 +158,7 @@ fun ModelPage(
 
                         feed.user.age?.let {
                             Text(
-                                text = "$it ${stringResource(R.string.YearsOld)}",
+                                text = org.telegram.messenger.LocaleController.formatPluralString("Years", it),
                                 style = AppTheme.typography.bodyMedium,
                                 color = AppTheme.colors.onBackground,
                             )
@@ -190,7 +189,7 @@ fun ModelPage(
 
                 Column {
                     RoundedGlassContainer(
-                        modifier = Modifier.width(65.dp),
+                        modifier = Modifier.width(67.dp),
                         height = 30.dp,
                         background = if (feed.isLiked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
@@ -211,13 +210,15 @@ fun ModelPage(
                                 text = feed.user.likesCount.toShortString(),
                                 style = AppTheme.typography.helveticaNeueRegular,
                                 color = if (feed.isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
-                                fontSize = 12.sp
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
                     Spacer(Modifier.height(10.dp))
-                    RoundedGlassContainer(
-                        modifier = Modifier.width(65.dp),
+                     RoundedGlassContainer(
+                        modifier = Modifier.width(67.dp),
                         height = 30.dp,
                         background = AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
@@ -234,30 +235,39 @@ fun ModelPage(
                             text = feed.user.viewsCount.toShortString(),
                             style = AppTheme.typography.helveticaNeueRegular,
                             color = AppTheme.colors.onBackground,
-                            fontSize = 12.sp
+                            fontSize = 12.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                     Spacer(Modifier.height(10.dp))
                     RoundedGlassContainer(
-                        modifier = Modifier.width(65.dp).clickableWithoutRipple { onBookmarkClick(feed.id) },
+                        modifier = Modifier.width(67.dp),
                         height = 30.dp,
-                        background = if (feed.isFavorite) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
+                        background = if (feed.isFollowed) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
-                        Icon(
-                            modifier = Modifier.size(16.dp),
-                            painter = if (feed.isFavorite) painterResource(R.drawable.ic_divo_bookmark_glass_selected) else painterResource(R.drawable.ic_divo_bookmark_glass),
-                            contentDescription = null,
-                            tint = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
-                        )
-                        Spacer(Modifier.width(3.dp))
-                        Text(
-                            modifier = Modifier.offset(y = 1.dp),
-                            text = feed.user.followersCount.toShortString(),
-                            style = AppTheme.typography.helveticaNeueRegular,
-                            color = if (feed.isFavorite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
-                            fontSize = 12.sp
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickableWithoutRipple { onBookmarkClick(feed.user.id) }
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(16.dp),
+                                painter = if (feed.isFollowed) painterResource(R.drawable.ic_divo_bookmark_glass_selected) else painterResource(R.drawable.ic_divo_bookmark_glass),
+                                contentDescription = null,
+                                tint = if (feed.isFollowed) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+                            )
+                            Spacer(Modifier.width(3.dp))
+                            Text(
+                                modifier = Modifier.offset(y = 1.dp),
+                                text = feed.user.followersCount.toShortString(),
+                                style = AppTheme.typography.helveticaNeueRegular,
+                                color = if (feed.isFollowed) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
+                                fontSize = 12.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     }
                 }
             }
@@ -282,13 +292,15 @@ fun ModelPage(
 
 @Composable
 private fun CardBlurredBackground(
-    imageUrl: String?,
+    feed: FeedItem,
     isBlurSupported: Boolean,
     isModel: Boolean,
     onMainImageReady: () -> Unit = {},
     onBlurImageReady: () -> Unit = {},
 ) {
     var hasError by remember { mutableStateOf(false) }
+    val imageUrl = feed.files.firstOrNull()?.url
+    var isImageLoaded by remember { mutableStateOf(false) }
 
     if (imageUrl.isNullOrEmpty() || hasError) {
         Image(
@@ -309,10 +321,11 @@ private fun CardBlurredBackground(
             model = imageUrl,
             contentScale = ContentScale.Crop,
             onReady = onMainImageReady,
-            onError = { hasError = true }
+            onError = { hasError = true },
+            loadingContent = { Box(Modifier.fillMaxSize()) }
         )
 
-        if (isBlurSupported) {
+        if (isBlurSupported && feed.files.size > 1) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -320,66 +333,68 @@ private fun CardBlurredBackground(
                     .drawWithContent {
                         drawContent()
 
-                    val h = size.height
-                    val topBlurHeight = 94.dp.toPx()    // Высота размытия сверху
-                    val bottomBlurHeight = 160.dp.toPx() // Высота размытия снизу
+                        val h = size.height
+                        val topBlurHeight = 94.dp.toPx()
+                        val bottomBlurHeight = 160.dp.toPx()
 
-                    drawRect(
-                        brush = Brush.verticalGradient(
-                            // Маска для верхней части (сглаженная)
-                            0.0f to Color.Black,
-                            (topBlurHeight / h) * 0.5f to Color.Black,
-                            (topBlurHeight / h) * 0.8f to Color.Black.copy(alpha = 0.5f), // Промежуточная точка
-                            (topBlurHeight / h) to Color.Transparent,
+                        drawRect(
+                            brush = Brush.verticalGradient(
+                                0.0f to Color.Black,
+                                (topBlurHeight / h) * 0.5f to Color.Black,
+                                (topBlurHeight / h) * 0.8f to Color.Black.copy(alpha = 0.5f),
+                                (topBlurHeight / h) to Color.Transparent,
+                                (1f - bottomBlurHeight / h) to Color.Transparent,
+                                (1f - (bottomBlurHeight / h) * 0.95f) to Color.Black.copy(alpha = 0.3f),
+                                (1f - (bottomBlurHeight / h) * 0.9f) to Color.Black.copy(alpha = 0.6f),
+                                (1f - (bottomBlurHeight / h) * 0.80f) to Color.Black.copy(alpha = 0.9f),
+                                (1f - (bottomBlurHeight / h) * 0.2f) to Color.Black,
+                                1.0f to Color.Black
+                            ),
+                            blendMode = BlendMode.DstIn
+                        )
+                    }
+            ) {
+                DivoAsyncImage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .blur(35.dp),
+                    model = imageUrl,
+                    contentScale = ContentScale.Crop,
+                    onReady = onBlurImageReady,
+                    loadingContent = { Box(Modifier.fillMaxSize()) }
+                )
 
-                            // Маска для нижней части (сглаженная)
-                            // Начинаем проявлять блюр гораздо раньше
-                            (1f - bottomBlurHeight / h) to Color.Transparent,
-                            (1f - (bottomBlurHeight / h) * 0.95f) to Color.Black.copy(alpha = 0.3f),
-                            (1f - (bottomBlurHeight / h) * 0.9f) to Color.Black.copy(alpha = 0.6f),
-                            (1f - (bottomBlurHeight / h) * 0.80f) to Color.Black.copy(alpha = 0.9f),
-                            (1f - (bottomBlurHeight / h) * 0.2f) to Color.Black,
-                            1.0f to Color.Black
-                        ),
-                        blendMode = BlendMode.DstIn
-                    )
-                }
-        ) {
-            DivoAsyncImage(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .blur(35.dp),
-                model = imageUrl,
-                contentScale = ContentScale.Crop,
-                onReady = onBlurImageReady
-            )
-
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                0.0f to Color.Black.copy(alpha = 0.2f),
+                                0.3f to Color.Transparent,
+                                0.7f to Color.Transparent,
+                                1.0f to Color.Black.copy(alpha = 0.3f)
+                            )
+                        )
+                )
+            }
+        } else {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(
                         Brush.verticalGradient(
-                            0.0f to Color.Black.copy(alpha = 0.2f), // Затемнение самого верха
-                            0.3f to Color.Transparent,
+                            0.0f to Color.Black.copy(alpha = 0.5f),
+                            0.2f to Color.Transparent,
                             0.7f to Color.Transparent,
-                            1.0f to Color.Black.copy(alpha = 0.3f)  // Затемнение самого низа
+                            1.0f to Color.Black.copy(alpha = 0.7f)
                         )
                     )
             )
-        }
-    } else {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        0.0f to Color.Black.copy(alpha = 0.5f),
-                        0.2f to Color.Transparent,
-                        0.7f to Color.Transparent,
-                        1.0f to Color.Black.copy(alpha = 0.7f)
-                    )
-                )
-            )
+            LaunchedEffect(Unit) {
+                if (isBlurSupported) {
+                    onBlurImageReady()
+                }
+            }
         }
     }
 }

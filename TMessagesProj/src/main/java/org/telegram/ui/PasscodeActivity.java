@@ -1163,7 +1163,9 @@ public class PasscodeActivity extends BaseFragment implements NotificationCenter
                 }
                 case VIEW_TYPE_UTYAN: {
                     RLottieImageHolderView holderView = (RLottieImageHolderView) holder.itemView;
-                    holderView.imageView.setAnimation(R.raw.utyan_passcode, 100, 100);
+//                    holderView.imageView.setAnimation(R.raw.utyan_passcode, 100, 100);
+                    //DIVO
+                    holderView.imageView.setImageResource(R.drawable.divo_logo_content);
                     holderView.imageView.playAnimation();
                     break;
                 }

@@ -46,6 +46,7 @@ fun TabContainer(
             modifier = Modifier,
             tabs = destinations,
             selectedIndex = pagerState.currentPage,
+            fraction = pagerState.currentPage + pagerState.currentPageOffsetFraction,
             onTabSelected = { index ->
                 coroutineScope.launch {
                     pagerState.animateScrollToPage(index)

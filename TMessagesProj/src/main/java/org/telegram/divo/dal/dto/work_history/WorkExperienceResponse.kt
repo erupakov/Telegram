@@ -15,6 +15,7 @@ class WorkExperienceDto(
     @SerializedName("startDate") val startDate: String,
     @SerializedName("endDate") val endDate: String? = null,
     @SerializedName("isCurrent") val isCurrent: Boolean,
+    @SerializedName("agencyAvatarLink") val agencyAvatarLink: String? = null,
 )
 
 fun WorkExperienceDto.toEntity() = WorkExperience(
@@ -25,4 +26,5 @@ fun WorkExperienceDto.toEntity() = WorkExperience(
     startDate = startDate,
     endDate = endDate,
     isCurrent = isCurrent,
+    agencyAvatarLink = agencyAvatarLink,
 )

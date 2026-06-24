@@ -2840,6 +2840,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             getNotificationCenter().addObserver(this, NotificationCenter.didUpdateConnectionState);
             getNotificationCenter().addObserver(this, NotificationCenter.onDownloadingFilesChanged);
             getNotificationCenter().addObserver(this, NotificationCenter.needDeleteDialog);
+            getNotificationCenter().addObserver(this, NotificationCenter.cancelUndoView); //DIVO
             getNotificationCenter().addObserver(this, NotificationCenter.folderBecomeEmpty);
             getNotificationCenter().addObserver(this, NotificationCenter.newSuggestionsAvailable);
             getNotificationCenter().addObserver(this, NotificationCenter.dialogsUnreadReactionsCounterChanged);
@@ -3010,6 +3011,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             getNotificationCenter().removeObserver(this, NotificationCenter.didUpdateConnectionState);
             getNotificationCenter().removeObserver(this, NotificationCenter.onDownloadingFilesChanged);
             getNotificationCenter().removeObserver(this, NotificationCenter.needDeleteDialog);
+            getNotificationCenter().removeObserver(this, NotificationCenter.cancelUndoView); //DIVO
             getNotificationCenter().removeObserver(this, NotificationCenter.folderBecomeEmpty);
             getNotificationCenter().removeObserver(this, NotificationCenter.newSuggestionsAvailable);
             getNotificationCenter().removeObserver(this, NotificationCenter.dialogsUnreadReactionsCounterChanged);
@@ -3452,11 +3454,22 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
                 statusDrawable.center = true;
-                logoDrawable = context.getResources().getDrawable(R.drawable.telegram_logo_2).mutate();
-                logoDrawable.setBounds(0, dp(2), logoDrawable.getIntrinsicWidth(), dp(2) + logoDrawable.getIntrinsicHeight());
-                logoDrawable.setColorFilter(getThemedColor(Theme.key_telegram_color_dialogsLogo), PorterDuff.Mode.MULTIPLY);
-                SpannableStringBuilder ssb = new SpannableStringBuilder(getString(R.string.AppName));
-                ssb.setSpan(new ImageSpan(logoDrawable), 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                //DIVO
+                android.graphics.Typeface tf = AndroidUtilities.getTypeface("fonts/helvetica_neue_lt_com_77_bold_condensed.ttf");
+                SpannableStringBuilder ssb = new SpannableStringBuilder(getString(R.string.DivoMainTabsChats).toUpperCase());
+                ssb.setSpan(new org.telegram.ui.Components.TypefaceSpan(tf, AndroidUtilities.dp(24), 0xFF222222) {
+                    @Override
+                    public void updateMeasureState(android.text.TextPaint p) {
+                        super.updateMeasureState(p);
+                        p.baselineShift = AndroidUtilities.dp(8);
+                    }
+
+                    @Override
+                    public void updateDrawState(android.text.TextPaint tp) {
+                        super.updateDrawState(tp);
+                        tp.baselineShift = AndroidUtilities.dp(8);
+                    }
+                }, 0, ssb.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                 actionBar.setTitle(ssb, statusDrawable);
                 updateStatus(UserConfig.getInstance(currentAccount).getCurrentUser(), false);
             }
@@ -5267,7 +5280,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         if (hasMainTabs) {
             actionBar.getTitlesContainer().setTranslationX(dp(4));
-            actionBar.setTitleColor(getThemedColor(Theme.key_telegram_color_dialogsLogo));
+            actionBar.setTitleColor(0xFF222222); //DIVO
         }
 
         if (folderId != 0) {
@@ -10432,6 +10445,10 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 deleteRunnable.run();
             }
+        } else if (id == NotificationCenter.cancelUndoView) {
+            if (undoView[0] != null) {
+                undoView[0].hide(false, 1);
+            }
         } else if (id == NotificationCenter.folderBecomeEmpty) {
             int fid = (Integer) args[0];
             if (folderId == fid && folderId != 0) {
@@ -11565,7 +11582,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 dialogStoriesCell.updateColors();
             }
             if (logoDrawable != null) {
-                logoDrawable.setColorFilter(getThemedColor(Theme.key_telegram_color_dialogsLogo), PorterDuff.Mode.MULTIPLY);
+                logoDrawable.setColorFilter(0xFF222222, PorterDuff.Mode.MULTIPLY); //DIVO
             }
             if (actionModeCloseView != null) {
                 actionModeCloseView.setColorFilter(new PorterDuffColorFilter(getThemedColor(Theme.key_actionBarActionModeDefaultIcon), PorterDuff.Mode.MULTIPLY));
@@ -13109,42 +13126,43 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             } else {
                 isCurrentThemeDark = Theme.isCurrentThemeDark();
             }
-            io.add(isCurrentThemeDark ? R.drawable.menu_day_mode_24 : R.drawable.menu_night_mode_24,
-                    getString(isCurrentThemeDark ? R.string.SwitchThemeToDay : R.string.SwitchThemeToNight), () -> {
-                if (switchingTheme) {
-                    return;
-                }
-                switchingTheme = true;
-                SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("themeconfig", Activity.MODE_PRIVATE);
-                String dayThemeName = preferences.getString("lastDayTheme", "Blue");
-                if (Theme.getTheme(dayThemeName) == null || Theme.getTheme(dayThemeName).isDark()) {
-                    dayThemeName = "Blue";
-                }
-                String nightThemeName = preferences.getString("lastDarkTheme", "Dark Blue");
-                if (Theme.getTheme(nightThemeName) == null || !Theme.getTheme(nightThemeName).isDark()) {
-                    nightThemeName = "Dark Blue";
-                }
-                Theme.ThemeInfo themeInfo = Theme.getActiveTheme();
-                if (dayThemeName.equals(nightThemeName)) {
-                    if (themeInfo.isDark() || dayThemeName.equals("Dark Blue") || dayThemeName.equals("Night")) {
-                        dayThemeName = "Blue";
-                    } else {
-                        nightThemeName = "Dark Blue";
-                    }
-                }
-
-                boolean toDark;
-                if (toDark = dayThemeName.equals(themeInfo.getKey())) {
-                    themeInfo = Theme.getTheme(nightThemeName);
-                } else {
-                    themeInfo = Theme.getTheme(dayThemeName);
-                }
-                switchTheme(themeInfo, toDark);
-                Theme.turnOffAutoNight(BulletinFactory.of(this), () -> {
-                    presentFragment(new ThemeActivity(ThemeActivity.THEME_TYPE_NIGHT));
-                });
-            });
-            io.addGap();
+            //DIVO
+//            io.add(isCurrentThemeDark ? R.drawable.menu_day_mode_24 : R.drawable.menu_night_mode_24,
+//                    getString(isCurrentThemeDark ? R.string.SwitchThemeToDay : R.string.SwitchThemeToNight), () -> {
+//                if (switchingTheme) {
+//                    return;
+//                }
+//                switchingTheme = true;
+//                SharedPreferences preferences = ApplicationLoader.applicationContext.getSharedPreferences("themeconfig", Activity.MODE_PRIVATE);
+//                String dayThemeName = preferences.getString("lastDayTheme", "Blue");
+//                if (Theme.getTheme(dayThemeName) == null || Theme.getTheme(dayThemeName).isDark()) {
+//                    dayThemeName = "Blue";
+//                }
+//                String nightThemeName = preferences.getString("lastDarkTheme", "Dark Blue");
+//                if (Theme.getTheme(nightThemeName) == null || !Theme.getTheme(nightThemeName).isDark()) {
+//                    nightThemeName = "Dark Blue";
+//                }
+//                Theme.ThemeInfo themeInfo = Theme.getActiveTheme();
+//                if (dayThemeName.equals(nightThemeName)) {
+//                    if (themeInfo.isDark() || dayThemeName.equals("Dark Blue") || dayThemeName.equals("Night")) {
+//                        dayThemeName = "Blue";
+//                    } else {
+//                        nightThemeName = "Dark Blue";
+//                    }
+//                }
+//
+//                boolean toDark;
+//                if (toDark = dayThemeName.equals(themeInfo.getKey())) {
+//                    themeInfo = Theme.getTheme(nightThemeName);
+//                } else {
+//                    themeInfo = Theme.getTheme(dayThemeName);
+//                }
+//                switchTheme(themeInfo, toDark);
+//                Theme.turnOffAutoNight(BulletinFactory.of(this), () -> {
+//                    presentFragment(new ThemeActivity(ThemeActivity.THEME_TYPE_NIGHT));
+//                });
+//            });
+//            io.addGap();
             io.add(R.drawable.outline_groups_24, getString(R.string.NewGroup), () -> {
                 Bundle args = new Bundle();
                 presentFragment(new GroupCreateActivity(args));

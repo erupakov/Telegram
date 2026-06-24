@@ -784,7 +784,9 @@ public class PeerColorActivity extends BaseFragment implements NotificationCente
                 setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
 
                 imageView = new BackupImageView(getContext());
-                imageView.setImageDrawable(new RLottieDrawable(R.raw.utyan_draw, "utyan_draw", dp(120), dp(120)));
+//                imageView.setImageDrawable(new RLottieDrawable(R.raw.utyan_draw, "utyan_draw", dp(120), dp(120)));
+                //DIVO
+                imageView.setImageResource(R.drawable.divo_logo_content);
                 addView(imageView, LayoutHelper.createLinear(120, 120, Gravity.CENTER_HORIZONTAL, 0, 6, 0, 0));
 
                 title = TextHelper.makeLinkTextView(getContext(), 14, Theme.key_windowBackgroundWhiteGrayText, false, resourceProvider);

@@ -64,9 +64,12 @@ public class ChatBigEmptyView extends LinearLayout {
         } else {
             RLottieImageView imageView = new RLottieImageView(context);
             imageView.setAutoRepeat(true);
-            imageView.setAnimation(R.raw.utyan_saved_messages, 120, 120);
+//            imageView.setAnimation(R.raw.utyan_saved_messages, 120, 120);
+            //DIVO
+            imageView.setImageResource(R.drawable.divo_logo_content);
+            imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             imageView.playAnimation();
-            addView(imageView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 2, 0, 0));
+            addView(imageView, LayoutHelper.createLinear(80, 80, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 2, 0, 0));
         }
 
         TextView textView = new TextView(context);

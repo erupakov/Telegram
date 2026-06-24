@@ -10,5 +10,9 @@ data class SimilarFace(
     val rank: Int,
     val role: String,
     val score: Double,
-    val userId: Int
+    val userId: Int,
+    val followersCount: Int = 0,
+    val isFollowedByUser: Boolean = false,
+    val likedCount: Int = 0,
+    val isLikedByUser: Boolean = false
 )

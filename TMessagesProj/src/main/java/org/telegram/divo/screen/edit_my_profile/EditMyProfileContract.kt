@@ -5,21 +5,31 @@ import org.telegram.divo.common.ViewIntent
 import org.telegram.divo.common.ViewState
 import org.telegram.divo.entity.UserInfo
 import org.telegram.tgnet.TLRPC
+import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.screen.search.LocalCity
 import java.io.File
 
 data class EventListViewState(
     val isModel: Boolean,
     val fName: String = "",
+    val lName: String = "",
     val bio: String = "",
     val avatarUrl: String = "",
     val userFull: UserInfo? = null,
     val isLoading: Boolean = true,
     val isSaved: Boolean = false,
+    val country: String = "",
+    val countryCode: String = "",
+    val city: LocalCity? = null,
+    val allCountries: List<LocalCountry> = emptyList(),
+    val allCities: List<LocalCity> = emptyList()
 ) : ViewState
 
 sealed class EditMyProfileIntent : ViewIntent {
-    data class OnSaveClicked(val fName: String, val bio: String, val file: Result<File>?) :
+    data class OnSaveClicked(val fName: String, val lName: String, val bio: String, val file: Result<File>?) :
         EditMyProfileIntent()
+        
+    data class OnLocationChanged(val country: String, val countryCode: String, val city: LocalCity?) : EditMyProfileIntent()
 
     data object OnLoad : EditMyProfileIntent()
     data class OnAvatarUploaded(

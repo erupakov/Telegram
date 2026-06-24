@@ -36,26 +36,56 @@ fun EditMyProfileLoadingContent(
                 .shimmer(highlightColor = color),
         )
         Spacer(Modifier.height(32.dp))
+        // First name
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .size(46.dp)
+                .height(56.dp)
                 .clip(RoundedCornerShape(41.dp))
                 .shimmer(highlightColor = color),
         )
-        Spacer(Modifier.height(18.dp))
+        Spacer(Modifier.height(16.dp))
+        // Last name
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .size(102.dp)
+                .height(56.dp)
+                .clip(RoundedCornerShape(41.dp))
+                .shimmer(highlightColor = color),
+        )
+        Spacer(Modifier.height(38.dp)) // Label + space
+        // Biography
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(114.dp)
                 .clip(RoundedCornerShape(16.dp))
                 .shimmer(highlightColor = color),
         )
-        Spacer(Modifier.height(20.dp))
+        Spacer(Modifier.height(16.dp))
+        // Country
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .size(56.dp)
+                .height(56.dp)
+                .clip(RoundedCornerShape(41.dp))
+                .shimmer(highlightColor = color),
+        )
+        Spacer(Modifier.height(16.dp))
+        // City
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .clip(RoundedCornerShape(41.dp))
+                .shimmer(highlightColor = color),
+        )
+        Spacer(Modifier.height(20.dp))
+        // Save button
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
                 .clip(RoundedCornerShape(41.dp))
                 .shimmer(highlightColor = color),
         )

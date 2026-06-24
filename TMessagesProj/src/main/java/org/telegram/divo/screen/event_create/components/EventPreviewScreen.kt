@@ -79,8 +79,9 @@ import org.telegram.divo.components.TransparentToolBarBackground
 import org.telegram.divo.components.TransparentToolBarContent
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.components.items.ParametersType
-import org.telegram.divo.components.items.numericFilterRange
-import org.telegram.divo.components.items.resolveNumericBlockParamBounds
+import org.telegram.divo.common.DivoSettings
+import org.telegram.divo.common.numericFilterRange
+import org.telegram.divo.common.resolveNumericBlockParamBounds
 import org.telegram.divo.entity.EventModelAttributes
 import org.telegram.divo.screen.event_create.CreateEventViewModel
 import org.telegram.divo.screen.event_create.Effect
@@ -301,8 +302,9 @@ private fun State.toEventModelAttributes(): EventModelAttributes {
 
     fun parseRange(type: ParametersType): Pair<Int?, Int?> {
         val raw = blockParams.find { it.type == type }?.value.orEmpty()
-        val bounds = type.numericFilterRange() ?: return null to null
-        return resolveNumericBlockParamBounds(raw, bounds)
+        val measuringSystem = DivoSettings.measuringSystem
+        val bounds = type.numericFilterRange(measuringSystem) ?: return null to null
+        return resolveNumericBlockParamBounds(raw, bounds, type, measuringSystem)
     }
 
     val (ageFrom, ageTo) = parseRange(ParametersType.AGE)
@@ -317,7 +319,8 @@ private fun State.toEventModelAttributes(): EventModelAttributes {
         roles = parseList(role.value),
         ageFrom = ageFrom,
         ageTo = ageTo,
-        genders = parseList(gender.value).ifEmpty { listOf("male", "female") },
+        genders = org.telegram.divo.entity.mapGenderToEnglish(gender.value)?.split(",")?.map { it.trim() }?.filter { it.isNotEmpty() }
+            ?: listOf("male", "female"),
         heightFrom = heightFrom,
         heightTo = heightTo,
         weightFrom = weightFrom,
@@ -334,7 +337,7 @@ private fun State.toEventModelAttributes(): EventModelAttributes {
         hairLengths = parseList(hairLength.value),
         eyeColors = parseList(eyeColor.value),
         skinColors = parseList(skinColor.value),
-        measuringSystem = "metric"
+        measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem
     )
 }
 
@@ -543,6 +546,7 @@ private fun PreviewBottomBar(
                 .weight(1f)
                 .height(56.dp),
             text = stringResource(R.string.ButtonEdit),
+            enabled = !isUploading,
             background = AppTheme.colors.buttonSecondary,
             leadingIcon = R.drawable.ic_divo_edit_24,
             leadingIconTint = AppTheme.colors.onBackground,
@@ -555,6 +559,7 @@ private fun PreviewBottomBar(
                 .height(56.dp),
             text = stringResource(R.string.EventPublish),
             enabled = !isUploading,
+            isLoading = isUploading,
             onClick = onPublish
         )
     }

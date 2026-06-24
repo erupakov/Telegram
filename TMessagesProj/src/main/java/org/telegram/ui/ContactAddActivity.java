@@ -310,17 +310,20 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         firstNameField.setText(firstNameFromCard);
 
         lastNameField = new EditTextCell(context, getString(R.string.LastName), false, false, -1, resourcesProvider);
-        lastNameField.editText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        lastNameField.editText.setImeOptions(EditorInfo.IME_ACTION_DONE); // DIVO: changed from IME_ACTION_NEXT
         lastNameField.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
         lastNameField.editText.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if (i == EditorInfo.IME_ACTION_DONE) {
+            if (i == EditorInfo.IME_ACTION_DONE || i == EditorInfo.IME_ACTION_NEXT) {
                 doneButton.performClick();
                 return true;
-            } else if (i == EditorInfo.IME_ACTION_NEXT) {
+            }
+            /* DIVO: skip noteField
+            else if (i == EditorInfo.IME_ACTION_NEXT) {
                 noteField.editText.requestFocus();
                 noteField.editText.setSelection(lastNameField.editText.length());
                 return true;
             }
+            */
             return false;
         });
         lastNameField.setText(lastNameFromCard);
@@ -545,8 +548,9 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
             items.add(UItem.asShadow(formatString(R.string.AddContactShareNumberInfo, UserObject.getFirstName(user))));
         }
 
-        items.add(UItem.asCustom(noteField));
-        items.add(UItem.asShadow(getString(R.string.AddNotesInfo)));
+        // DIVO: hide notes because the backend doesn't support it yet
+        // items.add(UItem.asCustom(noteField));
+        // items.add(UItem.asShadow(getString(R.string.AddNotesInfo)));
 
         if (!addContact) {
             final TLRPC.UserFull userInfo = getMessagesController().getUserFull(user_id);
@@ -713,7 +717,12 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
 
     private String getPhone() {
         TLRPC.User user = getMessagesController().getUser(user_id);
-        return user != null && !TextUtils.isEmpty(user.phone) ? user.phone : phone;
+        //DIVO
+        String p = user != null && !TextUtils.isEmpty(user.phone) ? user.phone : phone;
+        if (p != null && p.startsWith("999")) {
+            return null;
+        }
+        return p;
     }
 
     public void didReceivedNotification(int id, int account, Object... args) {

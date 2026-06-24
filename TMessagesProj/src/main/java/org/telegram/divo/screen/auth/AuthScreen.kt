@@ -57,7 +57,7 @@ import org.telegram.messenger.UserConfig
 fun AuthScreen(
     viewModel: AuthViewModel = viewModel(),
     onAuthClicked: () -> Unit = {},
-    onGoogleUserNotFound: (firebaseUid: String, email: String, dummyPhone: String, authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit = { _, _, _, _ -> },
+    onGoogleUserNotFound: (firebaseUid: String, email: String, dummyPhone: String, authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization, firstName: String?, lastName: String?, photoUrl: String?) -> Unit = { _, _, _, _, _, _, _ -> },
     onGoogleSuccess: (authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit = { _ -> }
 ) {
     val state by viewModel.state.collectAsState()
@@ -106,9 +106,9 @@ fun AuthScreen(
                                     isGoogleLoading.value = false
                                     onGoogleSuccess(authResponse)
                                 }
-                                override fun onUserNotFound(firebaseUid: String, email: String, dummyPhone: String, authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization) {
+                                override fun onUserNotFound(firebaseUid: String, email: String, dummyPhone: String, authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization, firstName: String?, lastName: String?, photoUrl: String?) {
                                     isGoogleLoading.value = false
-                                    onGoogleUserNotFound(firebaseUid, email, dummyPhone, authResponse)
+                                    onGoogleUserNotFound(firebaseUid, email, dummyPhone, authResponse, firstName, lastName, photoUrl)
                                 }
                                 override fun onError(error: String) {
                                     isGoogleLoading.value = false
