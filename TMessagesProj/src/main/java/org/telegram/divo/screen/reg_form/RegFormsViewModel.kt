@@ -334,7 +334,8 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                             org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest(
                                 agencyId = null,
                                 title = data.companyName.takeIf { it.isNotBlank() },
-                                description = data.websiteUrl.takeIf { it.isNotBlank() },
+                                description = null,
+                                site = data.websiteUrl.takeIf { it.isNotBlank() },
                                 address = null,
                                 background = null,
                                 photo = photoContainer,
@@ -363,6 +364,23 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (updateResponse !is DivoResult.Success) {
                         val errorMessage = updateResponse.getErrorMessage()
                         sendEffect(RegFormsEffect.ShowError(errorMessage))
+                    } else if (mappedRole == RoleType.AGENCY.value) {
+                        try {
+                            val agencyPhoto = uploadedPhotoUuid?.let {
+                                org.telegram.divo.entity.Photo(photoId = 0, fileUuid = it)
+                            }
+                            val agency = org.telegram.divo.entity.Agency(
+                                title = data.companyName,
+                                site = data.websiteUrl,
+                                photo = agencyPhoto
+                            )
+                            val agencyResponse = DivoApi.userRepository.updateAgency(agency)
+                            if (agencyResponse !is DivoResult.Success) {
+                                sendEffect(RegFormsEffect.ShowError(agencyResponse.getErrorMessage()))
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
                     val dummyAuth = TLRPC.TL_auth_authorization().apply {
