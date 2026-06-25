@@ -46,6 +46,7 @@ object DivoAuthHelper {
             withContext(Dispatchers.Main) {
                 if (result is DivoResult.Success) {
                     DivoApi.accessTokenProvider.setGoogleLogin(false)
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.LoginSuccess())
                     callback.onSuccess()
                 } else {
                     val errorMsg = result.getErrorMessage()

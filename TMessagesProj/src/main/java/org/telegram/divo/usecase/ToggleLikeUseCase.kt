@@ -46,6 +46,7 @@ class ToggleLikeUseCase(
                     newLikesCount = newCount
                 )
             )
+            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.LikeToggled())
             onSuccess(newLiked)
         } else {
             onRollback()

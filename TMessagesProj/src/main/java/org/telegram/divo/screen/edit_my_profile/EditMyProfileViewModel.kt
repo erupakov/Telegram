@@ -154,6 +154,7 @@ class EditMyProfileViewModel(
                             lastName = lNameRaw.trim()
                         )
 
+                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ProfileEditSaved())
                         setState { copy(isSaved = false) }
                         sendEffect(Effect.SaveSuccess)
                     }

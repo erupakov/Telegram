@@ -289,6 +289,8 @@ public class ApplicationLoader extends Application {
 
         super.onCreate();
 
+        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.init(); //DIVO
+
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("app start time = " + (startTime = SystemClock.elapsedRealtime()));
             try {

@@ -131,6 +131,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
 
     @Override
     public boolean onFragmentCreate() {
+        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.OnboardingStarted());
         MessagesController.getGlobalMainSettings().edit().putLong("intro_crashed_time", System.currentTimeMillis()).apply();
 
         titles = new CharSequence[]{
@@ -173,6 +174,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                 new kotlin.jvm.functions.Function0<kotlin.Unit>() {
                     @Override
                     public kotlin.Unit invoke() {
+                        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.OnboardingCompleted());
                         // Mark onboarding as seen (optional but recommended)
                         getContext().getSharedPreferences("kit_prefs", Context.MODE_PRIVATE)
                                 .edit().putBoolean("onboarding_seen", true).apply();

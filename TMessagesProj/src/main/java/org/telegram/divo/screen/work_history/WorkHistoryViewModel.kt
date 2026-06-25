@@ -73,6 +73,8 @@ class WorkHistoryViewModel(
             setState { copy(deletingId = null) }
             if (result !is DivoResult.Success) {
                 sendEffect(Effect.ShowError(result.getErrorMessage()))
+            } else {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.WorkHistoryDeleted())
             }
         }
     }

@@ -79,6 +79,7 @@ class SimilarProfilesViewModel(
     }
 
     init {
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SimilarProfileOpened())
         loadData()
     }
 

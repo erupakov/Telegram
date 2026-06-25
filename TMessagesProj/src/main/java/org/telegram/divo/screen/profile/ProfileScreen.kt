@@ -400,6 +400,20 @@ private fun ProfileScreenContent(
     }
 
     val currentPage = pagerState.currentPage
+    
+    LaunchedEffect(currentPage) {
+        val tabName = when (currentPage) {
+            0 -> "gallery"
+            1 -> "video"
+            2 -> if (uiState.isModel) "channels" else "agency_models"
+            3 -> "channels"
+            else -> "events"
+        }
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(
+            org.telegram.divo.analytics.AnalyticsEvent.ProfileTabViewed(tabName)
+        )
+    }
+
     val showAddButton = uiState.isOwnProfile && isPagerSectionVisible && when (currentPage) {
         0 -> uiState.userGalleryItems.isNotEmpty()
         1 -> uiState.videoItems.isNotEmpty()

@@ -92,6 +92,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             is Intent.OnPhotoSelected -> sendEffect(NavigateToFaceSearch(intent.uri.toString()))
             Intent.OnLoadMore -> loadMore()
             is Intent.OnItemClicked -> {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchModelTapped())
                 if (intent.isSearchMode)
                     sendEffect(NavigateToProfile(intent.user))
                 else {
@@ -100,6 +101,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             }
             is Intent.OnSearchConfirmed -> setState { copy(isSearchConfirmed = true) }
             is Intent.OnApplyFilters -> {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchFiltersApplied())
                 searchJob?.cancel()
                 searchPaginator.reset()
                 viewModelScope.launch {
@@ -132,6 +134,8 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     }
 
                     searchPaginator.loadInitial()
+                    val hasResults = searchPaginator.state.value.items.isNotEmpty()
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults))
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
@@ -157,6 +161,8 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                 viewModelScope.launch {
                     setState { copy(isLoading = true) }
                     searchPaginator.loadInitial()
+                    val hasResults = searchPaginator.state.value.items.isNotEmpty()
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults))
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
@@ -234,9 +240,12 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
 
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MS)
+            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchQueryEntered(query.length))
             setState { copy(isLoading = true) }
             searchPaginator.reset()
             searchPaginator.loadInitial()
+            val hasResults = searchPaginator.state.value.items.isNotEmpty()
+            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults))
             setState { copy(isLoading = false, hasSearched = true) }
         }
     }

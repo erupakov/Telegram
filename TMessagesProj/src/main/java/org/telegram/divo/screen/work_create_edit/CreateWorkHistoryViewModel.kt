@@ -111,7 +111,10 @@ class CreateWorkHistoryViewModel(
                 isCurrent = s.isCurrent,
             )
             when (result) {
-                is DivoResult.Success -> sendEffect(Effect.ShowSuccess)
+                is DivoResult.Success -> {
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.WorkHistoryCreated())
+                    sendEffect(Effect.ShowSuccess)
+                }
                 else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
             }
         }
@@ -138,7 +141,10 @@ class CreateWorkHistoryViewModel(
                 isCurrent = s.isCurrent,
             )
             when (result) {
-                is DivoResult.Success -> sendEffect(Effect.ShowSuccess)
+                is DivoResult.Success -> {
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.WorkHistoryEdited())
+                    sendEffect(Effect.ShowSuccess)
+                }
                 else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
             }
         }

@@ -16,6 +16,7 @@ import kotlinx.coroutines.coroutineScope
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.dal.api.UserService
 import org.telegram.divo.dal.dto.common.UuidContainerDto
 import org.telegram.divo.dal.dto.common.toDto
@@ -52,7 +53,7 @@ class UserRepository(
     private val service: UserService,
     private val prefs: android.content.SharedPreferences,
     private val accountIndex: Int
-) : org.telegram.messenger.NotificationCenter.NotificationCenterDelegate {
+) : NotificationCenter.NotificationCenterDelegate {
     private companion object {
         const val KEY_AVATAR_URL = "cached_avatar_url"
         const val KEY_USER_ID = "cached_user_id"
@@ -69,7 +70,9 @@ class UserRepository(
         if (savedId != 0 && savedUrl != null) {
             _currentUserCache.value = UserInfo(id = savedId, avatarUrl = savedUrl)
         }
-        NotificationCenter.getInstance(accountIndex).addObserver(this, org.telegram.messenger.NotificationCenter.dialogDeleted)
+        org.telegram.messenger.AndroidUtilities.runOnUIThread {
+            NotificationCenter.getInstance(accountIndex).addObserver(this, NotificationCenter.dialogDeleted)
+        }
     }
 
     private val pendingDeletions = mutableSetOf<Int>()
@@ -190,6 +193,11 @@ class UserRepository(
             putString(KEY_AVATAR_URL, info.avatarUrl)
             apply()
         }
+        
+        if (info.role != org.telegram.divo.entity.RoleType.UNKNOWN) {
+            DivoAnalytics.setUserProperty("user_role", info.role.value)
+        }
+        
         scope.launch {
             NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
         }

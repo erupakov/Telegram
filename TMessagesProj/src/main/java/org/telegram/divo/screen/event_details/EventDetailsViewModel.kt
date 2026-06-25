@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -68,6 +70,13 @@ class EventDetailsViewModel(
                     }
                 },
                 onSuccess = { newFavourite ->
+                    DivoAnalytics.logEvent(
+                        AnalyticsEvent.EventFavoriteToggled(
+                            eventId = currentEvent.id.toLong(),
+                            isFavorite = newFavourite,
+                            screenName = "EventDetails"
+                        )
+                    )
                     sendEffect(
                         EventDetailsEffect.ActionChanged(
                             resDrawableId = org.telegram.messenger.R.drawable.ic_divo_bookmark_glass_selected,
@@ -152,6 +161,8 @@ class EventDetailsViewModel(
         }
         DivoApi.eventRepository.notifyEventParticipationChanged(eventId, false, newAppliesCount)
 
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventWithdraw())
+
         viewModelScope.launch {
             val result = DivoApi.eventRepository.unapplyEvent(eventId)
 
@@ -213,6 +224,14 @@ class EventDetailsViewModel(
                         isLoading = false
                     )
                 }
+                
+                DivoAnalytics.logEvent(
+                    AnalyticsEvent.EventDetailsViewed(
+                        eventId = result.value.id.toLong(),
+                        screenName = "EventDetails"
+                    )
+                )
+                
                 val creatorId = result.value.creator?.id ?: return@launch
                 eventPaginator = GetEventListUseCase(limit = 10, creatorId = creatorId).paginator
                 observeEvents()
@@ -283,6 +302,7 @@ class EventDetailsViewModel(
             viewModelScope.launch {
                 val result = DivoApi.eventRepository.deleteEvent(id)
                 if (result is DivoResult.Success) {
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventDeleted())
                     sendEffect(EventDeleted)
                 } else {
                     sendEffect(ShowError(result.getErrorMessage()))
@@ -310,6 +330,7 @@ class EventDetailsViewModel(
             viewModelScope.launch {
                 val result = DivoApi.eventRepository.cancelEvent(id)
                 if (result is DivoResult.Success) {
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventDeleted())
                     sendEffect(EventDeleted)
                 } else {
                     sendEffect(ShowError(result.getErrorMessage()))

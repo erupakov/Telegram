@@ -57,6 +57,7 @@ class EventListViewModel :
 
     init {
         NotificationCenter.getGlobalInstance().addObserver(languageObserver, NotificationCenter.reloadInterface)
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventListOpened())
         setIntent(EventListIntent.OnLoad)
         viewModelScope.launch {
             launch { loadCountries() }
@@ -159,6 +160,7 @@ class EventListViewModel :
                 performSearch()
             }
             is EventListIntent.OnApplyFilters -> {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchFiltersApplied())
                 setState { copy(searchFilters = intent.filters) }
                 performSearch()
             }

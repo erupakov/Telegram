@@ -53,6 +53,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             }
             is SettingsViewIntent.OnChangeMeasuringSystem -> {
                 val newSystem = intent.system
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.MeasurementSystemChanged(newSystem))
                 DivoSettings.measuringSystem = newSystem
                 setState { copy(measuringSystem = newSystem) }
                 // Also update profile silently if needed

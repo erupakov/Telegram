@@ -123,6 +123,7 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
                         e.printStackTrace()
                     }
 
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ParametersUpdated())
                     setState { copy(isSaving = false) }
                     sendEffect(YourParametersEffect.SaveSuccess)
                 }

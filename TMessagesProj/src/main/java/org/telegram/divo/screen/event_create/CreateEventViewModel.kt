@@ -233,6 +233,11 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
                     DivoApi.eventRepository.updateEvent(eventId, request)
                 } ?: DivoApi.eventRepository.createEvent(request)
                 if (result is DivoResult.Success) {
+                    if (state.value.editingEventId != null) {
+                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventEdited())
+                    } else {
+                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventCreateSuccess())
+                    }
                     sendEffect(Effect.EventPublished)
                     setState { copy(isUploading = false) }
                 } else {

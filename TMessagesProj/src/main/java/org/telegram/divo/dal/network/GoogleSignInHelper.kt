@@ -120,6 +120,7 @@ object GoogleSignInHelper {
                     withContext(Dispatchers.Main) {
                         if (authResponse != null) {
                             DivoApi.accessTokenProvider.setGoogleLogin(true)
+                            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.LoginSuccess())
                             callback.onSuccess(authResponse)
                         } else {
                             callback.onError(context.getString(R.string.ErrorTelegramAuthFailed))
@@ -157,7 +158,9 @@ object GoogleSignInHelper {
             } catch (e: GetCredentialException) {
                 callback.onError(context.getString(R.string.ErrorGoogleSignInFailed))
             } catch (e: Exception) {
-                callback.onError(context.getString(R.string.ErrorUnexpected))
+                withContext(Dispatchers.Main) {
+                    callback.onError(context.getString(R.string.ErrorUnexpected) + ": " + e.message)
+                }
             }
         }
         return Runnable { job.cancel() }

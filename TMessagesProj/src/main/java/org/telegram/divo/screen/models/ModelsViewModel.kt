@@ -60,6 +60,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             val newLanguage = org.telegram.messenger.LocaleController.getInstance().currentLocale?.language ?: ""
             if (newLanguage != currentLanguage) {
                 currentLanguage = newLanguage
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.AppLanguageChanged(newLanguage))
                 viewModelScope.launch {
                     delay(300)
                     refresh()
@@ -77,6 +78,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     init {
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ModelsFeedViewed())
         setIntent(LoadInitialData)
         viewModelScope.launch {
             merge(

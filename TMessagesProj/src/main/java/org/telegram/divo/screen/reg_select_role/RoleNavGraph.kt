@@ -49,6 +49,11 @@ fun RoleNavGraph(
         onNavControllerReady(nav)
     }
 
+    LaunchedEffect(Unit) {
+        val method = if (firebaseUid != null) "google" else "phone"
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SignUpStart(method))
+    }
+
     val startDestination: Screen = Screen.RoleSelection
 
     NavHost(

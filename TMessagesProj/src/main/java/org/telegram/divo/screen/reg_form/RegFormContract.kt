@@ -56,7 +56,7 @@ data class RegFormsState(
         RegFormStep.STUDIO_CONTACT -> websiteUrl.isBlank() && contactName.isBlank() && contactPhone.isBlank()
 
         // Step 3
-        RegFormStep.COMPANY_CONTACT -> websiteUrl.isBlank() && contactRole.isBlank() && contactName.isBlank() && contactPhone.isBlank()
+        RegFormStep.COMPANY_CONTACT -> websiteUrl.isBlank() && contactRole.isBlank() && firstName.isBlank() && lastName.isBlank()
         
         RegFormStep.PROFESSIONAL_LINKS,
         RegFormStep.TALENT_LINKS,

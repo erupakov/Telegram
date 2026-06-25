@@ -48,6 +48,12 @@ class ToggleBookmarkUseCase(
                     newFollowersCount = newCount
                 )
             )
+            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.BookmarkToggled())
+            if (newFollowed) {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ProfileFollowed(userId.toLong()))
+            } else {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ProfileUnfollowed(userId.toLong()))
+            }
             onSuccess(newFollowed)
         } else {
             onRollback()

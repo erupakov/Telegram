@@ -17,6 +17,7 @@ class ApplyConfirmationViewModel(
     override fun createInitialState(): ApplyConfirmationViewState = ApplyConfirmationViewState(eventId)
 
     init {
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventApplyStarted(eventId.toLong()))
         setIntent(ApplyConfirmationIntent.OnLoad)
     }
 
@@ -64,6 +65,7 @@ class ApplyConfirmationViewModel(
             setState { copy(isSubmitting = true) }
             val result = DivoApi.eventRepository.applyEvent(eventId)
             if (result is DivoResult.Success) {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventApplyConfirmed(eventId.toLong()))
                 val event = state.value.eventDetails
                 if (event != null) {
                     DivoApi.eventRepository.notifyEventParticipationChanged(eventId, true, event.appliesCount + 1)

@@ -204,10 +204,16 @@ class ProfileViewModel(
             is ProfileIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
             is ProfileIntent.OnFindSimilarProfiles -> sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
-            is ProfileIntent.OnSendDMClicked -> sendEffect(ProfileEffect.NavigateToChat(intent.telegramId, intent.telegramAccessHash, intent.telegramUsername))
+            is ProfileIntent.OnSendDMClicked -> {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.DirectMessageStarted(intent.telegramId))
+                sendEffect(ProfileEffect.NavigateToChat(intent.telegramId, intent.telegramAccessHash, intent.telegramUsername))
+            }
             ProfileIntent.OnShowAppearances -> sendEffect(ShowAppearances)
             ProfileIntent.OnBackgroundReady -> setState { copy(hasBackgroundReady = true) }
-            ProfileIntent.OnEventCreate -> sendEffect(NavigateToCreateEvent)
+            ProfileIntent.OnEventCreate -> {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventCreateStarted())
+                sendEffect(NavigateToCreateEvent)
+            }
             ProfileIntent.OnLoadMoreSearchModels -> loadMoreSearchModels()
             is ProfileIntent.OnSearchModelsQueryChanged -> onSearchModelsQueryChanged(intent.query)
             ProfileIntent.OnLoadMoreAgencyModels -> viewModelScope.launch { agencyModelsPaginator.loadMore() }
@@ -216,7 +222,12 @@ class ProfileViewModel(
             is ProfileIntent.OnEventApplied -> applyEvent(intent.eventId)
             is ProfileIntent.OnAddAgencyModel -> addAgencyModel(intent.userId, intent.note)
             is ProfileIntent.OnCancelAgencyModelRequest -> cancelAgencyModelRequest(intent.modelId)
-            is ProfileIntent.OnToggleAgencySearch -> setState { copy(isAgencySearchSheetVisible = intent.visible) }
+            is ProfileIntent.OnToggleAgencySearch -> {
+                if (intent.visible) {
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.AddModelStarted())
+                }
+                setState { copy(isAgencySearchSheetVisible = intent.visible) }
+            }
             is ProfileIntent.OnSelectAgencyModelForAdd -> selectAgencyModelForAdd(intent.model)
             ProfileIntent.OnReportProfileClicked -> onReportProfileClicked()
             ProfileIntent.OnDismissReportSheet -> setState { copy(showReportSheet = false) }
@@ -514,6 +525,7 @@ class ProfileViewModel(
             val result = DivoApi.userRepository.addAgencyModel(userId, note)
             if (result is DivoResult.Success) {
                 // Refresh models list or update search status locally
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.AddModelSuccess())
                 kotlinx.coroutines.joinAll(
                     launch { agencyModelsPaginator.loadInitial(clearItems = false) },
                     launch { searchModelsPaginator.loadInitial(clearItems = false) }
@@ -735,6 +747,7 @@ class ProfileViewModel(
             val res = DivoApi.userRepository.reportProfile(state.value.userId, reportKey)
             setState { copy(isLoading = false) }
             if (res is DivoResult.Success) {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.UserReported(state.value.userId.toLong(), reportKey))
                 // Profile reported successfully
                 sendEffect(ProfileEffect.SaveSuccess(R.string.ReportSent))
             } else {
@@ -744,6 +757,7 @@ class ProfileViewModel(
     }
 
     private fun onStatsTabOpened(type: StatsType) {
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.StatsTabViewed(type.name.lowercase()))
         setState {
             copy(
                 activeStatsType = type,
@@ -808,8 +822,11 @@ class ProfileViewModel(
                 .flatMap { DivoApi.userRepository.addToGallery(it.uuid) }
 
             when (result) {
-                is DivoResult.Success -> setState {
-                    copy(mediaUploading = false)
+                is DivoResult.Success -> {
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.GalleryMediaUploaded("photo"))
+                    setState {
+                        copy(mediaUploading = false)
+                    }
                 }
                 else -> {
                     setState {
@@ -841,7 +858,10 @@ class ProfileViewModel(
                 }
 
             when (result) {
-                is DivoResult.Success -> setState { copy(mediaUploading = false) }
+                is DivoResult.Success -> {
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.GalleryMediaUploaded("video"))
+                    setState { copy(mediaUploading = false) }
+                }
                 else -> {
                     setState { copy(mediaUploading = false) }
                     sendEffect(ShowError(result.getErrorMessage()))

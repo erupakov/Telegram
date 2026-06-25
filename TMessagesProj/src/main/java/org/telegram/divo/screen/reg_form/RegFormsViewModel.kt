@@ -368,6 +368,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     val dummyAuth = TLRPC.TL_auth_authorization().apply {
                         user = profileUpdateResult ?: tgUser
                     }
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SignUpComplete())
                     sendEffect(RegFormsEffect.FinishRegistration(dummyAuth))
                 } catch (e: Exception) {
                     e.printStackTrace()
