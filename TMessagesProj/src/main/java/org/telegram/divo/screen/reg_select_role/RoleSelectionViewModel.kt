@@ -4,7 +4,9 @@ import org.telegram.divo.common.BaseViewModel
 
 class RoleSelectionViewModel : BaseViewModel<RoleSelectionState, RoleSelectionIntent, RoleSelectionEffect>() {
 
-    override fun createInitialState(): RoleSelectionState = RoleSelectionState()
+    override fun createInitialState(): RoleSelectionState {
+        return RoleSelectionState()
+    }
 
     override fun handleIntent(intent: RoleSelectionIntent) {
         when (intent) {
@@ -25,15 +27,6 @@ class RoleSelectionViewModel : BaseViewModel<RoleSelectionState, RoleSelectionIn
     // Главный экран — выбор одной из 3 дверей
     private fun onUserIntentSelected(userIntent: UserIntent) {
         setState { copy(intent = userIntent) }
-        when (userIntent) {
-            UserIntent.FAN -> sendEffect(
-                RoleSelectionEffect.NavigateToResult(SubRole.FAN)
-            )
-            UserIntent.GET_HIRED,
-            UserIntent.LOOKING_FOR_TALENT -> sendEffect(
-                RoleSelectionEffect.NavigateToQuiz(userIntent)
-            )
-        }
     }
 
     // Q1 для LOOKING_FOR_TALENT — Company или Individual
@@ -63,6 +56,7 @@ class RoleSelectionViewModel : BaseViewModel<RoleSelectionState, RoleSelectionIn
             sendEffect(RoleSelectionEffect.ShowError("Please select a role"))
             return
         }
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SignUpRoleSelected(finalRole.name))
         sendEffect(RoleSelectionEffect.NavigateToResult(finalRole))
     }
 

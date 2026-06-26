@@ -23,6 +23,7 @@
     <string name="ButtonEdit">Edit</string>
     <string name="ButtonDelete">Delete</string>
     <string name="ButtonContinue">Continue</string>
+    <string name="OnboardingSkip">Skip</string>
     <string name="ButtonDone">Done</string>
     <string name="RetryLabel">Retry</string>
     <string name="YourPhoneLabel">Your Phone</string>

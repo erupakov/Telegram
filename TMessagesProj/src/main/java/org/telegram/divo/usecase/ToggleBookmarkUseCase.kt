@@ -1,5 +1,7 @@
 package org.telegram.divo.usecase
 
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -23,6 +25,7 @@ class ToggleBookmarkUseCase(
         userId: Int,
         isFollowed: Boolean,
         currentFollowersCount: Int,
+        screenName: String,
         onUpdate: (newFollowed: Boolean, newFollowersCount: Int) -> Unit,
         onRollback: () -> Unit,
         onSuccess: (newFollowed: Boolean) -> Unit,
@@ -48,6 +51,7 @@ class ToggleBookmarkUseCase(
                     newFollowersCount = newCount
                 )
             )
+            DivoAnalytics.logEvent(AnalyticsEvent.BookmarkToggled(userId.toLong(), newFollowed, screenName))
             onSuccess(newFollowed)
         } else {
             onRollback()

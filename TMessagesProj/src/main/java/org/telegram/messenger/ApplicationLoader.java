@@ -289,6 +289,19 @@ public class ApplicationLoader extends Application {
 
         super.onCreate();
 
+        try {
+            com.facebook.FacebookSdk.sdkInitialize(applicationContext);
+            com.facebook.appevents.AppEventsLogger.activateApp(this);
+            if (BuildVars.DEBUG_VERSION) {
+                com.facebook.FacebookSdk.setIsDebugEnabled(true);
+                com.facebook.FacebookSdk.addLoggingBehavior(com.facebook.LoggingBehavior.APP_EVENTS);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+
+        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.init(); //DIVO
+
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("app start time = " + (startTime = SystemClock.elapsedRealtime()));
             try {

@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,34 +35,31 @@ import kotlin.math.absoluteValue
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.style.setDivoContent
 import org.telegram.divo.style.DivoFont
 
-@Composable
-private fun IntroCompose(onNext: () -> Unit) {
-    OnboardingHost(navigateNext = onNext)
-}
-
 object OnboardingScreen {
     @JvmStatic
-    fun mountOnboarding(composeView: ComposeView,onNext: () -> Unit
+    fun mountOnboarding(composeView: ComposeView,onNext: () -> Unit, onSkipped: () -> Unit
     ) {
         composeView.setDivoContent {
-            OnboardingHost(onNext)
+            OnboardingHost(onNext, onSkipped)
         }
     }
 }
 
 @Preview
 @Composable
-fun OnboardingHost(navigateNext: () -> Unit = {}) {
+fun OnboardingHost(navigateNext: () -> Unit = {}, onSkipped: () -> Unit = {}) {
     val pages = listOf(
         OnboardPage(R.drawable.divo_onboarding_1_img, R.string.OnboardingTitleGetSeenByTheRightPeople, R.string.OnboardingSubtitleGetSeenByTheRightPeople),
         OnboardPage(R.drawable.divo_onboarding_2_img, R.string.OnboardingTitleRealCastingsRealOpportunities, R.string.OnboardingSubtitleRealCastingsRealOpportunities),
         OnboardPage(R.drawable.divo_onboarding_3_img, R.string.OnboardingTitleDiscoveredFasterWithAI, R.string.OnboardingSubtitleDiscoveredFasterWithAI)
     )
-    OnboardingScreen(pages = pages, onContinue = navigateNext)
+    OnboardingScreen(pages = pages, onContinue = navigateNext, onSkipped = onSkipped)
 }
 
 
@@ -68,10 +67,13 @@ fun OnboardingHost(navigateNext: () -> Unit = {}) {
 @Composable
 fun OnboardingScreen(
     pages: List<OnboardPage>,
-    onContinue: () -> Unit
+    onContinue: () -> Unit,
+    onSkipped: () -> Unit
 ) {
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { pages.size })
     val bottomInset = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
+    val topInset = WindowInsets.systemBars.asPaddingValues().calculateTopPadding()
+    val coroutineScope = rememberCoroutineScope()
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -158,8 +160,28 @@ fun OnboardingScreen(
                     .padding(horizontal = 16.dp),
                 text = stringResource(R.string.ButtonContinue)
             ) {
-                onContinue()
+                if (pagerState.currentPage < pages.lastIndex) {
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                    }
+                } else {
+                    onContinue()
+                }
             }
+        }
+
+        if (pagerState.currentPage < pages.lastIndex) {
+            Text(
+                text = stringResource(R.string.OnboardingSkip),
+                color = Color.White,
+                fontFamily = DivoFont.HelveticaNeue,
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = topInset + 24.dp, end = 16.dp)
+                    .clickableWithoutRipple { onSkipped() }
+                    .padding(8.dp)
+            )
         }
     }
 }

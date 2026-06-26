@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
@@ -47,6 +49,7 @@ class ApplyConfirmationViewModel(
                         isLoading = false
                     ) 
                 }
+                DivoAnalytics.logEvent(AnalyticsEvent.EventApplyStarted(eventId.toLong(), userResult.value.id.toLong()))
             } else {
                 setState { copy(isLoading = false) }
                 val errorMsg = when {
@@ -64,6 +67,8 @@ class ApplyConfirmationViewModel(
             setState { copy(isSubmitting = true) }
             val result = DivoApi.eventRepository.applyEvent(eventId)
             if (result is DivoResult.Success) {
+                val userId = state.value.userInfo?.id ?: 0
+                DivoAnalytics.logEvent(AnalyticsEvent.EventApplyConfirmed(eventId.toLong(), userId.toLong()))
                 val event = state.value.eventDetails
                 if (event != null) {
                     DivoApi.eventRepository.notifyEventParticipationChanged(eventId, true, event.appliesCount + 1)

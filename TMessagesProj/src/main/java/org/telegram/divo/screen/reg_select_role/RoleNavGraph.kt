@@ -11,6 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.screen.reg_form.RegFormsScreen
 import org.telegram.divo.screen.reg_select_role.components.QuizResultScreen
 import org.telegram.divo.screen.reg_select_role.components.QuizScreen
@@ -61,6 +63,7 @@ fun RoleNavGraph(
             RoleSelectionScreen(
                 viewModel = viewModel,
                 onContinue = { intent ->
+                    DivoAnalytics.logEvent(AnalyticsEvent.SignUpIntentSelected(intent.name))
                     when (intent) {
                         UserIntent.FAN -> nav.navigate(Screen.QuizResult.createRoute(SubRole.FAN))
                         UserIntent.GET_HIRED, UserIntent.LOOKING_FOR_TALENT -> nav.navigate(Screen.Quiz.createRoute(intent))

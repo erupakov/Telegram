@@ -22,6 +22,8 @@ import org.telegram.ui.Components.LayoutHelper
 import android.widget.FrameLayout
 import android.view.Gravity
 import android.view.ViewGroup
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.dal.network.DivoApi
 
 class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDelegate {
 
@@ -135,7 +137,11 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
             val botBlock = if (user != null && user.bot) args[3] as Boolean else false
 
             val deleteRunnable = Runnable {
+                val currentUserId = DivoApi.userRepository.currentUserFlow.value?.id ?: 0
                 if (chat != null) {
+                    if (ChatObject.isChannel(chat)) {
+                        DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ChannelDeleteSuccess(currentUserId, dialogId))
+                    }
                     if (ChatObject.isNotInChat(chat)) {
                         MessagesController.getInstance(currentAccount).deleteDialog(dialogId, 0, revoke)
                     } else {

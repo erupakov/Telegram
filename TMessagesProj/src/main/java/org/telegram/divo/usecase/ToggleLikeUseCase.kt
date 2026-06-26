@@ -1,5 +1,7 @@
 package org.telegram.divo.usecase
 
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -22,6 +24,7 @@ class ToggleLikeUseCase(
         userId: Int,
         isLiked: Boolean,
         currentCount: Int,
+        screenName: String,
         onUpdate: (newLiked: Boolean, newCount: Int) -> Unit,
         onRollback: () -> Unit,
         onSuccess: (newLiked: Boolean) -> Unit,
@@ -46,6 +49,7 @@ class ToggleLikeUseCase(
                     newLikesCount = newCount
                 )
             )
+            DivoAnalytics.logEvent(AnalyticsEvent.LikeToggled(userId.toLong(), newLiked, screenName))
             onSuccess(newLiked)
         } else {
             onRollback()

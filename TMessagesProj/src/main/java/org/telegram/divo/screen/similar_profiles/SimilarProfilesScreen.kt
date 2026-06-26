@@ -25,6 +25,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent.Error
@@ -118,7 +120,10 @@ private fun SimilarProfilesContent(
                         modifier = Modifier.padding(end = 16.dp),
                         resId = R.drawable.ic_divo_filter,
                         iconSize = 24.dp,
-                        onClick = { showBottomSheet = true }
+                        onClick = { 
+                            DivoAnalytics.logEvent(AnalyticsEvent.SimilarProfilesFiltersOpened())
+                            showBottomSheet = true 
+                        }
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

@@ -2,6 +2,8 @@ package org.telegram.divo.screen.profile_social_links
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
@@ -11,6 +13,10 @@ import org.telegram.divo.entity.SocialNetworkType
 class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>() {
 
     override fun createInitialState(): UiViewState = UiViewState()
+
+    init {
+        DivoAnalytics.logEvent(AnalyticsEvent.SocialLinksOpened())
+    }
 
     override fun handleIntent(intent: Intent) {
         when (intent) {
@@ -77,6 +83,7 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
 
             when (result) {
                 is DivoResult.Success -> {
+                    DivoAnalytics.logEvent(AnalyticsEvent.SocialLinksSaved())
                     setState { copy(isUploading = false) }
                     sendEffect(Effect.NavigateBack)
                 }

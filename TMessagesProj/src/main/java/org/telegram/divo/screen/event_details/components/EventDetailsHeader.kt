@@ -96,6 +96,7 @@ fun EventDetailsHeader(
                 .padding(top = topPadding + 16.dp)
                 .graphicsLayer { alpha = engagementsAlpha },
             event = event,
+            isOwnEvent = isOwnEvent,
             onLikeClicked = onLikeClicked,
             onFavouriteClicked = onFavouriteClicked
         )
@@ -117,6 +118,7 @@ fun EventDetailsHeader(
 private fun StatsSection(
     modifier: Modifier = Modifier,
     event: EventDetails?,
+    isOwnEvent: Boolean,
     onLikeClicked: () -> Unit,
     onFavouriteClicked: () -> Unit
 ) {
@@ -136,7 +138,7 @@ private fun StatsSection(
             tint = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             textColor = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             background = if (isLiked) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
-            onClick = onLikeClicked
+            onClick = if (isOwnEvent) null else onLikeClicked
         )
         Spacer(Modifier.height(10.dp))
         EngagementItem(
@@ -151,7 +153,7 @@ private fun StatsSection(
             tint = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             textColor = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             background = if (isFavourite) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
-            onClick = onFavouriteClicked
+            onClick = if (isOwnEvent) null else onFavouriteClicked
         )
     }
 }

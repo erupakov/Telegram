@@ -52,6 +52,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import org.telegram.divo.analytics.AnalyticsEvent;
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.divo.screen.auth.AuthFragment;
 import org.telegram.divo.screen.onboarding.OnboardingScreen;
 import org.telegram.messenger.AndroidUtilities;
@@ -131,6 +133,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
 
     @Override
     public boolean onFragmentCreate() {
+        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.OnboardingStarted());
         MessagesController.getGlobalMainSettings().edit().putLong("intro_crashed_time", System.currentTimeMillis()).apply();
 
         titles = new CharSequence[]{
@@ -173,6 +176,7 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                 new kotlin.jvm.functions.Function0<kotlin.Unit>() {
                     @Override
                     public kotlin.Unit invoke() {
+                        DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.OnboardingCompleted());
                         // Mark onboarding as seen (optional but recommended)
                         getContext().getSharedPreferences("kit_prefs", Context.MODE_PRIVATE)
                                 .edit().putBoolean("onboarding_seen", true).apply();
@@ -181,7 +185,19 @@ public class IntroActivity extends BaseFragment implements NotificationCenter.No
                         destroyed = true;
                         return kotlin.Unit.INSTANCE;
                     }
-                }::invoke // Java can't pass lambdas easily; using Function0 and method ref works
+                }::invoke, // onNext
+                new kotlin.jvm.functions.Function0<kotlin.Unit>() {
+                    @Override
+                    public kotlin.Unit invoke() {
+                        DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.OnboardingSkipped());
+                        getContext().getSharedPreferences("kit_prefs", Context.MODE_PRIVATE)
+                                .edit().putBoolean("onboarding_seen", true).apply();
+
+                        presentFragment(new AuthFragment(), true); //DIVO
+                        destroyed = true;
+                        return kotlin.Unit.INSTANCE;
+                    }
+                }::invoke // onSkipped
         );
 
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.suggestedLangpack);

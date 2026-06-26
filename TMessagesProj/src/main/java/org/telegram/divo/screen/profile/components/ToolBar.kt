@@ -37,6 +37,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.hazeEffect
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.clickableWithoutRipple
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.common.utils.toCountryFlagEmoji
@@ -125,12 +127,26 @@ fun ToolBarContent(
         PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report)
     )
 
-    val editOptions = remember {
+    val editOptions = remember(uiState.userId, uiState.isModel) {
         buildList {
-            add(PopupMenuItem(R.string.EditProfile, onEditProfileClicked))
-            add(PopupMenuItem(R.string.ChangeProfileBackground, onEditBackgroundClicked))
-            add(PopupMenuItem(R.string.EditSocialLinks, onEditSocialLinksClicked))
-            if (uiState.isModel) add(PopupMenuItem(R.string.ManageWorkExperience, onManageWorkExperienceClicked))
+            add(PopupMenuItem(R.string.EditProfile, {
+                DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOptionTapped(uiState.userId, "edit_profile"))
+                onEditProfileClicked()
+            }))
+            add(PopupMenuItem(R.string.ChangeProfileBackground, {
+                DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOptionTapped(uiState.userId, "change_background"))
+                onEditBackgroundClicked()
+            }))
+            add(PopupMenuItem(R.string.EditSocialLinks, {
+                DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOptionTapped(uiState.userId, "edit_social_links"))
+                onEditSocialLinksClicked()
+            }))
+            if (uiState.isModel) {
+                add(PopupMenuItem(R.string.ManageWorkExperience, {
+                    DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOptionTapped(uiState.userId, "manage_work_experience"))
+                    onManageWorkExperienceClicked()
+                }))
+            }
         }
     }
 
@@ -196,6 +212,7 @@ fun ToolBarContent(
                         .clickableWithoutRipple { 
                             val account = org.telegram.messenger.UserConfig.selectedAccount
                             val fragment = org.telegram.ui.LaunchActivity.getLastFragment() ?: return@clickableWithoutRipple
+                            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.StoryAddClicked("profile"))
                             org.telegram.ui.Stories.recorder.StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
                         },
                     painter = painterResource(R.drawable.ic_divo_rounded_plus),
@@ -206,7 +223,10 @@ fun ToolBarContent(
                 Icon(
                     modifier = Modifier
                         .size(16.dp)
-                        .clickableWithoutRipple { showEditMenu = true },
+                        .clickableWithoutRipple { 
+                            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ProfileEditMenuTapped(uiState.userId))
+                            showEditMenu = true 
+                        },
                     painter = painterResource(R.drawable.ic_divo_edit_24),
                     contentDescription = null,
                     tint = buttonIconColor

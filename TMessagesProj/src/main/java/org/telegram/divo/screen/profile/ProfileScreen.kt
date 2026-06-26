@@ -56,6 +56,8 @@ import androidx.media3.common.util.UnstableApi
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent.Error
@@ -400,6 +402,41 @@ private fun ProfileScreenContent(
     }
 
     val currentPage = pagerState.currentPage
+    
+    var lastLoggedPage by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(currentPage) {
+        if (lastLoggedPage != null && lastLoggedPage != currentPage) {
+            val tabName = when (currentPage) {
+                0 -> "gallery"
+                1 -> "video"
+                2 -> if (uiState.isModel) "channels" else "agency_models"
+                3 -> "channels"
+                else -> "events"
+            }
+            DivoAnalytics.logEvent(
+                AnalyticsEvent.ProfileTabViewed(tabName)
+            )
+        }
+        lastLoggedPage = currentPage
+    }
+
+    var lastLoggedInfoPage by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(pagerInfoState.currentPage) {
+        if (uiState.isModel) {
+            if (lastLoggedInfoPage != null && lastLoggedInfoPage != pagerInfoState.currentPage) {
+                val tabName = when (pagerInfoState.currentPage) {
+                    0 -> "bio"
+                    1 -> "appearance"
+                    else -> "experience"
+                }
+                DivoAnalytics.logEvent(
+                    AnalyticsEvent.ProfileInfoTabViewed(tabName)
+                )
+            }
+            lastLoggedInfoPage = pagerInfoState.currentPage
+        }
+    }
+
     val showAddButton = uiState.isOwnProfile && isPagerSectionVisible && when (currentPage) {
         0 -> uiState.userGalleryItems.isNotEmpty()
         1 -> uiState.videoItems.isNotEmpty()

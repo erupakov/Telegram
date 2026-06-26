@@ -65,7 +65,7 @@ fun ModelPage(
     feed: FeedItem,
     cardHeight: Dp,
     onClick: (Int) -> Unit,
-    onPhotoClicked: (List<GalleryItem>, Int) -> Unit,
+    onPhotoClicked: (List<GalleryItem>, Int, Int) -> Unit,
     onLikeClick: (Int, Boolean) -> Unit,
     onBookmarkClick: (Int) -> Unit,
 ) {
@@ -282,7 +282,7 @@ fun ModelPage(
                     feed = feed,
                     onPhotoClicked = {
                         val items = feed.files.map { GalleryItem(it.order, it.url, false) }
-                        onPhotoClicked(items, it)
+                        onPhotoClicked(items, it, feed.user.id)
                     }
                 )
             }

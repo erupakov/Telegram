@@ -43,6 +43,8 @@ object DivoSharingHelper {
     ) {
         val shareUrl = type.buildUrl(id)
         val textBody = "$customMessage\n$shareUrl"
+        
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ContentShared(type.name.lowercase(), id?.toLong() ?: -1L))
 
         openShareSheet(context, textBody, null)
 //        if (imageUrl.isNullOrBlank()) {

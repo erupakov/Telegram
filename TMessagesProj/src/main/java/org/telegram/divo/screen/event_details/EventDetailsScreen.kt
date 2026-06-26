@@ -82,9 +82,7 @@ import org.telegram.messenger.R
 fun EventDetailsScreen(
     eventId: Int,
     isOwnProfile: Boolean,
-    viewModel: EventDetailsViewModel = viewModel(
-        factory = EventDetailsViewModel.factory(eventId, isOwnProfile)
-    ),
+    viewModel: EventDetailsViewModel,
     onPhotoClicked: (List<GalleryItem>, Int) -> Unit,
     onParamsClicked: () -> Unit,
     onEditEvent: (Int) -> Unit,
@@ -108,11 +106,17 @@ fun EventDetailsScreen(
                 EventDetailsEffect.Back -> onBack()
                 EventDetailsEffect.EventDeleted -> onEventDeleted()
                 is EventDetailsEffect.ShowError -> {
-                    snackbarState.show(
-                        SnackbarEvent.ErrorWithRetry(action.message, retryText) {
-                            viewModel.setIntent(EventDetailsIntent.OnLoad)
-                        }
-                    )
+                    if (action.canRetry) {
+                        snackbarState.show(
+                            SnackbarEvent.ErrorWithRetry(action.message, retryText) {
+                                viewModel.setIntent(EventDetailsIntent.OnLoad)
+                            }
+                        )
+                    } else {
+                        snackbarState.show(
+                            SnackbarEvent.Error(action.message)
+                        )
+                    }
                 }
                 is EventDetailsEffect.NavigateToGallery -> { onPhotoClicked(action.items, action.id) }
                 EventDetailsEffect.NavigateToParams -> { onParamsClicked() }
@@ -312,7 +316,10 @@ private fun EventDetailsContent(
                         Icon(
                             modifier = Modifier
                                 .size(24.dp)
-                                .clickableWithoutRipple { showMenu = true },
+                                .clickableWithoutRipple { 
+                                    showMenu = true 
+                                    onIntent(EventDetailsIntent.OnMenuClicked)
+                                },
                             painter = painterResource(R.drawable.ic_ab_other),
                             contentDescription = null,
                             tint = iconColor

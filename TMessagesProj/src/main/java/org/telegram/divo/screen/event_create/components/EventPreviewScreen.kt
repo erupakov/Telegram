@@ -337,7 +337,7 @@ private fun State.toEventModelAttributes(): EventModelAttributes {
         hairLengths = parseList(hairLength.value),
         eyeColors = parseList(eyeColor.value),
         skinColors = parseList(skinColor.value),
-        measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem
+        measuringSystem = DivoSettings.measuringSystem
     )
 }
 
@@ -470,7 +470,7 @@ private fun PreviewHeader(
                 ) {
                     if (state.deadlineDate.isNotBlank()) {
                         RoundedGlassContainer(
-                            height = 30.dp,
+                            height = 36.dp,
                             borderColor = AppTheme.colors.onBackground.copy(alpha = 0.2f),
                             contentPadding = PaddingValues(horizontal = 12.dp)
                         ) {
@@ -485,7 +485,7 @@ private fun PreviewHeader(
                         }
                     }
                 }
-
+                Spacer(Modifier.width(10.dp))
                 RoundedGlassContainer(
                     height = 36.dp,
                     background = Color.White.copy(alpha = 0.8f),

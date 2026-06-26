@@ -4,6 +4,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.dal.network.DivoApi
 
 object DivoChannelHelper {
@@ -21,6 +23,10 @@ object DivoChannelHelper {
                     username = resolvedUsername,
                     inviteLink = resolvedInviteLink
                 )
+                
+                val user = DivoApi.userRepository.currentUserFlow.value
+                val userId = user?.id ?: 0
+                DivoAnalytics.logEvent(AnalyticsEvent.ChannelCreateSuccess(userId, chatId))
             } catch (e: Exception) { }
         }
     }

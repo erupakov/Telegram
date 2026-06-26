@@ -61,6 +61,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.DivoAsyncImage
@@ -169,6 +171,22 @@ private fun GalleryPagerContent(
     LaunchedEffect(pagerState.currentPage, uiState.items.size) {
         if (pagerState.currentPage >= uiState.items.size - 3 && uiState.hasMore) {
             onLoadMore()
+        }
+    }
+
+    // 4. Аналитика просмотра фото/видео
+    LaunchedEffect(pagerState.currentPage, uiState.items) {
+        if (uiState.items.isNotEmpty() && uiState.source != null) {
+            val index = pagerState.currentPage.coerceIn(0, uiState.items.lastIndex)
+            val item = uiState.items[index]
+            DivoAnalytics.logEvent(
+                AnalyticsEvent.GalleryItemViewed(
+                    targetUserId = uiState.source.userId,
+                    mediaId = item.id,
+                    mediaType = if (item.isVideo) "video" else "photo",
+                    screenName = uiState.source.screenName
+                )
+            )
         }
     }
 

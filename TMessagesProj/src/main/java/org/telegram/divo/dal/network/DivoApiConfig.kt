@@ -13,7 +13,7 @@ object DivoApiConfig {
         get() = if (org.telegram.messenger.BuildVars.DEBUG_VERSION) {
             "https://api-stage.divo.fashion/api/"
         } else {
-            "https://api.divo.fashion/v2/"
+            "https://api-stage.divo.fashion/api/"//"https://api.divo.fashion/v2/"
         }
 
     /**

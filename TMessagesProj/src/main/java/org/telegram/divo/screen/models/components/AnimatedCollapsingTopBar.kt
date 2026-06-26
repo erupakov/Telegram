@@ -69,6 +69,8 @@ import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.AndroidUtilities.lerp
 import org.telegram.messenger.R
 import androidx.compose.ui.viewinterop.AndroidView
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
 import org.telegram.messenger.AndroidUtilities
@@ -211,9 +213,11 @@ fun AnimatedLargeStoriesOverlay(
                             .clickable { 
                                 val fragment = LaunchActivity.getLastFragment() ?: return@clickable
                                 if (story.isSelf && !story.hasStories) {
+                                    DivoAnalytics.logEvent(AnalyticsEvent.StoryAddClicked("models_feed"))
                                     StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
                                 } else {
                                     val peerIds = arrayListOf(story.dialogId)
+                                    DivoAnalytics.logEvent(AnalyticsEvent.StoryOpened("models_feed"))
                                     fragment.getOrCreateStoryViewer().open(
                                         fragment.context, null, peerIds, 0, null, null, null, false
                                     )
@@ -316,6 +320,7 @@ fun AnimatedLargeStoriesOverlay(
                                 .background(Color.White, CircleShape)
                                 .clickable {
                                     val fragment = LaunchActivity.getLastFragment() ?: return@clickable
+                                    DivoAnalytics.logEvent(AnalyticsEvent.StoryAddClicked("models_feed"))
                                     StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
                                 }
                                 .padding(2.dp)

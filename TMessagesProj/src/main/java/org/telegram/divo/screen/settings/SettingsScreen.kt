@@ -132,6 +132,7 @@ fun SettingsScreen(
 
                 SettingsViewEffect.NavigateToLogout -> navigateToLogout()
                 SettingsViewEffect.ShowMeasuringSystemDialog -> showMeasuringSystemDialog = true
+                SettingsViewEffect.ShowQrCode -> showQrBottomSheet = true
             }
         }
     }
@@ -162,7 +163,7 @@ fun SettingsScreen(
         topBar = {
             SettingsTopBar(
                 onAction = { viewModel.setIntent(SettingsViewIntent.OnEditProfileClicked) },
-                onQrCode = { showQrBottomSheet = true }
+                onQrCode = { viewModel.setIntent(SettingsViewIntent.OnQrCodeClicked) }
             )
         },
         snackbarHost = {

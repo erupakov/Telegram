@@ -132,6 +132,8 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.zxing.common.detector.MathUtils;
 
 import org.telegram.PhoneFormat.PhoneFormat;
+import org.telegram.divo.analytics.AnalyticsEvent;
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -2612,7 +2614,7 @@ public class ChatActivity extends BaseFragment implements
                 }
             }
         }
-        //DIVO--END
+
         wallpaperRandomSeed = Utilities.random.nextLong();
         if (quickReplyShortcut != null) {
             QuickRepliesController.QuickReply quickReply = QuickRepliesController.getInstance(currentAccount).findReply(quickReplyShortcut);
@@ -2757,6 +2759,25 @@ public class ChatActivity extends BaseFragment implements
         }
 
         dialog_id_Long = dialog_id;
+        //DIVO--START
+        long divoTargetUserId = 0;
+        long divoChatId = 0;
+        if (currentUser != null && currentUser.id != 0) {
+            divoTargetUserId = currentUser.id;
+        } else if (currentChat != null && currentChat.id != 0) {
+            divoChatId = currentChat.id;
+        } else if (dialog_id != 0) {
+            if (dialog_id > 0) {
+                divoTargetUserId = dialog_id;
+            } else {
+                divoChatId = -dialog_id;
+            }
+        }
+        
+        if (divoTargetUserId != 0 || divoChatId != 0) {
+            DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.ChatViewed(divoTargetUserId, divoChatId));
+        }
+        //DIVO--END
 
         transitionAnimationGlobalIndex = NotificationCenter.getGlobalInstance().setAnimationInProgress(transitionAnimationGlobalIndex, new int[0]);
 
@@ -3963,6 +3984,9 @@ public class ChatActivity extends BaseFragment implements
                     }
                 } else if (id == call || id == video_call) {
                     if (currentUser != null && getParentActivity() != null) {
+                        //DIVO--START
+                        DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.CallStarted(dialog_id, id == video_call));
+                        //DIVO--END
                         VoIPHelper.startCall(currentUser, id == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
                     }
                 } else if (id == text_bold) {
@@ -13197,6 +13221,9 @@ public class ChatActivity extends BaseFragment implements
             return;
         }
         createChatAttachView();
+        //DIVO--START
+        DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.AttachmentMenuOpened(dialog_id));
+        //DIVO--END
         chatAttachAlert.getPhotoLayout().loadGalleryPhotos();
         if (Build.VERSION.SDK_INT == 21 || Build.VERSION.SDK_INT == 22) {
             chatActivityEnterView.closeKeyboard();
@@ -37002,6 +37029,12 @@ public class ChatActivity extends BaseFragment implements
             boolean hashtags = false;
             boolean channelHashtags = false;
             searchingQuery = editText != null ? editText.getText().toString() : searchingQuery;
+            
+            //DIVO--START
+            if (searchingQuery != null && !searchingQuery.isEmpty()) {
+                DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.SearchQueryEntered("chat_messages", searchingQuery.length()));
+            }
+            //DIVO--END
             if (!TextUtils.isEmpty(searchingQuery) && (searchingQuery.startsWith("$") || searchingQuery.startsWith("#"))) {
                 hashtags = true;
                 if (searchingQuery.contains("@")) {

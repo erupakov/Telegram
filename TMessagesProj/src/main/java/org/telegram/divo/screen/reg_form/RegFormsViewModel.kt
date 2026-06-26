@@ -12,6 +12,8 @@ import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import java.io.InputStreamReader
 import kotlinx.coroutines.suspendCancellableCoroutine
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.AdditionalInfoKeys
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -69,6 +71,16 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
     }
 
     private fun onContinue() {
+        state.value.currentStep?.let { step ->
+            DivoAnalytics.logEvent(
+                AnalyticsEvent.SignUpStepCompleted(
+                    stepName = step.name,
+                    stepNumber = state.value.currentStepIndex + 1,
+                    totalSteps = state.value.totalSteps
+                )
+            )
+        }
+        
         if (state.value.isLastStep) {
             setState { copy(isLoading = true) }
             val data = state.value.formData ?: return
@@ -192,6 +204,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         val divoResponse = DivoApi.authRepository.registrationSocial(socialRequest)
                         if (divoResponse !is DivoResult.Success) {
                             val errorMessage = divoResponse.getErrorMessage()
+                            DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))
                             sendEffect(RegFormsEffect.ShowError("Registration failed: $errorMessage"))
                             setState { copy(isLoading = false) }
                             return@launch
@@ -212,6 +225,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         val divoResponse = DivoApi.authRepository.register(regRequest)
                         if (divoResponse !is DivoResult.Success) {
                             val errorMessage = divoResponse.getErrorMessage()
+                            DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))
                             sendEffect(RegFormsEffect.ShowError("Registration failed: $errorMessage"))
                             setState { copy(isLoading = false) }
                             return@launch
@@ -276,6 +290,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     val linkResponse = DivoApi.authRepository.linkTelegramAccount(linkRequest)
                     if (linkResponse !is DivoResult.Success) {
                         val errorMessage = linkResponse.getErrorMessage()
+                        DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))
 
                         DivoApi.accessTokenProvider.setAccessToken(null)
                         sendEffect(RegFormsEffect.ShowError("Linking failed: $errorMessage"))
@@ -334,7 +349,8 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                             org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest(
                                 agencyId = null,
                                 title = data.companyName.takeIf { it.isNotBlank() },
-                                description = data.websiteUrl.takeIf { it.isNotBlank() },
+                                description = null,
+                                site = data.websiteUrl.takeIf { it.isNotBlank() },
                                 address = null,
                                 background = null,
                                 photo = photoContainer,
@@ -362,15 +378,35 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     val updateResponse = DivoApi.userRepository.updateProfile(updateProfileRequest)
                     if (updateResponse !is DivoResult.Success) {
                         val errorMessage = updateResponse.getErrorMessage()
+                        DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))
                         sendEffect(RegFormsEffect.ShowError(errorMessage))
+                    } else if (mappedRole == RoleType.AGENCY.value) {
+                        try {
+                            val agencyPhoto = uploadedPhotoUuid?.let {
+                                org.telegram.divo.entity.Photo(photoId = 0, fileUuid = it)
+                            }
+                            val agency = org.telegram.divo.entity.Agency(
+                                title = data.companyName,
+                                site = data.websiteUrl,
+                                photo = agencyPhoto
+                            )
+                            val agencyResponse = DivoApi.userRepository.updateAgency(agency)
+                            if (agencyResponse !is DivoResult.Success) {
+                                sendEffect(RegFormsEffect.ShowError(agencyResponse.getErrorMessage()))
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
                     val dummyAuth = TLRPC.TL_auth_authorization().apply {
                         user = profileUpdateResult ?: tgUser
                     }
+                    DivoAnalytics.logEvent(AnalyticsEvent.SignUpComplete())
                     sendEffect(RegFormsEffect.FinishRegistration(dummyAuth))
                 } catch (e: Exception) {
                     e.printStackTrace()
+                    DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(e.message ?: "Unknown Exception"))
                     setState { copy(isLoading = false) }
                     if (e.message?.contains("PHONE_CODE_EXPIRED") == true) {
                         sendEffect(RegFormsEffect.NavigateBackToPhone)

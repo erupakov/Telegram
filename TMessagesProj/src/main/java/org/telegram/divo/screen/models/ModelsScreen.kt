@@ -60,6 +60,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent.Error
@@ -87,7 +89,7 @@ fun ModelsHomeScreen(
         viewModelStoreOwner = LocalContext.current.findActivity() as ViewModelStoreOwner
     ),
     onClick: (Int) -> Unit = {},
-    onPhotoClicked: (List<GalleryItem>, Int) -> Unit = { _, _ -> },
+    onPhotoClicked: (List<GalleryItem>, Int, Int) -> Unit = { _, _, _ -> },
 ) {
     val state by viewModel.state.collectAsState()
     val density = LocalDensity.current
@@ -189,8 +191,17 @@ fun ModelsHomeScreen(
         }
     }
 
+    var lastLoggedPage by remember { mutableStateOf<Int?>(null) }
     LaunchedEffect(pagerState.currentPage) {
         val currentTab = Tab.entries[pagerState.currentPage]
+        viewModel.setIntent(ModelsViewIntent.OnTabSelected(currentTab))
+        
+        if (lastLoggedPage != null && lastLoggedPage != pagerState.currentPage) {
+            DivoAnalytics.logEvent(
+                AnalyticsEvent.ModelsTabViewed(currentTab.name.lowercase())
+            )
+        }
+        lastLoggedPage = pagerState.currentPage
         val activeList = listStates[currentTab] ?: return@LaunchedEffect
 
         snapshotFlow {
@@ -320,7 +331,7 @@ private fun ModelsList(
     onLikeClick: (Int, Boolean) -> Unit,
     onBookmarkClick: (Int) -> Unit,
     onClick: (Int) -> Unit,
-    onPhotoClicked: (List<GalleryItem>, Int) -> Unit
+    onPhotoClicked: (List<GalleryItem>, Int, Int) -> Unit
 ) {
     val pageFeedItems = state.tabFeeds[tab] ?: emptyList()
     val isLoading = state.tabLoadingStates[tab] ?: false

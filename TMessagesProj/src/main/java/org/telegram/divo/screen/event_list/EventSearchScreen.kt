@@ -22,6 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.components.LottieProgressIndicator
@@ -179,7 +181,10 @@ fun EventSearchScreen(
             ) {
                 EventSearchRow(
                     value = state.searchFilters.query,
-                    onFilterClicked = { showFilterSheet = true },
+                    onFilterClicked = {
+                        DivoAnalytics.logEvent(AnalyticsEvent.SearchFiltersOpened("events"))
+                        showFilterSheet = true
+                    },
                     onValueChanged = onSearchQueryChanged,
                     onSearchConfirmed = onSearchConfirmed,
                     onBack = onCloseSearch

@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.utils.uriToFile
 import org.telegram.divo.components.items.ParametersType
@@ -65,7 +67,10 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             Intent.Load -> {}
             is Intent.OnInitEdit -> initEditMode(intent.eventId)
             Intent.OnBackClicked -> sendEffect(Effect.NavigateBack)
-            Intent.OnPreviewClicked -> sendEffect(Effect.NavigateToPreview)
+            Intent.OnPreviewClicked -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.EventCreatePreviewOpened())
+                sendEffect(Effect.NavigateToPreview)
+            }
             Intent.OnEditFromPreviewClicked -> setState { copy(resetPagerToFirstPage = true) }
             Intent.OnFirstPageReached -> setState { copy(resetPagerToFirstPage = false) }
             Intent.OnPublishClicked -> publishEvent()
@@ -233,6 +238,11 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
                     DivoApi.eventRepository.updateEvent(eventId, request)
                 } ?: DivoApi.eventRepository.createEvent(request)
                 if (result is DivoResult.Success) {
+                    if (state.value.editingEventId != null) {
+                        DivoAnalytics.logEvent(AnalyticsEvent.EventEdited(state.value.editingEventId!!.toLong()))
+                    } else {
+                        DivoAnalytics.logEvent(AnalyticsEvent.EventCreateSuccess(result.value.id.toLong()))
+                    }
                     sendEffect(Effect.EventPublished)
                     setState { copy(isUploading = false) }
                 } else {
