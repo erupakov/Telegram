@@ -83,6 +83,7 @@ object GoogleSignInHelper {
                 Log.d(TAG, "Firebase UID: $uid, email: $email")
 
                 // Step 3: Try login-social on Divo backend
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SignInStart("google"))
                 val deviceId = getDeviceId()
                 val loginResult = withContext(Dispatchers.IO) {
                     DivoApi.authRepository.loginSocial(
@@ -120,7 +121,7 @@ object GoogleSignInHelper {
                     withContext(Dispatchers.Main) {
                         if (authResponse != null) {
                             DivoApi.accessTokenProvider.setGoogleLogin(true)
-                            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.LoginSuccess())
+                            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SignInComplete("google"))
                             callback.onSuccess(authResponse)
                         } else {
                             callback.onError(context.getString(R.string.ErrorTelegramAuthFailed))

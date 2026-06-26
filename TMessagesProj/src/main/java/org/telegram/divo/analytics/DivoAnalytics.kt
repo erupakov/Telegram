@@ -3,6 +3,7 @@ package org.telegram.divo.analytics
 import android.os.Bundle
 import org.telegram.messenger.ApplicationLoader
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.facebook.appevents.AppEventsLogger
 
 /**
  * Singleton for logging analytics events.
@@ -11,9 +12,15 @@ import com.google.firebase.analytics.FirebaseAnalytics
 object DivoAnalytics {
 
     private var firebaseAnalytics: FirebaseAnalytics? = null
+    private var fbLogger: AppEventsLogger? = null
 
     fun init() {
         firebaseAnalytics = FirebaseAnalytics.getInstance(ApplicationLoader.applicationContext)
+        try {
+            fbLogger = AppEventsLogger.newLogger(ApplicationLoader.applicationContext)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     /**
@@ -36,7 +43,18 @@ object DivoAnalytics {
         }
 
         firebaseAnalytics?.logEvent(event.eventName, bundle)
-        //android.util.Log.i("DivoAnalytics", "📊 EVENT SENT: ${event.eventName} | Params: ${event.parameters}")
+        android.util.Log.i("DivoAnalytics", "📊 EVENT SENT: ${event.eventName} | Params: ${event.parameters}")
+        
+        // Log specific events to Facebook Meta SDK
+        val fbEventName = when (event.eventName) {
+            "profile_media_uploaded" -> "gallery_media_uploaded" // Map to Meta specs
+            else -> event.eventName
+        }
+        
+        if (fbEventName == "sign_up_start" || fbEventName == "sign_up_complete" || fbEventName == "gallery_media_uploaded") {
+            fbLogger?.logEvent(fbEventName, bundle)
+            android.util.Log.i("DivoAnalytics", "🚀 EVENT SENT TO META: $fbEventName | Params: $bundle")
+        }
     }
 
     /**

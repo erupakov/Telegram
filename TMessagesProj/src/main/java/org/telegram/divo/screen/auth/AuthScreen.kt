@@ -175,7 +175,7 @@ fun AuthScreen(
                     paddingTop = 1.dp,
                     enabled = !isGoogleLoading.value,
                     onClick = {
-                        DivoAnalytics.logEvent(AnalyticsEvent.SignUpStart("phone"))
+                        DivoAnalytics.logEvent(AnalyticsEvent.AuthMethodSelected("phone"))
                         onAuthClicked()
                     }
                 )
@@ -224,7 +224,7 @@ fun AuthScreen(
                         fontSize = 16.sp
                     ),
                     onClick = { 
-                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("google"))
+                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.AuthMethodSelected("google"))
                         viewModel.setIntent(AuthViewIntent.GoogleSignIn) 
                     }
                 )

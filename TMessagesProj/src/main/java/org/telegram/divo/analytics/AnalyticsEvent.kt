@@ -51,7 +51,15 @@ sealed class AnalyticsEvent(
     }
     
     class SignUpComplete : AnalyticsEvent("sign_up_complete")
-    class LoginSuccess : AnalyticsEvent("login_success")
+    class SignInComplete(method: String) : AnalyticsEvent("sign_in_complete") {
+        init { parameters["method"] = method }
+    }
+    class SignInStart(method: String) : AnalyticsEvent("sign_in_start") {
+        init { parameters["method"] = method }
+    }
+    class AuthMethodSelected(method: String) : AnalyticsEvent("auth_method_selected") {
+        init { parameters["method"] = method }
+    }
 
 
     // ==========================================

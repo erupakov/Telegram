@@ -495,6 +495,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         this.googlePhotoUrl = photoUrl;
         this.isGoogleFlow = true;
         forceRoleSelection = true;
+        // DIVO: log sign up start (Google Flow)
+        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("google"));
         return this;
     }
 
@@ -1974,6 +1976,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 }
                                 Bundle b = new Bundle();
                                 if (res.user.phone != null) b.putString("phoneFormated", res.user.phone);
+                                org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("phone"));
                                 setPage(VIEW_REGISTER, true, b, true);
                             }
 
@@ -5347,6 +5350,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                             MessagesStorage.getInstance(currentAccount).cleanup(true);
                                             
                                             params.putLong("telegramUserId", authResult.user.id);
+                                            org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("phone"));
                                             animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
                                         } else {
                                             String msg = "SignUp Error";
