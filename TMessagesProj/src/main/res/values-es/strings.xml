@@ -23,6 +23,7 @@
     <string name="ButtonEdit">Editar</string>
     <string name="ButtonDelete">Eliminar</string>
     <string name="ButtonContinue">Continuar</string>
+    <string name="OnboardingSkip">Omitir</string>
     <string name="ButtonDone">Listo</string>
     <string name="RetryLabel">Reintentar</string>
     <string name="YourPhoneLabel">Tu teléfono</string>
@@ -2285,4 +2286,6 @@ crea uno nuevo.</string>
     <string name="NotificationsPermissionAlert2">Entérate cuando te mencionen en grupos</string>
     <string name="NotificationsPermissionAlert3">Silencia chats específicos y tipos de chats</string>
     <string name="NotificationsPermissionSettings">Abrir ajustes</string>
+    <string name="StoryCameraSavedDualFrontHint">Toca aquí para desactivar la cámara selfie</string>
+    <string name="StoryCameraHint2">Toma fotos o videos para compartirlos con todos tus contactos o amigos cercanos a la vez.</string>
 </resources>

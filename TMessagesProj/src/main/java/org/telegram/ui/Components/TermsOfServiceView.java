@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.telegram.divo.analytics.AnalyticsEvent;
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
@@ -101,6 +103,7 @@ public class TermsOfServiceView extends FrameLayout {
                 builder12.setMessage(LocaleController.getString(R.string.TosDeclineDeleteAccount));
                 builder12.setTitle(LocaleController.getString(R.string.AppName));
                 builder12.setPositiveButton(LocaleController.getString(R.string.Deactivate), (dialogInterface, i) -> {
+                    DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.TermsDeclined()); // DIVO
                     final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
                     progressDialog.setCanCancel(false);
 
@@ -167,6 +170,7 @@ public class TermsOfServiceView extends FrameLayout {
     }
 
     private void accept() {
+        DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.TermsAccepted()); // DIVO
         delegate.onAcceptTerms(currentAccount);
         TLRPC.TL_help_acceptTermsOfService req = new TLRPC.TL_help_acceptTermsOfService();
         req.id = currentTos.id;

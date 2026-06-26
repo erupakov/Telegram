@@ -6,10 +6,13 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.dal.repository.AgencySelection
 import org.telegram.messenger.R
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -56,7 +59,12 @@ class CreateWorkHistoryViewModel(
                 else createWorkExperience()
             }
             Intent.OnSearchSelected -> {
-                DivoApi.workHistory.selectAgency(org.telegram.divo.dal.repository.AgencySelection(state.value.agencyName, state.value.avatarUrl))
+                DivoApi.workHistory.selectAgency(
+                    AgencySelection(
+                        state.value.agencyName,
+                        state.value.avatarUrl
+                    )
+                )
                 sendEffect(Effect.NavigateToSearch)
             }
         }
@@ -64,30 +72,35 @@ class CreateWorkHistoryViewModel(
 
     private fun onLoad(editId: Int?) {
         viewModelScope.launch {
-            editId?.let { id ->
-                val item = DivoApi.workHistory.cache.value?.find { it.id == id }
-                item?.let {
+            if (editId != null) {
+                val item = DivoApi.workHistory.cache.value?.find { it.id == editId }
+                if (item != null) {
+                    DivoAnalytics.logEvent(AnalyticsEvent.WorkHistoryEditOpened(editId))
                     setState {
                         copy(
                             isEditMode = true,
-                            agencyName = it.agencyName.orEmpty(),
-                            editId = id,
-                            startDate = it.startDate,
-                            startDateMil = LocalDate.parse(it.startDate)
+                            agencyName = item.agencyName.orEmpty(),
+                            editId = editId,
+                            startDate = item.startDate,
+                            startDateMil = LocalDate.parse(item.startDate)
                                 .atStartOfDay(ZoneOffset.UTC)
                                 .toInstant()
                                 .toEpochMilli(),
-                            endDate = it.endDate,
-                            endDateMil = it.endDate?.let { d ->
+                            endDate = item.endDate,
+                            endDateMil = item.endDate?.let { d ->
                                 LocalDate.parse(d)
                                     .atStartOfDay(ZoneOffset.UTC)
                                     .toInstant()
                                     .toEpochMilli()
                             } ?: System.currentTimeMillis(),
-                            isCurrent = it.isCurrent
+                            isCurrent = item.isCurrent
                         )
                     }
+                } else {
+                    DivoAnalytics.logEvent(AnalyticsEvent.WorkHistoryCreateOpened())
                 }
+            } else {
+                DivoAnalytics.logEvent(AnalyticsEvent.WorkHistoryCreateOpened())
             }
         }
     }
@@ -112,7 +125,7 @@ class CreateWorkHistoryViewModel(
             )
             when (result) {
                 is DivoResult.Success -> {
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.WorkHistoryCreated())
+                    DivoAnalytics.logEvent(AnalyticsEvent.WorkHistoryCreated())
                     sendEffect(Effect.ShowSuccess)
                 }
                 else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
@@ -142,7 +155,7 @@ class CreateWorkHistoryViewModel(
             )
             when (result) {
                 is DivoResult.Success -> {
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.WorkHistoryEdited())
+                    DivoAnalytics.logEvent(AnalyticsEvent.WorkHistoryEdited())
                     sendEffect(Effect.ShowSuccess)
                 }
                 else -> sendEffect(Effect.ShowError(result.getErrorMessage()))

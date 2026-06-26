@@ -38,6 +38,7 @@ sealed class SettingsViewIntent : ViewIntent {
     data object OnLogoutClicked : SettingsViewIntent()
     data object OnMeasuringSystemClicked : SettingsViewIntent()
     data class OnChangeMeasuringSystem(val system: String) : SettingsViewIntent()
+    data object OnQrCodeClicked : SettingsViewIntent()
 }
 
 sealed class SettingsViewEffect : ViewEffect {
@@ -55,4 +56,5 @@ sealed class SettingsViewEffect : ViewEffect {
     data object NavigateToLogout : SettingsViewEffect()
     data object ShowMeasuringSystemDialog : SettingsViewEffect()
     data class ShowError(val message: String) : SettingsViewEffect()
+    data object ShowQrCode : SettingsViewEffect()
 }

@@ -263,8 +263,8 @@ fun ProfileNavGraph(
             val initialIndex = backStackEntry.arguments?.getInt("initialIndex") ?: 0
 
             val source = when (sourceType) {
-                "portfolio" -> GallerySource.Portfolio(sourceUserId, initialIndex)
-                "video" -> GallerySource.Video(sourceUserId, initialIndex)
+                "portfolio" -> GallerySource.Portfolio(sourceUserId, initialIndex, "profile")
+                "video" -> GallerySource.Video(sourceUserId, initialIndex, "profile")
                 else -> return@composable
             }
 
@@ -313,6 +313,7 @@ fun ProfileNavGraph(
             EventDetailsNavGraph(
                 eventId = eventId,
                 isOwnProfile = isOwnProfile,
+                screenName = "Profile",
                 onNavigateToEditEvent = { nav.navigate(ProfileRoute.CreateEvent.createRoute(it)) },
                 onEventDeleted = {
                     nav.previousBackStackEntry?.savedStateHandle?.set("needsRefresh", true)

@@ -42,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent
@@ -173,6 +175,7 @@ fun AuthScreen(
                     paddingTop = 1.dp,
                     enabled = !isGoogleLoading.value,
                     onClick = {
+                        DivoAnalytics.logEvent(AnalyticsEvent.SignUpStart("phone"))
                         onAuthClicked()
                     }
                 )
@@ -220,7 +223,10 @@ fun AuthScreen(
                         color = AppTheme.colors.textPrimary,
                         fontSize = 16.sp
                     ),
-                    onClick = { viewModel.setIntent(AuthViewIntent.GoogleSignIn) }
+                    onClick = { 
+                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("google"))
+                        viewModel.setIntent(AuthViewIntent.GoogleSignIn) 
+                    }
                 )
             }
 
@@ -248,7 +254,10 @@ private fun TermsText() {
 
         withLink(
             LinkAnnotation.Url(
-                url = termsUrl
+                url = termsUrl,
+                linkInteractionListener = androidx.compose.ui.text.LinkInteractionListener {
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.TermsLinkClicked())
+                }
             )
         ) {
             withStyle(
@@ -266,7 +275,10 @@ private fun TermsText() {
 
         withLink(
             LinkAnnotation.Url(
-                url = privacyUrl
+                url = privacyUrl,
+                linkInteractionListener = androidx.compose.ui.text.LinkInteractionListener {
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.PrivacyPolicyLinkClicked())
+                }
             )
         ) {
             withStyle(

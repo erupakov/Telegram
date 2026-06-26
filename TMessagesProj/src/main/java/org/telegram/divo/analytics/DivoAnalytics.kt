@@ -36,7 +36,7 @@ object DivoAnalytics {
         }
 
         firebaseAnalytics?.logEvent(event.eventName, bundle)
-        android.util.Log.i("DivoAnalytics", "📊 EVENT SENT: ${event.eventName} | Params: ${event.parameters}")
+        //android.util.Log.i("DivoAnalytics", "📊 EVENT SENT: ${event.eventName} | Params: ${event.parameters}")
     }
 
     /**

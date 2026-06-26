@@ -7,6 +7,8 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.components.items.ParametersType
@@ -37,6 +39,7 @@ class SimilarProfilesViewModel(
     private var currentUserId: Int? = null
     private var pendingCountryShortNames: List<String> = emptyList()
     private var allProfiles: List<SearchedProfile> = emptyList()
+    private var hasLoggedScreenOpened = false
 
     override fun createInitialState(): State = State(
         imageUrl = imageUrl,
@@ -70,6 +73,10 @@ class SimilarProfilesViewModel(
                     role = intent.role,
                     blockParams = intent.blockParams
                 )
+                
+                val activeFiltersStr = getActiveFiltersString(newState)
+                DivoAnalytics.logEvent(AnalyticsEvent.SimilarProfilesFiltersApplied(activeFiltersStr))
+                
                 val filtered = filterProfiles(newState)
                 val updatedState = newState.copy(profiles = filtered)
                 setState { updatedState }
@@ -79,7 +86,6 @@ class SimilarProfilesViewModel(
     }
 
     init {
-        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SimilarProfileOpened())
         loadData()
     }
 
@@ -114,6 +120,13 @@ class SimilarProfilesViewModel(
             isLoading = false
         )
         setState { newState }
+
+        if (!hasLoggedScreenOpened) {
+            hasLoggedScreenOpened = true
+            org.telegram.divo.analytics.DivoAnalytics.logEvent(
+                org.telegram.divo.analytics.AnalyticsEvent.SimilarProfilesScreenOpened(filtered.isNotEmpty())
+            )
+        }
 
         saveHistory(newState)
     }
@@ -199,6 +212,7 @@ class SimilarProfilesViewModel(
                 userId = targetProfile.id,
                 isLiked = targetProfile.isLiked,
                 currentCount = targetProfile.likes,
+                screenName = "similar_profiles",
                 onUpdate = { newLiked, newCount ->
                     setState {
                         copy(profiles = profiles.map { if (it.id == id) it.copy(isLiked = newLiked, likes = newCount) else it })
@@ -224,6 +238,7 @@ class SimilarProfilesViewModel(
                 userId = targetProfile.id,
                 isFollowed = targetProfile.isMarked,
                 currentFollowersCount = targetProfile.followersCount,
+                screenName = "similar_profiles",
                 onUpdate = { newFollowed, newCount ->
                     setState {
                         copy(profiles = profiles.map { if (it.id == id) it.copy(isMarked = newFollowed, followersCount = newCount) else it })
@@ -395,5 +410,14 @@ class SimilarProfilesViewModel(
                 return SimilarProfilesViewModel(uri, filtersJson, resultsJson) as T
             }
         }
+    }
+
+    private fun getActiveFiltersString(s: State): String {
+        val active = mutableListOf<String>()
+        if (s.selectedCountries.isNotEmpty()) active.add("country")
+        if (s.similarityPercent > MIN_SIMILARITY) active.add("similarity")
+        if (s.role.value.isNotBlank()) active.add("role")
+        if (s.blockParams.any { it.value.isNotBlank() }) active.add("body_params")
+        return active.joinToString(",")
     }
 }

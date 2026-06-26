@@ -7,6 +7,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.search.LocalCity
 import java.io.BufferedReader
@@ -186,11 +188,7 @@ class EditMyProfileViewModel(
     private val currentAccount: Int = UserConfig.selectedAccount
 
     init {
-        val uc = UserConfig.getInstance(currentAccount)
-        val mc = MessagesController.getInstance(currentAccount)
-
-        val me = uc.currentUser
-        val userFull = mc.getUserFull(uc.clientUserId)
+        DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOpened())
     }
 
     override fun handleIntent(intent: EditMyProfileIntent) {
@@ -279,6 +277,7 @@ class EditMyProfileViewModel(
                     }
 
                     if (response is TLRPC.TL_photos_photo) {
+                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ProfileAvatarUploaded())
                         MessagesController
                             .getInstance(currentAccount)
                             .putUsers(response.users, false)

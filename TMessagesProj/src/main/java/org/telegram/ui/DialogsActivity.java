@@ -94,6 +94,8 @@ import androidx.recyclerview.widget.LinearSmoothScrollerCustom;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import org.telegram.divo.analytics.AnalyticsEvent;
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.AnimationNotificationsLocker;
@@ -12518,6 +12520,14 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 if (search && searchViewPager.dialogsSearchAdapter.getItemCount() == 0) {
                     searchViewPager.cancelEnterAnimation();
                 }
+                // DIVO--START
+                if (!search && searchString != null && !searchString.trim().isEmpty()) {
+                    boolean hasResults = searchViewPager.dialogsSearchAdapter.getItemCount() != 0;
+                    org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(
+                            new org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("chats", hasResults, searchString.trim(), "")
+                    );
+                }
+                // DIVO--END
             }
 
             @Override
@@ -13022,6 +13032,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             return;
         }
 
+        DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.StoryAddClicked("chats"));
         StoryRecorder.getInstance(getParentActivity(), currentAccount)
             .closeToWhenSent(new StoryRecorder.ClosingViewProvider() {
                 @Override

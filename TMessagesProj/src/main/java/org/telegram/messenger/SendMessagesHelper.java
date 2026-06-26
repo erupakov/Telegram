@@ -47,6 +47,8 @@ import androidx.annotation.UiThread;
 import androidx.collection.LongSparseArray;
 import androidx.core.view.inputmethod.InputContentInfoCompat;
 import org.json.JSONObject;
+import org.telegram.divo.analytics.AnalyticsEvent;
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.messenger.audioinfo.AudioInfo;
 import org.telegram.messenger.support.SparseLongArray;
 import org.telegram.messenger.utils.tlutils.AmountUtils;
@@ -4605,6 +4607,27 @@ public class SendMessagesHelper extends BaseController implements NotificationCe
             newMsgObj.wasJustSent = true;
             newMsgObj.sentHighQuality = sendMessageParams.sendingHighQuality;
             newMsgObj.scheduled = scheduleDate != 0;
+            //DIVO--START
+            String analyticsMessageType = "text";
+            if (type == 2) analyticsMessageType = "photo";
+            else if (type == 3) analyticsMessageType = "video";
+            else if (type == 7) analyticsMessageType = "file";
+            else if (type == 8) analyticsMessageType = "voice";
+            else if (type == 1) analyticsMessageType = "geo";
+            else if (type == 4) analyticsMessageType = "forward";
+            else if (type == 6) analyticsMessageType = "contact";
+            else if (type == 10) analyticsMessageType = "poll";
+            else if (type != 0) analyticsMessageType = "other";
+            
+            long divoTargetUserId = 0;
+            long divoChatId = 0;
+            if (peer > 0) {
+                divoTargetUserId = peer;
+            } else if (peer < 0) {
+                divoChatId = -peer;
+            }
+            DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.MessageSent(divoTargetUserId, divoChatId, analyticsMessageType));
+            //DIVO--END
             if (!newMsgObj.isForwarded() && (newMsgObj.type == MessageObject.TYPE_VIDEO || videoEditedInfo != null || newMsgObj.type == MessageObject.TYPE_VOICE) && !TextUtils.isEmpty(newMsg.attachPath)) {
                 newMsgObj.attachPathExists = true;
             }

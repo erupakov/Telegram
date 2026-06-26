@@ -11,6 +11,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.OffsetPaginator
 import org.telegram.divo.common.PaginatedResult
@@ -132,6 +134,7 @@ class ProfileViewModel(
     }
 
     init {
+        DivoAnalytics.logEvent(AnalyticsEvent.ProfileOpened(userId.toLong()))
         loadData()
         viewModelScope.launch {
             DivoApi.eventRepository.eventsUpdatedFlow.collect {
@@ -181,8 +184,14 @@ class ProfileViewModel(
             is ProfileIntent.OnRefresh -> refreshData()
             is ProfileIntent.OpenSocialLink -> openLink(intent.socialNetworkType)
             is ProfileIntent.OnBackgroundPhotoSelected -> { changeBackground(intent.file) }
-            is ProfileIntent.OnPortfolioPhotoSelected -> { uploadPhoto(intent.file) }
-            is ProfileIntent.OnVideoSelected -> uploadVideo(intent.file)
+            is ProfileIntent.OnPortfolioPhotoSelected -> { 
+                DivoAnalytics.logEvent(AnalyticsEvent.ProfileMediaUploadTapped("photo", state.value.userId))
+                uploadPhoto(intent.file) 
+            }
+            is ProfileIntent.OnVideoSelected -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.ProfileMediaUploadTapped("video", state.value.userId))
+                uploadVideo(intent.file)
+            }
             is ProfileIntent.OnClearPortfolioUpload -> {}
             is ProfileIntent.OnLoadMoreEngagementStats -> loadMoreEngagement(intent.type)
             is ProfileIntent.OnStatsTabOpened -> onStatsTabOpened(intent.type)
@@ -195,7 +204,10 @@ class ProfileViewModel(
             is ProfileIntent.OnEditLinksClicked -> sendEffect(NavigateToEditLinks)
 
             is ProfileIntent.OnNavigateBack -> sendEffect(NavigateBack)
-            is ProfileIntent.OnShowWorkHistory -> sendEffect(ShowWorkHistory(state.value.userId))
+            is ProfileIntent.OnShowWorkHistory -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.WorkHistoryOpened(state.value.userId))
+                sendEffect(ShowWorkHistory(state.value.userId))
+            }
             is ProfileIntent.OnGalleryClicked -> {
                 val index = getGalleryItemIndex(intent.url, intent.isVideo)
                 sendEffect(NavigateToGallery(index, intent.isVideo))
@@ -203,15 +215,19 @@ class ProfileViewModel(
             is ProfileIntent.OnProfileClicked -> sendEffect(NavigateToProfile(intent.profileId))
             is ProfileIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
-            is ProfileIntent.OnFindSimilarProfiles -> sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
+            is ProfileIntent.OnFindSimilarProfiles -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("profile", state.value.userId))
+                sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
+            }
             is ProfileIntent.OnSendDMClicked -> {
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.DirectMessageStarted(intent.telegramId))
+                val currentUserId = DivoApi.userRepository.currentUserFlow.value?.id ?: 0
+                DivoAnalytics.logEvent(AnalyticsEvent.DirectMessageStarted(currentUserId, intent.telegramId))
                 sendEffect(ProfileEffect.NavigateToChat(intent.telegramId, intent.telegramAccessHash, intent.telegramUsername))
             }
             ProfileIntent.OnShowAppearances -> sendEffect(ShowAppearances)
             ProfileIntent.OnBackgroundReady -> setState { copy(hasBackgroundReady = true) }
             ProfileIntent.OnEventCreate -> {
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventCreateStarted())
+                DivoAnalytics.logEvent(AnalyticsEvent.EventCreateStarted(state.value.userId))
                 sendEffect(NavigateToCreateEvent)
             }
             ProfileIntent.OnLoadMoreSearchModels -> loadMoreSearchModels()
@@ -224,7 +240,7 @@ class ProfileViewModel(
             is ProfileIntent.OnCancelAgencyModelRequest -> cancelAgencyModelRequest(intent.modelId)
             is ProfileIntent.OnToggleAgencySearch -> {
                 if (intent.visible) {
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.AddModelStarted())
+                    DivoAnalytics.logEvent(AnalyticsEvent.AddModelStarted(state.value.userId))
                 }
                 setState { copy(isAgencySearchSheetVisible = intent.visible) }
             }
@@ -232,7 +248,10 @@ class ProfileViewModel(
             ProfileIntent.OnReportProfileClicked -> onReportProfileClicked()
             ProfileIntent.OnDismissReportSheet -> setState { copy(showReportSheet = false) }
             is ProfileIntent.OnReportOptionSelected -> reportProfile(intent.reportKey)
-            ProfileIntent.OnCreateChannelClicked -> sendEffect(ProfileEffect.NavigateToCreateChannel())
+            ProfileIntent.OnCreateChannelClicked -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.ChannelCreateStarted(state.value.userId))
+                sendEffect(ProfileEffect.NavigateToCreateChannel())
+            }
         }
     }
 
@@ -394,6 +413,17 @@ class ProfileViewModel(
             engagement.currentSearchQuery = query
             engagement.searchPaginator.reset()
             engagement.searchPaginator.loadInitial()
+            
+            val hasResults = engagement.searchPaginator.state.value.items.isNotEmpty()
+            
+            DivoAnalytics.logEvent(
+                AnalyticsEvent.EngagementSearchPerformed(
+                    state.value.activeStatsType?.name?.lowercase() ?: "unknown",
+                    state.value.userId,
+                    query,
+                    hasResults
+                )
+            )
         }
     }
 
@@ -510,6 +540,8 @@ class ProfileViewModel(
             delay(SEARCH_DEBOUNCE_MS)
             searchModelsPaginator.reset()
             searchModelsPaginator.loadInitial()
+            val hasResults = searchModelsPaginator.state.value.items.isNotEmpty()
+            DivoAnalytics.logEvent(AnalyticsEvent.SearchPerformed("agency_models_search", hasResults, query))
         }
     }
 
@@ -524,8 +556,9 @@ class ProfileViewModel(
             setState { copy(isAddingAgencyModel = true) }
             val result = DivoApi.userRepository.addAgencyModel(userId, note)
             if (result is DivoResult.Success) {
+                val agencyId = state.value.userInfo.agency?.id ?: 0
                 // Refresh models list or update search status locally
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.AddModelSuccess())
+                DivoAnalytics.logEvent(AnalyticsEvent.AddModelSuccess(userId, agencyId))
                 kotlinx.coroutines.joinAll(
                     launch { agencyModelsPaginator.loadInitial(clearItems = false) },
                     launch { searchModelsPaginator.loadInitial(clearItems = false) }
@@ -543,6 +576,7 @@ class ProfileViewModel(
             val agencyId = state.value.userInfo.agency?.id ?: return@launch
             val result = DivoApi.userRepository.deleteAgencyModel(agencyId, modelId)
             if (result is DivoResult.Success) {
+                DivoAnalytics.logEvent(AnalyticsEvent.RemoveModelSuccess(modelId, agencyId))
                 agencyModelsPaginator.loadInitial(clearItems = false)
                 searchModelsPaginator.loadInitial(clearItems = false)
             } else {
@@ -689,6 +723,7 @@ class ProfileViewModel(
                 userId = info.id,
                 isFollowed = info.isFollowed,
                 currentFollowersCount = info.statistic.followersCount,
+                screenName = "profile",
                 onUpdate = { newFavorite, newCount ->
                     setState {
                         copy(
@@ -719,6 +754,7 @@ class ProfileViewModel(
                 userId = info.id,
                 isLiked = info.isLikedByUser,
                 currentCount = info.statistic.likesCount,
+                screenName = "profile",
                 onUpdate = { newLiked, newCount ->
                     setState {
                         copy(
@@ -747,7 +783,7 @@ class ProfileViewModel(
             val res = DivoApi.userRepository.reportProfile(state.value.userId, reportKey)
             setState { copy(isLoading = false) }
             if (res is DivoResult.Success) {
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.UserReported(state.value.userId.toLong(), reportKey))
+                DivoAnalytics.logEvent(AnalyticsEvent.UserReported(state.value.userId.toLong(), reportKey))
                 // Profile reported successfully
                 sendEffect(ProfileEffect.SaveSuccess(R.string.ReportSent))
             } else {
@@ -757,7 +793,7 @@ class ProfileViewModel(
     }
 
     private fun onStatsTabOpened(type: StatsType) {
-        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.StatsTabViewed(type.name.lowercase()))
+        DivoAnalytics.logEvent(AnalyticsEvent.EngagementTabViewed(type.name.lowercase(), state.value.userId))
         setState {
             copy(
                 activeStatsType = type,
@@ -782,6 +818,7 @@ class ProfileViewModel(
     private fun selectAgencyModelForAdd(model: org.telegram.divo.entity.AgencySearchModel?) {
         setState { copy(selectedAgencyModelForAdd = model) }
         if (model != null) {
+            DivoAnalytics.logEvent(AnalyticsEvent.SearchModelTapped(model.userId, "agency_search"))
             viewModelScope.launch {
                 val res = DivoApi.userRepository.getUserById(model.userId)
                 if (res is DivoResult.Success) {
@@ -823,7 +860,7 @@ class ProfileViewModel(
 
             when (result) {
                 is DivoResult.Success -> {
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.GalleryMediaUploaded("photo"))
+                    DivoAnalytics.logEvent(AnalyticsEvent.ProfileMediaUploaded("photo", state.value.userId))
                     setState {
                         copy(mediaUploading = false)
                     }
@@ -859,7 +896,7 @@ class ProfileViewModel(
 
             when (result) {
                 is DivoResult.Success -> {
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.GalleryMediaUploaded("video"))
+                    DivoAnalytics.logEvent(AnalyticsEvent.ProfileMediaUploaded("video", state.value.userId))
                     setState { copy(mediaUploading = false) }
                 }
                 else -> {
@@ -886,13 +923,16 @@ class ProfileViewModel(
                 }
 
             when (result) {
-                is DivoResult.Success -> setState {
-                    copy(
-                        backgroundChanging = false,
-                        userInfo = userInfo.copy(
-                            photoUrl = result.value.photoUrl
+                is DivoResult.Success -> {
+                    DivoAnalytics.logEvent(AnalyticsEvent.ProfileBackgroundChanged())
+                    setState {
+                        copy(
+                            backgroundChanging = false,
+                            userInfo = userInfo.copy(
+                                photoUrl = result.value.photoUrl
+                            )
                         )
-                    )
+                    }
                 }
                 else -> {
                     setState {
@@ -981,6 +1021,9 @@ class ProfileViewModel(
         
         updateEventLocally(false, expectedNewCount)
         DivoApi.eventRepository.notifyEventParticipationChanged(id, false, expectedNewCount)
+
+        val currentUserId = DivoApi.userRepository.currentUserFlow.value?.id ?: 0
+        DivoAnalytics.logEvent(AnalyticsEvent.EventWithdraw(id.toLong(), currentUserId.toLong()))
 
         viewModelScope.launch {
             val result = DivoApi.eventRepository.unapplyEvent(id)

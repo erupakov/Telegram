@@ -173,6 +173,7 @@ fun EventsNavGraph(
 
             EventDetailsNavGraph(
                 eventId = eventId,
+                screenName = "EventList",
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToEditEvent = { nav.navigate(EventRoute.CreateEvent.createRoute(it)) },
                 onEventDeleted = {

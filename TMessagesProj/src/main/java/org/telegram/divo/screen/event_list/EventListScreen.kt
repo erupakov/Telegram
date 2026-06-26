@@ -109,7 +109,7 @@ fun EventListScreen(
             viewModel.handleIntent(EventListIntent.OnSearchClicked)
         },
         onAddEventClick = {
-            onNavigateToCreateEvent()
+            viewModel.handleIntent(EventListIntent.OnAddEventClicked)
         },
         onLoadMore = {
             viewModel.handleIntent(EventListIntent.OnLoadMore)

@@ -38,8 +38,8 @@ sealed class EventDetailsRoute(val route: String) {
     object GalleryViewer : EventDetailsRoute("gallery/{sourceType}") {
         const val ROUTE = "gallery/{sourceType}"
 
-        fun createRoute(items: List<GalleryItem>, initialIndex: Int): String {
-            GallerySourceHolder.pendingSource = GallerySource.Feed(items, initialIndex)
+        fun createRoute(items: List<GalleryItem>, initialIndex: Int, userId: Int): String {
+            GallerySourceHolder.pendingSource = GallerySource.Feed(items, initialIndex, userId, "event_details")
             return "gallery/feed"
         }
     }
@@ -49,6 +49,7 @@ sealed class EventDetailsRoute(val route: String) {
 fun EventDetailsNavGraph(
     eventId: Int,
     isOwnProfile: Boolean = false,
+    screenName: String = "EventDetails",
     onNavigateToEditEvent: (Int) -> Unit = {},
     onEventDeleted: () -> Unit = {},
     onNavigateBack: () -> Unit,
@@ -73,7 +74,7 @@ fun EventDetailsNavGraph(
 
             val eventDetailsViewModel: EventDetailsViewModel = viewModel(
                 key = "event_detail_$currentEventId",
-                factory = EventDetailsViewModel.factory(currentEventId, isOwnProfile)
+                factory = EventDetailsViewModel.factory(currentEventId, isOwnProfile, screenName)
             )
 
             EventDetailsScreen(
@@ -81,7 +82,8 @@ fun EventDetailsNavGraph(
                 isOwnProfile = isOwnProfile,
                 viewModel = eventDetailsViewModel,
                 onPhotoClicked = { items, index ->
-                    nav.navigate(EventDetailsRoute.GalleryViewer.createRoute(items, index))
+                    val creatorId = eventDetailsViewModel.state.value.eventDetails?.creator?.id ?: -1
+                    nav.navigate(EventDetailsRoute.GalleryViewer.createRoute(items, index, creatorId))
                 },
                 onParamsClicked = {
                     val eventDetails = eventDetailsViewModel.state.value.eventDetails

@@ -6,6 +6,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.OffsetPaginator
 import org.telegram.divo.common.PaginatedResult
@@ -89,19 +91,22 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         when (intent) {
             Intent.OnBackClicked -> sendEffect(NavigateBack)
             is Intent.OnQueryChanged -> onQueryChanged(intent.value)
-            is Intent.OnPhotoSelected -> sendEffect(NavigateToFaceSearch(intent.uri.toString()))
+            is Intent.OnPhotoSelected -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("search"))
+                sendEffect(NavigateToFaceSearch(intent.uri.toString()))
+            }
             Intent.OnLoadMore -> loadMore()
             is Intent.OnItemClicked -> {
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchModelTapped())
+                DivoAnalytics.logEvent(AnalyticsEvent.SearchModelTapped(intent.user.id))
                 if (intent.isSearchMode)
                     sendEffect(NavigateToProfile(intent.user))
                 else {
+                    DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("search"))
                     sendEffect(NavigateToFaceSearch(intent.user.photo))
                 }
             }
             is Intent.OnSearchConfirmed -> setState { copy(isSearchConfirmed = true) }
             is Intent.OnApplyFilters -> {
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchFiltersApplied())
                 searchJob?.cancel()
                 searchPaginator.reset()
                 viewModelScope.launch {
@@ -135,7 +140,9 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
 
                     searchPaginator.loadInitial()
                     val hasResults = searchPaginator.state.value.items.isNotEmpty()
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults))
+                    val filtersStr = getActiveFiltersString(state.value)
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchFiltersApplied("models", filtersStr))
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults, state.value.query, filtersStr))
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
@@ -162,12 +169,15 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     setState { copy(isLoading = true) }
                     searchPaginator.loadInitial()
                     val hasResults = searchPaginator.state.value.items.isNotEmpty()
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults))
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults, state.value.query, ""))
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
             Intent.OnFaceSearchHistoryClicked -> { sendEffect(NavigateToFaceSearchHistory) }
-            is Intent.OnSimilarProfilesClicked -> sendEffect(NavigateToSimilarProfiles(intent.photo, intent.filters))
+            is Intent.OnSimilarProfilesClicked -> {
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.FaceRecognitionOpened("search"))
+                sendEffect(NavigateToSimilarProfiles(intent.photo, intent.filters))
+            }
             Intent.OnLoadMoreFR -> loadMoreFR()
             is Intent.OnQueryFRChanged -> onQueryFRChanged(intent.value)
             is Intent.OnLikeClick -> onLikeClick(intent.userId, intent.isFrSearch)
@@ -240,12 +250,13 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
 
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MS)
-            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchQueryEntered(query.length))
+            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchQueryEntered("models", query.length))
             setState { copy(isLoading = true) }
             searchPaginator.reset()
             searchPaginator.loadInitial()
             val hasResults = searchPaginator.state.value.items.isNotEmpty()
-            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults))
+            val filtersStr = getActiveFiltersString(state.value)
+            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults, query, filtersStr))
             setState { copy(isLoading = false, hasSearched = true) }
         }
     }
@@ -298,6 +309,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                 userId = userId,
                 isLiked = targetItem.isLiked,
                 currentCount = targetItem.likes,
+                screenName = "search",
                 onUpdate = { newLiked, newCount ->
                     if (isFrSearch) {
                         setState { copy(searchResultsFR = updateAll(newLiked, newCount)) }
@@ -339,6 +351,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                 userId = userId,
                 isFollowed = targetItem.isMarked,
                 currentFollowersCount = targetItem.followersCount,
+                screenName = "search",
                 onUpdate = { newFavorite, newCount ->
                     if (isFrSearch) {
                         setState { copy(searchResultsFR = updateAll(newFavorite, newCount)) }
@@ -550,5 +563,19 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     companion object {
         private const val PAGE_SIZE = 10
         private const val SEARCH_DEBOUNCE_MS = 400L
+    }
+
+    private fun getActiveFiltersString(s: State): String {
+        val active = mutableListOf<String>()
+        if (s.selectedCountries.isNotEmpty()) active.add("country")
+        if (s.selectedCity != null) active.add("city")
+        if (s.role.value.isNotBlank()) active.add("role")
+        if (s.gender.value.isNotBlank()) active.add("gender")
+        if (s.hairLength.value.isNotBlank()) active.add("hair_length")
+        if (s.hairColor.value.isNotBlank()) active.add("hair_color")
+        if (s.eyeColor.value.isNotBlank()) active.add("eye_color")
+        if (s.skinColor.value.isNotBlank()) active.add("skin_color")
+        if (s.blockParams.any { it.value.isNotBlank() }) active.add("body_params")
+        return active.joinToString(",")
     }
 }

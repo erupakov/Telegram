@@ -10,6 +10,7 @@ import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import androidx.navigation.NavController
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.common.utils.FragmentLifecycleOwner
 import org.telegram.divo.style.setDivoContent
@@ -114,6 +115,7 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
     }
 
     fun openSearchFromBottomBar() {
+        DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ModelsSearchOpened())
         modelsNavController?.navigate(ModelsRoute.Search.route)
     }
 

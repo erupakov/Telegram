@@ -16,9 +16,11 @@ import org.telegram.divo.usecase.IsModelUserUseCase
 
 class EventDetailsViewModel(
     private val eventId: Int,
-    private val isOwnProfile: Boolean
+    private val isOwnProfile: Boolean,
+    private val screenName: String
 ) : BaseViewModel<EventDetailsViewState, EventDetailsIntent, EventDetailsEffect>() {
     private var currentUserId: Int? = null
+    private var hasLoggedViewEvent = false
     private val toggleEventFavouriteUseCase = org.telegram.divo.usecase.ToggleEventFavouriteUseCase()
 
     override fun createInitialState(): EventDetailsViewState = EventDetailsViewState(eventId, isOwnProfile)
@@ -30,13 +32,26 @@ class EventDetailsViewModel(
             is EventDetailsIntent.OnEventCtaClicked -> handleCtaClicked(intent.eventId)
             is EventDetailsIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             EventDetailsIntent.OnSearchClicked -> {}
+            EventDetailsIntent.OnMenuClicked -> {
+                state.value.eventDetails?.id?.let {
+                    DivoAnalytics.logEvent(AnalyticsEvent.EventDetailsMenuOpened(it.toLong()))
+                }
+            }
             EventDetailsIntent.OnBackClicked -> sendEffect(Back)
-            EventDetailsIntent.OnEditEventClick -> state.value.eventDetails?.id?.let { sendEffect(NavigateToEditEvent(it)) }
+            EventDetailsIntent.OnEditEventClick -> state.value.eventDetails?.id?.let { 
+                DivoAnalytics.logEvent(AnalyticsEvent.EventEditStarted(it.toLong()))
+                sendEffect(NavigateToEditEvent(it)) 
+            }
             EventDetailsIntent.OnCloseApplicationsConfirmed -> closeApplications()
             EventDetailsIntent.OnCancelEventConfirmed -> cancelEvent()
             EventDetailsIntent.OnDeleteEventConfirmed -> deleteEvent()
             is EventDetailsIntent.OnPhotoClick -> sendEffect(NavigateToGallery(intent.items, intent.id))
-            EventDetailsIntent.OnParamsClick -> sendEffect(NavigateToParams)
+            EventDetailsIntent.OnParamsClick -> {
+                state.value.eventDetails?.id?.let {
+                    DivoAnalytics.logEvent(AnalyticsEvent.EventParametersOpened(it.toLong()))
+                }
+                sendEffect(NavigateToParams)
+            }
             is EventDetailsIntent.OnPrevEventClicked -> sendEffect(NavigateToPrevEvent(intent.eventId))
             EventDetailsIntent.OnLikeClicked -> handleLikeClicked()
             EventDetailsIntent.OnFavouriteClicked -> handleFavouriteClicked()
@@ -84,7 +99,7 @@ class EventDetailsViewModel(
                         )
                     )
                 },
-                onError = { sendEffect(ShowError(it)) }
+                onError = { sendEffect(ShowError(it, canRetry = false)) }
             )
         }
     }
@@ -129,7 +144,7 @@ class EventDetailsViewModel(
                         )
                     )
                 }
-                sendEffect(ShowError(result.getErrorMessage()))
+                sendEffect(ShowError(result.getErrorMessage(), canRetry = false))
             }
         }
     }
@@ -161,7 +176,8 @@ class EventDetailsViewModel(
         }
         DivoApi.eventRepository.notifyEventParticipationChanged(eventId, false, newAppliesCount)
 
-        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventWithdraw())
+        val userId = currentUserId ?: 0
+        DivoAnalytics.logEvent(AnalyticsEvent.EventWithdraw(eventId.toLong(), userId.toLong()))
 
         viewModelScope.launch {
             val result = DivoApi.eventRepository.unapplyEvent(eventId)
@@ -225,12 +241,15 @@ class EventDetailsViewModel(
                     )
                 }
                 
-                DivoAnalytics.logEvent(
-                    AnalyticsEvent.EventDetailsViewed(
-                        eventId = result.value.id.toLong(),
-                        screenName = "EventDetails"
+                if (!hasLoggedViewEvent) {
+                    hasLoggedViewEvent = true
+                    DivoAnalytics.logEvent(
+                        AnalyticsEvent.EventDetailsViewed(
+                            eventId = result.value.id.toLong(),
+                            screenName = screenName
+                        )
                     )
-                )
+                }
                 
                 val creatorId = result.value.creator?.id ?: return@launch
                 eventPaginator = GetEventListUseCase(limit = 10, creatorId = creatorId).paginator
@@ -302,7 +321,7 @@ class EventDetailsViewModel(
             viewModelScope.launch {
                 val result = DivoApi.eventRepository.deleteEvent(id)
                 if (result is DivoResult.Success) {
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventDeleted())
+                    DivoAnalytics.logEvent(AnalyticsEvent.EventDeleted(id.toLong()))
                     sendEffect(EventDeleted)
                 } else {
                     sendEffect(ShowError(result.getErrorMessage()))
@@ -316,6 +335,7 @@ class EventDetailsViewModel(
             viewModelScope.launch {
                 val result = DivoApi.eventRepository.closeApplications(id)
                 if (result is DivoResult.Success) {
+                    DivoAnalytics.logEvent(AnalyticsEvent.EventApplicationsClosed(id.toLong()))
                     setState { copy(eventDetails = result.value) }
                     sendEffect(ApplicationsClosed)
                 } else {
@@ -330,7 +350,7 @@ class EventDetailsViewModel(
             viewModelScope.launch {
                 val result = DivoApi.eventRepository.cancelEvent(id)
                 if (result is DivoResult.Success) {
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventDeleted())
+                    DivoAnalytics.logEvent(AnalyticsEvent.EventCancelled(id.toLong()))
                     sendEffect(EventDeleted)
                 } else {
                     sendEffect(ShowError(result.getErrorMessage()))
@@ -340,10 +360,10 @@ class EventDetailsViewModel(
     }
 
     companion object {
-        fun factory(eventId: Int, isOwnProfile: Boolean) = object : ViewModelProvider.Factory {
+        fun factory(eventId: Int, isOwnProfile: Boolean, screenName: String) = object : ViewModelProvider.Factory {
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 @Suppress("UNCHECKED_CAST")
-                return EventDetailsViewModel(eventId, isOwnProfile) as T
+                return EventDetailsViewModel(eventId, isOwnProfile, screenName) as T
             }
         }
     }

@@ -90,12 +90,12 @@ fun OrganizerCard(
                         }
                     }
 
-                    Spacer(Modifier.height(10.dp))
-                    Text(
-                        text = status,
-                        style = AppTheme.typography.bodyMedium,
-                        color = Color.Red, //AppTheme.colors.textPrimary.copy(0.6f)
-                    )
+//                    Spacer(Modifier.height(10.dp))
+//                    Text(
+//                        text = status,
+//                        style = AppTheme.typography.bodyMedium,
+//                        color = AppTheme.colors.textPrimary.copy(0.6f)
+//                    )
                 }
             }
         }

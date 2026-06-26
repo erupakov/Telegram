@@ -59,6 +59,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import org.telegram.divo.common.clickableWithoutRipple
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.ui.Stories.recorder.StoryRecorder
 
 
 @Preview
@@ -345,9 +348,11 @@ fun ProfileNameItem(
                     .clickableWithoutRipple {
                         val fragment = org.telegram.ui.LaunchActivity.getLastFragment() ?: return@clickableWithoutRipple
                         if (uiState.isOwnProfile && !hasStories) {
-                            org.telegram.ui.Stories.recorder.StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
+                            DivoAnalytics.logEvent(AnalyticsEvent.StoryAddClicked("profile"))
+                            StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
                         } else if (dialogId != 0L) {
                             val peerIds = arrayListOf(dialogId)
+                            DivoAnalytics.logEvent(AnalyticsEvent.StoryOpened("profile_details"))
                             fragment.getOrCreateStoryViewer().open(
                                 fragment.context, null, peerIds, 0, null, null, null, false
                             )

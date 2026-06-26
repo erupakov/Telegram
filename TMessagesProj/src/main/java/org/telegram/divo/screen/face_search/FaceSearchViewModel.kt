@@ -12,6 +12,8 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.OffsetPaginator
 import org.telegram.divo.common.PaginatedResult
 import org.telegram.divo.common.utils.ImageCacheHelper
@@ -60,7 +62,10 @@ class FaceSearchViewModel(
                 }
             }
             is Intent.OnChangePhoto -> analyzeImage(intent.uri)
-            Intent.OnFindClicked -> performSearch()
+            Intent.OnFindClicked -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceSearchFindTapped())
+                performSearch()
+            }
             Intent.OnFindProfilesClicked -> sendEffect(NavigateToSearch)
             is Intent.OnFaceSelected -> setState { copy(selectedFaceIndex = intent.index) }
             Intent.OnLoadMore -> loadMore()

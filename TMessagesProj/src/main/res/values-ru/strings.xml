@@ -16,6 +16,7 @@
     <string name="ButtonEdit">Редактировать</string>
     <string name="ButtonDelete">Удалить</string>
     <string name="ButtonContinue">Продолжить</string>
+    <string name="OnboardingSkip">Пропустить</string>
     <string name="ButtonDone">Готово</string>
     <string name="RetryLabel">Повторить</string>
     <string name="YourPhoneLabel">Ваш номер телефона</string>
@@ -1211,4 +1212,6 @@
     <string name="NotificationsPermissionAlert2">Узнавайте, когда вас упоминают в группах</string>
     <string name="NotificationsPermissionAlert3">Отключайте звук для определенных чатов и типов чатов</string>
     <string name="NotificationsPermissionSettings">Открыть настройки</string>
+    <string name="StoryCameraSavedDualFrontHint">Нажмите здесь, чтобы отключить селфи-камеру</string>
+    <string name="StoryCameraHint2">Снимайте фото или видео, чтобы поделиться ими со всеми контактами или близкими друзьями сразу.</string>
 </resources>

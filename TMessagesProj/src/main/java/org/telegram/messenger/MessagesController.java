@@ -8444,6 +8444,7 @@ public class MessagesController extends BaseController implements NotificationCe
         if (totalBlockedCount >= 0) {
             totalBlockedCount++;
         }
+        
         getNotificationCenter().postNotificationName(NotificationCenter.blockedUsersDidLoad);
         TLRPC.TL_contacts_block req = new TLRPC.TL_contacts_block();
         if (user != null) {
@@ -8625,6 +8626,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }
         totalBlockedCount--;
         blockePeers.delete(id);
+        
         if (user != null) {
             req.id = getInputPeer(user);
         } else {
@@ -15167,6 +15169,10 @@ public class MessagesController extends BaseController implements NotificationCe
         }
         getUserConfig().clearConfig();
         SharedPrefsHelper.cleanupAccount(currentAccount);
+        // DIVO--START
+        ApplicationLoader.applicationContext.getSharedPreferences("logininfo2_" + currentAccount, Context.MODE_PRIVATE).edit().clear().commit();
+        ApplicationLoader.applicationContext.getSharedPreferences("logininfo2", Context.MODE_PRIVATE).edit().clear().commit();
+        // DIVO--END
 
         boolean shouldHandle = true;
         ArrayList<NotificationCenter.NotificationCenterDelegate> observers = getNotificationCenter().getObservers(NotificationCenter.appDidLogout);

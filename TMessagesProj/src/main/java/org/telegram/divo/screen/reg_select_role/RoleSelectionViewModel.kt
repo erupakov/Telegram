@@ -27,18 +27,6 @@ class RoleSelectionViewModel : BaseViewModel<RoleSelectionState, RoleSelectionIn
     // Главный экран — выбор одной из 3 дверей
     private fun onUserIntentSelected(userIntent: UserIntent) {
         setState { copy(intent = userIntent) }
-        when (userIntent) {
-            UserIntent.FAN -> {
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SignUpRoleSelected(SubRole.FAN.name))
-                sendEffect(
-                    RoleSelectionEffect.NavigateToResult(SubRole.FAN)
-                )
-            }
-            UserIntent.GET_HIRED,
-            UserIntent.LOOKING_FOR_TALENT -> sendEffect(
-                RoleSelectionEffect.NavigateToQuiz(userIntent)
-            )
-        }
     }
 
     // Q1 для LOOKING_FOR_TALENT — Company или Individual

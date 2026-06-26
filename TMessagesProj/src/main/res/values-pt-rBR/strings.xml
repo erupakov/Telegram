@@ -23,6 +23,7 @@
     <string name="ButtonEdit">Editar</string>
     <string name="ButtonDelete">Excluir</string>
     <string name="ButtonContinue">Continuar</string>
+    <string name="OnboardingSkip">Pular</string>
     <string name="ButtonDone">Concluído</string>
     <string name="RetryLabel">Tentar novamente</string>
     <string name="YourPhoneLabel">Seu telefone</string>
@@ -2212,4 +2213,6 @@ crie um novo.</string>
     <string name="NotificationsPermissionAlert2">Saiba quando você é mencionado em grupos</string>
     <string name="NotificationsPermissionAlert3">Silencie chats específicos e tipos de chats</string>
     <string name="NotificationsPermissionSettings">Abrir configurações</string>
+    <string name="StoryCameraSavedDualFrontHint">Toque aqui para desativar a câmera frontal</string>
+    <string name="StoryCameraHint2">Tire fotos ou grave vídeos para compartilhar com todos os seus contatos ou amigos próximos de uma só vez.</string>
 </resources>
