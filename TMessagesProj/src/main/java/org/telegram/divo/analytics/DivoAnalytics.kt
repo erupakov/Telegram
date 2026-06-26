@@ -43,7 +43,7 @@ object DivoAnalytics {
         }
 
         firebaseAnalytics?.logEvent(event.eventName, bundle)
-        android.util.Log.i("DivoAnalytics", "📊 EVENT SENT: ${event.eventName} | Params: ${event.parameters}")
+        //android.util.Log.i("DivoAnalytics", "📊 EVENT SENT: ${event.eventName} | Params: ${event.parameters}")
         
         // Log specific events to Facebook Meta SDK
         val fbEventName = when (event.eventName) {
@@ -53,7 +53,7 @@ object DivoAnalytics {
         
         if (fbEventName == "sign_up_start" || fbEventName == "sign_up_complete" || fbEventName == "gallery_media_uploaded") {
             fbLogger?.logEvent(fbEventName, bundle)
-            android.util.Log.i("DivoAnalytics", "🚀 EVENT SENT TO META: $fbEventName | Params: $bundle")
+            //android.util.Log.i("DivoAnalytics", "🚀 EVENT SENT TO META: $fbEventName | Params: $bundle")
         }
     }
 
