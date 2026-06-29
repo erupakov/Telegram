@@ -911,4 +911,8 @@
     <string name="NotificationsPermissionSettings">打开设置</string>
     <string name="StoryCameraSavedDualFrontHint">点击此处禁用自拍相机</string>
     <string name="StoryCameraHint2">拍摄照片或视频，一次性与您的所有联系人或密友分享。</string>
+    <string name="PermissionFSILockscreen">请允许 Divo Global 显示在锁屏界面，以便通话正常工作。</string>
+    <string name="StoryCameraHint">点击 %s 为您的联系人发布快拍。</string>
+    <string name="ThereAreNoImagesYet">尚无图片</string>
+    <string name="ThereAreNoVideosYet">尚无视频</string>
 </resources>

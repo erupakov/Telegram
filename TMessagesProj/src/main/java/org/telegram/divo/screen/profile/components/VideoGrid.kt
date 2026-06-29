@@ -86,6 +86,7 @@ fun VideoGrid(
     isUploading: Boolean,
     hasMore: Boolean,
     isActive: Boolean = true,
+    transitionProgress: Float = 1f,
     topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onVideoClicked: (String) -> Unit,
@@ -268,24 +269,33 @@ fun VideoGrid(
 
     Box(modifier = modifier.fillMaxSize().clipToBounds()) {
         val bottomPadding = if (isOwnProfile) 72.dp else 16.dp
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            state = gridState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = topPadding,
-                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + bottomPadding,
-            ),
-        ) {
-            if (videoItems.isEmpty() && !isFirstLoading && isOwnProfile) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    PortfolioEmptyAddButton(
-                        isUploading = isUploading,
-                        isVideo = true,
-                        onMediaSelected = onVideoSelected
-                    )
+
+        if (videoItems.isEmpty() && !isFirstLoading && !isOwnProfile) {
+            EmptyMediaPlaceholder(
+                text = androidx.compose.ui.res.stringResource(org.telegram.messenger.R.string.ThereAreNoVideosYet),
+                isVideo = true,
+                transitionProgress = transitionProgress,
+                topPadding = topPadding
+            )
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                state = gridState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    top = topPadding,
+                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + bottomPadding,
+                ),
+            ) {
+                if (videoItems.isEmpty() && !isFirstLoading && isOwnProfile) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        PortfolioEmptyAddButton(
+                            isUploading = isUploading,
+                            isVideo = true,
+                            onMediaSelected = onVideoSelected
+                        )
+                    }
                 }
-            }
 
             itemsIndexed(
                 items = videoItems,
@@ -324,7 +334,7 @@ fun VideoGrid(
                 }
             }
         }
-
+        }
 
         playerPool.forEachIndexed { slot, player ->
             key(slot) {

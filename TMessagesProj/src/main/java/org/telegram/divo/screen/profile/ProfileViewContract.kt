@@ -142,10 +142,10 @@ data class ProfileViewState(
             )
         )
 
-    val instagramUser get() = userInfo.model?.instagramUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
-    val tiktokUser get() = userInfo.model?.tiktokUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
-    val youtubeUser get() = userInfo.model?.youtubeUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
-    val website get() = userInfo.model?.websiteUrl?.removePrefix("https://")?.removePrefix("http://").orEmpty()
+    val instagramUser get() = (userInfo.model?.instagramUrl ?: userInfo.agency?.instagramUrl)?.trimEnd('/')?.substringAfterLast("/").orEmpty()
+    val tiktokUser get() = (userInfo.model?.tiktokUrl ?: userInfo.agency?.tiktokUrl)?.trimEnd('/')?.substringAfterLast("/").orEmpty()
+    val youtubeUser get() = (userInfo.model?.youtubeUrl ?: userInfo.agency?.youtubeUrl)?.trimEnd('/')?.substringAfterLast("/").orEmpty()
+    val website get() = (userInfo.model?.websiteUrl ?: userInfo.agency?.websiteUrl)?.removePrefix("https://")?.removePrefix("http://").orEmpty()
 
     val isVisibleSocialLinks: Boolean
         get() = instagramUser.isEmpty() && tiktokUser.isEmpty() && youtubeUser.isEmpty() && website.isEmpty()

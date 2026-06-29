@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -138,14 +139,16 @@ fun EditMyProfileScreen(
                     val titleId = if (uiState.isModel) R.string.Profile else R.string.MyAgencyProfile
 
                     Text(
-                        modifier = Modifier.padding(top = 3.dp),
+                        modifier = Modifier.padding(top = 3.dp, start = 10.dp, end = 10.dp),
                         text = stringResource(titleId).uppercase(),
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 1,
                         style = AppTheme.typography.appBar
                     )
                 },
                 navigationIcon = {
                     RoundedButton(
-                        modifier = Modifier.padding(start = 16.dp),
+                        modifier = Modifier.padding(start = 12.dp),
                         resId = R.drawable.ic_divo_back,
                         onClick = onCloseScreen
                     )
@@ -156,7 +159,10 @@ fun EditMyProfileScreen(
             )
         },
         snackbarHost = {
-            AppSnackbarHost(state = snackbarState)
+            AppSnackbarHost(
+                state = snackbarState,
+                bottomPadding = 76.dp
+            )
         },
     ) { paddingValues ->
 

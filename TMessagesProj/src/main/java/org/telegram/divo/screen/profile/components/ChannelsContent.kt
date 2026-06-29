@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -48,6 +49,7 @@ fun ChannelsContent(
     isModel: Boolean,
     isOwnProfile: Boolean,
     isEvent: Boolean = false,
+    transitionProgress: Float = 1f,
     topPadding: Dp = 0.dp,
     isRefreshing: Boolean = false,
     onAddChannel: () -> Unit = {}
@@ -58,6 +60,8 @@ fun ChannelsContent(
         EmptyChannels(
             isOwnProfile = isOwnProfile,
             isModel = isModel,
+            transitionProgress = transitionProgress,
+            topPadding = topPadding,
             bottomPadding = bottomPadding,
             onClick = onAddChannel
         )
@@ -321,6 +325,8 @@ private fun ChannelItem(
 private fun EmptyChannels(
     isOwnProfile: Boolean,
     isModel: Boolean,
+    transitionProgress: Float,
+    topPadding: Dp,
     bottomPadding: Dp,
     onClick: () -> Unit = {}
 ) {
@@ -330,16 +336,20 @@ private fun EmptyChannels(
         else -> R.string.ThisAgencyHasNotCreatedChannels
     }
 
-    Box(
+    androidx.compose.foundation.layout.BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.backgroundLight)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.TopCenter
     ) {
+        val startOffset = topPadding + 16.dp
+        val endOffset = maxHeight / 2 - 100.dp
+        val currentOffset = startOffset + (endOffset - startOffset) * transitionProgress
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = bottomPadding + 56.dp),
+                .offset(y = currentOffset),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

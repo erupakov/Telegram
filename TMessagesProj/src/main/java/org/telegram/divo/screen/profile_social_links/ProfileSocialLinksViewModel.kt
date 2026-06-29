@@ -39,10 +39,10 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
                     copy(
                         isLoading = false,
                         userFull = result.value,
-                        instagramUrl = result.value.model?.instagramUrl.orEmpty(),
-                        tiktokUrl = result.value.model?.tiktokUrl.orEmpty(),
-                        youtubeUrl = result.value.model?.youtubeUrl.orEmpty(),
-                        websiteUrl = result.value.model?.websiteUrl.orEmpty(),
+                        instagramUrl = result.value.model?.instagramUrl ?: result.value.agency?.instagramUrl.orEmpty(),
+                        tiktokUrl = result.value.model?.tiktokUrl ?: result.value.agency?.tiktokUrl.orEmpty(),
+                        youtubeUrl = result.value.model?.youtubeUrl ?: result.value.agency?.youtubeUrl.orEmpty(),
+                        websiteUrl = result.value.model?.websiteUrl ?: result.value.agency?.websiteUrl.orEmpty(),
                         errorMessage = null
                     )
                 }
@@ -78,6 +78,12 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
                         youtubeUrl = buildUrl(state.value.youtubeUser, state.value.youtubeUrl),
                         websiteUrl = state.value.website,
                     ),
+                    agency = state.value.userFull.agency?.copy(
+                        instagramUrl = buildUrl(state.value.instagramUser, state.value.instagramUrl),
+                        tiktokUrl = buildUrl(state.value.tiktokUser, state.value.tiktokUrl),
+                        youtubeUrl = buildUrl(state.value.youtubeUser, state.value.youtubeUrl),
+                        websiteUrl = state.value.website,
+                    )
                 )
             )
 

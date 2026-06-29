@@ -69,20 +69,22 @@ jobs:
           name: divo-debug-apk
           path: TMessagesProj_App/build/outputs/apk/afat/debug/Divo-Global.apk
 
-      - name: Upload Release Artifacts
-        if: github.base_ref == 'release' || github.event.inputs.build_type == 'release'
-        uses: actions/upload-artifact@v4
-        with:
-          name: divo-release-artifacts
-          path: |
-            TMessagesProj_App/build/outputs/apk/afat/release/Divo-Global.apk
-            TMessagesProj_App/build/outputs/bundle/afatRelease/*.aab
-
       - name: Extract App Version
         id: extract_version
         run: |
           APP_VERSION=$(grep 'APP_VERSION_NAME' gradle.properties | cut -d'=' -f2)
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        if: github.base_ref == 'release' || github.event.inputs.build_type == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ env.APP_VERSION }}-build${{ github.run_number }}
+          name: Divo Release v${{ env.APP_VERSION }} (Build ${{ github.run_number }})
+          files: |
+            TMessagesProj_App/build/outputs/apk/afat/release/Divo-Global.apk
+            TMessagesProj_App/build/outputs/bundle/afatRelease/*.aab
+          generate_release_notes: true
 
       - name: Send Debug APK to Telegram
         if: github.base_ref == 'dev' || github.event.inputs.build_type == 'debug'
@@ -109,5 +111,5 @@ jobs:
             Версия: ${{ env.APP_VERSION }} (Билд #${{ github.run_number }})
             PR/Ветка: ${{ github.head_ref || github.ref_name }}
             
-            📥 **Скачать APK и AAB (Artifacts):**
-            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            📥 **Скачать APK и AAB (Release):**
+            https://github.com/${{ github.repository }}/releases/tag/v${{ env.APP_VERSION }}-build${{ github.run_number }}

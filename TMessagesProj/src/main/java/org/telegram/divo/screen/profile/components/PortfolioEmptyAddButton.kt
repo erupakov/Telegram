@@ -1,25 +1,27 @@
 package org.telegram.divo.screen.profile.components
 
 import android.net.Uri
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -73,6 +75,52 @@ fun PortfolioEmptyAddButton(
                 style = AppTheme.typography.helveticaNeueRegular,
                 fontSize = 12.sp,
                 color = AppTheme.colors.textPrimary
+            )
+        }
+    }
+}
+
+@Composable
+fun EmptyMediaPlaceholder(text: String, isVideo: Boolean, transitionProgress: Float, topPadding: androidx.compose.ui.unit.Dp) {
+    androidx.compose.foundation.layout.BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppTheme.colors.backgroundLight)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        val startOffset = topPadding + 16.dp
+        val endOffset = maxHeight / 2 - 100.dp
+        val currentOffset = startOffset + (endOffset - startOffset) * transitionProgress
+
+        Column(
+            modifier = Modifier
+                .offset(y = currentOffset),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(68.dp)
+                    .clip(CircleShape)
+                    .background(AppTheme.colors.textPrimary.copy(0.1f))
+            ) {
+                androidx.compose.material3.Icon(
+                    modifier = Modifier
+                        .size(24.dp)
+                        .align(Alignment.Center),
+                    painter = painterResource(if (isVideo) R.drawable.ic_action_play else R.drawable.ic_divo_add_photo),
+                    contentDescription = null,
+                    tint = Color.Black.copy(alpha = 0.8f)
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = text,
+                style = AppTheme.typography.helveticaNeueLtCom,
+                fontSize = 26.sp,
+                lineHeight = 30.sp,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             )
         }
     }

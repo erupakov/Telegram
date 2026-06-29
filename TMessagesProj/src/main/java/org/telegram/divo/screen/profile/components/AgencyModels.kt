@@ -67,6 +67,7 @@ fun AgencyModels(
     query: String,
     onQueryChanged: (String) -> Unit,
     isOwnProfile: Boolean,
+    transitionProgress: Float = 1f,
     topPadding: Dp = 0.dp,
     isLoadingSearchModels: Boolean,
     isLoadingMore: Boolean,
@@ -90,6 +91,8 @@ fun AgencyModels(
     if (models.isEmpty()) {
         EmptyModels(
             isOwnProfile = isOwnProfile,
+            transitionProgress = transitionProgress,
+            topPadding = topPadding,
             bottomPadding = bottomPadding,
             onClick = { onToggleBottomSheet(true) }
         )
@@ -338,19 +341,25 @@ private fun ModelItem(
 @Composable
 private fun EmptyModels(
     isOwnProfile: Boolean,
+    transitionProgress: Float,
+    topPadding: Dp,
     bottomPadding: Dp,
     onClick: () -> Unit = {}
 ) {
-    Box(
+    androidx.compose.foundation.layout.BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.backgroundLight)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.TopCenter
     ) {
+        val startOffset = topPadding + 16.dp
+        val endOffset = maxHeight / 2 - 100.dp
+        val currentOffset = startOffset + (endOffset - startOffset) * transitionProgress
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = bottomPadding + 56.dp),
+                .offset(y = currentOffset),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {

@@ -243,19 +243,12 @@ fun TelegramUserAvatarEditable(
                         }
                     )
                 } else {
-                    if (usePlaceholder) {
-                        PlaceholderAvatar(
-                            modifier = Modifier.fillMaxSize(),
-                            name = placeholderSymbols,
-                        )
-                    } else {
-                        Icon(
-                            modifier = Modifier.align(Alignment.Center).size(placeholderIconSize),
-                            painter = painterResource(R.drawable.ic_divo_add_photo),
-                            contentDescription = null,
-                            tint = borderColor
-                        )
-                    }
+                    Image(
+                        painter = painterResource(R.drawable.divo_avatar_placeholder),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
                 }
             }
 

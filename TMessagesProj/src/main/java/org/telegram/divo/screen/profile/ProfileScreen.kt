@@ -552,6 +552,7 @@ private fun ProfileScreenContent(
                             when (page) {
                                 0 -> PortfolioGrid(
                                     topPadding = totalTopPaddingDp,
+                                    transitionProgress = transitionProgress,
                                     portfolioItems = uiState.userGalleryItems,
                                     similarItems = uiState.similarProfiles,
                                     isUploading = uiState.mediaUploading,
@@ -570,6 +571,7 @@ private fun ProfileScreenContent(
 
                                     VideoGrid(
                                         topPadding = totalTopPaddingDp,
+                                        transitionProgress = transitionProgress,
                                         videoItems = uiState.videoItems,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isLoadingMore = uiState.isLoadingMoreVideos,
@@ -583,12 +585,13 @@ private fun ProfileScreenContent(
                                     )
                                 }
                                 2 -> if (uiState.isModel) {
-                                    ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, isRefreshing = isRefreshing, onAddChannel = {
+                                    ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, transitionProgress = transitionProgress, isRefreshing = isRefreshing, onAddChannel = {
                                         onIntent(ProfileIntent.OnCreateChannelClicked) 
                                     })
                                 } else {
                                     AgencyModels(
                                         topPadding = totalTopPaddingDp,
+                                        transitionProgress = transitionProgress,
                                         models = uiState.agencyModels,
                                         query = uiState.searchModelsQuery,
                                         searchModels = uiState.searchModels,
@@ -611,11 +614,12 @@ private fun ProfileScreenContent(
                                         onSelectModelForAdd = { onIntent(ProfileIntent.OnSelectAgencyModelForAdd(it)) }
                                     )
                                 }
-                                3 -> ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, isRefreshing = isRefreshing, onAddChannel = {
+                                3 -> ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, transitionProgress = transitionProgress, isRefreshing = isRefreshing, onAddChannel = {
                                     onIntent(ProfileIntent.OnCreateChannelClicked) 
                                 })
                                 else -> EventsColumn(
                                     topPadding = totalTopPaddingDp,
+                                    transitionProgress = transitionProgress,
                                     events = uiState.events,
                                     isOwnProfile = uiState.isOwnProfile,
                                     isModel = uiState.isModel,
