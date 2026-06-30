@@ -2288,4 +2288,8 @@ crea uno nuevo.</string>
     <string name="NotificationsPermissionSettings">Abrir ajustes</string>
     <string name="StoryCameraSavedDualFrontHint">Toca aquí para desactivar la cámara selfie</string>
     <string name="StoryCameraHint2">Toma fotos o videos para compartirlos con todos tus contactos o amigos cercanos a la vez.</string>
+    <string name="PermissionFSILockscreen">Por favor, permita que Divo Global se muestre en la pantalla de bloqueo para que las llamadas funcionen correctamente.</string>
+    <string name="StoryCameraHint">Toca %s para publicar una historia para tus contactos.</string>
+    <string name="ThereAreNoImagesYet">AÚN NO HAY IMÁGENES</string>
+    <string name="ThereAreNoVideosYet">AÚN NO HAY VIDEOS</string>
 </resources>

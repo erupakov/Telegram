@@ -13,13 +13,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.arch.OffsetPaginator
+import org.telegram.divo.common.arch.PaginatedResult
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.AgencyModelStatus
 import org.telegram.divo.entity.AgencySearchModelStatus
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
@@ -118,7 +119,7 @@ class ProfileViewModel(
                 val mappedItems = paginatedResult.items.map { searchModel ->
                     val existing = currentAgencyModels.find { it.userId == searchModel.userId }
                     if (existing != null) {
-                        if (existing.status == org.telegram.divo.entity.AgencyModelStatus.PENDING) {
+                        if (existing.status == AgencyModelStatus.PENDING) {
                             searchModel.copy(status = AgencySearchModelStatus.RequestPending)
                         } else {
                             searchModel.copy(status = AgencySearchModelStatus.AlreadyAdded)
@@ -971,10 +972,10 @@ class ProfileViewModel(
 
     private fun openLink(socialNetworkType: SocialNetworkType) {
         val url = when (socialNetworkType) {
-            SocialNetworkType.TIKTOK -> state.value.userInfo.model?.tiktokUrl.orEmpty()
-            SocialNetworkType.INSTAGRAM -> state.value.userInfo.model?.instagramUrl.orEmpty()
-            SocialNetworkType.WEBSITE -> state.value.userInfo.model?.websiteUrl.orEmpty()
-            SocialNetworkType.YOUTUBE -> state.value.userInfo.model?.youtubeUrl.orEmpty()
+            SocialNetworkType.TIKTOK -> state.value.userInfo.model?.tiktokUrl ?: state.value.userInfo.agency?.tiktokUrl.orEmpty()
+            SocialNetworkType.INSTAGRAM -> state.value.userInfo.model?.instagramUrl ?: state.value.userInfo.agency?.instagramUrl.orEmpty()
+            SocialNetworkType.WEBSITE -> state.value.userInfo.model?.websiteUrl ?: state.value.userInfo.agency?.websiteUrl.orEmpty()
+            SocialNetworkType.YOUTUBE -> state.value.userInfo.model?.youtubeUrl ?: state.value.userInfo.agency?.youtubeUrl.orEmpty()
         }
 
         sendEffect(ProfileEffect.OpenUrl(url))

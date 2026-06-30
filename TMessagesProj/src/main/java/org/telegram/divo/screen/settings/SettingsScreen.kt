@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -31,11 +30,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
 import org.telegram.divo.common.DivoSettings
-import org.telegram.divo.common.SnackbarEvent.ErrorWithRetry
-import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.common.controllers.SnackbarEvent.ErrorWithRetry
+import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.screen.settings.components.ContainerItems
 import org.telegram.divo.screen.settings.components.MeasuringSystemDialog
 import org.telegram.divo.screen.settings.components.ProfileRow

@@ -25,9 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.telegram.divo.common.MeasuringUnits
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.labelRes
+import org.telegram.divo.common.utils.MeasuringUnits
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.common.utils.labelRes
 import org.telegram.divo.common.utils.formatWeird
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.style.AppTheme
@@ -81,7 +81,7 @@ fun ParametersBlock(
                             .weight(1f)
                             .padding(top = 2.dp),
                         text = if (item.type == ParametersType.BIRTHDAY) {
-                            item.value.formattedAge(context).substringBefore(" ")
+                            item.value.formattedAge().substringBefore(" ")
                         } else {
                             val displayValue = if (valuesInMetric) {
                                 MeasuringUnits.convertRangeForDisplay(item.type, item.value)

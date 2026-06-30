@@ -257,10 +257,15 @@ public class AvatarDrawable extends Drawable {
             color = color2 = Theme.getColor(Theme.key_chats_actionBackground);
         } else if (avatarType == AVATAR_TYPE_ARCHIVED) {
             color = color2 = getThemedColor(Theme.key_avatar_backgroundArchivedHidden);
-        } else if (avatarType == AVATAR_TYPE_SUGGESTION || avatarType == AVATAR_TYPE_REPLIES || avatarType == AVATAR_TYPE_SAVED || avatarType == AVATAR_TYPE_OTHER_CHATS) {
+        } else if (avatarType == AVATAR_TYPE_SUGGESTION || avatarType == AVATAR_TYPE_REPLIES || avatarType == AVATAR_TYPE_OTHER_CHATS) { //DIVO
             hasGradient = true;
             color = getThemedColor(Theme.key_avatar_backgroundSaved);
             color2 = getThemedColor(Theme.key_avatar_background2Saved);
+        } else if (avatarType == AVATAR_TYPE_SAVED) {
+            // DIVO: Change Saved Messages avatar to Divo orange accent
+            hasGradient = true;
+            color = 0xFFFF772D;
+            color2 = 0xFFFFA743;
         } else if (avatarType == AVATAR_TYPE_STORY) {
             rotate45Background = true;
             hasGradient = true;
@@ -321,7 +326,8 @@ public class AvatarDrawable extends Drawable {
             if (advancedGradient == null) {
                 advancedGradient = new GradientTools();
             }
-            advancedGradient.setColors(0xFF4D8DFF, 0xFF2BBFFF, 0xFF20E2CD, 0xFF0EE1F1);
+            // DIVO: Change My Notes (Saved Messages sub-type) avatar to Divo orange accent
+            advancedGradient.setColors(0xFFF5694E, 0xFFF5772C, 0xFFFFD412, 0xFFFFA743);
         } else {
             hasGradient = true;
             color = getThemedColor(Theme.keys_avatar_background[getColorIndex(4)]);

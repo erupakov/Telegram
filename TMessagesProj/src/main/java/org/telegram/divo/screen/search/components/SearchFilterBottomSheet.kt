@@ -24,17 +24,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.getFormatedOptions
-import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.components.items.DivoBottomSheet
-import org.telegram.divo.components.items.ParameterBottomSheet
+import org.telegram.divo.components.bottomsheets.CityPickerSheet
+import org.telegram.divo.components.bottomsheets.CountryPickerSheet
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.components.bottomsheets.DivoBottomSheet
+import org.telegram.divo.components.bottomsheets.ParameterBottomSheet
 import org.telegram.divo.components.items.ParameterItem
 import org.telegram.divo.components.items.ParametersBlock
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
-import org.telegram.divo.screen.add_model.CountryPickerSheet
-import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.screen.search.LocalCity
 import org.telegram.divo.screen.search.State
 import org.telegram.divo.style.AppTheme
@@ -303,7 +304,7 @@ fun SearchFilterBottomSheet(
                 }
             }
 
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

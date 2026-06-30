@@ -1,8 +1,6 @@
 package org.telegram.divo.screen.profile.components
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,16 +37,19 @@ import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.hazeEffect
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.common.utils.toCountryFlagEmoji
-import org.telegram.divo.components.DivoPopupMenu
-import org.telegram.divo.components.PopupMenuItem
-import org.telegram.divo.components.RoundedGlassButton
-import org.telegram.divo.components.RoundedGlassContainer
+import org.telegram.divo.components.navigation.DivoPopupMenu
+import org.telegram.divo.components.navigation.PopupMenuItem
+import org.telegram.divo.components.inputs.RoundedGlassButton
+import org.telegram.divo.components.inputs.RoundedGlassContainer
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
+import org.telegram.messenger.UserConfig
+import org.telegram.ui.LaunchActivity
+import org.telegram.ui.Stories.recorder.StoryRecorder
 
 @Composable
 fun ToolBarBackground(
@@ -210,10 +211,10 @@ fun ToolBarContent(
                     modifier = Modifier
                         .size(22.dp)
                         .clickableWithoutRipple { 
-                            val account = org.telegram.messenger.UserConfig.selectedAccount
-                            val fragment = org.telegram.ui.LaunchActivity.getLastFragment() ?: return@clickableWithoutRipple
-                            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.StoryAddClicked("profile"))
-                            org.telegram.ui.Stories.recorder.StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
+                            val account = UserConfig.selectedAccount
+                            val fragment = LaunchActivity.getLastFragment() ?: return@clickableWithoutRipple
+                            DivoAnalytics.logEvent(AnalyticsEvent.StoryAddClicked("profile"))
+                            StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
                         },
                     painter = painterResource(R.drawable.ic_divo_rounded_plus),
                     contentDescription = null,
@@ -224,7 +225,7 @@ fun ToolBarContent(
                     modifier = Modifier
                         .size(16.dp)
                         .clickableWithoutRipple { 
-                            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ProfileEditMenuTapped(uiState.userId))
+                            DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditMenuTapped(uiState.userId))
                             showEditMenu = true 
                         },
                     painter = painterResource(R.drawable.ic_divo_edit_24),
@@ -287,7 +288,7 @@ private fun TitleContent(
                     fontSize = 12.sp,
                 )
                 if (userInfo.birthday.isNotEmpty()) {
-                    val ageText = userInfo.birthday.formattedAge(context)
+                    val ageText = userInfo.birthday.formattedAge()
                     val suffix = if (userInfo.city != null) " · " else ""
                     Text(
                         text = " · $ageText$suffix",

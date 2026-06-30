@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.arch.OffsetPaginator
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.repository.UserActionEvent
 import org.telegram.divo.entity.FeedItem
@@ -62,7 +62,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             val newLanguage = org.telegram.messenger.LocaleController.getInstance().currentLocale?.language ?: ""
             if (newLanguage != currentLanguage) {
                 currentLanguage = newLanguage
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.AppLanguageChanged(newLanguage))
+                DivoAnalytics.logEvent(AnalyticsEvent.AppLanguageChanged(newLanguage))
                 viewModelScope.launch {
                     delay(300)
                     refresh()
@@ -181,7 +181,6 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         setState {
             copy(
                 isLoading = false,
-                models = ModelsViewState.preview.models
             )
         }
         val account = UserConfig.selectedAccount

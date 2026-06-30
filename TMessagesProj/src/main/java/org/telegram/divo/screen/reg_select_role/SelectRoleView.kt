@@ -8,7 +8,7 @@ import androidx.navigation.NavController
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import org.telegram.divo.style.setDivoContent
+import org.telegram.divo.common.arch.setDivoContent
 import org.telegram.ui.Components.SlideView
 
 class RoleSelectionView(context: Context, private val account: Int) : SlideView(context) {

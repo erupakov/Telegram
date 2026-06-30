@@ -1,7 +1,6 @@
 package org.telegram.divo.screen.auth
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,16 +43,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.dal.network.GoogleSignInHelper
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.dal.network.DivoApiConfig
+import org.telegram.divo.dal.utils.GoogleSignInHelper
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont
 import org.telegram.messenger.R
 import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.TLRPC
 
 @Composable
 fun AuthScreen(
@@ -104,11 +105,11 @@ fun AuthScreen(
                         GoogleSignInHelper.signInWithGoogle(
                             context = activity,
                             callback = object : GoogleSignInHelper.GoogleSignInCallback {
-                                override fun onSuccess(authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization) {
+                                override fun onSuccess(authResponse: TLRPC.TL_auth_authorization) {
                                     isGoogleLoading.value = false
                                     onGoogleSuccess(authResponse)
                                 }
-                                override fun onUserNotFound(firebaseUid: String, email: String, dummyPhone: String, authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization, firstName: String?, lastName: String?, photoUrl: String?) {
+                                override fun onUserNotFound(firebaseUid: String, email: String, dummyPhone: String, authResponse: TLRPC.TL_auth_authorization, firstName: String?, lastName: String?, photoUrl: String?) {
                                     isGoogleLoading.value = false
                                     onGoogleUserNotFound(firebaseUid, email, dummyPhone, authResponse, firstName, lastName, photoUrl)
                                 }
@@ -163,7 +164,7 @@ fun AuthScreen(
             )
             Spacer(Modifier.height(32.dp))
             Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
-                UIButtonNew(
+                UIButton(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.ContinueWithPhoneNumber),
                     textStyle = AppTheme.typography.textButton.copy(
@@ -212,7 +213,7 @@ fun AuthScreen(
                     LottieProgressIndicator(color = AppTheme.colors.textPrimary)
                 }
             } else {
-                UIButtonNew(
+                UIButton(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.OnboardingSignInWithGoogle),
                     background = AppTheme.colors.onBackground,
@@ -224,7 +225,7 @@ fun AuthScreen(
                         fontSize = 16.sp
                     ),
                     onClick = { 
-                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.AuthMethodSelected("google"))
+                        DivoAnalytics.logEvent(AnalyticsEvent.AuthMethodSelected("google"))
                         viewModel.setIntent(AuthViewIntent.GoogleSignIn) 
                     }
                 )
@@ -244,8 +245,8 @@ private fun TermsText() {
     val privacy = stringResource(R.string.OnboardingPrivacyPolicy)
     val andText = stringResource(R.string.OnboardingAnd)
 
-    val termsUrl = "https://www.divo.global/legal-documents/mobile-app-eula"
-    val privacyUrl = "https://www.divo.global/legal-documents/privacy-policy"
+    val termsUrl = DivoApiConfig.TERMS_URL
+    val privacyUrl = DivoApiConfig.PRIVACY_URL
 
     val annotatedString = buildAnnotatedString {
 
@@ -256,7 +257,7 @@ private fun TermsText() {
             LinkAnnotation.Url(
                 url = termsUrl,
                 linkInteractionListener = androidx.compose.ui.text.LinkInteractionListener {
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.TermsLinkClicked())
+                    DivoAnalytics.logEvent(AnalyticsEvent.TermsLinkClicked())
                 }
             )
         ) {
@@ -277,7 +278,7 @@ private fun TermsText() {
             LinkAnnotation.Url(
                 url = privacyUrl,
                 linkInteractionListener = androidx.compose.ui.text.LinkInteractionListener {
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.PrivacyPolicyLinkClicked())
+                    DivoAnalytics.logEvent(AnalyticsEvent.PrivacyPolicyLinkClicked())
                 }
             )
         ) {

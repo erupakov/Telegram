@@ -19,6 +19,7 @@ configurations {
 configurations.all {
     // exclude group: 'com.google.firebase', module: 'firebase-core' // Removed for Divo Crashlytics/Analytics
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
+    exclude group: 'com.google.zxing', module: 'core' // ZXing source code is already bundled in the project
 }
 
 dependencies {

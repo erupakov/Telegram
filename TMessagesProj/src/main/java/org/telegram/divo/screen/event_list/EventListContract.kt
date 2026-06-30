@@ -1,13 +1,13 @@
 package org.telegram.divo.screen.event_list
 
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.EventType
-import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.screen.search.LocalCity
 
 data class EventSearchFilters(

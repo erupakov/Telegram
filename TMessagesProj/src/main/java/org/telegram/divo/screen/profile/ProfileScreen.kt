@@ -58,15 +58,16 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.SnackbarEvent.ErrorWithRetry
-import org.telegram.divo.common.SnackbarEvent.Success
-import org.telegram.divo.common.SnackbarEvent.SuccessWithIcon
-import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.common.controllers.SnackbarEvent.ErrorWithRetry
+import org.telegram.divo.common.controllers.SnackbarEvent.Success
+import org.telegram.divo.common.controllers.SnackbarEvent.SuccessWithIcon
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
-import org.telegram.divo.components.StatusBarIconColorEffect
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
+import org.telegram.divo.components.bottomsheets.DivoWithdrawBottomSheet
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.profile.components.AgencyModels
 import org.telegram.divo.screen.profile.components.AnimatedPortfolioAddButton
@@ -246,7 +247,7 @@ fun ProfileScreen(
         )
 
         if (withdrawEventId != null) {
-            org.telegram.divo.components.DivoWithdrawBottomSheet(
+            DivoWithdrawBottomSheet(
                 onKeepApplication = { withdrawEventId = null },
                 onWithdraw = {
                     val id = withdrawEventId
@@ -552,6 +553,7 @@ private fun ProfileScreenContent(
                             when (page) {
                                 0 -> PortfolioGrid(
                                     topPadding = totalTopPaddingDp,
+                                    transitionProgress = transitionProgress,
                                     portfolioItems = uiState.userGalleryItems,
                                     similarItems = uiState.similarProfiles,
                                     isUploading = uiState.mediaUploading,
@@ -570,6 +572,7 @@ private fun ProfileScreenContent(
 
                                     VideoGrid(
                                         topPadding = totalTopPaddingDp,
+                                        transitionProgress = transitionProgress,
                                         videoItems = uiState.videoItems,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isLoadingMore = uiState.isLoadingMoreVideos,
@@ -583,12 +586,13 @@ private fun ProfileScreenContent(
                                     )
                                 }
                                 2 -> if (uiState.isModel) {
-                                    ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, isRefreshing = isRefreshing, onAddChannel = {
+                                    ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, transitionProgress = transitionProgress, isRefreshing = isRefreshing, onAddChannel = {
                                         onIntent(ProfileIntent.OnCreateChannelClicked) 
                                     })
                                 } else {
                                     AgencyModels(
                                         topPadding = totalTopPaddingDp,
+                                        transitionProgress = transitionProgress,
                                         models = uiState.agencyModels,
                                         query = uiState.searchModelsQuery,
                                         searchModels = uiState.searchModels,
@@ -611,11 +615,12 @@ private fun ProfileScreenContent(
                                         onSelectModelForAdd = { onIntent(ProfileIntent.OnSelectAgencyModelForAdd(it)) }
                                     )
                                 }
-                                3 -> ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, isRefreshing = isRefreshing, onAddChannel = {
+                                3 -> ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, transitionProgress = transitionProgress, isRefreshing = isRefreshing, onAddChannel = {
                                     onIntent(ProfileIntent.OnCreateChannelClicked) 
                                 })
                                 else -> EventsColumn(
                                     topPadding = totalTopPaddingDp,
+                                    transitionProgress = transitionProgress,
                                     events = uiState.events,
                                     isOwnProfile = uiState.isOwnProfile,
                                     isModel = uiState.isModel,

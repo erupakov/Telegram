@@ -25,12 +25,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.MeasuringUnits
-import org.telegram.divo.common.labelRes
-import org.telegram.divo.common.utils.formattedAge
+import org.telegram.divo.common.utils.MeasuringUnits
+import org.telegram.divo.common.utils.labelRes
 import org.telegram.divo.common.utils.toDateFloat
 import org.telegram.divo.components.items.ParametersType
-import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.components.inputs.RoundedButton
 import org.telegram.divo.screen.profile.PhysicalParams
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R

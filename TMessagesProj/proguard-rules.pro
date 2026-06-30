@@ -108,3 +108,11 @@
 -dontoptimize
 -dontobfuscate
 -dontwarn java.lang.invoke.StringConcatFactory
+
+# Facebook SDK - suppress warnings for unused Device Login QR code feature
+# (ZXing source is bundled in the project, but not the full library)
+-dontwarn com.google.zxing.MultiFormatWriter
+-dontwarn com.google.zxing.common.BitMatrix
+-dontwarn com.google.zxing.BarcodeFormat
+-dontwarn com.google.zxing.EncodeHintType
+-dontwarn com.facebook.devicerequests.internal.DeviceRequestsHelper

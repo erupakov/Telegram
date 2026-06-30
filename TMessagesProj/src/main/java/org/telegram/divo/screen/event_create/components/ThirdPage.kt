@@ -50,10 +50,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.rememberMultipleGalleryLauncher
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.common.controllers.rememberMultipleGalleryLauncher
+import org.telegram.divo.components.inputs.DivoTextField
+import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.screen.event_create.Intent
 import org.telegram.divo.screen.event_create.State
 import org.telegram.divo.style.AppTheme

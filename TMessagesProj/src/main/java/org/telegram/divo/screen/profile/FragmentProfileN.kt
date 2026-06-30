@@ -13,7 +13,7 @@ import androidx.navigation.NavController
 import org.telegram.divo.common.utils.FragmentLifecycleOwner
 import org.telegram.messenger.MessagesController
 import org.telegram.messenger.UserConfig
-import org.telegram.divo.style.setDivoContent
+import org.telegram.divo.common.arch.setDivoContent
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.ChatObject
@@ -24,6 +24,9 @@ import android.view.Gravity
 import android.view.ViewGroup
 import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.dal.network.DivoApi
+import org.telegram.tgnet.TLRPC
+import org.telegram.ui.ChannelCreateActivity
+import org.telegram.ui.ChatActivity
 
 class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDelegate {
 
@@ -87,7 +90,7 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
                             val currentAccount = UserConfig.selectedAccount
                             var user = MessagesController.getInstance(currentAccount).getUser(tgId)
                             if (user == null) {
-                                user = org.telegram.tgnet.TLRPC.TL_user()
+                                user = TLRPC.TL_user()
                                 user.id = tgId
                                 user.first_name = tgUsername ?: "User"
                                 user.username = tgUsername
@@ -96,12 +99,12 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
                             }
                             val args = Bundle()
                             args.putLong("user_id", tgId)
-                            presentFragment(org.telegram.ui.ChatActivity(args))
+                            presentFragment(ChatActivity(args))
                         },
                         onNavigateToCreateChannel = {
                             val args = Bundle()
                             args.putInt("step", 0)
-                            presentFragment(org.telegram.ui.ChannelCreateActivity(args))
+                            presentFragment(ChannelCreateActivity(args))
                         },
                         onNavigateBack = { finishFragment() }
                     )
@@ -128,11 +131,10 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
     }
 
     override fun didReceivedNotification(id: Int, account: Int, vararg args: Any) {
-        android.util.Log.d("UndoViewBug", "FragmentProfileN didReceivedNotification id=$id")
         if (id == NotificationCenter.needDeleteDialog) {
             val dialogId = args[0] as Long
-            val user = args[1] as? org.telegram.tgnet.TLRPC.User
-            val chat = args[2] as? org.telegram.tgnet.TLRPC.Chat
+            val user = args[1] as? TLRPC.User
+            val chat = args[2] as? TLRPC.Chat
             val revoke = if (user != null && user.bot) false else args[3] as Boolean
             val botBlock = if (user != null && user.bot) args[3] as Boolean else false
 
@@ -157,10 +159,8 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
             }
 
             if (!ChatObject.isForum(chat)) {
-                android.util.Log.d("UndoViewBug", "Showing UndoView in FragmentProfileN for dialogId=$dialogId")
                 undoView?.showWithAction(dialogId, if (revoke) UndoView.ACTION_DELETE else UndoView.ACTION_LEAVE, deleteRunnable)
             } else {
-                android.util.Log.d("UndoViewBug", "Running deleteRunnable directly for forum")
                 deleteRunnable.run()
             }
         }

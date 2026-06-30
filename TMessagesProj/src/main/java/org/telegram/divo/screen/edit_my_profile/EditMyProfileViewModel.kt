@@ -6,19 +6,18 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.search.LocalCity
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLoader
 import org.telegram.messenger.MessagesController
@@ -28,6 +27,7 @@ import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLRPC
 import java.io.File
+import kotlin.collections.find
 
 class EditMyProfileViewModel(
     private val isModel: Boolean

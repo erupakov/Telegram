@@ -1214,4 +1214,8 @@
     <string name="NotificationsPermissionSettings">Открыть настройки</string>
     <string name="StoryCameraSavedDualFrontHint">Нажмите здесь, чтобы отключить селфи-камеру</string>
     <string name="StoryCameraHint2">Снимайте фото или видео, чтобы поделиться ими со всеми контактами или близкими друзьями сразу.</string>
+    <string name="PermissionFSILockscreen">Пожалуйста, разрешите Divo Global отображаться на экране блокировки для корректной работы звонков.</string>
+    <string name="StoryCameraHint">Нажмите на %s, чтобы опубликовать историю для своих контактов.</string>
+    <string name="ThereAreNoImagesYet">ЕЩЕ НЕТ ФОТО</string>
+    <string name="ThereAreNoVideosYet">ЕЩЕ НЕТ ВИДЕО</string>
 </resources>

@@ -8,9 +8,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.arch.OffsetPaginator
+import org.telegram.divo.common.arch.PaginatedResult
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.dal.dto.publication.ModelParametersDto
@@ -20,8 +20,8 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.AppearanceItem
 import org.telegram.divo.entity.FeedlineItem
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.entity.SearchedProfile
-import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.search.Effect.*
 import org.telegram.divo.usecase.ToggleBookmarkUseCase
 import org.telegram.divo.usecase.ToggleLikeUseCase
@@ -141,8 +141,8 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     searchPaginator.loadInitial()
                     val hasResults = searchPaginator.state.value.items.isNotEmpty()
                     val filtersStr = getActiveFiltersString(state.value)
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchFiltersApplied("models", filtersStr))
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults, state.value.query, filtersStr))
+                    DivoAnalytics.logEvent(AnalyticsEvent.SearchFiltersApplied("models", filtersStr))
+                    DivoAnalytics.logEvent(AnalyticsEvent.SearchPerformed("models", hasResults, state.value.query, filtersStr))
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
@@ -169,13 +169,13 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     setState { copy(isLoading = true) }
                     searchPaginator.loadInitial()
                     val hasResults = searchPaginator.state.value.items.isNotEmpty()
-                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults, state.value.query, ""))
+                    DivoAnalytics.logEvent(AnalyticsEvent.SearchPerformed("models", hasResults, state.value.query, ""))
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
             Intent.OnFaceSearchHistoryClicked -> { sendEffect(NavigateToFaceSearchHistory) }
             is Intent.OnSimilarProfilesClicked -> {
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.FaceRecognitionOpened("search"))
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("search"))
                 sendEffect(NavigateToSimilarProfiles(intent.photo, intent.filters))
             }
             Intent.OnLoadMoreFR -> loadMoreFR()
@@ -250,13 +250,13 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
 
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MS)
-            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchQueryEntered("models", query.length))
+            DivoAnalytics.logEvent(AnalyticsEvent.SearchQueryEntered("models", query.length))
             setState { copy(isLoading = true) }
             searchPaginator.reset()
             searchPaginator.loadInitial()
             val hasResults = searchPaginator.state.value.items.isNotEmpty()
             val filtersStr = getActiveFiltersString(state.value)
-            org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SearchPerformed("models", hasResults, query, filtersStr))
+            DivoAnalytics.logEvent(AnalyticsEvent.SearchPerformed("models", hasResults, query, filtersStr))
             setState { copy(isLoading = false, hasSearched = true) }
         }
     }

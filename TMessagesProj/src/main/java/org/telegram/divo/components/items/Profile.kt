@@ -26,14 +26,22 @@ import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.PlatformTextStyle
@@ -42,27 +50,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.common.utils.toCountryFlagEmoji
-import org.telegram.divo.components.DivoChip
-import org.telegram.divo.components.DivoAvatar
+import org.telegram.divo.components.media.DivoAvatar
+import org.telegram.divo.components.inputs.DivoChip
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.material3.CircularProgressIndicator
-import org.telegram.divo.common.clickableWithoutRipple
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.mutableStateOf
-import org.telegram.divo.analytics.AnalyticsEvent
-import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.ui.LaunchActivity
 import org.telegram.ui.Stories.recorder.StoryRecorder
-
 
 @Preview
 @Composable
@@ -346,7 +345,7 @@ fun ProfileNameItem(
                 modifier = Modifier
                     .requiredSize(if (hasStories || isLoading) 68.dp else 64.dp)
                     .clickableWithoutRipple {
-                        val fragment = org.telegram.ui.LaunchActivity.getLastFragment() ?: return@clickableWithoutRipple
+                        val fragment = LaunchActivity.getLastFragment() ?: return@clickableWithoutRipple
                         if (uiState.isOwnProfile && !hasStories) {
                             DivoAnalytics.logEvent(AnalyticsEvent.StoryAddClicked("profile"))
                             StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
@@ -467,7 +466,7 @@ fun ProfileNameItem(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 if (age.isNotEmpty()) {
-                    val ageText = age.formattedAge(context)
+                    val ageText = age.formattedAge()
                     val textToDisplay = if (city != null) "$ageText · " else ageText
                     Text(
                         text = textToDisplay,

@@ -44,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -55,18 +56,22 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.arch.DivoLocaleProvider
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.common.utils.toCountryFlagEmoji
-import org.telegram.divo.components.DivoChip
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.items.DivoBottomSheet
-import org.telegram.divo.components.shimmer
+import org.telegram.divo.components.inputs.DivoChip
+import org.telegram.divo.components.inputs.DivoTextField
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.components.bottomsheets.DivoBottomSheet
+import org.telegram.divo.common.compose.shimmer
 import org.telegram.divo.entity.AgencySearchModel
 import org.telegram.divo.entity.AgencySearchModelStatus
+import org.telegram.divo.screen.search.components.EmptyPlaceContent
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -163,7 +168,7 @@ fun AgencyModelsBottomSheet(
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    org.telegram.divo.screen.search.components.EmptyPlaceContent(
+                    EmptyPlaceContent(
                         title = stringResource(R.string.Models),
                         body = stringResource(R.string.Model)
                     )
@@ -211,7 +216,7 @@ fun AgencyModelsBottomSheet(
                                 modifier = Modifier.fillMaxWidth().padding(16.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                org.telegram.divo.components.UIButtonNew(
+                                UIButton(
                                     text = stringResource(R.string.RetryLabel),
                                     height = 40.dp,
                                     onClick = onLoadMore
@@ -285,7 +290,7 @@ private fun ModelConflictDialog(
                     lineHeight = 20.sp
                 )
                 Spacer(modifier = Modifier.height(28.dp))
-                org.telegram.divo.components.UIButtonNew(
+                UIButton(
                     text = stringResource(R.string.Cancel),
                     modifier = Modifier.fillMaxWidth(),
                     background = Color(0xFF333333),
@@ -427,160 +432,181 @@ private fun ConfirmModelAdditionBottomSheet(
         modifier = Modifier.padding(top = topPadding + 16.dp),
         contentWindowInsets = { WindowInsets(0.dp) }
     ) {
-        org.telegram.divo.style.DivoLocaleProvider {
+        DivoLocaleProvider {
             Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(AppTheme.colors.backgroundLight)
-        ) {
-            val screenHeight = androidx.compose.ui.platform.LocalConfiguration.current.screenHeightDp.dp
-            val imageHeight = screenHeight * 0.4f
-            if (selectedModelInfo == null) {
-                ConfirmModelAdditionLoadingContent(imageHeight)
-            } else {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    // Header Image
-                    Box(modifier = Modifier.fillMaxWidth().height(imageHeight)) {
-                        DivoAsyncImage(
-                            model = model.photoUrl,
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop,
-                            errorContent = {
-                                Image(
-                                    painter = painterResource(R.drawable.divo_models_placeholder),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-                        )
-                    }
-
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(AppTheme.colors.backgroundLight)
+            ) {
+                val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+                val imageHeight = screenHeight * 0.4f
+                if (selectedModelInfo == null) {
+                    ConfirmModelAdditionLoadingContent(imageHeight)
+                } else {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
                     ) {
-                        // Avatar overlapping the image
-                        DivoAsyncImage(
-                            model = model.photoUrl,
+                        // Header Image
+                        Box(modifier = Modifier.fillMaxWidth().height(imageHeight)) {
+                            DivoAsyncImage(
+                                model = model.photoUrl,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop,
+                                errorContent = {
+                                    Image(
+                                        painter = painterResource(R.drawable.divo_models_placeholder),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
+                            )
+                        }
+
+                        Column(
                             modifier = Modifier
-                                .size(68.dp)
-                                .offset(y = (-34).dp)
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop,
-                            errorContent = {
-                                Image(
-                                    painter = painterResource(R.drawable.divo_avatar_placeholder),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        // Name and Premium
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.offset(y = (-15).dp)
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = model.name,
-                                style = AppTheme.typography.helveticaNeueLtCom.copy(fontWeight = FontWeight.Bold),
-                                fontSize = 32.sp,
-                                color = Color.Black
+                            // Avatar overlapping the image
+                            DivoAsyncImage(
+                                model = model.photoUrl,
+                                modifier = Modifier
+                                    .size(68.dp)
+                                    .offset(y = (-34).dp)
+                                    .clip(CircleShape),
+                                contentScale = ContentScale.Crop,
+                                errorContent = {
+                                    Image(
+                                        painter = painterResource(R.drawable.divo_avatar_placeholder),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                }
                             )
-                            if (model.isPremium) {
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Image(
-                                    modifier = Modifier.size(26.dp).offset(y = (-3).dp),
-                                    painter = painterResource(R.drawable.divo_premium_bage),
-                                    contentDescription = null,
+                            Spacer(modifier = Modifier.height(4.dp))
+                            // Name and Premium
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.offset(y = (-15).dp)
+                            ) {
+                                Text(
+                                    text = model.name,
+                                    style = AppTheme.typography.helveticaNeueLtCom.copy(fontWeight = FontWeight.Bold),
+                                    fontSize = 32.sp,
+                                    color = Color.Black
                                 )
-                            }
-                        }
-
-                        // Role, age, location
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.offset(y = (-8).dp)
-                        ) {
-                            DivoChip(
-                                text = model.role,
-                                background = Color(0xFF2653CE),
-                                textColor = Color.White,
-                                border = 0.dp,
-                                contentPadding = PaddingValues(
-                                    horizontal = 10.dp,
-                                    vertical = 6.dp
-                                )
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            val age = model.birthday?.toAge()
-                            val ageStr = age?.let { org.telegram.messenger.LocaleController.formatPluralString("Years", it) }
-                            val locationStr = buildString {
-                                if (ageStr != null) append("$ageStr · ")
-                                val country = model.city?.countryName ?: ""
-                                val flag = model.city?.countryCode?.toCountryFlagEmoji() ?: ""
-                                if (flag.isNotBlank()) append("$flag ")
-                                append(country)
-                            }
-                            Text(
-                                text = locationStr,
-                                style = AppTheme.typography.helveticaNeueRegular,
-                                fontSize = 14.sp,
-                                color = AppTheme.colors.textPrimary.copy(0.8f)
-                            )
-                        }
-
-                        val appearance = selectedModelInfo.model?.appearance
-                        if (appearance != null) {
-                            val h = appearance.height?.toInt()
-                            val b = appearance.breastSize
-                            val w = appearance.waist?.toInt()
-                            val hips = appearance.hips?.toInt()
-
-                            val parts = mutableListOf<String>()
-                            if (h != null && h > 0) parts.add(stringResource(R.string.DivoAgencyModelHeight, h))
-                            if (!b.isNullOrBlank()) parts.add(stringResource(R.string.DivoAgencyModelBreast, b))
-                            if (w != null && w > 0) parts.add(stringResource(R.string.DivoAgencyModelWaist, w))
-                            if (hips != null && hips > 0) parts.add(stringResource(R.string.DivoAgencyModelHips, hips))
-
-                            if (parts.isNotEmpty()) {
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Box(
-                                    modifier = Modifier
-                                        .height(34.dp)
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(AppTheme.colors.onBackground)
-                                        .padding(horizontal = 16.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = parts.joinToString(" · "),
-                                        style = AppTheme.typography.helveticaNeueRegular,
-                                        color = AppTheme.colors.textPrimary.copy(0.8f),
-                                        fontSize = 14.sp
+                                if (model.isPremium) {
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Image(
+                                        modifier = Modifier.size(26.dp).offset(y = (-3).dp),
+                                        painter = painterResource(R.drawable.divo_premium_bage),
+                                        contentDescription = null,
                                     )
                                 }
                             }
-                        }
 
-                        Spacer(modifier = Modifier.height(32.dp))
-                        Text(
-                            text = stringResource(R.string.DivoAgencyModelAddNoteDescription),
-                            style = AppTheme.typography.helveticaNeueRegular,
-                            fontSize = 16.sp,
-                            lineHeight = 20.sp,
-                            color = Color.Black.copy(0.6f),
-                            modifier = Modifier.fillMaxWidth()
-                        )
+                            // Role, age, location
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.offset(y = (-8).dp)
+                            ) {
+                                DivoChip(
+                                    text = model.role,
+                                    background = Color(0xFF2653CE),
+                                    textColor = Color.White,
+                                    border = 0.dp,
+                                    contentPadding = PaddingValues(
+                                        horizontal = 10.dp,
+                                        vertical = 6.dp
+                                    )
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+
+                                val age = model.birthday?.toAge()
+                                val ageStr =
+                                    age?.let { LocaleController.formatPluralString("Years", it) }
+                                val locationStr = buildString {
+                                    if (ageStr != null) append("$ageStr · ")
+                                    val country = model.city?.countryName ?: ""
+                                    val flag = model.city?.countryCode?.toCountryFlagEmoji() ?: ""
+                                    if (flag.isNotBlank()) append("$flag ")
+                                    append(country)
+                                }
+                                Text(
+                                    text = locationStr,
+                                    style = AppTheme.typography.helveticaNeueRegular,
+                                    fontSize = 14.sp,
+                                    color = AppTheme.colors.textPrimary.copy(0.8f)
+                                )
+                            }
+
+                            val appearance = selectedModelInfo.model?.appearance
+                            if (appearance != null) {
+                                val h = appearance.height?.toInt()
+                                val b = appearance.breastSize
+                                val w = appearance.waist?.toInt()
+                                val hips = appearance.hips?.toInt()
+
+                                val parts = mutableListOf<String>()
+                                if (h != null && h > 0) parts.add(
+                                    stringResource(
+                                        R.string.DivoAgencyModelHeight,
+                                        h
+                                    )
+                                )
+                                if (!b.isNullOrBlank()) parts.add(
+                                    stringResource(
+                                        R.string.DivoAgencyModelBreast,
+                                        b
+                                    )
+                                )
+                                if (w != null && w > 0) parts.add(
+                                    stringResource(
+                                        R.string.DivoAgencyModelWaist,
+                                        w
+                                    )
+                                )
+                                if (hips != null && hips > 0) parts.add(
+                                    stringResource(
+                                        R.string.DivoAgencyModelHips,
+                                        hips
+                                    )
+                                )
+
+                                if (parts.isNotEmpty()) {
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Box(
+                                        modifier = Modifier
+                                            .height(34.dp)
+                                            .clip(RoundedCornerShape(16.dp))
+                                            .background(AppTheme.colors.onBackground)
+                                            .padding(horizontal = 16.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = parts.joinToString(" · "),
+                                            style = AppTheme.typography.helveticaNeueRegular,
+                                            color = AppTheme.colors.textPrimary.copy(0.8f),
+                                            fontSize = 14.sp
+                                        )
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(32.dp))
+                            Text(
+                                text = stringResource(R.string.DivoAgencyModelAddNoteDescription),
+                                style = AppTheme.typography.helveticaNeueRegular,
+                                fontSize = 16.sp,
+                                lineHeight = 20.sp,
+                                color = Color.Black.copy(0.6f),
+                                modifier = Modifier.fillMaxWidth()
+                            )
 //                        Spacer(modifier = Modifier.height(16.dp))
 //                        Text(
 //                            text = stringResource(R.string.DivoAgencyModelAddNoteTitle),
@@ -602,41 +628,41 @@ private fun ConfirmModelAdditionBottomSheet(
 //                            backgroundColor = AppTheme.colors.onBackground
 //                        )
 
-                        Spacer(modifier = Modifier.height(100.dp))
+                            Spacer(modifier = Modifier.height(100.dp))
+                        }
                     }
-                }
 
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .padding(
-                            bottom = WindowInsets.navigationBars.asPaddingValues()
-                                .calculateBottomPadding() + 8.dp
-                        )
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        org.telegram.divo.components.UIButtonNew(
-                            text = stringResource(R.string.Cancel),
-                            modifier = Modifier.weight(1f),
-                            background = Color(0xFF333333),
-                            onClick = onDismiss
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        org.telegram.divo.components.UIButtonNew(
-                            text = stringResource(R.string.Confirm),
-                            modifier = Modifier.weight(1f),
-                            isLoading = isAddingModel,
-                            onClick = {
-                                onAddClicked(
-                                    model.userId,
-                                    personalNote.takeIf { p -> p.isNotBlank() }
-                                )
-                            }
-                        )
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .padding(
+                                bottom = WindowInsets.navigationBars.asPaddingValues()
+                                    .calculateBottomPadding() + 8.dp
+                            )
+                            .padding(horizontal = 16.dp)
+                    ) {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            UIButton(
+                                text = stringResource(R.string.Cancel),
+                                modifier = Modifier.weight(1f),
+                                background = Color(0xFF333333),
+                                onClick = onDismiss
+                            )
+                            Spacer(modifier = Modifier.width(16.dp))
+                            UIButton(
+                                text = stringResource(R.string.Confirm),
+                                modifier = Modifier.weight(1f),
+                                isLoading = isAddingModel,
+                                onClick = {
+                                    onAddClicked(
+                                        model.userId,
+                                        personalNote.takeIf { p -> p.isNotBlank() }
+                                    )
+                                }
+                            )
+                        }
                     }
-                }
                 }
             }
         }

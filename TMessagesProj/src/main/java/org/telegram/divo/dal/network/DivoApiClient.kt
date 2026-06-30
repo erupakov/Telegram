@@ -13,6 +13,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
+import org.telegram.divo.dal.utils.AccessTokenProvider
+import org.telegram.divo.dal.utils.DivoLanguageManager
 
 /**
  * Builds shared OkHttp and Retrofit instances for talking to the Divo backend.
@@ -121,51 +123,5 @@ object DivoApiClient {
             }
         }
     }
-
-//    private class TokenAuthenticator(
-//        private val accessTokenProvider: AccessTokenProvider
-//    ) : Authenticator {
-//
-//        override fun authenticate(route: Route?, response: Response): Request? {
-//            if (responseCount(response) >= 2) {
-//                return null
-//            }
-//
-//            val newToken = runBlocking {
-//                val request = LoginRequest()
-//                val result = DivoApi.authRepository.login(request)
-//
-//                if (result is DivoResult.Success) {
-//                    result.value.data?.accessToken
-//                } else {
-//                    val msg = when (result) {
-//                        is DivoResult.HttpError -> result.body?.message ?: "HTTP ${result.code}"
-//                        is DivoResult.NetworkError -> result.exception.localizedMessage ?: "Network error"
-//                        is DivoResult.UnknownError -> result.throwable.localizedMessage ?: "Unknown error"
-//                        else -> "Unexpected error"
-//                    }
-//                    Log.e("TokenAuthenticator", "Login error: $msg")
-//                    null
-//                }
-//            } ?: return null
-//
-//            runBlocking { accessTokenProvider.setAccessToken(newToken) }
-//
-//            return response.request.newBuilder()
-//                .header("Authorization", "Bearer $newToken")
-//                .build()
-//        }
-//
-//        // Счётчик ретраев
-//        private fun responseCount(response: Response?): Int {
-//            var count = 1
-//            var res = response
-//            while (res?.priorResponse != null) {
-//                count++
-//                res = res.priorResponse
-//            }
-//            return count
-//        }
-//    }
 }
 

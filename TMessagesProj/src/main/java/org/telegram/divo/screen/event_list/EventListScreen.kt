@@ -46,11 +46,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.components.bottomsheets.DivoWithdrawBottomSheet
 import org.telegram.divo.screen.event_list.components.EventItemView
 import org.telegram.divo.screen.event_list.components.EventListTopBar
 import org.telegram.divo.style.AppTheme
@@ -120,7 +121,7 @@ fun EventListScreen(
     )
 
     if (withdrawEventId != null) {
-        org.telegram.divo.components.DivoWithdrawBottomSheet(
+        DivoWithdrawBottomSheet(
             onKeepApplication = { withdrawEventId = null },
             onWithdraw = {
                 val id = withdrawEventId
@@ -341,7 +342,7 @@ private fun EventsEmptyState(
         }
 
         if (isAgency) {
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

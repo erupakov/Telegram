@@ -27,11 +27,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.components.ProfilesSearchGrid
-import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.components.items.ProfilesSearchGrid
+import org.telegram.divo.components.inputs.RoundedButton
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.similar_profiles.components.SearchResultSection
 import org.telegram.divo.screen.similar_profiles.components.SimilarFilterBottomSheet

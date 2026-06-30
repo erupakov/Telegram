@@ -2,16 +2,15 @@ package org.telegram.divo.screen.profile
 
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.persistentListOf
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
-import org.telegram.divo.components.TabConfig
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
+import org.telegram.divo.components.navigation.TabConfig
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.AgencySearchModel
 import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.Publication
-import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
@@ -142,10 +141,10 @@ data class ProfileViewState(
             )
         )
 
-    val instagramUser get() = userInfo.model?.instagramUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
-    val tiktokUser get() = userInfo.model?.tiktokUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
-    val youtubeUser get() = userInfo.model?.youtubeUrl?.trimEnd('/')?.substringAfterLast("/").orEmpty()
-    val website get() = userInfo.model?.websiteUrl?.removePrefix("https://")?.removePrefix("http://").orEmpty()
+    val instagramUser get() = (userInfo.model?.instagramUrl ?: userInfo.agency?.instagramUrl)?.trimEnd('/')?.substringAfterLast("/").orEmpty()
+    val tiktokUser get() = (userInfo.model?.tiktokUrl ?: userInfo.agency?.tiktokUrl)?.trimEnd('/')?.substringAfterLast("/").orEmpty()
+    val youtubeUser get() = (userInfo.model?.youtubeUrl ?: userInfo.agency?.youtubeUrl)?.trimEnd('/')?.substringAfterLast("/").orEmpty()
+    val website get() = (userInfo.model?.websiteUrl ?: userInfo.agency?.websiteUrl)?.removePrefix("https://")?.removePrefix("http://").orEmpty()
 
     val isVisibleSocialLinks: Boolean
         get() = instagramUser.isEmpty() && tiktokUser.isEmpty() && youtubeUser.isEmpty() && website.isEmpty()
