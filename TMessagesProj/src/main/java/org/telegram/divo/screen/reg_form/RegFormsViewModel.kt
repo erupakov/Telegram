@@ -5,31 +5,32 @@ import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.screen.search.LocalCity
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import java.io.InputStreamReader
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.AdditionalInfoKeys
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import org.telegram.tgnet.ConnectionsManager
+import org.telegram.divo.common.utils.AdditionalInfoKeys
+import org.telegram.divo.common.utils.TelegramProfileHelper
 import org.telegram.tgnet.TLRPC
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.dto.auth.RegistrationRequest
 import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
-import org.telegram.divo.dal.network.DivoAuthHelper
+import org.telegram.divo.dal.dto.common.CustomerDto
+import org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest
+import org.telegram.divo.dal.dto.user.UpdateProfileModelDto
+import org.telegram.divo.dal.dto.user.UpdateProfileRequest
+import org.telegram.divo.dal.utils.DivoAuthHelper
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.LocalCountry
+import org.telegram.divo.entity.Photo
 import org.telegram.divo.entity.RoleType
+import org.telegram.divo.entity.mapGenderToEnglish
 import org.telegram.divo.screen.reg_select_role.SubRole
-import org.telegram.tgnet.tl.TL_account
 import java.io.BufferedReader
-import java.security.MessageDigest
 
 class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsEffect>() {
 
@@ -244,7 +245,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (firstName.isBlank()) {
                         firstName = "User"
                     }
-                    val profileUpdateResult = org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramName(
+                    val profileUpdateResult = TelegramProfileHelper.updateTelegramName(
                         currentAccount = state.value.currentAccount,
                         firstName = firstName,
                         lastName = lastName
@@ -258,7 +259,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                 val month = parts[1].toIntOrNull()
                                 val day = parts[2].toIntOrNull()
                                 if (year != null && month != null && day != null) {
-                                    org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramBirthday(
+                                    TelegramProfileHelper.updateTelegramBirthday(
                                         currentAccount = state.value.currentAccount,
                                         year = year,
                                         month = month,
@@ -273,7 +274,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
 
                     // 2.5 TG Profile Photo Update
                     if (telegramPhotoFile != null) {
-                        org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatar(state.value.currentAccount, telegramPhotoFile)
+                        TelegramProfileHelper.updateTelegramAvatar(state.value.currentAccount, telegramPhotoFile)
                     }
 
                     // 3. Divo Link (REST)
@@ -314,9 +315,9 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     }
 
                     // Build role-specific DTOs from form data
-                    val modelDto: org.telegram.divo.dal.dto.user.UpdateProfileModelDto? =
+                    val modelDto: UpdateProfileModelDto? =
                         if (mappedRole == RoleType.MODEL.value || mappedRole == RoleType.NEW_FACE.value || mappedRole == RoleType.FAN.value) {
-                            org.telegram.divo.dal.dto.user.UpdateProfileModelDto(
+                            UpdateProfileModelDto(
                                 agencyId = null,
                                 profileUrl = data.castingProfileUrl.takeIf { it.isNotBlank() },
                                 education = null,
@@ -331,37 +332,42 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                 tiktokUrl = null,
                                 youtubeUrl = data.showreelUrl.takeIf { it.isNotBlank() },
                                 instagramUrl = data.instagramUrl.takeIf { it.isNotBlank() },
-                                websiteUrl = data.portfolioUrl.takeIf { it.isNotBlank() },
+                                websiteUrl = data.websiteUrl.takeIf { it.isNotBlank() } ?: data.portfolioUrl.takeIf { it.isNotBlank() },
                             )
                         } else null
 
-                    val customerDto: org.telegram.divo.dal.dto.common.CustomerDto? =
+                    val customerDto: CustomerDto? =
                         if (mappedRole == RoleType.CUSTOMER.value) {
-                            org.telegram.divo.dal.dto.common.CustomerDto(
+                            CustomerDto(
                                 site = data.websiteUrl.takeIf { it.isNotBlank() }
                                     ?: data.portfolioUrl.takeIf { it.isNotBlank() },
                                 description = data.specialisation?.takeIf { it.isNotBlank() },
                             )
                         } else null
 
-                    val agencyDto: org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest? =
+                    val agencyDto: UpdateProfileAgencyRequest? =
                         if (mappedRole == RoleType.AGENCY.value) {
-                            org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest(
+                            UpdateProfileAgencyRequest(
                                 agencyId = null,
-                                title = data.companyName.takeIf { it.isNotBlank() },
+                                title = data.companyName.takeIf { it.isNotBlank() } ?: fullName,
                                 description = null,
                                 site = data.websiteUrl.takeIf { it.isNotBlank() },
                                 address = null,
                                 background = null,
                                 photo = photoContainer,
+                                tiktokUrl = null,
+                                youtubeUrl = data.showreelUrl.takeIf { it.isNotBlank() },
+                                telegramUrl = null,
+                                instagramUrl = data.instagramUrl.takeIf { it.isNotBlank() },
+                                websiteUrl = data.websiteUrl.takeIf { it.isNotBlank() } ?: data.portfolioUrl.takeIf { it.isNotBlank() },
                             )
                         } else null
                     
-                    val updateProfileRequest = org.telegram.divo.dal.dto.user.UpdateProfileRequest(
+                    val updateProfileRequest = UpdateProfileRequest(
                         fullName = fullName,
                         phone = rawPhone,
                         timezone = java.util.TimeZone.getDefault().id,
-                        gender = org.telegram.divo.entity.mapGenderToEnglish(data.gender) ?: "female",
+                        gender = mapGenderToEnglish(data.gender) ?: "female",
                         birthday = data.dateOfBirth ?: "",
                         geoCityId = resolvedCityId?.takeIf { it > 0 },
                         measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem,
@@ -383,11 +389,12 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     } else if (mappedRole == RoleType.AGENCY.value) {
                         try {
                             val agencyPhoto = uploadedPhotoUuid?.let {
-                                org.telegram.divo.entity.Photo(photoId = 0, fileUuid = it)
+                                Photo(photoId = 0, fileUuid = it)
                             }
+                            val agencyTitle = data.companyName.takeIf { it.isNotBlank() } ?: fullName
                             val agency = org.telegram.divo.entity.Agency(
-                                title = data.companyName,
-                                site = data.websiteUrl,
+                                title = agencyTitle,
+                                site = data.websiteUrl.takeIf { it.isNotBlank() } ?: data.portfolioUrl,
                                 photo = agencyPhoto
                             )
                             val agencyResponse = DivoApi.userRepository.updateAgency(agency)

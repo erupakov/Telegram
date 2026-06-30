@@ -5,13 +5,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.telegram.divo.dal.network.DivoApiConfig
 import java.io.File
-import java.io.FileOutputStream
-import java.net.URL
 
 enum class DivoShareType(val pathSegment: String) {
     PROFILE("profile"),

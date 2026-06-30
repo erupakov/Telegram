@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -42,7 +42,7 @@ class WorkHistoryViewModel(
             
             // TODO: (Hack) Remove when backend fixes it
             val userResult = DivoApi.userRepository.getUserById(userId)
-            val agency = (userResult as? org.telegram.divo.dal.network.DivoResult.Success)?.value?.model?.agency
+            val agency = (userResult as? DivoResult.Success)?.value?.model?.agency
 
             setState { copy(isLoading = false) }
             if (result !is DivoResult.Success) {

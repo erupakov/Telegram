@@ -1,6 +1,6 @@
 package org.telegram.divo.screen.reg_select_role
 
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 
 class RoleSelectionViewModel : BaseViewModel<RoleSelectionState, RoleSelectionIntent, RoleSelectionEffect>() {
 

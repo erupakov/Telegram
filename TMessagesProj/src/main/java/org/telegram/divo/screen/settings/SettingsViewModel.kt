@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.common.DivoSettings
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
@@ -101,7 +101,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             }
             is SettingsViewIntent.OnChangeMeasuringSystem -> {
                 val newSystem = intent.system
-                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.MeasurementSystemChanged(newSystem))
+                DivoAnalytics.logEvent(AnalyticsEvent.MeasurementSystemChanged(newSystem))
                 DivoSettings.measuringSystem = newSystem
                 setState { copy(measuringSystem = newSystem) }
                 // Also update profile silently if needed

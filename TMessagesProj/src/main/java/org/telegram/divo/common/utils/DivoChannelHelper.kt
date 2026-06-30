@@ -12,7 +12,7 @@ object DivoChannelHelper {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     @JvmStatic
-    fun onChannelCreated(chatId: Long, currentAccount: Int, username: String?, inviteLink: String?) {
+    fun onChannelCreated(chatId: Long, username: String?, inviteLink: String?) {
         scope.launch {
             try {
                 val resolvedUsername = username?.takeIf { it.isNotBlank() }

@@ -29,9 +29,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.request.ImageRequest
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.UserGalleryItem
 
@@ -46,6 +46,7 @@ fun PortfolioGrid(
     isLoadingMore: Boolean,
     isFirstLoading: Boolean,
     hasMore: Boolean,
+    transitionProgress: Float = 1f,
     topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onPhotoClicked: (String) -> Unit,
@@ -81,25 +82,33 @@ fun PortfolioGrid(
     Box {
         val bottomPadding = if (isOwnProfile) 72.dp else 16.dp
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            state = gridState,
-            modifier = modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = topPadding,
-                bottom = WindowInsets.navigationBars
-                    .asPaddingValues()
-                    .calculateBottomPadding() + bottomPadding
+        if (portfolioItems.isEmpty() && !isFirstLoading && !isOwnProfile) {
+            EmptyMediaPlaceholder(
+                text = androidx.compose.ui.res.stringResource(org.telegram.messenger.R.string.ThereAreNoImagesYet),
+                isVideo = false,
+                transitionProgress = transitionProgress,
+                topPadding = topPadding
             )
-        ) {
-            if (portfolioItems.isEmpty() && !isFirstLoading && isOwnProfile) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    PortfolioEmptyAddButton(
-                        isUploading = isUploading,
-                        onMediaSelected = onImageSelected
-                    )
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                state = gridState,
+                modifier = modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    top = topPadding,
+                    bottom = WindowInsets.navigationBars
+                        .asPaddingValues()
+                        .calculateBottomPadding() + bottomPadding
+                )
+            ) {
+                if (portfolioItems.isEmpty() && !isFirstLoading && isOwnProfile) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        PortfolioEmptyAddButton(
+                            isUploading = isUploading,
+                            onMediaSelected = onImageSelected
+                        )
+                    }
                 }
-            }
 
             items(
                 items = portfolioItems,
@@ -156,6 +165,6 @@ fun PortfolioGrid(
                 }
             }
         }
-
+        }
     }
 }

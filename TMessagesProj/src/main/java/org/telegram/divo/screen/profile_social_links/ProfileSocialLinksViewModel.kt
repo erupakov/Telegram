@@ -4,7 +4,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -39,10 +39,10 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
                     copy(
                         isLoading = false,
                         userFull = result.value,
-                        instagramUrl = result.value.model?.instagramUrl.orEmpty(),
-                        tiktokUrl = result.value.model?.tiktokUrl.orEmpty(),
-                        youtubeUrl = result.value.model?.youtubeUrl.orEmpty(),
-                        websiteUrl = result.value.model?.websiteUrl.orEmpty(),
+                        instagramUrl = result.value.model?.instagramUrl ?: result.value.agency?.instagramUrl.orEmpty(),
+                        tiktokUrl = result.value.model?.tiktokUrl ?: result.value.agency?.tiktokUrl.orEmpty(),
+                        youtubeUrl = result.value.model?.youtubeUrl ?: result.value.agency?.youtubeUrl.orEmpty(),
+                        websiteUrl = result.value.model?.websiteUrl ?: result.value.agency?.websiteUrl.orEmpty(),
                         errorMessage = null
                     )
                 }
@@ -78,6 +78,12 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
                         youtubeUrl = buildUrl(state.value.youtubeUser, state.value.youtubeUrl),
                         websiteUrl = state.value.website,
                     ),
+                    agency = state.value.userFull.agency?.copy(
+                        instagramUrl = buildUrl(state.value.instagramUser, state.value.instagramUrl),
+                        tiktokUrl = buildUrl(state.value.tiktokUser, state.value.tiktokUrl),
+                        youtubeUrl = buildUrl(state.value.youtubeUser, state.value.youtubeUrl),
+                        websiteUrl = state.value.website,
+                    )
                 )
             )
 

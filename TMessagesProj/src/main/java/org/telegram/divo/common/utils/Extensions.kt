@@ -3,8 +3,8 @@ package org.telegram.divo.common.utils
 import android.content.Context
 import android.net.Uri
 import org.telegram.divo.components.items.ProfileParameter
-import org.telegram.divo.dal.network.DivoLanguageManager
-import org.telegram.messenger.R
+import org.telegram.divo.dal.utils.DivoLanguageManager
+import org.telegram.messenger.LocaleController
 import java.io.File
 import java.time.Instant
 import java.time.LocalDate
@@ -12,19 +12,18 @@ import java.time.LocalDateTime
 import java.time.Period
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.util.Locale
 
 fun String.toCountryFlagEmoji(): String = this.uppercase(Locale.ROOT)
     .map { char -> Character.toCodePoint('\uD83C', '\uDDE6' + (char - 'A')) }
     .joinToString("") { String(Character.toChars(it)) }
 
-fun String.formattedAge(context: Context, locale: Locale = DivoLanguageManager.getSystemLocale()): String {
+fun String.formattedAge(): String {
     return try {
         val birthDate = LocalDate.parse(this)
         val age = Period.between(birthDate, LocalDate.now()).years
 
-        org.telegram.messenger.LocaleController.formatPluralString("Years", age)
+        LocaleController.formatPluralString("Years", age)
     } catch (e: Exception) {
         ""
     }

@@ -1,9 +1,11 @@
 package org.telegram.divo.screen.profile.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -47,12 +49,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.DivoChip
-import org.telegram.divo.components.DivoPopupMenu
-import org.telegram.divo.components.PopupMenuItem
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.common.arch.DivoLocaleProvider
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.inputs.DivoChip
+import org.telegram.divo.components.navigation.DivoPopupMenu
+import org.telegram.divo.components.navigation.PopupMenuItem
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.entity.AgencyModel
 import org.telegram.divo.entity.AgencySearchModel
 import org.telegram.divo.entity.RoleType
@@ -67,6 +70,7 @@ fun AgencyModels(
     query: String,
     onQueryChanged: (String) -> Unit,
     isOwnProfile: Boolean,
+    transitionProgress: Float = 1f,
     topPadding: Dp = 0.dp,
     isLoadingSearchModels: Boolean,
     isLoadingMore: Boolean,
@@ -90,6 +94,8 @@ fun AgencyModels(
     if (models.isEmpty()) {
         EmptyModels(
             isOwnProfile = isOwnProfile,
+            transitionProgress = transitionProgress,
+            topPadding = topPadding,
             bottomPadding = bottomPadding,
             onClick = { onToggleBottomSheet(true) }
         )
@@ -180,61 +186,71 @@ fun AgencyModels(
             containerColor = Color.Transparent,
             dragHandle = null
         ) {
-            org.telegram.divo.style.DivoLocaleProvider {
+            DivoLocaleProvider {
                 Column(
-                modifier = Modifier.padding(horizontal = 16.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(AppTheme.colors.backgroundLight),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
-                    Spacer(Modifier.height(24.dp))
-                    Text(
-                        text = if (isPending) stringResource(R.string.DivoAgencyModelCancelRequestTitle, model.name) else stringResource(R.string.DivoAgencyModelRemoveRosterTitle, model.name),
-                        style = AppTheme.typography.helveticaNeueRegular,
-                        fontSize = 15.sp,
-                        color = Color.Black.copy(alpha = 0.6f)
-                    )
-                    Spacer(Modifier.height(24.dp))
-                    androidx.compose.material.Divider(color = Color.LightGray, thickness = 0.5.dp)
-                    Box(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickableWithoutRipple {
-                                onCancelRequest(model.id)
-                                modelToCancel = null
-                            },
-                        contentAlignment = Alignment.Center
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(AppTheme.colors.backgroundLight),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
+                        Spacer(Modifier.height(24.dp))
                         Text(
-                            modifier = Modifier.padding(vertical = 18.dp),
-                            text = if (isPending) stringResource(R.string.DivoAgencyModelYesCancel) else stringResource(R.string.DivoAgencyModelYesRemove),
+                            text = if (isPending) stringResource(
+                                R.string.DivoAgencyModelCancelRequestTitle,
+                                model.name
+                            ) else stringResource(
+                                R.string.DivoAgencyModelRemoveRosterTitle,
+                                model.name
+                            ),
                             style = AppTheme.typography.helveticaNeueRegular,
-                            fontSize = 17.sp,
-                            color = AppTheme.colors.accentOrange
+                            fontSize = 15.sp,
+                            color = Color.Black.copy(alpha = 0.6f)
                         )
+                        Spacer(Modifier.height(24.dp))
+                        Divider(color = Color.LightGray, thickness = 0.5.dp)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickableWithoutRipple {
+                                    onCancelRequest(model.id)
+                                    modelToCancel = null
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(vertical = 18.dp),
+                                text = if (isPending) stringResource(R.string.DivoAgencyModelYesCancel) else stringResource(
+                                    R.string.DivoAgencyModelYesRemove
+                                ),
+                                style = AppTheme.typography.helveticaNeueRegular,
+                                fontSize = 17.sp,
+                                color = AppTheme.colors.accentOrange
+                            )
+                        }
+                        Divider(color = Color.LightGray, thickness = 0.5.dp)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickableWithoutRipple { modelToCancel = null },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                modifier = Modifier.padding(vertical = 18.dp),
+                                text = if (isPending) stringResource(R.string.DivoAgencyModelKeepRequest) else stringResource(
+                                    R.string.DivoAgencyModelKeepModel
+                                ),
+                                style = AppTheme.typography.helveticaNeueLtCom.copy(fontWeight = FontWeight.Bold),
+                                fontSize = 17.sp,
+                                color = Color.Black
+                            )
+                        }
                     }
-                    androidx.compose.material.Divider(color = Color.LightGray, thickness = 0.5.dp)
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickableWithoutRipple { modelToCancel = null },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(vertical = 18.dp),
-                            text = if (isPending) stringResource(R.string.DivoAgencyModelKeepRequest) else stringResource(R.string.DivoAgencyModelKeepModel),
-                            style = AppTheme.typography.helveticaNeueLtCom.copy(fontWeight = FontWeight.Bold),
-                            fontSize = 17.sp,
-                            color = Color.Black
-                        )
-                    }
+                    Spacer(Modifier.height(16.dp))
                 }
-                Spacer(Modifier.height(16.dp))
-            }
             }
         }
     }
@@ -335,22 +351,29 @@ private fun ModelItem(
     Divider(color = Color.LightGray, thickness = 0.5.dp)
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun EmptyModels(
     isOwnProfile: Boolean,
+    transitionProgress: Float,
+    topPadding: Dp,
     bottomPadding: Dp,
     onClick: () -> Unit = {}
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.backgroundLight)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.TopCenter
     ) {
+        val startOffset = topPadding + 16.dp
+        val endOffset = maxHeight / 2 - 100.dp
+        val currentOffset = startOffset + (endOffset - startOffset) * transitionProgress
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = bottomPadding + 56.dp),
+                .offset(y = currentOffset),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -388,7 +411,7 @@ private fun EmptyModels(
         }
 
         if (isOwnProfile) {
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = bottomPadding)

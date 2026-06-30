@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.work_create_edit
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,12 +7,11 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.dal.repository.AgencySelection
-import org.telegram.messenger.R
 import java.time.LocalDate
 import java.time.ZoneOffset
 

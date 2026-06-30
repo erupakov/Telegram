@@ -12,8 +12,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.google.android.exoplayer2.util.Log
-import org.telegram.divo.screen.add_model.AddModelScreen
 import org.telegram.divo.screen.edit_my_profile.EditMyProfileScreen
 import org.telegram.divo.screen.event_create.CreateEventScreen
 import org.telegram.divo.screen.event_create.CreateEventViewModel
@@ -37,7 +35,6 @@ object ParamsHolder {
 sealed class ProfileRoute(val route: String) {
     data object YourParameters : ProfileRoute("profile_your_parameters")
     data object EditLinks : ProfileRoute("profile_edit_links")
-    data object AddModel : ProfileRoute("profile_add_model")
     data object Appearance : ProfileRoute("profile_appearance")
     data object CreateEvent : ProfileRoute("create_event?eventId={eventId}") {
         const val BASE_ROUTE = "create_event"
@@ -206,7 +203,7 @@ fun ProfileNavGraph(
         ) {
             val isModel = it.arguments?.getBoolean("isModel") ?: false
             val initialPage = it.arguments?.getInt("initialPage") ?: 0
-            Log.d("VideoGrid", initialPage.toString())
+
             EditMyProfileScreen(
                 isModel = isModel,
                 initialPage = initialPage,
@@ -283,24 +280,10 @@ fun ProfileNavGraph(
             )
         }
 
-        composable(ProfileRoute.AddModel.route) {
-            AddModelScreen(
-                onNavigateToYourParameters = {
-                    nav.navigate(ProfileRoute.YourParameters.route)
-                },
-                onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
-            )
-        }
         composable(ProfileRoute.YourParameters.route) {
             YourParametersScreen(
                 showTitle = false,
                 showTopBar = true,
-                onSaved = {
-                    nav.popBackStack(
-                        ProfileRoute.AddModel.route,
-                        inclusive = true
-                    )
-                },
                 onBack = { if (!nav.popBackStack()) onNavigateBack() }
             )
         }

@@ -1,6 +1,5 @@
 package org.telegram.divo.common.utils
 
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.lifecycle.Lifecycle

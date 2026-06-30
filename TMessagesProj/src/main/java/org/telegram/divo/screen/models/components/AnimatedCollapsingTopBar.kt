@@ -1,9 +1,7 @@
 package org.telegram.divo.screen.models.components
 
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,10 +24,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -37,6 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -44,45 +44,39 @@ import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
-import coil.compose.rememberAsyncImagePainter
 import dev.chrisbanes.haze.HazeProgressive
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.screen.models.ModelsViewState
 import org.telegram.divo.screen.models.Story
 import org.telegram.divo.style.AppTheme
-import org.telegram.messenger.AndroidUtilities.lerp
-import org.telegram.messenger.R
-import androidx.compose.ui.viewinterop.AndroidView
-import org.telegram.divo.analytics.AnalyticsEvent
-import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.messenger.MessagesController
-import org.telegram.messenger.UserConfig
 import org.telegram.messenger.AndroidUtilities
-import org.telegram.ui.Components.BackupImageView
+import org.telegram.messenger.AndroidUtilities.lerp
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.R
+import org.telegram.messenger.UserConfig
 import org.telegram.ui.Components.AvatarDrawable
+import org.telegram.ui.Components.BackupImageView
 import org.telegram.ui.LaunchActivity
 import org.telegram.ui.Stories.recorder.StoryRecorder
 
 @Composable
 fun AnimatedLargeStoriesOverlay(
     collapseFraction: Float,
-    stories: List<Story> = ModelsViewState.preview.stories,
+    stories: List<Story>,
     hazeState: HazeState
 ) {
     val density = LocalDensity.current

@@ -11,8 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import org.telegram.divo.components.DivoTabSelector
-import org.telegram.divo.components.TabConfig
+import org.telegram.divo.components.navigation.DivoTabSelector
+import org.telegram.divo.components.navigation.TabConfig
 
 enum class ProfileDestination {
     SONGS,

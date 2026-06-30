@@ -15,6 +15,7 @@ import org.telegram.divo.screen.models.ModelsRoute
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.INavigationLayout
+import org.telegram.ui.MainTabsActivity
 import java.lang.ref.WeakReference
 
 object DivoDeeplinkDispatcher {
@@ -82,7 +83,7 @@ object DivoDeeplinkDispatcher {
                 "profile" -> {
                     val profileId = data.pathSegments.getOrNull(1)?.toIntOrNull()
                     if (profileId != null) {
-                        val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is org.telegram.ui.MainTabsActivity } as? org.telegram.ui.MainTabsActivity
+                        val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is MainTabsActivity } as? MainTabsActivity
                         mainTabs?.switchToTabPosition(0)
                         pendingProfileId = profileId
                     }
@@ -90,18 +91,18 @@ object DivoDeeplinkDispatcher {
                 "event" -> {
                     val eventId = data.pathSegments.getOrNull(1)?.toIntOrNull()
                     if (eventId != null) {
-                        val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is org.telegram.ui.MainTabsActivity } as? org.telegram.ui.MainTabsActivity
+                        val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is MainTabsActivity } as? MainTabsActivity
                         mainTabs?.switchToTabPosition(1)
                         pendingEventId = eventId
                     }
                 }
                 "channel" -> {
                     // Todo реализовать в будущем
-                    val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is org.telegram.ui.MainTabsActivity } as? org.telegram.ui.MainTabsActivity
+                    val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is MainTabsActivity } as? MainTabsActivity
                     mainTabs?.switchToTabPosition(2)
                 }
                 else -> {
-                    val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is org.telegram.ui.MainTabsActivity } as? org.telegram.ui.MainTabsActivity
+                    val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is MainTabsActivity } as? MainTabsActivity
                     mainTabs?.switchToTabPosition(0)
                 }
             }

@@ -30,16 +30,15 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.components.shimmer
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.common.compose.shimmer
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
-
 
 @Composable
 fun ProfileSocialLinksScreen(
@@ -166,7 +165,7 @@ fun ProfileSocialLinksScreenView(
 
                 Spacer(Modifier.height(24.dp))
 
-                UIButtonNew(
+                UIButton(
                     modifier = Modifier.fillMaxWidth(),
                     text = if (uiState.isUploading) "Saving..." else "Save",
                     enabled = !uiState.isUploading,

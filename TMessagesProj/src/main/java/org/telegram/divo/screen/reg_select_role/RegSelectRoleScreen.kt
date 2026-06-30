@@ -21,12 +21,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.screen.reg_select_role.components.RoleCard
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.R
-
 
 data class RoleOption(
     val role: UserIntent,
@@ -105,7 +104,7 @@ fun RoleSelectionScreen(
                 }
             }
 
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)

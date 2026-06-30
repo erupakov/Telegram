@@ -44,24 +44,24 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.DivoShareType
 import org.telegram.divo.common.utils.DivoSharingHelper
 import org.telegram.divo.common.utils.toEventShortDate
-import org.telegram.divo.components.DivoPopupMenu
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.PopupMenuItem
-import org.telegram.divo.components.RoundedGlassButton
-import org.telegram.divo.components.RoundedGlassContainer
-import org.telegram.divo.components.StatusBarIconColorEffect
-import org.telegram.divo.components.TransparentToolBarBackground
-import org.telegram.divo.components.TransparentToolBarContent
+import org.telegram.divo.components.navigation.DivoPopupMenu
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.navigation.PopupMenuItem
+import org.telegram.divo.components.inputs.RoundedGlassButton
+import org.telegram.divo.components.inputs.RoundedGlassContainer
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
+import org.telegram.divo.components.bottomsheets.DivoWithdrawBottomSheet
+import org.telegram.divo.components.navigation.TransparentToolBarBackground
+import org.telegram.divo.components.navigation.TransparentToolBarContent
 import org.telegram.divo.screen.event_details.components.AboutCard
 import org.telegram.divo.screen.event_details.components.CancelEventConfirmationDialog
 import org.telegram.divo.screen.event_details.components.CapacityCard
@@ -160,7 +160,7 @@ fun EventDetailsScreen(
     }
 
     if (withdrawEventId != null) {
-        org.telegram.divo.components.DivoWithdrawBottomSheet(
+        DivoWithdrawBottomSheet(
             onKeepApplication = { withdrawEventId = null },
             onWithdraw = {
                 val id = withdrawEventId

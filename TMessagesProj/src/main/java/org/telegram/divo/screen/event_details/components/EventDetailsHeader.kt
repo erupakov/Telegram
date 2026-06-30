@@ -27,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,21 +46,18 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.utils.DivoShareType
-import org.telegram.divo.common.utils.DivoSharingHelper
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.toEventDisplayDate
 import org.telegram.divo.common.utils.toShortString
-import org.telegram.divo.components.DivoChip
-import org.telegram.divo.components.RoundedGlassButton
-import org.telegram.divo.components.RoundedGlassContainer
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.inputs.DivoChip
+import org.telegram.divo.components.inputs.RoundedGlassContainer
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
-import org.telegram.divo.components.TelegramPhotoBackground
+import org.telegram.divo.components.media.TelegramPhotoBackground
 
 @Composable
 fun EventDetailsHeader(
@@ -263,7 +259,7 @@ private fun ContentSection(
                         else -> AppTheme.colors.onBackground
                     }
 
-                    UIButtonNew(
+                    UIButton(
                         text = stringResource(buttonTextId),
                         leadingIcon = buttonIconResId,
                         leadingIconTint = buttonTextColor,
@@ -321,73 +317,6 @@ private fun EngagementItem(
             fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@Composable
-private fun Background(
-    modifier: Modifier = Modifier,
-    backgroundUrl: String?,
-) {
-    val hazeState = remember { HazeState() }
-    var componentHeight by remember { mutableFloatStateOf(0f) }
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .onSizeChanged { componentHeight = it.height.toFloat() }
-    ) {
-        DivoAsyncImage(
-            modifier = Modifier
-                .hazeSource(state = hazeState),
-            model = backgroundUrl,
-            loadingContent = {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFBF7A54)))
-            },
-            errorContent = {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFBF7A54)))
-            }
-        )
-
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .hazeEffect(
-                    state = hazeState,
-                    style = HazeStyle(
-                        backgroundColor = Color.Black,
-                        blurRadius = 30.dp,
-                        tints = listOf(HazeTint(Color.Black.copy(alpha = 0.2f)))
-                    )
-                ) {
-                    progressive = HazeProgressive.verticalGradient(
-                        startY = componentHeight * 0.65f,
-                        startIntensity = 0f,
-                        endY = componentHeight * 0.8f,
-                        endIntensity = 1f,
-                        easing = LinearEasing
-                    )
-                }
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .align(Alignment.TopCenter)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black.copy(alpha = 0.5f),
-                            Color.Transparent
-                        )
-                    )
-                )
         )
     }
 }

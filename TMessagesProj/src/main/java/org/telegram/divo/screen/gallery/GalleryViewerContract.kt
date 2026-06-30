@@ -1,8 +1,8 @@
 package org.telegram.divo.screen.gallery
 
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
 
 data class GalleryViewerState(
     val source: GallerySource? = null,

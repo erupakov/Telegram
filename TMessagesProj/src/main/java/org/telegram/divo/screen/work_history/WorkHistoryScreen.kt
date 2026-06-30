@@ -51,17 +51,16 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.components.DivoPopupMenu
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.PlaceholderAvatar
-import org.telegram.divo.components.PopupMenuItem
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.TextTitle
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.components.navigation.DivoPopupMenu
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.media.PlaceholderAvatar
+import org.telegram.divo.components.navigation.PopupMenuItem
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.entity.WorkExperience
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -179,7 +178,7 @@ private fun WorkHistoryScreenView(
             }
         }
         if (isFromEditScreen) {
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
@@ -222,10 +221,12 @@ private fun WorkHistoryEmpty(
                 )
             }
             Spacer(Modifier.height(16.dp))
-            TextTitle(
+            Text(
                 text = stringResource(R.string.WorkHistoryEmptyTitle).uppercase(),
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontSize = 32.sp,
+                lineHeight = 36.sp,
             )
             if (isOwnProfile) {
                 Spacer(Modifier.height(2.dp))
@@ -240,7 +241,7 @@ private fun WorkHistoryEmpty(
         }
 
         if (isOwnProfile && !isFromEditScreen) {
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

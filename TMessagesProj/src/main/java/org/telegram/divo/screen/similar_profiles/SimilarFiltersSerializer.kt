@@ -4,6 +4,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
+import kotlin.collections.map
 
 internal data class SimilarFiltersPayload(
     val countryShortNames: List<String> = emptyList(),

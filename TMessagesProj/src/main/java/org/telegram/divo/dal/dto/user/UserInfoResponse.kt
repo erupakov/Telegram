@@ -17,7 +17,7 @@ import org.telegram.divo.entity.Model
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.Statistic
 import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.common.AdditionalInfoKeys
+import org.telegram.divo.common.utils.AdditionalInfoKeys
 
 
 class UserInfoResponse(

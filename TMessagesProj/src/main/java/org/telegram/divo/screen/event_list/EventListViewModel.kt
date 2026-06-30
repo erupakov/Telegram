@@ -2,15 +2,14 @@ package org.telegram.divo.screen.event_list
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.arch.OffsetPaginator
 import org.telegram.messenger.NotificationCenter
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.RoleType
-import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.search.LocalCity
 import org.telegram.divo.usecase.GetEventListUseCase
 import org.telegram.messenger.ApplicationLoader
@@ -20,6 +19,8 @@ import java.io.InputStreamReader
 import kotlinx.coroutines.Dispatchers
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.entity.Event
+import org.telegram.divo.entity.LocalCountry
 
 class EventListViewModel :
     BaseViewModel<EventListViewState, EventListIntent, EventListEffect>() {
@@ -27,11 +28,11 @@ class EventListViewModel :
     override fun createInitialState(): EventListViewState = EventListViewState()
 
     private val allEventsPaginator = GetEventListUseCase(limit = 10).paginator
-    private var myEventsPaginator: OffsetPaginator<org.telegram.divo.entity.Event>? = null
+    private var myEventsPaginator: OffsetPaginator<Event>? = null
     private var currentUserId: Int? = null
     private var searchLogJob: kotlinx.coroutines.Job? = null
 
-    private val activePaginator: OffsetPaginator<org.telegram.divo.entity.Event>
+    private val activePaginator: OffsetPaginator<Event>
         get() {
             return if (state.value.isSearchMode) {
                 allEventsPaginator
@@ -240,7 +241,7 @@ class EventListViewModel :
         }
     }
 
-    private fun syncStateFromPaginator(paginator: OffsetPaginator<org.telegram.divo.entity.Event>) {
+    private fun syncStateFromPaginator(paginator: OffsetPaginator<Event>) {
         val paginatorState = paginator.state.value
         
         var filteredItems = paginatorState.items

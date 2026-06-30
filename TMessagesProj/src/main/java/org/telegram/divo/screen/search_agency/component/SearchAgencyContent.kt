@@ -42,13 +42,14 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.PlaceholderAvatar
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.inputs.DivoTextField
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.media.PlaceholderAvatar
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.dal.repository.AgencySelection
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.screen.search_agency.Intent
 import org.telegram.divo.screen.search_agency.State
@@ -92,13 +93,13 @@ fun SearchAgencyContent(
                 )
             }
         }
-        UIButtonNew(
+        UIButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(start = 16.dp, end = 16.dp, bottom = 8.dp),
             enabled = State.query.isNotBlank() || State.agencyName.isNotBlank(),
-            onClick = { onIntent(Intent.OnSearchSelected(org.telegram.divo.dal.repository.AgencySelection(State.query, null))) }
+            onClick = { onIntent(Intent.OnSearchSelected(AgencySelection(State.query, null))) }
         )
     }
 }

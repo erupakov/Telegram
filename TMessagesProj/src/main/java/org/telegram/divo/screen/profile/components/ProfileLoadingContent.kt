@@ -25,8 +25,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
-import org.telegram.divo.components.RoundedGlassButton
-import org.telegram.divo.components.shimmer
+import org.telegram.divo.components.inputs.RoundedGlassButton
+import org.telegram.divo.common.compose.shimmer
 import org.telegram.divo.style.AppTheme
 
 @Composable

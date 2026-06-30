@@ -1,9 +1,9 @@
 package org.telegram.divo.screen.face_search
 
 import android.net.Uri
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
 import org.telegram.divo.entity.SearchedProfile
 
 data class ServerFace(

@@ -17,6 +17,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.arch.PaginatedResult
 import org.telegram.divo.dal.api.UserService
 import org.telegram.divo.dal.dto.common.UuidContainerDto
 import org.telegram.divo.dal.dto.common.toDto
@@ -36,6 +37,7 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyModels
+import org.telegram.divo.entity.AgencySearchModel
 import org.telegram.divo.entity.Appearances
 import org.telegram.divo.entity.Engagement
 import org.telegram.divo.entity.UploadedFile
@@ -239,7 +241,7 @@ class UserRepository(
         offset: Int,
         limit: Int,
         currentAgencyId: Int?
-    ): DivoResult<org.telegram.divo.common.PaginatedResult<org.telegram.divo.entity.AgencySearchModel>> = resultOf {
+    ): DivoResult<PaginatedResult<AgencySearchModel>> = resultOf {
         val res = service.searchAgencyModels(
             org.telegram.divo.dal.dto.user.AgencySearchRequest(
                 name = query.takeIf { it.isNotBlank() },
@@ -248,7 +250,7 @@ class UserRepository(
             )
         )
         val entities = res.toEntities(currentAgencyId)
-        org.telegram.divo.common.PaginatedResult(
+        PaginatedResult(
             items = entities,
             totalCount = res.data?.pagination?.meta?.totalCount ?: entities.size
         )
