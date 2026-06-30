@@ -28,9 +28,6 @@ object DivoAnalytics {
      */
     fun logEvent(event: AnalyticsEvent) {
         val bundle = Bundle().apply {
-            // Add global parameters here if needed
-            
-            // Add specific event parameters
             event.parameters.forEach { (key, value) ->
                 when (value) {
                     is String -> putString(key, value)
@@ -43,7 +40,6 @@ object DivoAnalytics {
         }
 
         firebaseAnalytics?.logEvent(event.eventName, bundle)
-        //android.util.Log.i("DivoAnalytics", "📊 EVENT SENT: ${event.eventName} | Params: ${event.parameters}")
         
         // Log specific events to Facebook Meta SDK
         val fbEventName = when (event.eventName) {
@@ -53,7 +49,6 @@ object DivoAnalytics {
         
         if (fbEventName == "sign_up_start" || fbEventName == "sign_up_complete" || fbEventName == "gallery_media_uploaded") {
             fbLogger?.logEvent(fbEventName, bundle)
-            //android.util.Log.i("DivoAnalytics", "🚀 EVENT SENT TO META: $fbEventName | Params: $bundle")
         }
     }
 
@@ -63,10 +58,6 @@ object DivoAnalytics {
      * Useful for splitting standard metrics (like session duration) by user role.
      */
     fun setUserProperty(key: String, value: String) {
-        println("📊 [DivoAnalytics] Setting User Property: $key = $value")
-        if (firebaseAnalytics == null) {
-            println("❌ [DivoAnalytics] ERROR: FirebaseAnalytics is NULL! Property will not be set.")
-        }
         firebaseAnalytics?.setUserProperty(key, value)
     }
 }

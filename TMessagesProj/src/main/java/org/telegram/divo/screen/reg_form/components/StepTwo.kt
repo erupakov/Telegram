@@ -1,6 +1,5 @@
 package org.telegram.divo.screen.reg_form.components
 
-import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -22,15 +21,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.components.RegTextField
-import org.telegram.divo.components.items.ParameterBottomSheet
+import org.telegram.divo.components.bottomsheets.CountryPickerSheet
+import org.telegram.divo.components.inputs.RegTextField
+import org.telegram.divo.components.bottomsheets.ParameterBottomSheet
 import org.telegram.divo.components.items.ParametersType
-import org.telegram.divo.screen.add_model.CountryPickerSheet
 import org.telegram.divo.screen.reg_form.RegFormsIntent
 import org.telegram.divo.screen.reg_form.RegFormsState
 import org.telegram.divo.screen.reg_form.RegistrationFormData
 import org.telegram.divo.screen.reg_select_role.SubRole
-import org.telegram.divo.screen.search.components.CityPickerSheet
+import org.telegram.divo.components.bottomsheets.CityPickerSheet
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.R

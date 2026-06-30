@@ -26,8 +26,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import org.telegram.divo.components.TextTitle
-import org.telegram.divo.components.pager.PageIndicator
+import org.telegram.divo.components.items.PageIndicator
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 import kotlin.math.absoluteValue
@@ -36,9 +35,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.style.setDivoContent
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.common.arch.setDivoContent
 import org.telegram.divo.style.DivoFont
 
 object OnboardingScreen {
@@ -119,14 +118,14 @@ fun OnboardingScreen(
                     )
                     Spacer(Modifier.height(32.dp))
 
-                    TextTitle(
+                    Text(
                         text = stringResource(data.titleRes).uppercase(),
                         fontSize = 32.sp,
                         lineHeight = 36.sp,
                         color = AppTheme.colors.textColor
                     )
                     Spacer(Modifier.height(10.dp))
-                    TextTitle(
+                    Text(
                         text = stringResource(data.subtitleRes),
                         fontSize = 16.sp,
                         lineHeight = 20.sp,
@@ -154,7 +153,7 @@ fun OnboardingScreen(
             )
             Spacer(Modifier.height(32.dp))
 
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),

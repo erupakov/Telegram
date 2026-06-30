@@ -42,11 +42,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.toEventDisplayDate
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.entity.Event
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -213,7 +213,7 @@ private fun EventItem(
                     )
                 }
             } else {
-                UIButtonNew(
+                UIButton(
                     modifier = Modifier
                         .height(32.dp),
                     text = stringResource(R.string.ButtonApply),
@@ -291,7 +291,7 @@ private fun EmptyEvent(
         }
 
         if (isOwnProfile) {
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = bottomPadding)

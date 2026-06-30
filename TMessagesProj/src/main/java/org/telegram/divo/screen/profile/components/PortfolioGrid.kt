@@ -29,9 +29,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.request.ImageRequest
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.UserGalleryItem
 

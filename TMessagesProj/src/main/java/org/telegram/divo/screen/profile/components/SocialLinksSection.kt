@@ -28,7 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R

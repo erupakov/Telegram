@@ -1,7 +1,7 @@
 package org.telegram.divo.dal.repository
 
 import kotlinx.coroutines.flow.asSharedFlow
-import org.telegram.divo.dal.network.AccessTokenProvider
+import org.telegram.divo.dal.utils.AccessTokenProvider
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf

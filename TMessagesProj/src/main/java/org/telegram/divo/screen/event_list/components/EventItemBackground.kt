@@ -23,7 +23,7 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
-import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.components.media.DivoAsyncImage
 
 @Composable
 fun EventItemBackground(

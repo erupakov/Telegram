@@ -13,13 +13,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.arch.OffsetPaginator
+import org.telegram.divo.common.arch.PaginatedResult
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.AgencyModelStatus
 import org.telegram.divo.entity.AgencySearchModelStatus
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
@@ -118,7 +119,7 @@ class ProfileViewModel(
                 val mappedItems = paginatedResult.items.map { searchModel ->
                     val existing = currentAgencyModels.find { it.userId == searchModel.userId }
                     if (existing != null) {
-                        if (existing.status == org.telegram.divo.entity.AgencyModelStatus.PENDING) {
+                        if (existing.status == AgencyModelStatus.PENDING) {
                             searchModel.copy(status = AgencySearchModelStatus.RequestPending)
                         } else {
                             searchModel.copy(status = AgencySearchModelStatus.AlreadyAdded)

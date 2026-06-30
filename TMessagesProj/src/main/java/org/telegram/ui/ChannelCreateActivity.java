@@ -46,6 +46,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import org.telegram.divo.common.utils.DivoChannelHelper;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLog;
@@ -377,7 +378,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
                                     AndroidUtilities.runOnUIThread(enableDoneLoading, 200);
                                     MessagesController.getInstance(currentAccount).updateChannelUserName(ChannelCreateActivity.this, chatId, lastCheckName, () -> {
                                         updateDoneProgress(false);
-                                        org.telegram.divo.common.utils.DivoChannelHelper.onChannelCreated(chatId, currentAccount, lastCheckName, null); //DIVO
+                                        DivoChannelHelper.onChannelCreated(chatId, lastCheckName, null); //DIVO
                                         if (onFinishListener != null) {
                                             onFinishListener.run(ChannelCreateActivity.this, chatId);
                                         }
@@ -390,7 +391,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
                                 }
                             }
                         } else { //DIVO
-                            org.telegram.divo.common.utils.DivoChannelHelper.onChannelCreated(chatId, currentAccount, null, invite != null ? invite.link : null);
+                            DivoChannelHelper.onChannelCreated(chatId, null, invite != null ? invite.link : null);
                             if (onFinishListener != null) {
                                 onFinishListener.run(ChannelCreateActivity.this, chatId);
                             }

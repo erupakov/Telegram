@@ -1,18 +1,18 @@
 package org.telegram.divo.screen.event_create
 
 import android.net.Uri
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.entity.AppearanceItem
 import org.telegram.divo.entity.EventFile
 import org.telegram.divo.entity.EventType
 import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.dal.dto.payment.PaymentTypeDto
 import org.telegram.divo.dal.dto.payment.PaymentFrequencyDto
+import org.telegram.divo.entity.LocalCountry
 
 data class State(
     val eventName: String = "",

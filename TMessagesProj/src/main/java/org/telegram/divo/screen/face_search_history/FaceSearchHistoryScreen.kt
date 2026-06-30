@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,12 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.components.items.ParametersType
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.SnackbarEvent
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.controllers.SnackbarEvent
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.inputs.RoundedButton
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
 import org.telegram.divo.screen.face_search_history.Effect.NavigateBack
 import org.telegram.divo.screen.face_search_history.Effect.NavigateToSimilarity
@@ -182,7 +183,7 @@ private fun HistoryItem(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(56.dp)
-                    .clip(androidx.compose.foundation.shape.CircleShape),
+                    .clip(CircleShape),
                 errorContent = {
                     Image(
                         painter = painterResource(R.drawable.divo_avatar_placeholder),

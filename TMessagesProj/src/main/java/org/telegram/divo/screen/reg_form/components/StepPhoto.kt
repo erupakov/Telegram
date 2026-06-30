@@ -28,8 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
 import org.telegram.divo.screen.reg_form.RegFormsIntent
 import org.telegram.divo.screen.reg_form.RegistrationFormData
 import org.telegram.divo.screen.reg_select_role.SubRole

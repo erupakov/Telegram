@@ -8,6 +8,8 @@ package org.telegram.divo.dal.network
 object DivoApiConfig {
 
     const val WEB_URL: String = "https://t.divo.global/"
+    const val TERMS_URL = "https://www.divo.global/legal-documents/mobile-app-eula"
+    const val PRIVACY_URL = "https://www.divo.global/legal-documents/privacy-policy"
 
     val BASE_URL: String
         get() = if (org.telegram.messenger.BuildVars.DEBUG_VERSION) {

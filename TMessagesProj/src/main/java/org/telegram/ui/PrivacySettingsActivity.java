@@ -725,8 +725,9 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 SharedConfig.saveConfig();
             }
         }
-        sessionsRow = rowCount++;
-        sessionsDetailRow = rowCount++;
+        // DIVO: hide Devices (Sessions)
+        sessionsRow = -1; // rowCount++;
+        sessionsDetailRow = -1; // rowCount++;
 
         privacySectionRow = rowCount++;
         phoneNumberRow = rowCount++;
@@ -745,7 +746,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         birthdayRow = rowCount++;
         giftsRow = rowCount++;
         bioRow = rowCount++;
-        musicRow = rowCount++;
+        // DIVO: hide Saved Music
+        musicRow = -1; // rowCount++;
         groupsRow = rowCount++;
         privacyShadowRow = rowCount++;
 
@@ -1406,16 +1408,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
 
     private SpannableString premiumStar;
     private CharSequence addPremiumStar(String text) {
-//        if (getUserConfig().isPremium()) {
-//            return text;
-//        }
-        if (premiumStar == null) {
-            premiumStar = new SpannableString("★");
-            Drawable drawable = new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().premiumStarMenuDrawable, dp(18), dp(18));
-            drawable.setBounds(0, 0, dp(18), dp(18));
-            premiumStar.setSpan(new ImageSpan(drawable, DynamicDrawableSpan.ALIGN_CENTER), 0, premiumStar.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
-        }
-        return new SpannableStringBuilder(text).append("  ").append(premiumStar);
+        // DIVO: hide premium stars for privacy settings menu items
+        return text;
     }
 
     @Override

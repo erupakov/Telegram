@@ -6,7 +6,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.utils.MeasuringUnits
 import org.telegram.divo.common.utils.uriToFile
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
@@ -15,8 +16,8 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.EventDetails
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.entity.UploadedFile
-import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import java.io.BufferedReader
@@ -161,10 +162,10 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
         val gallery = sortedFiles.map { Uri.parse(it.fullUrl) }
 
         val attrs = event.modelAttributes
-        val storedSystem = org.telegram.divo.common.MeasuringUnits.resolveStoredSystem(attrs?.measuringSystem)
+        val storedSystem = MeasuringUnits.resolveStoredSystem(attrs?.measuringSystem)
         fun rangeToStr(type: ParametersType, from: Int?, to: Int?): String {
             if (from == null && to == null) return ""
-            return org.telegram.divo.common.MeasuringUnits.formatStoredRange(type, from, to, storedSystem)
+            return MeasuringUnits.formatStoredRange(type, from, to, storedSystem)
         }
 
         val roleValue = attrs?.roles?.joinToString(", ") ?: ""

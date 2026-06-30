@@ -19,9 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,9 +30,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.screen.reg_form.components.StepOne
 import org.telegram.divo.screen.reg_form.components.StepPhoto
 import org.telegram.divo.screen.reg_form.components.StepThree
@@ -194,7 +194,7 @@ private fun RegFormsScreenContent(
                 }
             }
 
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = (8 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp, start = 16.dp, end = 16.dp)

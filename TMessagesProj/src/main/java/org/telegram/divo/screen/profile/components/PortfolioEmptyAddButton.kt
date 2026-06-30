@@ -1,17 +1,15 @@
 package org.telegram.divo.screen.profile.components
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,9 +24,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.rememberGalleryLauncher
-import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
+import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -80,9 +78,10 @@ fun PortfolioEmptyAddButton(
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun EmptyMediaPlaceholder(text: String, isVideo: Boolean, transitionProgress: Float, topPadding: androidx.compose.ui.unit.Dp) {
-    androidx.compose.foundation.layout.BoxWithConstraints(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.backgroundLight)

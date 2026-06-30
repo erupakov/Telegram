@@ -119,27 +119,3 @@ private fun SkinColorDto.toEntity(): SkinColor =
         id = id,
         title = title
     )
-
-private fun HairColor.toDto(): HairColorDto =
-    HairColorDto(
-        id = id,
-        title = title
-    )
-
-private fun HairLength.toDto(): HairLengthDto =
-    HairLengthDto(
-        id = id,
-        title = title
-    )
-
-private fun EyeColor.toDto(): EyeColorDto =
-    EyeColorDto(
-        id = id,
-        title = title
-    )
-
-private fun SkinColor.toDto(): SkinColorDto =
-    SkinColorDto(
-        id = id,
-        title = title
-    )

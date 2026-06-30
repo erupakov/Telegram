@@ -9,20 +9,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
-import org.telegram.divo.common.numericFilterRange
+import org.telegram.divo.common.utils.numericFilterRange
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
 import org.telegram.divo.dal.dto.face.SimilarFaceDto
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.entity.UserInfo
-import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.similar_profiles.Effect.NavigateBack
 import org.telegram.divo.screen.similar_profiles.Effect.NavigateToProfile
 import org.telegram.divo.screen.similar_profiles.Effect.ShowError
@@ -123,8 +123,8 @@ class SimilarProfilesViewModel(
 
         if (!hasLoggedScreenOpened) {
             hasLoggedScreenOpened = true
-            org.telegram.divo.analytics.DivoAnalytics.logEvent(
-                org.telegram.divo.analytics.AnalyticsEvent.SimilarProfilesScreenOpened(filtered.isNotEmpty())
+            DivoAnalytics.logEvent(
+                AnalyticsEvent.SimilarProfilesScreenOpened(filtered.isNotEmpty())
             )
         }
 

@@ -5,19 +5,15 @@ import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.screen.search.LocalCity
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.LocaleController
 import java.io.InputStreamReader
-import kotlinx.coroutines.suspendCancellableCoroutine
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.AdditionalInfoKeys
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import org.telegram.tgnet.ConnectionsManager
+import org.telegram.divo.common.utils.AdditionalInfoKeys
+import org.telegram.divo.common.utils.TelegramProfileHelper
 import org.telegram.tgnet.TLRPC
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
@@ -26,15 +22,15 @@ import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
 import org.telegram.divo.dal.dto.common.CustomerDto
 import org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest
 import org.telegram.divo.dal.dto.user.UpdateProfileModelDto
-import org.telegram.divo.dal.network.DivoAuthHelper
+import org.telegram.divo.dal.dto.user.UpdateProfileRequest
+import org.telegram.divo.dal.utils.DivoAuthHelper
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.entity.Photo
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.mapGenderToEnglish
 import org.telegram.divo.screen.reg_select_role.SubRole
-import org.telegram.tgnet.tl.TL_account
 import java.io.BufferedReader
-import java.security.MessageDigest
 
 class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsEffect>() {
 
@@ -249,7 +245,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (firstName.isBlank()) {
                         firstName = "User"
                     }
-                    val profileUpdateResult = org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramName(
+                    val profileUpdateResult = TelegramProfileHelper.updateTelegramName(
                         currentAccount = state.value.currentAccount,
                         firstName = firstName,
                         lastName = lastName
@@ -263,7 +259,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                 val month = parts[1].toIntOrNull()
                                 val day = parts[2].toIntOrNull()
                                 if (year != null && month != null && day != null) {
-                                    org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramBirthday(
+                                    TelegramProfileHelper.updateTelegramBirthday(
                                         currentAccount = state.value.currentAccount,
                                         year = year,
                                         month = month,
@@ -278,7 +274,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
 
                     // 2.5 TG Profile Photo Update
                     if (telegramPhotoFile != null) {
-                        org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatar(state.value.currentAccount, telegramPhotoFile)
+                        TelegramProfileHelper.updateTelegramAvatar(state.value.currentAccount, telegramPhotoFile)
                     }
 
                     // 3. Divo Link (REST)
@@ -367,7 +363,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                             )
                         } else null
                     
-                    val updateProfileRequest = org.telegram.divo.dal.dto.user.UpdateProfileRequest(
+                    val updateProfileRequest = UpdateProfileRequest(
                         fullName = fullName,
                         phone = rawPhone,
                         timezone = java.util.TimeZone.getDefault().id,

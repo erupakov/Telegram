@@ -2,7 +2,6 @@
 
 package org.telegram.divo.screen.profile.components
 
-
 import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
@@ -65,12 +64,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
-import com.google.android.exoplayer2.util.Log
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.entity.Publication
 import org.telegram.divo.entity.PublicationFile
 

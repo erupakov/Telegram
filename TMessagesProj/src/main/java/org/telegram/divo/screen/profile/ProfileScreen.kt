@@ -58,15 +58,16 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.SnackbarEvent.ErrorWithRetry
-import org.telegram.divo.common.SnackbarEvent.Success
-import org.telegram.divo.common.SnackbarEvent.SuccessWithIcon
-import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.common.controllers.SnackbarEvent.ErrorWithRetry
+import org.telegram.divo.common.controllers.SnackbarEvent.Success
+import org.telegram.divo.common.controllers.SnackbarEvent.SuccessWithIcon
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
-import org.telegram.divo.components.StatusBarIconColorEffect
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
+import org.telegram.divo.components.bottomsheets.DivoWithdrawBottomSheet
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.profile.components.AgencyModels
 import org.telegram.divo.screen.profile.components.AnimatedPortfolioAddButton
@@ -246,7 +247,7 @@ fun ProfileScreen(
         )
 
         if (withdrawEventId != null) {
-            org.telegram.divo.components.DivoWithdrawBottomSheet(
+            DivoWithdrawBottomSheet(
                 onKeepApplication = { withdrawEventId = null },
                 onWithdraw = {
                     val id = withdrawEventId

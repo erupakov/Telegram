@@ -1,8 +1,10 @@
 package org.telegram.divo.screen.profile.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -37,11 +39,18 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.components.shimmer
+import androidx.core.content.ContextCompat
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.common.compose.shimmer
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.LocaleController
+import org.telegram.messenger.MessagesController
 import org.telegram.messenger.R
+import org.telegram.tgnet.ConnectionsManager
+import org.telegram.tgnet.TLRPC
+import org.telegram.ui.Components.BackupImageView
 
 @Composable
 fun ChannelsContent(
@@ -101,8 +110,8 @@ private fun ChannelItem(
     onClicked: () -> Unit,
 ) {
     val account = org.telegram.messenger.UserConfig.selectedAccount
-    val initialChat = org.telegram.messenger.MessagesController.getInstance(account).getChat(channel.telegramChatId)
-    val initialChatFull = org.telegram.messenger.MessagesController.getInstance(account).getChatFull(channel.telegramChatId)
+    val initialChat = MessagesController.getInstance(account).getChat(channel.telegramChatId)
+    val initialChatFull = MessagesController.getInstance(account).getChatFull(channel.telegramChatId)
 
     var chatTitle by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(initialChat?.title ?: channel.username ?: "Channel ${channel.telegramChatId}") }
     var chatParticipants by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(initialChatFull?.participants_count ?: initialChat?.participants_count ?: 0) }
@@ -111,15 +120,15 @@ private fun ChannelItem(
     androidx.compose.runtime.DisposableEffect(channel.telegramChatId) {
         val observer = org.telegram.messenger.NotificationCenter.NotificationCenterDelegate { id, _, args ->
             if (id == org.telegram.messenger.NotificationCenter.updateInterfaces) {
-                val updatedChat = org.telegram.messenger.MessagesController.getInstance(account).getChat(channel.telegramChatId)
-                val updatedChatFull = org.telegram.messenger.MessagesController.getInstance(account).getChatFull(channel.telegramChatId)
+                val updatedChat = MessagesController.getInstance(account).getChat(channel.telegramChatId)
+                val updatedChatFull = MessagesController.getInstance(account).getChatFull(channel.telegramChatId)
                 if (updatedChat != null) {
                     chatTitle = updatedChat.title
                     chatParticipants = updatedChatFull?.participants_count ?: updatedChat.participants_count
                     chatObject = updatedChat
                 }
             } else if (id == org.telegram.messenger.NotificationCenter.chatInfoDidLoad) {
-                val chatFull = args[0] as? org.telegram.tgnet.TLRPC.ChatFull
+                val chatFull = args[0] as? TLRPC.ChatFull
                 if (chatFull != null && chatFull.id == channel.telegramChatId) {
                     chatParticipants = chatFull.participants_count
                 }
@@ -139,8 +148,8 @@ private fun ChannelItem(
     androidx.compose.runtime.DisposableEffect(lifecycleOwner, channel.telegramChatId) {
         val lifecycleObserver = androidx.lifecycle.LifecycleEventObserver { _, event ->
             if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
-                val updatedChat = org.telegram.messenger.MessagesController.getInstance(account).getChat(channel.telegramChatId)
-                val updatedChatFull = org.telegram.messenger.MessagesController.getInstance(account).getChatFull(channel.telegramChatId)
+                val updatedChat = MessagesController.getInstance(account).getChat(channel.telegramChatId)
+                val updatedChatFull = MessagesController.getInstance(account).getChatFull(channel.telegramChatId)
                 if (updatedChat != null) {
                     chatTitle = updatedChat.title
                     chatParticipants = updatedChatFull?.participants_count ?: updatedChat.participants_count
@@ -158,18 +167,18 @@ private fun ChannelItem(
     androidx.compose.runtime.LaunchedEffect(channel.telegramChatId, isRefreshing) {
         if (initialChat == null || isRefreshing) {
             if (!channel.username.isNullOrEmpty()) {
-                val req = org.telegram.tgnet.TLRPC.TL_contacts_resolveUsername()
+                val req = TLRPC.TL_contacts_resolveUsername()
                 req.username = channel.username
-                org.telegram.tgnet.ConnectionsManager.getInstance(account).sendRequest(req) { response, _ ->
-                    org.telegram.messenger.AndroidUtilities.runOnUIThread {
-                        if (response is org.telegram.tgnet.TLRPC.TL_contacts_resolvedPeer) {
+                ConnectionsManager.getInstance(account).sendRequest(req) { response, _ ->
+                    AndroidUtilities.runOnUIThread {
+                        if (response is TLRPC.TL_contacts_resolvedPeer) {
                             val resolvedChat = response.chats.firstOrNull { it.id == channel.telegramChatId } ?: response.chats.firstOrNull()
                             if (resolvedChat != null) {
-                                org.telegram.messenger.MessagesController.getInstance(account).putChat(resolvedChat, false)
+                                MessagesController.getInstance(account).putChat(resolvedChat, false)
                                 chatTitle = resolvedChat.title
                                 chatParticipants = resolvedChat.participants_count
                                 chatObject = resolvedChat
-                                org.telegram.messenger.MessagesController.getInstance(account).loadFullChat(resolvedChat.id, 0, true)
+                                MessagesController.getInstance(account).loadFullChat(resolvedChat.id, 0, true)
                             }
                         }
                     }
@@ -177,17 +186,17 @@ private fun ChannelItem(
             } else if (!channel.inviteLink.isNullOrEmpty()) {
                 val hash = channel.inviteLink.substringAfterLast("/+")
                 if (hash.isNotEmpty() && hash != channel.inviteLink) {
-                    val req = org.telegram.tgnet.TLRPC.TL_messages_checkChatInvite()
+                    val req = TLRPC.TL_messages_checkChatInvite()
                     req.hash = hash
-                    org.telegram.tgnet.ConnectionsManager.getInstance(account).sendRequest(req) { response, _ ->
-                        org.telegram.messenger.AndroidUtilities.runOnUIThread {
-                            if (response is org.telegram.tgnet.TLRPC.ChatInvite) {
-                                if (response is org.telegram.tgnet.TLRPC.TL_chatInviteAlready) {
-                                    org.telegram.messenger.MessagesController.getInstance(account).putChat(response.chat, false)
+                    ConnectionsManager.getInstance(account).sendRequest(req) { response, _ ->
+                        AndroidUtilities.runOnUIThread {
+                            if (response is TLRPC.ChatInvite) {
+                                if (response is TLRPC.TL_chatInviteAlready) {
+                                    MessagesController.getInstance(account).putChat(response.chat, false)
                                     chatTitle = response.chat.title
                                     chatParticipants = response.chat.participants_count
                                     chatObject = response.chat
-                                    org.telegram.messenger.MessagesController.getInstance(account).loadFullChat(response.chat.id, 0, true)
+                                    MessagesController.getInstance(account).loadFullChat(response.chat.id, 0, true)
                                 } else {
                                     chatTitle = response.title
                                     chatParticipants = response.participants_count
@@ -199,11 +208,11 @@ private fun ChannelItem(
                 }
             }
         } else if (initialChatFull == null) {
-            org.telegram.messenger.MessagesController.getInstance(account).loadFullChat(channel.telegramChatId, 0, true)
+            MessagesController.getInstance(account).loadFullChat(channel.telegramChatId, 0, true)
         }
     }
 
-    val displayFollowers = org.telegram.messenger.LocaleController.formatPluralStringSpaced("Followers", chatParticipants)
+    val displayFollowers = LocaleController.formatPluralStringSpaced("Followers", chatParticipants)
 
     if (chatObject == null) {
         Row(
@@ -258,22 +267,22 @@ private fun ChannelItem(
             ) {
                 androidx.compose.ui.viewinterop.AndroidView(
                     factory = { ctx ->
-                        org.telegram.ui.Components.BackupImageView(ctx).apply {
-                            setRoundRadius(org.telegram.messenger.AndroidUtilities.dp(30f))
+                        BackupImageView(ctx).apply {
+                            setRoundRadius(AndroidUtilities.dp(30f))
                         }
                     },
                     update = { view ->
                         if (chatObject != null) {
                             val avatarDrawable = org.telegram.ui.Components.AvatarDrawable()
-                            if (chatObject is org.telegram.tgnet.TLRPC.Chat) {
-                                avatarDrawable.setInfo(account, chatObject as org.telegram.tgnet.TLRPC.Chat)
-                            } else if (chatObject is org.telegram.tgnet.TLRPC.ChatInvite) {
-                                val invite = chatObject as org.telegram.tgnet.TLRPC.ChatInvite
+                            if (chatObject is TLRPC.Chat) {
+                                avatarDrawable.setInfo(account, chatObject as TLRPC.Chat)
+                            } else if (chatObject is TLRPC.ChatInvite) {
+                                val invite = chatObject as TLRPC.ChatInvite
                                 avatarDrawable.setInfo(0L, invite.title ?: "", null)
                             }
                             view.setForUserOrChat(chatObject, avatarDrawable)
                         } else {
-                            view.setImageDrawable(androidx.core.content.ContextCompat.getDrawable(view.context, org.telegram.messenger.R.drawable.divo_avatar_placeholder))
+                            view.setImageDrawable(ContextCompat.getDrawable(view.context, R.drawable.divo_avatar_placeholder))
                         }
                     },
                     modifier = Modifier.fillMaxSize()
@@ -307,7 +316,7 @@ private fun ChannelItem(
         }
 
         if (isEvent) {
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .height(32.dp),
                 text = "Apply",
@@ -321,6 +330,7 @@ private fun ChannelItem(
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun EmptyChannels(
     isOwnProfile: Boolean,
@@ -336,7 +346,7 @@ private fun EmptyChannels(
         else -> R.string.ThisAgencyHasNotCreatedChannels
     }
 
-    androidx.compose.foundation.layout.BoxWithConstraints(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.backgroundLight)
@@ -386,7 +396,7 @@ private fun EmptyChannels(
         }
 
         if (isOwnProfile) {
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = bottomPadding + 8.dp)

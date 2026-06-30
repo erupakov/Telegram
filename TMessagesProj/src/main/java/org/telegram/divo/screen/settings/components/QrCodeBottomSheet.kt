@@ -44,9 +44,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.telegram.divo.common.utils.DivoShareType
 import org.telegram.divo.common.utils.DivoSharingHelper
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.style.AppTheme
-import org.telegram.divo.style.DivoLocaleProvider
+import org.telegram.divo.common.arch.DivoLocaleProvider
 import org.telegram.messenger.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -144,7 +144,7 @@ fun QrCodeBottomSheet(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 // Кнопка с лоадером и дизейблом
-                UIButtonNew(
+                UIButton(
                     text = stringResource(R.string.DivoShareBtn),
                     modifier = Modifier.fillMaxWidth(),
                     background = AppTheme.colors.accentOrange,

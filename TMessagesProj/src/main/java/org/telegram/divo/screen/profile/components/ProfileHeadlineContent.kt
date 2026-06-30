@@ -31,13 +31,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.DivoShareType
 import org.telegram.divo.common.utils.DivoSharingHelper
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.RoundedGlassButton
-import org.telegram.divo.components.RoundedGlassContainer
-import org.telegram.divo.components.TelegramPhotoBackground
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.RoundedGlassButton
+import org.telegram.divo.components.inputs.RoundedGlassContainer
+import org.telegram.divo.components.media.TelegramPhotoBackground
 import org.telegram.divo.components.items.ProfileNameItem
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.screen.profile.ProfileViewState
@@ -74,7 +74,7 @@ fun ProfileHeadlineContent(
         TelegramPhotoBackground(
             modifier = Modifier.fillMaxSize(),
             photo = uiState.userInfo.photoUrl,
-            fallbackResId = if (uiState.isModel) R.drawable.divo_models_placeholder else R.drawable.divo_agency_placeholder,
+            fallbackResId = if (uiState.isModel) drawable.divo_models_placeholder else drawable.divo_agency_placeholder,
             onReady = onReady
         )
 
@@ -125,7 +125,7 @@ fun ProfileHeadlineContent(
                             modifier = Modifier
                                 .align(Alignment.CenterEnd)
                                 .padding(end = 16.dp),
-                            resId = R.drawable.ic_divo_share_model,
+                            resId = drawable.ic_divo_share_model,
                             iconSize = 24.dp,
                             onClick = {
                                 val user = uiState.userInfo
@@ -175,7 +175,7 @@ fun ProfileHeadlineContent(
                         
                         Spacer(Modifier.weight(1f))
                         RoundedGlassButton(
-                            resId = R.drawable.ic_divo_share_model,
+                            resId = drawable.ic_divo_share_model,
                             iconSize = 24.dp,
                             onClick = {
                                 val user = uiState.userInfo

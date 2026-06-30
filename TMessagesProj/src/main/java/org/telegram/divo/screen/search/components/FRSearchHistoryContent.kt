@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,8 +26,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -81,7 +82,7 @@ fun FRSearchHistoryContent(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(56.dp)
-                        .clip(androidx.compose.foundation.shape.CircleShape),
+                        .clip(CircleShape),
                     errorContent = {
                         Image(
                             painter = painterResource(R.drawable.divo_avatar_placeholder),

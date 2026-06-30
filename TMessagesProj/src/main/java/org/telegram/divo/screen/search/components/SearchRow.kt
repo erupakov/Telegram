@@ -13,8 +13,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.components.inputs.DivoTextField
+import org.telegram.divo.components.inputs.RoundedButton
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 

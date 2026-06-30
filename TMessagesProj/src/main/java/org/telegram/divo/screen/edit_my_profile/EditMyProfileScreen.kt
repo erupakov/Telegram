@@ -43,23 +43,23 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.*
-import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.*
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
-import org.telegram.divo.components.DivoTabSelector
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.TabConfig
-import org.telegram.divo.components.TelegramUserAvatarEditable
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.bottomsheets.CountryPickerSheet
+import org.telegram.divo.components.navigation.DivoTabSelector
+import org.telegram.divo.components.inputs.DivoTextField
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.navigation.TabConfig
+import org.telegram.divo.components.media.TelegramUserAvatarEditable
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.screen.work_history.WorkHistoryScreen
 import org.telegram.divo.screen.your_parameters.YourParametersScreen
 import org.telegram.divo.screen.reg_form.components.PlaceField
-import org.telegram.divo.screen.add_model.CountryPickerSheet
-import org.telegram.divo.screen.search.components.CityPickerSheet
+import org.telegram.divo.components.bottomsheets.CityPickerSheet
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -444,7 +444,7 @@ fun EditMyProfileScreenView(
                 } else {
                     val isCityRequiredButMissing = uiState.country.isNotEmpty() && uiState.city == null
                     
-                    UIButtonNew(
+                    UIButton(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(R.string.SaveEditProfileScreen),
                         enabled = !isCityRequiredButMissing,

@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,11 +47,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.shimmer
+import org.telegram.divo.common.arch.DivoLocaleProvider
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.inputs.DivoTextField
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.common.compose.shimmer
 import org.telegram.divo.entity.EngagementUser
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -119,7 +121,7 @@ fun EngagementStatsBottomSheet(
             )
         }
     ) {
-        org.telegram.divo.style.DivoLocaleProvider {
+        DivoLocaleProvider {
             BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                 val configuration = LocalConfiguration.current
                 val screenHeight = configuration.screenHeightDp.dp
@@ -255,7 +257,7 @@ private fun StatsDetailRow(
                     painter = painterResource(R.drawable.divo_avatar_placeholder),
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
-                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                    contentScale = ContentScale.Crop
                 )
             }
         )

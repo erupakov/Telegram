@@ -1,6 +1,6 @@
 package org.telegram.divo.screen.auth
 
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 
 class AuthViewModel :
     BaseViewModel<AuthViewState, AuthViewIntent, AuthViewEffect>() {

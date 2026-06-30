@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import org.telegram.divo.components.TabConfig
+import org.telegram.divo.components.navigation.TabConfig
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.screen.profile.PhysicalParams
 import kotlin.math.absoluteValue

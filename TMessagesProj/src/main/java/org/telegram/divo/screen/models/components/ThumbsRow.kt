@@ -19,9 +19,9 @@ import androidx.compose.ui.unit.dp
 import coil.imageLoader
 import coil.request.ImageRequest
 import coil.size.Size
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.shimmer
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.common.compose.shimmer
 import org.telegram.divo.entity.FeedItem
 
 @Composable

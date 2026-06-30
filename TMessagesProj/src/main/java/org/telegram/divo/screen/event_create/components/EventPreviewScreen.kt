@@ -64,24 +64,24 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.SnackbarEvent
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.controllers.SnackbarEvent
 import org.telegram.divo.common.utils.toMonthDayFormat
 import org.telegram.divo.common.utils.toShortString
-import org.telegram.divo.components.DivoChip
-import org.telegram.divo.components.RoundedGlassButton
-import org.telegram.divo.components.RoundedGlassContainer
-import org.telegram.divo.components.StatusBarIconColorEffect
-import org.telegram.divo.components.TelegramPhotoBackground
-import org.telegram.divo.components.TransparentToolBarBackground
-import org.telegram.divo.components.TransparentToolBarContent
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.inputs.DivoChip
+import org.telegram.divo.components.inputs.RoundedGlassButton
+import org.telegram.divo.components.inputs.RoundedGlassContainer
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
+import org.telegram.divo.components.media.TelegramPhotoBackground
+import org.telegram.divo.components.navigation.TransparentToolBarBackground
+import org.telegram.divo.components.navigation.TransparentToolBarContent
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.common.DivoSettings
-import org.telegram.divo.common.numericFilterRange
-import org.telegram.divo.common.resolveNumericBlockParamBounds
+import org.telegram.divo.common.utils.numericFilterRange
+import org.telegram.divo.common.utils.resolveNumericBlockParamBounds
 import org.telegram.divo.entity.EventModelAttributes
 import org.telegram.divo.screen.event_create.CreateEventViewModel
 import org.telegram.divo.screen.event_create.Effect
@@ -541,7 +541,7 @@ private fun PreviewBottomBar(
         horizontalArrangement = Arrangement.spacedBy(9.dp)
     ) {
         // Edit button (secondary style)
-        UIButtonNew(
+        UIButton(
             modifier = Modifier
                 .weight(1f)
                 .height(56.dp),
@@ -553,7 +553,7 @@ private fun PreviewBottomBar(
             onClick = onEdit
         )
 
-        UIButtonNew(
+        UIButton(
             modifier = Modifier
                 .weight(1f)
                 .height(56.dp),

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Colors
 import androidx.compose.material.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -23,7 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.arch.DivoLocaleProvider
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -42,67 +42,67 @@ fun DeleteEventConfirmationDialog(
         containerColor = Color.Transparent,
         dragHandle = null
     ) {
-        org.telegram.divo.style.DivoLocaleProvider {
+        DivoLocaleProvider {
             Column(
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(AppTheme.colors.backgroundLight),
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
-                Spacer(Modifier.height(16.dp))
-                Text(
-                    text = stringResource(R.string.DeleteEventTitle, eventName),
-                    style = AppTheme.typography.bodyMedium,
-                    color = AppTheme.colors.textPrimary
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(AppTheme.colors.backgroundLight),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(Modifier.height(16.dp))
+                    Text(
+                        text = stringResource(R.string.DeleteEventTitle, eventName),
+                        style = AppTheme.typography.bodyMedium,
+                        color = AppTheme.colors.textPrimary
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        modifier = Modifier.padding(horizontal = 24.dp),
+                        text = stringResource(R.string.DeleteEventDescription),
+                        style = AppTheme.typography.bodyMedium,
+                        color = AppTheme.colors.textPrimary.copy(0.6f),
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    Divider(color = Color.LightGray)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickableWithoutRipple { onConfirm() },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(vertical = 20.dp),
+                            text = stringResource(R.string.DeleteEventConfirm),
+                            style = AppTheme.typography.helveticaNeueRegular,
+                            fontSize = 17.sp,
+                            color = Color.Red
+                        )
+                    }
+                }
                 Spacer(Modifier.height(8.dp))
-                Text(
-                    modifier = Modifier.padding(horizontal = 24.dp),
-                    text = stringResource(R.string.DeleteEventDescription),
-                    style = AppTheme.typography.bodyMedium,
-                    color = AppTheme.colors.textPrimary.copy(0.6f),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(Modifier.height(16.dp))
-                Divider(color = Color.LightGray)
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickableWithoutRipple { onConfirm() },
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(AppTheme.colors.backgroundLight)
+                        .clickableWithoutRipple { onDismissRequest() },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 20.dp),
-                        text = stringResource(R.string.DeleteEventConfirm),
+                        text = stringResource(R.string.ButtonCancel),
                         style = AppTheme.typography.helveticaNeueRegular,
                         fontSize = 17.sp,
-                        color = Color.Red
+                        color = AppTheme.colors.textPrimary
                     )
                 }
+                Spacer(Modifier.height(8.dp))
             }
-            Spacer(Modifier.height(8.dp))
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(AppTheme.colors.backgroundLight)
-                    .clickableWithoutRipple { onDismissRequest() },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    modifier = Modifier.padding(vertical = 20.dp),
-                    text = stringResource(R.string.ButtonCancel),
-                    style = AppTheme.typography.helveticaNeueRegular,
-                    fontSize = 17.sp,
-                    color = AppTheme.colors.textPrimary
-                )
-            }
-            Spacer(Modifier.height(8.dp))
-        }
         }
     }
 }

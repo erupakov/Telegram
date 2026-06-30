@@ -1,6 +1,7 @@
 package org.telegram.divo.screen.models
 
 import android.content.Context
+import android.os.Bundle
 import android.view.View
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.runtime.CompositionLocalProvider
@@ -13,8 +14,13 @@ import androidx.navigation.NavController
 import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.common.utils.FragmentLifecycleOwner
-import org.telegram.divo.style.setDivoContent
+import org.telegram.divo.common.arch.setDivoContent
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.UserConfig
+import org.telegram.tgnet.TLRPC
 import org.telegram.ui.ActionBar.BaseFragment
+import org.telegram.ui.ChannelCreateActivity
+import org.telegram.ui.ChatActivity
 import org.telegram.ui.MainTabsActivity
 import org.telegram.ui.MainTabsActivityController
 
@@ -68,24 +74,24 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
                             profileNavController = navController
                         },
                         onNavigateToChat = { tgId, tgHash, tgUsername ->
-                            val currentAccount = org.telegram.messenger.UserConfig.selectedAccount
-                            var user = org.telegram.messenger.MessagesController.getInstance(currentAccount).getUser(tgId)
+                            val currentAccount = UserConfig.selectedAccount
+                            var user = MessagesController.getInstance(currentAccount).getUser(tgId)
                             if (user == null) {
-                                user = org.telegram.tgnet.TLRPC.TL_user()
+                                user = TLRPC.TL_user()
                                 user.id = tgId
                                 user.first_name = tgUsername ?: "User"
                                 user.username = tgUsername
                                 user.access_hash = tgHash ?: 0L
-                                org.telegram.messenger.MessagesController.getInstance(currentAccount).putUser(user, false)
+                                MessagesController.getInstance(currentAccount).putUser(user, false)
                             }
-                            val args = android.os.Bundle()
+                            val args = Bundle()
                             args.putLong("user_id", tgId)
-                            presentFragment(org.telegram.ui.ChatActivity(args))
+                            presentFragment(ChatActivity(args))
                         },
                         onNavigateToCreateChannel = {
-                            val args = android.os.Bundle()
+                            val args = Bundle()
                             args.putInt("step", 0)
-                            presentFragment(org.telegram.ui.ChannelCreateActivity(args))
+                            presentFragment(ChannelCreateActivity(args))
                         }
                     )
                 }

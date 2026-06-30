@@ -63,11 +63,9 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
-import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.ReplacementSpan;
@@ -120,9 +118,8 @@ import com.google.android.play.core.integrity.IntegrityTokenResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.telegram.PhoneFormat.PhoneFormat;
-import org.telegram.divo.components.SliderView;
-import org.telegram.divo.components.items.ButtonContainer;
 import org.telegram.divo.components.items.RegButtonView;
+import org.telegram.divo.dal.utils.DivoAuthHelper;
 import org.telegram.divo.screen.reg_select_role.RoleSelectionView;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
@@ -134,10 +131,8 @@ import org.telegram.messenger.CallReceiver;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLog;
-import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
-import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
@@ -163,8 +158,6 @@ import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.CheckBoxCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AnimatedPhoneNumberEditText;
-import org.telegram.ui.Components.AvatarDrawable;
-import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.CubicBezierInterpolator;
@@ -172,7 +165,6 @@ import org.telegram.ui.Components.CustomPhoneKeyboardView;
 import org.telegram.ui.Components.Easings;
 import org.telegram.ui.Components.EditTextBoldCursor;
 import org.telegram.ui.Components.FragmentFloatingButton;
-import org.telegram.ui.Components.ImageUpdater;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.LinkPath;
@@ -188,7 +180,6 @@ import org.telegram.ui.Components.Premium.StarParticlesView;
 import org.telegram.ui.Components.ProxyDrawable;
 import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.Components.RLottieImageView;
-import org.telegram.ui.Components.RadialProgressView;
 import org.telegram.ui.Components.ScaleStateListAnimator;
 import org.telegram.ui.Components.SimpleThemeDescription;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
@@ -1958,9 +1949,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                     divoAuthProgressDialog.show();
 
-                    divoAuthRequest = org.telegram.divo.dal.network.DivoAuthHelper.checkDivoUserExists(
+                    divoAuthRequest = DivoAuthHelper.checkDivoUserExists(
                         res.user.phone,
-                        new org.telegram.divo.dal.network.DivoAuthHelper.DivoAuthCallback() {
+                        new DivoAuthHelper.DivoAuthCallback() {
                             @Override
                             public void onSuccess() {
                                 if (divoAuthProgressDialog != null) {
