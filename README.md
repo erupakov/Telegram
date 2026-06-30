@@ -1,38 +1,42 @@
-## Telegram messenger for Android
+## Telegram messenger for Android (Divo Fork)
 
 [Telegram](https://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
-This repo contains the official source code for [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger).
+This repo contains the modified source code for the Divo Global project, built on top of the Telegram App for Android.
 
-## Creating your Telegram Application
+### Compilation Guide
 
-We welcome all developers to use our API and source code to create applications on our platform.
-There are several things we require from **all developers** for the moment.
+**Note**: In order to support reproducible builds, this repo relies on `local.properties` and `google-services.json` which are not checked into version control. Before compiling, please make sure to set these up.
 
-1. [**Obtain your own api_id**](https://core.telegram.org/api/obtaining_api_id) for your application.
-2. Please **do not** use the name Telegram for your app — or make sure your users understand that it is unofficial.
-3. Kindly **do not** use our standard logo (white paper plane in a blue circle) as your app's logo.
-3. Please study our [**security guidelines**](https://core.telegram.org/mtproto/security_guidelines) and take good care of your users' data and privacy.
-4. Please remember to publish **your** code too in order to comply with the licences.
+You will require **Android Studio Hedgehog (2023.1.1)**, **JDK 17**, **Android SDK 35**, and **Android NDK rev. 21.4.7075529**.
+
+1. Clone the repository: `git clone <your-repo-url>`
+2. Copy your `release.keystore` into `TMessagesProj/config/`
+3. Create or edit `local.properties` in the root of the project to include your SDK/NDK paths and required keys:
+   ```properties
+   sdk.dir=/path/to/Android/Sdk
+   ndk.dir=/path/to/Android/Sdk/ndk/21.4.7075529
+   
+   # Telegram API Keys (Obtain from https://my.telegram.org)
+   TELEGRAM_APP_ID=your_api_id
+   TELEGRAM_APP_HASH=your_api_hash
+   
+   # Keystore Credentials
+   RELEASE_KEY_PASSWORD=...
+   RELEASE_KEY_ALIAS=...
+   RELEASE_STORE_PASSWORD=...
+
+4. Go to the [Firebase Console](https://console.firebase.google.com/), download the `google-services.json` for this project, and copy it to the `TMessagesProj_App/` folder.
+5. Open the project in Android Studio (note that it should be **opened**, NOT imported).
+6. You are ready to compile. You can build via the IDE or using Gradle:
+   ```bash
+   ./gradlew :TMessagesProj_App:assembleAfatDebug
+   ```
 
 ### API, Protocol documentation
 
 Telegram API manuals: https://core.telegram.org/api
-
 MTproto protocol manuals: https://core.telegram.org/mtproto
-
-### Compilation Guide
-
-**Note**: In order to support [reproducible builds](https://core.telegram.org/reproducible-builds), this repo contains dummy release.keystore,  google-services.json and filled variables inside BuildVars.java. Before publishing your own APKs please make sure to replace all these files with your own.
-
-You will require Android Studio 3.4, Android NDK rev. 20 and Android SDK 8.1
-
-1. Download the Telegram source code from https://github.com/DrKLO/Telegram ( git clone https://github.com/DrKLO/Telegram.git )
-2. Copy your release.keystore into TMessagesProj/config
-3. Fill out RELEASE_KEY_PASSWORD, RELEASE_KEY_ALIAS, RELEASE_STORE_PASSWORD in gradle.properties to access your  release.keystore
-4.  Go to https://console.firebase.google.com/, create two android apps with application IDs org.telegram.messenger and org.telegram.messenger.beta, turn on firebase messaging and download google-services.json, which should be copied to the same folder as TMessagesProj.
-5. Open the project in the Studio (note that it should be opened, NOT imported).
-6. Fill out values in TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java – there’s a link for each of the variables showing where and which data to obtain.
-7. You are ready to compile Telegram.
+Security guidelines: https://core.telegram.org/mtproto/security_guidelines
 
 ### Localization
 
