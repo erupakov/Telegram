@@ -1,7 +1,6 @@
 package org.telegram.divo.screen.search
 
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -19,15 +18,10 @@ import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.AppearanceItem
 import org.telegram.divo.entity.FeedlineItem
 import org.telegram.divo.entity.SearchedProfile
-import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.search.Effect.*
 import org.telegram.divo.usecase.ToggleBookmarkUseCase
 import org.telegram.divo.usecase.ToggleLikeUseCase
-import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     private var searchFRJob: Job? = null
@@ -356,39 +350,9 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     }
 
     private fun loadCountries() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val list = mutableListOf<LocalCountry>()
-            try {
-                val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
-                val reader = BufferedReader(InputStreamReader(stream))
-                reader.forEachLine { line ->
-                    val args = line.split(";")
-                    if (args.size >= 3) {
-                        val code = args[0]
-                        val shortname = args[1]
-                        val defaultName = args[2]
-                        val locName = LocaleController.getCountryName(shortname)
-                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
-                        val flag = LocaleController.getLanguageFlag(shortname)
-                        list.add(
-                            LocalCountry(
-                                code = code,
-                                shortName = shortname,
-                                name = name,
-                                flag = flag
-                            )
-                        )
-                    }
-                }
-                reader.close()
-                stream.close()
-
-                list.sortBy { it.name }
-
-                setState { copy(allCountries = list) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCountries()
+            setState { copy(allCountries = list) }
         }
     }
 
@@ -430,30 +394,9 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     }
 
     private fun loadCities() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val cities = mutableListOf<LocalCity>()
-                val stream = ApplicationLoader.applicationContext.assets.open("cities.txt")
-                stream.bufferedReader().forEachLine { line ->
-                    val cols = line.split("\t")
-                    if (cols.size > 14) {
-                        cities.add(
-                            LocalCity(
-                                id = cols[0].toLongOrNull() ?: return@forEachLine,
-                                name = cols[1],
-                                asciiName = cols[2],
-                                alternateNames = cols[3],
-                                countryCode = cols[8],
-                                population = cols[14].toIntOrNull() ?: 0
-                            )
-                        )
-                    }
-                }
-                stream.close()
-                setState { copy(allCities = cities) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        viewModelScope.launch {
+            val cities = DivoApi.locationRepository.getCities()
+            setState { copy(allCities = cities) }
         }
     }
 

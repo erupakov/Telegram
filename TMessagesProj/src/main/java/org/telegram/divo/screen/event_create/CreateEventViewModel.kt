@@ -2,7 +2,6 @@ package org.telegram.divo.screen.event_create
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.common.utils.uriToFile
@@ -14,11 +13,7 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.entity.UploadedFile
-import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.LocaleController
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
 
@@ -266,39 +261,9 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
     }
 
     private fun loadCountries() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val list = mutableListOf<LocalCountry>()
-            try {
-                val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
-                val reader = BufferedReader(InputStreamReader(stream))
-                reader.forEachLine { line ->
-                    val args = line.split(";")
-                    if (args.size >= 3) {
-                        val code = args[0]
-                        val shortname = args[1]
-                        val defaultName = args[2]
-                        val locName = LocaleController.getCountryName(shortname)
-                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
-                        val flag = LocaleController.getLanguageFlag(shortname)
-                        list.add(
-                            LocalCountry(
-                                code = code,
-                                shortName = shortname,
-                                name = name,
-                                flag = flag
-                            )
-                        )
-                    }
-                }
-                reader.close()
-                stream.close()
-
-                list.sortBy { it.name }
-
-                setState { copy(allCountries = list) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCountries()
+            setState { copy(allCountries = list) }
         }
     }
 

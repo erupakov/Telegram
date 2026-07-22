@@ -240,48 +240,18 @@ class SimilarProfilesViewModel(
     }
 
     private fun loadCountries() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val list = mutableListOf<LocalCountry>()
-            try {
-                val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
-                val reader = BufferedReader(InputStreamReader(stream))
-                reader.forEachLine { line ->
-                    val args = line.split(";")
-                    if (args.size >= 3) {
-                        val code = args[0]
-                        val shortname = args[1]
-                        val defaultName = args[2]
-                        val locName = LocaleController.getCountryName(shortname)
-                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
-                        val flag = LocaleController.getLanguageFlag(shortname)
-                        list.add(
-                            LocalCountry(
-                                code = code,
-                                shortName = shortname,
-                                name = name,
-                                flag = flag
-                            )
-                        )
-                    }
+        viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCountries()
+            setState { copy(allCountries = list) }
+            if (pendingCountryShortNames.isNotEmpty()) {
+                val selected = list.filter { it.shortName in pendingCountryShortNames }
+                if (selected.isNotEmpty()) {
+                    val newState = state.value.copy(selectedCountries = selected)
+                    val filtered = filterProfiles(newState)
+                    setState { newState.copy(profiles = filtered) }
+                    saveHistory(newState.copy(profiles = filtered))
                 }
-                reader.close()
-                stream.close()
-
-                list.sortBy { it.name }
-
-                setState { copy(allCountries = list) }
-                if (pendingCountryShortNames.isNotEmpty()) {
-                    val selected = list.filter { it.shortName in pendingCountryShortNames }
-                    if (selected.isNotEmpty()) {
-                        val newState = state.value.copy(selectedCountries = selected)
-                        val filtered = filterProfiles(newState)
-                        setState { newState.copy(profiles = filtered) }
-                        saveHistory(newState.copy(profiles = filtered))
-                    }
-                    pendingCountryShortNames = emptyList()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
+                pendingCountryShortNames = emptyList()
             }
         }
     }

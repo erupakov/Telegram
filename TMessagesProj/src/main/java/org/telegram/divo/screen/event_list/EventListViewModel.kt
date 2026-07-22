@@ -10,14 +10,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.RoleType
-import org.telegram.divo.screen.add_model.LocalCountry
-import org.telegram.divo.screen.search.LocalCity
 import org.telegram.divo.usecase.GetEventListUseCase
-import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.LocaleController
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import kotlinx.coroutines.Dispatchers
 
 class EventListViewModel :
     BaseViewModel<EventListViewState, EventListIntent, EventListEffect>() {
@@ -416,67 +409,16 @@ class EventListViewModel :
         }
     }
     private fun loadCountries() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val list = mutableListOf<LocalCountry>()
-            try {
-                val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
-                val reader = BufferedReader(InputStreamReader(stream))
-                reader.forEachLine { line ->
-                    val args = line.split(";")
-                    if (args.size >= 3) {
-                        val code = args[0]
-                        val shortname = args[1]
-                        val defaultName = args[2]
-                        val locName = LocaleController.getCountryName(shortname)
-                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
-                        val flag = LocaleController.getLanguageFlag(shortname)
-                        list.add(
-                            LocalCountry(
-                                code = code,
-                                shortName = shortname,
-                                name = name,
-                                flag = flag
-                            )
-                        )
-                    }
-                }
-                reader.close()
-                stream.close()
-
-                list.sortBy { it.name }
-
-                setState { copy(allCountries = list) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCountries()
+            setState { copy(allCountries = list) }
         }
     }
 
     private fun loadCities() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val cities = mutableListOf<LocalCity>()
-                val stream = ApplicationLoader.applicationContext.assets.open("cities.txt")
-                stream.bufferedReader().forEachLine { line ->
-                    val cols = line.split("\t")
-                    if (cols.size > 14) {
-                        cities.add(
-                            LocalCity(
-                                id = cols[0].toLongOrNull() ?: return@forEachLine,
-                                name = cols[1],
-                                asciiName = cols[2],
-                                alternateNames = cols[3],
-                                countryCode = cols[8],
-                                population = cols[14].toIntOrNull() ?: 0
-                            )
-                        )
-                    }
-                }
-                stream.close()
-                setState { copy(allCities = cities) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        viewModelScope.launch {
+            val cities = DivoApi.locationRepository.getCities()
+            setState { copy(allCities = cities) }
         }
     }
 }
