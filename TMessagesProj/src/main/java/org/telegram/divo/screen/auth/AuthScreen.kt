@@ -1,19 +1,18 @@
 package org.telegram.divo.screen.auth
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.Text
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -46,12 +45,12 @@ import org.telegram.divo.common.AppSnackbarHost
 import org.telegram.divo.common.AppSnackbarHostState
 import org.telegram.divo.common.SnackbarEvent
 import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.components.StatusBarIconColorEffect
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.dal.network.GoogleSignInHelper
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont
 import org.telegram.messenger.R
-import org.telegram.messenger.UserConfig
 
 @Composable
 fun AuthScreen(
@@ -64,7 +63,6 @@ fun AuthScreen(
     val context = LocalContext.current
     val isGoogleLoading = remember { mutableStateOf(false) }
 
-    val currentAccount = UserConfig.selectedAccount
     val snackbarHostState = remember { AppSnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -126,6 +124,8 @@ fun AuthScreen(
             }
         }
     }
+
+    StatusBarIconColorEffect(useDarkIcons = true)
 
     Scaffold(
         snackbarHost = { AppSnackbarHost(state = snackbarHostState) },
