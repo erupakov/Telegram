@@ -471,7 +471,7 @@ private fun PreviewHeader(
                     if (state.deadlineDate.isNotBlank()) {
                         RoundedGlassContainer(
                             height = 30.dp,
-                            borderColor = AppTheme.colors.onBackground.copy(alpha = 0.2f),
+                            borderColor = AppTheme.colors.onBackground.copy(alpha = 0.1f),
                             contentPadding = PaddingValues(horizontal = 12.dp)
                         ) {
                             val date = state.deadlineDate.toMonthDayFormat()

@@ -33,7 +33,7 @@ fun EngagementsColumn(
     onStatsClicked: (StatsType) -> Unit,
 ) {
     Column(modifier = modifier) {
-        val backgroundColor = AppTheme.colors.onBackground.copy(alpha = 0.3f)
+        val backgroundColor = AppTheme.colors.backgroundDark.copy(alpha = 0.4f)
         val contentColor = if (uiState.userInfo.isLikedByUser) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
         val isFollowed = uiState.userInfo.isFollowed
 

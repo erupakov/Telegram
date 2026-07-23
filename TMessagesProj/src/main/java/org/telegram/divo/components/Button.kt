@@ -211,8 +211,8 @@ fun RoundedGlassButton(
     modifier: Modifier = Modifier,
     @DrawableRes resId: Int = R.drawable.ic_divo_back,
     shadowEnabled: Boolean = true,
-    borderColor: Color = AppTheme.colors.onBackground.copy(alpha = 0.4f),
-    background: Color = AppTheme.colors.onBackground.copy(alpha = 0.2f),
+    borderColor: Color = AppTheme.colors.onBackground.copy(alpha = 0.1f),
+    background: Color = AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
     iconTint: Color = AppTheme.colors.onBackground,
     iconSize: Dp = 16.dp,
     onClick: () -> Unit = {},
@@ -282,8 +282,8 @@ fun RoundedGlassContainer(
     space: Dp = 0.dp,
     height: Dp = 40.dp,
     contentPadding: PaddingValues = PaddingValues(horizontal = 10.dp),
-    borderColor: Color = AppTheme.colors.onBackground.copy(alpha = 0.4f),
-    background: Color = AppTheme.colors.onBackground.copy(alpha = 0.2f),
+    borderColor: Color = AppTheme.colors.onBackground.copy(alpha = 0.1f),
+    background: Color = AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
     content: @Composable (RowScope.() -> Unit)
 ) {
     Row(

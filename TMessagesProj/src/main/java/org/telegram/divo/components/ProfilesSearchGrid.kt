@@ -256,7 +256,7 @@ private fun ProfileItem(
                 RoundedGlassContainer(
                     space = 10.dp,
                     height = 22.dp,
-                    background = if (showSocialStats && profile.isMarked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.2f),
+                    background = if (showSocialStats && profile.isMarked) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
                     contentPadding = PaddingValues(horizontal = 8.dp)
                 ) {
                     Icon(
@@ -299,7 +299,7 @@ private fun ProfileItem(
                             .clickableWithoutRipple { onLikeClicked() },
                         height = 22.dp,
                         space = 4.dp,
-                        background = if (profile.isLiked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.2f),
+                        background = if (profile.isLiked) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
                         contentPadding = PaddingValues(horizontal = 6.dp)
                     ) {
                     Icon(

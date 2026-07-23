@@ -191,7 +191,7 @@ fun ModelPage(
                     RoundedGlassContainer(
                         modifier = Modifier.width(67.dp),
                         height = 30.dp,
-                        background = if (feed.isLiked) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
+                        background = if (feed.isLiked) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Row(
@@ -220,7 +220,7 @@ fun ModelPage(
                      RoundedGlassContainer(
                         modifier = Modifier.width(67.dp),
                         height = 30.dp,
-                        background = AppTheme.colors.onBackground.copy(alpha = 0.3f),
+                        background = AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Icon(
@@ -244,7 +244,7 @@ fun ModelPage(
                     RoundedGlassContainer(
                         modifier = Modifier.width(67.dp),
                         height = 30.dp,
-                        background = if (feed.isFollowed) AppTheme.colors.onBackground else AppTheme.colors.onBackground.copy(alpha = 0.3f),
+                        background = if (feed.isFollowed) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Row(

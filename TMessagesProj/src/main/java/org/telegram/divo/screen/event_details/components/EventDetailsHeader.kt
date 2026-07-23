@@ -135,7 +135,7 @@ private fun StatsSection(
             count = event?.likesCount ?: 0,
             tint = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             textColor = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
-            background = if (isLiked) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
+            background = if (isLiked) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
             onClick = onLikeClicked
         )
         Spacer(Modifier.height(10.dp))
@@ -150,7 +150,7 @@ private fun StatsSection(
             count = event?.favoritesCount ?: 0,
             tint = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             textColor = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
-            background = if (isFavourite) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
+            background = if (isFavourite) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
             onClick = onFavouriteClicked
         )
     }
@@ -227,7 +227,7 @@ private fun ContentSection(
                     if (statusText.isNotEmpty()) {
                         RoundedGlassContainer(
                             height = 36.dp,
-                            background = Color.White.copy(alpha = 0.3f),
+                            background = AppTheme.colors.backgroundDark.copy(0.4f),
                             contentPadding = PaddingValues(horizontal = 10.dp)
                         ) {
                             Text(
@@ -288,7 +288,7 @@ private fun EngagementItem(
     count: Int,
     tint: Color = AppTheme.colors.onBackground,
     textColor: Color = AppTheme.colors.onBackground,
-    background: Color = Color.White.copy(alpha = 0.3f),
+    background: Color = AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
     onClick: (() -> Unit)? = null
 ) {
     val baseModifier = Modifier.width(56.dp)
@@ -319,73 +319,6 @@ private fun EngagementItem(
             fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@Composable
-private fun Background(
-    modifier: Modifier = Modifier,
-    backgroundUrl: String?,
-) {
-    val hazeState = remember { HazeState() }
-    var componentHeight by remember { mutableFloatStateOf(0f) }
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .onSizeChanged { componentHeight = it.height.toFloat() }
-    ) {
-        DivoAsyncImage(
-            modifier = Modifier
-                .hazeSource(state = hazeState),
-            model = backgroundUrl,
-            loadingContent = {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFBF7A54)))
-            },
-            errorContent = {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color(0xFFBF7A54)))
-            }
-        )
-
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .hazeEffect(
-                    state = hazeState,
-                    style = HazeStyle(
-                        backgroundColor = Color.Black,
-                        blurRadius = 30.dp,
-                        tints = listOf(HazeTint(Color.Black.copy(alpha = 0.2f)))
-                    )
-                ) {
-                    progressive = HazeProgressive.verticalGradient(
-                        startY = componentHeight * 0.65f,
-                        startIntensity = 0f,
-                        endY = componentHeight * 0.8f,
-                        endIntensity = 1f,
-                        easing = LinearEasing
-                    )
-                }
-        )
-
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(100.dp)
-                .align(Alignment.TopCenter)
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black.copy(alpha = 0.5f),
-                            Color.Transparent
-                        )
-                    )
-                )
         )
     }
 }

@@ -116,9 +116,9 @@ fun ToolBarContent(
     var showEditMenu by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
 
-    val buttonBgColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.2f), Color.White, transitionProgress)
+    val buttonBgColor = lerp(AppTheme.colors.backgroundDark.copy(alpha = 0.4f), Color.White, transitionProgress)
     val buttonIconColor = lerp(Color.White, Color.Black, transitionProgress)
-    val buttonBorderColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.4f), Color.Transparent, transitionProgress)
+    val buttonBorderColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.1f), Color.Transparent, transitionProgress)
 
     val options = listOf(
         PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec),
