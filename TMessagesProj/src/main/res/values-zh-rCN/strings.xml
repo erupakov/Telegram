@@ -12,6 +12,7 @@
     <string name="DivoMainTabsEvents">活动</string>
     <string name="DivoMainTabsChats">聊天</string>
     <string name="DivoMainTabsSettings">设置</string>
+    <string name="DivoMainTabsProfile">个人资料</string>
     <string name="ButtonBack">返回</string>
     <string name="ButtonCreate">创建</string>
     <string name="ButtonSave">保存</string>

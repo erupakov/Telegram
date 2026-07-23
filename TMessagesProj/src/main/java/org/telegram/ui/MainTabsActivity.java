@@ -23,6 +23,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.telegram.divo.screen.event_list.FragmentEventList;
 import org.telegram.divo.screen.models.FragmentModels;
+import org.telegram.divo.screen.profile.FragmentProfileN;
 import org.telegram.divo.screen.settings.FragmentSettings;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.FileLoader;
@@ -55,16 +56,18 @@ import me.vkryl.android.animator.BoolAnimator;
 import me.vkryl.android.animator.FactorAnimator;
 
 public class MainTabsActivity extends ViewPagerActivity implements NotificationCenter.NotificationCenterDelegate, FactorAnimator.Target {
-    public static final int TABS_COUNT = 4;
+    public static final int TABS_COUNT = 5;
     private static final int POSITION_MODELS = 0;
     private static final int POSITION_EVENTS = 1;
     private static final int POSITION_CHATS = 2;
-    private static final int POSITION_SETTINGS = 3;
+    private static final int POSITION_PROFILE = 3;
+    private static final int POSITION_SETTINGS = 4;
 
     private static final int INDEX_MODELS = 0;
     private static final int INDEX_EVENTS = 1;
     private static final int INDEX_CHATS = 2;
-    private static final int INDEX_SETTINGS = 3;
+    private static final int INDEX_PROFILE = 3;
+    private static final int INDEX_SETTINGS = 4;
 
 
 
@@ -83,6 +86,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     //DIVO--START
     private LinearLayout bottomBarContainer;
     private FrameLayout modelsSearchButton;
+    private FrameLayout searchButtonWrapper;
     private boolean isModelsSearchVisible;
     //DIVO--END
 
@@ -215,7 +219,8 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         tabs[INDEX_MODELS] = GlassTabView.createMainTabWithIcon(context, resourceProvider, R.drawable.baseline_models, R.string.DivoMainTabsModels);
         tabs[INDEX_EVENTS] = GlassTabView.createMainTabWithIcon(context, resourceProvider, R.drawable.baseline_calendar_item, R.string.DivoMainTabsEvents);
         tabs[INDEX_CHATS] = GlassTabView.createMainTab(context, resourceProvider, GlassTabView.TabAnimation.CHATS, R.string.DivoMainTabsChats);
-        tabs[INDEX_SETTINGS] = GlassTabView.createAvatar(context, resourceProvider, currentAccount, R.string.DivoMainTabsSettings);
+        tabs[INDEX_PROFILE] = GlassTabView.createAvatar(context, resourceProvider, currentAccount, R.string.DivoMainTabsProfile);
+        tabs[INDEX_SETTINGS] = GlassTabView.createMainTabWithIcon(context, resourceProvider, R.drawable.outline_profile_settings, R.string.DivoMainTabsSettings);
 
         for (int index = 0; index < tabs.length; index++) {
             final GlassTabView view = tabs[index];
@@ -278,15 +283,27 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             BaseFragment fragment = getCurrentVisibleFragment();
             if (fragment instanceof FragmentModels) {
                 ((FragmentModels) fragment).openSearchFromBottomBar();
+            } else if (fragment instanceof org.telegram.divo.screen.event_list.FragmentEventList) {
+                ((org.telegram.divo.screen.event_list.FragmentEventList) fragment).openSearchFromBottomBar();
+            } else if (fragment instanceof DialogsActivity) {
+                ((DialogsActivity) fragment).openSearchFromBottomBar();
             }
         });
         modelsSearchButton.setVisibility(View.GONE);
         modelsSearchButton.setAlpha(0f);
+        modelsSearchButton.setPivotX(0f);
+        modelsSearchButton.setPivotY(dp(36));
 
         ImageView searchIcon = new ImageView(context);
         searchIcon.setScaleType(ImageView.ScaleType.CENTER);
         searchIcon.setImageResource(R.drawable.ic_divo_search_24);
         modelsSearchButton.addView(searchIcon, LayoutHelper.createFrame(24, 24, Gravity.CENTER));
+
+        searchButtonWrapper = new FrameLayout(context);
+        searchButtonWrapper.addView(modelsSearchButton, LayoutHelper.createFrame(
+                DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS,
+                DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS,
+                Gravity.CENTER_VERTICAL | Gravity.LEFT));
 
         bottomBarContainer = new LinearLayout(context);
         bottomBarContainer.setOrientation(LinearLayout.HORIZONTAL);
@@ -295,7 +312,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
         bottomBarContainer.addView(tabsView, LayoutHelper.createLinear(
                 LayoutHelper.WRAP_CONTENT, DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS));
-        bottomBarContainer.addView(modelsSearchButton, LayoutHelper.createLinear(
+        bottomBarContainer.addView(searchButtonWrapper, LayoutHelper.createLinear(
                 DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS,
                 DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS,
                 0, -4, 0, 0, 0));
@@ -419,6 +436,15 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
             dialogsActivity = new DialogsActivity(args);
             dialogsActivity.setMainTabsActivityController(new MainTabsActivityControllerImpl());
             return dialogsActivity;
+        } else if (position == POSITION_PROFILE) {
+            int userId = -1;
+            org.telegram.divo.entity.UserInfo info = org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().getCurrentUserFlow().getValue();
+            if (info != null) {
+                userId = info.getId();
+            }
+            FragmentProfileN fragment = FragmentProfileN.Companion.newInstance(userId, true);
+            fragment.setMainTabsActivityController(new MainTabsActivityControllerImpl());
+            return fragment;
         } else if (position == POSITION_SETTINGS) {
             FragmentSettings fragment = new FragmentSettings();
             fragment.setMainTabsActivityController(new MainTabsActivityControllerImpl());
@@ -435,11 +461,85 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
     public GlassTabView[] tabs;
 
+    //DIVO--START
+    private android.animation.ValueAnimator searchAnimator;
+    private float searchAnimationProgress = 1f;
+    private Runnable pendingSettingsAnim;
+
+    private void updateModesAnimation(int position, boolean animated) {
+        boolean showSearch = (position == POSITION_MODELS);
+        boolean showSettings = !showSearch;
+
+        if (!animated) {
+            searchAnimationProgress = showSearch ? 1f : 0f;
+            if (tabsView != null && tabs.length > INDEX_SETTINGS && tabs[INDEX_SETTINGS] != null) {
+                tabsView.setViewVisible(tabs[INDEX_SETTINGS], showSettings, false);
+            }
+            if (searchAnimator != null) {
+                searchAnimator.cancel();
+                searchAnimator = null;
+            }
+            if (pendingSettingsAnim != null) {
+                org.telegram.messenger.AndroidUtilities.cancelRunOnUIThread(pendingSettingsAnim);
+                pendingSettingsAnim = null;
+            }
+            checkUi_fadeView();
+            return;
+        }
+
+        if (showSettings && !showSearch) {
+            animateSearch(0f, () -> {
+                if (tabsView != null && tabs.length > INDEX_SETTINGS && tabs[INDEX_SETTINGS] != null) {
+                    tabsView.setViewVisible(tabs[INDEX_SETTINGS], true, true);
+                }
+            });
+        } else if (showSearch && !showSettings) {
+            if (tabsView != null && tabs.length > INDEX_SETTINGS && tabs[INDEX_SETTINGS] != null) {
+                tabsView.setViewVisible(tabs[INDEX_SETTINGS], false, true);
+            }
+            if (pendingSettingsAnim != null) {
+                org.telegram.messenger.AndroidUtilities.cancelRunOnUIThread(pendingSettingsAnim);
+                pendingSettingsAnim = null;
+            }
+            animateSearch(1f, null);
+        } else if (!showSearch && !showSettings) {
+            if (tabsView != null && tabs.length > INDEX_SETTINGS && tabs[INDEX_SETTINGS] != null) {
+                tabsView.setViewVisible(tabs[INDEX_SETTINGS], false, true);
+            }
+            if (pendingSettingsAnim != null) {
+                org.telegram.messenger.AndroidUtilities.cancelRunOnUIThread(pendingSettingsAnim);
+                pendingSettingsAnim = null;
+            }
+            animateSearch(0f, null);
+        }
+    }
+
+    private void animateSearch(float target, Runnable onEnd) {
+        if (searchAnimator != null) {
+            searchAnimator.cancel();
+        }
+        searchAnimator = android.animation.ValueAnimator.ofFloat(searchAnimationProgress, target);
+        searchAnimator.setDuration(150);
+        searchAnimator.addUpdateListener(animation -> {
+            searchAnimationProgress = (float) animation.getAnimatedValue();
+            checkUi_fadeView();
+        });
+        searchAnimator.addListener(new android.animation.AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(android.animation.Animator animation) {
+                if (onEnd != null) onEnd.run();
+            }
+        });
+        searchAnimator.start();
+    }
+    //DIVO--END
+
     public void selectTab(int position, boolean animated) {
         for (int a = 0; a < tabs.length; a++) {
             GlassTabView tab = tabs[a];
             tab.setSelected(a == position, animated);
         }
+        updateModesAnimation(position, animated);
         //DIVO
         if (getParentActivity() != null) {
             if (position == POSITION_CHATS) {
@@ -654,15 +754,20 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         fadeView.setTranslationY(0);
         fadeView.setVisibility(alpha > 0 ? View.VISIBLE : View.GONE);
         //DIVO--START
-        if (modelsSearchButton != null && bottomBarContainer != null) {
-            final boolean canShow = viewPager.getCurrentPosition() == POSITION_MODELS
-                    && (isModelsSearchVisible || getCurrentVisibleFragment() instanceof FragmentModels);
-
-            final float searchAlpha = canShow ? alpha : 0f;
+        if (modelsSearchButton != null && bottomBarContainer != null && searchButtonWrapper != null) {
+            final float searchAlpha = searchAnimationProgress * alpha;
             modelsSearchButton.setAlpha(searchAlpha);
             modelsSearchButton.setVisibility(searchAlpha > 0 ? View.VISIBLE : View.GONE);
             modelsSearchButton.setTranslationY(lerp(dp(28), 0, searchAlpha));
             modelsSearchButton.setClickable(searchAlpha >= 1f);
+            modelsSearchButton.setScaleX(searchAnimationProgress);
+            modelsSearchButton.setScaleY(searchAnimationProgress);
+
+            android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) searchButtonWrapper.getLayoutParams();
+            if (lp != null) {
+                lp.width = (int) (dp(DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS) * searchAnimationProgress); // Use original 72dp width
+                searchButtonWrapper.setLayoutParams(lp);
+            }
         }
 
         checkUi_bottomBarLayout();
@@ -836,12 +941,12 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     private void updateSettingsAvatar() {
         org.telegram.divo.entity.UserInfo info = org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().getCurrentUserFlow().getValue();
         if (info != null && !info.getAvatarUrl().isEmpty()) {
-            if (tabs != null && tabs[INDEX_SETTINGS] != null) {
-                tabs[INDEX_SETTINGS].setAvatarUrl(info.getAvatarUrl());
+            if (tabs != null && tabs[INDEX_PROFILE] != null) {
+                tabs[INDEX_PROFILE].setAvatarUrl(info.getAvatarUrl());
             }
         } else if (info != null && !info.getPhotoUrl().isEmpty()) {
-            if (tabs != null && tabs[INDEX_SETTINGS] != null) {
-                tabs[INDEX_SETTINGS].setAvatarUrl(info.getPhotoUrl());
+            if (tabs != null && tabs[INDEX_PROFILE] != null) {
+                tabs[INDEX_PROFILE].setAvatarUrl(info.getPhotoUrl());
             }
         }
     }

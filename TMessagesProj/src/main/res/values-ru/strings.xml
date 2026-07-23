@@ -5,6 +5,7 @@
     <string name="DivoMainTabsEvents">События</string>
     <string name="DivoMainTabsChats">Чаты</string>
     <string name="DivoMainTabsSettings">Настройки</string>
+    <string name="DivoMainTabsProfile">Профиль</string>
     <string name="ButtonBack">Назад</string>
     <string name="ButtonCreate">Создать</string>
     <string name="ButtonSave">Сохранить</string>

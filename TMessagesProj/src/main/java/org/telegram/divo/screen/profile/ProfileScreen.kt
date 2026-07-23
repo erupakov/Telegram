@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -96,6 +97,7 @@ fun ProfileScreen(
     onEditClicked: (Boolean, Int) -> Unit,
     onEditLinksClicked: () -> Unit = {},
     onNavigateToCreateChannel: () -> Unit = {},
+    showBackButton: Boolean = true,
     onNavigateBack: () -> Unit = {},
     showWorkHistory: (Int) -> Unit = {},
     onGalleryClicked: (Int, Boolean) -> Unit = { _, _ -> },
@@ -113,26 +115,10 @@ fun ProfileScreen(
     var withdrawEventId by remember { mutableStateOf<Int?>(null) }
 
     var isRefreshing by remember { mutableStateOf(false) }
-    var hasInitiallyResumed by remember { mutableStateOf(false) }
 
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
 
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == androidx.lifecycle.Lifecycle.Event.ON_RESUME) {
-                if (hasInitiallyResumed) {
-                    isRefreshing = true
-                    viewModel.setIntent(ProfileIntent.OnRefresh)
-                } else {
-                    hasInitiallyResumed = true
-                }
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
+    // Removed automatic refresh on ON_RESUME to prevent reloading when switching tabs
 
     LaunchedEffect(uiState.isLoading) {
         if (!uiState.isLoading) isRefreshing = false
@@ -219,6 +205,7 @@ fun ProfileScreen(
                     ProfileScreenContent(
                         uiState = uiState,
                         isRefreshing = isRefreshing,
+                        showBackButton = showBackButton,
                         onIntent = { intent ->
                             viewModel.setIntent(intent)
                         }
@@ -263,6 +250,7 @@ fun ProfileScreen(
 private fun ProfileScreenContent(
     uiState: ProfileViewState,
     isRefreshing: Boolean,
+    showBackButton: Boolean,
     onIntent: (ProfileIntent) -> Unit
 ) {
     val pageCount = uiState.pageCount
@@ -621,6 +609,7 @@ private fun ProfileScreenContent(
             onEditSocialLinksClicked = { onIntent(ProfileIntent.OnEditLinksClicked) },
             onEditProfileClicked = { onIntent(ProfileIntent.OnEditClicked(0)) },
             onEditBackgroundClicked = { openGalleryForBg() },
+            showBackButton = showBackButton,
             onManageWorkExperienceClicked = { onIntent(ProfileIntent.OnShowWorkHistory) },
             onNavigateBack = { onIntent(ProfileIntent.OnNavigateBack) },
             onFindSimilarProfiles = { onIntent(ProfileIntent.OnFindSimilarProfiles) },
@@ -660,7 +649,9 @@ private fun ProfileScreenContent(
         }
 
         AnimatedPortfolioAddButton(
-            modifier = Modifier.align(Alignment.BottomCenter),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = if (!showBackButton) 68.dp else 0.dp),
             pagerState = pagerState,
             showAddButton = showAddButton,
             isUploading = uiState.mediaUploading,

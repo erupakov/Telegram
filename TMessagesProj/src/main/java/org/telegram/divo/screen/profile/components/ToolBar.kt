@@ -111,6 +111,7 @@ fun ToolBarContent(
     onFindSimilarProfiles: () -> Unit = {},
     onReportProfile: () -> Unit = {},
     isSolid: Boolean = false,
+    showBackButton: Boolean = true,
     transitionProgress: Float = 0f,
 ) {
     var showEditMenu by remember { mutableStateOf(false) }
@@ -147,15 +148,17 @@ fun ToolBarContent(
             .padding(top = statusBarPadding.value + 8.dp, bottom = 8.dp),
         contentAlignment = Alignment.Center
     ) {
-        RoundedGlassButton(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .align(Alignment.CenterStart),
-            background = buttonBgColor,
-            iconTint = buttonIconColor,
-            borderColor = buttonBorderColor,
-            onClick = onNavigateBack
-        )
+        if (showBackButton) {
+            RoundedGlassButton(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .align(Alignment.CenterStart),
+                background = buttonBgColor,
+                iconTint = buttonIconColor,
+                borderColor = buttonBorderColor,
+                onClick = onNavigateBack
+            )
+        }
 
         Box(
             modifier = Modifier

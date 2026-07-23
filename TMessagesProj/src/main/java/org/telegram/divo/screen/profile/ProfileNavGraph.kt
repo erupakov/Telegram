@@ -117,6 +117,7 @@ sealed class ProfileRoute(val route: String) {
 fun ProfileNavGraph(
     userId: Int,
     isOwnProfile: Boolean = false,
+    showRootBackButton: Boolean = true,
     onNavControllerReady: (NavController) -> Unit = {},
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
     onNavigateToCreateChannel: () -> Unit = {},
@@ -161,6 +162,7 @@ fun ProfileNavGraph(
                 viewModel = profileViewModel,
                 userId = currentUserId,
                 isOwnProfile = currentIsOwnProfile,
+                showBackButton = if (nav.previousBackStackEntry == null) showRootBackButton else true,
                 onEditClicked = { isModel, initialPage ->
                     nav.navigate(ProfileRoute.Edit.createRoute(isModel, initialPage)) },
                 onEditLinksClicked = { nav.navigate(ProfileRoute.EditLinks.route) },

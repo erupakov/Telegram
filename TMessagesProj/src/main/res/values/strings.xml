@@ -12,6 +12,7 @@
     <string name="DivoMainTabsEvents">Events</string>
     <string name="DivoMainTabsChats">Chats</string>
     <string name="DivoMainTabsSettings">Settings</string>
+    <string name="DivoMainTabsProfile">Profile</string>
     <string name="ButtonBack">Back</string>
     <string name="ButtonCreate">Create</string>
     <string name="ButtonSave">Save</string>

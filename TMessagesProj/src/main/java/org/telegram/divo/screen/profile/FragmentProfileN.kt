@@ -31,6 +31,13 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
 
     private var navController: NavController? = null
     
+    private val isOnHomeScreen = androidx.compose.runtime.mutableStateOf(true)
+    private var mainTabsController: org.telegram.ui.MainTabsActivityController? = null
+
+    fun setMainTabsActivityController(controller: org.telegram.ui.MainTabsActivityController) {
+        this.mainTabsController = controller
+    }
+    
     private val composeLifecycleOwner = FragmentLifecycleOwner().apply {
         onCreate()
         onStart()
@@ -80,7 +87,14 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
                     ProfileNavGraph(
                         userId = targetUserId,
                         isOwnProfile = true,
-                        onNavControllerReady = { navController = it },
+                        showRootBackButton = false,
+                        onNavControllerReady = { nav -> 
+                            navController = nav 
+                            nav.addOnDestinationChangedListener { _, destination, _ ->
+                                isOnHomeScreen.value = destination.route?.startsWith("profile/") == true
+                                mainTabsController?.setTabsVisible(isOnHomeScreen.value)
+                            }
+                        },
                         onNavigateToChat = { tgId, tgHash, tgUsername ->
                             val currentAccount = UserConfig.selectedAccount
                             var user = MessagesController.getInstance(currentAccount).getUser(tgId)
