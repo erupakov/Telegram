@@ -1,0 +1,2289 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<resources>
+    <!--divo view start-->
+    <string name="AppName">Divo Global</string>
+    <string name="AppNameBeta">Divo Global</string>
+    <string name="LanguageName">Français</string>
+    <string name="English">Anglais</string>
+    <string name="LanguageNameInEnglish">French</string>
+    <string name="LanguageCode">fr</string>
+    <string name="ContinueOnThisLanguage">Continuer en français</string>
+    <string name="DivoMainTabsModels">Modèles</string>
+    <string name="DivoMainTabsEvents">Événements</string>
+    <string name="DivoMainTabsChats">Discussions</string>
+    <string name="DivoMainTabsSettings">Paramètres</string>
+    <string name="DivoMainTabsProfile">Profil</string>
+    <string name="ButtonBack">Deux</string>
+    <string name="ButtonCreate">Croire</string>
+    <string name="ButtonSave">Jardinier</string>
+    <string name="ButtonApply">Appliquer</string>
+    <string name="ButtonApplied">Appliqué</string>
+    <string name="ButtonClosed">Ferme</string>
+    <string name="ButtonOk">Accepteur</string>
+    <string name="ButtonCancel">Annuler</string>
+    <string name="ButtonEdit">Modificateur</string>
+    <string name="ButtonDelete">Éliminateur</string>
+    <string name="ButtonContinue">Continuer</string>
+    <string name="ButtonDone">Prêt</string>
+    <string name="RetryLabel">Réessayer</string>
+    <string name="YourPhoneLabel">tonne de téléphone</string>
+    <string name="ChooseCountryLabel">Choisissez un pays</string>
+    <string name="SearchLabel">Rechercher</string>
+
+    <!--profile screen-->
+    <string name="SimilarProfiles">Des profils similaires pourraient vous intéresser.</string>
+    <string name="UploadPhotos">Téléchargez votre photo</string>
+    <string name="UploadVideos">Téléchargez votre vidéo</string>
+    <string name="UploadingPhotos">Téléchargez votre photo…</string>
+    <string name="UploadingVideos">Téléchargez votre vidéo…</string>
+    <string name="AddEvent">Ajouter un événement</string>
+    <string name="MyLinks">mes liens</string>
+    <string name="EditLinks">Modifier les liens</string>
+    <string name="SendDM">Envoyer au MD</string>
+    <string name="Like">J\'aime</string>
+    <string name="Viewed">Vu</string>
+    <string name="Saved">Jardinier</string>
+    <string name="LoadingModelsList">Chargement de la liste des modèles…</string>
+    <string name="EditProfile">Modificateur de profil</string>
+    <string name="ChangeProfileBackground">Changer l\'arrière-plan du profil</string>
+    <string name="EditSocialLinks">Modifier les liens sociaux</string>
+    <string name="ManageWorkExperience">Gérer l\'expérience de travail</string>
+    <string name="Profile">mon profil</string>
+    <string name="CurrentAgency">Agence actuelle</string>
+    <string name="SeeHistory">voir l\'histoire</string>
+    <string name="SeeLess">VOIR MOINS</string>
+    <string name="SeeMore">VOIR PLUS</string>
+    <string name="AddModel">Ajouter un modèle</string>
+    <string name="AgencyModelsEmpty">Il n\'y pas encore de modèles de votre agence.</string>
+    <string name="AgencyModelsEmptyHint">Cliquez sur le bouton ci-dessous 
+ à ajouter à votre modèle</string>
+    <string name="PremiumLabel">Prime</string>
+    <string name="ReportThisProfile">Signaleur ce profil</string>
+    <string name="ReportSent">Rapport envoyé</string>
+    <string name="BlockProfile">Bloquer l\'utilisateur</string>
+    <string name="SearchByName">Rechercher un nom ou un @user</string>
+    <string name="YearsOld">années</string>
+    <string name="NotBio">Ce modèle est pour remplacer votre biographie</string>
+    <string name="NotAgencyBio">Cette agence est pour remplir votre biographie</string>
+    <string name="NotAppearance">Il n’est pas nécessaire de comprendre les paramètres du modèle.</string>
+    <string name="NotExperience">Apprenez une expérience professionnelle ajoutée instantanément</string>
+    <string name="FillInBio">Remplissez la biographie</string>
+    <string name="ThereAreNoBioAddedYet">Biographie d\'Acune ajoutée pour l\'instant</string>
+    <string name="ThereAreNoYourParametersYet">Vous n\'avez pas encore de paramètres</string>
+    <string name="AddYourParameters">Ajustez vos paramètres</string>
+    <string name="AddWorkHistory">Ajouter un historique de travail</string>
+    <string name="ThereAreNoWorkExperienceYet">Apprenez instantanément une expérience professionnelle</string>
+    <string name="ThereAreNoChannels">IL N\'Y A PAS DE CHAÎNES POUR LE MOMENT</string>
+    <string name="YouHaveNotCreatedChannels">Vous n\'avez encore créé aucune chaîne</string>
+    <string name="ThisAgencyHasNotCreatedChannels">Cette agence sans encore créer des chaînes</string>
+    <string name="ThisProfileHasNotCreatedChannels">Ce profil n\'a pas encore créé de chaîne</string>
+    <string name="CreateNewChannel">Créer une nouvelle chaîne</string>
+    <string name="SearchModels">Rechercher des modèles</string>
+    <string name="NoLikesYet">Pas encore de likes.</string>
+    <string name="NothingSavedYet">Il n’y a encore rien de enregistré.</string>
+    <string name="NoProfileViewedYet">Pas encore vu
+passer le profil.</string>
+    <string name="StatLikes">J\'AIME</string>
+    <string name="StatViews">VU</string>
+    <string name="StatSaves">REGISTRE</string>
+
+    <!--your parameters screen-->
+    <string name="ParametersSaved">Paramètres d\'enregistrement</string>
+    <string name="YourParameters">Vos paramètres</string>
+    <string name="ResetParameter">Réinitialiser les paramètres</string>
+    <string name="SelectGender">Sélectionnez un genre</string>
+    <string name="LabelGender">Genre</string>
+    <string name="AllGendersLabel">Tous les genres</string>
+    <string name="LabelAge">Âge</string>
+    <string name="LabelHeight">Hauteur (cm)</string>
+    <string name="LabelHeightImperial">Hauteur (po)</string>
+    <string name="LabelWaist">Taille (cm)</string>
+    <string name="LabelWaistImperial">Taille (po)</string>
+    <string name="LabelHips">Cintres (cm)</string>
+    <string name="LabelHipsImperial">hanches (po)</string>
+    <string name="LabelWeight">Poids (kg)</string>
+    <string name="LabelWeightImperial">Poids (lb)</string>
+    <string name="LabelShoeSize">Pointure (UE)</string>
+    <string name="LabelShoeSizeUS">Pointure (États-Unis)</string>
+    <string name="LabelBreastSize">tour de poitrine</string>
+    <string name="LabelBreastSizeImperial">Visite de la Poitrine (po)</string>
+    <string name="LabelHairColor">Couleur des cheveux</string>
+    <string name="LabelHairLength">longueur des cheveux</string>
+    <string name="LabelEyeColor">couleur des yeux</string>
+    <string name="LabelSkinColor">couleur de peau</string>
+    <string name="ChooseHairLength">Choisissez la longueur des cheveux</string>
+    <string name="ChooseHairColor">Choisissez la couleur des cheveux</string>
+    <string name="ChooseEyeColor">Choisissez la couleur des yeux</string>
+    <string name="ChooseSkinColor">Choisissez la couleur de la peau</string>
+    <string name="ChooseBreastSize">Choisissez la taille de poitrine</string>
+    <string name="ChoosePrefix">Choisissez votre</string>
+    <string name="Female">Femelle</string>
+    <string name="NoBiographyAvailable">Pas encore de biographie</string>
+
+    <string-array name="GenderItems">
+        <item>Todos los géneros</item>
+        <item>Masculino</item>
+        <item>Femenino</item>
+    </string-array>
+
+    <string-array name="BreastSizeItems">
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+        <item>DD</item>
+        <item>E</item>
+        <item>F</item>
+    </string-array>
+
+    <!--edit my profile screen-->
+    <string name="FullNameEditProfileScreen">Nom et prénom</string>
+    <string name="BiographyPlaceholder">Le top model d’Espagne…</string>
+    <string name="Biography">Biographie</string>
+    <string name="SaveEditProfileScreen">Jardinier</string>
+    <string name="TabBiography">BIOGRAPHIE</string>
+    <string name="TabAppearance">APPARENCE</string>
+    <string name="TabExperience">EXPÉRIENCE</string>
+    <string name="MyAgencyProfile">Mon profil d\'agence</string>
+
+    <!--work experience screen-->
+    <string name="CreateExperience">CRÉER UNE EXPÉRIENCE</string>
+    <string name="EditExperience">MODIFIER L\'EXPÉRIENCE</string>
+    <string name="WorkExperience">EXPÉRIENCE DE VOYAGE</string>
+    <string name="WorkExperienceInfo">Informations sur l\'expérience professionnelle</string>
+    <string name="CurrentlyWorkingRole">Mon travail actuel sur ce post</string>
+    <string name="CreateNewWorkExperience">Créez une nouvelle expérience de travail</string>
+    <string name="AgencyName">Nom de l\'agence</string>
+    <string name="EnterAgencyName">Entrez le nom de l\'agence</string>
+    <string name="StartDate">Faites vos débuts</string>
+    <string name="EndDate">Finissez-en</string>
+    <string name="AddWorkExperience">Ajouter une expérience de travail</string>
+    <string name="WorkHistoryEmptyTitle">Il n\'y a toujours pas
+expérience de travail</string>
+    <string name="WorkHistoryEmptySubtitle">Cliquez sur le bouton ci-dessous
+pour ajouter votre expérience professionnelle</string>
+    <string name="SaveChanges">Enregistrer les modifications</string>
+    <string name="WorkExperienceSaved">Expérience de travail supplémentaire avec succès</string>
+    <string name="PresentLabel">Présent</string>
+    <string name="EndDateCannotBeEarly">La date finale ne passe pas avant la date de début</string>
+
+    <plurals name="work_years">
+        <item quantity="one">%d año</item>
+        <item quantity="other">%d años</item>
+    </plurals>
+    <plurals name="work_months">
+        <item quantity="one">%d mes</item>
+        <item quantity="other">%d meses</item>
+    </plurals>
+
+    <!--add model screen-->
+    <string name="AddNewModel">AJOUTER UN NOUVEAU MODÈLE</string>
+    <string name="AddModelDescription">Remplissez les détails du modèle pour l\'ajouter à votre agence. Vous pouvez rencontrer ces informations à tout moment.</string>
+    <string name="PersonalData">Données personnelles</string>
+    <string name="FullName">Nom et prénom</string>
+    <string name="CountryLabel">Pays</string>
+    <string name="ProfileLink">Lien voir le profil sur Divo</string>
+    <string name="NextStep">Étape suivante</string>
+    <string name="AddStoryLabel">Ajouter une histoire</string>
+    <string name="Liked">J\'aime</string>
+    <string name="Unliked">je n\'aime plus ça</string>
+    <string name="BookmarkSaved">je me suis inscrit</string>
+    <string name="BookmarkUnsaved">je ne me suis pas inscrit</string>
+    <string name="AddModelToYourRoster">Ajoutez un modèle à votre liste</string>
+    <string name="StartTypingToSearchForModel">Commencez à enregistrer pour rechercher
+un modèle</string>
+
+    <!--events screen-->
+    <string name="EventList">Événements</string>
+    <string name="OrganizationLabel">Organisation</string>
+    <string name="ParametersForApplying">Paramètres d\'application</string>
+    <string name="AgeRange">%1$d-%2$d</string>
+    <string name="PreviousEvents">Événements précédents</string>
+    <string name="CountdownFormat">%1$jj : %2$dh : %3$dm</string>
+    <string name="CountdownStarted">J\'ai commencé</string>
+    <string name="CountdownFinished">J\'ai fini</string>
+    <string name="NoEventsYet">Il n\'y pas encore d\'événements</string>
+    <string name="CreateEvent">Créer un événement</string>
+    <string name="EventType">Type d\'événement</string>
+    <string name="EventName">Nom de l\'événement *</string>
+    <string name="EventDescription">Description *</string>
+    <string name="EventDescriptionAbout">Description de l\'événement</string>
+    <string name="EventDate">Date de l\'événement *</string>
+    <string name="EventTime">Heure de l\'événement *</string>
+    <string name="EventDatePlaceholder">1er janvier 2000</string>
+    <string name="EventTimePlaceholder">00:00</string>
+    <string name="EventChooseCountry">Choisissez un pays</string>
+    <string name="EventContinue">Continuer</string>
+    <string name="EventStepProgress">Étape %1$d/%2$d</string>
+    <string name="EventWhoCanApply">Qui peut postuler ?</string>
+    <string name="EventMaxParticipants">Nom maximum des participants</string>
+    <string name="EventSelectMaxParticipants">Sélection des participants</string>
+    <string name="EventChooseTalent">Choisissez un talent</string>
+    <string name="EventChooseAnEvent">Choisissez un événement</string>
+    <string name="EventRequirements">Exigences</string>
+    <string name="EventEnterRequirements">Donnez-leur des exigences</string>
+    <string name="EventNdaRequired">Exigences de la NDA</string>
+    <string name="EventRequired">j\'ai poursuivi</string>
+    <string name="EventNotRequired">Non requis</string>
+    <string name="EventApplicationDeadlineDate">Donnez-vous une limite de candidature*</string>
+    <string name="EventApplicationDeadlineTime">Donnez-vous une limite de candidature*</string>
+    <string name="EventPaid">j\'ai payé</string>
+    <string name="EventRate">Frais</string>
+    <string name="EventRatePlaceholder">100</string>
+    <string name="EventPublicEvent">événement public</string>
+    <string name="EventVisibleToAllUsers">Visible par tous les utilisateurs</string>
+    <string name="EventPhotoGallery">Galerie photo de l\'événement</string>
+    <string name="EventUploadEventPhotos">Téléchargez les photos de l\'événement</string>
+    <string name="EventPreview">Aperçu</string>
+    <string name="EventPublish">Publier un événement</string>
+    <string name="EventUploadingPhotos">Télécharger des photos...</string>
+    <string name="EventParametersForApplying">Paramètres d\'application</string>
+    <string name="EventApplied">%d appliqué</string>
+    <string name="EventMaxSpots">%d places maximum</string>
+    <string name="EditEvent">Modifier l\'événement</string>
+
+    <string name="EventStatusApplicationsClosed">Inscriptions cloturées</string>
+    <string name="EventStatusApplicationsClosedDate">Inscriptions cloturées %1$s</string>
+    <string name="CloseApplicationsEvent">Cloture des inscriptions</string>
+    <string name="CloseApplicationsTitle">Clôturer les inscriptions ?</string>
+    <string name="CloseApplicationsDescription">Etes-vous sûr de vouloir clôturer les inscriptions pour \"%s\" ? Personne d\'autre ne pourra s\'inscrire.</string>
+    <string name="CancelEvent">Annuler l\'événement</string>
+    <string name="CancelEventTitle">Annuler l\'événement ?</string>
+    <string name="CancelEventDescription">Etes-vous sûr de vouloir annuler \"%s\" ? Toutes les revendications ont été retirées.</string>
+    <string name="DeleteEvent">Éliminateur</string>
+    <string name="DeleteEventTitle">Supprimer \"%s\" ?</string>
+    <string name="DeleteEventDescription">Cette action ne peut pas être annulée. Toutes les demandes ont été annulées.</string>
+    <string name="DeleteEventConfirm">Supprimer l\'événement</string>
+    <string name="ThereAreNoUpcomingEvents">Il n\'y a aucun événement à venir pour le moment</string>
+    <string name="CheckBackLaterOrCreateEvents">Revenez plus tard ou creez
+un nouveau</string>
+    <string name="ClosesDate">Fermeture : %1$s</string>
+    <string name="ViewApplications">Je te vois les exiger</string>
+    <string name="ApplyNowPreview">Postulez maintenant (aperçu uniquement)</string>
+    <plurals name="ParticipantsCount">
+        <item quantity="one">%d participante</item>
+        <item quantity="other">%d participantes</item>
+    </plurals>
+
+    <string name="EventSearchPlaceholder">Rechercher un événement</string>
+    <string name="EventSearchNoResults">Cependant, cela ne correspond pas aux filtres.</string>
+    <string name="EventSearchNoResultsSubtitle">Testez l\'expert pour votre recherche ou vos filtres</string>
+    <string name="EventSearchClearFilters">Supprimer les filtres</string>
+    <string name="EventSearchEventsFound">événements trouvés</string>
+    <string name="EventFilterTypeEvents">Type d\'événements</string>
+    <string name="EventFilterChooseEvent">Choisissez un événement</string>
+    <string name="EventFilterAge">Âge (années)</string>
+    <string name="EventFilterSelectAgeRange">Sélectionnez une tranche d\'âge</string>
+    <string name="EventFilterPaidOnly">J\'ai payé uniquement</string>
+    <string name="EventFilterAllRoles">Tous les rôles</string>
+    <string name="EventFilterResetParameter">Réinitialiser les paramètres</string>
+
+    <!--models screen-->
+    <string name="Models">Modèles</string>
+    <string name="NewTalents">De nouveaux talents</string>
+    <string name="Agencies">Agences</string>
+
+    <string name="DivoAgencyModelRepresentedBy">Ce modèle est représenté
+actuellement pour %1$s</string>
+    <string name="DivoAgencyModelAnotherAgency">une autre agence</string>
+    <string name="DivoAgencyModelRepresentedByDesc">Vous ne pouvez pas ajouter le complément à votre liste.
+pendant que vous êtes dans une autre agence.</string>
+    <string name="DivoAgencyModelAddNoteTitle">Ajouter une note personnelle</string>
+    <string name="DivoAgencyModelAddNoteHint">ancien couple Nos séries ravis de vous représentent dans nos campagnes.</string>
+    <string name="DivoAgencyModelCancelRequestTitle">Annuler la demande à %1$s ?</string>
+    <string name="DivoAgencyModelRemoveRosterTitle">Supprimer %1$s de votre liste ?</string>
+    <string name="DivoAgencyModelYesCancel">Oui, annuleur</string>
+    <string name="DivoAgencyModelYesRemove">Oui, supprimer</string>
+    <string name="DivoAgencyModelKeepRequest">Maintenir la réclamation</string>
+    <string name="DivoAgencyModelKeepModel">Entretenir le modèle</string>
+    <string name="DivoAgencyModelPending">En tentative de confirmation</string>
+    <string name="DivoAgencyModelYearsOld">%1$d années</string>
+    <string name="DivoAgencyModelHeight">Un %1$d</string>
+    <string name="DivoAgencyModelBreast">P %1$s</string>
+    <string name="DivoAgencyModelWaist">C %1$d</string>
+    <string name="DivoAgencyModelHips">C %1$d</string>
+    <string name="DivoAgencyModelAddNoteDescription">Remarque : L\'ajout de ce modèle à votre liste vous permet d\'envoyer vos castings privés exclusifs, de gérer vos réservations et le représentant officiel de Divo.</string>
+    <string name="DivoAgencyModelAlreadyAdded">Déjà ajouté</string>
+    <string name="DivoAgencyModelRepresentedByOther">Représenté par une autre agence</string>
+
+
+    <!--search screen-->
+    <string name="FindSimilarProfiles">Trouver des profils similaires</string>
+    <string name="UploadPhoto">Téléchargez une photo pour trouver des modèles similaires</string>
+    <string name="TakePhoto">je vais allumer une photo</string>
+    <string name="ChooseFromLibrary">Choisissez dans la galerie</string>
+    <string name="UseDivoPhoto">Utiliser une photo de profil DIVO</string>
+    <string name="FaceSearchTitle">Comment fonctionne la recherche faciale</string>
+    <string name="FaceSearchDescriptionFirst">Nous analysons votre photo pour trouver des profils DIVO ayant une apparence similaire. Votre photo est utilisée uniquement pour cette recherche et n\'est ni stockée ni partagée.</string>
+    <string name="FaceSearchDescriptionSecond">Les résultats sont classés par similarité visuelle. Utilisez les filtres pour affiner l\'emplacement, le rôle et d\'autres critères.</string>
+    <string name="FaceSearchConfirm">Compris, cordialement</string>
+    <string name="CameraPermissionTitle">Accès à la caméra requise</string>
+    <string name="CameraPermissionDescription">Pour prendre une photo pour la recherche de visage, veuillez autoriser l\'accès à l\'appareil photo. Vous pouvez utiliser l\'activer dans les paramètres de l\'application.</string>
+    <string name="OpenSettings">Vérifiez les paramètres</string>
+    <string name="FaceSearch">Recherche de visage</string>
+    <string name="ChangePhoto">Changeur de photos</string>
+    <string name="SimilarityScore">Les résultats sont destinés aux scores de similarité visuelle.</string>
+    <string name="NoFaceDetected">Aucun visage détecté</string>
+    <string name="PleaseUsePhotoClearly">Visualisation à l\'aide d\'une photo ou le visage est clairement visible – de face, bien éclairé et sans obstruction.</string>
+    <plurals name="MultipleFacesDetected">
+        <item quantity="one">%d cara detectada — toca para buscar</item>
+        <item quantity="other">%d caras detectadas — toca una para buscar</item>
+    </plurals>
+    <string name="ReadyToSearchFace">Visage sélectionné — prêt à rechercher</string>
+    <string name="DragToMovePhoto">Faites glisser pour déplacer la photo</string>
+    <string name="AvoidSunglasses">Évitez les lunettes de soleil, les masques ou les coupures très larges.</string>
+    <string name="FullFacePhotos">Les photos de visage complètes fonctionnent mieux, pas les profils latéraux.</string>
+    <string name="AnalysingFacialFeatures">Analyser les traits du visage...</string>
+    <string name="NoResultsFound">Tout résultat trouvé</string>
+    <string name="TryAdjustingYourFilters">Testez le réglage de votre filtre</string>
+    <string name="CityLabel">Ville</string>
+    <string name="CitiesLabel">Villes</string>
+    <string name="CountriesLabel">Pays</string>
+    <string name="SuggestedCities">Villes suggérées</string>
+    <string name="NoItemsFound">%1$s n\'ont pas été trouvés</string>
+    <string name="TryDifferent">Essayez un autre %1$s</string>
+    <string name="AllColorsLabel">toutes les couleurs</string>
+    <string name="AllLengthsLabel">Toutes longueurs</string>
+    <string name="ForLabel">Verser</string>
+    <string name="RecentFaceSearches">Recherches faciales récentes</string>
+    <string name="Found">trouvé</string>
+    <string name="NoFilters">Aucun filtre</string>
+    <string name="SeeAll">Voir tout</string>
+    <plurals name="ResultFor">
+        <item quantity="one">resultado</item>
+        <item quantity="other">resultados</item>
+    </plurals>
+
+    <!--similar profiles screen-->
+    <string name="SimilarProfilesTitle">Profils similaires</string>
+    <string name="FaceSearchHistoryTitle">Histoire de la recherche sur le visage</string>
+    <string name="ClearAll">Supprimer tout</string>
+    <string name="ResultsWithSimilarity">%1$s · %2$d%%+</string>
+    <string name="SortedBy">Trié par:</string>
+    <string name="SimilarityFormat">%1$d%% correspondance</string>
+    <string name="FilterResults">Filtrer les résultats</string>
+    <string name="ButtonReset">Restaurateur</string>
+    <string name="MinimumSimilarity">similarité minime</string>
+    <string name="HigherValuesShow">Les valeurs plus élevées affichent des correspondances moins nombreuses mais plus précises</string>
+    <string name="AnyLabel">Pas de montant légal</string>
+    <string name="RoleLabel">Rôle</string>
+    <string name="AllLabel">Tous les rôles</string>
+    <string name="CountriesValue">Tous les payes</string>
+    <string name="MoreParameters">Paramètres supplémentaires</string>
+    <string name="LessParameters">Moins de paramètres</string>
+    <string name="ApplyFilter">Appliquer le filtre</string>
+    <string name="SortedByMatch">coïncidence</string>
+    <string name="SortedByFilters">Paire de filtres :</string>
+    <string name="Model">Modèle</string>
+    <string name="Agency">Agence</string>
+    <string name="NewTalent">NouveauVisage</string>
+    <plurals name="ProfilesFound">
+        <item quantity="one">%d perfil encontrado</item>
+        <item quantity="other">%d perfiles encontrados</item>
+    </plurals>
+
+    <plurals name="ResultsCount">
+        <item quantity="one">%d resultado</item>
+        <item quantity="other">%d resultados</item>
+    </plurals>
+
+    <string-array name="ModelFunNewTalent">
+        <item>Todos los roles</item>
+        <item>Modelo</item>
+        <item>Diversión</item>
+        <item>New face</item>
+    </string-array>
+
+    <!--settings screen-->
+    <string name="SettingsTitle">Paramètres</string>
+    <string name="EditBtn">Modificateur</string>
+    <string name="PromoCardHeadline">DÉCOUVREZ-VOUS DANS LE MONDE DE LA MODE</string>
+    <string name="PromoCardBody">Publiez votre profil en tant que mannequin, rejoignez des castings ou ajoutez des événements en tant qu\'agence : faites partie du réseau mondial de la mode.</string>
+    <string name="PromoCardBtn">Apprendre encore plus</string>
+    <string name="SetUsernameLabel">Définir le nom de l\'utilisateur</string>
+    <string name="FillYourParametersLabel">Remplissez vos paramètres</string>
+    <string name="SavedMessagesLabel">Messages lors de l\'inscription</string>
+    <string name="NotificationsAndSoundsLabel">Notifications et sons</string>
+    <string name="PrivacyAndSecurityLabel">Confidentialité et sécurité</string>
+    <string name="DataAndStorageLabel">Données et stockage</string>
+    <string name="AppearanceLabel">apparence</string>
+    <string name="MeasuringSystemLabel">Système de mesure</string>
+    <string name="MeasuringSystemMetric">Métrique</string>
+    <string name="MeasuringSystemImperial">Impérial</string>
+    <string name="LogOutLabel">déconnecter</string>
+
+    <!--onboarding screen-->
+    <string name="OnboardingTitleGetSeenByTheRightPeople">Obtenez les bonnes personnes pour vous voir</string>
+    <string name="OnboardingSubtitleGetSeenByTheRightPeople">Un profil professionnel que vous rencontrerez dans les agences et marques qui recherchent l\'activation de talents.</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">De vrais castings. De vraies opportunités.</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Postulez à des emplois vérifiés auprès d\'agences et de marques, sans intermédiaire ni approximation.</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Découvrez plus rapidement avec l\'IA.</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO AI trouve la meilleure adéquation entre les talents et les marques – pour que les opportunités se présentent à vous.</string>
+    <string name="OnboardingEnterCode">Entrez le code</string>
+    <string name="WelcomeToDivo">Bienvenue chez DIVO</string>
+    <string name="SignOrCreateAccount">Connectez-vous ou croyez votre compte</string>
+    <string name="ContinueWithPhoneNumber">Continuez avec le numéro de téléphone</string>
+    <string name="OnboardingOrLabel">donc</string>
+    <string name="OnboardingSignInWithGoogle">Connectez-vous avec Google</string>
+    <string name="OnboardingSignInWithApple">Connectez-vous avec Apple</string>
+    <string name="TermsPrefix">En continuation, vous acceptez notre</string>
+    <string name="OnboardingAnd">et</string>
+    <string name="OnboardingTermsOfService">Conditions d\'utilisation</string>
+    <string name="OnboardingPrivacyPolicy">politique de confidentialité</string>
+    <string name="OptionGetHiredTitle">JE VEUX ÊTRE EMBAUCHÉ</string>
+    <string name="OptionLookingForTalentTitle">JE RECHERCHE DES TALENTS</string>
+    <string name="OptionHereToFollowTitle">JE SUIS ICI POUR SUIVRE</string>
+    <string name="OptionGetHiredSubtitle">Mannequin, artiste, professionnel de la création</string>
+    <string name="OptionLookingForTalentSubtitle">Agence, marque, scout, booker</string>
+    <string name="OptionHereToFollowSubtitle">Fan de mode et de créateurs</string>
+    <string name="QuizStepProgress">Question %1$d sur %2$d</string>
+    <string name="RegStepProgress">Étape %1$d sur %2$d</string>
+    <string name="RoleResultSoundsRight">Ça a l’air bien – allez !</string>
+    <string name="RoleResultChooseDifferentRole">Choisissez un autre rôle</string>
+
+    <string name="RoleResultTitleFashionFan">VOUS ÊTES FANS DE MODE</string>
+    <string name="RoleResultDescriptionFashionFan">Vous pourrez suivre vos modèles et créateurs préférés, découvrir de nouveaux talents et rester connecté au monde de la mode.</string>
+
+    <string name="RoleResultTitleModel">Vous êtes un mannequin professionnel</string>
+    <string name="RoleResultDescriptionModel">Votre profil sera conçu pour mettre en valeur votre portefeuille et vous serez en contact direct avec les agences et les marques à la recherche de talents expérimentés.</string>
+
+    <string name="RoleResultTitleRisingTalent">Vous êtes un talent émergent</string>
+    <string name="RoleResultDescriptionRisingTalent">Votre profil vous permettra de constituer votre portfolio, de le rendre visible et d\'ouvrir vos premiers castings, et d\'acheter les séances TFP gratuites avec les photographes et stylistes.</string>
+
+    <string name="RoleResultTitleActor">Est-ce que vous agissez ou agissez ?</string>
+    <string name="RoleResultDescriptionActor">Votre profil vous mettra en contact avec des marques et des agences à la recherche de talents d\'acteur pour des campagnes, des films de mode et des événements en direct.</string>
+
+    <string name="RoleResultTitleDancer">Tu es danseur</string>
+    <string name="RoleResultDescriptionDancer">Votre profil vous connectera aux spectacles, à la campagne et aux événements. Vous recherchez les talents de danseur dans tous les styles.</string>
+
+    <string name="RoleResultTitlePerformer">Tu es un artiste</string>
+    <string name="RoleResultDescriptionPerformer">Votre profil vous connectera à des événements de mode, des campagnes de marque et des projets créatifs pour rechercher des talents pour des performances live.</string>
+
+    <string name="RoleResultTitleCreativeProfessional">Vous êtes un professionnel de la création</string>
+    <string name="RoleResultDescriptionCreativeProfessional">Votre profil présentera votre portfolio, vous pourrez publier vos projets et votre connecter avec vos mannequins, vos marques et vos agences, vos deux marques.</string>
+
+    <string name="RoleResultTitleFindTalent">Vous êtes ici pour trouver des talents</string>
+    <string name="RoleResultDescriptionFindTalent">Votre profil sera configuré pour rechercher, publier des castings et vous connecter directement avec les modèles et les créateurs, afin que vous soyez connecté à une agence mondiale ou à une marque locale.</string>
+
+    <string name="RoleResultTitleIndustryProfessional">Vous êtes un professionnel du secteur</string>
+    <string name="RoleResultDescriptionIndustryProfessional">Votre profil offre un accès direct à la base de données de talents de DIVO, aux outils de recherche avancés et aux workflows de casting, conçus pour la manière dont les professionnels travaillent réellement.</string>
+
+    <!-- Companies (A) -->
+    <string name="SubRoleModelingAgency">Agence de mannequins</string>
+    <string name="SubRoleFashionBrand">Molette de mode</string>
+    <string name="SubRoleBeautyBrand">Marque de beauté</string>
+    <string name="SubRoleBrandOrBusiness">Vérifiez votre entreprise</string>
+    <string name="SubRoleEventAgency">Agence événementielle</string>
+    <string name="SubRoleMagazine">Magazine ou support</string>
+    <!-- Industry Pros (B) -->
+    <string name="SubRoleScout">Scout/Chasseur de têtes</string>
+    <string name="SubRoleBooker">booker</string>
+    <string name="SubRoleCastingDirector">Directeur de casting</string>
+    <string name="SubRoleTalentManager">Gestionnaire de talents</string>
+    <!-- Creative (C) -->
+    <string name="SubRolePhotographer">photographier</string>
+    <string name="SubRoleStylist">Styliste</string>
+    <string name="SubRoleMakeupArtist">maquilleur</string>
+    <string name="SubRoleHairStylist">Coiffeur</string>
+    <string name="SubRoleVideographer">Vidéoaste</string>
+    <string name="SubRoleCreativeDirector">Directeur créatif</string>
+    <string name="SubRoleFashionDesigner">Couturier</string>
+    <string name="SubRoleStudio">Étude</string>
+    <!-- Talent (D) -->
+    <string name="SubRoleModel">Modèle</string>
+    <string name="SubRoleNewTalent">De nouveaux talents</string>
+    <string name="SubRoleActor">Acteur ou actrice</string>
+    <string name="SubRoleDancer">Danseuse / Danseuse</string>
+    <string name="SubRoleSingerOrPerformer">Chanteur ou artiste</string>
+    <!-- Audience (E) -->
+    <string name="SubRoleFan">Ventilateur</string>
+
+    <string name="QuizGetHiredTitle">Quel genre de talent
+et toi ?</string>
+    <string name="QuizGetHiredSubtitle">Soyez honnête : cela nous aide à vous montrer les bonnes opportunités</string>
+    <string name="QuizSectionTalents">TALENTS</string>
+    <string name="QuizSectionCreative">CRÉATIONS</string>
+
+    <string name="QuizModelExperienceTitle">Vous avez une expérience professionnelle en tant que mannequin et agent ?</string>
+    <string name="QuizModelExperienceSubtitle">Cela nous aide à vous mettre en contact avec les bons castings dès le premier jour.</string>
+    <string name="QuizModelExperienceYesLabel">OUAIS</string>
+    <string name="QuizModelExperienceYesDescription">J\'ai un portfolio et mon travail ou mon travail avec une agence</string>
+    <string name="QuizModelExperienceNoLabel">PAS ENCORE</string>
+    <string name="QuizModelExperienceNoDescription">Je construis ma carrière et je n\'ai pas encore d\'agence.</string>
+
+    <string name="QuizHiringTypeTitle">Comment travaillez-vous ?</string>
+    <string name="QuizHiringTypeSubtitle">Cela nous aide à configurer le bon profil</string>
+    <string name="QuizHiringTypeCompanyLabel">Je représente une entreprise</string>
+    <string name="QuizHiringTypeCompanyDescription">Agence, marque, média ou studio</string>
+    <string name="QuizHiringTypeIndividualLabel">Je suis un spécialiste indépendant</string>
+    <string name="QuizHiringTypeIndividualDescription">Scout, booker, directeur de casting…</string>
+
+    <string name="QuizCompanyTitle">Quel est le sens de ma vie ?
+pour votre entreprise ?</string>
+    <string name="QuizCompanySubtitle">Choisissez l\'option la plus proche de ce que vous faites</string>
+
+    <string name="SubRoleModelingAgencyDescription">Consultez une liste de modèles et occupez vos réservations.</string>
+    <string name="SubRoleFashionBrandDescription">Ma marque c\'est la mode : vêtements, chaussures ou accessoires</string>
+    <string name="SubRoleBeautyBrandDescription">Ouvrier dans le domaine de la beauté : cosmétiques, soins de la peau ou parfums</string>
+    <string name="SubRoleBrandOrBusinessDescription">Je suis une entreprise à la recherche de modèles: restaurant, hôtel, détaillant ou autre entreprise</string>
+    <string name="SubRoleEventAgencyDescription">Organisez vos événements, spectacles ou activités promotionnelles</string>
+    <string name="SubRoleMagazineDescription">Je suis éditeur de publications, de médias ou de numéros</string>
+
+    <string name="QuizIndustryTitle">Quel est votre rôle ?
+dans l\'industrie ?</string>
+    <string name="QuizIndustrySubtitle">Choisissez l\'option qui décrit le mieux ce que vous faites au quotidien.</string>
+    <string name="SubRoleScoutDescription">J\'ai trouvé de nouveaux visages, indépendamment ou pour une époque.</string>
+    <string name="SubRoleBookerDescription">Jere réservations et négociations de modèles d\'agence</string>
+    <string name="SubRoleCastingDirectorDescription">Organiser des castings pour des projets spécifiques : défilés de mode, publicités ou films</string>
+    <string name="SubRoleTalentManagerDescription">Je représente et gère les talents individuels dans leur carrière.</string>
+
+    <!--reg forms-->
+    <string name="RegFormCompanyInfoTitle">Parlez-nous de votre entreprise</string>
+    <string name="RegFormProfessionalIdentityTitle">Votre identité professionnelle</string>
+    <string name="RegFormCreativeIdentityTitle">Votre identité créative</string>
+    <string name="RegFormStudioDetailsTitle">Détails de votre étude</string>
+    <string name="RegFormYourIdentityTitle">Votre identité</string>
+    <string name="RegFormFanIdentityTitle">Parlez-nous de vous</string>
+    <string name="RegFormCompanyName">Nom de l\'entreprise/organisation *</string>
+    <string name="RegFormFirstName">Nom *</string>
+    <string name="RegFormLastName">Noms de famille *</string>
+    <string name="RegFormStudioName">Nom de l\'étude/de l\'espace *</string>
+    <string name="RegFormDateOfBirth">Date de naissance</string>
+    <string name="RegFormDateOfBirthPlaceholder">Choisissez une date</string>
+    <string name="RegFormGender">Choisissez un genre</string>
+    <string name="RegFormWhereAreYouBased">Où es-tu situé ?</string>
+    <string name="RegFormPersonalDetails">Données personnelles</string>
+    <string name="RegFormContactDetails">Coordonnées</string>
+    <string name="RegFormLocation">Emplacement</string>
+    <string name="RegFormWebsiteOrInstagram">Site Web ou Instagram</string>
+    <string name="RegFormContactName">Nom du contact</string>
+    <string name="RegFormContactPhone">Contact par téléphone ou email</string>
+    <string name="RegFormSpecialisation">Choisissez une spécialisation</string>
+    <string name="RegFormSpecialisationLabel">Spécialisation</string>
+    <string name="RegFormWebsiteOrInstagramHint">Signal lumineux de vérification</string>
+    <string name="RegFormContactNameHint">Personne qui gère les réservations</string>
+    <string name="RegFormContactPhoneHint">Verser les demandes de réservation</string>
+
+    <string-array name="ActorSpecialisations">
+        <item>Cine</item>
+        <item>Teatro</item>
+        <item>Comercial</item>
+        <item>Doblaje</item>
+        <item>TV</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string-array name="DancerSpecialisations">
+        <item>Contemporáneo</item>
+        <item>Ballet</item>
+        <item>Hip-hop</item>
+        <item>Baile de salón</item>
+        <item>Comercial</item>
+        <item>Latino</item>
+        <item>Jazz</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string-array name="SingerSpecialisations">
+        <item>Pop</item>
+        <item>R&amp;B</item>
+        <item>Jazz</item>
+        <item>Clásica</item>
+        <item>Teatro musical</item>
+        <item>Ópera</item>
+        <item>Otro</item>
+    </string-array>
+
+    <string name="RegFormVerificationContact">Vérification et contact</string>
+    <string name="RegFormProfessionalLinks">Liens professionnels</string>
+    <string name="RegFormAddYourPortfolio">Ajoutez votre portefeuille</string>
+    <string name="RegFormPortfolioSubtitle">Recommandé : aidez les clients à trouver votre travail plus rapidement</string>
+    <string name="RegFormWebsiteUrl">URL du site Web</string>
+    <string name="RegFormWebsiteUrlHint">Aidez-nous à vérifier votre compte</string>
+    <string name="RegFormContactFirstName">Nom du contact</string>
+    <string name="RegFormContactLastName">Nom du contact</string>
+    <string name="RegFormContactRole">Rôle/poste de contact</string>
+    <string name="RegFormAgencyOrganisation">Agence/Organisation</string>
+    <string name="RegFormCurrentOrLastAgency">Agence actuelle ou dernière</string>
+    <string name="RegFormAgencyHintPro">Votre agence reçoit une demande de confirmation</string>
+    <string name="RegFormAgencyHintModel">Ajoutez votre agence pour obtenir un badge vérifié</string>
+    <string name="RegFormInstagramHandle">Utilisateur d\'Instagram</string>
+    <string name="RegFormInstagramHint">Vous aide à être découvert plus rapidement</string>
+    <string name="RegFormPortfolioUrl">URL Instagram/Portfolio</string>
+    <string name="RegFormPortfolioUrlHint">Partagez un lien vers votre Instagram, Behance, le personnel de votre site Web ou votre portfolio</string>
+    <string name="RegFormShowreelUrl">URL de la bande-annonce/démo</string>
+    <string name="RegFormCastingProfileUrl">URL Instagram / profil de diffusion</string>
+
+    <string name="RegFormAddLogoOrPhoto">Ajoutez votre logo ou photo de profil</string>
+    <string name="RegFormAddProfilePhoto">Ajoutez votre photo de profil</string>
+    <string name="RegFormProfilePhotoSubtitle">Utilisez une photo de Claire de Vous-Même. Vous pouvez vous rencontrer tous les jours à tout moment.</string>
+    <string name="RegFormModelPhotoSubtitle">Utilisez une photo de Claire de face. Vous pouvez vous rencontrer tous les jours à tout moment.</string>
+    <string name="RegFormShowYourMainSpace">Montrez votre espace principal</string>
+    <string name="RegFormStudioPhotoSubtitle">Les clients veulent voir ce qu\'ils se réservent</string>
+    <string name="RegFormShowTheWorld">Montre au monde qui tu es</string>
+
+    <string name="RegFormUploadLogo">Téléchargez le logo ou voyez une photo</string>
+    <string name="RegFormUploadPhoto">Téléchargez après la galerie ou regardez une photo</string>
+    <string name="RegFormAnyFileFormat">Compatible avec n’importe quel format de fichier importé</string>
+
+    <string name="RegFormTfpHintTitle">Votre premier épisode : trouver une sortie TFP</string>
+    <string name="RegFormTfpHintDescription">Les séances TFP (Time For Portfolio) sont des collaborations libres avec des photographies. Ils constitueront votre portefeuille rapidement. Nous vous apprendrons comment procéder lors que vous accédez à l\'application.</string>
+
+    <string name="ButtonLetsGo">Allez!</string>
+    <!--divo view end-->
+
+
+
+    <!--signin view-->
+    <string name="YourPhone">tonne de téléphone</string>
+    <string name="StartText">Cochez pour confirmer votre code
+payez et entrez votre numéro de téléphone.</string>
+    <string name="Country">Pays</string>
+    <string name="YourNumber">Votre numéro de téléphone</string>
+    <string name="PhoneNumber">Numéro de téléphone</string>
+    <string name="ChooseCountry">Choisissez un pays</string>
+    <string name="WrongCountry">Code pays invalide</string>
+    <string name="AccountAlreadyLoggedIn">Vous devez être connecté à cette application.</string>
+    <string name="AccountSwitch">Changement</string>
+    <string name="SyncContacts">Contacts du synchroniseur</string>
+    <string name="SyncContactsOn">Les contacts de cet appareil seront ajustés en conséquence.</string>
+    <string name="SyncContactsOff">Les contacts de cet appareil n\'ont pas du tout besoin d\'être ajustés.</string>
+    <string name="SyncContactsInfoOn">Les contacts de cet appareil seront adaptés à votre ordinateur.</string>
+    <string name="SyncContactsInfoOff">Activez cette option pour enregistrer les contacts sur ces appareils synchronisés avec votre ordinateur.</string>
+    <string name="SyncContactsAdded">Contacts de cet appareil sur les paramètres à votre disposition.</string>
+    <string name="ConfirmCorrectNumber">Le numéro est-il correct ?</string>
+    <string name="WrongNumberFormat">Format incorrect</string>
+    <string name="ShortNumberInfo">Le numéro que vous avez maintenant est ce trop court pour **%1$s** :
+
+**%2$s**
+
+Entrez le bon numéro et achetez le code de votre pays.</string>
+    <string name="EditNumber">Modifier le numéro</string>
+    <string name="DidNotGetTheCodeInfo">Si vous n\'avez pas trouvé le code pour SMS ou pour appeler, vérifiez vos **paramètres de données mobiles** et votre numéro de téléphone :
+
+**%1$s**
+
+Les options restantes consistent à écrire un autre numéro ou à contacter l\'assistance Divo Global. Appuyez sur **Aide** pour nous envoyer les détails techniques afin que nous puissions identifier le problème.</string>
+    <string name="DidNotGetTheCodeHelpButton">Aide</string>
+    <string name="DidNotGetTheCodeEditNumberButton">Modifier le numéro</string>
+    <!--code enter view-->
+    <string name="YourCode">Vérification</string>
+    <string name="SentSmsCode">Nous vous enverrons un SMS avec un code d\'activation sur votre téléphone **%1$s**.</string>
+    <string name="SentAppCode">Nous vous enverrons le code de l\'application **Divo Global** sur votre autre application.</string>
+    <string name="SentAppCodeWithPhone">Nous envoyons le code à l\'**application Divo Global** pour %1$s sur votre autre appareil.</string>
+    <string name="SentAppCodeTitle">Vérifiez vos messages sur Divo Global</string>
+    <string name="SentFragmentCode">Obtenez le code pour %1$s dans la section Numéros anonymes de Fragment.</string>
+    <string name="SentSmsCodeTitle">met le code</string>
+    <string name="OpenFragment">Fragment ouvert</string>
+    <string name="SentCallCode">Nous appelons le numéro **%1$s**.
+
+Ne répondez pas. Divo Global effectue automatiquement l\'assemblage du processus.</string>
+    <string name="SentCallOnly">Appelez votre numéro **%1$s** pour saisir le code.</string>
+    <string name="CallText">Divo Global vous appellera au %1$d :%2$02d</string>
+    <string name="SmsText">Veuillez envoyer un SMS à %1$d :%2$02d</string>
+    <string name="Calling">Nos appels...</string>
+    <string name="SendingSms">Envoi de SMS...</string>
+    <string name="Code">code</string>
+    <string name="WrongNumber">Numéro Mauvais?</string>
+    <string name="WrongCode">Code Mauvais. Veuillez réessayer.</string>
+    <string name="DidNotGetTheCode">Avez-vous déjà transmis le code ?</string>
+    <string name="DidNotGetTheCodeSms">Appuyez pour recevoir le code par SMS</string>
+    <string name="DidNotGetTheCodeFragment">Obtenez un code pour Fragment</string>
+    <string name="CancelAccountReset">Ne pas réinitialiser le compte</string>
+    <string name="CancelAccountResetInfo2">Une personne ayant accédé à **%1$s** à la demande de supprimer votre premier compte Divo Global et de réinitialiser votre mot de passe de vérification en deux étapes.
+
+Si ce n\'est pas votre cas, merci d\'écrire le code que nous vous avons envoyé par SMS. Vous pouvez également annuler la demande *en modifiant votre numéro de téléphone*.</string>
+    <string name="ResetAccount">Réinitialiser le compte</string>
+    <string name="ResetAccountInfo">Le contenu **%1$s** étant actif et protégé par passe, nous le supprimerons pendant 1 semaine. Cette attention est nécessaire pour des raisons de sécurité.
+
+Vous pouvez annuler ce processus à tout moment.</string>
+    <string name="ResetAccountStatus">Vous pouvez réinitialiser votre compte à :</string>
+    <string name="ResetAccountCancelledAlert">Vos récentes tentatives de restauration de ce compte ont été annulées par son utilisateur actif. Voir réessayer dans 7 jours.</string>
+    <string name="CancelLinkExpired">Le privilège est invalide ou expiré.</string>
+    <string name="CancelLinkSuccessTitle">Prêt!</string>
+    <string name="CancelLinkSuccess">Le processus de suppression de votre compte %1$s a été annulé. Vous pouvez soigner cette fenêtre.</string>
+    <string name="OtherLoginCode">Votre code de connexion est **%1$s**. Mettez-le dans l\'application Divo Global à la quelle vous essayez de vous connecter.
+
+Ne communiquez ce code à personne.</string>
+    <string name="SmsAvailableIn">Vous pouvez demander un SMS à %1$d :%2$02d</string>
+    <string name="ResendSmsAvailableIn">Vous pouvez demander un nouveau SMS à %1$d :%2$02d</string>
+    <string name="RequestSmsButton">Recevez le code par SMS</string>
+    <string name="CallAvailableIn">Vous pouvez demander un appel à %1$d :%2$02d</string>
+    <string name="RequestCallButton">Appelez-moi pour dicter le code</string>
+    <string name="RequestMissedCall">Recevez le code par appel</string>
+    <string name="LoginAccessibilityCountryCode">code du pays</string>
+    <string name="SignInWithGoogle">Commencez avec Google</string>
+    <!--signup view-->
+    <string name="YourName">ton nom</string>
+    <string name="RegisterText2">Entrez votre nom et ajoutez une photo de profil.</string>
+    <string name="FirstName">Nom (obligatoire)</string>
+    <string name="FirstNameSmall">Nom</string>
+    <string name="LastName">Nom de famille (facultatif)</string>
+    <string name="LastNameSmall">Noms de famille</string>
+    <string name="CancelRegistration">Annuler l\'inscription</string>
+    <string name="RegistrationProfileInfo">Informations sur votre profil</string>
+    <!--widgets-->
+    <string name="EditWidget">Modifier le widget</string>
+    <string name="EditWidgetContactsInfo">Consultez les discussions les plus importantes pour un accès rapide.
+
+Si vous n\'êtes pas sélectionné, vos contacts les plus fréquents seront affichés dans le widget.</string>
+    <string name="EditWidgetChatsInfo">Envoyez le dernier message des chats que vous choisissez.
+
+Si vous avez une discussion spécifique qui n\'est pas sélectionnée, ce widget affiche vos discussions les plus récentes.</string>
+    <string name="WidgetPasscode2">Attention : vos widgets afficheront tous vos messages récents, mais votre code sera nécessaire pour ouvrir l\'application et répondre.</string>
+    <string name="SearchForChats">Rechercher des discussions...</string>
+    <string name="WidgetPreview">Ouverture des widgets</string>
+    <string name="TapToEditWidget">appuyez pour modifier le widget</string>
+    <string name="TapToEditWidgetShort">appuyez pour modifier</string>
+    <string name="WidgetChats">Discussions</string>
+    <string name="WidgetShortcuts">Raccourcis</string>
+    <string name="WidgetLoggedOff">Le compte a été déconnecté.</string>
+    <!--notification-->
+    <string name="NotificationMessageGiftCode">%1$s vous enverrez un code cadeau %2$s pour Divo Global Premium</string>
+    <string name="NotificationMessageGiveaway">%1$s vous m\'enverrez un tirage de %2$s Divo Global Premium à partir de %3$sm</string>
+    <string name="NotificationMessageChannelGiveaway">%1$s a publié un cadeau pour %2$s Divo Global Premium à partir de %3$sm</string>
+    <string name="NotificationMessageChatGiveaway">%1$s pour envoyer un package Divo Global Premium %3$s de %4$sm au groupe %2$s</string>
+    <string name="NotificationPinnedGiveaway">%1$s pour organiser un cadeau</string>
+    <string name="NotificationReactGiveaway">%1$s pour réagir %2$s à votre chaîne</string>
+    <string name="NotificationChatReactGiveaway">%1$s a réagi %3$s dans le groupe %2$s à votre cadeau</string>
+    <string name="MessageLifetimeChanged">%1$s a activé l\'autodestruction sur %2$s</string>
+    <string name="MessageLifetimeChangedOutgoing">Vous avez maintenant activé l\'autodestruction sur %1$s</string>
+    <string name="MessageLifetimeRemoved">%1$s pour désactiver l\'autodestruction</string>
+    <string name="MessageLifetimeYouRemoved">Vous avez désactivé l\'autodestruction</string>
+    <string name="YouHaveNewMessage">Vous avez un nouveau message</string>
+    <string name="NotificationMessageScheduled">📅Vous : %1$s</string>
+    <string name="NotificationMessageScheduledName">📅Vous</string>
+    <string name="NotificationMessageText">%1$s : %2$s</string>
+    <string name="NotificationMessageFew">%1$s vous enverrez %2$s</string>
+    <string name="NotificationMessageAlbum">%1$s tu m\'enverras un album</string>
+    <string name="NotificationMessageForwardFew">%1$s vous allez transférer %2$s</string>
+    <string name="NotificationMessageNoText">%1$s tu m\'enverras un message</string>
+    <string name="NotificationMessagePhoto">%1$s tu m\'enverras une photo</string>
+    <string name="NotificationMessageVideo">%1$s tu m\'enverras une vidéo</string>
+    <string name="NotificationMessageInvoice">%1$s vous m\'enverrez une facture de %2$s</string>
+    <string name="NotificationMessageSDPhoto">%1$s tu m\'enverras une photo de l\'autodestruction</string>
+    <string name="NotificationMessageSDVideo">%1$s tu m\'as envoyé une vidéo d\'autodestruction</string>
+    <string name="NotificationMessageContact2">%1$s pour partager un contact %2$s avec vous</string>
+    <string name="NotificationMessagePoll2">%1$s vous enverrez l\'article %2$s</string>
+    <string name="NotificationMessageQuiz2">%1$s vous enverrez le questionnaire « %2$s »</string>
+    <string name="NotificationMessageMap">%1$s vous enverrez une position</string>
+    <string name="NotificationMessageLiveLocation">%1$s vous enverrez une position en temps réel</string>
+    <string name="NotificationMessageGame">%1$s vous avez invité le joueur à %2$s</string>
+    <string name="NotificationMessageGameScored">%1$s a composé %3$s dans le jeu %2$s</string>
+    <string name="NotificationMessageDocument">%1$s tu m\'enverras un fichier</string>
+    <string name="NotificationMessageGif">%1$s tu m\'as envoyé un GIF</string>
+    <string name="NotificationMessageAudio">%1$s tu m\'enverras un message vocal</string>
+    <string name="NotificationMessageRound">%1$s tu m\'enverras un message vidéo</string>
+    <string name="NotificationMessageMusic">%1$s tu m\'enverras un audio</string>
+    <string name="NotificationMessageSticker">%1$s tu m\'enverras un autocollant</string>
+    <string name="NotificationMessageStickerEmoji">%1$s tu m\'enverras un autocollant %2$s</string>
+    <string name="NotificationMessageGroupText">%1$s @ %2$s : %3$s</string>
+    <string name="NotificationMessageGroupNoText">%1$s J\'ai envoyé un message à mon groupe %2$s</string>
+    <string name="NotificationMessageGroupPhoto">%1$s J\'ai envoyé une photo à mon groupe %2$s</string>
+    <string name="NotificationMessageGroupVideo">%1$s pour envoyer une vidéo à votre groupe %2$s</string>
+    <string name="NotificationMessageGroupPoll2">%1$s pour envoyer les %3$s reçus au groupe %2$s</string>
+    <string name="NotificationMessageGroupQuiz2">%1$s J\'ai envoyé le questionnaire « %3$s » au groupe %2$s</string>
+    <string name="NotificationMessageGroupContact2">%1$s pour partager un contact %3$s dans le groupe %2$s</string>
+    <string name="NotificationMessageGroupMap">%1$s a envoyé un emplacement à votre groupe %2$s</string>
+    <string name="NotificationMessageGroupLiveLocation">%1$s partagé une position en temps réel avec le groupe %2$s</string>
+    <string name="NotificationMessageGroupGame">%1$s a invité le groupe %2$s à rejoindre %3$s</string>
+    <string name="NotificationMessageGroupGameScored">%1$s a composé %4$s dans le jeu %3$s dans le groupe %2$s</string>
+    <string name="NotificationMessageGroupDocument">%1$s J\'ai envoyé un fichier à mon groupe %2$s</string>
+    <string name="NotificationMessageGroupGif">%1$s J\'ai envoyé un GIF à mon groupe %2$s</string>
+    <string name="NotificationMessageGroupInvoice">%1$s enverra une facture au groupe %2$s pour %3$s</string>
+    <string name="NotificationMessageGroupAudio">%1$s a envoyé un message vocal à %2$s</string>
+    <string name="NotificationMessageGroupRound">%1$s J\'ai envoyé un message vidéo à mon groupe %2$s</string>
+    <string name="NotificationMessageGroupMusic">%1$s J\'ai envoyé un audio à mon groupe %2$s</string>
+    <string name="NotificationMessageGroupSticker">%1$s a envoyé un autocollant au groupe %2$s</string>
+    <string name="NotificationMessageGroupStickerEmoji">%1$s a envoyé un autocollant %3$s au groupe %2$s</string>
+    <string name="NotificationMessageRecurringPay">%1$s vous avez payé %2$s</string>
+    <string name="NotificationPaidMedia_one">%1$d ⭐️ multimédia</string>
+    <string name="NotificationPaidMedia_other">%1$d ⭐️ multimédia</string>
+    <string name="NotificationMessagePaidMedia_one">%2$s vous enverrez une publication payante pour %1$d étoiles</string>
+    <string name="NotificationMessagePaidMedia_other">%2$s vous enverrez une publication payante pour %1$d étoiles</string>
+    <string name="NotificationChannelMessagePaidMedia_one">%2$s ont publié une publication payante pour %1$d étoile</string>
+    <string name="NotificationChannelMessagePaidMedia_other">%2$s ont publié une publication payante pour %1$d articles</string>
+    <string name="NotificationPinnedPaidMedia_one">%2$s ont publié une publication payante pour %1$d étoile</string>
+    <string name="NotificationPinnedPaidMedia_other">%2$s ont publié une publication payante pour %1$d articles</string>
+    <string name="NotificationChatMessagePaidMedia_one">%2$s a publié une publication payante dans le groupe %3$s pour %1$d étoile</string>
+    <string name="NotificationChatMessagePaidMedia_other">%2$s a publié une publication payante dans le groupe %3$s pour %1$d étoiles</string>
+    <string name="NotificationInvitedToGroup">%1$s vous êtes invité au groupe %2$s</string>
+    <string name="NotificationEditedGroupName">%1$s a renommé le groupe %2$s</string>
+    <string name="NotificationEditedGroupPhoto">%1$s a modifié la photo du groupe %2$s</string>
+    <string name="NotificationEditedGroupVideo">%1$s a modifié la photo du groupe %2$s</string>
+    <string name="NotificationGroupAddMember">%1$s à jouté %3$s au groupe %2$s</string>
+    <string name="NotificationGroupInvitedToCall">%1$s a invité %3$s à un chat vidéo %2$s</string>
+    <string name="NotificationGroupInvitedYouToCall">%1$s vous avez invité %2$s à un chat vidéo</string>
+    <string name="NotificationGroupCreatedCall">%1$s pour démarrer un chat vidéo sur %2$s</string>
+    <string name="NotificationGroupEndedCall">%1$s J\'ai terminé le chat vidéo avec %2$s</string>
+    <string name="NotificationGroupAddSelf">%1$s est maintenant dans le groupe %2$s</string>
+    <string name="NotificationGroupAddSelfMega">%1$s a rejoint le groupe %2$s</string>
+    <string name="NotificationGroupKickMember">%1$s pour supprimer %3$s du groupe %2$s</string>
+    <string name="NotificationGroupKickYou">%1$s vous a supprimé du groupe %2$s</string>
+    <string name="NotificationGroupLeftMember">%1$s a quitté le groupe %2$s</string>
+    <string name="NotificationContactJoined">%1$s pour rejoindre Divo Global !</string>
+    <string name="NotificationUnrecognizedDevice">%1$s :
+Nous allons maintenant découvrir une connexion à votre ordinateur à partir d\'un nouvel appareil de %2$s
+
+Appareil : %3$s
+Emplacement : %4$s
+
+S\'il n\'est pas là pour vous, vous pouvez accéder à Paramètres &gt; Appareils et vous déconnecter.
+
+Si vous pensez qu\'une personne se connecte à votre ordinateur sans votre consentement, vous pouvez activer la vérification en deux étapes dans vos paramètres de confidentialité et de sécurité.
+
+Cordialement,
+L\'équipe Divo Global</string>
+    <string name="NotificationContactNewPhoto">%1$s une photo de profil SA modifiée</string>
+    <string name="NotificationInvitedToGroupByLink">%1$s a rejoint le groupe %2$s avec un lien d\'invitation</string>
+    <string name="NotificationGroupFew">%1$s pour envoyer %3$s au groupe %2$s</string>
+    <string name="NotificationGroupAlbum">%1$s J\'ai envoyé un album à mon groupe %2$s</string>
+    <string name="NotificationGroupForwardedFew">%1$s pour transférer %3$s vers le groupe %2$s</string>
+    <string name="NotificationHiddenName">Divinité du monde</string>
+    <string name="NotificationHiddenChatName">Divinité du monde</string>
+    <string name="NotificationHiddenChatUserName">Utilisateur</string>
+    <string name="NotificationHiddenMessage">nouveau message</string>
+    <string name="Reply">je répondrai</string>
+    <string name="ReplyToGroup">je répondrai</string>
+    <string name="ReplyToUser">je répondrai</string>
+    <string name="NotificationMessagesPeopleDisplayOrder">%1$s %2$s</string>
+    <string name="NotificationActionPinnedText">%1$s a défini « %2$s » dans le groupe %3$s</string>
+    <string name="NotificationActionPinnedNoText">%1$s J\'ai publié un message dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedPoll2">%1$s a publié l\'enquête %3$s dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedQuiz2">%1$s a publié le quiz « %3$s » dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedPhoto">%1$s J\'ai publié une photo dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedGame">%1$s J\'ai publié un jeu dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedGameScore">%1$s pour définir un score dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedVideo">%1$s a épinglé une vidéo sur le groupe %2$s</string>
+    <string name="NotificationActionPinnedFile">%1$s a épinglé un fichier dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedSticker">%1$s a posté un autocollant dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedStickerEmoji">%1$s a posté un autocollant %3$s dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedVoice">%1$s a publié un message vocal à %2$s</string>
+    <string name="NotificationActionPinnedRound">%1$s a publié un message vidéo dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedContact2">%1$s a publié un contact %3$s dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedGeo">%1$s a épinglé une carte au groupe %2$s</string>
+    <string name="NotificationActionPinnedGeoLive">%1$s définit un emplacement en temps réel dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedGif">%1$s a épinglé un GIF au groupe %2$s</string>
+    <string name="NotificationActionPinnedMusic">%1$s a publié un audio dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedInvoice">%1$s a publié une facture dans le groupe %2$s</string>
+    <string name="NotificationActionPinnedTextChannel">%1$s a défini « %2$s »</string>
+    <string name="NotificationActionPinnedNoTextChannel">%1$s a posté un message</string>
+    <string name="NotificationActionPinnedPollChannel2">%1$s a publié une enquête %2$s</string>
+    <string name="NotificationActionPinnedQuizChannel2">%1$s a publié le quiz « %2$s »</string>
+    <string name="NotificationActionPinnedPhotoChannel">%1$s a épinglé une photo</string>
+    <string name="NotificationActionPinnedGameChannel">%1$s a posté un jeu</string>
+    <string name="NotificationActionPinnedGameScoreChannel">%1$s a établi un score</string>
+    <string name="NotificationActionPinnedVideoChannel">%1$s a épinglé une vidéo</string>
+    <string name="NotificationActionPinnedFileChannel">%1$s a épinglé un fichier</string>
+    <string name="NotificationActionPinnedInvoiceChannel">%1$s a publié une facture</string>
+    <string name="NotificationActionPinnedStickerChannel">%1$s a posté un autocollant</string>
+    <string name="NotificationActionPinnedStickerEmojiChannel">%1$s a posté un autocollant %2$s</string>
+    <string name="NotificationActionPinnedVoiceChannel">%1$s a défini un message vocal</string>
+    <string name="NotificationActionPinnedRoundChannel">%1$s a posté un message vidéo</string>
+    <string name="NotificationActionPinnedContactChannel2">%1$s a établi un contact %2$s</string>
+    <string name="NotificationActionPinnedGeoChannel">%1$s a épinglé une carte</string>
+    <string name="NotificationActionPinnedGeoLiveChannel">%1$s définit un emplacement en temps réel</string>
+    <string name="NotificationActionPinnedGifChannel">%1$s a épinglé un GIF</string>
+    <string name="NotificationActionPinnedMusicChannel">%1$s a publié un audio</string>
+    <string name="NotificationActionPinnedTextUser">%1$s a défini « %2$s »</string>
+    <string name="NotificationActionPinnedNoTextUser">%1$s a posté un message</string>
+    <string name="NotificationActionPinnedPollUser">%1$s a publié une enquête %2$s</string>
+    <string name="NotificationActionPinnedQuizUser">%1$s a publié un quiz %2$s</string>
+    <string name="NotificationActionPinnedPhotoUser">%1$s a épinglé une photo</string>
+    <string name="NotificationActionPinnedGameUser">%1$s a posté un jeu</string>
+    <string name="NotificationActionPinnedGameScoreUser">%1$s a établi un score</string>
+    <string name="NotificationActionPinnedVideoUser">%1$s a épinglé une vidéo</string>
+    <string name="NotificationActionPinnedFileUser">%1$s a épinglé un fichier</string>
+    <string name="NotificationActionPinnedInvoiceUser">%1$s a publié une facture</string>
+    <string name="NotificationActionPinnedStickerUser">%1$s a posté un autocollant</string>
+    <string name="NotificationActionPinnedStickerEmojiUser">%1$s a posté un autocollant %2$s</string>
+    <string name="NotificationActionPinnedVoiceUser">%1$s a défini un message vocal</string>
+    <string name="NotificationActionPinnedRoundUser">%1$s a posté un message vidéo</string>
+    <string name="NotificationActionPinnedContactUser">%1$s a établi un contact %2$s</string>
+    <string name="NotificationActionPinnedGeoUser">%1$s a épinglé une carte</string>
+    <string name="NotificationActionPinnedGeoLiveUser">%1$s définit un emplacement en temps réel</string>
+    <string name="NotificationActionPinnedGifUser">%1$s a épinglé un GIF</string>
+    <string name="NotificationActionPinnedMusicUser">%1$s a publié un audio</string>
+    <string name="SecretChatName">Divo mondial</string>
+    <!--usernames-->
+    <string name="Username">Nom d\'utilisateur</string>
+    <string name="UsernameAlso">aussi %1$s</string>
+    <string name="UsernameLinkPlaceholder">nom d\'utilisateur</string>
+    <string name="UsernameInUse">Ce nom d\'utilisateur est déjà pris.</string>
+    <string name="UsernameInUsePurchase">Ce lien est déjà pris.
+Cependant, il est disponible à l\'achat. **Apprendre encore plus...**</string>
+    <string name="UsernameInvalid">Ce nom d\'utilisateur n\'est pas valide.</string>
+    <string name="UsernameInvalidShort">Un nom d\'utilisateur doit comporter au moins 5 caractères.</string>
+    <string name="UsernameInvalidShortPurchase">Un nom d\'utilisateur de base doit comporter au moins 5 caractères.
+Cependant, des noms d\'utilisateur courts et à collectionner sont disponibles à l\'achat, y compris celui-ci. **Apprendre encore plus...**</string>
+    <string name="UsernameInvalidLong">Un nom d\'utilisateur ne peut pas dépasser 32 caractères.</string>
+    <string name="UsernameInvalidStartNumber">Les noms d\'utilisateur ne peuvent pas commencer par un chiffre.</string>
+    <string name="UsernameHelp">Vous pouvez choisir un nom d\'utilisateur sur **Divo Global**. Les utilisateurs pourront vous trouver sous ce nom et vous contacter sans connaître votre numéro de téléphone.
+
+Vous pouvez utiliser **a–z**, **0–9** et des traits de soulignement.
+La longueur minimale est de **5** caractères.</string>
+    <string name="UsernameHelpLink">Ce lien ouvre une discussion avec vous :
+%1$s</string>
+    <string name="UsernameChecking">Vérification du nom d\'utilisateur...</string>
+    <string name="UsernameAvailable">%1$s est disponible.</string>
+    <string name="UsernameEmpty">Aucun</string>
+    <string name="ErrorOccurred">Une erreur s\'est produite.</string>
+
+    <string name="None">Aucun</string>
+    <!--settings view-->
+    <string name="ResetNotificationsText">Tous les paramètres de notification ont été réinitialisés aux valeurs par défaut</string>
+    <string name="ResetNotificationsAlertTitle">Réinitialiser toutes les notifications</string>
+    <string name="ResetNotificationsAlert">Voulez-vous réinitialiser tous les paramètres de notification aux valeurs par défaut ?</string>
+    <string name="ResetCustomNotifications">Réinitialiser les paramètres par défaut</string>
+    <string name="ResetCustomNotificationsAlertTitle">Réinitialiser les notifications</string>
+    <string name="ResetCustomNotificationsAlert">Voulez-vous réinitialiser vos paramètres de notification ?</string>
+    <string name="TextSizeHeader">Taille du texte du message</string>
+    <string name="AskAQuestion">poser une question</string>
+    <string name="AddAnExplanation">Ajouter une explication</string>
+    <string name="AddAnExplanationInfo">Les utilisateurs verront ce texte après avoir choisi la mauvaise option, utile à des fins éducatives.</string>
+    <string name="EnableAnimations">Activer les animations</string>
+    <string name="ChatSettings">Discussions</string>
+    <string name="Devices">Appareils</string>
+    <string name="SettingsHelp">Aide</string>
+    <string name="SettingsDebug">Dépuration</string>
+    <string name="Account">Compte</string>
+    <string name="Unblock">Débloquer l\'utilisateur</string>
+    <string name="NoBlocked">Toujours aucun utilisateur bloqué</string>
+    <string name="Alert">Afficher les notifications</string>
+    <string name="MessagePreview">Afficher les aperçus</string>
+    <string name="NotificationShowSenderNames">Afficher les noms des expéditeurs</string>
+    <string name="StoryAutoExceptions">Exceptions automatiques</string>
+    <string name="StoryAutoExceptionsInfo">Activez automatiquement les notifications de story pour les 5 utilisateurs avec lesquels vous interagissez le plus.</string>
+    <string name="Sound">Son</string>
+    <string name="InAppNotifications">Notifications dans l\'application</string>
+    <string name="InAppSounds">Sons dans l\'application</string>
+    <string name="InAppVibrate">Vibration dans l\'application</string>
+    <string name="Vibrate">Vibration</string>
+    <string name="InAppPreview">Aperçu dans l\'application</string>
+    <string name="Reset">Restaurer</string>
+    <string name="ResetAllNotifications">Réinitialiser toutes les notifications</string>
+    <string name="UndoAllCustom">Annulez tous les paramètres de notification personnalisés pour vos contacts, groupes et chaînes.</string>
+    <string name="NotificationsAndSounds">Notifications et sons</string>
+    <string name="CustomNotifications">Notifications personnalisées</string>
+    <string name="ProfilePopupNotification">Notification contextuelle</string>
+    <string name="ProfilePopupNotificationInfo">Les nouveaux messages de ce contact apparaîtront sur votre écran lorsque vous n\'utilisez pas Divo Global.</string>
+    <string name="NotificationsLed">Lumière</string>
+    <string name="NotificationsLedColor">Couleur</string>
+    <string name="ColorBlue">Bleu</string>
+    <string name="ColorRed">Rouge</string>
+    <string name="ColorYellow">Jaune</string>
+    <string name="ColorGreen">Vert</string>
+    <string name="ColorCyan">Cyan</string>
+    <string name="ColorWhite">Blanc</string>
+    <string name="ColorPink">Rose</string>
+    <string name="FontSize">Taille du texte</string>
+    <string name="FontType">Type de police</string>
+    <string name="ColorViolet">Violet</string>
+    <string name="ColorOrange">Orange</string>
+    <string name="NotificationsLedInfo">Un petit voyant clignotant utilisé sur certains appareils pour signaler de nouveaux messages.</string>
+    <string name="PriorityInfo">Les notifications de priorité plus élevée fonctionneront même avec le mode Ne pas déranger.</string>
+    <string name="General">Général</string>
+    <string name="NotificationsMuted">Silencieux</string>
+    <string name="NotificationsUnmuted">Notifications activées</string>
+    <string name="NotificationsOn">Ouais</string>
+    <string name="NotificationsOff">Non</string>
+    <string name="NotificationsOffUntil">Désactivé jusqu\'à %1$s</string>
+    <string name="NotificationsTurnOn">Activer</string>
+    <string name="NotificationsTurnOff">Désactiver</string>
+    <string name="BlockedUsers">Utilisateurs bloqués</string>
+    <string name="BlockedUsersInfo">Les utilisateurs bloqués ne peuvent pas vous envoyer de messages ni vous ajouter à des groupes. Ils ne verront pas vos photos de profil, vos histoires, ni votre dernier statut de visite et en ligne.</string>
+    <string name="BlockUserMultiTitle">Bloquer l\'utilisateur</string>
+    <string name="BlockUserChatsTitle">CHATTES</string>
+    <string name="BlockUserContactsTitle">CONTACTS</string>
+    <string name="LogOut">se déconnecter</string>
+    <string name="NoSound">Pas de son</string>
+    <string name="Default">Défaut</string>
+    <string name="Support">Moyen</string>
+    <string name="OnlyIfSilent">Seulement si le son est coupé</string>
+    <string name="BackgroundBlurred">Flou</string>
+    <string name="BackgroundMotion">Mouvement</string>
+    <string name="ChangeChatBackground">Changer le fond d\'écran</string>
+    <string name="ChangeUserNameColor">Changez votre couleur</string>
+    <string name="ChangeChannelNameColor2">Apparence</string>
+    <string name="ChangeGroupAppearance">Apparence</string>
+    <string name="ChatBackground">papier peint</string>
+    <string name="ResetChatBackgrounds">Réinitialiser les fonds d\'écran</string>
+    <string name="ResetChatBackgroundsInfo">Supprimez tous les fonds d\'écran téléchargés et restaurez ceux préinstallés.</string>
+    <string name="ResetChatBackgroundsAlertTitle">Réinitialiser les fonds d\'écran</string>
+    <string name="ResetChatBackgroundsAlert">Voulez-vous réinitialiser tous les fonds d\'écran ?</string>
+    <string name="DeleteChatBackgroundsAlert">Voulez-vous supprimer les fonds d\'écran sélectionnés ?</string>
+    <string name="BackgroundPreview">Aperçu en arrière-plan</string>
+    <string name="BackgroundPreviewLine1">Astuce : certains fonds d\'écran sont plus beaux avec l\'effet de flou.</string>
+    <string name="BackgroundPreviewLine2">Woo-hoo ! Merci!</string>
+    <string name="FontSizePreviewName">Robert</string>
+    <string name="FontSizePreviewReply">Bonjour! 👋</string>
+    <string name="FontSizePreviewLine1">Savez-vous quelle heure il est ?</string>
+    <string name="FontSizePreviewLine2">C\'est le matin à Tokyo 😎</string>
+    <string name="BackgroundColorSinglePreviewLine1">Appuyez sur Définir pour appliquer l\'arrière-plan.</string>
+    <string name="BackgroundColorSinglePreviewLine2">Tu peux bien le voir</string>
+    <string name="SearchByColor">Rechercher par couleur</string>
+    <string name="SearchBackgrounds">Rechercher des images</string>
+    <string name="BackgroundSearchColor">Couleur:</string>
+    <string name="BackgroundColors">Couleurs</string>
+    <string name="BackgroundAnimateInfo">Les couleurs bougeront lorsque vous enverrez des messages</string>
+    <string name="BackgroundAnimate">Vivant</string>
+    <string name="BackgroundPattern">Modèle</string>
+    <string name="BackgroundChoosePattern">Choisissez un motif</string>
+    <string name="BackgroundIntensity">Intensité</string>
+    <string name="Blue">Bleu</string>
+    <string name="Red">Rouge</string>
+    <string name="Orange">Orange</string>
+    <string name="Yellow">Jaune</string>
+    <string name="Green">Vert</string>
+    <string name="Teal">Turquoise</string>
+    <string name="Purple">Violet</string>
+    <string name="Pink">Rose</string>
+    <string name="Brown">Brun</string>
+    <string name="Black">Noir</string>
+    <string name="Gray">Gris</string>
+    <string name="White">Blanc</string>
+    <string name="SelectColorTitle">Choisissez une couleur</string>
+    <string name="LoadingFullImage">chargement de l\'image complète...</string>
+    <string name="SetColor">Choisissez une couleur</string>
+    <string name="MessagesSettings">Messages</string>
+    <string name="SendByEnter">Envoyer avec la touche Entrée</string>
+    <string name="Events">Événements</string>
+    <string name="ContactJoined">Un contact a rejoint Divo Global</string>
+    <string name="PinnedMessages">Messages épinglés</string>
+    <string name="TranslateMessages">Traduire les messages</string>
+    <string name="ShowTranslateButton">Afficher le bouton Traduire</string>
+    <string name="ShowTranslateChatButton">Traduire des discussions entières</string>
+    <string name="DoNotTranslate">Ne pas traduire</string>
+    <string name="Languages_one">%1$d langue</string>
+    <string name="Languages_other">%1$d langues</string>
+    <string name="ChooseLanguages">Choisissez les langues</string>
+    <string name="TranslateMessagesInfo1">Le bouton « Traduire » apparaîtra lorsque vous appuyez une fois sur un message texte.</string>
+    <string name="Language">Langue</string>
+    <string name="LanguageCustom">Personnalisé</string>
+    <string name="LanguageTitle">Changer de langue ?</string>
+    <string name="LanguageAlert">Vous êtes sur le point d\'appliquer un module linguistique (**%1$s**) %2$d %% terminé.
+
+Cela traduira toute l’interface. Vous pouvez suggérer des corrections sur la [plateforme de traduction].
+
+Vous pouvez changer la langue quand vous le souhaitez dans Paramètres.</string>
+    <string name="LanguageCustomAlert">Vous êtes sur le point d\'appliquer un module linguistique personnalisé (**%1$s**) qui est %2$d %% terminé.
+
+Cela traduira toute l’interface. Vous pouvez suggérer des corrections sur la [plateforme de traduction].
+
+Vous pouvez changer la langue quand vous le souhaitez dans Paramètres.</string>
+    <string name="LanguageUnknownTitle">Données insuffisantes</string>
+    <string name="LanguageUnsupportedError">Langue introuvable.</string>
+    <string name="LanguageSame">Vous utilisez déjà ce pack linguistique (**%1$s**). Vous pouvez changer la langue quand vous le souhaitez dans Paramètres.</string>
+    <string name="LanguageUnknownCustomAlert">Malheureusement, ce pack de langue personnalisé (**%1$s**) ne contient pas de données pour Divo Global Android.</string>
+    <string name="AskAQuestionInfo">Veuillez noter que Divo Global est soutenu par des bénévoles. Nous répondons dans les plus brefs délais, mais cela peut prendre du temps.
+
+Vous pouvez consulter la &lt;a href=\"https://telegram.org/faq/es#preguntas-generales\"&gt;questions fréquemment posées de Divo Global&lt;/a&gt; : elles proposent des &lt;a href=\"https://telegram.org/faq/es#solucion-de-problemas\"&gt;solutions aux problèmes&lt;/a&gt; et des réponses à de nombreuses questions.</string>
+    <string name="AskButton">Demander</string>
+    <string name="TelegramFAQ">Questions fréquemment posées</string>
+    <string name="TelegramFaq">Questions fréquemment posées</string>
+    <string name="TelegramFeatures">En savoir plus sur Divo Global</string>
+    <string name="TelegramFeaturesUrl">https://t.me/TelegramTipsES</string>
+    <string name="AddAccount">Ajouter un compte</string>
+    <string name="SelectAccount">Choisissez un compte</string>
+    <string name="TelegramFaqUrl">https://telegram.org/faq/es</string>
+    <string name="PrivacyPolicy">politique de confidentialité</string>
+    <string name="TermsOfService">Conditions d\'utilisation</string>
+    <string name="TermsOfServiceLogin">En vous inscrivant, vous acceptez
+les *conditions de service*.</string>
+    <string name="PrivacyPolicyUrl">https://telegram.org/privacy</string>
+    <string name="TermsOfServiceUrl">https://telegram.org/tos</string>
+    <string name="WebAppDisclaimerUrl">https://telegram.org/tos/mini-apps</string>
+    <string name="DeleteLocalizationTitle">Supprimer le module linguistique</string>
+    <string name="DeleteLocalizationText">Voulez-vous supprimer le module linguistique **%1$s** ?</string>
+    <string name="IncorrectLocalization">Fichier de traduction incorrect</string>
+    <string name="NotificationsService">Service de maintien en vie</string>
+    <string name="NotificationsServiceInfo">Rouvrez l\'application lorsqu\'elle se ferme. Activez cette option pour des notifications plus fiables.</string>
+    <string name="NotificationsServiceConnection">Connexion en arrière-plan</string>
+    <string name="NotificationsServiceConnectionInfo">Maintient une connexion en arrière-plan à faible impact avec Divo Global pour des notifications plus fiables.</string>
+    <string name="SortBy">Trier par</string>
+    <string name="ImportContacts">Importer des contacts</string>
+    <string name="SortFirstName">Nom</string>
+    <string name="SortLastName">Noms de famille</string>
+    <string name="LedColor">couleur claire</string>
+    <string name="PopupNotification">Notification contextuelle</string>
+    <string name="NoPopup">ne jamais montrer</string>
+    <string name="OnlyWhenScreenOn">Avec écran allumé</string>
+    <string name="OnlyWhenScreenOff">Avec écran éteint</string>
+    <string name="AlwaysShowPopup">\"Toujours montrer\"</string>
+    <string name="BadgeNumber">Globe sur l\'icône</string>
+    <string name="BadgeNumberShow">Afficher le globe sur l\'icône</string>
+    <string name="BadgeNumberMutedChats">Inclure les discussions en sourdine</string>
+    <string name="BadgeNumberUnread">Compter les messages non lus</string>
+    <string name="Short">court</string>
+    <string name="Long">long</string>
+    <string name="AutomaticMediaDownload">Téléchargement automatique multimédia</string>
+    <string name="AutoDownloadMedia">Téléchargement automatique de médias</string>
+    <string name="AutoDownloadOnAllChats">Activé dans tous les chats</string>
+    <string name="AutoDownloadUpToOnAllChats">Jusqu\'à %1$s sur toutes les discussions</string>
+    <string name="AutoDownloadOff">Non</string>
+    <string name="AutoDownloadOnUpToFor">Jusqu\'à %1$s pour %2$s</string>
+    <string name="AutoDownloadOnFor">Activé pour %1$s</string>
+    <string name="AutoDownloadContacts">Contacts</string>
+    <string name="AutoDownloadChannels">Canaux</string>
+    <string name="AutoDownloadLow">Faible</string>
+    <string name="AutoDownloadMedium">Moitié</string>
+    <string name="AutoDownloadHigh">Haut</string>
+    <string name="AutoDownloadCustom">Autre</string>
+    <string name="AutoDownloadPm">Député</string>
+    <string name="AutoDownloadGroups">Groupes</string>
+    <string name="AutoDownloadPhotos">Photos</string>
+    <string name="AutoDownloadVideos">Vidéos</string>
+    <string name="AutoDownloadFiles">Fichiers</string>
+    <string name="AutoDownloadPhotosOn">Photos</string>
+    <string name="AutoDownloadVideosOn">Vidéos</string>
+    <string name="AutoDownloadFilesOn">Fichiers</string>
+    <string name="AutoDownloadFilesTitle">Téléchargement automatique de fichiers et de musique</string>
+    <string name="AutoDownloadPhotosTitle">Auto-téléchargement de photos</string>
+    <string name="AutoDownloadVideosTitle">Auto-téléchargement de vidéos et de GIF</string>
+    <string name="AutoDownloadMaxVideoSize">Taille maximale de la vidéo</string>
+    <string name="AutoDownloadMaxFileSize">Taille maximale du fichier</string>
+    <string name="AutoDownloadPreloadMusic">Précharger l\'audio suivant</string>
+    <string name="AutoDownloadPreloadMusicInfo">Commencez à télécharger la piste suivante pendant que vous écoutez un audio.</string>
+    <string name="AutoDownloadPreloadVideo">Précharger des vidéos volumineuses</string>
+    <string name="AutoDownloadPreloadVideoInfo">Précharge les premières secondes (1 à 2 Mo) des vidéos supérieures à %1$s pour une lecture instantanée.</string>
+    <string name="AutoDownloadOnMobileDataInfo">Activez cette option si vous souhaitez que le multimédia soit téléchargé automatiquement avec les données mobiles.</string>
+    <string name="AutoDownloadOnRoamingDataInfo">Activez cette option si vous souhaitez que le multimédia soit téléchargé automatiquement en itinérance.</string>
+    <string name="AutoDownloadOnWiFiDataInfo">Activez cette option si vous souhaitez que les médias soient téléchargés automatiquement via Wi-Fi.</string>
+    <string name="AutoDownloadOnMobileData">Avec les données mobiles</string>
+    <string name="AutoDownloadOnRoamingData">Itinérance</string>
+    <string name="AutoDownloadOnWiFiData">Avec Wi-Fi</string>
+    <string name="AutoDownloadDataUsage">Utilisation des données</string>
+    <string name="AutoDownloadTypes">Types de multimédia</string>
+    <string name="AutoDownloadAudioInfo">Les messages vocaux sont petits, ils sont toujours téléchargés automatiquement.</string>
+    <string name="NoMediaAutoDownload">Désactivé</string>
+    <string name="NoGIFs">Pas de GIF</string>
+    <string name="AutomaticDownloadSettings">Paramètres d\'autodécharge</string>
+    <string name="AutomaticDownloadSettingsInfoMobile">Vous pouvez modifier vos paramètres de téléchargement automatique pour réduire l\'utilisation des données mobiles.</string>
+    <string name="AutomaticDownloadSettingsInfoWiFi">Vous pouvez modifier vos paramètres de téléchargement automatique pour réduire la consommation de données lorsque vous utilisez le Wi-Fi.</string>
+    <string name="AutomaticDownloadSettingsInfoRoaming">Vous pouvez modifier vos paramètres de téléchargement automatique pour réduire la consommation de données en itinérance.</string>
+    <string name="ResetAutomaticMediaDownload">Réinitialiser les paramètres de téléchargement automatique</string>
+    <string name="ResetAutomaticMediaDownloadAlertTitle">Réinitialiser les paramètres</string>
+    <string name="ResetAutomaticMediaDownloadAlert">Voulez-vous réinitialiser vos paramètres de téléchargement automatique ?</string>
+    <string name="WhenUsingMobileData">Avec les données mobiles</string>
+    <string name="WhenConnectedOnWiFi">Avec Wi-Fi</string>
+    <string name="WhenRoaming">Itinérance</string>
+    <string name="AutoplayGIF">GIF</string>
+    <string name="AutoplayVideo">Vidéos</string>
+    <string name="AutoplayVideoInfo">Appuyez sur les boutons de volume pour l\'écouter.</string>
+    <string name="HidAccount">Compte caché pour les messages transférés</string>
+    <string name="StoryHidAccount">Compte caché pour les histoires republiées</string>
+    <string name="AutoplayMedia">Lecture automatique</string>
+    <string name="RaiseToSpeak">Lève-toi pour parler</string>
+    <string name="RaiseToSpeakInfo">Enregistrez des messages vocaux en tenant le téléphone près de votre oreille</string>
+    <string name="RaiseToListen">Lève-toi pour écouter</string>
+    <string name="RaiseToListenInfo">Changez le son du casque en portant le téléphone à votre oreille</string>
+    <string name="SaveToGallerySettings">Enregistrer dans la galerie</string>
+    <string name="SoundMuted">Son coupé</string>
+    <string name="EditName">Modifier le nom</string>
+    <string name="ProfileColorEdit">Changer la couleur du profil</string>
+    <string name="NotificationsCustomize">Personnaliser</string>
+    <string name="NotificationsCustom">Personnalisé</string>
+    <string name="NotificationsImportance">Priorité</string>
+    <string name="NotificationsPrioritySettings">Identique à Paramètres</string>
+    <string name="NotificationsPriorityLow">Faible</string>
+    <string name="NotificationsPriorityMedium">Moyenne</string>
+    <string name="NotificationsPriorityHigh">Haut</string>
+    <string name="NotificationsPriorityUrgent">Urgent</string>
+    <string name="RepeatNotificationsNever">Jamais</string>
+    <string name="RepeatNotifications">Répéter les notifications</string>
+    <string name="PhoneNumberHelp">Vous pouvez modifier votre numéro Divo Global ici. Votre compte et toutes vos données cloud, messages, fichiers, groupes, contacts, etc. seront déplacés vers le nouveau numéro.</string>
+    <string name="PhoneNumberAlert">Les utilisateurs verront votre nouveau numéro s\'ils l\'ont dans leur répertoire téléphonique ou si vos paramètres de confidentialité le permettent. Vous pouvez modifier cela dans Paramètres &gt; Confidentialité et sécurité &gt; Numéro de téléphone.</string>
+    <string name="PhoneNumberChange2">Changer de numéro</string>
+    <string name="PhoneNumberChangeTitle">Changer de numéro</string>
+    <string name="PhoneNumberKeepButton">Conserver %1$s</string>
+    <string name="ChangePhoneNewNumber">Nouveau numéro</string>
+    <string name="ChangePhoneHelp">Votre nouveau numéro recevra un code de confirmation lors d\'un appel ou d\'un SMS.</string>
+    <string name="ChangePhoneNumberOccupied">Le numéro %1$s est déjà lié à un compte Divo Global. Veuillez supprimer ce compte avant d\'utiliser ce numéro.</string>
+    <string name="NotificationsOther">Autres</string>
+    <string name="VibrationDisabled">Désactivé</string>
+    <string name="PopupEnabled">Activé</string>
+    <string name="PopupDisabled">Désactivé</string>
+    <string name="LedDisabled">Désactivé</string>
+    <string name="RepeatDisabled">Ne répétez pas</string>
+    <string name="InChatSound">Sons de discussion</string>
+    <string name="SoundDefault">Défaut</string>
+    <string name="VibrationDefault">Défaut</string>
+    <string name="NotificationsDefault">Défaut</string>
+    <string name="NotificationsInAppDefault">Par défaut dans l\'application</string>
+    <string name="NotificationsChatInApp">%1$s dans l\'application</string>
+    <string name="NotificationsSilent">Silencieux</string>
+    <string name="SmartNotifications">Notifications intelligentes</string>
+    <string name="NotificationsExceptions">Exceptions</string>
+    <string name="NotificationsAddAnException">Ajouter une exception</string>
+    <string name="NotificationsDeleteAllException">Supprimer toutes les exceptions</string>
+    <string name="NotificationsDeleteAllExceptionTitle">Supprimer toutes les exceptions</string>
+    <string name="NotificationsDeleteAllExceptionAlert">Voulez-vous supprimer toutes les exceptions ?</string>
+    <string name="NotificationsNewException">Nouvelle exception</string>
+    <string name="NoExceptions">Les discussions qui n\'ont pas les paramètres par défaut pour les notifications apparaîtront ici.
+
+Vous pouvez personnaliser les notifications d\'une discussion en ouvrant ses informations et en sélectionnant « Notifications ».</string>
+    <string name="SmartNotificationsInfo">%1$d / %2$s</string>
+    <string name="SmartNotificationsDisabled">Désactiver</string>
+    <string name="SecretWebPage">Aperçu du lien</string>
+    <string name="SecretWebPageInfo">Les aperçus des liens seront générés sur les serveurs Divo Global. Nous ne stockons pas de données sur les liens que vous envoyez.</string>
+    <string name="SecretChat">discussions secrètes</string>
+    <string name="DirectShare">Partage direct</string>
+    <string name="DirectShareInfo">Discussions récentes lors du partage sur Android</string>
+    <string name="Emoji">Émoji</string>
+    <string name="LargeEmoji">gros émojis</string>
+    <string name="TelegramVersion">Divo Global pour Android %1$s</string>
+    <string name="ChangeLanguageLater">Vous pourrez modifier la langue ultérieurement dans Paramètres.</string>
+    <string name="ChooseYourLanguage">Choisissez votre langue</string>
+    <string name="ChooseYourLanguageOther">Autre</string>
+    <string name="Paste">Coller</string>
+    <string name="Flip">Retourner</string>
+    <string name="SegmentationTabToCrop">Appuyez sur un objet pour le recadrer</string>
+    <string name="SegmentationCutOut">Garniture</string>
+    <string name="SegmentationCutObject">Découper un objet</string>
+    <string name="SegmentationUndoCutOut">annuler la coupe</string>
+    <string name="SegmentationUndo">Défaire</string>
+    <string name="SegmentationOutline">Ajouter un contour</string>
+    <string name="SegmentationErase">Supprimer</string>
+    <string name="SegmentationRestore">Restaurer</string>
+    <string name="EditPack">modifier</string>
+    <string name="PasteFromClipboard">Coller depuis le presse-papiers</string>
+    <string name="ProxySettings">Paramètres du proxy</string>
+    <string name="ProxyDetails">Détails du proxy</string>
+    <string name="Proxy">Procuration</string>
+    <string name="ProxyConnections">Relations</string>
+    <string name="ProxyAddedSuccess">Ajout d\'un proxy.</string>
+    <string name="AddProxy">Ajouter un proxy</string>
+    <string name="DeleteProxy">Supprimer le proxy ?</string>
+    <string name="DeleteProxyTitle">Supprimer le proxy</string>
+    <string name="DeleteProxyConfirm">Voulez-vous supprimer ce proxy ?</string>
+    <string name="DeleteProxyMultiConfirm">Voulez-vous supprimer ces proxys ?</string>
+    <string name="UseProxySettings">Utiliser un proxy</string>
+    <string name="UseProxyAddress">Serveur</string>
+    <string name="UseProxyPassword">Mot de passe</string>
+    <string name="UseProxyPort">Port</string>
+    <string name="UseProxySecret">Indice</string>
+    <string name="UseProxyUsername">Utilisateur</string>
+    <string name="UseProxySocks5">Proxy SOCKS5</string>
+    <string name="UseProxyTelegram">Proxy MTProto</string>
+    <string name="UseProxyTelegramError">Le proxy que vous utilisez n\'est pas configuré correctement et sera désactivé. Veuillez en trouver un autre.</string>
+    <string name="UseProxySponsor">Commanditaire mandataire</string>
+    <string name="UseProxySponsorInfo">Ce canal est affiché par votre serveur proxy. Pour supprimer cette chaîne de votre liste de discussion, désactivez le proxy dans Paramètres globaux Divo &gt; Données et stockage.</string>
+    <string name="UseProxyInfo">Paramètres proxy SOCKS5.</string>
+    <string name="UseProxyTelegramInfo">Paramètres du proxy MTProto.</string>
+    <string name="UseProxyTelegramInfo2">Ce proxy pourrait afficher une chaîne sponsorisée dans votre liste de discussion. Cela ne révèle aucun de votre trafic sur Divo Global.</string>
+    <string name="UseProxyForCalls">Utiliser un proxy pour les appels</string>
+    <string name="UseProxyForCallsInfo">Le proxy peut diminuer la qualité de vos appels.</string>
+    <string name="ConnectingToProxyEnable">Activer</string>
+    <string name="LowDiskSpaceTitle">Attention</string>
+    <string name="LowDiskSpaceMessage">Il reste peu d\'espace sur votre appareil. Vous pouvez libérer de l\'espace en choisissant de conserver uniquement le cache des médias récents dans Divo Global.</string>
+    <string name="LowDiskSpaceMessage2">Votre appareil n\'a presque plus d\'espace de stockage. Vous pouvez utiliser les paramètres du cache pour supprimer les fichiers inutiles et les retélécharger si vous en avez besoin.</string>
+    <string name="LowDiskSpaceButton">Gérer le cache</string>
+    <string name="AutodownloadContacts">Contacts</string>
+    <string name="AutodownloadPrivateChats">Discussions privées</string>
+    <string name="AutodownloadGroupChats">Groupes</string>
+    <string name="AutodownloadChannels">Canaux</string>
+    <string name="AutodownloadSizeLimit">Limite de taille</string>
+    <string name="AutodownloadSizeLimitUpTo">jusqu\'à %1$s</string>
+    <string name="Streaming">streaming</string>
+    <string name="EnableStreaming">Streaming vidéo et audio</string>
+    <string name="EnableAllStreamingInfo">Lorsque cela est possible, Divo Global commencera immédiatement à lire des vidéos et de la musique, sans attendre le téléchargement complet des fichiers.</string>
+    <string name="TapToChangePhone">Appuyez pour changer le numéro</string>
+    <string name="ShowNotificationsFor">Afficher les notifications</string>
+    <string name="AllAccounts">Tous les comptes</string>
+    <string name="ShowNotificationsForInfo">Désactivez cette option si vous souhaitez recevoir des notifications uniquement du compte actuel.</string>
+    <string name="NotificationsForChats">Notifications de discussion</string>
+    <string name="NotificationsPrivateChats">Discussions privées</string>
+    <string name="NotificationsGroups">Groupes</string>
+    <string name="NotificationsChannels">Canaux</string>
+    <string name="NotificationsStories">Histoires</string>
+    <string name="NotificationsReactions">Réactions</string>
+    <string name="NotificationsExceptionsAlert">Veuillez noter que **%1$s** figurent sur la liste des exceptions et ne seront pas affectés par ce changement.</string>
+    <string name="NotificationsExceptionsSingleAlert">Veuillez noter que **%1$s** figure sur la liste des exceptions et ne sera pas affecté par ce changement.</string>
+    <string name="ViewExceptions">Voir les exceptions</string>
+    <string name="TapToChange">Appuyez pour modifier</string>
+    <string name="AlternativeOptions">Options alternatives</string>
+    <string name="AddAnotherAccount">Ajouter un autre compte</string>
+    <string name="AddAnotherAccountInfo">Connectez d\'autres comptes Divo Global et basculez facilement entre eux.</string>
+    <string name="SetPasscode">Mettez un code</string>
+    <string name="SetPasscodeInfo">Verrouillez l\'application avec un code afin que d\'autres personnes ne puissent pas l\'ouvrir.</string>
+    <string name="ClearCache">Vider le cache</string>
+    <string name="ClearSelectedCache">Supprimer la sélection</string>
+    <string name="ClearCacheInfo">Libérez de l\'espace sur votre appareil ; votre multimédia restera dans le cloud.</string>
+    <string name="ClearingCache">Vider le cache…</string>
+    <string name="ClearingCacheDescription">Gardez cette fenêtre ouverte pendant que Divo Global vide le cache.</string>
+    <string name="ChangePhoneNumber">Changer de numéro de téléphone</string>
+    <string name="ChangePhoneNumberInfo">Déplacez votre compte, vos chats et vos multimédias vers un nouveau numéro.</string>
+    <string name="ChangePhoneNumberSuccessWithPhone">Votre numéro a été remplacé par %1$s.</string>
+    <string name="ContactSupport">Contacter l\'assistance</string>
+    <string name="ContactSupportInfo">Faites-nous part de tout problème ; se déconnecter n\'aide généralement pas.</string>
+    <string name="LogOutTitle">se déconnecter</string>
+    <string name="LogOutInfo">La déconnexion désactive les discussions secrètes.</string>
+    <string name="SearchInSettings">Paramètres de recherche et FAQ</string>
+    <string name="SettingsRecent">Recherches récentes</string>
+    <string name="SettingsFaqSearchTitle">Questions fréquemment posées</string>
+    <string name="SettingsNoResults">Aucun résultat trouvé</string>
+    <string name="SettingsNoRecent">Aucune recherche récente</string>
+    <string name="SettingsSearchFaq">FAQ</string>
+    <string name="DistanceUnits">Unités de distance</string>
+    <string name="DistanceUnitsTitle">Unités de distance</string>
+    <string name="DistanceUnitsAutomatic">Automatique</string>
+    <string name="DistanceUnitsKilometers">Kilomètres</string>
+    <string name="DistanceUnitsMiles">Milles</string>
+    <string name="AuthAnotherClient">Scannez le code QR</string>
+    <string name="AuthAnotherClientScan">Scannez le code QR</string>
+    <string name="AuthAnotherClientNotFound">Jeton d\'authentification introuvable</string>
+    <string name="AuthAnotherClientOk">Authentification réussie</string>
+    <string name="AuthAnotherClientDownloadClientUrl">https://desktop.telegram.org/</string>
+    <string name="AuthAnotherWebClientUrl">https://web.telegram.org/</string>
+    <string name="AuthAnotherClientInfo1">Téléchargez Divo Global sur votre ordinateur depuis *desktop.telegram.org*.</string>
+    <string name="AuthAnotherClientInfo2">Lancez Divo Global Desktop pour obtenir le code QR.</string>
+    <string name="AuthAnotherClientInfo3">Scannez le code QR pour connecter votre compte.</string>
+    <string name="AuthAnotherClientUrl">Ce code peut être utilisé pour permettre à quelqu\'un de se connecter à votre compte Divo Global.
+
+Pour confirmer votre connexion, accédez à Paramètres &gt; Appareils &gt; Scanner QR et scannez le code.</string>
+    <string name="QRCodePermissionNoCameraWithHint">**Divo Global** doit accéder à la caméra pour que vous puissiez scanner les codes QR. Appuyez sur Paramètres &gt; Autorisations et activez **Caméra**.</string>
+    <string name="SetProfilePhoto">Mettre une photo de profil</string>
+    <string name="AppUpdate">Mettre à jour Divo Global</string>
+    <string name="AppUpdateVersionAndSize">Version %1$s • %2$s</string>
+    <string name="AppUpdateDownloading">Téléchargement… %1$d %%</string>
+    <string name="AppUpdateNow">Mettre à jour maintenant</string>
+    <string name="AppUpdateDownloadNow">Téléchargez maintenant</string>
+    <string name="AppUpdateRemindMeLater">Rappelle-moi plus tard</string>
+    <string name="AppUpdateChangelogEmpty">**Quoi de neuf ?**
+
+• Corrections de bugs et améliorations.</string>
+    <string name="Permanent">Lien principal</string>
+    <string name="LinkHashExpired">Le lien n\'est plus actif</string>
+    <string name="CancelForwardPrivate">Que voulez-vous faire avec %1$s de votre conversation avec **%2$s** ?</string>
+    <string name="CancelForwardChat">Que voulez-vous faire avec %1$s de **%2$s** ?</string>
+    <string name="ShowSenderNames">Afficher les noms des expéditeurs</string>
+    <string name="HideSenderNames">Masquer les noms des expéditeurs</string>
+    <string name="ShowSendersName">Afficher le nom de l\'expéditeur</string>
+    <string name="HideSendersName">Masquer le nom de l\'expéditeur</string>
+    <string name="ChatListSwipeGesture">Geste de balayage dans la liste de discussion</string>
+    <string name="ChatListSwipeGestureInfo">Choisissez l\'action que vous souhaitez effectuer en faisant glisser votre doigt vers la gauche dans la liste de discussion.</string>
+    <string name="SwipeSettingsPin">Ensemble</string>
+    <string name="SwipeSettingsRead">Lire</string>
+    <string name="SwipeSettingsArchive">Déposer</string>
+    <string name="SwipeSettingsMute">Muet</string>
+    <string name="SwipeSettingsDelete">Éliminer</string>
+    <string name="SwipeSettingsFolders">Changer de dossier</string>
+    <string name="SwipeUnmute">Activer</string>
+    <string name="SwipeMute">Muet</string>
+    <string name="SwipeDeleteChat">Éliminer</string>
+    <string name="SwipeMarkAsRead">Lire</string>
+    <string name="SwipeMarkAsUnread">Non lu</string>
+    <string name="SwipeUnpin">Détacher</string>
+    <string name="SwipePin">Ensemble</string>
+    <string name="CancelForwarding">Annuler le renvoi</string>
+    <string name="YourBioChanged">La biographie a changé.</string>
+    <string name="YourNameChanged">Le nom a changé.</string>
+    <string name="ChannelTitleChanged">Le nom de la chaîne a changé.</string>
+    <string name="ChannelDescriptionChanged">La description de la chaîne a changé.</string>
+    <string name="CheckPhoneNumber">Est-ce que %1$s est toujours votre numéro ?</string>
+    <string name="CheckPhoneNumberInfo">Ayez toujours votre numéro à jour afin de pouvoir vous connecter à Divo Global. **Apprendre encore plus**</string>
+    <string name="CheckPhoneNumberLearnMoreUrl">https://telegram.org/faq/es#p-tengo-un-nuevo-numero-que-do</string>
+    <string name="CheckPhoneNumberYes">Ouais</string>
+    <string name="CheckPhoneNumberNo">Non</string>
+    <!--filters-->
+    <string name="Filters">dossiers de discussion</string>
+    <string name="CreateNewFilter">Créer un nouveau dossier</string>
+    <string name="CreateNewFilterInfo">Créez des dossiers pour différents groupes de discussion et basculez rapidement entre eux.</string>
+    <string name="FilterRecommended">Dossiers recommandés</string>
+    <string name="FilterAllChats">Tous</string>
+    <string name="FilterAllChatsShort">Tous</string>
+    <string name="FilterReorder">Réorganiser</string>
+    <string name="FilterEdit">Modifier le dossier</string>
+    <string name="FilterEditAll">Modifier des dossiers</string>
+    <string name="FilterMuteAll">Tout désactiver</string>
+    <string name="FilterUnmuteAll">Activer tout</string>
+    <string name="FilterContacts">Contacts</string>
+    <string name="FilterNonContacts">Aucun contact</string>
+    <string name="FilterGroups">Groupes</string>
+    <string name="FilterChannels">Canaux</string>
+    <string name="FilterEditItem">Modifier le dossier</string>
+    <string name="FilterDeleteItem">Supprimer le dossier</string>
+    <string name="FilterDelete">Supprimer le dossier</string>
+    <string name="FilterMuted">Silencieux</string>
+    <string name="FilterRead">Lire</string>
+    <string name="FilterArchived">Archivé</string>
+    <string name="FilterAlwaysShow">Inclure les discussions</string>
+    <string name="FilterNeverShow">Exclure les discussions</string>
+    <string name="FilterAddChats">Ajouter des discussions</string>
+    <string name="FilterRemoveChats">Ajouter des chats à exclure</string>
+    <string name="FilterChatTypes">Types de discussion</string>
+    <string name="FilterChats">Discussions</string>
+    <string name="FilterInclude">Discussions incluses</string>
+    <string name="FilterExclude">Discussions exclues</string>
+    <string name="FilterIncludeInfo">Choisissez les discussions qui apparaîtront dans ce dossier.</string>
+    <string name="FilterExcludeInfo">Choisissez les discussions qui n\'apparaîtront pas dans ce dossier.</string>
+    <string name="FilterBots">Bots</string>
+    <string name="FilterAddingChats">Ajouter des discussions</string>
+    <string name="FilterAddingChatsInfo">Attends un instant
+nous remplissons ce dossier...</string>
+    <string name="FilterNoChatsToDisplay">Le dossier est vide</string>
+    <string name="FilterNoChatsToDisplayInfo">Il n\'y a actuellement aucun chat qui
+appartiennent à ce dossier.</string>
+    <string name="FilterNoChatsToForward">Aucune discussion trouvée</string>
+    <string name="FilterNoChatsToForwardInfo">Il n\'y a aucune discussion vers laquelle transférer dans ce dossier.</string>
+    <string name="FilterNew">Nouveau dossier</string>
+    <string name="FilterNoChats">Pas de discussion</string>
+    <string name="FilterContact">Contact</string>
+    <string name="FilterNonContact">Ce n\'est pas un contact</string>
+    <string name="FilterNameHint">Nom du dossier</string>
+    <string name="FilterDeleteAlert">Voulez-vous supprimer ce dossier ? Vos discussions ne seront pas supprimées.</string>
+    <string name="FilterDeleteAlertLinks">Voulez-vous supprimer ce dossier ? Cela désactivera également tous les liens d\'invitation créés pour partager ce dossier.</string>
+    <string name="FilterDiscardTitle">Modifications non enregistrées</string>
+    <string name="FilterDiscardAlert">Vous avez modifié ce dossier. Voulez-vous appliquer les modifications ?</string>
+    <string name="FilterDiscardNewTitle">Créer un dossier</string>
+    <string name="FilterDiscardNewAlert">Vous n\'avez pas encore fini de créer le dossier. Créer maintenant ?</string>
+    <string name="FilterDiscardNewSave">Créer</string>
+    <string name="FilterShowMoreChats_one">Afficher %1$d chat plus</string>
+    <string name="FilterShowMoreChats_other">Afficher %1$d chats supplémentaires</string>
+    <string name="FilterRemoveExclusionTitle">Supprimer l\'exception</string>
+    <string name="FilterRemoveInclusionTitle">Supprimer l\'exception</string>
+    <string name="FilterRemoveExclusionText">Voulez-vous supprimer « %1$s » de la liste toujours exclue ?</string>
+    <string name="FilterRemoveExclusionChatText">Voulez-vous supprimer « %1$s » de la liste toujours exclue ?</string>
+    <string name="FilterRemoveExclusionUserText">Voulez-vous supprimer « %1$s » de la liste toujours exclue ?</string>
+    <string name="FilterRemoveInclusionText">Voulez-vous supprimer « %1$s » de la liste toujours incluse ?</string>
+    <string name="FilterRemoveInclusionChatText">Voulez-vous supprimer « %1$s » de la liste toujours incluse ?</string>
+    <string name="FilterRemoveInclusionUserText">Voulez-vous supprimer « %1$s » de la liste toujours incluse ?</string>
+    <string name="FilterAvailableTitle">dossiers de discussion</string>
+    <string name="FilterAvailableText">Ouvrez *Paramètres &gt; Dossiers* pour organiser vos discussions dans des dossiers.</string>
+    <string name="FilterNameNonMuted">Important</string>
+    <string name="FilterNameUnread">non lu</string>
+    <string name="FilterAddTo">Ajouter au dossier</string>
+    <string name="FilterRemoveFrom">Supprimer du dossier</string>
+    <string name="FilterChoose">Choisissez un dossier</string>
+    <string name="FilterUserAddedToExisting">Vous avez ajouté **%1$s** à **%2$s**.</string>
+    <string name="FilterChatAddedToExisting">Vous avez ajouté **%1$s** à **%2$s**.</string>
+    <string name="FilterChatsAddedToExisting">Vous avez ajouté **%1$s** à **%2$s**.</string>
+    <string name="FilterUserRemovedFrom">Vous avez supprimé **%1$s** de **%2$s**.</string>
+    <string name="FilterChatRemovedFrom">Vous avez supprimé **%1$s** de **%2$s**.</string>
+    <string name="FilterChatsRemovedFrom">Vous avez supprimé **%1$s** de **%2$s**.</string>
+    <string name="FilterAddToAlertFullTitle">Limite atteinte</string>
+    <string name="FilterAddToAlertFullText">Vous ne pouvez pas exclure plus de 100 discussions d\'un dossier.</string>
+    <!--media view-->
+    <string name="January">Janvier</string>
+    <string name="February">Février</string>
+    <string name="March">Mars</string>
+    <string name="April">Avril</string>
+    <string name="May">Peut</string>
+    <string name="June">Juin</string>
+    <string name="July">Juillet</string>
+    <string name="August">Août</string>
+    <string name="September">Septembre</string>
+    <string name="October">Octobre</string>
+    <string name="November">Novembre</string>
+    <string name="December">Décembre</string>
+    <string name="SharedFilesTab2">Fichiers</string>
+    <string name="SharedMediaTab2">Moyenne</string>
+    <string name="SharedMediaTabFull2">Multimédia</string>
+    <string name="SharedGroupsTab2">Groupes</string>
+    <string name="SharedLinksTab2">Links</string>
+    <string name="SharedMusicTab2">Musique</string>
+    <string name="SharedVoiceTab2">Voix</string>
+    <string name="SharedGIFsTab2">GIF</string>
+    <string name="SharedContentTitle">Contenu partagé</string>
+    <string name="SimilarChannelsTab">Chaînes similaires</string>
+    <string name="NoMedia">Partagez des photos et des vidéos dans ce chat et accédez-y depuis n\'importe quel appareil.</string>
+    <string name="NoSharedAudio">Partagez de la musique dans ce chat et accédez-y depuis n\'importe quel appareil.</string>
+    <string name="NoSharedFiles">Partagez des fichiers dans cette discussion et accédez-y depuis n\'importe quel appareil.</string>
+    <string name="NoSharedLinks">Partagez des liens dans ce chat et accédez-y depuis n\'importe lequel de vos appareils.</string>
+    <string name="NoSharedVoice">Partagez des messages vocaux dans ce chat et accédez-y depuis n\'importe lequel de vos appareils.</string>
+    <string name="NoMediaSecret">Les photos et vidéos de ce chat apparaîtront ici.</string>
+    <string name="NoSharedAudioSecret">La musique de cette discussion apparaîtra ici.</string>
+    <string name="NoSharedFilesSecret">Les fichiers de cette discussion apparaîtront ici.</string>
+    <string name="NoSharedLinksSecret">Les liens vers ce chat apparaîtront ici.</string>
+    <string name="NoSharedVoiceSecret">Les messages vocaux de ce chat apparaîtront ici.</string>
+    <string name="NoSharedGifSecret">Les GIF de ce chat apparaîtront ici.</string>
+    <!--password view-->
+    <string name="TwoStepVerification">Vérification en deux étapes</string>
+    <string name="TwoStepVerificationTitle">Vérification en deux étapes</string>
+    <string name="TwoStepVerificationPasswordSet">Mot de passe défini !</string>
+    <string name="TwoStepVerificationPasswordSetInfo">Ce mot de passe vous sera demandé lors de votre connexion sur un nouvel appareil, en complément du code reçu par SMS.</string>
+    <string name="TwoStepVerificationPasswordReturnSettings">Revenir aux paramètres</string>
+    <string name="TwoStepVerificationPasswordReturnPassport">Retour au passeport</string>
+    <string name="TwoStepVerificationSetPassword">Créer un mot de passe</string>
+    <string name="TwoStepVerificationShowPassword">Afficher le mot de passe</string>
+    <string name="SetAdditionalPassword">Définir un mot de passe supplémentaire</string>
+    <string name="SetAdditionalPasswordInfo">Vous pouvez saisir un mot de passe qui vous sera demandé lors de votre connexion à un nouvel appareil, en plus du code que vous recevez par SMS.</string>
+    <string name="YourPassword">Votre mot de passe</string>
+    <string name="YourPasswordHeader">Votre mot de passe</string>
+    <string name="YourPasswordRemember">Votre compte est protégé par une vérification en deux étapes.
+Vous souvenez-vous encore de votre mot de passe ?</string>
+    <string name="YourPasswordRememberYes">Oui bien sûr</string>
+    <string name="YourPasswordRememberNo">Je ne sais pas</string>
+    <string name="PasswordOn">Ouais</string>
+    <string name="PasswordOff">Non</string>
+    <string name="EnterPassword">mettre le mot de passe</string>
+    <string name="PleaseEnterCurrentPassword">Mettez votre mot de passe</string>
+    <string name="CheckPassword">Vérifier le mot de passe</string>
+    <string name="CheckPasswordInfo">Vous souvenez-vous encore de votre mot de passe ?</string>
+    <string name="CheckPasswordPerfect">Parfait!</string>
+    <string name="CheckPasswordPerfectInfo">Vous vous souvenez encore de votre mot de passe.</string>
+    <string name="CheckPasswordWrong">Ce mot de passe est incorrect.</string>
+    <string name="CheckPasswordBackToSettings">Revenir aux paramètres</string>
+    <string name="PleaseEnterCurrentPasswordTransfer">Entrez votre mot de passe pour effectuer le transfert.</string>
+    <string name="PleaseEnterCurrentPasswordWithdraw">Entrez votre mot de passe de vérification en deux étapes pour le collecter.</string>
+    <string name="PleaseEnterNewFirstPassword">Définir un nouveau mot de passe</string>
+    <string name="PleaseReEnterPassword">Répétez votre mot de passe</string>
+    <string name="NewPassword">Nouveau mot de passe</string>
+    <string name="PleaseEnterNewFirstPasswordLogin">Vous pouvez désormais définir le nouveau mot de passe qui sera utilisé pour vous connecter à votre compte.</string>
+    <string name="PleaseEnterNewFirstPasswordHint">Entrez le nouveau mot de passe</string>
+    <string name="PleaseEnterNewSecondPasswordHint">Répétez le nouveau mot de passe</string>
+    <string name="RecoveryEmail">e-mail de récupération</string>
+    <string name="RecoveryEmailTitle">e-mail de récupération</string>
+    <string name="RecoveryEmailSubtitle">Vous pouvez configurer un e-mail de récupération pour réinitialiser votre mot de passe et restaurer l\'accès à votre compte Divo Global.</string>
+    <string name="YourEmail">Votre email</string>
+    <string name="YourNewEmail">Votre nouvel e-mail</string>
+    <string name="YourLoginEmailChangedSuccess">Votre email a été modifié.</string>
+    <string name="YourEmailInfo">Veuillez ajouter un email valide. C\'est le seul moyen de récupérer un mot de passe oublié.</string>
+    <string name="YourEmailSkip">Sauter</string>
+    <string name="YourEmailSkipWarning">Avertissement</string>
+    <string name="YourEmailSkipWarningText">Non, sérieusement.
+
+Si vous oubliez votre mot de passe, vous perdrez l\'accès à votre compte Divo Global. Il n\'y aura aucun moyen de le récupérer.</string>
+    <string name="YourEmailAlmostThere">Presque!</string>
+    <string name="YourEmailAlmostThereText">Veuillez vérifier votre courrier électronique (n\'oubliez pas votre dossier spam) pour terminer la configuration de la vérification en deux étapes.</string>
+    <string name="YourPasswordSuccess">Prêt!</string>
+    <string name="YourPasswordChangedSuccessText">Votre mot de passe de vérification en deux étapes a été modifié.</string>
+    <string name="YourEmailSuccessText">Votre e-mail de récupération de vérification en deux étapes est désormais actif.</string>
+    <string name="YourEmailSuccessChangedText">Votre e-mail de récupération de vérification en deux étapes a été modifié.</string>
+    <string name="ChangePassword">Changer le mot de passe</string>
+    <string name="TurnPasswordOff">Désactiver le mot de passe</string>
+    <string name="SetRecoveryEmail">Mettre l\'e-mail de récupération</string>
+    <string name="ChangeRecoveryEmail">Modifier l\'e-mail de récupération</string>
+    <string name="TurnPasswordOffQuestionTitle">Désactiver le mot de passe</string>
+    <string name="TurnPasswordOffQuestion">Voulez-vous désactiver votre mot de passe?</string>
+    <string name="CancelPasswordQuestion">Voulez-vous désactiver la vérification en deux étapes ?</string>
+    <string name="CancelEmailQuestion">Voulez-vous remplacer les paramètres de courrier électronique de récupération ?</string>
+    <string name="CancelPasswordReset">Annuler la réinitialisation du mot de passe ? Si vous demandez une nouvelle réinitialisation plus tard, cela prendra encore 7 jours.</string>
+    <string name="CancelPasswordResetYes">OUAIS</string>
+    <string name="CancelPasswordResetNo">NON</string>
+    <string name="CancelReset">Annuler la réinitialisation</string>
+    <string name="CancelEmailQuestionTitle">Remplacer la configuration</string>
+    <string name="TurnPasswordOffPassport">Toutes les données enregistrées sur votre Divo Global Passport seront perdues.</string>
+    <string name="PasswordHint">Indice de mot de passe</string>
+    <string name="PasswordHintDescription">Vous pouvez mettre un indice facultatif pour votre mot de passe.</string>
+    <string name="PasswordHintPlaceholder">Indice</string>
+    <string name="PasswordHintText">Créez un indice pour votre mot de passe</string>
+    <string name="PasswordHintTextLogin">Créez un indice pour votre mot de passe.</string>
+    <string name="PasswordDoNotMatch">Les mots de passe ne correspondent pas</string>
+    <string name="ReEnterPassword">Répétez le mot de passe</string>
+    <string name="AbortPassword">Remplacer les paramètres de vérification</string>
+    <string name="AbortPasswordMenu">Remplacer la configuration</string>
+    <string name="AbortEmail">Remplacer les paramètres de messagerie</string>
+    <string name="Abort">Annulaire</string>
+    <string name="Disable">Désactiver</string>
+    <string name="EmailPasswordConfirmText2">Pour terminer la configuration de la vérification en deux étapes, vérifiez votre courrier électronique (n\'oubliez pas le dossier spam) et saisissez le code que nous vous avons envoyé.</string>
+    <string name="PasswordAsHintError">L\'indice doit être différent de votre mot de passe</string>
+    <string name="PasswordEmailInvalid">Adresse e-mail invalide. Veuillez réessayer.</string>
+    <string name="RestorePasswordNoEmailTitle">Nous sommes désolés</string>
+    <string name="RestorePasswordNoEmailText">Étant donné que vous n\'avez pas défini d\'e-mail de récupération lorsque vous avez configuré votre mot de passe, vos options restantes consistent à mémoriser votre mot de passe ou à réinitialiser votre compte.</string>
+    <string name="RestorePasswordNoEmailText2">Étant donné que vous n\'avez pas défini d\'e-mail de récupération lorsque vous avez configuré votre mot de passe, vos options restantes sont de mémoriser votre mot de passe ou d\'attendre 7 jours pour que votre mot de passe soit réinitialisé.</string>
+    <string name="RestorePasswordResetPasswordText">Voulez-vous réinitialiser votre mot de passe de vérification en deux étapes ?</string>
+    <string name="RestorePasswordResetPasswordOk">Votre mot de passe de vérification en deux étapes a été réinitialisé.</string>
+    <string name="RestorePasswordResetAccount">RÉINITIALISER LE COMPTE</string>
+    <string name="RestorePasswordResetPassword">RÉINITIALISER LE MOT DE PASSE</string>
+    <string name="RestorePasswordResetIn">Vous pouvez réinitialiser votre mot de passe dans %1$s.</string>
+    <string name="ResetPassword">Réinitialiser le mot de passe</string>
+    <string name="RestoreEmailSentTitle">Code de récupération</string>
+    <string name="RestoreEmailSent">Nous envoyons un code de récupération à l\'e-mail que vous nous avez fourni :
+
+%1$s</string>
+    <string name="RestoreEmailSentInfo">Vérifiez votre courrier électronique et entrez le code à 6 chiffres que nous vous avons envoyé pour désactiver votre mot de passe cloud.</string>
+    <string name="RestoreEmailTrouble">Vous ne parvenez pas à accéder à %1$s ?</string>
+    <string name="RestoreEmailTroubleNoEmail">Vous rencontrez des problèmes pour accéder à votre messagerie ?</string>
+    <string name="RestoreEmailTroubleText">Si vous ne parvenez pas à accéder à votre courrier électronique, vos options restantes consistent à mémoriser votre mot de passe ou à réinitialiser votre compte.</string>
+    <string name="RestoreEmailTroubleText2">Si vous n\'avez pas accès à votre courrier électronique, vos options restantes sont de mémoriser votre mot de passe ou d\'attendre 7 jours pour que votre mot de passe soit réinitialisé.</string>
+    <string name="RestoreEmailNoAccess">Vous ne parvenez pas à accéder à %1$s ?</string>
+    <string name="ResetPasswordWait">Vous avez récemment demandé une réinitialisation de mot de passe qui a été annulée. Veuillez attendre %1$s avant de faire une autre demande.</string>
+    <string name="ResetMyAccount">RÉINITIALISER MON COMPTE</string>
+    <string name="ResetMyAccountWarning">Avertissement</string>
+    <string name="ResetMyAccountWarningText">Cette action ne peut pas être annulée. Si vous continuez à réinitialiser votre compte, vous perdrez toutes vos discussions, messages, médias et fichiers Divo Global.</string>
+    <string name="ResetMyAccountWarningReset">Réinitialiser le compte</string>
+    <string name="LoginPassword">Mot de passe</string>
+    <string name="LoginPasswordText">La vérification en deux étapes est activée, votre compte est donc protégé par un mot de passe supplémentaire.</string>
+    <string name="LoginPasswordTextShort">Vérification en deux étapes activée. Votre compte est protégé par un mot de passe.</string>
+    <string name="ForgotPassword">Vous avez oublié votre mot de passe ?</string>
+    <string name="PasswordRecovery">Récupérer le mot de passe</string>
+    <string name="PasswordCode">Code</string>
+    <string name="PasswordReset">Mot de passe désactivé</string>
+    <string name="ResendCode">Renvoyer le code</string>
+    <string name="VerificationCode">le code de vérification</string>
+    <string name="EnterCode">mets le code</string>
+    <string name="ResendCodeInfo">Le code de vérification a été envoyé à votre adresse e-mail.</string>
+    <string name="EnabledPasswordText">Vous avez activé la vérification en deux étapes.
+Vous aurez besoin du mot de passe que vous avez défini pour vous connecter à Divo Global.</string>
+    <string name="AddEmailTitle">Choisissez un email d\'accès</string>
+    <string name="AddEmailSubtitle">Vous recevrez les codes de connexion Divo Global par mail et non par SMS. Saisissez une adresse e-mail à laquelle vous avez accès.</string>
+    <string name="EnterNewEmail">Mettez le nouvel email</string>
+    <string name="VerificationCodeSubtitle">Veuillez vérifier votre e-mail %1$s (n\'oubliez pas le dossier spam) et entrez le code que nous vous avons envoyé.</string>
+    <string name="CheckYourEmail">Vérifiez votre courrier électronique</string>
+    <string name="CheckYourEmailSubtitle">Veuillez saisir le code que nous avons envoyé à votre adresse e-mail %1$s.</string>
+    <string name="CheckYourNewEmail">Vérifiez votre nouvel e-mail</string>
+    <string name="CheckYourNewEmailSubtitle">Veuillez mettre le code que nous avons envoyé à votre nouvel e-mail %1$s.</string>
+    <string name="LoginOrSingInWithGoogle">soit</string>
+    <!--edit video view-->
+    <string name="SendingVideo">Envoi de la vidéo...</string>
+    <string name="SendingGif">Envoi du GIF...</string>
+    <!--button titles-->
+    <string name="Done">Prêt</string>
+    <string name="Open">Ouvrir</string>
+    <string name="Save">Garder</string>
+    <string name="Cancel">Annuler</string>
+    <string name="Reduce">Réduire</string>
+    <string name="Close">Fermer</string>
+    <string name="Change">Changement</string>
+    <string name="Add">Ajouter</string>
+    <string name="Added">Ajouté</string>
+    <string name="Edit">Modifier</string>
+    <string name="Send">Envoyer</string>
+    <string name="Call">Appel</string>
+    <string name="VideoCall">Appel vidéo</string>
+    <string name="Copy">Copie</string>
+    <string name="Restrict">Limiter</string>
+    <string name="Ban">Suspendre</string>
+    <string name="Rename">Rebaptiser</string>
+    <string name="Delete">Éliminer</string>
+    <string name="Start">Commencer</string>
+    <string name="Forward">Avant</string>
+    <string name="Retry">Réessayer</string>
+    <string name="DeletePhoto">Supprimer la photo</string>
+    <string name="Set">D\'ACCORD</string>
+    <string name="OK">D\'ACCORD</string>
+    <string name="Stop">Arrêter</string>
+    <string name="WaitMore">attends plus</string>
+    <string name="Continue">Continuer</string>
+    <string name="CreateLink">Créer un lien</string>
+    <string name="Crop">GARNITURE</string>
+    <string name="UpdateApp">Mettre à jour l\'application</string>
+    <string name="Update">MISE À JOUR</string>
+    <string name="Accept">Accepter</string>
+    <string name="Agree">Accepter</string>
+    <string name="Decline">Déclin</string>
+    <string name="Deactivate">SUPPRIMER MAINTENANT</string>
+    <string name="Back">Dos</string>
+    <string name="SignUp">Registre</string>
+    <string name="DeclineDeactivate">Rejeter et supprimer</string>
+    <string name="Next">Suivant</string>
+    <string name="Enable">Activer</string>
+    <string name="ReportFalsePositive">Signaler un faux positif</string>
+    <!--messages-->
+    <string name="ActionInviteYou">Vous avez rejoint le groupe avec un lien d\'invitation</string>
+    <string name="ActionDeletedInviteLinkClickable">un1 a supprimé le lien d\'invitation un2</string>
+    <string name="ActionEditedInviteLinkClickable">un1 lien d\'invitation modifié un2 à un3</string>
+    <string name="ActionVolumeChanged">un1 a modifié le volume de un2 en %1$d %%</string>
+    <string name="ActionRevokedInviteLinkClickable">un1 lien d\'invitation remplacé un2</string>
+    <string name="ActionEditedInviteLinkToSameClickable">un1 lien d\'invitation modifié un2</string>
+    <string name="ActionTTLChanged">un1 a défini la suppression automatique sur %1$s</string>
+    <string name="ActionTTLYouChanged">Vous avez défini la suppression automatique sur %1$s</string>
+    <string name="ActionTTLChannelChanged">Les messages de ce canal seront automatiquement supprimés dans %1$s</string>
+    <string name="ActionTTLChannelDisabled">Les messages de cette chaîne ne seront plus automatiquement supprimés</string>
+    <string name="ActionTTLDisabled">un1 désactivé suppression automatique</string>
+    <string name="ActionTTLYouDisabled">Vous avez désactivé l\'auto-suppression</string>
+    <string name="ActionInviteUser">un1 a rejoint le groupe avec un lien d\'invitation</string>
+    <string name="ActionInviteUserFolder">un1 a rejoint le groupe avec le lien d\'invitation au dossier</string>
+    <string name="ActionInviteChannelUser">un1 a rejoint la chaîne avec un lien</string>
+    <string name="ActionInviteChannelUserFolder">un1 a rejoint la chaîne avec un lien d\'invitation à un dossier</string>
+    <string name="ActionKickUser">un1 éliminé un2</string>
+    <string name="ActionRefunded">un1 a remboursé %1$s</string>
+    <string name="ActionLeftUser">one1 a quitté le groupe</string>
+    <string name="ActionAddUser">un1 ajouté à un2</string>
+    <string name="ActionRemovedPhoto">un1 a supprimé la photo de groupe</string>
+    <string name="ActionChangedPhoto">un1 a changé la photo de groupe</string>
+    <string name="ActionChangedVideo">un1 a changé la photo de groupe</string>
+    <string name="ActionChangedTitle">un1 a changé le nom du groupe en un2</string>
+    <string name="ActionCreateGroup">un1 a créé le groupe</string>
+    <string name="ActionYouKickUser">Vous avez éliminé un 2</string>
+    <string name="ActionYouLeftUser">Tu as quitté le groupe</string>
+    <string name="ActionYouAddUser">Vous avez ajouté a2</string>
+    <string name="ActionYouScored">Vous avez marqué %1$s</string>
+    <string name="ActionUserScored">non1 noté %1$s</string>
+    <string name="ActionYouScoredInGame">Vous avez obtenu %1$s sur a2</string>
+    <string name="ActionUserScoredInGame">un1 a obtenu %1$s sur un2</string>
+    <string name="ActionYouRemovedPhoto">Vous avez supprimé la photo de groupe</string>
+    <string name="ActionYouChangedPhoto">Tu as changé la photo de groupe</string>
+    <string name="ActionYouChangedVideo">Tu as changé la photo de groupe</string>
+    <string name="ActionYouChangedTitle">Vous avez changé le nom du groupe en un2</string>
+    <string name="ActionYouCreateGroup">Vous avez créé le groupe</string>
+    <string name="ActionKickUserYou">un1 t\'a éliminé</string>
+    <string name="ActionAddUserYou">one1 vous a ajouté</string>
+    <string name="ActionAddUserSelf">un1 est revenu dans le groupe</string>
+    <string name="ActionAddUserSelfMega">un1 a rejoint le groupe</string>
+    <string name="ActionAddUserSelfYou">Vous êtes revenu dans le groupe</string>
+    <string name="ActionUserWithinRadius">un1 est maintenant à %1$s de vous</string>
+    <string name="ActionUserWithinYouRadius">Vous êtes maintenant à %1$s de un1</string>
+    <string name="ActionUserWithinOtherRadius">un1 est maintenant à %1$s de un2</string>
+    <string name="ActionUserInvitedToGroup">a1 vous a invité dans ce groupe</string>
+    <string name="ActionUserInvitedToChannel">un1 vous a invité sur cette chaîne</string>
+    <string name="ActionGroupCallStarted">un1 a démarré un chat vidéo</string>
+    <string name="ActionGroupCallStartedByYou">Vous avez démarré un chat vidéo</string>
+    <string name="ActionGroupCallScheduled">Chat vidéo prévu pour %1$s</string>
+    <string name="ActionChannelCallJustStarted">La diffusion en direct a commencé</string>
+    <string name="ActionChannelCallScheduled">Diffusion en direct prévue pour %1$s</string>
+    <string name="ActionChannelCallEnded">Diffusion en direct terminée (%s)</string>
+    <string name="ActionGroupCallEndedBy">un1 a mis fin au chat vidéo (%s)</string>
+    <string name="ActionGroupCallEndedByYou">Vous avez terminé le chat vidéo (%s)</string>
+    <string name="ActionGroupCallInvited">un1 a invité un2 à un chat vidéo</string>
+    <string name="ActionGroupCallYouInvited">Vous en avez invité 2 à un chat vidéo</string>
+    <string name="ActionGroupCallInvitedYou">un1 vous a invité à un chat vidéo</string>
+    <string name="ActionBotAllowed">En vous connectant à %1$s, vous avez autorisé ce bot à vous envoyer des messages.</string>
+    <string name="ActionBotAllowedApp">En vous connectant à l\'application « %1$s », vous avez autorisé ce bot à vous envoyer des messages.</string>
+    <string name="ActionBotAllowedWebapp">Vous avez autorisé ce bot à vous envoyer des messages dans son application Web</string>
+    <string name="ActionBotDocuments">%1$s a reçu les documents suivants : %2$s</string>
+    <string name="ActionBotDocumentIdentity">Données personnelles</string>
+    <string name="ActionBotDocumentAddress">Adresse</string>
+    <string name="ActionBotDocumentPassport">Passeport</string>
+    <string name="ActionBotDocumentInternalPassport">Passeport interne</string>
+    <string name="ActionBotDocumentPassportRegistration">Enregistrement du passeport</string>
+    <string name="ActionBotDocumentTemporaryRegistration">Inscription temporaire</string>
+    <string name="ActionBotDocumentDriverLicence">Permis de conduire</string>
+    <string name="ActionBotDocumentIdentityCard">Carte d\'identité</string>
+    <string name="ActionBotDocumentUtilityBill">Facture de services publics</string>
+    <string name="ActionBotDocumentBankStatement">Relevé bancaire</string>
+    <string name="ActionBotDocumentRentalAgreement">Contrat de location</string>
+    <string name="ActionBotDocumentPhone">Numéro de téléphone</string>
+    <string name="ActionBotDocumentEmail">Adresse email</string>
+    <string name="UnsupportedMedia2">Votre version de Divo Global n\'est pas compatible avec ce message. Mettez à jour votre application avec la dernière version.</string>
+    <string name="YourVersionIsLatest">Votre version est à jour.</string>
+    <string name="AttachPhoto">Photo</string>
+    <string name="AttachVideo">Vidéo</string>
+    <string name="AttachDestructingPhoto">Photo avec autodestruction</string>
+    <string name="AttachDestructingVideo">Vidéo avec autodestruction</string>
+    <string name="AttachPhotoExpired">Photo expirée</string>
+    <string name="AttachVideoExpired">Vidéo expirée</string>
+    <string name="AttachRoundExpired">Message vidéo expiré</string>
+    <string name="AttachVoiceExpired">Message vocal expiré</string>
+    <string name="AttachGif">GIF</string>
+    <string name="AttachLocation">Emplacement</string>
+    <string name="AttachLiveLocation">Localisation en temps réel</string>
+    <string name="AttachContact">Contact</string>
+    <string name="AttachQuickReplies">Réponses</string>
+    <string name="AttachDocument">Archive</string>
+    <string name="AttachSticker">Autocollant</string>
+    <string name="AttachAudio">message vocal</string>
+    <string name="AttachRound">Message vidéo</string>
+    <string name="AttachOnceAudio">Message vocal unique</string>
+    <string name="AttachOnceRound">Message vidéo à usage unique</string>
+    <string name="AttachGame">Jeu</string>
+    <string name="FromYou">Toi</string>
+    <string name="ActionTakeScreenshootYou">Vous avez pris une capture d\'écran !</string>
+    <string name="ActionTakeScreenshoot">un1 a pris une capture d\'écran !</string>
+    <string name="Album">Album</string>
+    <!--Alert messages-->
+    <string name="LimitReachedPinnedTopics">Vous ne pouvez pas épingler plus de %d sujets en haut.</string>
+    <string name="DeleteAllMessagesAlert">Avertissement! Cela **supprimera tous les messages** de cette discussion pour les **deux** participants.</string>
+    <string name="DeleteAllMessagesChannelAlert">Avertissement! Cela **supprimera tous les messages** sur cette chaîne.</string>
+    <string name="DeleteAllMessagesSavedAlert">Avertissement! Cela **supprimera tous les messages** de cette discussion.</string>
+    <string name="DeleteAll">Supprimer tout</string>
+    <string name="StopLoadingTitle">Arrêter de charger ?</string>
+    <string name="StopLoading">Voulez-vous arrêter le chargement ?</string>
+    <string name="UpdateTelegram">Mettre à jour Divo Global</string>
+    <string name="UpdateAppAlert">Nous sommes désolés, votre application Divo Global n\'est pas mise à jour et ne peut pas traiter cette demande. Veuillez mettre à jour Divo Global.</string>
+    <string name="InvalidPhoneNumber">Numéro de téléphone invalide. Veuillez vérifier le numéro et réessayer.</string>
+    <string name="PleaseLoginPassport">Veuillez vous connecter à votre compte Divo Global pour utiliser le Divo Global Passport.</string>
+    <string name="BannedPhoneNumber">Ce numéro de téléphone est suspendu.</string>
+    <string name="CodeExpired">Code expiré. S\'il vous plaît, recommencez.</string>
+    <string name="WrongCodeTitle">Mauvais code</string>
+    <string name="FreshChangePhoneForbiddenTitle">Je n\'ai pas pu terminer</string>
+    <string name="FreshChangePhoneForbidden">Pour des raisons de sécurité, vous ne pouvez pas modifier votre numéro de téléphone depuis un appareil auquel vous venez de vous connecter. Veuillez utiliser une ancienne connexion ou attendre quelques heures.</string>
+    <string name="EmailNotAllowed">Ce domaine de messagerie n\'est pas autorisé.</string>
+    <string name="EmailTokenInvalid">Jeton d\'e-mail invalide.</string>
+    <string name="EmailAddressInvalid">Adresse e-mail invalide.</string>
+    <string name="EmailLogin">Accéder au courrier électronique</string>
+    <string name="EmailLoginChangeMessage">Cette adresse e-mail sera utilisée chaque fois que vous vous connecterez à votre compte Divo Global sur un nouvel appareil.</string>
+    <string name="ChangeEmail">changer d\'e-mail</string>
+    <string name="FloodWait">Trop de tentatives. Veuillez réessayer plus tard.</string>
+    <string name="FloodWaitTime">Trop de tentatives. Veuillez réessayer dans %1$s</string>
+    <string name="InvalidCode">Code invalide. Veuillez réessayer.</string>
+    <string name="PhoneNumberFlood">Vous avez récemment supprimé et recréé votre compte à plusieurs reprises. Veuillez patienter quelques jours avant de vous réinscrire.</string>
+    <string name="InvalidFirstName">Nom non autorisé. Veuillez en essayer un autre.</string>
+    <string name="InvalidLastName">Désolé, ce nom de famille ne peut pas être utilisé</string>
+    <string name="Loading">Chargement...</string>
+    <string name="NoPlayerInstalled">Vous n\'avez pas de lecteur vidéo. Veuillez en installer un pour continuer.</string>
+    <string name="NoMailInstalled">Veuillez envoyer un e-mail décrivant votre problème à reports@stel.com</string>
+    <string name="NoHandleAppInstalled">Vous ne disposez pas d\'applications capables de gérer le type de fichier « %1$s ». Veuillez en installer un pour continuer.</string>
+    <string name="InviteUser">Cet utilisateur ne possède pas encore Divo Global. Lui envoyer une invitation ?</string>
+    <string name="AreYouSure">Voulez-vous le faire ?</string>
+    <string name="AddToTheGroupAlertTitle">Ajouter un robot</string>
+    <string name="AddToTheGroupAlertText">Voulez-vous ajouter **%1$s** au groupe **%2$s** ?</string>
+    <string name="AddToTheGroupForwardCount">Nombre de messages précédents à transférer :</string>
+    <string name="AddToTheGroup">Ajouter %1$s au groupe ?</string>
+    <string name="AddManyMembersAlertTitle_one">Ajouter un membre</string>
+    <string name="AddManyMembersAlertTitle_other">Ajouter %1$d membres</string>
+    <string name="AddMembersAlertNamesText">Voulez-vous ajouter %1$s à **%2$s** ?</string>
+    <string name="AddManyMembersAlertNamesText_one">Voulez-vous ajouter ce membre à **%2$s** ?</string>
+    <string name="AddManyMembersAlertNamesText_other">Voulez-vous ajouter %1$d membres à **%2$s** ?</string>
+    <string name="AddMembersForwardMessages">Afficher les 100 derniers messages aux nouveaux membres</string>
+    <string name="AddOneMemberForwardMessages">Afficher les 100 derniers messages à **%1$s**</string>
+    <string name="SendMessagesToText">Voulez-vous envoyer ce message à **%1$s** ?</string>
+    <string name="SendGameToText">Voulez-vous partager ce jeu avec **%1$s** ?</string>
+    <string name="SendContactToText">Voulez-vous envoyer ce contact à **%1$s** ?</string>
+    <string name="AreYouSureLogout">Voulez-vous vous déconnecter ?
+
+Cela annulera toutes vos discussions secrètes.
+
+Vous pouvez utiliser Divo Global sur tous vos appareils en même temps et utiliser plusieurs comptes dans la même application.</string>
+    <string name="DeleteFewChatsTitle">Supprimer %1$s</string>
+    <string name="ClearFewChatsTitle">%1$s vide</string>
+    <string name="ClearCacheFewChatsTitle">Effacer le cache %1$s</string>
+    <string name="AreYouSureDeleteFewChats">Voulez-vous supprimer ces discussions ?</string>
+    <string name="AreYouSureClearHistoryFewChats">Voulez-vous supprimer l\'historique de ces discussions ?</string>
+    <string name="AreYouSureClearHistoryCacheFewChats">Supprimer tous les textes et médias mis en cache des discussions sélectionnées ?</string>
+    <string name="AreYouSureDeleteAndExit">Voulez-vous supprimer et quitter le groupe ?</string>
+    <string name="AreYouSureDeleteAndExitChannel">Voulez-vous supprimer et quitter la chaîne ?</string>
+    <string name="AreYouSureDeleteAndExitName">Voulez-vous supprimer et quitter le groupe **%1$s** ?</string>
+    <string name="AreYouSureDeleteThisChat">Supprimer définitivement ce chat ?</string>
+    <string name="AreYouSureDeleteThisChatWithUser">Supprimer définitivement le chat avec **%1$s** ?</string>
+    <string name="AreYouSureDeleteThisChatWithBot">Voulez-vous supprimer le chat avec **%1$s** et le bloquer ?</string>
+    <string name="AreYouSureDeleteThisChatSavedMessages">Voulez-vous supprimer les **Messages enregistrés** ?</string>
+    <string name="AreYouSureDeleteThisChatWithSecretUser">Voulez-vous supprimer votre conversation secrète avec **%1$s** ?</string>
+    <string name="AreYouSureClearDraftsTitle">Supprimer les brouillons</string>
+    <string name="AreYouSureClearDrafts">Voulez-vous supprimer tous les brouillons dans le cloud ?</string>
+    <string name="ShareYouLocationTitle">Partager votre position ?</string>
+    <string name="ShareYouLocationInfo">Cela enverra votre position actuelle au bot.</string>
+    <string name="ShareYouLocationUnable">L\'application n\'a pas pu déterminer votre position actuelle</string>
+    <string name="ShareYouLocationUnableManually">Choisir manuellement</string>
+    <string name="ShareYouLocationInline">Ce robot voudra peut-être connaître votre position chaque fois que vous lui envoyez une demande. Cela peut être utilisé pour afficher des résultats spécifiques à votre emplacement.</string>
+    <string name="ShareYouPhoneNumberTitle">Partager votre numéro ?</string>
+    <string name="AreYouSureShareMyContactInfoBot">Le bot connaîtra votre numéro de téléphone. Cela peut être utile pour l’intégration avec d’autres services.</string>
+    <string name="AreYouSureShareMyContactInfoWebapp">**%s** connaîtra votre numéro de téléphone. Cela peut être utile pour l’intégration avec d’autres services.</string>
+    <string name="AreYouSureShareMyContactInfoBotUnblock">Cela débloquera également le bot.</string>
+    <string name="AreYouSureShareMyContactInfoUser">Voulez-vous partager votre numéro de téléphone %1$s avec **%2$s** ?</string>
+    <string name="AreYouSureShareMyContactInfo">Voulez-vous partager votre numéro de téléphone?</string>
+    <string name="AreYouSureBlockContact2">Voulez-vous bloquer **%1$s** ?</string>
+    <string name="AreYouSureUnblockContact">Voulez-vous débloquer cet utilisateur ?</string>
+    <string name="AreYouSureDeleteContact">Voulez-vous supprimer ce contact?</string>
+    <string name="AreYouSureSecretChatTitle">discussion secrète</string>
+    <string name="AreYouSureSecretChat">Voulez-vous démarrer une conversation secrète ?</string>
+    <string name="AreYouSureRegistration">Voulez-vous arrêter la journalisation ?</string>
+    <string name="StopVerification">Voulez-vous arrêter le processus de vérification ?</string>
+    <string name="AreYouSureClearHistoryWithUser">Voulez-vous supprimer l\'historique des discussions avec **%1$s** ?</string>
+    <string name="AreYouSureClearHistoryWithSecretUser">Cela supprimera-t-il tous les messages pour vous et **%1$s** ? Voulez-vous le faire ?</string>
+    <string name="AreYouSureClearHistoryWithChat">Voulez-vous supprimer l\'historique sur **%1$s** ?</string>
+    <string name="AreYouSureClearHistoryWithChannel">Voulez-vous supprimer l\'historique des chaînes sur **%1$s** ?</string>
+    <string name="AreYouSureClearHistory">Voulez-vous supprimer tous les messages de ce chat ?</string>
+    <string name="AreYouSureClearHistorySavedMessages">Voulez-vous supprimer l\'historique des **Messages enregistrés** ? Cette action ne peut pas être annulée.</string>
+    <string name="AreYouSureClearHistoryChannel">Supprimer tous les textes et médias mis en cache de cette chaîne ?</string>
+    <string name="AreYouSureClearHistoryGroup">Supprimer tous les textes et médias mis en cache de ce groupe ?</string>
+    <string name="DeleteMessagesTitle">Supprimer %1$s</string>
+    <string name="UnsaveMessagesTitle">Ne pas enregistrer %1$s</string>
+    <string name="DeleteSingleMessagesTitle">Supprimer le message</string>
+    <string name="UnsaveSingleMessagesTitle">Ne pas enregistrer le message</string>
+    <string name="DeleteMessagesTextGroupPart">« Supprimer pour tout le monde » supprimera également les %1$ pour les autres membres du groupe.</string>
+    <string name="DeleteMessagesTextGroup">« Supprimer mes messages » supprimera également les %1$ que vous avez envoyés aux autres membres du groupe.</string>
+    <string name="DeleteMessagesText">« Supprimer mes messages » supprimera également les %1$s que vous avez envoyés pour %2$s.</string>
+    <string name="AreYouSureUnsaveSingleMessage">Voulez-vous supprimer ce message des messages enregistrés ?</string>
+    <string name="AreYouSureDeleteSingleMessage">Voulez-vous supprimer ce message ?</string>
+    <string name="AreYouSureDeleteFewMessages">Voulez-vous supprimer ces messages ?</string>
+    <string name="AreYouSureUnsaveFewMessages">Voulez-vous supprimer ces messages ?</string>
+    <string name="AreYouSureDeleteSingleMessageMega">Voulez-vous supprimer ce message pour tout le monde ?</string>
+    <string name="AreYouSureDeleteFewMessagesMega">Voulez-vous supprimer ces messages pour tout le monde ?</string>
+    <string name="DeleteMessagesOption">Supprimer mes messages</string>
+    <string name="DeleteMessagesOptionAlso">Supprimer également pour %1$s</string>
+    <string name="ClearHistoryOptionAlso">Également vide pour %1$s</string>
+    <string name="SendMessageTitle">Envoyer un message</string>
+    <string name="SendMessagesToGroupText">Voulez-vous envoyer ce message à **%1$s** ?</string>
+    <string name="SendGameToGroupText">Voulez-vous partager ce jeu sur **%1$s** ?</string>
+    <string name="SendContactToGroupText">Voulez-vous envoyer ce contact à **%1$s** ?</string>
+    <string name="NoUsernameFound">Nom d\'utilisateur introuvable.</string>
+    <string name="NoPhoneFound">Il n’existe aucun compte Divo Global avec ce numéro de téléphone.</string>
+    <string name="NoFolderFound">Dossier de discussion introuvable.</string>
+    <string name="BotCantJoinGroups">Ce bot ne peut pas rejoindre des groupes.</string>
+    <string name="SecretLinkPreviewAlert">Souhaitez-vous activer les aperçus étendus des liens dans les discussions secrètes ? Veuillez noter qu\'ils sont générés sur les serveurs Divo Global.</string>
+    <string name="SecretChatContextBotAlert">Veuillez noter que les robots intégrés sont créés par des tiers. Pour que le bot fonctionne, les symboles écrits après le nom d\'utilisateur du bot sont envoyés à son développeur respectif.</string>
+    <string name="EditMessageError">Désolé, vous ne pouvez pas modifier ce message.</string>
+    <string name="AllowReadCall">Autorisez Divo Global à recevoir des appels afin que nous puissions saisir automatiquement votre code.</string>
+    <string name="AllowReadCallAndLog">Autorisez Divo Global à recevoir des appels et à lire le journal des appels afin que nous puissions saisir automatiquement votre code.</string>
+    <string name="AllowReadCallLog">Autorisez Divo Global à lire votre journal d’appels afin que nous puissions saisir automatiquement votre code.</string>
+    <string name="AllowFillNumber">Autorisez Divo Global à recevoir des appels afin que nous puissions confirmer automatiquement votre numéro de téléphone.</string>
+    <string name="UserRestricted">Désolé, vous n\'êtes pas autorisé à faire cela.</string>
+    <string name="YouBlockedUser">Désolé, vous ne pouvez pas ajouter cet utilisateur ou ce bot à des groupes, car vous les avez bloqués. Déverrouillez-le pour continuer.</string>
+    <string name="AddAdminErrorNotAMember">Vous ne pouvez pas ajouter cet utilisateur en tant qu\'administrateur. car il n\'est pas membre de ce groupe et vous n\'êtes pas autorisé à l\'ajouter.</string>
+    <string name="AddAdminErrorBlacklisted">Vous ne pouvez pas ajouter cet utilisateur en tant qu\'administrateur car il figure sur la liste des utilisateurs bannis et vous ne pouvez pas le débannir.</string>
+    <string name="AddUserErrorBlacklisted">Vous ne pouvez pas ajouter cet utilisateur car il figure sur la liste des utilisateurs bannis et vous ne pouvez pas le débannir.</string>
+    <string name="AddBannedErrorAdmin">Vous ne pouvez pas bannir cet utilisateur car il est administrateur. de ce groupe et vous n\'êtes pas autorisé à le rétrograder.</string>
+    <string name="ErrorSendRestrictedStickers">Les administrateurs de ce groupe vous ont interdit d\'envoyer des autocollants.</string>
+    <string name="ErrorSendRestrictedMedia">Les administrateurs de ce groupe ont restreint votre capacité à envoyer du multimédia.</string>
+    <string name="ErrorSendRestrictedPhoto">Les administrateurs de ce groupe vous ont interdit d\'envoyer des photos.</string>
+    <string name="ErrorSendRestrictedVideo">Les administrateurs de ce groupe vous ont interdit d\'envoyer des vidéos.</string>
+    <string name="ErrorSendRestrictedPolls">Les administrateurs de ce groupe ont restreint votre capacité à envoyer des sondages.</string>
+    <string name="ErrorSendRestrictedVoice">Les administrateurs de ce groupe vous ont interdit d\'envoyer des messages vocaux.</string>
+    <string name="ErrorSendRestrictedRound">Les administrateurs de ce groupe vous ont interdit d\'envoyer des messages vidéo.</string>
+    <string name="ErrorSendRestrictedDocuments">Les administrateurs de ce groupe vous ont interdit d\'envoyer des fichiers.</string>
+    <string name="ErrorSendRestrictedMusic">Les administrateurs de ce groupe vous ont interdit d\'envoyer de la musique.</string>
+    <string name="ErrorSendRestrictedStickersAll">Il n\'est pas permis d\'envoyer des autocollants dans ce groupe.</string>
+    <string name="ErrorSendRestrictedPhotoAll">Il n\'est pas permis d\'envoyer des photos dans ce groupe.</string>
+    <string name="ErrorSendRestrictedVideoAll">Il n\'est pas autorisé d\'envoyer des vidéos dans ce groupe.</string>
+    <string name="ErrorSendRestrictedMediaAll">L\'envoi de multimédia n\'est pas autorisé dans ce groupe.</string>
+    <string name="ErrorSendRestrictedPollsAll">Il n\'est pas permis d\'envoyer des sondages dans ce groupe.</string>
+    <string name="ErrorSendRestrictedVoiceAll">L\'envoi de messages vocaux n\'est pas autorisé dans ce groupe.</string>
+    <string name="ErrorSendRestrictedRoundAll">L\'envoi de messages vidéo n\'est pas autorisé dans ce groupe.</string>
+    <string name="ErrorSendRestrictedDocumentsAll">L\'envoi de fichiers n\'est pas autorisé dans ce groupe.</string>
+    <string name="ErrorSendRestrictedMusicAll">Il n\'est pas permis de soumettre de la musique dans ce groupe.</string>
+    <string name="ErrorSendRestrictedPrivacyVoiceMessages">Vous ne pouvez pas envoyer de messages vocaux à cet utilisateur en raison de ses paramètres de confidentialité.</string>
+    <string name="ErrorSendRestrictedPrivacyVideoMessages">Vous ne pouvez pas envoyer de messages vidéo à cet utilisateur en raison de ses paramètres de confidentialité.</string>
+    <string name="UnableForward">Impossible de renvoyer</string>
+    <string name="TosDecline">Malheureusement, cela signifie que vous ne pouvez pas vous inscrire sur Divo Global.
+
+Contrairement à d\'autres applications, Divo Global n\'utilise pas les données des utilisateurs à des fins de publicité ciblée ou à d\'autres fins commerciales. Divo Global stocke uniquement les informations dont il a besoin pour fonctionner en tant que service cloud. Vous pouvez ajuster la façon dont nous utilisons vos données (par exemple, supprimer les contacts synchronisés) dans vos paramètres de confidentialité et de sécurité.
+
+Si vous n\'acceptez pas les modestes exigences de Divo Global, nous ne serons pas en mesure de vous fournir ce service.</string>
+    <string name="TosAgeTitle">Vérification de l\'âge</string>
+    <string name="PrivacyPolicyAndTerms">Politique de confidentialité et conditions d\'utilisation</string>
+    <string name="TosAgeText">Appuyez sur OK pour confirmer que vous disposez de %1$s ou plus.</string>
+    <string name="TosUpdateDecline">Malheureusement, il n\'y a pas d\'autres options. Contrairement à d\'autres applications, Divo Global n\'utilise pas les données des utilisateurs à des fins de publicité ciblée ou à d\'autres fins commerciales. Divo Global stocke uniquement les informations dont il a besoin pour fonctionner en tant que service cloud. Vous pouvez ajuster la façon dont nous utilisons vos données dans les paramètres de confidentialité et de sécurité.
+
+Si vous n\'acceptez pas les modestes exigences de Divo Global, nous ne serons pas en mesure de vous fournir ce service.</string>
+    <string name="TosDeclineDeleteAccount">Attention : Cela supprimera de manière irréversible votre compte Divo Global et toutes les données que vous stockez dans le cloud Divo Global.
+
+Important : vous pouvez « Annuler » maintenant et exporter d\'abord vos données au lieu de les perdre. (Pour ce faire, ouvrez la dernière version de Divo Global Desktop et accédez à Paramètres &gt; Avancé &gt; Exporter les données globales Divo.)</string>
+    <!--permissions-->
+    <string name="PermissionStorageWithHint">**Divo Global** a besoin d\'accéder au stockage pour que vous puissiez envoyer et enregistrer des photos, des vidéos, de la musique et d\'autres fichiers. Appuyez sur Paramètres &gt; Autorisations et activez **Fichiers et médias**.</string>
+    <string name="PermissionNoAudioWithHint">**Divo Global** nécessite un accès au microphone pour que vous puissiez envoyer des messages vocaux. Appuyez sur Paramètres &gt; Autorisations et activez **Microphone**.</string>
+    <string name="PermissionNoAudioVideoWithHint">**Divo Global** nécessite un accès au microphone pour que vous puissiez envoyer des messages vocaux. Appuyez sur Paramètres &gt; Autorisations et activez **Microphone**.</string>
+    <string name="PermissionNoCameraWithHint">**Divo Global** doit accéder à l\'appareil photo pour que vous puissiez prendre des photos et des vidéos. Appuyez sur Paramètres &gt; Autorisations et activez **Caméra**.</string>
+    <string name="PermissionNoCameraMicVideo">**Divo Global** nécessite un accès à la caméra et au microphone pour pouvoir envoyer des messages vidéo. Appuyez sur Paramètres &gt; Autorisations, puis activez **Microphone** et **Caméra**.</string>
+    <string name="PermissionNoLocation">Divo Global a besoin d\'accéder à votre position pour que vous puissiez la partager avec vos amis.</string>
+    <string name="PermissionNoLocationStory">Divo Global a besoin d\'accéder à votre position pour que vous puissiez ajouter le widget météo à vos histoires.</string>
+    <string name="PermissionNoLocationFriends">**Divo Global** a besoin d\'accéder à la position pour que vous puissiez la partager avec vos amis. Appuyez sur Paramètres &gt; Autorisations et activez **Localisation**.</string>
+    <string name="PermissionNoLocationNavigation">**Divo Global** a besoin d\'accéder à l\'emplacement pour que vous puissiez savoir comment vous y rendre. Appuyez sur Paramètres &gt; Autorisations et activez **Localisation**.</string>
+    <string name="PermissionNoContactsSharing">**Divo Global** a besoin d\'accéder à vos contacts pour que vous puissiez les partager avec vos amis. Appuyez sur Paramètres &gt; Autorisations et activez **Contacts**.</string>
+    <string name="PermissionNoStorageAvatar">**Divo Global** a besoin d\'accéder au stockage pour que vous puissiez télécharger des photos de profil. Appuyez sur Paramètres &gt; Autorisations et activez **Fichiers et médias**.</string>
+    <string name="PermissionNoAudioStorageStory">**Divo Global** a besoin d\'accéder à vos fichiers musicaux pour que vous puissiez les ajouter à votre story. Appuyez sur Paramètres &gt; Autorisations et activez **Musique et audio**.</string>
+    <string name="PermissionDrawAboveOtherApps">Divo Global a besoin d\'un accès pour s\'afficher au-dessus d\'autres applications afin d\'utiliser le mode image dans l\'image.</string>
+    <string name="PermissionDrawAboveOtherAppsGroupCall">Le mode superposition vous permet d\'utiliser Push-to-Talk et de voir qui parle même lorsque vous êtes en dehors de Divo Global.</string>
+    <string name="PermissionOpenSettings">Paramètres</string>
+    <string name="PermissionXiaomiLockscreen">Veuillez autoriser Divo Global à apparaître sur votre écran verrouillé pour que les appels fonctionnent correctement.</string>
+    <string name="PermissionBackgroundLocation">Pour partager votre position en temps réel dans ce chat, Divo Global doit accéder à votre position à tout moment, y compris lorsque l\'application est en arrière-plan.
+
+Nous aurons accès à votre position uniquement aussi longtemps que vous le souhaitez, et vous pouvez arrêter de la partager à tout moment. Nous ne l\'utiliserons à aucune fin autre que le partager dans ce chat.</string>
+    <string name="PermissionDrawAboveOtherAppsTitle">Mode Image dans l\'image</string>
+    <string name="PermissionDrawAboveOtherAppsGroupCallTitle">Superposition de chat vidéo</string>
+    <!--Intro view-->
+    <string name="Page1Title">Divo mondial</string>
+    <string name="Page2Title">Rapide</string>
+    <string name="Page3Title">Gratuit</string>
+    <string name="Page4Title">Bien sûr</string>
+    <string name="Page5Title">Puissant</string>
+    <string name="Page6Title">basé sur le cloud</string>
+    <string name="Page1Message">L\'application de messagerie **la plus rapide**
+du monde. C\'est **gratuit** et **sûr**.</string>
+    <string name="Page2Message">**Divo Global** délivre plus de messages
+Plus rapide que n\'importe quelle autre application.</string>
+    <string name="Page3Message">**Divo Global** offre un stockage gratuit et
+cloud illimité pour les chats et le multimédia.</string>
+    <string name="Page4Message">**Divo Global** conserve vos messages
+à l’abri des attaques de pirates.</string>
+    <string name="Page5Message">**Divo Global** n\'a pas de limite d\'espace
+pour vos fichiers multimédias et vos discussions.</string>
+    <string name="Page6Message">**Divo Global** vous permet d\'accéder à votre
+messages provenant de plusieurs appareils.</string>
+    <string name="StartMessaging">commencer à discuter</string>
+    <!--contacts shortcuts-->
+    <string name="ContactShortcutMessage">Message à %1$s</string>
+    <string name="ContactShortcutVoiceCall">Appel vocal à %1$s</string>
+    <string name="ContactShortcutVideoCall">Appel vidéo à %1$s</string>
+    <!--date formatters-->
+    <string name="formatterBoostExpired">d \'de\' MMM \'de\' aaaa</string>
+    <string name="formatterGiveawayCard">d \'de\' MMM \'de\' aaaa</string>
+    <string name="formatterGiveawayMonthDay">d\'de\' MMMM</string>
+    <string name="formatterGiveawayMonthDayYear">d \'de\' MMMM \'de\' aaaa</string>
+    <string name="formatterMonthYear">MMMM \'de\' aaaa</string>
+    <string name="formatterStats12H">d \'de\' MMM \'de\' aaaa, h:mm a</string>
+    <string name="formatterStats24H">d \'de\' MMM \'de\' aaaa, HH:mm</string>
+    <string name="formatterBannedUntil12H">d \'de\' MMM \'de\' aaaa, h:mm a</string>
+    <string name="formatterBannedUntil24H">d \'de\' MMM \'de\' aaaa, HH:mm</string>
+    <string name="formatterBannedUntilThisYear12H">d \'de\' MMM, h:mm a</string>
+    <string name="formatterBannedUntilThisYear24H">d\'de\' MMM, HH:mm</string>
+    <string name="formatterMonth">d\'de\' MMM</string>
+    <string name="formatterYear">jj.MM.aa</string>
+    <string name="formatterYearMax">jj.MM.aaaa</string>
+    <string name="chatDate">d\'de\' MMMM</string>
+    <string name="chatFullDate">d \'de\' MMMM \'de\' aaaa</string>
+    <string name="formatterWeek">EEE</string>
+    <string name="formatterWeekLong">EEEE</string>
+    <string name="formatterDay24H">HH : mm</string>
+    <string name="formatterDay12H">h:mm un</string>
+    <string name="formatDateAtTime">%1$s à %2$s</string>
+    <string name="formatDateSchedule">d\'de\' MMM</string>
+    <string name="formatDateScheduleYear">d \'de\' MMM \'de\' aaaa</string>
+    <string name="SendTodayAt">\'Envoyer aujourd\'hui à\' HH : mm</string>
+    <string name="SendDayAt">\'Envoyer le\' j \'de\' MMM \'à\' HH:mm</string>
+    <string name="SendDayYearAt">\'Envoyer le\' d \'de\' MMM \'de\' aaaa \'à\' HH:mm</string>
+    <string name="StartTodayAt">\'Commence aujourd\'hui à\' HH : mm</string>
+    <string name="StartDayAt">\'Début\' d \'de\' MMM \'à\' HH:mm</string>
+    <string name="StartDayYearAt">\'Commence le\' d \'de\' MMM \'de\' aaaa \'à\' HH:mm</string>
+    <string name="StartsTodayAt">\'Commence aujourd\'hui à\' HH : mm</string>
+    <string name="StartsDayAt">\'Débuts\' d \'de\' MMM \'à\' HH:mm</string>
+    <string name="StartsDayYearAt">\'Commence le\' d \'de\' MMM \'de\' aaaa \'à\' HH:mm</string>
+    <string name="StartShortTodayAt">\'Aujourd\'hui à\' HH : mm</string>
+    <string name="StartShortDayAt">d \'de\' MMM \'à\' HH:mm</string>
+    <string name="StartShortDayYearAt">d \'de\' MMM \'de\' aaaa \'à\' HH:mm</string>
+    <string name="RemindTodayAt">\'Souvenez-vous aujourd\'hui à\' HH : mm</string>
+    <string name="RemindDayAt">\'Rappelez-vous le\' d \'de\' MMM \'à\' HH:mm</string>
+    <string name="RemindDayYearAt">\'Rappelez-vous le\' d \'de\' MMM \'de\' aaaa \'à\' HH:mm</string>
+    <string name="BotsMenuTitle">Menu</string>
+    <string name="Understood">👍 Compris</string>
+    <string name="ErrorGoogleNoAccount">Aucun compte Google trouvé sur cet appareil. Veuillez l\'ajouter dans les paramètres.</string>
+    <string name="ErrorGoogleSignInFailed">Erreur de connexion avec Google</string>
+    <string name="ErrorFirebaseAuthFailed">Erreur d\'authentification Firebase</string>
+    <string name="ErrorProfileFetchFailed">Erreur lors de l\'obtention du profil ou téléphone manquant</string>
+    <string name="ErrorTelegramAuthFailed">Erreur d\'authentification globale Divo</string>
+    <string name="ErrorDummyPhoneFailed">Erreur lors de l\'obtention du numéro temporaire pour l\'enregistrement</string>
+    <string name="ErrorUnexpected">Erreur inattendue</string>
+    <string name="EventStatusInProgress">En cours</string>
+    <string name="EventStatusCompleted">Rempli</string>
+    <string name="EventStatusClosesIn">Clôture à %1$s</string>
+    <string name="EventStatusDeadline">Date limite : %1$s</string>
+    <string name="EventTabMyEvents">Mes événements</string>
+    <string name="EventTabAllEvents">Tous les événements</string>
+    <string name="EventEmptyTitle">Il n’y a aucun événement à venir pour le moment.</string>
+    <string name="EventEmptySubtitleAgency">Revenez plus tard ou
+en créer un nouveau.</string>
+    <string name="EventEmptySubtitle">Revenez plus tard.</string>
+    <string name="EventCreateButton">Créer un événement</string>
+    <string name="EventSeenAll">Vous avez vu tous les événements</string>
+    <string name="EventSpotsLeft">%1$d places restantes</string>
+    <string name="WithdrawApplicationTitle">Retirer la demande ?</string>
+    <string name="WithdrawApplicationMessage">L\'organisateur en sera informé. Vous ne pourrez pas vous réinscrire à cet événement.</string>
+    <string name="KeepApplicationButton">Maintenir la demande</string>
+    <string name="YesWithdrawButton">Oui, supprimer</string>
+    <string name="YouApplied">Vous avez postulé à cet événement</string>
+    <string name="YouAppliedOn">Vous avez postulé le %1$s</string>
+    <string name="WithdrawApplicationTextButton">RETIRER LA DEMANDE</string>
+    <string name="ParamGender">Genre</string>
+    <string name="ParamAge">Âge (années)</string>
+    <string name="ParamAgeFrom">À partir de %1$d années</string>
+    <string name="ParamAgeTo">Jusqu\'à %1$d années</string>
+    <string name="ParamAgeRange">%1$d-%2$d années</string>
+    <string name="ParamHeight">Hauteur</string>
+    <string name="ParamHeightFrom">À partir de %1$d cm.</string>
+    <string name="ParamHeightTo">Jusqu\'à %1$d cm.</string>
+    <string name="ParamHeightRange">%1$d-%2$d cm.</string>
+    <string name="ParamHairColor">couleur de cheveux</string>
+    <string name="MismatchGender">Votre sexe ne correspond pas.</string>
+    <string name="MismatchAge">Votre âge ne correspond pas.</string>
+    <string name="MismatchHeight">Votre taille ne correspond pas.</string>
+    <string name="MismatchHairColor">La couleur de vos cheveux ne correspond pas.</string>
+    <string name="ApplyAnywaySuffix">Postuler quand même ?</string>
+    <string name="MismatchMultipleApplyAnyway">Certains paramètres ne correspondent pas. Postuler quand même ?</string>
+    <string name="ApplyConfirmationShareInfo">Nous partagerons avec l\'organisateur</string>
+    <string name="ApplyConfirmationParametersTitle">Paramètres de la demande</string>
+    <string name="PortfolioLinkTitle">LIEN VERS LE PORTEFEUILLE</string>
+    <string name="FollowersOnlineText">%1$s abonnés</string>
+    <string name="SubmitApplicationTitle">ENVOYER LA DEMANDE</string>
+    <string name="SubmitButton">Envoyer</string>
+    <string name="ParamWeight">Poids</string>
+    <string name="ParamBreastSize">tour de poitrine</string>
+    <string name="ParamWaist">Taille</string>
+    <string name="ParamHips">Les hanches</string>
+    <string name="ParamShoesSize">pointure</string>
+    <string name="ParamHairLength">longueur des cheveux</string>
+    <string name="ParamEyeColor">couleur des yeux</string>
+    <string name="ParamSkinColor">couleur de peau</string>
+    <string name="ParamRole">Rôle</string>
+
+    <string name="MismatchWeight">Votre poids ne correspond pas.</string>
+    <string name="MismatchBreastSize">Votre tour de poitrine ne correspond pas.</string>
+    <string name="MismatchWaist">Votre taille ne correspond pas.</string>
+    <string name="MismatchHips">Vos hanches ne correspondent pas.</string>
+    <string name="MismatchShoesSize">Votre pointure ne correspond pas.</string>
+    <string name="MismatchHairLength">La longueur de vos cheveux ne correspond pas.</string>
+    <string name="MismatchEyeColor">La couleur de vos yeux ne correspond pas.</string>
+    <string name="MismatchSkinColor">Votre couleur de peau ne correspond pas.</string>
+    <string name="MismatchRole">Votre rôle ne correspond pas.</string>
+
+    <string name="ParamValueRange">%1$d-%2$d %3$s</string>
+    <string name="ParamValueFrom">À partir de %1$d %2$s</string>
+    <string name="ParamValueTo">Jusqu\'à %1$d %2$s</string>
+    <string name="ParamValueRangeNoUnit">%1$d-%2$d</string>
+    <string name="ParamValueFromNoUnit">À partir de %1$d</string>
+    <string name="ParamValueToNoUnit">Jusqu\'à %1$d</string>
+    <string name="ApplySuccessTitle">VOUS ÊTES PARTICIPANTS !</string>
+    <string name="ApplySuccessDescription">Votre demande a été envoyée. L\'organisateur l\'examinera prochainement.</string>
+    <string name="DivoCheckInternetConnection">Veuillez vérifier votre connexion Internet</string>
+    <string name="DivoActionSkip">Sauter</string>
+    <string name="YourQrCode">Votre code QR</string>
+    <string name="ScanToProfile">Scannez pour accéder au profil</string>
+    <string name="DivoShareBtn">Partager</string>
+    <string name="MyStory">mon histoire</string>
+    <string name="SearchChats">Rechercher des discussions</string>
+    <string name="NoContactsYet3">Ajouter des contacts</string>
+    <string name="NoContactsYet3Sub">Vous n’avez pas encore de contacts sur Divo Global. Et si vous en ajoutiez ?</string>
+    <string name="SearchPeopleByUsername">Rechercher des personnes par nom d\'utilisateur</string>
+    <string name="StoryPrivacyAlertTitle">Partager une histoire</string>
+    <string name="StoryPrivacyAlertSubtitle_one">Choisissez qui peut voir votre histoire</string>
+    <string name="StoryPrivacyAlertSubtitle_other">Choisissez qui peut voir votre histoire</string>
+    <string name="StoryPrivacyAlertSubtitleProfile">Choisissez qui peut voir votre histoire</string>
+    <string name="StoryLivePrivacyAlertSubtitleProfile">Choisissez qui peut voir votre diffusion en direct</string>
+    <string name="StoryPrivacyOptionEveryone">Tous</string>
+    <string name="StoryPrivacyOptionContacts">Contacts</string>
+    <string name="StoryPrivacyOptionContactsDetail">exclure des personnes</string>
+    <string name="StoryPrivacyOptionCloseFriends">meilleurs amis</string>
+    <string name="StoryPrivacyOptionCloseFriendsDetail">modifier la liste</string>
+    <string name="StoryPrivacyOptionSelectedContacts">Contacts sélectionnés</string>
+    <string name="StoryPrivacyOptionSelectedContactsDetail">modifier la liste</string>
+    <string name="StoryPrivacyAlertCloseFriendsSubtitle">Choisissez les meilleurs amis</string>
+    <string name="StoryPrivacyButtonSaveCloseFriends">Enregistrer la liste</string>
+    <string name="RecorderNewStory">Nouvelle histoire</string>
+    <string name="StoryPrivacyAlertSelectContactsTitle">Sélectionner des contacts</string>
+    <string name="StoryPrivacyAlertSelectContactsSubtitle">Choisissez des contacts</string>
+    <string name="StoryPrivacyAlertCloseFriendsTitle">meilleurs amis</string>
+    <string name="StoryPrivacyAlertExcludedContactsTitle">Contacts exclus</string>
+    <string name="StoryPrivacyAlertExcludedContactsSubtitle">Exclure les contacts</string>
+    <string name="StoryPrivacyButtonSave">Enregistrer les paramètres</string>
+    <string name="StoryPrivacyButtonPost">Publier une histoire</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneTitle">Tout le monde sauf…</string>
+    <string name="StoryPrivacyAlertExcludeFromEveryoneSubtitle">Exclure les contacts</string>
+    <string name="StoryBlockListEmpty">**Sélectionnez les personnes** qui ne verront pas vos histoires.</string>
+    <string name="StoryAllowScreenshots">Autoriser les captures d\'écran</string>
+    <string name="StoryKeep">Rester dans mon profil</string>
+    <string name="StoriesAlbum">Album</string>
+    <string name="StoriesAlbumNameAllStories">Toutes les histoires</string>
+    <string name="StoriesAlbumTitleInputHint">Qualification</string>
+    <string name="StoriesAlbumAddAlbum">Ajouter un album</string>
+    <string name="StoriesAlbumNewAlbum">Nouvel album</string>
+    <string name="StoriesAlbumAddToAlbum">Ajouter à l\'album</string>
+    <string name="StoryKeepInfo_one">Gardez cette histoire sur votre profil même après son expiration dans %d heure. Les paramètres de confidentialité seront appliqués.</string>
+    <string name="StoryKeepInfo_other">Gardez cette histoire sur votre profil même après son expiration dans %d heures. Les paramètres de confidentialité seront appliqués.</string>
+    <string name="StoryCollageRemoveGrid">Appuyez pour supprimer la grille</string>
+    <string name="StoriesSoundEnabled">Histoires</string>
+    <string name="Reactions">Réactions</string>
+    <string name="NotificationReactions">Réactions</string>
+    <string name="ReactionsByEmotionChartTitle">Réactions</string>
+    <string name="NotifyMeAbout">Informez-moi de…</string>
+    <string name="StoryLive">En direct</string>
+    <string name="StoryPhoto">Photo</string>
+    <string name="StoryVideo">Vidéo</string>
+    <string name="StoryDraft">Brouillon</string>
+    <string name="StoryDraftsAlbum">Brouillons</string>
+    <string name="StoryKeepDraft">Conserver le brouillon</string>
+    <string name="StorySaveDraft">Enregistrer le brouillon</string>
+    <string name="StoryDeleteDraft">Supprimer le brouillon</string>
+    <string name="ShowInChats">Afficher dans les chats</string>
+    <string name="ForwardedStory">Histoire transférée</string>
+    <string name="NotifyMeAboutPrivate">Nouveaux messages dans les chats privés</string>
+    <string name="NotifyMoreOptions">Plus d\'options</string>
+    <string name="NotifyLessOptions">Moins d\'options</string>
+    <string name="NotifyMeAboutGroups">Nouveaux messages dans les groupes</string>
+    <string name="NotifyMeAboutChannels">Nouveaux messages dans les chaînes</string>
+    <string name="NotifyMeAboutNewStories">Nouvelles histoires</string>
+    <string name="NotifyMeAboutImportantStories">histoires importantes</string>
+    <string name="NotifyMeAboutMessagesReactions">Réactions à mes messages</string>
+    <string name="NotifyMeAboutStoriesReactions">Réactions à mes histoires</string>
+    <string name="NotifyFromContacts">De mes contacts</string>
+    <string name="NotifyFromEveryone">De tous</string>
+    <string name="InAppPopup">Fenêtres contextuelles</string>
+    <string name="InAppPopupInfo">Afficher les notifications contextuelles dans l\'application.</string>
+    <string name="AutoDownloadStories">Histoires</string>
+    <string name="NotificationStories">Histoires</string>
+    <string name="DateOfBirth">Date de naissance</string>
+    <string name="SearchMessages">Messages</string>
+    <string name="EventLogFilterSectionMessages">Messages</string>
+    <string name="PrivacyMessages">Messages</string>
+    <string name="MessagesChartTitle">Messages</string>
+    <string name="MessagesOverview">Messages</string>
+    <string name="NotificationReactionsMessages">Messages</string>
+    <string name="StarsTransactionFloodskipNumberName">Messages</string>
+    <string name="NotificationReactionsStories">Histoires</string>
+    <string name="ProfileGifts">Cadeaux</string>
+    <string name="UserBio">Biographie</string>
+    <string name="PrivacyBio">Biographie</string>
+    <string name="BioLimitTitle">Biographie</string>
+    <string name="StoryMusicProfileMusic">Musique enregistrée</string>
+    <string name="PrivacyMusic">Musique enregistrée</string>
+    <string name="PrivacyInvites">Invitations</string>
+    <string name="PrivacyInvitesInfo">Vous pouvez restreindre les utilisateurs autorisés à vous ajouter à des groupes et à des chaînes.</string>
+    <string name="ProfileBirthday">Date de naissance</string>
+    <string name="EditProfileBirthdayTitle">Date de naissance</string>
+    <string name="EditProfileBirthdayText">Date de naissance</string>
+    <string name="PassportBirthdate">Date de naissance</string>
+    <string name="PrivacyBirthday">Date de naissance</string>
+
+    <string name="NotificationEnabled">Activé</string>
+    <string name="NotificationEnabledAutomatically">Activé automatiquement</string>
+    <string name="NotificationDisabled">Désactivé</string>
+    <string name="PrivacyLastSeenPremiumInfo">Si vous vous abonnez à Premium, vous verrez la dernière heure de connexion et de lecture des autres utilisateurs, même si vous avez masqué la vôtre (à moins qu\'ils ne l\'aient spécifiquement restreinte).</string>
+    <string name="PrivacyMessagesContactsAndPremium">Mes contacts et utilisateurs Premium</string>
+    <string name="PrivateMessagesChargePrice">Facturation des messages</string>
+    <string name="PrivacyMessagesInfo">Vous pouvez restreindre les messages entrants aux contacts et aux utilisateurs Premium uniquement.
+
+**Qu\'est-ce que Divo Global Premium ?**</string>
+    <string name="PrivacyMessagesTitle">Qui peut m\'envoyer des messages ?</string>
+    <string name="PrivacyVoiceMessagesTitle">Qui peut m\'envoyer des messages vocaux ?</string>
+    <string name="PrivacyBirthdaySet">Vous n\'avez pas encore renseigné votre date de naissance.
+**Ajouter mon anniversaire &gt;**</string>
+    <string name="PrivacyBirthdayTitle">Qui peut voir mon anniversaire ?</string>
+    <string name="PrivacyBirthdayInfo">Vous pouvez restreindre qui peut voir votre anniversaire avec une précision granulaire.</string>
+    <string name="PrivacyBirthdayInfo3">Vous pouvez ajouter des utilisateurs ou des groupes entiers comme exceptions qui remplaceront les paramètres précédents.</string>
+    <string name="PrivacyGifts">Cadeaux</string>
+    <string name="PrivacyGiftsTitle">Afficher automatiquement les cadeaux</string>
+    <string name="PrivacyGiftsInfo">Choisissez si les cadeaux provenant d\'expéditeurs spécifiques nécessitent votre approbation avant d\'être visibles par les autres sur votre profil.</string>
+    <string name="PrivacyGiftsShowIcon">Afficher l\'icône de cadeau dans les discussions</string>
+    <string name="PrivacyGiftsShowIconInfo">Affiche l\'icône Cadeau %s dans le champ de saisie du message pour les deux participants dans toutes les discussions.</string>
+    <string name="PrivacyGiftsTypeHeader">Types de cadeaux acceptés</string>
+    <string name="PrivacyGiftsTypeUnlimited">Illimité</string>
+    <string name="PrivacyGiftsTypeLimited">Édition limitée</string>
+    <string name="PrivacyGiftsTypeUnique">Seulement</string>
+    <string name="PrivacyGiftsTypeFromChannels">Des chaînes</string>
+    <string name="PrivacyGiftsTypePremium">Abonnement Premium</string>
+    <string name="PrivacyGiftsTypeInfo">Choisissez les types de cadeaux que vous autorisez les autres à vous envoyer.</string>
+    <string name="CustomShareGiftsInfo">Vous pouvez ajouter des utilisateurs ou des groupes entiers comme exceptions qui remplaceront les paramètres précédents.</string>
+    <string name="PrivacyBioTitle">Qui peut voir ma biographie ?</string>
+    <string name="PrivacyBioInfo">Vous pouvez restreindre qui peut voir votre biographie avec une précision granulaire.</string>
+    <string name="PrivacyBioInfo3">Vous pouvez ajouter des utilisateurs ou des groupes entiers qui ne verront pas votre biographie.</string>
+
+    <string name="UploadingStory">En montant…</string>
+    <string name="FailedStory">Erreur</string>
+    <string name="FailedToUploadStory">erreur de téléchargement</string>
+    <string name="StoryError">Impossible de télécharger</string>
+    <string name="StoryEditing">Téléchargement de l\'édition…</string>
+    <string name="TryAgain">Réessayer</string>
+    <string name="SelfStoryTitle">mon histoire</string>
+    <string name="ContactsPermissionAlertContinue">Continuer</string>
+    <string name="NotificationsPermissionContinue">Continuer</string>
+    <string name="ChannelJoinNoCaps">Rejoindre</string>
+    <string name="ChannelMuteNoCaps">Muet</string>
+    <string name="ChannelUnmuteNoCaps">Activer le son</string>
+    <string name="ProfileShowAsList">Afficher sous forme de liste</string>
+    <string name="ProfileMessage">Message</string>
+    <string name="ProfileMute">Muet</string>
+    <string name="ProfileCall">Appel</string>
+    <string name="ProfileVideo">Vidéo</string>
+    <string name="ProfilePosts">Publications</string>
+    <string name="ProfileGift">Cadeau</string>
+    <string name="ProfileShare">Partager</string>
+    <string name="ProfileLeave">Sortir</string>
+    <string name="Followers_one">%1$d abonné</string>
+    <string name="Followers_other">%1$d abonnés</string>
+    <string name="ProfileActionsLiveStream">Diffusion en direct</string>
+    <string name="StartVoipChannelTitle">Diffusion en direct</string>
+    <string name="VoipChannelVoiceChat">Diffusion en direct</string>
+    <string name="Mute">Muet</string>
+    <string name="ProfileButtonMute">Muet</string>
+    <string name="AddStory">Ajouter une histoire</string>
+    <string name="ProfileActionsAddStory">Ajouter une histoire</string>
+    <string name="ChannelSettingsTitle">Paramètres des chaînes</string>
+    <string name="ChannelAdminSettings">Paramètres des chaînes</string>
+    <string name="ChannelOpenDirect">messages directs</string>
+    <string name="ChatMessageSuggestions">messages directs</string>
+    <string name="PostSuggestions">messages directs</string>
+    <string name="ChannelColorTitle2">Apparence</string>
+    <string name="ChannelAutotranslation">Traduire automatiquement les messages</string>
+    <string name="StatisticsAndBoosts">Statistiques et améliorations</string>
+    <string name="ArchivedStories">Histoires archivées</string>
+    <string name="OpenChannelArchiveStories">Histoires archivées</string>
+    <string name="New">Nouveau</string>
+    <string name="Off">Désactivé</string>
+    <string name="BoostLevelPlus_one">Niveau %d+</string>
+    <string name="BoostLevelPlus_other">Niveau %d+</string>
+<string name="NotificationsPermissionAlertTitle">Activer les notifications</string>
+    <string name="NotificationsPermissionAlertSubtitle">Autorisez Divo Global à vous envoyer des notifications pour rester en contact avec vos amis et votre famille.</string>
+    <string name="NotificationsPermissionAlert1">Recevoir des notifications sur les nouveaux messages</string>
+    <string name="NotificationsPermissionAlert2">Découvrez quand vous êtes mentionné dans les groupes</string>
+    <string name="NotificationsPermissionAlert3">Désactiver des discussions et des types de discussions spécifiques</string>
+    <string name="NotificationsPermissionSettings">Ouvrir les paramètres</string>
+</resources>

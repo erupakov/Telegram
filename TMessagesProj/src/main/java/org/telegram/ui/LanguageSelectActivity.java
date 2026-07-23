@@ -429,7 +429,7 @@ public class LanguageSelectActivity extends BaseFragment implements Notification
     }
 
     private static final java.util.Set<String> DIVO_SUPPORTED_LANGUAGES = new HashSet<>(java.util.Arrays.asList(
-            "en", "ru", "es", "pt_br", "zh_hans_cn", "zh"
+            "en", "ru", "es", "pt_br", "zh_hans_cn", "zh", "fr"
     ));
 
     private boolean isDivoSupportedLanguage(LocaleController.LocaleInfo info) {
