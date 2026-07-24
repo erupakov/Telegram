@@ -14,11 +14,13 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
         viewModelScope.launch {
             DivoApi.userRepository.currentUserFlow.collect { user ->
                 user?.let {
+                    val tgUser = org.telegram.messenger.UserConfig.getInstance(org.telegram.messenger.UserConfig.selectedAccount).currentUser
+                    val displayUserName = if (!tgUser?.username.isNullOrEmpty()) "@${tgUser.username}" else ""
                     setState {
                         copy(
                             userId = it.id,
                             role = it.roleLabel,
-                            userName = it.fullName,
+                            userName = displayUserName,
                             avatarUrl = it.avatarUrl,
                             phoneNumber = it.phone,
                             isModel = it.role.isModel(),
@@ -69,14 +71,16 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
 
     private fun loadUserData() {
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            setState { copy(isLoading = userId == -1) }
             val result = DivoApi.userRepository.getCurrentUserInfo()
 
             if (result is DivoResult.Success) {
+                val tgUser = org.telegram.messenger.UserConfig.getInstance(org.telegram.messenger.UserConfig.selectedAccount).currentUser
+                val displayUserName = if (!tgUser?.username.isNullOrEmpty()) "@${tgUser.username}" else ""
                 setState {
                     copy(
                         userId = result.value.id,
-                        userName = result.value.fullName,
+                        userName = displayUserName,
                         avatarUrl = result.value.avatarUrl,
                         phoneNumber = result.value.phone,
                         isModel = result.value.role.isModel(),

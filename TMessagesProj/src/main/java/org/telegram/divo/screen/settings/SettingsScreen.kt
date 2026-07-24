@@ -70,6 +70,7 @@ fun SettingsScreen(
     var showQrBottomSheet by remember { mutableStateOf(false) }
 
     LifecycleResumeEffect(Unit) {
+        viewModel.setIntent(SettingsViewIntent.OnRefresh)
         onPauseOrDispose { }
     }
 

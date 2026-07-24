@@ -38,7 +38,6 @@ class FragmentSettings : BaseFragment(), NotificationCenter.NotificationCenterDe
     private val composeLifecycleOwner = FragmentLifecycleOwner().apply {
         onCreate()
         onStart()
-        onResume()
     }
 
     private var settingsNavController: NavController? = null
@@ -56,6 +55,16 @@ class FragmentSettings : BaseFragment(), NotificationCenter.NotificationCenterDe
     override fun onFragmentCreate(): Boolean {
         NotificationCenter.getInstance(currentAccount).addObserver(this, NotificationCenter.needDeleteDialog)
         return super.onFragmentCreate()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        composeLifecycleOwner.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        composeLifecycleOwner.onPause()
     }
 
     override fun createView(context: Context): View {
