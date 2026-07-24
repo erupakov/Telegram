@@ -636,7 +636,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
                 int statusBarHeight = AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight;
                 marginLayoutParams = (MarginLayoutParams) backButtonView.getLayoutParams();
-                marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
+                marginLayoutParams.topMargin = AndroidUtilities.dp(8) + statusBarHeight;
 
                 marginLayoutParams = (MarginLayoutParams) proxyButtonView.getLayoutParams();
                 marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
@@ -847,15 +847,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         backButtonView.setImageResource(R.drawable.ic_divo_back);
         backButtonView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         backButtonView.setColorFilter(new android.graphics.PorterDuffColorFilter(0xff212121, android.graphics.PorterDuff.Mode.SRC_IN));
-        GradientDrawable bgShape = new GradientDrawable();
-        bgShape.setShape(GradientDrawable.OVAL);
+        android.graphics.drawable.GradientDrawable bgShape = new android.graphics.drawable.GradientDrawable();
+        bgShape.setShape(android.graphics.drawable.GradientDrawable.OVAL);
         bgShape.setColor(0xFFFFFFFF);
-        bgShape.setSize(AndroidUtilities.dp(40), AndroidUtilities.dp(40));
-        ColorStateList rippleColor = ColorStateList.valueOf(Theme.getColor(Theme.key_listSelector));
-        RippleDrawable rippleDrawable = new RippleDrawable(rippleColor, bgShape, null);
-        int p = AndroidUtilities.dp(12);
+        bgShape.setSize(org.telegram.messenger.AndroidUtilities.dp(40), org.telegram.messenger.AndroidUtilities.dp(40));
+        android.content.res.ColorStateList rippleColor = android.content.res.ColorStateList.valueOf(org.telegram.ui.ActionBar.Theme.getColor(org.telegram.ui.ActionBar.Theme.key_listSelector));
+        android.graphics.drawable.RippleDrawable rippleDrawable = new android.graphics.drawable.RippleDrawable(rippleColor, bgShape, null);
+        
+        android.graphics.drawable.InsetDrawable insetDrawable = new android.graphics.drawable.InsetDrawable(rippleDrawable, org.telegram.messenger.AndroidUtilities.dp(8));
+        backButtonView.setBackground(insetDrawable);
+        
+        int p = org.telegram.messenger.AndroidUtilities.dp(20);
         backButtonView.setPadding(p, p, p, p);
-        backButtonView.setBackground(rippleDrawable);
         //DIVO--END
         backButtonView.setOnClickListener(v -> {
             if (onBackPressed(true)) {
@@ -867,7 +870,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         });
         backButtonView.setContentDescription(getString(R.string.Back));
-        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(40, 40, Gravity.LEFT | Gravity.TOP, 16, 16, 0, 0));
+        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(56, 56, Gravity.LEFT | Gravity.TOP, 8, 8, 0, 0));
 
         if (emailChangeSkipCallback != null && !emailChangeNonSkippable && emailChangeIsSuggestion) {
             emailChangeSkipButton = new TextView(context);
