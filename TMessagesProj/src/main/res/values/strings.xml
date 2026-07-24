@@ -28,6 +28,7 @@
     <string name="RetryLabel">Retry</string>
     <string name="YourPhoneLabel">Your Phone</string>
     <string name="ChooseCountryLabel">Choose a country</string>
+    <string name="EventsTabTitle">EVENTS</string>
     <string name="SearchLabel">Search</string>
 
     <!--profile screen-->

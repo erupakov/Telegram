@@ -29,6 +29,8 @@ import org.telegram.ui.ActionBar.Theme;
 public class TermsOfServiceView extends FrameLayout {
 
     private TextView textView;
+    private TextView declineTextView;
+    private TextView acceptTextView;
     private TermsOfServiceViewDelegate delegate;
     private TLRPC.TL_help_termsOfService currentTos;
     @SuppressWarnings("FieldCanBeLocal")
@@ -47,6 +49,7 @@ public class TermsOfServiceView extends FrameLayout {
         setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
         final int top = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? AndroidUtilities.statusBarHeight : 0;
+        final int bottom = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? AndroidUtilities.navigationBarHeight : 0;
 
         if (top > 0) {
             View view = new View(context);
@@ -80,11 +83,11 @@ public class TermsOfServiceView extends FrameLayout {
         scrollView = new ScrollView(context);
         scrollView.setVerticalScrollBarEnabled(false);
         scrollView.setOverScrollMode(OVER_SCROLL_NEVER);
-        scrollView.setPadding(AndroidUtilities.dp(24f), top, AndroidUtilities.dp(24f), AndroidUtilities.dp(75f));
+        scrollView.setPadding(AndroidUtilities.dp(24f), top, AndroidUtilities.dp(24f), AndroidUtilities.dp(75f) + bottom);
         scrollView.addView(linearLayout, new LayoutParams(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         addView(scrollView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        TextView declineTextView = new TextView(context);
+        declineTextView = new TextView(context);
         declineTextView.setText(LocaleController.getString(R.string.Decline).toUpperCase());
         declineTextView.setGravity(Gravity.CENTER);
         declineTextView.setTypeface(AndroidUtilities.bold());
@@ -92,7 +95,9 @@ public class TermsOfServiceView extends FrameLayout {
         declineTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         declineTextView.setBackground(Theme.getRoundRectSelectorDrawable(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText)));
         declineTextView.setPadding(AndroidUtilities.dp(20), AndroidUtilities.dp(10), AndroidUtilities.dp(20), AndroidUtilities.dp(10));
-        addView(declineTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 16));
+        FrameLayout.LayoutParams declineParams = LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 16);
+        declineParams.bottomMargin += bottom;
+        addView(declineTextView, declineParams);
         declineTextView.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
             builder.setTitle(LocaleController.getString(R.string.TermsOfService));
@@ -132,7 +137,7 @@ public class TermsOfServiceView extends FrameLayout {
             builder.show();
         });
 
-        TextView acceptTextView = new TextView(context);
+        acceptTextView = new TextView(context);
         acceptTextView.setText(LocaleController.getString(R.string.Accept));
         acceptTextView.setGravity(Gravity.CENTER);
         acceptTextView.setTypeface(AndroidUtilities.bold());
@@ -140,7 +145,9 @@ public class TermsOfServiceView extends FrameLayout {
         acceptTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         acceptTextView.setBackgroundDrawable(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(4), 0xffff772d, 0xffe66725));
         acceptTextView.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
-        addView(acceptTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 42, Gravity.RIGHT | Gravity.BOTTOM, 16, 0, 16, 16));
+        FrameLayout.LayoutParams acceptParams = LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 42, Gravity.RIGHT | Gravity.BOTTOM, 16, 0, 16, 16);
+        acceptParams.bottomMargin += bottom;
+        addView(acceptTextView, acceptParams);
         acceptTextView.setOnClickListener(view -> {
             if (currentTos.min_age_confirm != 0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
@@ -157,7 +164,7 @@ public class TermsOfServiceView extends FrameLayout {
         final View lineView = new View(context);
         lineView.setBackgroundColor(Theme.getColor(Theme.key_divider));
         final LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1);
-        params.bottomMargin = AndroidUtilities.dp(75f);
+        params.bottomMargin = AndroidUtilities.dp(75f) + bottom;
         params.gravity = Gravity.BOTTOM;
         addView(lineView, params);
     }

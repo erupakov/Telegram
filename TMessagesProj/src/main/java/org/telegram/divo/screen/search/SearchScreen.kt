@@ -86,11 +86,11 @@ fun SearchScreen(
             onIntent = { viewModel.setIntent(it) }
         )
 
-        AppSnackbarHost(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            state = snackbarState,
-            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 16.dp
-        )
+            AppSnackbarHost(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                state = snackbarState,
+                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 16.dp
+            )
     }
 }
 

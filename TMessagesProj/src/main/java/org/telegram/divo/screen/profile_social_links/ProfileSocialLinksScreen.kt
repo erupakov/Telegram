@@ -106,7 +106,7 @@ fun ProfileSocialLinksScreenView(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarHostState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 8.dp
+                bottomPadding = 16.dp
             )
         }
     ) { paddingValues ->

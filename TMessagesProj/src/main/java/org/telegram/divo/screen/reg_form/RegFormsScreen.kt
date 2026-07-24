@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -130,7 +132,12 @@ private fun RegFormsScreenContent(
     }
 
     Scaffold(
-        snackbarHost = { AppSnackbarHost(state = snackbarHostState) },
+        snackbarHost = { 
+            AppSnackbarHost(
+                state = snackbarHostState,
+                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
+            ) 
+        },
         topBar = {
             TopBar(
                 currentPage = state.currentStepIndex + 1,

@@ -28,6 +28,7 @@
     <string name="RetryLabel">Tentar novamente</string>
     <string name="YourPhoneLabel">Seu telefone</string>
     <string name="ChooseCountryLabel">Escolha um país</string>
+    <string name="EventsTabTitle">EVENTOS</string>
     <string name="SearchLabel">Buscar</string>
 
     <!--profile screen-->

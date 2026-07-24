@@ -169,7 +169,7 @@ fun SettingsScreen(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 74.dp
+                bottomPadding = 74.dp
             )
         }
     ) { padding ->

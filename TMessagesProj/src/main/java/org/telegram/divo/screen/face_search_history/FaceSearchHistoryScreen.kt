@@ -130,7 +130,7 @@ private fun FaceSearchHistoryContent(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarHostState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 66.dp
+                bottomPadding = 16.dp
             )
         }
     ) { paddingValues ->

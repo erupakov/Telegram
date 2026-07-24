@@ -122,7 +122,7 @@ private fun FaceSearchContent(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarHostState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 86.dp
+                bottomPadding = 86.dp
             )
         }
     ) { paddingValues ->

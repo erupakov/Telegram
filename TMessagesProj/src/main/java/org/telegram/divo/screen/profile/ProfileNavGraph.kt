@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -117,6 +118,7 @@ sealed class ProfileRoute(val route: String) {
 fun ProfileNavGraph(
     userId: Int,
     isOwnProfile: Boolean = false,
+    hasBottomBar: Boolean = false,
     showRootBackButton: Boolean = true,
     onNavControllerReady: (NavController) -> Unit = {},
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
@@ -158,10 +160,13 @@ fun ProfileNavGraph(
                 }
             }
 
+            val bottomBarPadding = if (nav.previousBackStackEntry == null && currentIsOwnProfile && hasBottomBar) 74.dp else 0.dp
+
             ProfileScreen(
                 viewModel = profileViewModel,
                 userId = currentUserId,
                 isOwnProfile = currentIsOwnProfile,
+                bottomBarPadding = bottomBarPadding,
                 showBackButton = if (nav.previousBackStackEntry == null) showRootBackButton else true,
                 onEditClicked = { isModel, initialPage ->
                     nav.navigate(ProfileRoute.Edit.createRoute(isModel, initialPage)) },

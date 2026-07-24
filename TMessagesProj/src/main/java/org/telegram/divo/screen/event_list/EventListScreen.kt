@@ -171,7 +171,7 @@ private fun EventListContent(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 74.dp
+                bottomPadding = 74.dp
             )
         }
     ) { innerPadding ->

@@ -129,7 +129,6 @@ private fun SimilarProfilesContent(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarHostState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 66.dp
             )
         }
     ) { paddingValues ->

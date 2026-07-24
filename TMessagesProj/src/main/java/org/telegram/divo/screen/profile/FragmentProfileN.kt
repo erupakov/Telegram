@@ -87,6 +87,7 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
                     ProfileNavGraph(
                         userId = targetUserId,
                         isOwnProfile = true,
+                        hasBottomBar = mainTabsController != null,
                         showRootBackButton = false,
                         onNavControllerReady = { nav -> 
                             navController = nav 

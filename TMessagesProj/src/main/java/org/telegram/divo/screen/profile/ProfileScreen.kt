@@ -48,10 +48,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.media3.common.util.UnstableApi
 import dev.chrisbanes.haze.hazeSource
@@ -98,6 +98,7 @@ fun ProfileScreen(
     onEditLinksClicked: () -> Unit = {},
     onNavigateToCreateChannel: () -> Unit = {},
     showBackButton: Boolean = true,
+    bottomBarPadding: Dp = 0.dp,
     onNavigateBack: () -> Unit = {},
     showWorkHistory: (Int) -> Unit = {},
     onGalleryClicked: (Int, Boolean) -> Unit = { _, _ -> },
@@ -115,10 +116,6 @@ fun ProfileScreen(
     var withdrawEventId by remember { mutableStateOf<Int?>(null) }
 
     var isRefreshing by remember { mutableStateOf(false) }
-
-    val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
-
-    // Removed automatic refresh on ON_RESUME to prevent reloading when switching tabs
 
     LaunchedEffect(uiState.isLoading) {
         if (!uiState.isLoading) isRefreshing = false
@@ -227,7 +224,7 @@ fun ProfileScreen(
         AppSnackbarHost(
             modifier = Modifier.align(Alignment.BottomCenter),
             state = snackbarState,
-            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateTopPadding() + 8.dp
+            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + bottomBarPadding + 8.dp
         )
 
         if (withdrawEventId != null) {

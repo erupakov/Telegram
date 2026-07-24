@@ -28,6 +28,7 @@
     <string name="RetryLabel">Réessayer</string>
     <string name="YourPhoneLabel">tonne de téléphone</string>
     <string name="ChooseCountryLabel">Choisissez un pays</string>
+    <string name="EventsTabTitle">ÉVÉNEMENTS</string>
     <string name="SearchLabel">Rechercher</string>
 
     <!--profile screen-->

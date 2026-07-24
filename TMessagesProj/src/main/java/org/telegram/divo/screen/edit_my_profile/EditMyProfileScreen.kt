@@ -156,7 +156,10 @@ fun EditMyProfileScreen(
             )
         },
         snackbarHost = {
-            AppSnackbarHost(state = snackbarState)
+            AppSnackbarHost(
+                state = snackbarState,
+                bottomPadding = 74.dp
+            )
         },
     ) { paddingValues ->
 

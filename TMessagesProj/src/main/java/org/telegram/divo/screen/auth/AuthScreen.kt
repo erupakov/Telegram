@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.HorizontalDivider
@@ -128,7 +130,12 @@ fun AuthScreen(
     StatusBarIconColorEffect(useDarkIcons = true)
 
     Scaffold(
-        snackbarHost = { AppSnackbarHost(state = snackbarHostState) },
+        snackbarHost = { 
+            AppSnackbarHost(
+                state = snackbarHostState,
+                bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+            ) 
+        },
         containerColor = AppTheme.colors.backgroundLight,
         contentWindowInsets = WindowInsets(0),
     ) { padding ->

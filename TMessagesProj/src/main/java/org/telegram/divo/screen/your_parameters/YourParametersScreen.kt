@@ -238,7 +238,7 @@ fun YourParametersScreen(
             AppSnackbarHost(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 state = snackbarState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 74.dp
+                bottomPadding = if (!showTopBar) 74.dp else WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
             )
         }
     }

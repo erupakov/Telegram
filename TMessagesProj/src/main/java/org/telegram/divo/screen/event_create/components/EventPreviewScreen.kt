@@ -208,7 +208,7 @@ fun EventPreviewScreen(
             snackbarHost = {
                 AppSnackbarHost(
                     state = snackbarState,
-                    bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 72.dp
+                    bottomPadding = 72.dp
                 )
             }
         ) { padding ->

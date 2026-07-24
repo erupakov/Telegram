@@ -21,6 +21,7 @@
     <string name="RetryLabel">Повторить</string>
     <string name="YourPhoneLabel">Ваш номер телефона</string>
     <string name="ChooseCountryLabel">Выберите страну</string>
+    <string name="EventsTabTitle">СОБЫТИЯ</string>
     <string name="SearchLabel">Поиск</string>
 
     <!--profile screen-->

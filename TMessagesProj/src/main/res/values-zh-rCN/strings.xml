@@ -28,6 +28,7 @@
     <string name="RetryLabel">重试</string>
     <string name="YourPhoneLabel">您的手机</string>
     <string name="ChooseCountryLabel">选择国家/地区</string>
+    <string name="EventsTabTitle">活动</string>
     <string name="SearchLabel">搜索</string>
 
     <!--profile screen-->
