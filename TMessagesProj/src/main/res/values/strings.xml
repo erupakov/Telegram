@@ -11117,4 +11117,6 @@ while she is with another agency.</string>
     <string name="DivoGlobalTitle">DIVO GLOBAL</string>
     <string name="Followers_one">%1$d follower</string>
     <string name="Followers_other">%1$d followers</string>
+    <string name="DivoEnterYourWebsite">Enter your website</string>
+    <string name="DivoSaving">Saving...</string>
 </resources>

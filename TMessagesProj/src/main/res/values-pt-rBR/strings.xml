@@ -2214,4 +2214,6 @@ crie um novo.</string>
     <string name="NotificationsPermissionAlert2">Saiba quando você é mencionado em grupos</string>
     <string name="NotificationsPermissionAlert3">Silencie chats específicos e tipos de chats</string>
     <string name="NotificationsPermissionSettings">Abrir configurações</string>
+    <string name="DivoEnterYourWebsite">Digite seu site</string>
+    <string name="DivoSaving">Salvando...</string>
 </resources>

@@ -2287,4 +2287,6 @@ en créer un nouveau.</string>
     <string name="NotificationsPermissionAlert2">Découvrez quand vous êtes mentionné dans les groupes</string>
     <string name="NotificationsPermissionAlert3">Désactiver des discussions et des types de discussions spécifiques</string>
     <string name="NotificationsPermissionSettings">Ouvrir les paramètres</string>
+    <string name="DivoEnterYourWebsite">Entrez votre site web</string>
+    <string name="DivoSaving">Enregistrement...</string>
 </resources>

@@ -910,4 +910,6 @@
     <string name="NotificationsPermissionAlert2">了解您在群组中何时被提及</string>
     <string name="NotificationsPermissionAlert3">将特定聊天和聊天类型静音</string>
     <string name="NotificationsPermissionSettings">打开设置</string>
+    <string name="DivoEnterYourWebsite">输入您的网站</string>
+    <string name="DivoSaving">正在保存...</string>
 </resources>
