@@ -111,11 +111,19 @@ fun ModelsHomeScreen(
     val hazeState = remember { HazeState() }
     val snackbarState = remember { AppSnackbarHostState() }
 
-    val maxScrollOffsetPx = remember {
-        with(density) { (HeaderExpandedHeight - HeaderCollapsedHeight).toPx() }
+    val hasOtherStories = remember(state.stories) {
+        state.stories.any { !it.isSelf }
     }
 
-    val headerScrollOffset by remember {
+    val maxScrollOffsetPx = remember(hasOtherStories) {
+        if (!hasOtherStories) {
+            0f
+        } else {
+            with(density) { (HeaderExpandedHeight - HeaderCollapsedHeight).toPx() }
+        }
+    }
+
+    val headerScrollOffset by remember(maxScrollOffsetPx) {
         derivedStateOf {
             val page = pagerState.currentPage
             val offsetFraction = pagerState.currentPageOffsetFraction
@@ -154,7 +162,7 @@ fun ModelsHomeScreen(
         }
     }
 
-    val collapseFraction = headerScrollOffset / maxScrollOffsetPx
+    val collapseFraction = if (maxScrollOffsetPx > 0f) headerScrollOffset / maxScrollOffsetPx else 0f
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val bottomInset = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
 
@@ -391,7 +399,7 @@ private fun rememberHeaderSnapNestedScroll(
     listStates: Map<Tab, LazyListState>,
     pagerState: PagerState,
     maxScrollOffsetPx: Float
-): NestedScrollConnection = remember(pagerState.currentPage) {
+): NestedScrollConnection = remember(pagerState.currentPage, maxScrollOffsetPx) {
     object : NestedScrollConnection {
         override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
             val activeList = listStates[Tab.entries[pagerState.currentPage]] ?: return super.onPostFling(consumed, available)

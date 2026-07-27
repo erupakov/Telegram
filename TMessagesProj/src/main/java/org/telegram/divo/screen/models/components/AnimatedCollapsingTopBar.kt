@@ -133,6 +133,8 @@ fun AnimatedLargeStoriesOverlay(
 
     val account = UserConfig.selectedAccount
 
+    val hasOtherStories = stories.any { !it.isSelf }
+
     val visibleStories = if (stories.size == 1 && stories.first().isSelf) {
         stories.take(1)
     } else {
@@ -340,12 +342,13 @@ fun AnimatedLargeStoriesOverlay(
                     story.userName
                 }
 
+                val isGray = story.isSelf && !story.hasStories && hasOtherStories
                 Text(
                     text = text,
                     fontSize = 11.5.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (story.isSelf && !story.hasStories) Color(0xFFB0B4BA) else Color.Black,
+                    color = if (isGray) Color(0xFFB0B4BA) else Color.Black,
                     modifier = Modifier.graphicsLayer { alpha = textAlpha }
                 )
             }
