@@ -82,7 +82,8 @@ class EditMyProfileViewModel(
 
     private fun updateProfile(fNameRaw: String, lNameRaw: String, aboutRaw: String, file: Result<File>?) {
         viewModelScope.launch {
-            val userInfo = state.value.userFull
+            val staleUserInfo = state.value.userFull
+            val userInfo = DivoApi.userRepository.currentUserFlow.value ?: staleUserInfo
             if (userInfo != null) {
                 setState { copy(isSaved = true) }
 

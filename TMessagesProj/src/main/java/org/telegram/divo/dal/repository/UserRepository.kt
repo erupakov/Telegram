@@ -157,7 +157,13 @@ class UserRepository(
                 fullName = userInfo.fullName,
                 phone = userInfo.phone,
                 timezone = TimeZone.getDefault().id,
-                gender = userInfo.gender?.id?.lowercase(java.util.Locale.US),
+                gender = userInfo.gender?.id?.let {
+                    if (it.lowercase() == "male" || it.lowercase() == "female") {
+                        it.lowercase()
+                    } else {
+                        org.telegram.divo.entity.mapGenderToEnglish(it) ?: "female"
+                    }
+                },
                 birthday = userInfo.birthday,
                 geoCityId = resolvedCityId?.takeIf { it > 0 },
                 measuringSystem = userInfo.measuringSystem,

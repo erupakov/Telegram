@@ -173,6 +173,19 @@ class ProfileViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            kotlinx.coroutines.flow.combine(
+                org.telegram.divo.dal.network.DivoApi.workHistory.cache,
+                org.telegram.divo.dal.network.DivoApi.workHistory.cachedUserIdFlow
+            ) { cached, cachedId ->
+                if (cachedId == userId) cached else null
+            }.collect { cached ->
+                if (cached != null) {
+                    val latest = cached.filter { it.id != -1 }.maxByOrNull { it.startDate }
+                    setState { copy(latestWorkExperience = latest) }
+                }
+            }
+        }
     }
 
     override fun handleIntent(intent: ProfileIntent) {

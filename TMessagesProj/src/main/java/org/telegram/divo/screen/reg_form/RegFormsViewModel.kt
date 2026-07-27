@@ -1,23 +1,22 @@
 package org.telegram.divo.screen.reg_form
 
-import android.os.Build
 import android.net.Uri
+import android.os.Build
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.screen.search.LocalCity
-import org.telegram.messenger.ApplicationLoader
 import org.telegram.divo.common.AdditionalInfoKeys
-import org.telegram.tgnet.TLRPC
-import org.telegram.divo.dal.network.DivoApi
-import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.common.BaseViewModel
 import org.telegram.divo.dal.dto.auth.RegistrationRequest
 import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
+import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoAuthHelper
+import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.RoleType
+import org.telegram.divo.entity.mapGenderToEnglish
 import org.telegram.divo.screen.reg_select_role.SubRole
+import org.telegram.messenger.ApplicationLoader
+import org.telegram.tgnet.TLRPC
 
 class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsEffect>() {
 
@@ -124,7 +123,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (data.firstName.isNotBlank()) additionalInfo[AdditionalInfoKeys.FIRST_NAME] = data.firstName
                     if (data.lastName.isNotBlank()) additionalInfo[AdditionalInfoKeys.LAST_NAME] = data.lastName
                     if (!data.dateOfBirth.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.DATE_OF_BIRTH] = data.dateOfBirth
-                    if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = data.gender.lowercase(java.util.Locale.US)
+                    if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = mapGenderToEnglish(data.gender) ?: "female"
                     if (data.country.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY] = data.country
                     if (data.countryCode.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY_CODE] = data.countryCode
                     if (data.city != null) additionalInfo[AdditionalInfoKeys.CITY] = data.city.name

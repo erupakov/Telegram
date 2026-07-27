@@ -122,9 +122,9 @@ passer le profil.</string>
     <string name="NoBiographyAvailable">Pas encore de biographie</string>
 
     <string-array name="GenderItems">
-        <item>Todos los géneros</item>
-        <item>Masculino</item>
-        <item>Femenino</item>
+        <item>Tous les genres</item>
+        <item>Masculin</item>
+        <item>Féminin</item>
     </string-array>
 
     <string-array name="BreastSizeItems">
@@ -389,10 +389,10 @@ pendant que vous êtes dans une autre agence.</string>
     </plurals>
 
     <string-array name="ModelFunNewTalent">
-        <item>Todos los roles</item>
-        <item>Modelo</item>
-        <item>Diversión</item>
-        <item>New face</item>
+        <item>Tous les rôles</item>
+        <item>Modèle</item>
+        <item>Divertissement</item>
+        <item>Nouveau visage</item>
     </string-array>
 
     <!--settings screen-->
@@ -566,33 +566,33 @@ dans l\'industrie ?</string>
     <string name="RegFormContactPhoneHint">Verser les demandes de réservation</string>
 
     <string-array name="ActorSpecialisations">
-        <item>Cine</item>
-        <item>Teatro</item>
-        <item>Comercial</item>
-        <item>Doblaje</item>
+        <item>Cinéma</item>
+        <item>Théâtre</item>
+        <item>Publicité</item>
+        <item>Doublage</item>
         <item>TV</item>
-        <item>Otro</item>
+        <item>Autre</item>
     </string-array>
 
     <string-array name="DancerSpecialisations">
-        <item>Contemporáneo</item>
+        <item>Contemporaine</item>
         <item>Ballet</item>
         <item>Hip-hop</item>
-        <item>Baile de salón</item>
-        <item>Comercial</item>
+        <item>Danse de salon</item>
+        <item>Commercial</item>
         <item>Latino</item>
         <item>Jazz</item>
-        <item>Otro</item>
+        <item>Autre</item>
     </string-array>
 
     <string-array name="SingerSpecialisations">
         <item>Pop</item>
         <item>R&amp;B</item>
         <item>Jazz</item>
-        <item>Clásica</item>
-        <item>Teatro musical</item>
-        <item>Ópera</item>
-        <item>Otro</item>
+        <item>Classique</item>
+        <item>Comédie musicale</item>
+        <item>Opéra</item>
+        <item>Autre</item>
     </string-array>
 
     <string name="RegFormVerificationContact">Vérification et contact</string>

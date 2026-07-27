@@ -56,7 +56,7 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
                         isLoading = false,
                         isError = false,
                         user = user,
-                        gender = ProfileParameter(ParametersType.GENDER, user.gender?.title.orEmpty()),
+                        gender = ProfileParameter(ParametersType.GENDER, org.telegram.divo.entity.mapGenderToLocalized(user.gender?.id) ?: user.gender?.title.orEmpty()),
                         blockParams = user.mapToBlockParams(),
                         hairLength = ProfileParameter(ParametersType.HAIR_LENGTH, user.model?.appearance?.hairLength?.title.orEmpty(), user.model?.appearance?.hairLength?.id),
                         hairColor = ProfileParameter(ParametersType.HAIR_COLOR, user.model?.appearance?.hairColor?.title.orEmpty(), user.model?.appearance?.hairColor?.id),
@@ -193,7 +193,8 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
     }
 
     private fun YourParametersViewState.toUserInfo(): UserInfo {
-        val appearance = user.model?.appearance
+        val latestUser = DivoApi.userRepository.currentUserFlow.value ?: user
+        val appearance = latestUser.model?.appearance
 
         val BIRTHDAYStr = blockParams.getValue(ParametersType.BIRTHDAY)
         val heightStr = blockParams.getValue(ParametersType.HEIGHT)
@@ -208,13 +209,13 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
         val parsedHips = hipsStr?.toFloatOrNull()
         val parsedShoesSize = shoesSizeStr?.toFloatOrNull()
 
-        val updatedUserInfo = user.copy(
+        val updatedUserInfo = latestUser.copy(
             gender = gender?.let { 
                 val engId = org.telegram.divo.entity.mapGenderToEnglish(it.value) ?: "female"
                 Gender(id = engId, title = it.value) 
             },
             birthday = BIRTHDAYStr.orEmpty(),
-            model = (user.model ?: org.telegram.divo.entity.Model()).copy(
+            model = (latestUser.model ?: org.telegram.divo.entity.Model()).copy(
                 appearance = (appearance ?: org.telegram.divo.entity.Appearance()).copy(
                     measuringSystem = DivoSettings.measuringSystem,
                     height = parsedHeight,

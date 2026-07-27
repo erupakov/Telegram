@@ -63,14 +63,27 @@ fun mapGenderToEnglish(localizedGenders: String?): String? {
     val items = localizedGenders.split(",").map { it.trim() }.filter { it.isNotEmpty() }
     
     val mapped = items.map { item ->
+        val lower = item.lowercase()
         when {
-            item.equals(maleLocalized, ignoreCase = true) || item.equals("male", ignoreCase = true) -> "male"
-            item.equals(femaleLocalized, ignoreCase = true) || item.equals("female", ignoreCase = true) -> "female"
-            else -> item.lowercase()
+            item.equals(maleLocalized, ignoreCase = true) || lower in listOf("male", "мужской", "masculino", "masculin", "男性") -> "male"
+            item.equals(femaleLocalized, ignoreCase = true) || lower in listOf("female", "женский", "femenino", "feminino", "féminin", "女性") -> "female"
+            else -> lower
         }
     }
     
     return mapped.joinToString(",").takeIf { it.isNotEmpty() }
+}
+
+fun mapGenderToLocalized(genderId: String?): String? {
+    if (genderId.isNullOrBlank()) return null
+    val context = org.telegram.messenger.ApplicationLoader.applicationContext
+    val array = context.resources.getStringArray(org.telegram.messenger.R.array.GenderItems)
+    
+    return when (genderId.lowercase()) {
+        "male" -> array.getOrNull(1)
+        "female" -> array.getOrNull(2)
+        else -> null
+    }
 }
 data class Model(
     val agency: Agency? = null,
