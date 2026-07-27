@@ -37,7 +37,28 @@ data class UserInfo(
     val channels: List<UserChannel> = emptyList()
 ) {
     val displayName: String
-        get() = if (role == RoleType.AGENCY) agency?.title?.takeIf { it.isNotBlank() } ?: fullName else fullName
+        get() {
+            val rawName = if (role == RoleType.AGENCY) agency?.title?.takeIf { it.isNotBlank() } ?: fullName else fullName
+            return rawName.toTitleCase()
+        }
+
+    private fun String.toTitleCase(): String {
+        val delimiters = charArrayOf(' ', '-')
+        var capitalizeNext = true
+        val result = StringBuilder(length)
+        for (char in this) {
+            if (char in delimiters) {
+                capitalizeNext = true
+                result.append(char)
+            } else if (capitalizeNext) {
+                result.append(char.uppercaseChar())
+                capitalizeNext = false
+            } else {
+                result.append(char.lowercaseChar())
+            }
+        }
+        return result.toString()
+    }
 }
 
 data class UserChannel(

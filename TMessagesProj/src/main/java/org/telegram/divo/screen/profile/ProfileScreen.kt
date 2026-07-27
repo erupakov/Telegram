@@ -65,6 +65,7 @@ import org.telegram.divo.common.SnackbarEvent.Success
 import org.telegram.divo.common.SnackbarEvent.SuccessWithIcon
 import org.telegram.divo.common.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
+import org.telegram.divo.components.DivoWithdrawBottomSheet
 import org.telegram.divo.components.StatusBarIconColorEffect
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.profile.components.AgencyModels
@@ -228,7 +229,7 @@ fun ProfileScreen(
         )
 
         if (withdrawEventId != null) {
-            org.telegram.divo.components.DivoWithdrawBottomSheet(
+            DivoWithdrawBottomSheet(
                 onKeepApplication = { withdrawEventId = null },
                 onWithdraw = {
                     val id = withdrawEventId

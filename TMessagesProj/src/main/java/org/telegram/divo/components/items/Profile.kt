@@ -429,12 +429,11 @@ fun ProfileNameItem(
             ) {
                 Text(
                     modifier = Modifier.weight(1f, fill = false),
-                    text = uiState.userInfo.displayName.uppercase(),
-                    style = AppTheme.typography.helveticaNeueLtCom.copy(
+                    text = uiState.userInfo.displayName,
+                    style = AppTheme.typography.displayLarge.copy(
                         platformStyle = PlatformTextStyle(includeFontPadding = false)
                     ),
                     color = AppTheme.colors.textColor,
-                    fontSize = 32.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
