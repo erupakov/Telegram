@@ -120,7 +120,6 @@ fun YourParametersScreen(
     ) {
         if (showTopBar) {
             ParametersTopBar(
-                onSaveClicked = { viewModel.setIntent(YourParametersIntent.OnSaveClicked(showTopBar)) },
                 onBack = { viewModel.setIntent(YourParametersIntent.OnBackClicked) }
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -238,7 +237,7 @@ fun YourParametersScreen(
             AppSnackbarHost(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 state = snackbarState,
-                bottomPadding = if (!showTopBar) 74.dp else WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
+                bottomPadding = if (!showTopBar) 74.dp else WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 74.dp
             )
         }
     }
