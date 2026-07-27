@@ -119,7 +119,8 @@ fun ModelsNavGraph(
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToChat = onNavigateToChat,
                 onNavigateToCreateChannel = onNavigateToCreateChannel,
-                onNavigateBack = { nav.popBackStack() }
+                onNavigateBack = { nav.popBackStack() },
+                onNavigateToModels = { nav.popBackStack(ModelsRoute.Models.route, inclusive = false) }
             )
         }
 
@@ -202,7 +203,8 @@ fun ModelsNavGraph(
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onClose = { nav.popBackStack(ModelsRoute.Models.route, inclusive = false) }
             )
         }
 

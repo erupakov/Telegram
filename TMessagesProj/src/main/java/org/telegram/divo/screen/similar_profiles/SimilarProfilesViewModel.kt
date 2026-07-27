@@ -46,6 +46,7 @@ class SimilarProfilesViewModel(
     override fun handleIntent(intent: Intent) {
         when (intent) {
             Intent.OnBackClicked -> sendEffect(NavigateBack)
+            Intent.OnCloseClicked -> sendEffect(Effect.NavigateHome)
             is Intent.OnLikeChanged -> onLikeChange(intent.id)
             is Intent.OnMarkChanged -> onMarkChange(intent.id)
             is Intent.OnProfileClicked -> sendEffect(NavigateToProfile(intent.id))

@@ -37,7 +37,8 @@ fun SearchResultSection(
     activeFiltersCount: Int,
     fx: Float? = null,
     fy: Float? = null,
-    onReset: () -> Unit
+    onReset: () -> Unit,
+    onFilterClicked: () -> Unit
 ) {
     val imageAlignment = remember(fx, fy) {
         if (fx != null && fy != null) {
@@ -71,11 +72,22 @@ fun SearchResultSection(
             similarityPercent
         )
 
-        ResultRow(
-            imageUrl = imageUrl,
-            result = text,
-            alignment = imageAlignment
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ResultRow(
+                imageUrl = imageUrl,
+                result = text,
+                alignment = imageAlignment
+            )
+            org.telegram.divo.components.RoundedButton(
+                resId = R.drawable.ic_divo_filter,
+                iconSize = 24.dp,
+                onClick = onFilterClicked
+            )
+        }
         Spacer(Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),

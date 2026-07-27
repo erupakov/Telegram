@@ -124,6 +124,7 @@ fun ProfileNavGraph(
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
     onNavigateToCreateChannel: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
+    onNavigateToModels: () -> Unit = { onNavigateBack() }
 ) {
     val nav = rememberNavController()
 
@@ -351,7 +352,8 @@ fun ProfileNavGraph(
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ProfileRoute.Profile.createRoute(it)) },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onClose = { onNavigateToModels() }
             )
         }
         composable(
