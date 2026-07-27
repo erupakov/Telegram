@@ -181,6 +181,10 @@ class UserRepository(
         result.toEntity(existingChannels).also { updateCacheAndPersist(it) }
     }
 
+    suspend fun deleteAccount(): DivoResult<Unit> = resultOf {
+        service.deleteAccount()
+    }
+
     suspend fun updateProfile(
         request: UpdateProfileRequest
     ): DivoResult<UserInfo> = resultOf {

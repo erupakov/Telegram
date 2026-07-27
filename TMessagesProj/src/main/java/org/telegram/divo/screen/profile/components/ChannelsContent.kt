@@ -47,12 +47,14 @@ fun ChannelsContent(
     channels: List<org.telegram.divo.entity.UserChannel>,
     isModel: Boolean,
     isOwnProfile: Boolean,
+    showBackButton: Boolean,
     isEvent: Boolean = false,
     topPadding: Dp = 0.dp,
     isRefreshing: Boolean = false,
     onAddChannel: () -> Unit = {}
 ) {
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val inset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val bottomPadding = if (!showBackButton) 68.dp + inset else inset + 8.dp
 
     if (channels.isEmpty()) {
         EmptyChannels(

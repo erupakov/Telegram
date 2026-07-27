@@ -2289,4 +2289,8 @@ crea uno nuevo.</string>
     <string name="NotificationsPermissionSettings">Abrir ajustes</string>
     <string name="DivoEnterYourWebsite">Introduce tu sitio web</string>
     <string name="DivoSaving">Guardando...</string>
+    <string name="DeleteProfile">Eliminar perfil</string>
+    <string name="DeleteProfileTitle">Eliminar perfil</string>
+    <string name="DeleteProfileDescription">¿Estás seguro de que quieres eliminar tu perfil? Esta acción no se puede deshacer.</string>
+    <string name="DeleteProfileConfirm">Eliminar</string>
 </resources>

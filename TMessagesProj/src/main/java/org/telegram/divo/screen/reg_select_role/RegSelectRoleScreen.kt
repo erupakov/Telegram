@@ -40,6 +40,7 @@ fun RoleSelectionScreen(
     onContinue: (UserIntent) -> Unit,
     onBack: () -> Unit = {},
 ) {
+    //org.telegram.divo.components.StatusBarIconColorEffect(useDarkIcons = false)
     val state by viewModel.state.collectAsState()
     val statusBarHeight = if (AndroidUtilities.isTablet()) 0 else AndroidUtilities.statusBarHeight
     val navBarHeight = AndroidUtilities.navigationBarHeight

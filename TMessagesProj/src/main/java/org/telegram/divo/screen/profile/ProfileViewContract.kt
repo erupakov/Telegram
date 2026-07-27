@@ -235,6 +235,7 @@ sealed class ProfileIntent : ViewIntent {
     object OnCreateChannelClicked : ProfileIntent()
     class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
     object OnFindSimilarProfiles : ProfileIntent()
+    object OnDeleteProfileConfirmed : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
@@ -258,4 +259,5 @@ sealed class ProfileEffect : ViewEffect {
     data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : ProfileEffect()
     object AgencyModelAdded : ProfileEffect()
     class NavigateToCreateChannel(val id: String = java.util.UUID.randomUUID().toString()) : ProfileEffect()
+    object NavigateToLogout : ProfileEffect()
 }

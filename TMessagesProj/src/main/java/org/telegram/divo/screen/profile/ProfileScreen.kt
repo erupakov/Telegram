@@ -26,7 +26,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -115,6 +114,7 @@ fun ProfileScreen(
     val uiState = viewModel.state.collectAsState().value
     val snackbarState = remember { AppSnackbarHostState() }
     var withdrawEventId by remember { mutableStateOf<Int?>(null) }
+    var showDeleteProfileDialog by remember { mutableStateOf(false) }
 
     var isRefreshing by remember { mutableStateOf(false) }
 
@@ -179,6 +179,32 @@ fun ProfileScreen(
                     is ProfileEffect.SaveSuccess -> {
                         snackbarState.show(Success(context.getString(effect.stringId)))
                     }
+                    ProfileEffect.NavigateToLogout -> {
+                        val progressDialog = org.telegram.ui.ActionBar.AlertDialog(context, 3)
+                        progressDialog.setCanCancel(false)
+                        progressDialog.show()
+
+                        val req = org.telegram.tgnet.tl.TL_account.deleteAccount()
+                        req.reason = "Divo Profile Deleted"
+                        org.telegram.tgnet.ConnectionsManager.getInstance(org.telegram.messenger.UserConfig.selectedAccount).sendRequest(req) { response, error -> 
+                            org.telegram.messenger.AndroidUtilities.runOnUIThread {
+                                try { progressDialog.dismiss() } catch (e: Exception) { org.telegram.messenger.FileLog.e(e) }
+                                if (response is org.telegram.tgnet.TLRPC.TL_boolTrue) {
+                                    org.telegram.messenger.MessagesController.getInstance(org.telegram.messenger.UserConfig.selectedAccount).performLogout(0)
+                                } else if (error == null || error.code != -1000) {
+                                    var errorText = org.telegram.messenger.LocaleController.getString(R.string.ErrorOccurred)
+                                    if (error != null) {
+                                        errorText += "\n" + error.text
+                                    }
+                                    val builder1 = org.telegram.ui.ActionBar.AlertDialog.Builder(context)
+                                    builder1.setTitle(org.telegram.messenger.LocaleController.getString(R.string.AppName))
+                                    builder1.setMessage(errorText)
+                                    builder1.setPositiveButton(org.telegram.messenger.LocaleController.getString(R.string.OK), null)
+                                    builder1.show()
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -204,6 +230,7 @@ fun ProfileScreen(
                         uiState = uiState,
                         isRefreshing = isRefreshing,
                         showBackButton = showBackButton,
+                        onDeleteProfileClicked = { showDeleteProfileDialog = true },
                         onIntent = { intent ->
                             viewModel.setIntent(intent)
                         }
@@ -239,6 +266,16 @@ fun ProfileScreen(
                 onDismiss = { withdrawEventId = null }
             )
         }
+
+        if (showDeleteProfileDialog) {
+            org.telegram.divo.screen.profile.components.DeleteProfileConfirmationDialog(
+                onDismissRequest = { showDeleteProfileDialog = false },
+                onConfirm = {
+                    showDeleteProfileDialog = false
+                    viewModel.setIntent(ProfileIntent.OnDeleteProfileConfirmed)
+                }
+            )
+        }
     }
 }
 
@@ -249,6 +286,7 @@ private fun ProfileScreenContent(
     uiState: ProfileViewState,
     isRefreshing: Boolean,
     showBackButton: Boolean,
+    onDeleteProfileClicked: () -> Unit,
     onIntent: (ProfileIntent) -> Unit
 ) {
     val pageCount = uiState.pageCount
@@ -532,15 +570,24 @@ private fun ProfileScreenContent(
                                     )
                                 }
                                 2 -> if (uiState.isModel) {
-                                    ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, isRefreshing = isRefreshing, onAddChannel = {
-                                        onIntent(ProfileIntent.OnCreateChannelClicked) 
-                                    })
+                                    ChannelsContent(
+                                        channels = uiState.userInfo.channels,
+                                        isOwnProfile = uiState.isOwnProfile,
+                                        isModel = uiState.isModel,
+                                        showBackButton = showBackButton,
+                                        topPadding = totalTopPaddingDp,
+                                        isRefreshing = isRefreshing,
+                                        onAddChannel = {
+                                            onIntent(ProfileIntent.OnCreateChannelClicked)
+                                        }
+                                    )
                                 } else {
                                     AgencyModels(
                                         topPadding = totalTopPaddingDp,
                                         models = uiState.agencyModels,
                                         query = uiState.searchModelsQuery,
                                         searchModels = uiState.searchModels,
+                                        showBackButton = showBackButton,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isLoadingSearchModels = uiState.isLoadingSearchModels,
                                         isLoadingMore = uiState.isLoadingMoreSearchModels,
@@ -560,14 +607,23 @@ private fun ProfileScreenContent(
                                         onSelectModelForAdd = { onIntent(ProfileIntent.OnSelectAgencyModelForAdd(it)) }
                                     )
                                 }
-                                3 -> ChannelsContent(channels = uiState.userInfo.channels, isOwnProfile = uiState.isOwnProfile, isModel = uiState.isModel, topPadding = totalTopPaddingDp, isRefreshing = isRefreshing, onAddChannel = {
-                                    onIntent(ProfileIntent.OnCreateChannelClicked) 
-                                })
+                                3 -> ChannelsContent(
+                                    channels = uiState.userInfo.channels,
+                                    isOwnProfile = uiState.isOwnProfile,
+                                    showBackButton = showBackButton,
+                                    isModel = uiState.isModel,
+                                    topPadding = totalTopPaddingDp,
+                                    isRefreshing = isRefreshing,
+                                    onAddChannel = {
+                                        onIntent(ProfileIntent.OnCreateChannelClicked)
+                                    }
+                                )
                                 else -> EventsColumn(
                                     topPadding = totalTopPaddingDp,
                                     events = uiState.events,
                                     isOwnProfile = uiState.isOwnProfile,
                                     isModel = uiState.isModel,
+                                    showBackButton = showBackButton,
                                     isLoading = uiState.isLoadingEvents,
                                     isLoadingMore = uiState.isLoadingMoreEvents,
                                     onLoadMore = { onIntent(ProfileIntent.OnLoadMoreEvents) },
@@ -611,7 +667,8 @@ private fun ProfileScreenContent(
             onManageWorkExperienceClicked = { onIntent(ProfileIntent.OnShowWorkHistory) },
             onNavigateBack = { onIntent(ProfileIntent.OnNavigateBack) },
             onFindSimilarProfiles = { onIntent(ProfileIntent.OnFindSimilarProfiles) },
-            onReportProfile = { onIntent(ProfileIntent.OnReportProfileClicked) }
+            onReportProfile = { onIntent(ProfileIntent.OnReportProfileClicked) },
+            onDeleteProfileClicked = onDeleteProfileClicked
         )
 
         if (uiState.showReportSheet && uiState.reportTypes != null) {

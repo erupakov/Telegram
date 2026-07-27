@@ -235,6 +235,7 @@ class ProfileViewModel(
             ProfileIntent.OnDismissReportSheet -> setState { copy(showReportSheet = false) }
             is ProfileIntent.OnReportOptionSelected -> reportProfile(intent.reportKey)
             ProfileIntent.OnCreateChannelClicked -> sendEffect(ProfileEffect.NavigateToCreateChannel())
+            ProfileIntent.OnDeleteProfileConfirmed -> deleteProfile()
         }
     }
 
@@ -739,6 +740,20 @@ class ProfileViewModel(
                 },
                 onError = { sendEffect(ShowError(it)) }
             )
+        }
+    }
+
+    private fun deleteProfile() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            val result = DivoApi.userRepository.deleteAccount()
+            if (result is DivoResult.Success) {
+                setState { copy(isLoading = false) }
+                sendEffect(ProfileEffect.NavigateToLogout)
+            } else {
+                setState { copy(isLoading = false) }
+                sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
+            }
         }
     }
 

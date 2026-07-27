@@ -1215,4 +1215,8 @@
     <string name="NotificationsPermissionSettings">Открыть настройки</string>
     <string name="DivoEnterYourWebsite">Введите ваш веб-сайт</string>
     <string name="DivoSaving">Сохранение...</string>
+    <string name="DeleteProfile">Удалить профиль</string>
+    <string name="DeleteProfileTitle">Удаление профиля</string>
+    <string name="DeleteProfileDescription">Вы действительно хотите удалить профиль? Это действие необратимо.</string>
+    <string name="DeleteProfileConfirm">Удалить</string>
 </resources>

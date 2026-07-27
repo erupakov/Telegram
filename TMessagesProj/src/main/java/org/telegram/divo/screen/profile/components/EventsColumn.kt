@@ -56,6 +56,7 @@ fun EventsColumn(
     isOwnProfile: Boolean,
     isModel: Boolean,
     isLoading: Boolean,
+    showBackButton: Boolean,
     isLoadingMore: Boolean,
     topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
@@ -72,6 +73,9 @@ fun EventsColumn(
         }
     }
 
+    val inset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val bottomPadding = if (!showBackButton) 76.dp + inset else inset + 8.dp
+
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore) {
             onLoadMore()
@@ -81,7 +85,7 @@ fun EventsColumn(
     if (events.isEmpty()) {
         EmptyEvent(
             isOwnProfile = isOwnProfile,
-            bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 8.dp,
+            bottomPadding = bottomPadding,
             onClick = onEventCreate
         )
     } else {

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import org.telegram.divo.components.LottieProgressIndicator
 import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.components.StatusBarIconColorEffect
 import org.telegram.divo.components.UIButtonNew
 import org.telegram.divo.screen.reg_form.components.StepOne
 import org.telegram.divo.screen.reg_form.components.StepPhoto
@@ -60,6 +61,7 @@ fun RegFormsScreen(
     onBack: () -> Unit,
     onBackToPhone: () -> Unit,
 ) {
+    StatusBarIconColorEffect(useDarkIcons = true)
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {

@@ -2289,4 +2289,8 @@ en créer un nouveau.</string>
     <string name="NotificationsPermissionSettings">Ouvrir les paramètres</string>
     <string name="DivoEnterYourWebsite">Entrez votre site web</string>
     <string name="DivoSaving">Enregistrement...</string>
+    <string name="DeleteProfile">Supprimer le profil</string>
+    <string name="DeleteProfileTitle">Supprimer le profil</string>
+    <string name="DeleteProfileDescription">Êtes-vous sûr de vouloir supprimer votre profil ? Cette action ne peut pas être annulée.</string>
+    <string name="DeleteProfileConfirm">Supprimer</string>
 </resources>

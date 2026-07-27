@@ -11119,4 +11119,8 @@ while she is with another agency.</string>
     <string name="Followers_other">%1$d followers</string>
     <string name="DivoEnterYourWebsite">Enter your website</string>
     <string name="DivoSaving">Saving...</string>
+    <string name="DeleteProfile">Delete profile</string>
+    <string name="DeleteProfileTitle">Delete Profile</string>
+    <string name="DeleteProfileDescription">Are you sure you want to delete your profile? This action cannot be undone.</string>
+    <string name="DeleteProfileConfirm">Delete</string>
 </resources>

@@ -334,7 +334,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         fullName = fullName,
                         phone = rawPhone,
                         timezone = java.util.TimeZone.getDefault().id,
-                        gender = org.telegram.divo.entity.mapGenderToEnglish(data.gender) ?: "female",
+                        gender = mapGenderToEnglish(data.gender) ?: "female",
                         birthday = data.dateOfBirth ?: "",
                         geoCityId = resolvedCityId?.takeIf { it > 0 },
                         measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem,

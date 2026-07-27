@@ -912,4 +912,8 @@
     <string name="NotificationsPermissionSettings">打开设置</string>
     <string name="DivoEnterYourWebsite">输入您的网站</string>
     <string name="DivoSaving">正在保存...</string>
+    <string name="DeleteProfile">删除个人资料</string>
+    <string name="DeleteProfileTitle">删除个人资料</string>
+    <string name="DeleteProfileDescription">您确定要删除您的个人资料吗？此操作无法撤消。</string>
+    <string name="DeleteProfileConfirm">删除</string>
 </resources>

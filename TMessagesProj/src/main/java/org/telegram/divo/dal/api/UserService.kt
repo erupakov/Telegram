@@ -57,6 +57,9 @@ interface UserService {
         @Body request: UserGalleryListRequest
     ): UserGalleryListResponse
 
+    @DELETE("user/delete-account")
+    suspend fun deleteAccount(): EmptyResponse
+
     @DELETE("user-gallery/{id}")
     suspend fun deleteFromGallery(
         @Path("id") id: Int

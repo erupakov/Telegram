@@ -110,6 +110,7 @@ fun ToolBarContent(
     onManageWorkExperienceClicked: () -> Unit = {},
     onFindSimilarProfiles: () -> Unit = {},
     onReportProfile: () -> Unit = {},
+    onDeleteProfileClicked: () -> Unit = {},
     isSolid: Boolean = false,
     showBackButton: Boolean = true,
     transitionProgress: Float = 0f,
@@ -132,6 +133,7 @@ fun ToolBarContent(
             add(PopupMenuItem(R.string.ChangeProfileBackground, onEditBackgroundClicked))
             add(PopupMenuItem(R.string.EditSocialLinks, onEditSocialLinksClicked))
             if (uiState.isModel) add(PopupMenuItem(R.string.ManageWorkExperience, onManageWorkExperienceClicked))
+            add(PopupMenuItem(R.string.DeleteProfile, onDeleteProfileClicked))
         }
     }
 

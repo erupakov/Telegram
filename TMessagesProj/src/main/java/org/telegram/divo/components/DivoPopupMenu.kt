@@ -66,7 +66,7 @@ fun DivoPopupMenu(
             ) {
                 Column {
                     items.forEachIndexed { index, item ->
-                        val color = if (item.titleRes == R.string.BlockProfile || item.titleRes == R.string.DeleteEvent) {
+                        val color = if (item.titleRes == R.string.BlockProfile || item.titleRes == R.string.DeleteEvent || item.titleRes == R.string.DeleteProfile) {
                             Color.Red
                         } else {
                             AppTheme.colors.textPrimary
