@@ -474,7 +474,7 @@ private fun PreviewHeader(
                 ) {
                     if (state.deadlineDate.isNotBlank()) {
                         RoundedGlassContainer(
-                            height = 30.dp,
+                            height = 36.dp,
                             borderColor = AppTheme.colors.onBackground.copy(alpha = 0.1f),
                             contentPadding = PaddingValues(horizontal = 12.dp)
                         ) {
