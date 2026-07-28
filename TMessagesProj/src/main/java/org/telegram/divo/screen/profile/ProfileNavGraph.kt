@@ -105,8 +105,11 @@ sealed class ProfileRoute(val route: String) {
         }
     }
 
-    data object FaceSearch : ProfileRoute("face_search/{uri}") {
-        fun createRoute(uri: String) = "face_search/${Uri.encode(uri)}"
+    data object FaceSearch : ProfileRoute("face_search/{uri}?profileId={profileId}") {
+        fun createRoute(uri: String, profileId: Int? = null): String {
+            val encodedUri = Uri.encode(uri)
+            return if (profileId != null) "face_search/$encodedUri?profileId=$profileId" else "face_search/$encodedUri"
+        }
     }
     data object EventPreview : ProfileRoute("event_preview")
 }
@@ -187,8 +190,8 @@ fun ProfileNavGraph(
                 onEventCreateClicked = {
                     nav.navigate(ProfileRoute.CreateEvent.route)
                 },
-                onFindSimilarProfiles = {
-                    nav.navigate(ProfileRoute.FaceSearch.createRoute(it))
+                onFindSimilarProfiles = { uri, profileId ->
+                    nav.navigate(ProfileRoute.FaceSearch.createRoute(uri, profileId))
                 },
                 onNavigateToApplyConfirmation = {
                     nav.navigate(ProfileRoute.ApplyConfirmation.createRoute(it))
@@ -342,11 +345,16 @@ fun ProfileNavGraph(
         }
         composable(
             route = ProfileRoute.FaceSearch.route,
-            arguments = listOf(navArgument("uri") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
+            arguments = listOf(
+                navArgument("uri") { type = NavType.StringType },
+                navArgument("profileId") { type = NavType.IntType; defaultValue = -1 }
+            )
+        ) {
+            val uri = Uri.decode(it.arguments?.getString("uri")).orEmpty()
+            val profileId = it.arguments?.getInt("profileId")?.takeIf { id -> id != -1 }
             FaceSearchScreen(
                 uri = uri,
+                profileId = profileId,
                 onNavigateSimilarProfiles = { url, fx, fy, resultsJson ->
                     nav.navigate(ProfileRoute.SimilarProfiles.createRoute(url, fx, fy, resultsJson = resultsJson)) {
                         popUpTo(ProfileRoute.FaceSearch.route) { inclusive = true }

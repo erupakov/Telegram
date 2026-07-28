@@ -107,7 +107,7 @@ fun ProfileScreen(
     onProfileClicked: (Int) -> Unit = {},
     onEventClicked: (Int) -> Unit,
     onEventCreateClicked: () -> Unit,
-    onFindSimilarProfiles: (String) -> Unit,
+    onFindSimilarProfiles: (String, Int) -> Unit,
     onNavigateToApplyConfirmation: (Int) -> Unit,
     onNavigateToAppearances: (PhysicalParams) -> Unit,
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
@@ -157,7 +157,7 @@ fun ProfileScreen(
                     is ProfileEffect.NavigateToEvent -> onEventClicked(effect.eventId)
                     is ProfileEffect.NavigateToApplyConfirmation -> onNavigateToApplyConfirmation(effect.eventId)
                     is ProfileEffect.ShowWithdrawConfirmation -> { withdrawEventId = effect.eventId }
-                    is ProfileEffect.NavigateToFindSimilarProfiles -> onFindSimilarProfiles(effect.photoUrl)
+                    is ProfileEffect.NavigateToFindSimilarProfiles -> onFindSimilarProfiles(effect.photoUrl, effect.profileId)
                     is ProfileEffect.NavigateToEditLinks -> onEditLinksClicked()
                     ProfileEffect.ShowAppearances -> onNavigateToAppearances(viewModel.state.value.physicalParams)
                     ProfileEffect.NavigateToCreateEvent -> onEventCreateClicked()
@@ -709,7 +709,7 @@ private fun ProfileScreenContent(
             showBackButton = showBackButton,
             onManageWorkExperienceClicked = { onIntent(ProfileIntent.OnShowWorkHistory) },
             onNavigateBack = { onIntent(ProfileIntent.OnNavigateBack) },
-            onFindSimilarProfiles = { onIntent(ProfileIntent.OnFindSimilarProfiles) },
+            onFindSimilarProfiles = { onIntent(ProfileIntent.OnFindSimilarProfiles(uiState.userInfo.photoUrl, uiState.userId)) },
             onReportProfile = { onIntent(ProfileIntent.OnReportProfileClicked) },
             onDeleteProfileClicked = onDeleteProfileClicked
         )

@@ -230,8 +230,8 @@ class ProfileViewModel(
             is ProfileIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
             is ProfileIntent.OnFindSimilarProfiles -> {
-                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("profile", state.value.userId))
-                sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("profile", intent.profileId))
+                sendEffect(NavigateToFindSimilarProfiles(intent.photoUrl, intent.profileId))
             }
             is ProfileIntent.OnSendDMClicked -> {
                 val currentUserId = DivoApi.userRepository.currentUserFlow.value?.id ?: 0

@@ -170,6 +170,7 @@ fun ModelsNavGraph(
             val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
             FaceSearchScreen(
                 uri = uri,
+                profileId = null,
                 onNavigateSimilarProfiles = { url, fx, fy, resultsJson ->
                     nav.navigate(ModelsRoute.SimilarProfiles.createRoute(url, fx, fy, resultsJson = resultsJson)) {
                         popUpTo(ModelsRoute.FaceSearch.route) { inclusive = true }

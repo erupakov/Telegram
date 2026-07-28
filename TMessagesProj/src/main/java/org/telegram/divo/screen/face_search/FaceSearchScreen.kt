@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.telegram.divo.common.controllers.AppSnackbarHost
@@ -53,6 +54,7 @@ import org.telegram.messenger.R
 @Composable
 fun FaceSearchScreen(
     uri: String,
+    profileId: Int? = null,
     onNavigateSimilarProfiles: (String, Float?, Float?, String) -> Unit,
     onNavigateToSearch: () -> Unit,
     onBack: () -> Unit
@@ -82,6 +84,7 @@ fun FaceSearchScreen(
 
     FaceSearchContent(
         uiState = state,
+        profileId = profileId,
         snackbarHostState = snackbarState,
         onIntent = { viewModel.setIntent(it) }
     )
@@ -91,6 +94,7 @@ fun FaceSearchScreen(
 @Composable
 private fun FaceSearchContent(
     uiState: State,
+    profileId: Int? = null,
     snackbarHostState: AppSnackbarHostState,
     onIntent: (Intent) -> Unit = {},
 ) {
@@ -138,33 +142,47 @@ private fun FaceSearchContent(
         }
 
         if (showBottomSheet) {
-            PhotoSourceBottomSheet(
-                value = uiState.query,
-                sheetState = sheetState,
-                searchResults = uiState.searchResults,
-                isLoading = uiState.isLoading,
-                isLoadingMore = uiState.isLoadingMore,
-                hasMore = uiState.hasMore,
-                onValueChanged = { onIntent(Intent.OnQueryChanged(it)) },
-                onClicked = {
-                    scope.launch {
-                        onIntent(Intent.OnChangePhoto(ImageCacheHelper.getLocalUri(context, it.photo)))
+            if (profileId != null) {
+                org.telegram.divo.components.bottomsheets.ProfilePhotoSourceBottomSheet(
+                    profileId = profileId,
+                    sheetState = sheetState,
+                    onPhotoSelected = { photoUrl ->
+                        scope.launch {
+                            onIntent(Intent.OnChangePhoto(photoUrl.toUri()))
+                            showBottomSheet = false
+                        }
+                    },
+                    onDismiss = { showBottomSheet = false }
+                )
+            } else {
+                PhotoSourceBottomSheet(
+                    value = uiState.query,
+                    sheetState = sheetState,
+                    searchResults = uiState.searchResults,
+                    isLoading = uiState.isLoading,
+                    isLoadingMore = uiState.isLoadingMore,
+                    hasMore = uiState.hasMore,
+                    onValueChanged = { onIntent(Intent.OnQueryChanged(it)) },
+                    onClicked = {
+                        scope.launch {
+                            onIntent(Intent.OnChangePhoto(ImageCacheHelper.getLocalUri(context, it.photo)))
+                            showBottomSheet = false
+                        }
+                    },
+                    onLoadMore = { onIntent(Intent.OnLoadMore) },
+                    onDismiss = {
+                        onIntent(Intent.OnQueryChanged(""))
                         showBottomSheet = false
+                    },
+                    onActionSelected = { action ->
+                        showBottomSheet = false
+                        when (action) {
+                            SearchImageAction.CAMERA -> camera.launch()
+                            SearchImageAction.GALLERY -> openGallery()
+                        }
                     }
-                },
-                onLoadMore = { onIntent(Intent.OnLoadMore) },
-                onDismiss = {
-                    onIntent(Intent.OnQueryChanged(""))
-                    showBottomSheet = false
-                },
-                onActionSelected = { action ->
-                    showBottomSheet = false
-                    when (action) {
-                        SearchImageAction.CAMERA -> camera.launch()
-                        SearchImageAction.GALLERY -> openGallery()
-                    }
-                }
-            )
+                )
+            }
         }
 
         if (uiState.isSearching) {
