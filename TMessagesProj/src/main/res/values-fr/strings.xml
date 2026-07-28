@@ -2293,4 +2293,5 @@ en créer un nouveau.</string>
     <string name="DeleteProfileTitle">Supprimer le profil</string>
     <string name="DeleteProfileDescription">Êtes-vous sûr de vouloir supprimer votre profil ? Cette action ne peut pas être annulée.</string>
     <string name="DeleteProfileConfirm">Supprimer</string>
+    <string name="NoPhotosYetBottomSheet">Aucune photo pour l\'instant</string>
 </resources>

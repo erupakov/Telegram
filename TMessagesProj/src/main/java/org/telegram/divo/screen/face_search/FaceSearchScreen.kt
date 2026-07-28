@@ -131,6 +131,7 @@ private fun FaceSearchContent(
         }
     ) { paddingValues ->
         var showBottomSheet by remember { mutableStateOf(false) }
+        var activeProfileId by remember(profileId) { mutableStateOf(profileId) }
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
         val camera = rememberCameraCapture { uri ->
@@ -142,17 +143,21 @@ private fun FaceSearchContent(
         }
 
         if (showBottomSheet) {
-            if (profileId != null) {
+            if (activeProfileId != null) {
                 org.telegram.divo.components.bottomsheets.ProfilePhotoSourceBottomSheet(
-                    profileId = profileId,
+                    profileId = activeProfileId!!,
                     sheetState = sheetState,
                     onPhotoSelected = { photoUrl ->
                         scope.launch {
                             onIntent(Intent.OnChangePhoto(photoUrl.toUri()))
                             showBottomSheet = false
+                            activeProfileId = profileId
                         }
                     },
-                    onDismiss = { showBottomSheet = false }
+                    onDismiss = {
+                        showBottomSheet = false
+                        activeProfileId = profileId
+                    }
                 )
             } else {
                 PhotoSourceBottomSheet(
@@ -173,12 +178,21 @@ private fun FaceSearchContent(
                     onDismiss = {
                         onIntent(Intent.OnQueryChanged(""))
                         showBottomSheet = false
+                        activeProfileId = profileId
                     },
                     onActionSelected = { action ->
-                        showBottomSheet = false
                         when (action) {
-                            SearchImageAction.CAMERA -> camera.launch()
-                            SearchImageAction.GALLERY -> openGallery()
+                            SearchImageAction.CAMERA -> {
+                                showBottomSheet = false
+                                camera.launch()
+                            }
+                            SearchImageAction.GALLERY -> {
+                                showBottomSheet = false
+                                openGallery()
+                            }
+                            SearchImageAction.OWN_PROFILE -> {
+                                activeProfileId = org.telegram.divo.dal.network.DivoApi.userRepository.currentUserFlow.value?.id
+                            }
                         }
                     }
                 )

@@ -71,7 +71,7 @@ import org.telegram.divo.style.AppTheme
 import org.telegram.divo.common.arch.DivoLocaleProvider
 import org.telegram.messenger.R
 
-enum class SearchImageAction { CAMERA, GALLERY }
+enum class SearchImageAction { CAMERA, GALLERY, OWN_PROFILE }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,7 +157,7 @@ fun PhotoSourceBottomSheet(
                     onValueChanged = onValueChanged,
                     onTakePhoto = { handleAction(SearchImageAction.CAMERA) },
                     onChooseFromLibrary = { handleAction(SearchImageAction.GALLERY) },
-                    onUseDivoPhoto = { isSearchEnabled = true },
+                    onUseDivoPhoto = { handleAction(SearchImageAction.OWN_PROFILE) },
                     onClicked = onClicked,
                     onLoadMore = onLoadMore
                 )
@@ -238,11 +238,11 @@ private fun ChoosePhotoSection(
             modifier = Modifier.clickableWithoutRipple { onChooseFromLibrary() },
             text = stringResource(R.string.ChooseFromLibrary)
         )
-//        Divider(color = Color.LightGray, thickness = 0.5.dp)
-//        Button(
-//            modifier = Modifier.clickableWithoutRipple { onUseDivoPhoto() },
-//            text = stringResource(R.string.UseDivoPhoto)
-//        )
+        Divider(color = Color.LightGray, thickness = 0.5.dp)
+        Button(
+            modifier = Modifier.clickableWithoutRipple { onUseDivoPhoto() },
+            text = stringResource(R.string.UseDivoPhoto)
+        )
 
         if (isSearchEnabled) {
             SearchContent(

@@ -2227,4 +2227,5 @@ crie um novo.</string>
     <string name="StoryCameraHint">Toque em %s para publicar uma história para seus contatos.</string>
     <string name="ThereAreNoImagesYet">AINDA NÃO HÁ IMAGENS</string>
     <string name="ThereAreNoVideosYet">AINDA NÃO HÁ VÍDEOS</string>
+    <string name="NoPhotosYetBottomSheet">Ainda sem fotos</string>
 </resources>

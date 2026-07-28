@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -104,6 +105,20 @@ fun ProfilePhotoSourceBottomSheet(
 
             if (isLoading) {
                 LottieProgressIndicator(modifier = Modifier.padding(32.dp).size(40.dp))
+            } else if (items.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().height(250.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.NoPhotosYetBottomSheet),
+                        style = AppTheme.typography.helveticaNeueLtCom,
+                        fontSize = 24.sp,
+                        color = AppTheme.colors.textPrimary.copy(alpha = 0.8f),
+                        modifier = Modifier.padding(vertical = 32.dp, horizontal = 16.dp)
+                    )
+                }
+                Spacer(Modifier.height(20.dp))
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
