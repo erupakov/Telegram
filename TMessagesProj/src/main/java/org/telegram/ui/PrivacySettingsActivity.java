@@ -706,13 +706,13 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         rowCount = 0;
 
         securitySectionRow = rowCount++;
-        passwordRow = rowCount++;
+        passwordRow = -1; //DIVO rowCount++;
         autoDeleteMesages = rowCount++;
-        passcodeRow = rowCount++;
+        passcodeRow = -1; //DIVO rowCount++;
         if (getMessagesController().config.settingsDisplayPasskeys.get() && Build.VERSION.SDK_INT >= 28 && BuildVars.SUPPORTS_PASSKEYS) {
             passkeysRow = rowCount++;
         }
-        if (currentPassword != null ? currentPassword.login_email_pattern != null : SharedConfig.hasEmailLogin) {
+        if (false /*//DIVO currentPassword != null ? currentPassword.login_email_pattern != null : SharedConfig.hasEmailLogin */) {
             emailLoginRow = rowCount++;
         } else {
             emailLoginRow = -1;
@@ -744,7 +744,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
             noncontactsRow = -1;
         }
         birthdayRow = rowCount++;
-        giftsRow = rowCount++;
+        giftsRow = -1; //DIVO rowCount++;
         bioRow = rowCount++;
         // DIVO: hide Saved Music
         musicRow = -1; // rowCount++;

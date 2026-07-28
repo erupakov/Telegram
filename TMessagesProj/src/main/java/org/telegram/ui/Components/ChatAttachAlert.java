@@ -1006,7 +1006,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     private boolean videosEnabled = true;
     private boolean musicEnabled = true;
     private boolean pollsEnabled = true;
-    private boolean todoEnabled = true;
+    private boolean todoEnabled = false; //DIVO
     private boolean plainTextEnabled = true;
 
     protected int maxSelectedPhotos = -1;
@@ -5441,12 +5441,12 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 videosEnabled = ChatObject.canSendVideo(chat);
                 musicEnabled = ChatObject.canSendMusic(chat);
                 pollsEnabled = ChatObject.canSendPolls(chat);
-                todoEnabled = !ChatObject.isChannelAndNotMegaGroup(chat) && ChatObject.canSendPolls(chat);
+                todoEnabled = false; ////DIVO !ChatObject.isChannelAndNotMegaGroup(chat) && ChatObject.canSendPolls(chat);
                 plainTextEnabled = ChatObject.canSendPlain(chat);
                 documentsEnabled = ChatObject.canSendDocument(chat);
             } else {
                 pollsEnabled = UserObject.isBot(user) || UserObject.isUserSelf(user);
-                todoEnabled = !(baseFragment instanceof ChatActivity) || ((ChatActivity) baseFragment).getCurrentEncryptedChat() == null;
+                todoEnabled = false; ////DIVO !(baseFragment instanceof ChatActivity) || ((ChatActivity) baseFragment).getCurrentEncryptedChat() == null;
             }
         }
         if (!(baseFragment instanceof ChatActivity && avatarPicker != 2)) {

@@ -1537,6 +1537,8 @@ public class ProfileGiftsContainer extends FrameLayout implements NotificationCe
 
     public void updateButton() {
         if (viewPager == null) return;
+        buttonContainer.setVisibility(View.GONE); //DIVO
+        if (true) return; //DIVO
         float ty;
         if (viewPager.getCurrentPosition() == viewPager.getNextPosition()) {
             final float hide = shouldHideButton(viewPager.getCurrentPosition()) ? 1.0f : 0.0f;
