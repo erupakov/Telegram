@@ -22,7 +22,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.arch.DivoLocaleProvider
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -41,7 +42,7 @@ fun CancelEventConfirmationDialog(
         containerColor = Color.Transparent,
         dragHandle = null
     ) {
-        org.telegram.divo.style.DivoLocaleProvider {
+        DivoLocaleProvider {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                 Column(
                     modifier = Modifier

@@ -24,6 +24,7 @@
     <string name="ButtonEdit">Editar</string>
     <string name="ButtonDelete">Excluir</string>
     <string name="ButtonContinue">Continuar</string>
+    <string name="OnboardingSkip">Pular</string>
     <string name="ButtonDone">Concluído</string>
     <string name="RetryLabel">Tentar novamente</string>
     <string name="YourPhoneLabel">Seu telefone</string>
@@ -2220,4 +2221,10 @@ crie um novo.</string>
     <string name="DeleteProfileTitle">Excluir perfil</string>
     <string name="DeleteProfileDescription">Tem certeza de que deseja excluir seu perfil? Esta ação não pode ser desfeita.</string>
     <string name="DeleteProfileConfirm">Excluir</string>
+    <string name="StoryCameraSavedDualFrontHint">Toque aqui para desativar a câmera frontal</string>
+    <string name="StoryCameraHint2">Tire fotos ou grave vídeos para compartilhar com todos os seus contatos ou amigos próximos de uma só vez.</string>
+    <string name="PermissionFSILockscreen">Por favor, permita que o Divo Global seja exibido na tela de bloqueio para que as chamadas funcionem corretamente.</string>
+    <string name="StoryCameraHint">Toque em %s para publicar uma história para seus contatos.</string>
+    <string name="ThereAreNoImagesYet">AINDA NÃO HÁ IMAGENS</string>
+    <string name="ThereAreNoVideosYet">AINDA NÃO HÁ VÍDEOS</string>
 </resources>

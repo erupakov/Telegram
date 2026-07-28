@@ -30,17 +30,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.screen.event_create.components.FirstPage
 import org.telegram.divo.screen.event_create.components.SecondPage
 import org.telegram.divo.screen.event_create.components.ThirdPage
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
-
 
 @Composable
 fun CreateEventScreen(
@@ -192,13 +191,13 @@ fun CreateEventScreenView(
                         .align(Alignment.BottomCenter),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    UIButtonNew(
+                    UIButton(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(R.string.SaveChanges),
                         enabled = isActionEnabled && !state.isUploading,
                         onClick = { onIntent(Intent.OnPublishClicked) }
                     )
-                    UIButtonNew(
+                    UIButton(
                         modifier = Modifier.fillMaxWidth(),
                         text = stringResource(R.string.DiscardChanges),
                         background = AppTheme.colors.buttonSecondary,
@@ -206,7 +205,7 @@ fun CreateEventScreenView(
                     )
                 }
             } else {
-                UIButtonNew(
+                UIButton(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)
@@ -214,7 +213,7 @@ fun CreateEventScreenView(
                     text = if (isLastPage) stringResource(R.string.EventPreview) else stringResource(R.string.EventContinue),
                     enabled = isActionEnabled,
                     onClick = {
-                        if (!isActionEnabled) return@UIButtonNew
+                        if (!isActionEnabled) return@UIButton
                         if (pagerState.currentPage < pagerState.pageCount - 1) {
                             scope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)

@@ -24,6 +24,7 @@
     <string name="ButtonEdit">编辑</string>
     <string name="ButtonDelete">删除</string>
     <string name="ButtonContinue">继续</string>
+    <string name="OnboardingSkip">跳过</string>
     <string name="ButtonDone">完成</string>
     <string name="RetryLabel">重试</string>
     <string name="YourPhoneLabel">您的手机</string>
@@ -910,6 +911,12 @@
     <string name="NotificationsPermissionAlert2">了解您在群组中何时被提及</string>
     <string name="NotificationsPermissionAlert3">将特定聊天和聊天类型静音</string>
     <string name="NotificationsPermissionSettings">打开设置</string>
+    <string name="StoryCameraSavedDualFrontHint">点击此处禁用自拍相机</string>
+    <string name="StoryCameraHint2">拍摄照片或视频，一次性与您的所有联系人或密友分享。</string>
+    <string name="PermissionFSILockscreen">请允许 Divo Global 显示在锁屏界面，以便通话正常工作。</string>
+    <string name="StoryCameraHint">点击 %s 为您的联系人发布快拍。</string>
+    <string name="ThereAreNoImagesYet">尚无图片</string>
+    <string name="ThereAreNoVideosYet">尚无视频</string>
     <string name="DivoEnterYourWebsite">输入您的网站</string>
     <string name="DivoSaving">正在保存...</string>
     <string name="DeleteProfile">删除个人资料</string>

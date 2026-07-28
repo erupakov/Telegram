@@ -32,13 +32,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.SnackbarEvent.Success
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.components.items.ParameterBottomSheet
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.common.controllers.SnackbarEvent.Success
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.components.bottomsheets.ParameterBottomSheet
 import org.telegram.divo.components.items.ParameterItem
 import org.telegram.divo.components.items.ParametersBlock
 import org.telegram.divo.components.items.ParametersType
@@ -82,7 +82,6 @@ fun YourParametersScreen(
             when (effect) {
                 is YourParametersEffect.SaveSuccess -> {
                     snackbarState.show(Success(parametersSavedText))
-                    onSaved()
                 }
                 is YourParametersEffect.NavigateBack -> {
                     onBack()
@@ -219,7 +218,7 @@ fun YourParametersScreen(
                             Spacer(Modifier.height(96.dp))
                         }
 
-                        UIButtonNew(
+                        UIButton(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .align(Alignment.BottomCenter)

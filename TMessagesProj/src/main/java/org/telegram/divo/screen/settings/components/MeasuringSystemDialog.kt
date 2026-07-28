@@ -25,11 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import org.telegram.divo.common.DivoSettings
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.RadioCircle
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.inputs.RadioCircle
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.style.AppTheme
-import org.telegram.divo.style.DivoLocaleProvider
+import org.telegram.divo.common.arch.DivoLocaleProvider
 import org.telegram.messenger.R
 
 @Composable
@@ -103,7 +103,7 @@ fun MeasuringSystemDialog(
                     }
 
                     Spacer(modifier = Modifier.height(28.dp))
-                    UIButtonNew(
+                    UIButton(
                         text = stringResource(R.string.ButtonApply),
                         height = 46.dp,
                         modifier = Modifier.fillMaxWidth(),

@@ -5,13 +5,8 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.telegram.divo.dal.network.DivoApiConfig
 import java.io.File
-import java.io.FileOutputStream
-import java.net.URL
 
 enum class DivoShareType(val pathSegment: String) {
     PROFILE("profile"),
@@ -43,6 +38,8 @@ object DivoSharingHelper {
     ) {
         val shareUrl = type.buildUrl(id)
         val textBody = "$customMessage\n$shareUrl"
+        
+        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ContentShared(type.name.lowercase(), id?.toLong() ?: -1L))
 
         openShareSheet(context, textBody, null)
 //        if (imageUrl.isNullOrBlank()) {

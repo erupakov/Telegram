@@ -1,13 +1,13 @@
 package org.telegram.divo.screen.event_list
 
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.EventType
-import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.screen.search.LocalCity
 
 data class EventSearchFilters(
@@ -42,6 +42,20 @@ data class EventSearchFilters(
     val hasAnyFilterOrQuery: Boolean get() = hasActiveFilters || query.isNotBlank()
 
     val typeIds: List<Int>? get() = selectedEventTypes.map { it.id }.ifEmpty { null }
+
+    fun toActiveFiltersString(): String {
+        val parts = mutableListOf<String>()
+        if (selectedEventTypes.isNotEmpty()) parts.add("types")
+        if (city != null) parts.add("city")
+        if (paidOnly) parts.add("paid_only")
+        if (ageFrom != null || ageTo != null) parts.add("age")
+        if (blockParams.any { it.value.isNotBlank() }) parts.add("parameters")
+        if (hairLength.value.isNotBlank()) parts.add("hair_length")
+        if (hairColor.value.isNotBlank()) parts.add("hair_color")
+        if (eyeColor.value.isNotBlank()) parts.add("eye_color")
+        if (skinColor.value.isNotBlank()) parts.add("skin_color")
+        return parts.joinToString(",")
+    }
 }
 
 fun getDefaultEventBlockParams() = listOf(

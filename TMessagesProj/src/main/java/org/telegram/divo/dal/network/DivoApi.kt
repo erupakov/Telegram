@@ -20,6 +20,8 @@ import org.telegram.divo.dal.repository.PaymentRepository
 import org.telegram.divo.dal.repository.PublicationRepository
 import org.telegram.divo.dal.repository.UserRepository
 import org.telegram.divo.dal.repository.WorkHistoryRepository
+import org.telegram.divo.dal.utils.AccessTokenProvider
+import org.telegram.divo.dal.utils.SharedPrefsAccessTokenProvider
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.UserConfig
 import retrofit2.Retrofit

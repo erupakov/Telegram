@@ -1,12 +1,11 @@
 package org.telegram.divo.usecase
 
-import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
+import org.telegram.divo.common.arch.OffsetPaginator
+import org.telegram.divo.common.arch.PaginatedResult
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.dal.repository.PublicationRepository
-import org.telegram.divo.entity.Publication
 
 class GetUserVideosUseCase(
     private val userId: Int,

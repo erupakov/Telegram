@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.profile.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,11 +43,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.toEventDisplayDate
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.entity.Event
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -58,6 +60,7 @@ fun EventsColumn(
     isLoading: Boolean,
     showBackButton: Boolean,
     isLoadingMore: Boolean,
+    transitionProgress: Float = 1f,
     topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onEventClicked: (Int) -> Unit,
@@ -85,6 +88,8 @@ fun EventsColumn(
     if (events.isEmpty()) {
         EmptyEvent(
             isOwnProfile = isOwnProfile,
+            transitionProgress = transitionProgress,
+            topPadding = topPadding,
             bottomPadding = bottomPadding,
             onClick = onEventCreate
         )
@@ -213,7 +218,7 @@ private fun EventItem(
                     )
                 }
             } else {
-                UIButtonNew(
+                UIButton(
                     modifier = Modifier
                         .height(32.dp),
                     text = stringResource(R.string.ButtonApply),
@@ -230,22 +235,29 @@ private fun EventItem(
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun EmptyEvent(
     isOwnProfile: Boolean,
+    transitionProgress: Float,
+    topPadding: Dp,
     bottomPadding: Dp,
     onClick: () -> Unit = {}
 ) {
-    Box(
+    androidx.compose.foundation.layout.BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .background(AppTheme.colors.backgroundLight)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.TopCenter
     ) {
+        val startOffset = topPadding + 16.dp
+        val endOffset = maxHeight / 2 - 100.dp
+        val currentOffset = startOffset + (endOffset - startOffset) * transitionProgress
+
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = bottomPadding + 56.dp),
+                .offset(y = currentOffset),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -285,7 +297,7 @@ private fun EmptyEvent(
         }
 
         if (isOwnProfile) {
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = bottomPadding)

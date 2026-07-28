@@ -5,15 +5,17 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.arch.OffsetPaginator
+import org.telegram.divo.common.arch.PaginatedResult
 import org.telegram.divo.common.utils.ImageCacheHelper
 import org.telegram.divo.dal.dto.face.SimilarFaceDto
 import org.telegram.divo.dal.network.DivoApi
@@ -60,7 +62,10 @@ class FaceSearchViewModel(
                 }
             }
             is Intent.OnChangePhoto -> analyzeImage(intent.uri)
-            Intent.OnFindClicked -> performSearch()
+            Intent.OnFindClicked -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceSearchFindTapped())
+                performSearch()
+            }
             Intent.OnFindProfilesClicked -> sendEffect(NavigateToSearch)
             is Intent.OnFaceSelected -> setState { copy(selectedFaceIndex = intent.index) }
             Intent.OnLoadMore -> loadMore()
@@ -178,6 +183,8 @@ class FaceSearchViewModel(
                 val currentState = state.value
                 val faceIndex = currentState.selectedFaceIndex ?: 0
 
+                org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.FaceSearchStarted())
+
                 val result = DivoApi.faceRecognitionRepository.search(
                     file = file,
                     kRatio = 0.3,
@@ -188,6 +195,7 @@ class FaceSearchViewModel(
                 when (result) {
                     is DivoResult.Success -> {
                         val response = result.value
+                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.FaceSearchSuccess(response.results?.size ?: 0))
 
                         var fx: Float? = null
                         var fy: Float? = null

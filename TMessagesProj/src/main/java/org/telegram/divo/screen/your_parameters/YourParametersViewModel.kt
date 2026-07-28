@@ -3,9 +3,9 @@ package org.telegram.divo.screen.your_parameters
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.common.DivoSettings
-import org.telegram.divo.common.MeasuringUnits
+import org.telegram.divo.common.utils.MeasuringUnits
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.dal.network.DivoApi
@@ -123,6 +123,7 @@ class YourParametersViewModel : BaseViewModel<YourParametersViewState, YourParam
                         e.printStackTrace()
                     }
 
+                    org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ParametersUpdated())
                     setState { copy(isSaving = false) }
                     sendEffect(YourParametersEffect.SaveSuccess)
                 }

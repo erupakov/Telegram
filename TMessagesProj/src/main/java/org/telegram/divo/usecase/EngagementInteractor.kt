@@ -2,8 +2,8 @@ package org.telegram.divo.usecase
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
+import org.telegram.divo.common.arch.OffsetPaginator
+import org.telegram.divo.common.arch.PaginatedResult
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage

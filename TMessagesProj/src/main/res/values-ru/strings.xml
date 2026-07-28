@@ -17,6 +17,7 @@
     <string name="ButtonEdit">Редактировать</string>
     <string name="ButtonDelete">Удалить</string>
     <string name="ButtonContinue">Продолжить</string>
+    <string name="OnboardingSkip">Пропустить</string>
     <string name="ButtonDone">Готово</string>
     <string name="RetryLabel">Повторить</string>
     <string name="YourPhoneLabel">Ваш номер телефона</string>
@@ -1213,6 +1214,12 @@
     <string name="NotificationsPermissionAlert2">Узнавайте, когда вас упоминают в группах</string>
     <string name="NotificationsPermissionAlert3">Отключайте звук для определенных чатов и типов чатов</string>
     <string name="NotificationsPermissionSettings">Открыть настройки</string>
+    <string name="StoryCameraSavedDualFrontHint">Нажмите здесь, чтобы отключить селфи-камеру</string>
+    <string name="StoryCameraHint2">Снимайте фото или видео, чтобы поделиться ими со всеми контактами или близкими друзьями сразу.</string>
+    <string name="PermissionFSILockscreen">Пожалуйста, разрешите Divo Global отображаться на экране блокировки для корректной работы звонков.</string>
+    <string name="StoryCameraHint">Нажмите на %s, чтобы опубликовать историю для своих контактов.</string>
+    <string name="ThereAreNoImagesYet">ЕЩЕ НЕТ ФОТО</string>
+    <string name="ThereAreNoVideosYet">ЕЩЕ НЕТ ВИДЕО</string>
     <string name="DivoEnterYourWebsite">Введите ваш веб-сайт</string>
     <string name="DivoSaving">Сохранение...</string>
     <string name="DeleteProfile">Удалить профиль</string>

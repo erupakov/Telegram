@@ -34,12 +34,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.MeasuringUnits
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.labelRes
+import org.telegram.divo.common.utils.MeasuringUnits
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.common.utils.labelRes
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.components.items.ParametersType
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.screen.profile.PhysicalParams
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
@@ -137,7 +137,7 @@ fun AppearanceContent(
 
     val allAvailableItems = if (!isAnyFilled) emptyList() else buildList {
         add(stringResource(R.string.LabelGender) to (params.gender.takeIf { it.isNotEmpty() } ?: "-"))
-        add(stringResource(R.string.LabelAge) to (params.age.takeIf { it.isNotEmpty() }?.formattedAge(context) ?: "-"))
+        add(stringResource(R.string.LabelAge) to (params.age.takeIf { it.isNotEmpty() }?.formattedAge() ?: "-"))
         add(
             stringResource(ParametersType.HEIGHT.labelRes()) to
                 if (params.height > 0) MeasuringUnits.formatStoredNumber(ParametersType.HEIGHT, params.height, storedSystem) else "-"
@@ -314,7 +314,7 @@ fun ProfileInfoEmptyContent(
 
         if (isOwnProfile) {
             Spacer(Modifier.height(10.dp))
-            UIButtonNew(
+            UIButton(
                 text = textButton,
                 height = 36.dp,
                 paddingTop = 1.dp,

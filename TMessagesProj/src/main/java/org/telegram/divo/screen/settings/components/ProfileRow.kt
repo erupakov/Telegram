@@ -20,7 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.components.media.DivoAsyncImage
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R

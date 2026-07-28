@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.telegram.divo.analytics.AnalyticsEvent;
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.FileLog;
 import org.telegram.messenger.LocaleController;
@@ -170,6 +172,7 @@ public class TermsOfServiceView extends FrameLayout {
     }
 
     private void accept() {
+        DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.TermsAccepted()); // DIVO
         delegate.onAcceptTerms(currentAccount);
         TLRPC.TL_help_acceptTermsOfService req = new TLRPC.TL_help_acceptTermsOfService();
         req.id = currentTos.id;

@@ -46,14 +46,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.toCountryFlagEmoji
 import org.telegram.divo.common.utils.toShortString
-import org.telegram.divo.components.DivoAvatar
-import org.telegram.divo.components.DivoChip
-import org.telegram.divo.components.RoundedGlassContainer
-import org.telegram.divo.components.shimmer
+import org.telegram.divo.components.media.DivoAvatar
+import org.telegram.divo.components.inputs.DivoChip
+import org.telegram.divo.components.inputs.RoundedGlassContainer
+import org.telegram.divo.common.compose.shimmer
 import org.telegram.divo.entity.FeedItem
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.style.AppTheme
@@ -65,7 +65,7 @@ fun ModelPage(
     feed: FeedItem,
     cardHeight: Dp,
     onClick: (Int) -> Unit,
-    onPhotoClicked: (List<GalleryItem>, Int) -> Unit,
+    onPhotoClicked: (List<GalleryItem>, Int, Int) -> Unit,
     onLikeClick: (Int, Boolean) -> Unit,
     onBookmarkClick: (Int) -> Unit,
 ) {
@@ -282,7 +282,7 @@ fun ModelPage(
                     feed = feed,
                     onPhotoClicked = {
                         val items = feed.files.map { GalleryItem(it.order, it.url, false) }
-                        onPhotoClicked(items, it)
+                        onPhotoClicked(items, it, feed.user.id)
                     }
                 )
             }

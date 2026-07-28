@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.telegram.divo.components.shimmer
+import org.telegram.divo.common.compose.shimmer
 import org.telegram.divo.style.AppTheme
 
 @Composable

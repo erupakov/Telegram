@@ -4,7 +4,9 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.dal.db.entity.FaceRecognitionEntity
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
@@ -16,6 +18,7 @@ class FaceSearchHistoryViewModel : BaseViewModel<State, Intent, Effect>() {
     private var currentUserId: Int? = null
     private var allItems = emptyList<FaceRecognitionEntity>()
     private var loadedCount = PAGE_SIZE
+    private var hasLoggedScreenOpened = false
 
     override fun handleIntent(intent: Intent) {
         when (intent) {
@@ -24,6 +27,7 @@ class FaceSearchHistoryViewModel : BaseViewModel<State, Intent, Effect>() {
                 viewModelScope.launch {
                     val userId = currentUserId ?: return@launch
                     DivoApi.faceRecognitionRepository.clearHistory(userId)
+                    DivoAnalytics.logEvent(AnalyticsEvent.FaceSearchHistoryCleared())
                     sendEffect(Effect.NavigateBack)
                 }
             }
@@ -56,6 +60,13 @@ class FaceSearchHistoryViewModel : BaseViewModel<State, Intent, Effect>() {
                     allItems = items
                     publishVisibleItems()
                     setState { copy(isLoading = false) }
+                    
+                    if (!hasLoggedScreenOpened) {
+                        hasLoggedScreenOpened = true
+                        DivoAnalytics.logEvent(
+                            AnalyticsEvent.FaceSearchHistoryOpened()
+                        )
+                    }
                 }
             }
         }

@@ -3,7 +3,10 @@ package org.telegram.divo.screen.event_create
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.utils.MeasuringUnits
 import org.telegram.divo.common.utils.uriToFile
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
@@ -12,6 +15,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.EventDetails
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.entity.UploadedFile
 import org.telegram.messenger.ApplicationLoader
 
@@ -61,7 +65,10 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             Intent.Load -> {}
             is Intent.OnInitEdit -> initEditMode(intent.eventId)
             Intent.OnBackClicked -> sendEffect(Effect.NavigateBack)
-            Intent.OnPreviewClicked -> sendEffect(Effect.NavigateToPreview)
+            Intent.OnPreviewClicked -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.EventCreatePreviewOpened())
+                sendEffect(Effect.NavigateToPreview)
+            }
             Intent.OnEditFromPreviewClicked -> setState { copy(resetPagerToFirstPage = true) }
             Intent.OnFirstPageReached -> setState { copy(resetPagerToFirstPage = false) }
             Intent.OnPublishClicked -> publishEvent()
@@ -159,10 +166,10 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
         val gallery = sortedFiles.map { Uri.parse(it.fullUrl) }
 
         val attrs = event.modelAttributes
-        val storedSystem = org.telegram.divo.common.MeasuringUnits.resolveStoredSystem(attrs?.measuringSystem)
+        val storedSystem = MeasuringUnits.resolveStoredSystem(attrs?.measuringSystem)
         fun rangeToStr(type: ParametersType, from: Int?, to: Int?): String {
             if (from == null && to == null) return ""
-            return org.telegram.divo.common.MeasuringUnits.formatStoredRange(type, from, to, storedSystem)
+            return MeasuringUnits.formatStoredRange(type, from, to, storedSystem)
         }
 
         val roleValue = attrs?.roles?.joinToString(", ") ?: ""
@@ -254,6 +261,11 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
                     DivoApi.eventRepository.updateEvent(eventId, request)
                 } ?: DivoApi.eventRepository.createEvent(request)
                 if (result is DivoResult.Success) {
+                    if (state.value.editingEventId != null) {
+                        DivoAnalytics.logEvent(AnalyticsEvent.EventEdited(state.value.editingEventId!!.toLong()))
+                    } else {
+                        DivoAnalytics.logEvent(AnalyticsEvent.EventCreateSuccess(result.value.id.toLong()))
+                    }
                     sendEffect(Effect.EventPublished)
                     setState { copy(isUploading = false) }
                 } else {

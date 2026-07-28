@@ -23,8 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.components.StatusBarIconColorEffect
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.screen.reg_select_role.RoleSelectionEffect
 import org.telegram.divo.screen.reg_select_role.RoleSelectionIntent
 import org.telegram.divo.screen.reg_select_role.RoleSelectionViewModel
@@ -85,13 +85,13 @@ fun QuizResultScreen(
                 color = AppTheme.colors.textColor
             )
             Spacer(Modifier.height(32.dp))
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.RoleResultSoundsRight),
                 onClick = { state.subRole?.let { onContinue(it) } }
             )
             Spacer(Modifier.height(16.dp))
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.RoleResultChooseDifferentRole),
                 background = AppTheme.colors.buttonSecondary,

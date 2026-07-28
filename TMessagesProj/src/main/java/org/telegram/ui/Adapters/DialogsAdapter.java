@@ -30,6 +30,8 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import org.telegram.divo.analytics.AnalyticsEvent;
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
 import org.telegram.messenger.ChatObject;
@@ -1171,6 +1173,7 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
     public void openStory(DialogCell dialogCell, Runnable onDone) {
         MessagesController messagesController = MessagesController.getInstance(currentAccount);
         if (MessagesController.getInstance(currentAccount).getStoriesController().hasStories(dialogCell.getDialogId())) {
+            DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.StoryOpened("chat_list"));
             parentFragment.getOrCreateStoryViewer().doOnAnimationReady(onDone);
             parentFragment.getOrCreateStoryViewer().open(parentFragment.getContext(), dialogCell.getDialogId(), StoriesListPlaceProvider.of((RecyclerListView) dialogCell.getParent()));
             return;

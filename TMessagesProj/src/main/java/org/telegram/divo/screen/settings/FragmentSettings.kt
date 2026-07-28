@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.messenger.UserConfig
-import org.telegram.divo.style.setDivoContent
+import org.telegram.divo.common.arch.setDivoContent
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.ChangeUsernameActivity
 import org.telegram.ui.ChatActivity
@@ -31,7 +31,12 @@ import org.telegram.ui.Components.LayoutHelper
 import android.widget.FrameLayout
 import android.view.Gravity
 import android.view.ViewGroup
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.dal.network.DivoApi
 import org.telegram.messenger.MessagesController
+import org.telegram.tgnet.TLRPC
+import org.telegram.ui.ChannelCreateActivity
 
 class FragmentSettings : BaseFragment(), NotificationCenter.NotificationCenterDelegate {
 
@@ -102,24 +107,24 @@ class FragmentSettings : BaseFragment(), NotificationCenter.NotificationCenterDe
                         profileNavController = navController
                     },
                     onNavigateToChat = { tgId, tgHash, tgUsername ->
-                        val currentAccount = org.telegram.messenger.UserConfig.selectedAccount
-                        var user = org.telegram.messenger.MessagesController.getInstance(currentAccount).getUser(tgId)
+                        val currentAccount = UserConfig.selectedAccount
+                        var user = MessagesController.getInstance(currentAccount).getUser(tgId)
                         if (user == null) {
-                            user = org.telegram.tgnet.TLRPC.TL_user()
+                            user = TLRPC.TL_user()
                             user.id = tgId
                             user.first_name = tgUsername ?: "User"
                             user.username = tgUsername
                             user.access_hash = tgHash ?: 0L
-                            org.telegram.messenger.MessagesController.getInstance(currentAccount).putUser(user, false)
+                            MessagesController.getInstance(currentAccount).putUser(user, false)
                         }
-                        val args = android.os.Bundle()
+                        val args = Bundle()
                         args.putLong("user_id", tgId)
-                        presentFragment(org.telegram.ui.ChatActivity(args))
+                        presentFragment(ChatActivity(args))
                     },
                     onNavigateToCreateChannel = {
-                        val args = android.os.Bundle()
+                        val args = Bundle()
                         args.putInt("step", 0)
-                        presentFragment(org.telegram.ui.ChannelCreateActivity(args))
+                        presentFragment(ChannelCreateActivity(args))
                     },
                     navigateToLogout = {
                         val activity = parentActivity
@@ -159,7 +164,11 @@ class FragmentSettings : BaseFragment(), NotificationCenter.NotificationCenterDe
             val botBlock = if (user != null && user.bot) args[3] as Boolean else false
 
             val deleteRunnable = Runnable {
+                val currentUserId = DivoApi.userRepository.currentUserFlow.value?.id ?: 0
                 if (chat != null) {
+                    if (ChatObject.isChannel(chat)) {
+                        DivoAnalytics.logEvent(AnalyticsEvent.ChannelDeleteSuccess(currentUserId, dialogId))
+                    }
                     if (ChatObject.isNotInChat(chat)) {
                         MessagesController.getInstance(currentAccount).deleteDialog(dialogId, 0, revoke)
                     } else {

@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.navigation.NavController
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
-import org.telegram.divo.style.setDivoContent
+import org.telegram.divo.common.arch.setDivoContent
 import org.telegram.ui.ActionBar.BaseFragment
 import org.telegram.ui.MainTabsActivityController
 

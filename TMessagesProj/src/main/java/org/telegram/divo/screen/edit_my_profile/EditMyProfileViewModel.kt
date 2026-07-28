@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.screen.search.LocalCity
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -19,6 +21,7 @@ import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLRPC
 import java.io.File
+import kotlin.collections.find
 
 class EditMyProfileViewModel(
     private val isModel: Boolean
@@ -121,17 +124,20 @@ class EditMyProfileViewModel(
                     )
                 } else {
                     val agency = userInfo.agency ?: org.telegram.divo.entity.Agency()
+                    val updatedAgency = agency.copy(
+                        description = aboutRaw,
+                        title = fullNameStr,
+                        photo = if (uploadedUuid.isNotEmpty()) org.telegram.divo.entity.Photo(photoId = 0L, fileUuid = uploadedUuid) else agency.photo
+                    )
                     DivoApi.userRepository.updateAgency(
-                        agency = agency.copy(
-                            description = aboutRaw,
-                            title = fullNameStr,
-                            photo = if (uploadedUuid.isNotEmpty()) org.telegram.divo.entity.Photo(photoId = 0L, fileUuid = uploadedUuid) else agency.photo
-                        ),
-                        // For agency we might also want to update the user's city in userInfo
+                        agency = updatedAgency
                     )
                     // The agency update doesn't take user city directly, it updates the agency. 
                     // However we should probably update user Profile to save the city.
                     DivoApi.userRepository.updateProfile(userInfo.copy(
+                        agency = updatedAgency,
+                        fullName = fullNameStr,
+                        avatarUuid = uploadedUuid,
                         city = state.value.city?.let {
                             val isNewCity = it.id != userInfo.city?.id?.toLong()
                             org.telegram.divo.entity.City(id = if (isNewCity) 0 else it.id.toInt(), name = it.name, countryCode = it.countryCode)
@@ -148,6 +154,7 @@ class EditMyProfileViewModel(
                             lastName = lNameRaw.trim()
                         )
 
+                        DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditSaved())
                         setState { copy(isSaved = false) }
                         sendEffect(Effect.SaveSuccess)
                     }
@@ -176,11 +183,7 @@ class EditMyProfileViewModel(
     private val currentAccount: Int = UserConfig.selectedAccount
 
     init {
-        val uc = UserConfig.getInstance(currentAccount)
-        val mc = MessagesController.getInstance(currentAccount)
-
-        val me = uc.currentUser
-        val userFull = mc.getUserFull(uc.clientUserId)
+        DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOpened())
     }
 
     override fun handleIntent(intent: EditMyProfileIntent) {
@@ -269,6 +272,7 @@ class EditMyProfileViewModel(
                     }
 
                     if (response is TLRPC.TL_photos_photo) {
+                        DivoAnalytics.logEvent(AnalyticsEvent.ProfileAvatarUploaded())
                         MessagesController
                             .getInstance(currentAccount)
                             .putUsers(response.users, false)

@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -25,18 +26,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.coremedia.iso.boxes.Box
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.SnackbarEvent
-import org.telegram.divo.common.clickableWithoutRipple
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.controllers.SnackbarEvent
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.common.utils.MeasuringUnits
 import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.common.utils.toEventDisplayDate
-import org.telegram.divo.components.*
+import org.telegram.divo.components.inputs.DivoChip
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.components.items.ParametersType
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.media.TelegramPhotoBackground
+import org.telegram.divo.components.navigation.TransparentToolBarBackground
+import org.telegram.divo.components.navigation.TransparentToolBarContent
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.style.AppTheme
@@ -120,7 +127,7 @@ fun ApplyConfirmationScreen(
                         style = AppTheme.typography.helveticaNeueLtCom,
                         fontSize = 20.sp,
                         lineHeight = 20.sp,
-                        color = androidx.compose.ui.graphics.lerp(Color.White, AppTheme.colors.textPrimary, transitionProgress),
+                        color = lerp(Color.White, AppTheme.colors.textPrimary, transitionProgress),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -189,11 +196,15 @@ fun ApplyConfirmationScreen(
                                     ) {
                                         if (!event.type.isNullOrEmpty()) {
                                             DivoChip(
-                                                modifier = Modifier.height(24.dp).weight(1f, fill = false),
+                                                modifier = Modifier.height(24.dp)
+                                                    .weight(1f, fill = false),
                                                 text = event.type,
                                                 background = AppTheme.colors.accentOrange,
                                                 textColor = Color.White,
-                                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
+                                                contentPadding = PaddingValues(
+                                                    horizontal = 8.dp,
+                                                    vertical = 2.dp
+                                                )
                                             )
                                         }
                                         var subtitle = event.date?.toEventDisplayDate(
@@ -380,7 +391,7 @@ private fun formatRange(from: Int?, to: Int?, unit: String? = null): String {
 private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
     val attrs = event.modelAttributes ?: return
     val appearance = userInfo?.model?.appearance
-    val isImperial = org.telegram.divo.common.MeasuringUnits.isImperial()
+    val isImperial = MeasuringUnits.isImperial()
 
     val rows = mutableListOf<ParamRowData>()
 
@@ -412,8 +423,8 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.heightFrom != null || attrs.heightTo != null) {
         val userHeight = appearance?.height
-        val displayFrom = attrs.heightFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.HEIGHT, it) else it }
-        val displayTo = attrs.heightTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.HEIGHT, it) else it }
+        val displayFrom = attrs.heightFrom?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.HEIGHT, it) else it }
+        val displayTo = attrs.heightTo?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.HEIGHT, it) else it }
         val reqHeightStr = formatRange(displayFrom, displayTo, if (isImperial) "in" else "cm")
         val isMatch = userHeight != null && 
             (attrs.heightFrom == null || userHeight >= attrs.heightFrom) && 
@@ -424,8 +435,8 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.weightFrom != null || attrs.weightTo != null) {
         val userWeight = appearance?.weight
-        val displayFrom = attrs.weightFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.WEIGHT, it) else it }
-        val displayTo = attrs.weightTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.WEIGHT, it) else it }
+        val displayFrom = attrs.weightFrom?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.WEIGHT, it) else it }
+        val displayTo = attrs.weightTo?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.WEIGHT, it) else it }
         val reqWeightStr = formatRange(displayFrom, displayTo, if (isImperial) "lb" else "kg")
         val isMatch = userWeight != null && 
             (attrs.weightFrom == null || userWeight >= attrs.weightFrom) && 
@@ -436,8 +447,8 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.breastSizeFrom != null || attrs.breastSizeTo != null) {
         val userBreastSize = appearance?.breastSize?.toFloatOrNull()
-        val displayFrom = attrs.breastSizeFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.BREAST_SIZE, it) else it }
-        val displayTo = attrs.breastSizeTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.BREAST_SIZE, it) else it }
+        val displayFrom = attrs.breastSizeFrom?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.BREAST_SIZE, it) else it }
+        val displayTo = attrs.breastSizeTo?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.BREAST_SIZE, it) else it }
         val reqBreastSizeStr = formatRange(displayFrom, displayTo, if (isImperial) "in" else "cm")
         val isMatch = userBreastSize != null && 
             (attrs.breastSizeFrom == null || userBreastSize >= attrs.breastSizeFrom) && 
@@ -448,8 +459,8 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.waistFrom != null || attrs.waistTo != null) {
         val userWaist = appearance?.waist
-        val displayFrom = attrs.waistFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.WAIST, it) else it }
-        val displayTo = attrs.waistTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.WAIST, it) else it }
+        val displayFrom = attrs.waistFrom?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.WAIST, it) else it }
+        val displayTo = attrs.waistTo?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.WAIST, it) else it }
         val reqWaistStr = formatRange(displayFrom, displayTo, if (isImperial) "in" else "cm")
         val isMatch = userWaist != null && 
             (attrs.waistFrom == null || userWaist >= attrs.waistFrom) && 
@@ -460,8 +471,8 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.hipsFrom != null || attrs.hipsTo != null) {
         val userHips = appearance?.hips
-        val displayFrom = attrs.hipsFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.HIPS, it) else it }
-        val displayTo = attrs.hipsTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.HIPS, it) else it }
+        val displayFrom = attrs.hipsFrom?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.HIPS, it) else it }
+        val displayTo = attrs.hipsTo?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.HIPS, it) else it }
         val reqHipsStr = formatRange(displayFrom, displayTo, if (isImperial) "in" else "cm")
         val isMatch = userHips != null && 
             (attrs.hipsFrom == null || userHips >= attrs.hipsFrom) && 
@@ -472,8 +483,8 @@ private fun ParametersCard(event: EventDetails, userInfo: UserInfo?) {
 
     if (attrs.shoesSizeFrom != null || attrs.shoesSizeTo != null) {
         val userShoesSize = appearance?.shoesSize
-        val displayFrom = attrs.shoesSizeFrom?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.SHOE_SIZE, it) else it }
-        val displayTo = attrs.shoesSizeTo?.let { if (isImperial) org.telegram.divo.common.MeasuringUnits.toDisplayValue(ParametersType.SHOE_SIZE, it) else it }
+        val displayFrom = attrs.shoesSizeFrom?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.SHOE_SIZE, it) else it }
+        val displayTo = attrs.shoesSizeTo?.let { if (isImperial) MeasuringUnits.toDisplayValue(ParametersType.SHOE_SIZE, it) else it }
         val reqShoesSizeStr = formatRange(displayFrom, displayTo, if (isImperial) "US" else "EU")
         val isMatch = userShoesSize != null && 
             (attrs.shoesSizeFrom == null || userShoesSize >= attrs.shoesSizeFrom) && 
@@ -608,14 +619,14 @@ private fun ApplyBottomBar(
             .navigationBarsPadding(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        UIButtonNew(
+        UIButton(
             modifier = Modifier.weight(1f),
             text = stringResource(R.string.Cancel),
             background = AppTheme.colors.buttonSecondary,
             onClick = onCancel,
             enabled = !isSubmitting
         )
-        UIButtonNew(
+        UIButton(
             modifier = Modifier.weight(1f),
             text = stringResource(R.string.SubmitButton),
             background = AppTheme.colors.accentOrange,

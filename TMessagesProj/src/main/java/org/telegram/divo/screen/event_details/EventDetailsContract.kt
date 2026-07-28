@@ -1,8 +1,8 @@
 package org.telegram.divo.screen.event_details
 
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
 import org.telegram.divo.entity.Event
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.screen.gallery.GalleryItem
@@ -27,6 +27,7 @@ sealed class EventDetailsIntent : ViewIntent {
     data object OnLoad : EventDetailsIntent()
     data object OnSearchClicked : EventDetailsIntent()
     data object OnAddEventClicked : EventDetailsIntent()
+    data object OnMenuClicked : EventDetailsIntent()
     data object OnBackClicked : EventDetailsIntent()
     data object OnEditEventClick : EventDetailsIntent()
     data object OnCloseApplicationsConfirmed : EventDetailsIntent()
@@ -52,6 +53,6 @@ sealed class EventDetailsEffect : ViewEffect {
     data class NavigateToApplyConfirmation(val eventId: Int) : EventDetailsEffect()
     data class ShowWithdrawConfirmation(val eventId: Int) : EventDetailsEffect()
     data object ApplicationsClosed : EventDetailsEffect()
-    data class ShowError(val message: String) : EventDetailsEffect()
+    data class ShowError(val message: String, val canRetry: Boolean = true) : EventDetailsEffect()
     data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : EventDetailsEffect()
 }

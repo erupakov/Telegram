@@ -36,10 +36,10 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.PlaceholderAvatar
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.media.PlaceholderAvatar
 import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.screen.search_agency.component.SearchSuggestionsLoadingContent
 import org.telegram.divo.style.AppTheme

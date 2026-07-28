@@ -36,6 +36,8 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import org.telegram.divo.analytics.AnalyticsEvent;
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
 import org.telegram.messenger.BotForumHelper;
@@ -181,6 +183,7 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
             StoriesUtilities.AvatarStoryParams params = new StoriesUtilities.AvatarStoryParams(true) {
                 @Override
                 public void openStory(long dialogId, Runnable onDone) {
+                    DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.StoryOpened("chat_details"));
                     baseFragment.getOrCreateStoryViewer().open(getContext(), dialogId, (dialogId1, messageId, storyId, type, holder) -> {
                         holder.crossfadeToAvatarImage = holder.storyImage = imageReceiver;
                         holder.params = params;
@@ -559,6 +562,9 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
 
         if (parentFragment.isComments) {
             if (chat == null) return;
+            //DIVO--START
+            DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.ProfileOpened(-chat.id, "chat_header"));
+            //DIVO--END
             parentFragment.presentFragment(ProfileActivity.of(-chat.id), removeLast);
             return;
         }
@@ -606,6 +612,9 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
                 if (fromChatAnimation) {
                     fragment.setPlayProfileAnimation(byAvatar ? 2 : 1);
                 }
+                //DIVO--START
+                DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.ProfileOpened(user.id, "chat_header"));
+                //DIVO--END
                 parentFragment.presentFragment(fragment, removeLast);
             }
         } else if (chat != null) {
@@ -623,6 +632,9 @@ public class ChatAvatarContainer extends FrameLayout implements NotificationCent
             if (fromChatAnimation) {
                 fragment.setPlayProfileAnimation(byAvatar ? 2 : 1);
             }
+            //DIVO--START
+            DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.ProfileOpened(-chat.id, "chat_header"));
+            //DIVO--END
             parentFragment.presentFragment(fragment, removeLast);
         }
     }

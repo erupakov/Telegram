@@ -35,16 +35,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.rememberCameraCapture
-import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.common.controllers.rememberCameraCapture
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
 import org.telegram.divo.common.utils.ImageCacheHelper
-import org.telegram.divo.components.PhotoSourceBottomSheet
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.SearchImageAction
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.bottomsheets.PhotoSourceBottomSheet
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.bottomsheets.SearchImageAction
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.screen.face_search.components.FaceDetectionStatus
 import org.telegram.divo.screen.face_search.components.FaceOverlayImage
 import org.telegram.divo.style.AppTheme
@@ -212,7 +212,7 @@ private fun FaceSearchContent(
                     FaceDetectionStatus(uiState.detectionResult)
                     Spacer(Modifier.height(16.dp))
 
-                    UIButtonNew(
+                    UIButton(
                         text = stringResource(R.string.ChangePhoto),
                         height = 40.dp,
                         textStyle = AppTheme.typography.textButton.copy(
@@ -227,7 +227,7 @@ private fun FaceSearchContent(
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    UIButtonNew(
+                    UIButton(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = uiState.detectionResult != FaceDetectionResult.Loading && uiState.detectionResult != FaceDetectionResult.NoFace && uiState.selectedFaceIndex != null,
                         text = stringResource(R.string.FindSimilarProfiles),

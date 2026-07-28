@@ -8,12 +8,17 @@ class AgencyDto(
     @SerializedName("title") val title: String,
     @SerializedName("site") val site: String?,
     @SerializedName("email") val email: String?,
-    //@SerializedName("socialNetworks") val socialNetworks: List<UserSocialNetworkDto>?,
     @SerializedName("description") val description: String?,
     @SerializedName("employeeTitle") val employeeTitle: String?,
     @SerializedName("address") val address: AgencyAddressDto?,
     @SerializedName("photo") val photo: PhotoDto?,
     @SerializedName("background") val background: PhotoDto?,
+    @SerializedName("tiktokUrl") val tiktokUrl: String?,
+    @SerializedName("youtubeUrl") val youtubeUrl: String?,
+    @SerializedName("telegramUrl") val telegramUrl: String?,
+    @SerializedName("instagramUrl") val instagramUrl: String?,
+    @SerializedName("websiteUrl") val websiteUrl: String?,
+    @SerializedName("socialNetworks") val socialNetworks: List<UserSocialNetworkDto>?,
 )
 
 fun AgencyDto.toEntity(): Agency =
@@ -27,4 +32,10 @@ fun AgencyDto.toEntity(): Agency =
         address = address?.toEntity(),
         photo = photo?.toEntity(),
         background = background?.toEntity(),
+        tiktokUrl = tiktokUrl,
+        youtubeUrl = youtubeUrl,
+        telegramUrl = telegramUrl,
+        instagramUrl = instagramUrl,
+        websiteUrl = websiteUrl,
+        socialNetworks = socialNetworks?.toEntities().orEmpty()
     )

@@ -18,8 +18,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import org.telegram.divo.common.utils.getFormatedOptions
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.items.ParameterBottomSheet
+import org.telegram.divo.components.inputs.DivoTextField
+import org.telegram.divo.components.bottomsheets.ParameterBottomSheet
 import org.telegram.divo.components.items.ParameterItem
 import org.telegram.divo.components.items.ParametersBlock
 import org.telegram.divo.components.items.ParametersType

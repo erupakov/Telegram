@@ -13,7 +13,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -22,13 +21,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.rememberGalleryLauncher
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.TelegramUserAvatarEditable
-import org.telegram.divo.dal.dto.event.EventTypeBottomSheet
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
+import org.telegram.divo.components.bottomsheets.CityPickerSheet
+import org.telegram.divo.components.bottomsheets.CountryPickerSheet
+import org.telegram.divo.components.inputs.DivoTextField
+import org.telegram.divo.components.media.TelegramUserAvatarEditable
 import org.telegram.divo.entity.EventType
-import org.telegram.divo.screen.search.components.CityPickerSheet
-import org.telegram.divo.screen.add_model.CountryPickerSheet
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.screen.event_create.State
 import org.telegram.divo.screen.search.LocalCity
 import org.telegram.divo.style.AppTheme
@@ -44,8 +43,8 @@ fun FirstPage(
     onAvatarSelected: (Uri) -> Unit,
     onEventDateChanged: (String) -> Unit,
     onEventTimeChanged: (String) -> Unit,
-    onCountriesChanged: (List<org.telegram.divo.screen.add_model.LocalCountry>) -> Unit,
-    onCitySelected: (LocalCity) -> Unit,
+    onCountriesChanged: (List<LocalCountry>) -> Unit,
+    onCitySelected: (LocalCity) -> Unit
 ) {
     var showCountrySheet by rememberSaveable { mutableStateOf(false) }
     var showCitySheet by rememberSaveable { mutableStateOf(false) }
@@ -144,7 +143,7 @@ fun FirstPage(
         Spacer(Modifier.height(16.dp))
         EventItem(
             title = stringResource(R.string.CityLabel) + " *",
-            value = state.selectedCity?.let { city -> 
+            value = state.selectedCity?.let { city ->
                 val flag = org.telegram.messenger.LocaleController.getLanguageFlag(city.countryCode) ?: ""
                 "$flag ${city.name}".trimStart()
             } ?: "",

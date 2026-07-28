@@ -7,8 +7,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.arch.OffsetPaginator
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.repository.UserActionEvent
 import org.telegram.divo.entity.FeedItem
@@ -60,6 +62,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
             val newLanguage = org.telegram.messenger.LocaleController.getInstance().currentLocale?.language ?: ""
             if (newLanguage != currentLanguage) {
                 currentLanguage = newLanguage
+                DivoAnalytics.logEvent(AnalyticsEvent.AppLanguageChanged(newLanguage))
                 viewModelScope.launch {
                     delay(300)
                     refresh()
@@ -77,6 +80,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
     }
 
     init {
+        DivoAnalytics.logEvent(AnalyticsEvent.ModelsFeedOpened())
         setIntent(LoadInitialData)
         viewModelScope.launch {
             merge(
@@ -177,7 +181,6 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
         setState {
             copy(
                 isLoading = false,
-                models = ModelsViewState.preview.models
             )
         }
         val account = UserConfig.selectedAccount
@@ -305,6 +308,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                 userId = targetItem.user.id,
                 isLiked = isLiked,
                 currentCount = targetItem.user.likesCount,
+                screenName = "models_feed",
                 onUpdate = { newLiked, newCount -> setState { copy(tabFeeds = updateAll(newLiked, newCount)) } },
                 onRollback = { setState { copy(tabFeeds = savedState) } },
                 onSuccess = { newLiked ->
@@ -337,6 +341,7 @@ class ModelsViewModel : BaseViewModel<ModelsViewState, ModelsViewIntent, ModelsV
                 userId = item.user.id,
                 isFollowed = item.isFollowed,
                 currentFollowersCount = item.user.followersCount,
+                screenName = "models_feed",
                 onUpdate = { newFavorite, newCount -> setState { copy(tabFeeds = updateAll(newFavorite, newCount)) } },
                 onRollback = { setState { copy(tabFeeds = savedState) } },
                 onSuccess = { newFavorite ->

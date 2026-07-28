@@ -20,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.components.RegTextField
+import org.telegram.divo.components.inputs.RegTextField
 import org.telegram.divo.screen.reg_form.RegFormsIntent
 import org.telegram.divo.screen.reg_form.RegistrationFormData
 import org.telegram.divo.screen.reg_select_role.SubRole

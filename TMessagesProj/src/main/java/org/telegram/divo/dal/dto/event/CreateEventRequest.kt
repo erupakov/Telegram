@@ -2,12 +2,14 @@ package org.telegram.divo.dal.dto.event
 
 import com.google.gson.annotations.SerializedName
 import org.telegram.divo.common.DivoSettings
-import org.telegram.divo.common.numericFilterRange
-import org.telegram.divo.common.resolveNumericBlockParamBounds
+import org.telegram.divo.common.utils.numericFilterRange
+import org.telegram.divo.common.utils.resolveNumericBlockParamBounds
 import org.telegram.divo.components.items.ParametersType
+import org.telegram.divo.dal.utils.DivoLanguageManager
 import org.telegram.divo.screen.event_create.State
 import java.text.SimpleDateFormat
 import java.util.Locale
+import kotlin.collections.firstOrNull
 
 fun State.toCreateEventRequest(
     uploadedFiles: List<org.telegram.divo.entity.UploadedFile>,
@@ -86,7 +88,7 @@ fun State.toCreateEventRequest(
 
         for (format in dateFormats) {
             try {
-                val sdf = SimpleDateFormat(format, org.telegram.divo.dal.network.DivoLanguageManager.getSystemLocale())
+                val sdf = SimpleDateFormat(format, DivoLanguageManager.getSystemLocale())
                 parsedDate = sdf.parse(dateStr)
                 if (parsedDate != null) break
             } catch (_: Exception) {}
@@ -94,7 +96,7 @@ fun State.toCreateEventRequest(
 
         for (format in timeFormats) {
             try {
-                val sdf = SimpleDateFormat(format, org.telegram.divo.dal.network.DivoLanguageManager.getSystemLocale())
+                val sdf = SimpleDateFormat(format, DivoLanguageManager.getSystemLocale())
                 parsedTime = sdf.parse(timeStr)
                 if (parsedTime != null) break
             } catch (_: Exception) {}

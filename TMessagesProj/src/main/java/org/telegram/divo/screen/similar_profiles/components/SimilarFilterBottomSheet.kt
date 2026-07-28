@@ -32,17 +32,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.SteppedDivoSlider
-import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.components.items.DivoBottomSheet
-import org.telegram.divo.components.items.ParameterBottomSheet
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.bottomsheets.CountryPickerSheet
+import org.telegram.divo.components.inputs.SteppedDivoSlider
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.components.bottomsheets.DivoBottomSheet
+import org.telegram.divo.components.bottomsheets.ParameterBottomSheet
 import org.telegram.divo.components.items.ParameterItem
 import org.telegram.divo.components.items.ParametersBlock
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
-import org.telegram.divo.screen.add_model.CountryPickerSheet
-import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.screen.similar_profiles.MIN_SIMILARITY
 import org.telegram.divo.screen.similar_profiles.State
 import org.telegram.divo.style.AppTheme
@@ -217,7 +217,7 @@ fun SimilarFilterBottomSheet(
                 }
             }
 
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

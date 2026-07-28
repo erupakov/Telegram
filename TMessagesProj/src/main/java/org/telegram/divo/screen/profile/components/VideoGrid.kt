@@ -2,7 +2,6 @@
 
 package org.telegram.divo.screen.profile.components
 
-
 import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.snap
@@ -65,12 +64,11 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
-import com.google.android.exoplayer2.util.Log
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.entity.Publication
 import org.telegram.divo.entity.PublicationFile
 
@@ -86,6 +84,7 @@ fun VideoGrid(
     isUploading: Boolean,
     hasMore: Boolean,
     isActive: Boolean = true,
+    transitionProgress: Float = 1f,
     topPadding: Dp = 0.dp,
     onLoadMore: () -> Unit,
     onVideoClicked: (String) -> Unit,
@@ -268,24 +267,33 @@ fun VideoGrid(
 
     Box(modifier = modifier.fillMaxSize().clipToBounds()) {
         val bottomPadding = if (isOwnProfile) 72.dp else 16.dp
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            state = gridState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = topPadding,
-                bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + bottomPadding,
-            ),
-        ) {
-            if (videoItems.isEmpty() && !isFirstLoading && isOwnProfile) {
-                item(span = { GridItemSpan(maxLineSpan) }) {
-                    PortfolioEmptyAddButton(
-                        isUploading = isUploading,
-                        isVideo = true,
-                        onMediaSelected = onVideoSelected
-                    )
+
+        if (videoItems.isEmpty() && !isFirstLoading && !isOwnProfile) {
+            EmptyMediaPlaceholder(
+                text = androidx.compose.ui.res.stringResource(org.telegram.messenger.R.string.ThereAreNoVideosYet),
+                isVideo = true,
+                transitionProgress = transitionProgress,
+                topPadding = topPadding
+            )
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                state = gridState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(
+                    top = topPadding,
+                    bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + bottomPadding,
+                ),
+            ) {
+                if (videoItems.isEmpty() && !isFirstLoading && isOwnProfile) {
+                    item(span = { GridItemSpan(maxLineSpan) }) {
+                        PortfolioEmptyAddButton(
+                            isUploading = isUploading,
+                            isVideo = true,
+                            onMediaSelected = onVideoSelected
+                        )
+                    }
                 }
-            }
 
             itemsIndexed(
                 items = videoItems,
@@ -324,7 +332,7 @@ fun VideoGrid(
                 }
             }
         }
-
+        }
 
         playerPool.forEachIndexed { slot, player ->
             key(slot) {

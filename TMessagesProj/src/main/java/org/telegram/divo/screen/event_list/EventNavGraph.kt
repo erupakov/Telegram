@@ -13,6 +13,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.screen.event_create.CreateEventScreen
 import org.telegram.divo.screen.event_create.CreateEventViewModel
@@ -78,7 +80,7 @@ fun EventsNavGraph(
                 viewModelStoreOwner = LocalContext.current.findActivity() as ViewModelStoreOwner
             )
             val state = viewModel.state.collectAsState().value
-            val snackbarState = remember { org.telegram.divo.common.AppSnackbarHostState() }
+            val snackbarState = remember { AppSnackbarHostState() }
             val context = LocalContext.current
             
             LaunchedEffect(viewModel.effect) {
@@ -92,7 +94,7 @@ fun EventsNavGraph(
                             nav.navigate(EventRoute.ApplyConfirmation.createRoute(action.eventId))
                         }
                         is EventListEffect.ShowError -> {
-                            snackbarState.show(org.telegram.divo.common.SnackbarEvent.Error(action.message))
+                            snackbarState.show(SnackbarEvent.Error(action.message))
                         }
                         else -> {}
                     }
@@ -173,6 +175,7 @@ fun EventsNavGraph(
 
             EventDetailsNavGraph(
                 eventId = eventId,
+                screenName = "EventList",
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToEditEvent = { nav.navigate(EventRoute.CreateEvent.createRoute(it)) },
                 onEventDeleted = {

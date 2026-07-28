@@ -24,6 +24,7 @@
     <string name="ButtonEdit">Edit</string>
     <string name="ButtonDelete">Delete</string>
     <string name="ButtonContinue">Continue</string>
+    <string name="OnboardingSkip">Skip</string>
     <string name="ButtonDone">Done</string>
     <string name="RetryLabel">Retry</string>
     <string name="YourPhoneLabel">Your Phone</string>
@@ -11117,6 +11118,8 @@ while she is with another agency.</string>
     <string name="DivoGlobalTitle">DIVO GLOBAL</string>
     <string name="Followers_one">%1$d follower</string>
     <string name="Followers_other">%1$d followers</string>
+    <string name="ThereAreNoImagesYet">THERE ARE NO IMAGES YET</string>
+    <string name="ThereAreNoVideosYet">THERE ARE NO VIDEOS YET</string>
     <string name="DivoEnterYourWebsite">Enter your website</string>
     <string name="DivoSaving">Saving...</string>
     <string name="DeleteProfile">Delete profile</string>

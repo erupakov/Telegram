@@ -38,14 +38,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.rememberCameraCapture
-import org.telegram.divo.common.rememberGalleryLauncher
-import org.telegram.divo.components.PhotoSourceBottomSheet
-import org.telegram.divo.components.ProfilesSearchGrid
-import org.telegram.divo.components.SearchImageAction
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.common.controllers.rememberCameraCapture
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
+import org.telegram.divo.components.bottomsheets.PhotoSourceBottomSheet
+import org.telegram.divo.components.items.ProfilesSearchGrid
+import org.telegram.divo.components.bottomsheets.SearchImageAction
 import org.telegram.divo.screen.search.components.FRSearchHistoryContent
 import org.telegram.divo.screen.search.components.SearchFilterBottomSheet
 import org.telegram.divo.screen.search.components.SearchRow
@@ -140,7 +142,10 @@ private fun SearchContent(
             SearchRow(
                 value = state.query,
                 onSearchFaceClicked = { showBottomSheet = true },
-                onFilterClicked = { showFiltersBottomSheet = true },
+                onFilterClicked = { 
+                    DivoAnalytics.logEvent(AnalyticsEvent.SearchFiltersOpened("models"))
+                    showFiltersBottomSheet = true 
+                },
                 onValueChanged = { onIntent(Intent.OnQueryChanged(it)) },
                 onSearchConfirmed = { onIntent(Intent.OnSearchConfirmed) },
                 onBack = { onIntent(Intent.OnBackClicked) }

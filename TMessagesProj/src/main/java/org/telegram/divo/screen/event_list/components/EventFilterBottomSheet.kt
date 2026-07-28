@@ -34,14 +34,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.UIButtonNew
-import org.telegram.divo.components.items.DivoBottomSheet
-import org.telegram.divo.components.items.ParameterBottomSheet
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.components.bottomsheets.DivoBottomSheet
+import org.telegram.divo.components.bottomsheets.ParameterBottomSheet
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ParameterItem
 import org.telegram.divo.components.items.ParametersBlock
-import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.entity.EventType
 import org.telegram.divo.screen.event_list.EventSearchFilters
 import org.telegram.divo.screen.event_list.EventListViewState
@@ -49,10 +48,10 @@ import org.telegram.divo.screen.event_list.getDefaultEventBlockParams
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 import org.telegram.divo.common.utils.getFormatedOptions
-import org.telegram.divo.screen.add_model.LocalCountry
 import org.telegram.divo.screen.reg_form.components.PlaceField
-import org.telegram.divo.screen.search.components.CityPickerSheet
+import org.telegram.divo.components.bottomsheets.CityPickerSheet
 import androidx.compose.ui.platform.LocalContext
+import org.telegram.divo.entity.LocalCountry
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -329,7 +328,7 @@ fun EventFilterBottomSheet(
                 }
             }
 
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
@@ -563,7 +562,7 @@ private fun EventTypePickerSheet(
                 }
             }
 
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)

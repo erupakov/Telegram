@@ -1,10 +1,10 @@
 package org.telegram.divo.screen.reg_form
 
 import android.net.Uri
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
-import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.divo.screen.search.LocalCity
 
@@ -56,7 +56,7 @@ data class RegFormsState(
         RegFormStep.STUDIO_CONTACT -> websiteUrl.isBlank() && contactName.isBlank() && contactPhone.isBlank()
 
         // Step 3
-        RegFormStep.COMPANY_CONTACT -> websiteUrl.isBlank() && contactRole.isBlank() && contactName.isBlank() && contactPhone.isBlank()
+        RegFormStep.COMPANY_CONTACT -> websiteUrl.isBlank() && contactRole.isBlank() && firstName.isBlank() && lastName.isBlank()
         
         RegFormStep.PROFESSIONAL_LINKS,
         RegFormStep.TALENT_LINKS,

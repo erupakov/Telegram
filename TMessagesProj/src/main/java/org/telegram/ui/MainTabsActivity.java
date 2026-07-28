@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.divo.screen.event_list.FragmentEventList;
 import org.telegram.divo.screen.models.FragmentModels;
 import org.telegram.divo.screen.profile.FragmentProfileN;
@@ -88,6 +89,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     private FrameLayout modelsSearchButton;
     private FrameLayout searchButtonWrapper;
     private boolean isModelsSearchVisible;
+    private int lastSelectedTab = -1;
     //DIVO--END
 
     public MainTabsActivity() {
@@ -535,6 +537,17 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     //DIVO--END
 
     public void selectTab(int position, boolean animated) {
+        if (lastSelectedTab != position) {
+            lastSelectedTab = position;
+            if (position == POSITION_CHATS) {
+                DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.ChatsOpened());
+            } else if (position == POSITION_SETTINGS) {
+                DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.SettingsOpened());
+            } else if (position == POSITION_EVENTS) {
+                // Future use
+            }
+        }
+
         for (int a = 0; a < tabs.length; a++) {
             GlassTabView tab = tabs[a];
             tab.setSelected(a == position, animated);

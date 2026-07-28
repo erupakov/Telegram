@@ -27,10 +27,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.screen.reg_select_role.RoleSelectionIntent
 import org.telegram.divo.screen.reg_select_role.RoleSelectionState
 import org.telegram.divo.screen.reg_select_role.RoleSelectionViewModel
@@ -136,7 +136,7 @@ fun QuizScreen(
                 }
             }
 
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = (8 + AndroidUtilities.navigationBarHeight / AndroidUtilities.density).dp, start = 16.dp, end = 16.dp)

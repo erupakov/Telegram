@@ -22,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import org.telegram.divo.components.items.DivoBottomSheet
+import org.telegram.divo.components.bottomsheets.DivoBottomSheet
 import org.telegram.divo.components.items.DivoWheelPicker
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R

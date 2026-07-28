@@ -22,10 +22,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.screen.event_list.components.EventFilterBottomSheet
 import org.telegram.divo.screen.event_list.components.EventItemView
 import org.telegram.divo.screen.event_list.components.EventSearchRow
@@ -179,7 +181,10 @@ fun EventSearchScreen(
             ) {
                 EventSearchRow(
                     value = state.searchFilters.query,
-                    onFilterClicked = { showFilterSheet = true },
+                    onFilterClicked = {
+                        DivoAnalytics.logEvent(AnalyticsEvent.SearchFiltersOpened("events"))
+                        showFilterSheet = true
+                    },
                     onValueChanged = onSearchQueryChanged,
                     onSearchConfirmed = onSearchConfirmed,
                     onBack = onCloseSearch
@@ -244,7 +249,7 @@ fun EventsSearchEmptyState(
 
             if (hasFilters) {
                 Spacer(Modifier.height(32.dp))
-                UIButtonNew(
+                UIButton(
                     text = stringResource(R.string.EventSearchClearFilters),
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onClearFilters

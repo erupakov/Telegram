@@ -5,9 +5,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
-import org.telegram.divo.common.PaginatedResult
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.arch.OffsetPaginator
+import org.telegram.divo.common.arch.PaginatedResult
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.components.items.ProfileParameter
 import org.telegram.divo.dal.dto.publication.ModelParametersDto
@@ -17,6 +19,7 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.AppearanceItem
 import org.telegram.divo.entity.FeedlineItem
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.entity.SearchedProfile
 import org.telegram.divo.screen.search.Effect.*
 import org.telegram.divo.usecase.ToggleBookmarkUseCase
@@ -83,12 +86,17 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
         when (intent) {
             Intent.OnBackClicked -> sendEffect(NavigateBack)
             is Intent.OnQueryChanged -> onQueryChanged(intent.value)
-            is Intent.OnPhotoSelected -> sendEffect(NavigateToFaceSearch(intent.uri.toString()))
+            is Intent.OnPhotoSelected -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("search"))
+                sendEffect(NavigateToFaceSearch(intent.uri.toString()))
+            }
             Intent.OnLoadMore -> loadMore()
             is Intent.OnItemClicked -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.SearchModelTapped(intent.user.id))
                 if (intent.isSearchMode)
                     sendEffect(NavigateToProfile(intent.user))
                 else {
+                    DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("search"))
                     sendEffect(NavigateToFaceSearch(intent.user.photo))
                 }
             }
@@ -126,6 +134,10 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     }
 
                     searchPaginator.loadInitial()
+                    val hasResults = searchPaginator.state.value.items.isNotEmpty()
+                    val filtersStr = getActiveFiltersString(state.value)
+                    DivoAnalytics.logEvent(AnalyticsEvent.SearchFiltersApplied("models", filtersStr))
+                    DivoAnalytics.logEvent(AnalyticsEvent.SearchPerformed("models", hasResults, state.value.query, filtersStr))
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
@@ -151,11 +163,16 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                 viewModelScope.launch {
                     setState { copy(isLoading = true) }
                     searchPaginator.loadInitial()
+                    val hasResults = searchPaginator.state.value.items.isNotEmpty()
+                    DivoAnalytics.logEvent(AnalyticsEvent.SearchPerformed("models", hasResults, state.value.query, ""))
                     setState { copy(isLoading = false, hasSearched = true) }
                 }
             }
             Intent.OnFaceSearchHistoryClicked -> { sendEffect(NavigateToFaceSearchHistory) }
-            is Intent.OnSimilarProfilesClicked -> sendEffect(NavigateToSimilarProfiles(intent.photo, intent.filters))
+            is Intent.OnSimilarProfilesClicked -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("search"))
+                sendEffect(NavigateToSimilarProfiles(intent.photo, intent.filters))
+            }
             Intent.OnLoadMoreFR -> loadMoreFR()
             is Intent.OnQueryFRChanged -> onQueryFRChanged(intent.value)
             is Intent.OnLikeClick -> onLikeClick(intent.userId, intent.isFrSearch)
@@ -228,9 +245,13 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
 
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_MS)
+            DivoAnalytics.logEvent(AnalyticsEvent.SearchQueryEntered("models", query.length))
             setState { copy(isLoading = true) }
             searchPaginator.reset()
             searchPaginator.loadInitial()
+            val hasResults = searchPaginator.state.value.items.isNotEmpty()
+            val filtersStr = getActiveFiltersString(state.value)
+            DivoAnalytics.logEvent(AnalyticsEvent.SearchPerformed("models", hasResults, query, filtersStr))
             setState { copy(isLoading = false, hasSearched = true) }
         }
     }
@@ -283,6 +304,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                 userId = userId,
                 isLiked = targetItem.isLiked,
                 currentCount = targetItem.likes,
+                screenName = "search",
                 onUpdate = { newLiked, newCount ->
                     if (isFrSearch) {
                         setState { copy(searchResultsFR = updateAll(newLiked, newCount)) }
@@ -324,6 +346,7 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                 userId = userId,
                 isFollowed = targetItem.isMarked,
                 currentFollowersCount = targetItem.followersCount,
+                screenName = "search",
                 onUpdate = { newFavorite, newCount ->
                     if (isFrSearch) {
                         setState { copy(searchResultsFR = updateAll(newFavorite, newCount)) }
@@ -484,5 +507,19 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     companion object {
         private const val PAGE_SIZE = 10
         private const val SEARCH_DEBOUNCE_MS = 400L
+    }
+
+    private fun getActiveFiltersString(s: State): String {
+        val active = mutableListOf<String>()
+        if (s.selectedCountries.isNotEmpty()) active.add("country")
+        if (s.selectedCity != null) active.add("city")
+        if (s.role.value.isNotBlank()) active.add("role")
+        if (s.gender.value.isNotBlank()) active.add("gender")
+        if (s.hairLength.value.isNotBlank()) active.add("hair_length")
+        if (s.hairColor.value.isNotBlank()) active.add("hair_color")
+        if (s.eyeColor.value.isNotBlank()) active.add("eye_color")
+        if (s.skinColor.value.isNotBlank()) active.add("skin_color")
+        if (s.blockParams.any { it.value.isNotBlank() }) active.add("body_params")
+        return active.joinToString(",")
     }
 }

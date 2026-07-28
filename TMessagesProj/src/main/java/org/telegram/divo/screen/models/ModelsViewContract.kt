@@ -1,11 +1,10 @@
 package org.telegram.divo.screen.models
 
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
 import org.telegram.divo.entity.FeedItem
 import org.telegram.messenger.R
-import org.telegram.tgnet.TLRPC
 
 data class Story(
     val id: String,
@@ -42,42 +41,12 @@ data class ModelsViewState(
     val tabLoadingMoreStates: Map<Tab, Boolean> = emptyMap(),
     val tabHasMore: Map<Tab, Boolean> = Tab.entries.associateWith { true },
     val stories: List<Story> = emptyList(),
-    val models: List<Model> = emptyList(),
     val selectedTab: Tab = Tab.MODELS,
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val error: String? = null,
     val allUserModels: List<Model> = emptyList(),
-) : ViewState {
-
-    companion object {
-        val preview = ModelsViewState(
-            stories = List(5) { index ->
-                Story(
-                    id = "$index",
-                    dialogId = index.toLong(),
-                    imageUrl = "https://randomuser.me/api/portraits/women/5$index.jpg",
-                    userName = "User $index",
-                    watched = false,
-                    hasUnread = true,
-                    hasStories = true,
-                    isSelf = index == 0,
-                    isLoading = false
-                )
-            },
-            selectedTab = Tab.MODELS,
-            isLoading = false,
-            error = null
-        )
-        val default = ModelsViewState(
-            stories = emptyList(),
-            models = emptyList(),
-            selectedTab = Tab.MODELS,
-            isLoading = false,
-            error = null
-        )
-    }
-}
+) : ViewState
 
 sealed class ModelsViewIntent : ViewIntent {
     data object LoadInitialData : ModelsViewIntent()

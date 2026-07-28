@@ -2,7 +2,9 @@ package org.telegram.divo.screen.settings
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.common.DivoSettings
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
@@ -11,6 +13,7 @@ import org.telegram.divo.dal.network.getErrorMessage
 class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, SettingsViewEffect>() {
 
     init {
+        DivoAnalytics.logEvent(AnalyticsEvent.SettingsOpened())
         viewModelScope.launch {
             DivoApi.userRepository.currentUserFlow.collect { user ->
                 user?.let {
@@ -35,26 +38,72 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
 
     override fun createInitialState(): SettingsViewState = SettingsViewState()
 
+    private fun logOptionTapped(option: String) {
+        DivoAnalytics.logEvent(AnalyticsEvent.SettingsOptionTapped(option))
+    }
+
     override fun handleIntent(intent: SettingsViewIntent) {
         when (intent) {
-            SettingsViewIntent.OnEditProfileClicked -> sendEffect(SettingsViewEffect.NavigateToEditProfile)
-            SettingsViewIntent.OnOpenProfileClicked -> sendEffect(SettingsViewEffect.NavigateToProfile)
-            SettingsViewIntent.OnSetUsernameClicked -> sendEffect(SettingsViewEffect.NavigateToSetUsername)
-            SettingsViewIntent.OnFillParametersClicked -> sendEffect(SettingsViewEffect.NavigateToFillParameters)
-            SettingsViewIntent.OnPromoClicked -> sendEffect(SettingsViewEffect.NavigateToPromo)
-            SettingsViewIntent.OnSavedMessagesClicked -> sendEffect(SettingsViewEffect.NavigateToSavedMessages)
-            SettingsViewIntent.OnNotificationsClicked -> sendEffect(SettingsViewEffect.NavigateToNotifications)
-            SettingsViewIntent.OnPrivacyClicked -> sendEffect(SettingsViewEffect.NavigateToPrivacy)
-            SettingsViewIntent.OnDataStorageClicked -> sendEffect(SettingsViewEffect.NavigateToDataStorage)
-            SettingsViewIntent.OnAppearanceClicked -> sendEffect(SettingsViewEffect.NavigateToAppearance)
-            SettingsViewIntent.OnLanguageClicked -> sendEffect(SettingsViewEffect.NavigateToLanguage)
+            SettingsViewIntent.OnEditProfileClicked -> {
+                logOptionTapped("edit_profile")
+                sendEffect(SettingsViewEffect.NavigateToEditProfile)
+            }
+            SettingsViewIntent.OnOpenProfileClicked -> {
+                logOptionTapped("open_profile")
+                sendEffect(SettingsViewEffect.NavigateToProfile)
+            }
+            SettingsViewIntent.OnSetUsernameClicked -> {
+                logOptionTapped("set_username")
+                sendEffect(SettingsViewEffect.NavigateToSetUsername)
+            }
+            SettingsViewIntent.OnFillParametersClicked -> {
+                logOptionTapped("fill_parameters")
+                sendEffect(SettingsViewEffect.NavigateToFillParameters)
+            }
+            SettingsViewIntent.OnPromoClicked -> {
+                logOptionTapped("promo")
+                sendEffect(SettingsViewEffect.NavigateToPromo)
+            }
+            SettingsViewIntent.OnSavedMessagesClicked -> {
+                logOptionTapped("saved_messages")
+                sendEffect(SettingsViewEffect.NavigateToSavedMessages)
+            }
+            SettingsViewIntent.OnNotificationsClicked -> {
+                logOptionTapped("notifications")
+                sendEffect(SettingsViewEffect.NavigateToNotifications)
+            }
+            SettingsViewIntent.OnPrivacyClicked -> {
+                logOptionTapped("privacy")
+                sendEffect(SettingsViewEffect.NavigateToPrivacy)
+            }
+            SettingsViewIntent.OnDataStorageClicked -> {
+                logOptionTapped("data_storage")
+                sendEffect(SettingsViewEffect.NavigateToDataStorage)
+            }
+            SettingsViewIntent.OnAppearanceClicked -> {
+                logOptionTapped("appearance")
+                sendEffect(SettingsViewEffect.NavigateToAppearance)
+            }
+            SettingsViewIntent.OnLanguageClicked -> {
+                logOptionTapped("language")
+                sendEffect(SettingsViewEffect.NavigateToLanguage)
+            }
             SettingsViewIntent.OnRefresh -> loadUserData()
-            SettingsViewIntent.OnLogoutClicked -> sendEffect(SettingsViewEffect.NavigateToLogout)
+            SettingsViewIntent.OnLogoutClicked -> {
+                logOptionTapped("logout")
+                sendEffect(SettingsViewEffect.NavigateToLogout)
+            }
             SettingsViewIntent.OnMeasuringSystemClicked -> {
+                logOptionTapped("measuring_system")
                 sendEffect(SettingsViewEffect.ShowMeasuringSystemDialog)
+            }
+            SettingsViewIntent.OnQrCodeClicked -> {
+                logOptionTapped("qr_code")
+                sendEffect(SettingsViewEffect.ShowQrCode)
             }
             is SettingsViewIntent.OnChangeMeasuringSystem -> {
                 val newSystem = intent.system
+                DivoAnalytics.logEvent(AnalyticsEvent.MeasurementSystemChanged(newSystem))
                 DivoSettings.measuringSystem = newSystem
                 setState { copy(measuringSystem = newSystem) }
                 // Also update profile silently if needed

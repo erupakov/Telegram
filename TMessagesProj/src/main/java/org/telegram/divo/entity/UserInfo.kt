@@ -134,6 +134,12 @@ data class Agency(
     val address: AgencyAddress? = null,
     val photo: Photo? = null,
     val background: Photo? = null,
+    val tiktokUrl: String? = null,
+    val youtubeUrl: String? = null,
+    val telegramUrl: String? = null,
+    val instagramUrl: String? = null,
+    val websiteUrl: String? = null,
+    val socialNetworks: List<UserSocialNetwork> = emptyList(),
 )
 
 data class AgencyAddress(

@@ -1,8 +1,8 @@
 package org.telegram.divo.screen.gallery
 
-import org.telegram.divo.common.ViewEffect
-import org.telegram.divo.common.ViewIntent
-import org.telegram.divo.common.ViewState
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
 
 data class GalleryViewerState(
     val source: GallerySource? = null,
@@ -25,9 +25,11 @@ sealed class GalleryEffect : ViewEffect {
 }
 
 sealed class GallerySource {
-    data class Portfolio(val userId: Int, val initialIndex: Int) : GallerySource()
-    data class Video(val userId: Int, val initialIndex: Int) : GallerySource()
-    data class Feed(val items: List<GalleryItem>, val initialIndex: Int) : GallerySource()
+    abstract val screenName: String
+    abstract val userId: Int
+    data class Portfolio(override val userId: Int, val initialIndex: Int, override val screenName: String) : GallerySource()
+    data class Video(override val userId: Int, val initialIndex: Int, override val screenName: String) : GallerySource()
+    data class Feed(val items: List<GalleryItem>, val initialIndex: Int, override val userId: Int, override val screenName: String) : GallerySource()
 }
 
 data class GalleryItem(

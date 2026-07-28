@@ -23,9 +23,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import org.telegram.divo.components.DivoTabSelector
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.TabConfig
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.navigation.DivoTabSelector
+import org.telegram.divo.components.navigation.TabConfig
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 

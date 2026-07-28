@@ -61,18 +61,20 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.LaunchedEffectOnce
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.DivoPopupMenu
-import org.telegram.divo.components.LottieProgressIndicator
-import org.telegram.divo.components.PopupMenuItem
-import org.telegram.divo.components.RoundedButton
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.LaunchedEffectOnce
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.navigation.DivoPopupMenu
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.navigation.PopupMenuItem
+import org.telegram.divo.components.inputs.RoundedButton
 import org.telegram.divo.style.AppTheme
-import org.telegram.divo.components.StatusBarIconColorEffect
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
 import org.telegram.messenger.R
 import kotlin.math.abs
 
@@ -169,6 +171,22 @@ private fun GalleryPagerContent(
     LaunchedEffect(pagerState.currentPage, uiState.items.size) {
         if (pagerState.currentPage >= uiState.items.size - 3 && uiState.hasMore) {
             onLoadMore()
+        }
+    }
+
+    // 4. Аналитика просмотра фото/видео
+    LaunchedEffect(pagerState.currentPage, uiState.items) {
+        if (uiState.items.isNotEmpty() && uiState.source != null) {
+            val index = pagerState.currentPage.coerceIn(0, uiState.items.lastIndex)
+            val item = uiState.items[index]
+            DivoAnalytics.logEvent(
+                AnalyticsEvent.GalleryItemViewed(
+                    targetUserId = uiState.source.userId,
+                    mediaId = item.id,
+                    mediaType = if (item.isVideo) "video" else "photo",
+                    screenName = uiState.source.screenName
+                )
+            )
         }
     }
 

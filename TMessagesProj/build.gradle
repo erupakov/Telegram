@@ -19,6 +19,7 @@ configurations {
 configurations.all {
     // exclude group: 'com.google.firebase', module: 'firebase-core' // Removed for Divo Crashlytics/Analytics
     exclude group: 'androidx.recyclerview', module: 'recyclerview'
+    exclude group: 'com.google.zxing', module: 'core' // ZXing source code is already bundled in the project
 }
 
 dependencies {
@@ -51,9 +52,11 @@ dependencies {
     compileOnly 'org.checkerframework:checker-compat-qual:2.5.0'
     implementation 'com.google.firebase:firebase-messaging:22.0.0'
     implementation 'com.google.firebase:firebase-config:21.0.1'
+    implementation 'com.google.firebase:firebase-analytics-ktx:21.3.0'
     implementation 'com.google.firebase:firebase-auth:22.1.0'
     implementation 'com.google.firebase:firebase-datatransport:18.1.0'
     implementation 'com.google.firebase:firebase-appindexing:20.0.0'
+    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
     implementation 'com.google.android.gms:play-services-maps:18.1.0'
     implementation 'com.google.android.gms:play-services-auth:20.4.0'
     implementation 'com.google.android.gms:play-services-vision:20.1.3'

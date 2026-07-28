@@ -55,9 +55,9 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.compose.PlayerSurface
 import androidx.media3.ui.compose.SURFACE_TYPE_TEXTURE_VIEW
 import kotlinx.coroutines.delay
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.components.DivoSlider
-import org.telegram.divo.components.LottieProgressIndicator
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.components.inputs.DivoSlider
+import org.telegram.divo.components.media.LottieProgressIndicator
 
 private const val CONTROLS_HIDE_DELAY_MS = 3000L
 

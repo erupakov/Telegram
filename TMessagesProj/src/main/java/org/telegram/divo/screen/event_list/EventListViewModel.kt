@@ -2,15 +2,25 @@ package org.telegram.divo.screen.event_list
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.BaseViewModel
-import org.telegram.divo.common.OffsetPaginator
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.arch.OffsetPaginator
 import org.telegram.messenger.NotificationCenter
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.RoleType
+import org.telegram.divo.screen.search.LocalCity
 import org.telegram.divo.usecase.GetEventListUseCase
+import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.LocaleController
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import kotlinx.coroutines.Dispatchers
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.entity.Event
+import org.telegram.divo.entity.LocalCountry
 
 class EventListViewModel :
     BaseViewModel<EventListViewState, EventListIntent, EventListEffect>() {
@@ -18,10 +28,11 @@ class EventListViewModel :
     override fun createInitialState(): EventListViewState = EventListViewState()
 
     private val allEventsPaginator = GetEventListUseCase(limit = 10).paginator
-    private var myEventsPaginator: OffsetPaginator<org.telegram.divo.entity.Event>? = null
+    private var myEventsPaginator: OffsetPaginator<Event>? = null
     private var currentUserId: Int? = null
+    private var searchLogJob: kotlinx.coroutines.Job? = null
 
-    private val activePaginator: OffsetPaginator<org.telegram.divo.entity.Event>
+    private val activePaginator: OffsetPaginator<Event>
         get() {
             return if (state.value.isSearchMode) {
                 allEventsPaginator
@@ -50,6 +61,7 @@ class EventListViewModel :
 
     init {
         NotificationCenter.getGlobalInstance().addObserver(languageObserver, NotificationCenter.reloadInterface)
+        DivoAnalytics.logEvent(AnalyticsEvent.EventListOpened())
         setIntent(EventListIntent.OnLoad)
         viewModelScope.launch {
             launch { loadCountries() }
@@ -101,12 +113,17 @@ class EventListViewModel :
                 }
             }
             is EventListIntent.ConfirmWithdraw -> confirmWithdraw(intent.eventId)
-            EventListIntent.OnAddEventClicked -> sendEffect(EventListEffect.NavigateToCreateEvent)
+            EventListIntent.OnAddEventClicked -> {
+                val currentUserId = DivoApi.userRepository.currentUserFlow.value?.id ?: 0
+                DivoAnalytics.logEvent(AnalyticsEvent.EventCreateStarted(currentUserId))
+                sendEffect(EventListEffect.NavigateToCreateEvent)
+            }
             is EventListIntent.OnEventCardClicked -> sendEffect(
                 EventListEffect.NavigateToEventDetails(intent.eventId)
             )
             is EventListIntent.OnEventCtaClicked -> onCtaClicked(intent.eventId)
             EventListIntent.OnSearchClicked -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.SearchFiltersOpened("events"))
                 setState { copy(isSearchMode = true) }
                 performSearch()
                 sendEffect(EventListEffect.NavigateToSearch)
@@ -127,6 +144,7 @@ class EventListViewModel :
             }
             // Search intents
             EventListIntent.OnOpenSearch -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.SearchFiltersOpened("events"))
                 setState { copy(isSearchMode = true) }
                 performSearch()
             }
@@ -147,11 +165,30 @@ class EventListViewModel :
                 val newFilters = state.value.searchFilters.copy(query = intent.query)
                 setState { copy(searchFilters = newFilters) }
                 performSearch()
+
+                searchLogJob?.cancel()
+                searchLogJob = viewModelScope.launch {
+                    kotlinx.coroutines.delay(1000)
+                    DivoAnalytics.logEvent(
+                        AnalyticsEvent.SearchPerformed(
+                            target = "events",
+                            hasResults = state.value.events.isNotEmpty(),
+                            query = intent.query,
+                            activeFilters = state.value.searchFilters.toActiveFiltersString()
+                        )
+                    )
+                }
             }
             EventListIntent.OnSearchConfirmed -> {
                 performSearch()
             }
             is EventListIntent.OnApplyFilters -> {
+                DivoAnalytics.logEvent(
+                    AnalyticsEvent.SearchFiltersApplied(
+                        target = "events",
+                        activeFilters = intent.filters.toActiveFiltersString()
+                    )
+                )
                 setState { copy(searchFilters = intent.filters) }
                 performSearch()
             }
@@ -204,7 +241,7 @@ class EventListViewModel :
         }
     }
 
-    private fun syncStateFromPaginator(paginator: OffsetPaginator<org.telegram.divo.entity.Event>) {
+    private fun syncStateFromPaginator(paginator: OffsetPaginator<Event>) {
         val paginatorState = paginator.state.value
         
         var filteredItems = paginatorState.items
@@ -324,6 +361,9 @@ class EventListViewModel :
         }
         val expectedNewCount = event.appliesCount - 1
         DivoApi.eventRepository.notifyEventParticipationChanged(eventId, false, expectedNewCount)
+
+        val userId = currentUserId ?: 0
+        DivoAnalytics.logEvent(AnalyticsEvent.EventWithdraw(eventId.toLong(), userId.toLong()))
 
         viewModelScope.launch {
             val result = DivoApi.eventRepository.unapplyEvent(eventId)

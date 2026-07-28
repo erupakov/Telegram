@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.telegram.divo.common.DivoAsyncImage
+import org.telegram.divo.components.media.DivoAsyncImage
 import org.telegram.divo.style.AppTheme
 
 @Composable

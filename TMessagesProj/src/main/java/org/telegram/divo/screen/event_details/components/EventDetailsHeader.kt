@@ -27,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,21 +46,18 @@ import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.utils.DivoShareType
-import org.telegram.divo.common.utils.DivoSharingHelper
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.toEventDisplayDate
 import org.telegram.divo.common.utils.toShortString
-import org.telegram.divo.components.DivoChip
-import org.telegram.divo.components.RoundedGlassButton
-import org.telegram.divo.components.RoundedGlassContainer
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.inputs.DivoChip
+import org.telegram.divo.components.inputs.RoundedGlassContainer
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
-import org.telegram.divo.components.TelegramPhotoBackground
+import org.telegram.divo.components.media.TelegramPhotoBackground
 
 @Composable
 fun EventDetailsHeader(
@@ -96,6 +92,7 @@ fun EventDetailsHeader(
                 .padding(top = topPadding + 16.dp)
                 .graphicsLayer { alpha = engagementsAlpha },
             event = event,
+            isOwnEvent = isOwnEvent,
             onLikeClicked = onLikeClicked,
             onFavouriteClicked = onFavouriteClicked
         )
@@ -117,6 +114,7 @@ fun EventDetailsHeader(
 private fun StatsSection(
     modifier: Modifier = Modifier,
     event: EventDetails?,
+    isOwnEvent: Boolean,
     onLikeClicked: () -> Unit,
     onFavouriteClicked: () -> Unit
 ) {
@@ -136,7 +134,7 @@ private fun StatsSection(
             tint = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             textColor = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             background = if (isLiked) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
-            onClick = onLikeClicked
+            onClick = if (isOwnEvent) null else onLikeClicked
         )
         Spacer(Modifier.height(10.dp))
         EngagementItem(
@@ -151,7 +149,7 @@ private fun StatsSection(
             tint = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             textColor = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             background = if (isFavourite) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
-            onClick = onFavouriteClicked
+            onClick = if (isOwnEvent) null else onFavouriteClicked
         )
     }
 }
@@ -261,7 +259,7 @@ private fun ContentSection(
                         else -> AppTheme.colors.onBackground
                     }
 
-                    UIButtonNew(
+                    UIButton(
                         text = stringResource(buttonTextId),
                         leadingIcon = buttonIconResId,
                         leadingIconTint = buttonTextColor,

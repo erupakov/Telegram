@@ -52,17 +52,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.SnackbarEvent.Success
-import org.telegram.divo.common.clickableWithoutRipple
-import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.common.controllers.SnackbarEvent.Success
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
 import org.telegram.divo.common.utils.toFormattedDate
-import org.telegram.divo.components.DivoTextField
-import org.telegram.divo.components.RoundedButton
-import org.telegram.divo.components.TelegramUserAvatarEditable
-import org.telegram.divo.components.UIButtonNew
+import org.telegram.divo.components.inputs.DivoTextField
+import org.telegram.divo.components.inputs.RoundedButton
+import org.telegram.divo.components.media.TelegramUserAvatarEditable
+import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 import java.time.Instant
@@ -276,7 +276,7 @@ fun CreateWorkHistoryScreenView(
                 }
             }
 
-            UIButtonNew(
+            UIButton(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 16.dp, end = 16.dp, bottom = 8.dp)

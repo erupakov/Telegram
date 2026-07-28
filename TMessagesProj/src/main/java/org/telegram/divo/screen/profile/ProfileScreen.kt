@@ -56,16 +56,18 @@ import androidx.media3.common.util.UnstableApi
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.AppSnackbarHost
-import org.telegram.divo.common.AppSnackbarHostState
-import org.telegram.divo.common.SnackbarEvent.Error
-import org.telegram.divo.common.SnackbarEvent.ErrorWithRetry
-import org.telegram.divo.common.SnackbarEvent.Success
-import org.telegram.divo.common.SnackbarEvent.SuccessWithIcon
-import org.telegram.divo.common.rememberGalleryLauncher
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.common.controllers.SnackbarEvent.ErrorWithRetry
+import org.telegram.divo.common.controllers.SnackbarEvent.Success
+import org.telegram.divo.common.controllers.SnackbarEvent.SuccessWithIcon
+import org.telegram.divo.common.controllers.rememberGalleryLauncher
 import org.telegram.divo.common.utils.uriToFile
-import org.telegram.divo.components.DivoWithdrawBottomSheet
-import org.telegram.divo.components.StatusBarIconColorEffect
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
+import org.telegram.divo.components.bottomsheets.DivoWithdrawBottomSheet
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.screen.profile.components.AgencyModels
 import org.telegram.divo.screen.profile.components.AnimatedPortfolioAddButton
@@ -186,7 +188,7 @@ fun ProfileScreen(
 
                         val req = org.telegram.tgnet.tl.TL_account.deleteAccount()
                         req.reason = "Divo Profile Deleted"
-                        org.telegram.tgnet.ConnectionsManager.getInstance(org.telegram.messenger.UserConfig.selectedAccount).sendRequest(req) { response, error -> 
+                        org.telegram.tgnet.ConnectionsManager.getInstance(org.telegram.messenger.UserConfig.selectedAccount).sendRequest(req) { response, error ->
                             org.telegram.messenger.AndroidUtilities.runOnUIThread {
                                 try { progressDialog.dismiss() } catch (e: Exception) { org.telegram.messenger.FileLog.e(e) }
                                 if (response is org.telegram.tgnet.TLRPC.TL_boolTrue) {
@@ -424,6 +426,41 @@ private fun ProfileScreenContent(
     }
 
     val currentPage = pagerState.currentPage
+
+    var lastLoggedPage by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(currentPage) {
+        if (lastLoggedPage != null && lastLoggedPage != currentPage) {
+            val tabName = when (currentPage) {
+                0 -> "gallery"
+                1 -> "video"
+                2 -> if (uiState.isModel) "channels" else "agency_models"
+                3 -> "channels"
+                else -> "events"
+            }
+            DivoAnalytics.logEvent(
+                AnalyticsEvent.ProfileTabViewed(tabName)
+            )
+        }
+        lastLoggedPage = currentPage
+    }
+
+    var lastLoggedInfoPage by remember { mutableStateOf<Int?>(null) }
+    LaunchedEffect(pagerInfoState.currentPage) {
+        if (uiState.isModel) {
+            if (lastLoggedInfoPage != null && lastLoggedInfoPage != pagerInfoState.currentPage) {
+                val tabName = when (pagerInfoState.currentPage) {
+                    0 -> "bio"
+                    1 -> "appearance"
+                    else -> "experience"
+                }
+                DivoAnalytics.logEvent(
+                    AnalyticsEvent.ProfileInfoTabViewed(tabName)
+                )
+            }
+            lastLoggedInfoPage = pagerInfoState.currentPage
+        }
+    }
+
     val showAddButton = uiState.isOwnProfile && isPagerSectionVisible && when (currentPage) {
         0 -> uiState.userGalleryItems.isNotEmpty()
         1 -> uiState.videoItems.isNotEmpty()
@@ -539,6 +576,7 @@ private fun ProfileScreenContent(
                             when (page) {
                                 0 -> PortfolioGrid(
                                     topPadding = totalTopPaddingDp,
+                                    transitionProgress = transitionProgress,
                                     portfolioItems = uiState.userGalleryItems,
                                     similarItems = uiState.similarProfiles,
                                     isUploading = uiState.mediaUploading,
@@ -557,6 +595,7 @@ private fun ProfileScreenContent(
 
                                     VideoGrid(
                                         topPadding = totalTopPaddingDp,
+                                        transitionProgress = transitionProgress,
                                         videoItems = uiState.videoItems,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isLoadingMore = uiState.isLoadingMoreVideos,
@@ -572,6 +611,7 @@ private fun ProfileScreenContent(
                                 2 -> if (uiState.isModel) {
                                     ChannelsContent(
                                         channels = uiState.userInfo.channels,
+                                        transitionProgress = transitionProgress,
                                         isOwnProfile = uiState.isOwnProfile,
                                         isModel = uiState.isModel,
                                         showBackButton = showBackButton,
@@ -584,6 +624,7 @@ private fun ProfileScreenContent(
                                 } else {
                                     AgencyModels(
                                         topPadding = totalTopPaddingDp,
+                                        transitionProgress = transitionProgress,
                                         models = uiState.agencyModels,
                                         query = uiState.searchModelsQuery,
                                         searchModels = uiState.searchModels,
@@ -609,6 +650,7 @@ private fun ProfileScreenContent(
                                 }
                                 3 -> ChannelsContent(
                                     channels = uiState.userInfo.channels,
+                                    transitionProgress = transitionProgress,
                                     isOwnProfile = uiState.isOwnProfile,
                                     showBackButton = showBackButton,
                                     isModel = uiState.isModel,
@@ -620,6 +662,7 @@ private fun ProfileScreenContent(
                                 )
                                 else -> EventsColumn(
                                     topPadding = totalTopPaddingDp,
+                                    transitionProgress = transitionProgress,
                                     events = uiState.events,
                                     isOwnProfile = uiState.isOwnProfile,
                                     isModel = uiState.isModel,

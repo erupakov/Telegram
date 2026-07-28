@@ -1,14 +1,14 @@
 package org.telegram.divo.dal.repository
 
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.screen.search.LocalCity
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 class LocationRepository {
 

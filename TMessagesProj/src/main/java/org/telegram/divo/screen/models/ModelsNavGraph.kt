@@ -64,8 +64,8 @@ sealed class ModelsRoute(val route: String) {
     object GalleryViewer : ModelsRoute("gallery/{sourceType}") {
         const val ROUTE = "gallery/{sourceType}"
 
-        fun createRoute(items: List<GalleryItem>, initialIndex: Int): String {
-            GallerySourceHolder.pendingSource = GallerySource.Feed(items.drop(1), initialIndex)
+        fun createRoute(items: List<GalleryItem>, initialIndex: Int, userId: Int): String {
+            GallerySourceHolder.pendingSource = GallerySource.Feed(items.drop(1), initialIndex, userId, "models_feed")
             return "gallery/feed"
         }
     }
@@ -101,8 +101,8 @@ fun ModelsNavGraph(
                 onClick = { userId ->
                     nav.navigate(ModelsRoute.Profile.createRoute(userId))
                 },
-                onPhotoClicked = { items, index ->
-                    nav.navigate(ModelsRoute.GalleryViewer.createRoute(items, index))
+                onPhotoClicked = { items, index, userId ->
+                    nav.navigate(ModelsRoute.GalleryViewer.createRoute(items, index, userId))
                 }
             )
         }

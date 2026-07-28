@@ -51,9 +51,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.delay
-import androidx.compose.ui.platform.LocalDensity
-import org.telegram.divo.common.DivoAsyncImage
-import org.telegram.divo.components.shimmer
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.shimmer
 import org.telegram.divo.screen.face_search.FaceDetectionResult
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
