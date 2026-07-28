@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -93,6 +94,7 @@ import org.telegram.divo.screen.event_details.components.OrganizerCard
 import org.telegram.divo.screen.event_details.components.ParametersCard
 import org.telegram.divo.screen.event_details.components.RequirementsCard
 import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.LocaleController
 import org.telegram.messenger.R
 
 @Composable
@@ -215,12 +217,13 @@ fun EventPreviewScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(padding),
+                    .padding(padding)
+                    .navigationBarsPadding(),
             ) {
                 LazyColumn(
                     state = lazyListState,
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 72.dp)
+                    contentPadding = PaddingValues(bottom = 74.dp)
                 ) {
                     item(key = "header") {
                         PreviewHeader(
@@ -247,7 +250,7 @@ fun EventPreviewScreen(
                         OrganizerCard(
                             avatarModel = state.currentUser.avatarUrl.ifBlank { state.currentUser.photoUrl.ifBlank { null } },
                             name = state.currentUser.fullName,
-                            status = "Online",
+                            status = "",
                             isVerified = true
                         )
                     }
@@ -442,9 +445,10 @@ private fun PreviewHeader(
                         append(state.eventTime)
                     }
                 }
-                if (state.selectedCountries.isNotEmpty()) {
+                if (state.selectedCity != null) {
                     if (isNotEmpty()) append(" · ")
-                    append("${state.selectedCountries.first().flag}")
+                    val flag = LocaleController.getLanguageFlag(state.selectedCity.countryCode) ?: ""
+                    append(flag)
                 }
                 if (state.isPaid && state.eventRate.isNotBlank()) {
                     if (isNotEmpty()) append(" · ")

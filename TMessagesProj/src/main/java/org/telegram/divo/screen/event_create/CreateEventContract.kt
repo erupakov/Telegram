@@ -11,6 +11,7 @@ import org.telegram.divo.entity.EventFile
 import org.telegram.divo.entity.EventType
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.screen.add_model.LocalCountry
+import org.telegram.divo.screen.search.LocalCity
 import org.telegram.divo.dal.dto.payment.PaymentTypeDto
 import org.telegram.divo.dal.dto.payment.PaymentFrequencyDto
 
@@ -22,6 +23,8 @@ data class State(
 
     val allCountries: List<LocalCountry> = emptyList(),
     val selectedCountries: List<LocalCountry> = emptyList(),
+    val allCities: List<LocalCity> = emptyList(),
+    val selectedCity: LocalCity? = null,
     val eventDate: String = "",
     val eventTime: String = "",
 
@@ -67,8 +70,9 @@ data class State(
                 eventName.trim().isNotEmpty() &&
                 eventDescription.trim().isNotEmpty() &&
                 eventDate.isNotBlank() &&
-                eventTime.isNotBlank()
-                //&& selectedCountries.isNotEmpty()
+                eventTime.isNotBlank() &&
+                selectedCountries.isNotEmpty() &&
+                selectedCity != null
 
     val isThirdPageValid: Boolean
         get() = deadlineDate.isNotBlank() &&
@@ -99,6 +103,7 @@ sealed interface Intent : ViewIntent {
     data class OnEventDateChanged(val value: String) : Intent
     data class OnEventTimeChanged(val value: String) : Intent
     data class OnCountriesChanged(val countries: List<LocalCountry>) : Intent
+    data class OnCitySelected(val city: LocalCity) : Intent
 
     // Second page
     data class OnRoleChanged(val param: ProfileParameter) : Intent

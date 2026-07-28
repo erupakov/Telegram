@@ -27,8 +27,10 @@ import org.telegram.divo.components.DivoTextField
 import org.telegram.divo.components.TelegramUserAvatarEditable
 import org.telegram.divo.dal.dto.event.EventTypeBottomSheet
 import org.telegram.divo.entity.EventType
+import org.telegram.divo.screen.search.components.CityPickerSheet
 import org.telegram.divo.screen.add_model.CountryPickerSheet
 import org.telegram.divo.screen.event_create.State
+import org.telegram.divo.screen.search.LocalCity
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -39,12 +41,14 @@ fun FirstPage(
     onEventTypeSelected: (EventType) -> Unit,
     onEventNameChanged: (String) -> Unit,
     onEventDescriptionChanged: (String) -> Unit,
-    onAvatarSelected: (android.net.Uri) -> Unit,
+    onAvatarSelected: (Uri) -> Unit,
     onEventDateChanged: (String) -> Unit,
     onEventTimeChanged: (String) -> Unit,
     onCountriesChanged: (List<org.telegram.divo.screen.add_model.LocalCountry>) -> Unit,
+    onCitySelected: (LocalCity) -> Unit,
 ) {
     var showCountrySheet by rememberSaveable { mutableStateOf(false) }
+    var showCitySheet by rememberSaveable { mutableStateOf(false) }
     var showEventTypesSheet by rememberSaveable { mutableStateOf(false) }
     var showDatePickerSheet by rememberSaveable { mutableStateOf(false) }
     var showTimePickerSheet by rememberSaveable { mutableStateOf(false) }
@@ -132,10 +136,20 @@ fun FirstPage(
         }
         Spacer(Modifier.height(16.dp))
         EventItem(
-            title = stringResource(R.string.CountryLabel),
+            title = stringResource(R.string.CountryLabel) + " *",
             value = if (state.selectedCountries.isEmpty()) "" else "${state.selectedCountries.first().flag} ${state.selectedCountries.first().name}",
             placeholder = stringResource(R.string.EventChooseCountry),
             onClick = { showCountrySheet = true }
+        )
+        Spacer(Modifier.height(16.dp))
+        EventItem(
+            title = stringResource(R.string.CityLabel) + " *",
+            value = state.selectedCity?.let { city -> 
+                val flag = org.telegram.messenger.LocaleController.getLanguageFlag(city.countryCode) ?: ""
+                "$flag ${city.name}".trimStart()
+            } ?: "",
+            placeholder = stringResource(R.string.CityLabel),
+            onClick = { showCitySheet = true }
         )
         Spacer(Modifier.height(72.dp))
     }
@@ -148,6 +162,21 @@ fun FirstPage(
             onPick = { selectedList ->
                 onCountriesChanged(selectedList)
                 showCountrySheet = false
+            }
+        )
+    }
+
+    if (showCitySheet) {
+        CityPickerSheet(
+            list = state.allCities,
+            selectedCountries = state.selectedCountries,
+            selectedCity = state.selectedCity,
+            onDismiss = { showCitySheet = false },
+            onPick = { city ->
+                if (city != null) {
+                    onCitySelected(city)
+                }
+                showCitySheet = false
             }
         )
     }

@@ -381,7 +381,7 @@ private fun EventDetailsContent(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
-                contentPadding = PaddingValues(bottom = 28.dp)
+                contentPadding = PaddingValues(bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 28.dp)
             ) {
                 item(key = "header") {
                     EventDetailsHeader(
@@ -421,7 +421,7 @@ private fun EventDetailsContent(
                     OrganizerCard(
                         avatarModel = uiState.eventDetails?.creator?.avatar?.fullUrl ?: uiState.eventDetails?.creator?.photo?.fullUrl,
                         name =  uiState.eventDetails?.creator?.fullName.orEmpty(),
-                        status = "12K followers · Online",
+                        status = "",
                         isVerified = uiState.eventDetails?.creator?.isVerified == true
                     )
                 }

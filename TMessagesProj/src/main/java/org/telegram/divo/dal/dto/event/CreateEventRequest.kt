@@ -9,7 +9,10 @@ import org.telegram.divo.screen.event_create.State
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.UploadedFile>): CreateEventRequest {
+fun State.toCreateEventRequest(
+    uploadedFiles: List<org.telegram.divo.entity.UploadedFile>,
+    resolvedCityId: Int
+): CreateEventRequest {
     fun getAppearanceIds(options: List<org.telegram.divo.entity.AppearanceItem>, paramValue: String): List<Int> {
         if (paramValue.isEmpty() || paramValue.contains("All", ignoreCase = true)) {
             return options.mapNotNull { it.id }
@@ -156,10 +159,10 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
             street = "Some street", // FIXME: Add address fields to UI
             house = "100B",
             apartment = "123",
-            formatted = selectedCountries.firstOrNull()?.name ?: "",
+            formatted = selectedCity?.name ?: "",
             latitude = 51.507351, // FIXME: Add geolocation
             longitude = -0.127758,
-            cityId = 1 // FIXME: Add city selection
+            cityId = resolvedCityId
         ),
         files = uploadedFiles.mapIndexed { index, file ->
             CreateEventFileRequest(
@@ -179,7 +182,7 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
         waist = blockNumericRangeToDto(ParametersType.WAIST, blockParams.find { it.type == ParametersType.WAIST }?.value.orEmpty()),
         hips = blockNumericRangeToDto(ParametersType.HIPS, blockParams.find { it.type == ParametersType.HIPS }?.value.orEmpty()),
         shoesSize = blockNumericRangeToDto(ParametersType.SHOE_SIZE, blockParams.find { it.type == ParametersType.SHOE_SIZE }?.value.orEmpty()),
-        measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem, // Default to user setting
+        measuringSystem = DivoSettings.measuringSystem, // Default to user setting
         hairColor = getAppearanceIds(hairColorOptions, hairColor.value),
         hairLength = getAppearanceIds(hairLengthOptions, hairLength.value),
         eyeColor = getAppearanceIds(eyeColorOptions, eyeColor.value),

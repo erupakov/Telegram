@@ -19,6 +19,7 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
 
     init {
         loadCountries()
+        loadCities()
         getEventTypes()
         loadAppearances()
         loadPaymentTypes()
@@ -74,7 +75,14 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             }
             is Intent.OnEventDateChanged -> setState { copy(eventDate = intent.value) }
             is Intent.OnEventTimeChanged -> setState { copy(eventTime = intent.value) }
-            is Intent.OnCountriesChanged -> setState { copy(selectedCountries = intent.countries) }
+            is Intent.OnCountriesChanged -> setState { copy(selectedCountries = intent.countries, selectedCity = null) }
+            is Intent.OnCitySelected -> setState {
+                val country = allCountries.find { it.shortName.equals(intent.city.countryCode, ignoreCase = true) }
+                copy(
+                    selectedCity = intent.city,
+                    selectedCountries = if (country != null) listOf(country) else selectedCountries
+                )
+            }
 
             // Second page
             is Intent.OnRoleChanged -> setState { copy(role = intent.param) }
@@ -173,6 +181,7 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             eventDate = datePart,
             eventTime = timePart,
             selectedCountries = allCountries.filter { it.name == event.address?.countryName }.ifEmpty { selectedCountries },
+            selectedCity = allCities.find { it.name == event.address?.countryName } ?: selectedCity, // countryName might actually hold city name in the backend based on previous implementation
             deadlineDate = deadlineDatePart,
             deadlineTime = deadlineTimePart,
             isPaid = event.cost?.isNotBlank() == true,
@@ -223,7 +232,24 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
                     }
                 }
                 
-                val request = state.value.toCreateEventRequest(uploadedFiles)
+                var resolvedCityId: Int? = null
+                val selectedCity = state.value.selectedCity
+                if (selectedCity != null) {
+                    try {
+                        val geoResponse = DivoApi.geoService.searchByAddressName(selectedCity.name)
+                        resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                
+                if (resolvedCityId == null) {
+                    sendEffect(Effect.ShowError("City not supported by server. Please try another city."))
+                    setState { copy(isUploading = false) }
+                    return@launch
+                }
+                
+                val request = state.value.toCreateEventRequest(uploadedFiles, resolvedCityId)
                 val result = state.value.editingEventId?.let { eventId ->
                     DivoApi.eventRepository.updateEvent(eventId, request)
                 } ?: DivoApi.eventRepository.createEvent(request)
@@ -257,6 +283,13 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             } else {
                 sendEffect(Effect.ShowError(result.getErrorMessage()))
             }
+        }
+    }
+
+    private fun loadCities() {
+        viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCities()
+            setState { copy(allCities = list) }
         }
     }
 
