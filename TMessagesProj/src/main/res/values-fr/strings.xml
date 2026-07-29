@@ -400,10 +400,12 @@ pendant que vous êtes dans une autre agence.</string>
     <string name="EditBtn">Modificateur</string>
     <string name="PromoCardHeadline">DÉCOUVREZ-VOUS DANS LE MONDE DE LA MODE</string>
     <string name="PromoCardBody">Publiez votre profil en tant que mannequin, rejoignez des castings ou ajoutez des événements en tant qu\'agence : faites partie du réseau mondial de la mode.</string>
+    <string name="SavedMessagesLabel">Messages enregistrés</string>
+    <string name="SavedProfilesLabel">Profils enregistrés</string>
+    <string name="SavedProfilesEmpty">Aucun profil enregistré pour le moment</string>
     <string name="PromoCardBtn">Apprendre encore plus</string>
     <string name="SetUsernameLabel">Définir le nom de l\'utilisateur</string>
     <string name="FillYourParametersLabel">Remplissez vos paramètres</string>
-    <string name="SavedMessagesLabel">Messages lors de l\'inscription</string>
     <string name="NotificationsAndSoundsLabel">Notifications et sons</string>
     <string name="PrivacyAndSecurityLabel">Confidentialité et sécurité</string>
     <string name="DataAndStorageLabel">Données et stockage</string>

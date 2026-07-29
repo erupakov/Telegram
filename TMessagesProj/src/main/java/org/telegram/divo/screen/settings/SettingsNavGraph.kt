@@ -65,10 +65,11 @@ fun SettingsNavGraph(
             arguments = listOf(navArgument("userId") { type = NavType.IntType })
         ) { backStackEntry ->
             val userId = backStackEntry.arguments?.getInt("userId") ?: -1
+            val currentUserId = org.telegram.divo.dal.network.DivoApi.userRepository.currentUserFlow.value?.id
 
             ProfileNavGraph(
                 userId = userId,
-                isOwnProfile = true,
+                isOwnProfile = userId == currentUserId,
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToChat = onNavigateToChat,
                 onNavigateToCreateChannel = onNavigateToCreateChannel,

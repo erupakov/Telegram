@@ -104,21 +104,11 @@ fun SettingsScreen(
                     navigateToPrivacy()
                 }
 
-                SettingsViewEffect.NavigateToProfile -> {
-                    navigateToProfile(state.userId)
-                }
-
+                is SettingsViewEffect.NavigateToProfile -> navigateToProfile(it.userId ?: state.userId)
                 SettingsViewEffect.NavigateToPromo -> {
                     // TODO: Implement promo screen
                 }
-
-                SettingsViewEffect.NavigateToSavedMessages -> {
-                    navigateToSavedMessages()
-                }
-
-                SettingsViewEffect.NavigateToSetUsername -> {
-                    navigateToSetUsername()
-                }
+                SettingsViewEffect.NavigateToSetUsername -> navigateToSetUsername()
 
                 is SettingsViewEffect.ShowError -> {
                     snackbarState.show(
@@ -153,6 +143,14 @@ fun SettingsScreen(
             userId = state.userId,
             message = "${state.userName} - ${state.role}",
             onDismiss = { showQrBottomSheet = false }
+        )
+    }
+
+    if (state.isSavedProfilesSheetVisible) {
+        org.telegram.divo.screen.settings.components.SavedProfilesBottomSheet(
+            paginator = viewModel.savedProfilesPaginator,
+            onDismiss = { viewModel.setIntent(SettingsViewIntent.OnCloseSavedProfilesSheet) },
+            onProfileClick = { userId -> navigateToProfile(userId) }
         )
     }
 
@@ -236,9 +234,9 @@ fun SettingsScreen(
                 ContainerItems {
                     SettingsItemRow(
                         item = SettingsItem(
-                            title = stringResource(R.string.SavedMessagesLabel),
+                            title = stringResource(R.string.SavedProfilesLabel),
                             iconResId = R.drawable.ic_divo_saved_message_icon,
-                            intent = SettingsViewIntent.OnSavedMessagesClicked
+                            intent = SettingsViewIntent.OnSavedProfilesClicked
                         ),
                         viewModel = viewModel
                     )

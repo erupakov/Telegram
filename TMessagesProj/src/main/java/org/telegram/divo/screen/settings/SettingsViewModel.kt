@@ -6,18 +6,29 @@ import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.common.DivoSettings
+import org.telegram.divo.common.arch.OffsetPaginator
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.messenger.UserConfig
 
 class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, SettingsViewEffect>() {
+
+    val savedProfilesPaginator = OffsetPaginator { offset, limit ->
+        val result = DivoApi.publicationRepository.getFollowing(limit = limit, offset = offset)
+        if (result is DivoResult.Success) {
+            result.value
+        } else {
+            throw Exception(result.getErrorMessage())
+        }
+    }
 
     init {
         DivoAnalytics.logEvent(AnalyticsEvent.SettingsOpened())
         viewModelScope.launch {
             DivoApi.userRepository.currentUserFlow.collect { user ->
                 user?.let {
-                    val tgUser = org.telegram.messenger.UserConfig.getInstance(org.telegram.messenger.UserConfig.selectedAccount).currentUser
+                    val tgUser = UserConfig.getInstance(UserConfig.selectedAccount).currentUser
                     val displayUserName = if (!tgUser?.username.isNullOrEmpty()) "@${tgUser.username}" else ""
                     setState {
                         copy(
@@ -50,7 +61,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             }
             SettingsViewIntent.OnOpenProfileClicked -> {
                 logOptionTapped("open_profile")
-                sendEffect(SettingsViewEffect.NavigateToProfile)
+                sendEffect(SettingsViewEffect.NavigateToProfile())
             }
             SettingsViewIntent.OnSetUsernameClicked -> {
                 logOptionTapped("set_username")
@@ -64,9 +75,15 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
                 logOptionTapped("promo")
                 sendEffect(SettingsViewEffect.NavigateToPromo)
             }
-            SettingsViewIntent.OnSavedMessagesClicked -> {
-                logOptionTapped("saved_messages")
-                sendEffect(SettingsViewEffect.NavigateToSavedMessages)
+            SettingsViewIntent.OnSavedProfilesClicked -> {
+                logOptionTapped("saved_profiles")
+                setState { copy(isSavedProfilesSheetVisible = true) }
+                viewModelScope.launch {
+                    savedProfilesPaginator.loadInitial()
+                }
+            }
+            SettingsViewIntent.OnCloseSavedProfilesSheet -> {
+                setState { copy(isSavedProfilesSheetVisible = false) }
             }
             SettingsViewIntent.OnNotificationsClicked -> {
                 logOptionTapped("notifications")
@@ -124,7 +141,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             val result = DivoApi.userRepository.getCurrentUserInfo()
 
             if (result is DivoResult.Success) {
-                val tgUser = org.telegram.messenger.UserConfig.getInstance(org.telegram.messenger.UserConfig.selectedAccount).currentUser
+                val tgUser = UserConfig.getInstance(UserConfig.selectedAccount).currentUser
                 val displayUserName = if (!tgUser?.username.isNullOrEmpty()) "@${tgUser.username}" else ""
                 setState {
                     copy(

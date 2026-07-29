@@ -7,8 +7,10 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
+import org.telegram.divo.common.arch.PaginatedResult
 import org.telegram.divo.common.utils.ThumbnailProcessor
 import org.telegram.divo.dal.api.PublicationService
+import org.telegram.divo.dal.dto.follower.FollowerListRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationFileRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
 import org.telegram.divo.dal.dto.publication.FollowRequest
@@ -19,6 +21,7 @@ import org.telegram.divo.dal.dto.publication.ModelParametersDto
 import org.telegram.divo.dal.dto.publication.PublicationListRequest
 import org.telegram.divo.dal.dto.publication.toEntities
 import org.telegram.divo.dal.dto.publication.toEntity
+import org.telegram.divo.dal.dto.follower.toEntity
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.Feed
@@ -53,6 +56,18 @@ class PublicationRepository(
 
     private val _events = MutableSharedFlow<UserActionEvent>(extraBufferCapacity = 8)
     val events: SharedFlow<UserActionEvent> = _events.asSharedFlow()
+
+    suspend fun getFollowing(
+        limit: Int = 100,
+        offset: Int = 0
+    ): DivoResult<PaginatedResult<org.telegram.divo.entity.SavedProfile>> = resultOf {
+        val request = FollowerListRequest(limit = limit, offset = offset)
+        val response = service.getFollowing(request).data
+        PaginatedResult(
+            items = response.items.map { it.toEntity() },
+            totalCount = response.pagination?.meta?.totalCount ?: 0
+        )
+    }
 
     suspend fun getFeed(
         requestDto: FeedRequestDto

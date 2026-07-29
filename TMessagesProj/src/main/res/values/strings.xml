@@ -400,6 +400,8 @@ while she is with another agency.</string>
     <string name="SetUsernameLabel">Set Username</string>
     <string name="FillYourParametersLabel">Fill your parameters</string>
     <string name="SavedMessagesLabel">Saved Messages</string>
+    <string name="SavedProfilesLabel">Saved Profiles</string>
+    <string name="SavedProfilesEmpty">No saved profiles yet</string>
     <string name="NotificationsAndSoundsLabel">Notifications and Sounds</string>
     <string name="PrivacyAndSecurityLabel">Privacy and Security</string>
     <string name="DataAndStorageLabel">Data and Storage</string>

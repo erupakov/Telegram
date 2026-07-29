@@ -412,6 +412,8 @@
     <string name="SetUsernameLabel">Задать имя пользователя</string>
     <string name="FillYourParametersLabel">Заполнить параметры</string>
     <string name="SavedMessagesLabel">Сохраненные сообщения</string>
+    <string name="SavedProfilesLabel">Сохраненные профили</string>
+    <string name="SavedProfilesEmpty">Пока нет сохраненных профилей</string>
     <string name="NotificationsAndSoundsLabel">Уведомления и звуки</string>
     <string name="PrivacyAndSecurityLabel">Конфиденциальность и безопасность</string>
     <string name="DataAndStorageLabel">Данные и память</string>

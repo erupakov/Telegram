@@ -405,6 +405,8 @@ enquanto ela estiver com outra agência.</string>
     <string name="SetUsernameLabel">Definir nome de usuário</string>
     <string name="FillYourParametersLabel">Preencha seus parâmetros</string>
     <string name="SavedMessagesLabel">Mensagens salvas</string>
+    <string name="SavedProfilesLabel">Perfis salvos</string>
+    <string name="SavedProfilesEmpty">Ainda não há perfis salvos</string>
     <string name="NotificationsAndSoundsLabel">Notificações e Sons</string>
     <string name="PrivacyAndSecurityLabel">Privacidade e Segurança</string>
     <string name="DataAndStorageLabel">Dados e Armazenamento</string>

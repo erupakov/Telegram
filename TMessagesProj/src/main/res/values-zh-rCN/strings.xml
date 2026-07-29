@@ -403,6 +403,8 @@
     <string name="SetUsernameLabel">设置用户名</string>
     <string name="FillYourParametersLabel">填写您的参数</string>
     <string name="SavedMessagesLabel">收藏的消息</string>
+    <string name="SavedProfilesLabel">保存的个人资料</string>
+    <string name="SavedProfilesEmpty">暂无保存的个人主页</string>
     <string name="NotificationsAndSoundsLabel">通知与声音</string>
     <string name="PrivacyAndSecurityLabel">隐私与安全</string>
     <string name="DataAndStorageLabel">数据与存储</string>
