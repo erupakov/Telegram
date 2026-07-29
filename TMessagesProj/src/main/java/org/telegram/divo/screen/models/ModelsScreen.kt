@@ -79,7 +79,7 @@ import org.telegram.messenger.R
 import kotlin.math.roundToInt
 
 private val HeaderExpandedHeight = 114.dp
-private val HeaderCollapsedHeight = 50.dp
+private val HeaderCollapsedHeight = 60.dp
 private val HeaderSpacerAdditional = 34.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -113,16 +113,8 @@ fun ModelsHomeScreen(
     val hazeState = remember { HazeState() }
     val snackbarState = remember { AppSnackbarHostState() }
 
-    val hasOtherStories = remember(state.stories) {
-        state.stories.any { !it.isSelf }
-    }
-
-    val maxScrollOffsetPx = remember(hasOtherStories) {
-        if (!hasOtherStories) {
-            0f
-        } else {
-            with(density) { (HeaderExpandedHeight - HeaderCollapsedHeight).toPx() }
-        }
+    val maxScrollOffsetPx = remember {
+        with(density) { (HeaderExpandedHeight - HeaderCollapsedHeight).toPx() }
     }
 
     val headerScrollOffset by remember(maxScrollOffsetPx) {
