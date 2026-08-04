@@ -778,8 +778,11 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
             android.widget.LinearLayout.LayoutParams lp = (android.widget.LinearLayout.LayoutParams) searchButtonWrapper.getLayoutParams();
             if (lp != null) {
-                lp.width = (int) (dp(DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS) * searchAnimationProgress); // Use original 72dp width
-                searchButtonWrapper.setLayoutParams(lp);
+                int newWidth = (int) (dp(DialogsActivity.MAIN_TABS_HEIGHT_WITH_MARGINS) * searchAnimationProgress);
+                if (lp.width != newWidth) {
+                    lp.width = newWidth;
+                    searchButtonWrapper.setLayoutParams(lp);
+                }
             }
         }
 
