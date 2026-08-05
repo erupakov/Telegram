@@ -7,6 +7,12 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.dal.repository.PublicationRepository
 import org.telegram.divo.dal.repository.UserActionEvent
+import org.telegram.messenger.ContactsController
+import org.telegram.messenger.MessagesController
+import org.telegram.messenger.UserConfig
+
+import org.telegram.divo.dal.repository.UserRepository
+import org.telegram.tgnet.TLRPC
 
 /**
  * Универсальный UseCase для переключения закладки (bookmark/favorite) пользователя.
@@ -20,6 +26,7 @@ import org.telegram.divo.dal.repository.UserActionEvent
  */
 class ToggleBookmarkUseCase(
     private val repository: PublicationRepository = DivoApi.publicationRepository,
+    private val userRepository: UserRepository = DivoApi.userRepository,
 ) {
     suspend fun execute(
         userId: Int,
@@ -52,6 +59,35 @@ class ToggleBookmarkUseCase(
                 )
             )
             DivoAnalytics.logEvent(AnalyticsEvent.BookmarkToggled(userId.toLong(), newFollowed, screenName))
+            
+            // Синхронизация с контактами Telegram
+            val userInfoResult = userRepository.getUserById(userId)
+            if (userInfoResult is DivoResult.Success) {
+                val telegramId = userInfoResult.value.telegramId
+                val accessHash = userInfoResult.value.telegramAccessHash
+
+                if (telegramId != null) {
+                    var tgUser = MessagesController.getInstance(UserConfig.selectedAccount).getUser(telegramId)
+                    
+                    if (tgUser == null && accessHash != null) {
+                        tgUser = TLRPC.TL_user().apply {
+                            id = telegramId
+                            access_hash = accessHash
+                            first_name = userInfoResult.value.fullName
+                        }
+                    }
+
+                    if (tgUser != null) {
+                        val contactsController = ContactsController.getInstance(UserConfig.selectedAccount)
+                        if (newFollowed) {
+                            contactsController.addContact(tgUser, false)
+                        } else {
+                            contactsController.deleteContact(arrayListOf(tgUser), false)
+                        }
+                    }
+                }
+            }
+
             onSuccess(newFollowed)
         } else {
             onRollback()
