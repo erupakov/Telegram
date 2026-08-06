@@ -91,9 +91,9 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
                 ) {
                     ProfileNavGraph(
                         userId = targetUserId,
-                        isOwnProfile = true,
+                        isOwnProfile = arguments?.getBoolean(ARG_OWN_PROFILE, false) ?: false,
                         hasBottomBar = mainTabsController != null,
-                        showRootBackButton = false,
+                        showRootBackButton = mainTabsController == null,
                         onNavControllerReady = { nav -> 
                             navController = nav 
                             nav.addOnDestinationChangedListener { _, destination, _ ->
@@ -127,7 +127,16 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
             }
         }
 
-        val container = FrameLayout(context)
+        val container = object : FrameLayout(context) {
+            override fun dispatchApplyWindowInsets(insets: android.view.WindowInsets): android.view.WindowInsets {
+                var currentInsets = insets
+                for (i in 0 until childCount) {
+                    val child = getChildAt(i)
+                    currentInsets = child.dispatchApplyWindowInsets(currentInsets)
+                }
+                return currentInsets
+            }
+        }
         container.addView(composeView, FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, 
             ViewGroup.LayoutParams.MATCH_PARENT
@@ -143,6 +152,14 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
         
         fragmentView = container
         return fragmentView
+    }
+
+    override fun isLightStatusBar(): Boolean {
+        return true
+    }
+
+    override fun isSupportEdgeToEdge(): Boolean {
+        return true
     }
 
     override fun didReceivedNotification(id: Int, account: Int, vararg args: Any) {
