@@ -31,7 +31,7 @@ public class BuildVars {
 
     // SafetyNet key for Google Identity SDK, set it to empty to disable
     public static String SAFETYNET_KEY = "";
-    public static String PLAYSTORE_APP_URL = "https://play.google.com/store/apps/details?id=com.android.divo2";
+    public static String PLAYSTORE_APP_URL = "https://play.google.com/store/apps/details?id=fashion.divo.app";
     public static String HUAWEI_STORE_URL = "https://appgallery.huawei.com/app/C101184875";
     public static String GOOGLE_AUTH_CLIENT_ID = "121062802243-9hajm212lfu3cpejssjgtkbpqb3j4jlp.apps.googleusercontent.com";
 
