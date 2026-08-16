@@ -5969,12 +5969,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             //}
             //DIVO--END
         } else if (chatId != 0) {
-            ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
-            if (call == null) {
-                VoIPHelper.showGroupCallAlert(ProfileActivity.this, currentChat, null, false, getAccountInstance());
-            } else {
-                VoIPHelper.startCall(currentChat, null, null, false, getParentActivity(), ProfileActivity.this, getAccountInstance());
-            }
+            //DIVO--START
+            AlertsCreator.showSimpleAlert(ProfileActivity.this, LocaleController.getString(R.string.CallsComingSoon));
+            //ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
+            //if (call == null) {
+            //    VoIPHelper.showGroupCallAlert(ProfileActivity.this, currentChat, null, false, getAccountInstance());
+            //} else {
+            //    VoIPHelper.startCall(currentChat, null, null, false, getParentActivity(), ProfileActivity.this, getAccountInstance());
+            //}
+            //DIVO--END
         }
     }
 
@@ -11835,20 +11838,33 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 if (chatInfo != null) {
                     if (ChatObject.canManageCalls(chat) && chatInfo.call == null) {
-                        otherItem.addSubItem(call_item, R.drawable.msg_voicechat, chat.megagroup && !chat.gigagroup ? LocaleController.getString(R.string.StartVoipChat) : LocaleController.getString(R.string.StartVoipChannel));
-                        hasVoiceChatItem = true;
+                        //DIVO--START
                         if (chat.megagroup && !chat.gigagroup) {
+                            otherItem.addSubItem(call_item, R.drawable.msg_voicechat, LocaleController.getString(R.string.StartVoipChat));
+                            hasVoiceChatItem = true;
                             voiceChatAction = true;
-                        } else {
-                            streamAction = true;
                         }
+                        //otherItem.addSubItem(call_item, R.drawable.msg_voicechat, chat.megagroup && !chat.gigagroup ? LocaleController.getString(R.string.StartVoipChat) : LocaleController.getString(R.string.StartVoipChannel));
+                        //hasVoiceChatItem = true;
+                        //if (chat.megagroup && !chat.gigagroup) {
+                        //    voiceChatAction = true;
+                        //} else {
+                        //    streamAction = true;
+                        //}
+                        //DIVO--END
                     }
                     if ((chatInfo.can_view_stats || chatInfo.can_view_revenue || chatInfo.can_view_stars_revenue || getMessagesController().getStoriesController().canPostStories(getDialogId())) && topicId == 0) {
                         otherItem.addSubItem(statistics, R.drawable.msg_stats, LocaleController.getString(R.string.Statistics));
                     }
                     ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
-                    callItemVisible = call != null;
-                    voiceChatAction = call != null || voiceChatAction;
+                    //DIVO--START
+                    if (chat.megagroup && !chat.gigagroup) {
+                        callItemVisible = call != null;
+                        voiceChatAction = call != null || voiceChatAction;
+                    }
+                    //callItemVisible = call != null;
+                    //voiceChatAction = call != null || voiceChatAction;
+                    //DIVO--END
                 }
                 if (chat.megagroup) {
                     if (chatInfo == null || !chatInfo.participants_hidden || ChatObject.hasAdminRights(chat)) {

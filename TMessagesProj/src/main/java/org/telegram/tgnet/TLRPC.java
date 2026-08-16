@@ -10141,6 +10141,14 @@ public class TLRPC {
                 case TL_messages_sponsoredMessages.constructor:
                     result = new TL_messages_sponsoredMessages();
                     break;
+                //DIVO--START
+                case TL_messages_sponsoredMessages_layer154.constructor:
+                    result = new TL_messages_sponsoredMessages_layer154();
+                    break;
+                case TL_messages_sponsoredMessages_layer133.constructor:
+                    result = new TL_messages_sponsoredMessages_layer133();
+                    break;
+                //DIVO--END
             }
             return TLdeserialize(messages_SponsoredMessages.class, result, stream, constructor, exception);
         }
@@ -10185,6 +10193,48 @@ public class TLRPC {
             if ((flags & 4) != 0) {
                 stream.writeInt32(between_delay);
             }
+            Vector.serialize(stream, messages);
+            Vector.serialize(stream, chats);
+            Vector.serialize(stream, users);
+        }
+    }
+
+    public static class TL_messages_sponsoredMessages_layer154 extends messages_SponsoredMessages {
+        public static final int constructor = 0xc9ee1d87;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            if ((flags & 1) != 0) {
+                posts_between = stream.readInt32(exception);
+            }
+            messages = Vector.deserialize(stream, TL_sponsoredMessage::TLdeserialize, exception);
+            chats = Vector.deserialize(stream, Chat::TLdeserialize, exception);
+            users = Vector.deserialize(stream, User::TLdeserialize, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(flags);
+            if ((flags & 1) != 0) {
+                stream.writeInt32(posts_between);
+            }
+            Vector.serialize(stream, messages);
+            Vector.serialize(stream, chats);
+            Vector.serialize(stream, users);
+        }
+    }
+
+    public static class TL_messages_sponsoredMessages_layer133 extends messages_SponsoredMessages {
+        public static final int constructor = 0x65a4c7d5;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            messages = Vector.deserialize(stream, TL_sponsoredMessage::TLdeserialize, exception);
+            chats = Vector.deserialize(stream, Chat::TLdeserialize, exception);
+            users = Vector.deserialize(stream, User::TLdeserialize, exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
             Vector.serialize(stream, messages);
             Vector.serialize(stream, chats);
             Vector.serialize(stream, users);
