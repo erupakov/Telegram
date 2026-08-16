@@ -2,6 +2,7 @@
 <resources>
     <!--divo view start-->
     <string name="AppName">Divo Global</string>
+    <string name="CallsComingSoon">This feature will be added later.</string>
     <string name="AppNameBeta">Divo Global</string>
     <string name="LanguageName">English</string>
     <string name="English">English</string>

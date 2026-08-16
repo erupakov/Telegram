@@ -3985,9 +3985,9 @@ public class ChatActivity extends BaseFragment implements
                 } else if (id == call || id == video_call) {
                     if (currentUser != null && getParentActivity() != null) {
                         //DIVO--START
-                        DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.CallStarted(dialog_id, id == video_call));
+                        AlertsCreator.showSimpleAlert(ChatActivity.this, LocaleController.getString(R.string.CallsComingSoon));
+                        //VoIPHelper.startCall(currentUser, id == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
                         //DIVO--END
-                        VoIPHelper.startCall(currentUser, id == video_call, userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
                     }
                 } else if (id == text_bold) {
                     if (chatActivityEnterView != null && chatActivityEnterView.getEditField() != null) {
@@ -32493,7 +32493,9 @@ public class ChatActivity extends BaseFragment implements
             }
             case OPTION_CALL_AGAIN: {
                 if (currentUser != null) {
-                    VoIPHelper.startCall(currentUser, selectedObject.isVideoCall(), userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                    //DIVO
+                    AlertsCreator.showSimpleAlert(this, LocaleController.getString(R.string.CallsComingSoon));
+                    //VoIPHelper.startCall(currentUser, selectedObject.isVideoCall(), userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
                 }
                 break;
             }
@@ -37681,7 +37683,9 @@ public class ChatActivity extends BaseFragment implements
                     progressDialog.setOnCancelListener(di -> getConnectionsManager().cancelRequest(reqId, true));
                     progressDialog.showDelayed(600);
                 } else if (currentUser != null) {
-                    VoIPHelper.startCall(currentUser, messageObject.isVideoCall(), userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
+                    //DIVO
+                    AlertsCreator.showSimpleAlert(ChatActivity.this, LocaleController.getString(R.string.CallsComingSoon));
+                    //VoIPHelper.startCall(currentUser, messageObject.isVideoCall(), userInfo != null && userInfo.video_calls_available, getParentActivity(), getMessagesController().getUserFull(currentUser.id), getAccountInstance());
                 }
             } else {
                 createMenu(cell, true, false, otherX, otherY, messageObject.isMusic(), false);
@@ -42592,10 +42596,14 @@ public class ChatActivity extends BaseFragment implements
                 options.add(R.drawable.msg_discussion, getString(R.string.SendMessage), () -> presentFragment(ChatActivity.of(user.id)));
                 if (!UserObject.isUserSelf(user)) {
                     options.add(R.drawable.msg_calls, getString(R.string.VoiceCallViaTelegram), () -> {
-                        VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        //DIVO
+                        AlertsCreator.showSimpleAlert(ChatActivity.this, LocaleController.getString(R.string.CallsComingSoon));
+                        //VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
                     });
                     options.add(R.drawable.msg_videocall, getString(R.string.VideoCallViaTelegram), () -> {
-                        VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        //DIVO
+                        AlertsCreator.showSimpleAlert(ChatActivity.this, LocaleController.getString(R.string.CallsComingSoon));
+                        //VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
                     });
                 }
                 options.add(R.drawable.msg_calls_regular, getString(R.string.VoiceCallViaCarrier), () -> {

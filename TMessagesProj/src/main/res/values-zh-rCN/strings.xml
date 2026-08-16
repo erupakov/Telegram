@@ -2,6 +2,7 @@
 <resources>
     <!--divo view start-->
     <string name="AppName">Divo Global</string>
+    <string name="CallsComingSoon">该功能将在稍后推出。</string>
     <string name="AppNameBeta">Divo Global</string>
     <string name="LanguageName">中文 (简体)</string>
     <string name="English">英文</string>

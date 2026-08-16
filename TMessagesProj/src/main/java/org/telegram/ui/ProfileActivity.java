@@ -5961,10 +5961,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     private void onCallClicked(boolean isVideoCall) {
         if (userId != 0) {
-            TLRPC.User user = getMessagesController().getUser(userId);
-            if (user != null) {
-                VoIPHelper.startCall(user, isVideoCall, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
-            }
+            //DIVO--START
+            AlertsCreator.showSimpleAlert(this, LocaleController.getString(R.string.CallsComingSoon));
+            //TLRPC.User user = getMessagesController().getUser(userId);
+            //if (user != null) {
+            //    VoIPHelper.startCall(user, isVideoCall, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+            //}
+            //DIVO--END
         } else if (chatId != 0) {
             ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
             if (call == null) {
@@ -7215,12 +7218,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (userInfo != null && userInfo.phone_calls_available) {
                     o.add(R.drawable.msg_calls, getString(R.string.CallViaTelegram), () -> {
                         if (getParentActivity() == null) return;
-                        VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                        //DIVO
+                        AlertsCreator.showSimpleAlert(ProfileActivity.this, LocaleController.getString(R.string.CallsComingSoon));
+                        //VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
                     });
                     if (userInfo.video_calls_available) {
                         o.add(R.drawable.msg_videocall, getString(R.string.VideoCallViaTelegram), () -> {
                             if (getParentActivity() == null) return;
-                            VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+                            //DIVO
+                            AlertsCreator.showSimpleAlert(ProfileActivity.this, LocaleController.getString(R.string.CallsComingSoon));
+                            //VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
                         });
                     }
                 }

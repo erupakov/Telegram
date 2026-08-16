@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--divo view start-->
+    <string name="CallsComingSoon">Данный функционал будет добавлен позже.</string>
     <string name="DivoMainTabsModels">Модели</string>
     <string name="DivoMainTabsEvents">События</string>
     <string name="DivoMainTabsChats">Чаты</string>
