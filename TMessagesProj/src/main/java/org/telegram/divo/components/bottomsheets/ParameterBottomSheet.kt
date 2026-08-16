@@ -277,7 +277,7 @@ fun ParameterBottomSheet(
                         )
                     } else {
                         Row(
-                            modifier = Modifier.fillMaxWidth(0.8f),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             DivoWheelPicker(
@@ -285,7 +285,7 @@ fun ParameterBottomSheet(
                                 initialIndex = integerParts.indexOf(selectedIntPart)
                                     .coerceAtLeast(0),
                                 isCyclic = true,
-                                modifier = Modifier.width(70.dp),
+                                modifier = Modifier.width(140.dp),
                                 onItemSelected = { _, item -> selectedIntPart = item }
                             )
                         }
