@@ -119,6 +119,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.components.items.RegButtonView;
+import org.telegram.divo.dal.network.DivoApi;
 import org.telegram.divo.dal.utils.DivoAuthHelper;
 import org.telegram.divo.screen.reg_select_role.RoleSelectionView;
 import org.telegram.messenger.AccountInstance;
@@ -1284,6 +1285,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                 }
                 clearCurrentState();
+                // DIVO--START: If returning from role selection / registration before completion, clean up incomplete session
+                if (currentViewNum == VIEW_REGISTER) {
+                    String token = DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(currentAccount);
+                    if (TextUtils.isEmpty(token)) {
+                        UserConfig.getInstance(currentAccount).clearConfig();
+                        ConnectionsManager.getInstance(currentAccount).cleanup(false);
+                        MessagesController.getInstance(currentAccount).cleanup();
+                        forceRoleSelection = false;
+                        initialRoleSelectionPhone = null;
+                    }
+                }
+                // DIVO--END
                 if (parentLayout != null && parentLayout.getFragmentStack().size() <= 1) {
                     presentFragment(new org.telegram.divo.screen.auth.AuthFragment(), true);
                     return false;
@@ -3427,6 +3440,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (!userConfig.isClientActivated()) {
                             continue;
                         }
+                        // DIVO--START: Do not treat accounts with uncompleted Divo registration as already logged in
+                        String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(a);
+                        if (android.text.TextUtils.isEmpty(token)) {
+                            if (a == currentAccount) {
+                                userConfig.clearConfig();
+                                ConnectionsManager.getInstance(a).cleanup(false);
+                                MessagesController.getInstance(a).cleanup();
+                            }
+                            continue;
+                        }
+                        // DIVO--END
                         String userPhone = userConfig.getCurrentUser().phone;
                         if (PhoneNumberUtils.compare(phone, userPhone) && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
                             final int num = a;
@@ -3825,6 +3849,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (!userConfig.isClientActivated()) {
                             continue;
                         }
+                        // DIVO--START
+                        String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(a);
+                        if (android.text.TextUtils.isEmpty(token)) {
+                            if (a == currentAccount) {
+                                userConfig.clearConfig();
+                                ConnectionsManager.getInstance(a).cleanup(false);
+                                MessagesController.getInstance(a).cleanup();
+                            }
+                            continue;
+                        }
+                        // DIVO--END
                         if (userConfig.getClientUserId() == userId && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
                             if (UserConfig.selectedAccount != a) {
                                 ((LaunchActivity) getParentActivity()).switchToAccount(a, true);

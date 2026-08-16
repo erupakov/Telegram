@@ -92,6 +92,7 @@ import com.google.firebase.appindexing.builders.AssistActionBuilder;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher;
+import org.telegram.divo.dal.network.DivoApi;
 import org.telegram.divo.screen.auth.AuthFragment;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
@@ -568,7 +569,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 actionBarLayout.addFragmentToStack(getClientNotActivatedFragment());
             } else {
                 // DIVO--START
-                String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken();
+                String token = DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(currentAccount);
                 if (android.text.TextUtils.isEmpty(token)) {
                     // Divo token is missing (registration not finished)
                     TLRPC.User currentUser = UserConfig.getInstance(currentAccount).getCurrentUser();

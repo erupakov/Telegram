@@ -29,42 +29,47 @@ class SharedPrefsAccessTokenProvider(
     private var cachedAccount: Int = -1
     private var cachedPrefs: SharedPreferences? = null
 
-    private val prefs: SharedPreferences
-        get() {
-            val account = UserConfig.selectedAccount
-            val currentPrefs = cachedPrefs
-            
-            if (account == cachedAccount && currentPrefs != null) {
-                return currentPrefs
-            }
-            
-            val newPrefs = try {
-                EncryptedSharedPreferences.create(
-                    context.applicationContext,
-                    PREFS_NAME_PREFIX + account,
-                    masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                )
-            } catch (e: Exception) {
-                // In case of keystore corruption, fallback or clear data
-                context.applicationContext.getSharedPreferences(PREFS_NAME_PREFIX + account, Context.MODE_PRIVATE).edit { clear() }
-                EncryptedSharedPreferences.create(
-                    context.applicationContext,
-                    PREFS_NAME_PREFIX + account,
-                    masterKey,
-                    EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-                    EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-                )
-            }
-            
+    private fun getPrefsForAccount(account: Int): SharedPreferences {
+        val currentPrefs = cachedPrefs
+        
+        if (account == cachedAccount && currentPrefs != null) {
+            return currentPrefs
+        }
+        
+        val newPrefs = try {
+            EncryptedSharedPreferences.create(
+                context.applicationContext,
+                PREFS_NAME_PREFIX + account,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        } catch (e: Exception) {
+            // In case of keystore corruption, fallback or clear data
+            context.applicationContext.getSharedPreferences(PREFS_NAME_PREFIX + account, Context.MODE_PRIVATE).edit { clear() }
+            EncryptedSharedPreferences.create(
+                context.applicationContext,
+                PREFS_NAME_PREFIX + account,
+                masterKey,
+                EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+                EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+            )
+        }
+        
+        if (account == UserConfig.selectedAccount) {
             cachedPrefs = newPrefs
             cachedAccount = account
-            
-            return newPrefs
         }
+        
+        return newPrefs
+    }
 
-    override fun getAccessToken(): String? = prefs.getString(KEY_ACCESS_TOKEN, null)
+    private val prefs: SharedPreferences
+        get() = getPrefsForAccount(UserConfig.selectedAccount)
+
+    override fun getAccessToken(): String? = getAccessToken(UserConfig.selectedAccount)
+
+    override fun getAccessToken(account: Int): String? = getPrefsForAccount(account).getString(KEY_ACCESS_TOKEN, null)
 
     override fun setAccessToken(token: String?) {
         prefs.edit {
