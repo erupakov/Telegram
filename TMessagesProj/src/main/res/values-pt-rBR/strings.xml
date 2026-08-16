@@ -20,6 +20,8 @@
     <string name="ButtonApply">Aplicar</string>
     <string name="ButtonApplied">Inscrito</string>
     <string name="EventButtonInterested">Tenho interesse</string>
+    <string name="DivoPublicProfile">Perfil público</string>
+    <string name="DivoUserNotFound">Perfil do usuário não encontrado no DIVO</string>
     <string name="ButtonClosed">Fechado</string>
     <string name="ButtonOk">Ok</string>
     <string name="ButtonCancel">Cancelar</string>

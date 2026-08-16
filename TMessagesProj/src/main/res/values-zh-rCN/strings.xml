@@ -20,6 +20,8 @@
     <string name="ButtonApply">应用</string>
     <string name="ButtonApplied">已申请</string>
     <string name="EventButtonInterested">感兴趣</string>
+    <string name="DivoPublicProfile">公开资料</string>
+    <string name="DivoUserNotFound">在 DIVO 中未找到用户资料</string>
     <string name="ButtonClosed">已关闭</string>
     <string name="ButtonOk">确定</string>
     <string name="ButtonCancel">取消</string>

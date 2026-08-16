@@ -42,6 +42,11 @@ interface UserService {
         @Path("userId") userId: Int
     ): UserInfoResponse
 
+    @GET("user/by-telegram")
+    suspend fun getUserByTelegram(
+        @Query("telegramId") telegramId: Long
+    ): UserInfoResponse
+
     @POST("user/update-profile")
     suspend fun updateProfile(
         @Body request: UpdateProfileRequest

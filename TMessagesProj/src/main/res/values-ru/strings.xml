@@ -13,6 +13,8 @@
     <string name="ButtonApply">Применить</string>
     <string name="ButtonApplied">Подано</string>
     <string name="EventButtonInterested">Интересно</string>
+    <string name="DivoPublicProfile">Публичный профиль</string>
+    <string name="DivoUserNotFound">Профиль пользователя в DIVO не найден</string>
     <string name="ButtonClosed">Закрыто</string>
     <string name="ButtonOk">ОК</string>
     <string name="ButtonCancel">Отмена</string>
