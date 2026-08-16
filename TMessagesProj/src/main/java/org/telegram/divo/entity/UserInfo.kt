@@ -106,6 +106,48 @@ fun mapGenderToLocalized(genderId: String?): String? {
         else -> null
     }
 }
+
+fun mapRoleToEnglish(localizedRoles: String?): String? {
+    if (localizedRoles.isNullOrBlank()) return null
+    val context = org.telegram.messenger.ApplicationLoader.applicationContext
+    val array = context.resources.getStringArray(org.telegram.messenger.R.array.ModelNewTalentAgency)
+    
+    val allRolesLabel = array.getOrNull(0)
+    val modelLocalized = array.getOrNull(1)
+    val newTalentLocalized = array.getOrNull(2)
+    val agencyLocalized = array.getOrNull(3)
+    
+    val items = localizedRoles.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+    
+    val mapped = items.map { item ->
+        val lower = item.lowercase().replace(" ", "_")
+        when {
+            item.equals(allRolesLabel, ignoreCase = true) || lower in listOf("all", "all_roles", "все_роли", "todos_los_roles", "tous_les_rôles", "todos_os_papéis", "所有角色") -> "all"
+            item.equals(modelLocalized, ignoreCase = true) || lower in listOf("model", "модель", "modelo", "modèle", "模特") -> "model"
+            item.equals(newTalentLocalized, ignoreCase = true) || lower in listOf("new_talent", "new_face", "новое_лицо", "новое лицо", "nuevo_talento", "nouveau_talent", "novo_talento", "新面孔") -> "new_face"
+            item.equals(agencyLocalized, ignoreCase = true) || lower in listOf("agency", "агентство", "agencia", "agence", "agência", "机构") -> "agency"
+            item.equals("fan", ignoreCase = true) || lower in listOf("fan", "фан", "fã", "爱好者") -> "fan"
+            else -> lower
+        }
+    }
+    
+    return mapped.joinToString(",").takeIf { it.isNotEmpty() }
+}
+
+fun mapRoleToLocalized(roleId: String?): String? {
+    if (roleId.isNullOrBlank()) return null
+    val context = org.telegram.messenger.ApplicationLoader.applicationContext
+    val array = context.resources.getStringArray(org.telegram.messenger.R.array.ModelNewTalentAgency)
+    
+    return when (roleId.lowercase().trim().replace(" ", "_")) {
+        "all", "all_roles" -> array.getOrNull(0)
+        "model" -> array.getOrNull(1)
+        "new_face", "new_talent" -> array.getOrNull(2)
+        "agency", "agency_employee" -> array.getOrNull(3)
+        else -> roleId
+    }
+}
+
 data class Model(
     val agency: Agency? = null,
     val education: String = "",

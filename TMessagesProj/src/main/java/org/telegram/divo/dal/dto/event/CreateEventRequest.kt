@@ -32,24 +32,26 @@ fun State.toCreateEventRequest(
     }
 
     fun mapRoleLabelToApiType(roleValue: String): List<String> {
-        if (roleValue.isEmpty() || roleValue.contains("All", ignoreCase = true)) {
-            return listOf(
-                org.telegram.divo.entity.RoleType.MODEL.value,
-                org.telegram.divo.entity.RoleType.FAN.value,
-                org.telegram.divo.entity.RoleType.NEW_FACE.value
-            )
+        val allRoles = listOf(
+            org.telegram.divo.entity.RoleType.MODEL.value,
+            org.telegram.divo.entity.RoleType.FAN.value,
+            org.telegram.divo.entity.RoleType.NEW_FACE.value
+        )
+        if (roleValue.isEmpty()) {
+            return allRoles
         }
-        return roleValue
-            .split(",")
-            .map { it.trim().lowercase().replace(" ", "_") }
-            .map { role ->
-                when (role) {
-                    org.telegram.divo.entity.RoleType.NEW_TALENT.value -> org.telegram.divo.entity.RoleType.NEW_FACE.value
-                    "agency" -> org.telegram.divo.entity.RoleType.AGENCY.value
-                    else -> role
-                }
+        val mapped = org.telegram.divo.entity.mapRoleToEnglish(roleValue) ?: return allRoles
+        val list = mapped.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        if (list.contains("all")) {
+            return allRoles
+        }
+        return list.map { role ->
+            when (role) {
+                org.telegram.divo.entity.RoleType.NEW_TALENT.value -> org.telegram.divo.entity.RoleType.NEW_FACE.value
+                "agency" -> org.telegram.divo.entity.RoleType.AGENCY.value
+                else -> role
             }
-            .filter { it.isNotEmpty() }
+        }
     }
 
     fun mapGenderLabelToApiType(genderValue: String): List<String> {

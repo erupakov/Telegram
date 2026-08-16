@@ -52,12 +52,13 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
     private val searchPaginator = OffsetPaginator(limit = PAGE_SIZE) { offset, limit ->
         val s = state.value
 
-        val roleValues = s.role.value
-            .split(",")
-            .map { it.trim().lowercase().replace(" ", "_") }
-            .map { if (it == "agency") "agency_employee" else it }
-            .filter { it.isNotEmpty() }
-            .ifEmpty { null }
+        val mappedRole = org.telegram.divo.entity.mapRoleToEnglish(s.role.value)
+        val roleValues = mappedRole
+            ?.split(",")
+            ?.map { it.trim() }
+            ?.filter { it.isNotEmpty() && it != "all" }
+            ?.map { if (it == "agency") "agency_employee" else it }
+            ?.ifEmpty { null }
 
         when (val result = DivoApi.publicationRepository.searchFeeds(
             offset = offset,

@@ -14,9 +14,11 @@ import org.telegram.divo.dal.dto.event.toCreateEventRequest
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.City
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.entity.UploadedFile
+import org.telegram.divo.screen.search.LocalCity
 import org.telegram.messenger.ApplicationLoader
 
 class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
@@ -172,12 +174,34 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             return MeasuringUnits.formatStoredRange(type, from, to, storedSystem)
         }
 
-        val roleValue = attrs?.roles?.joinToString(", ") ?: ""
-        val genderValue = attrs?.genders?.joinToString(", ") ?: ""
+        val roleValue = attrs?.roles?.mapNotNull { org.telegram.divo.entity.mapRoleToLocalized(it) }?.joinToString(", ") ?: ""
+        val genderValue = attrs?.genders?.mapNotNull { org.telegram.divo.entity.mapGenderToLocalized(it) }?.joinToString(", ") ?: ""
         val hairLengthValue = attrs?.hairLengths?.joinToString(", ") ?: ""
         val hairColorValue = attrs?.hairColors?.joinToString(", ") ?: ""
         val eyeColorValue = attrs?.eyeColors?.joinToString(", ") ?: ""
         val skinColorValue = attrs?.skinColors?.joinToString(", ") ?: ""
+
+        val countryObj = allCountries.find {
+            it.name.equals(event.address?.countryName, ignoreCase = true) ||
+            it.shortName.equals(event.address?.countryCode, ignoreCase = true)
+        }
+        val countries = if (countryObj != null) listOf(countryObj) else selectedCountries
+
+        val cityObj = allCities.find {
+            it.name.equals(event.address?.cityName, ignoreCase = true)
+        } ?: if (!event.address?.cityName.isNullOrBlank()) {
+            LocalCity(
+                id = 0L,
+                name = event.address?.cityName.orEmpty(),
+                asciiName = event.address?.cityName.orEmpty(),
+                alternateNames = "",
+                countryCode = event.address?.countryCode.takeIf { !it.isNullOrBlank() }
+                    ?: countryObj?.shortName.orEmpty(),
+                population = 0
+            )
+        } else {
+            selectedCity
+        }
 
         return copy(
             editingEventId = eventId,
@@ -187,8 +211,8 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             selectedEventType = eventTypes.find { it.title == event.type } ?: selectedEventType,
             eventDate = datePart,
             eventTime = timePart,
-            selectedCountries = allCountries.filter { it.name == event.address?.countryName }.ifEmpty { selectedCountries },
-            selectedCity = allCities.find { it.name == event.address?.countryName } ?: selectedCity, // countryName might actually hold city name in the backend based on previous implementation
+            selectedCountries = countries,
+            selectedCity = cityObj,
             deadlineDate = deadlineDatePart,
             deadlineTime = deadlineTimePart,
             isPaid = event.cost?.isNotBlank() == true,

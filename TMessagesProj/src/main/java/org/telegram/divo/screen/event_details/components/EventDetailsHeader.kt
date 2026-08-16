@@ -244,7 +244,7 @@ private fun ContentSection(
                     val buttonTextId = when {
                         isApplied -> R.string.ButtonApplied
                         isClosed -> R.string.ButtonClosed
-                        else -> R.string.ButtonApply
+                        else -> R.string.EventButtonInterested
                     }
                     val buttonIconResId = when {
                         isApplied -> R.drawable.divo_check_ic

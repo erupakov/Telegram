@@ -19,6 +19,7 @@
     <string name="ButtonSave">Save</string>
     <string name="ButtonApply">Apply</string>
     <string name="ButtonApplied">Applied</string>
+    <string name="EventButtonInterested">Interested</string>
     <string name="ButtonClosed">Closed</string>
     <string name="ButtonOk">Ok</string>
     <string name="ButtonCancel">Cancel</string>

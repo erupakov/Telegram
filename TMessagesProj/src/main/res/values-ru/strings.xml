@@ -12,6 +12,7 @@
     <string name="ButtonSave">Сохранить</string>
     <string name="ButtonApply">Применить</string>
     <string name="ButtonApplied">Подано</string>
+    <string name="EventButtonInterested">Интересно</string>
     <string name="ButtonClosed">Закрыто</string>
     <string name="ButtonOk">ОК</string>
     <string name="ButtonCancel">Отмена</string>
@@ -159,6 +160,7 @@
     <string name="WorkHistoryEmptySubtitle">Нажмите кнопку ниже,
 чтобы добавить опыт работы</string>
     <string name="SaveChanges">Сохранить изменения</string>
+    <string name="DiscardChanges">Отменить изменения</string>
     <string name="WorkExperienceSaved">Опыт работы успешно добавлен</string>
     <string name="PresentLabel">По настоящее время</string>
     <string name="EndDateCannotBeEarly">Дата окончания не может быть раньше даты начала</string>
@@ -397,11 +399,11 @@
         <item quantity="other">%d результатов</item>
     </plurals>
 
-    <string-array name="ModelFunNewTalent">
+    <string-array name="ModelNewTalentAgency">
         <item>Все роли</item>
         <item>Модель</item>
-        <item>Фан</item>
         <item>Новое лицо</item>
+        <item>Агентство</item>
     </string-array>
 
     <!--settings screen-->
@@ -997,6 +999,13 @@
     <string name="FollowersOnlineText">%1$s подписчиков</string>
     <string name="SubmitApplicationTitle">ПОДАТЬ ЗАЯВКУ</string>
     <string name="SubmitButton">Подать</string>
+    <string name="Cancel">Отмена</string>
+    <string name="Close">Закрыть</string>
+    <string name="Done">Готово</string>
+    <string name="Save">Сохранить</string>
+    <string name="Delete">Удалить</string>
+    <string name="Back">Назад</string>
+    <string name="OK">ОК</string>
     <string name="ParamWeight">Вес</string>
     <string name="ParamBreastSize">Размер груди</string>
     <string name="ParamWaist">Талия</string>

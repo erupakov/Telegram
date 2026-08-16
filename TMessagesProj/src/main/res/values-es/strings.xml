@@ -19,6 +19,7 @@
     <string name="ButtonSave">Guardar</string>
     <string name="ButtonApply">Aplicar</string>
     <string name="ButtonApplied">Aplicado</string>
+    <string name="EventButtonInterested">Me interesa</string>
     <string name="ButtonClosed">Cerrado</string>
     <string name="ButtonOk">Aceptar</string>
     <string name="ButtonCancel">Cancelar</string>
@@ -166,6 +167,7 @@ experiencia laboral</string>
     <string name="WorkHistoryEmptySubtitle">Haz clic en el botón de abajo
 para añadir tu experiencia laboral</string>
     <string name="SaveChanges">Guardar cambios</string>
+    <string name="DiscardChanges">Descartar cambios</string>
     <string name="WorkExperienceSaved">Experiencia laboral añadida con éxito</string>
     <string name="PresentLabel">Presente</string>
     <string name="EndDateCannotBeEarly">La fecha de fin no puede ser anterior a la fecha de inicio</string>
@@ -390,11 +392,11 @@ mientras esté con otra agencia.</string>
         <item quantity="other">%d resultados</item>
     </plurals>
 
-    <string-array name="ModelFunNewTalent">
+    <string-array name="ModelNewTalentAgency">
         <item>Todos los roles</item>
         <item>Modelo</item>
-        <item>Diversión</item>
-        <item>New face</item>
+        <item>Nuevo talento</item>
+        <item>Agencia</item>
     </string-array>
 
     <!--settings screen-->

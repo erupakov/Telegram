@@ -19,6 +19,7 @@
     <string name="ButtonSave">Jardinier</string>
     <string name="ButtonApply">Appliquer</string>
     <string name="ButtonApplied">Appliqué</string>
+    <string name="EventButtonInterested">Intéressé(e)</string>
     <string name="ButtonClosed">Ferme</string>
     <string name="ButtonOk">Accepteur</string>
     <string name="ButtonCancel">Annuler</string>
@@ -165,6 +166,7 @@ expérience de travail</string>
     <string name="WorkHistoryEmptySubtitle">Cliquez sur le bouton ci-dessous
 pour ajouter votre expérience professionnelle</string>
     <string name="SaveChanges">Enregistrer les modifications</string>
+    <string name="DiscardChanges">Abandonner les modifications</string>
     <string name="WorkExperienceSaved">Expérience de travail supplémentaire avec succès</string>
     <string name="PresentLabel">Présent</string>
     <string name="EndDateCannotBeEarly">La date finale ne passe pas avant la date de début</string>
@@ -389,11 +391,11 @@ pendant que vous êtes dans une autre agence.</string>
         <item quantity="other">%d resultados</item>
     </plurals>
 
-    <string-array name="ModelFunNewTalent">
+    <string-array name="ModelNewTalentAgency">
         <item>Tous les rôles</item>
         <item>Modèle</item>
-        <item>Divertissement</item>
-        <item>Nouveau visage</item>
+        <item>Nouveau talent</item>
+        <item>Agence</item>
     </string-array>
 
     <!--settings screen-->

@@ -176,10 +176,15 @@ class SimilarProfilesViewModel(
             val roleMatch = if (currentState.role.value.isEmpty()) {
                 true
             } else {
-                val selectedRoles = currentState.role.value.split(", ")
-
-                selectedRoles.any { selectedRole ->
-                    profile.roleLabel.equals(selectedRole, ignoreCase = true)
+                val mappedSelected = org.telegram.divo.entity.mapRoleToEnglish(currentState.role.value)
+                val selectedRoles = mappedSelected?.split(",")?.map { it.trim() } ?: emptyList()
+                if (selectedRoles.contains("all") || selectedRoles.isEmpty()) {
+                    true
+                } else {
+                    selectedRoles.any { selectedRole ->
+                        val profileRoleEnglish = org.telegram.divo.entity.mapRoleToEnglish(profile.roleLabel) ?: profile.roleLabel
+                        profileRoleEnglish.equals(selectedRole, ignoreCase = true)
+                    }
                 }
             }
 

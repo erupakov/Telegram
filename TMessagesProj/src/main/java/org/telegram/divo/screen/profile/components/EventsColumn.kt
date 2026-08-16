@@ -221,7 +221,7 @@ private fun EventItem(
                 UIButton(
                     modifier = Modifier
                         .height(32.dp),
-                    text = stringResource(R.string.ButtonApply),
+                    text = stringResource(R.string.EventButtonInterested),
                     paddingTop = 0.dp,
                     background = AppTheme.colors.accentOrange,
                     textStyle = AppTheme.typography.textButton.copy(

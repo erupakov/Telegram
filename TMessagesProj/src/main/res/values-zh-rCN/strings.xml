@@ -19,6 +19,7 @@
     <string name="ButtonSave">保存</string>
     <string name="ButtonApply">应用</string>
     <string name="ButtonApplied">已申请</string>
+    <string name="EventButtonInterested">感兴趣</string>
     <string name="ButtonClosed">已关闭</string>
     <string name="ButtonOk">确定</string>
     <string name="ButtonCancel">取消</string>
@@ -165,6 +166,7 @@
     <string name="WorkHistoryEmptySubtitle">点击下方按钮
 添加您的工作经历</string>
     <string name="SaveChanges">保存更改</string>
+    <string name="DiscardChanges">放弃更改</string>
     <string name="WorkExperienceSaved">工作经历添加成功</string>
     <string name="PresentLabel">至今</string>
     <string name="EndDateCannotBeEarly">结束日期不能早于开始日期</string>
@@ -388,11 +390,11 @@
         <item quantity="other">%d 个结果</item>
     </plurals>
 
-    <string-array name="ModelFunNewTalent">
+    <string-array name="ModelNewTalentAgency">
         <item>所有角色</item>
         <item>模特</item>
-        <item>爱好者</item>
         <item>新面孔</item>
+        <item>机构</item>
     </string-array>
 
     <!--settings screen-->
@@ -684,6 +686,13 @@
     <string name="FollowersOnlineText">%1$s 粉丝</string>
     <string name="SubmitApplicationTitle">提交申请</string>
     <string name="SubmitButton">提交</string>
+    <string name="Cancel">取消</string>
+    <string name="Close">关闭</string>
+    <string name="Done">完成</string>
+    <string name="Save">保存</string>
+    <string name="Delete">删除</string>
+    <string name="Back">返回</string>
+    <string name="OK">确定</string>
     <string name="ParamWeight">体重</string>
     <string name="ParamBreastSize">胸围</string>
     <string name="ParamWaist">腰围</string>
