@@ -3745,6 +3745,9 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
             if (parentAlert.avatarPicker == 3) {
                 galleryAlbumEntry = MediaController.allVideosAlbumEntry;
                 progressView.setText(LocaleController.getString(R.string.NoVideos));
+            } else if (!videoEnabled) {
+                galleryAlbumEntry = MediaController.allPhotosAlbumEntry;
+                progressView.setText(LocaleController.getString(R.string.NoPhotos));
                 //DIVO--END
             } else if (shouldLoadAllMedia()) {
                 galleryAlbumEntry = MediaController.allMediaAlbumEntry;

@@ -155,7 +155,16 @@ private fun openTelegramPhotoPicker(
     val chatAttachAlert = ChatAttachAlert(activity, lastFragment, false, false, false, null)
     chatAttachAlert.setMaxSelectedPhotos(maxItems, false)
     chatAttachAlert.allowAvatarConstructor = false
-    chatAttachAlert.setAvatarPicker(if (isVideo) 3 else 1, false, null)
+    chatAttachAlert.disableTypeButtons = true
+    chatAttachAlert.documentsEnabled = false
+    chatAttachAlert.videosEnabled = isVideo
+    chatAttachAlert.photosEnabled = !isVideo
+    if (maxItems == 1) {
+        chatAttachAlert.setAvatarPicker(if (isVideo) 3 else 1, false, null)
+    } else {
+        chatAttachAlert.typeButtonsAvailable = false
+        chatAttachAlert.selectedTextView?.setText(LocaleController.getString(if (isVideo) R.string.ChoosePhotoOrVideo else R.string.ChoosePhoto))
+    }
     chatAttachAlert.photoLayout?.loadGalleryPhotos()
     chatAttachAlert.setDelegate(object : ChatAttachAlert.ChatAttachViewDelegate {
         override fun didPressedButton(

@@ -245,14 +245,16 @@ fun EventPreviewScreen(
                         }
                     }
 
-                    item(key = "organizer") {
-                        Spacer(Modifier.height(16.dp))
-                        OrganizerCard(
-                            avatarModel = state.currentUser.avatarUrl.ifBlank { state.currentUser.photoUrl.ifBlank { null } },
-                            name = state.currentUser.fullName,
-                            status = "",
-                            isVerified = true
-                        )
+                    if (state.currentUser.fullName.isNotBlank()) {
+                        item(key = "organizer") {
+                            Spacer(Modifier.height(16.dp))
+                            OrganizerCard(
+                                avatarModel = state.currentUser.avatarUrl.ifBlank { state.currentUser.photoUrl.ifBlank { null } },
+                                name = state.currentUser.fullName,
+                                status = "",
+                                isVerified = true
+                            )
+                        }
                     }
 
                     if (state.eventDescription.isNotBlank()) {

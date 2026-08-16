@@ -28,22 +28,27 @@ fun CapacityCard(
     appliedCount: Int?,
     maxSpotsCount: Int?
 ) {
+    val showApplied = appliedCount != null
+    val showMaxSpots = maxSpotsCount != null && maxSpotsCount > 0
+
+    if (!showApplied && !showMaxSpots) return
+
     Row(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        appliedCount?.let {
+        if (showApplied) {
             CapacityItem(
                 modifier = Modifier.weight(1f),
                 iconRes = R.drawable.ic_divo_applied,
-                text = stringResource(R.string.EventApplied, appliedCount)
+                text = stringResource(R.string.EventApplied, appliedCount ?: 0)
             )
         }
-        maxSpotsCount?.let {
+        if (showMaxSpots) {
             CapacityItem(
                 modifier = Modifier.weight(1f),
                 iconRes = R.drawable.ic_divo_max_spots,
-                text = stringResource(R.string.EventMaxSpots, maxSpotsCount)
+                text = stringResource(R.string.EventMaxSpots, maxSpotsCount ?: 0)
             )
         }
     }

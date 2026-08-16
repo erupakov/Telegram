@@ -419,32 +419,39 @@ private fun EventDetailsContent(
                     Spacer(Modifier.height(20.dp))
                     CapacityCard(
                         appliedCount = uiState.eventDetails?.appliesCount,
-                        maxSpotsCount = 100
+                        maxSpotsCount = uiState.eventDetails?.maxAttendees
                     )
                 }
 
-                item(key = "organizer") {
-                    Spacer(Modifier.height(16.dp))
-                    OrganizerCard(
-                        avatarModel = uiState.eventDetails?.creator?.avatar?.fullUrl ?: uiState.eventDetails?.creator?.photo?.fullUrl,
-                        name =  uiState.eventDetails?.creator?.fullName.orEmpty(),
-                        status = "",
-                        isVerified = uiState.eventDetails?.creator?.isVerified == true
-                    )
-                }
-
-                uiState.eventDetails?.description?.let {
-                    item(key = "about") {
-                        Spacer(Modifier.height(10.dp))
-                        AboutCard(
-                            text = it
+                val organizerName = uiState.eventDetails?.creator?.fullName
+                if (!organizerName.isNullOrBlank()) {
+                    item(key = "organizer") {
+                        Spacer(Modifier.height(16.dp))
+                        OrganizerCard(
+                            avatarModel = uiState.eventDetails?.creator?.avatar?.fullUrl ?: uiState.eventDetails?.creator?.photo?.fullUrl,
+                            name = organizerName,
+                            status = "",
+                            isVerified = uiState.eventDetails?.creator?.isVerified == true
                         )
                     }
                 }
 
-                item(key = "requirements") {
-                    Spacer(Modifier.height(10.dp))
-                    RequirementsCard("Bring your portfolio")
+                if (!uiState.eventDetails?.description.isNullOrBlank()) {
+                    item(key = "about") {
+                        Spacer(Modifier.height(10.dp))
+                        AboutCard(
+                            text = uiState.eventDetails!!.description!!
+                        )
+                    }
+                }
+
+                if (!uiState.eventDetails?.requirements.isNullOrBlank()) {
+                    item(key = "requirements") {
+                        Spacer(Modifier.height(10.dp))
+                        RequirementsCard(
+                            text = uiState.eventDetails!!.requirements!!
+                        )
+                    }
                 }
 
                 uiState.eventDetails?.modelAttributes?.let {

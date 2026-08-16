@@ -210,7 +210,8 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             ),
             galleryUris = gallery,
             existingGalleryFiles = sortedFiles,
-            eventRequirements = event.description.orEmpty()
+            maxParticipants = event.maxAttendees ?: maxParticipants,
+            eventRequirements = event.requirements ?: event.description.orEmpty()
         )
     }
 
