@@ -2231,4 +2231,6 @@ crie um novo.</string>
     <string name="ThereAreNoImagesYet">AINDA NÃO HÁ IMAGENS</string>
     <string name="ThereAreNoVideosYet">AINDA NÃO HÁ VÍDEOS</string>
     <string name="NoPhotosYetBottomSheet">Ainda sem fotos</string>
+    <string name="NoVideos">Ainda sem vídeos</string>
+    <string name="PermissionGalleryDeniedToast">Permita o acesso a fotos e vídeos nas configurações.</string>
 </resources>

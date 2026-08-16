@@ -3855,6 +3855,8 @@ while she is with another agency.</string>
     <string name="AllMedia">All media</string>
     <string name="AllVideos">All videos</string>
     <string name="NoPhotos">No photos yet</string>
+    <string name="NoVideos">No videos yet</string>
+    <string name="PermissionGalleryDeniedToast">Please grant access to photos and videos in settings.</string>
     <string name="PleaseDownload">Please download media first</string>
     <string name="PleaseStreamDownload">Please wait for the video to be fully downloaded.</string>
     <string name="VideoDoesNotSupportStreaming">This video is not optimized for streaming. You may need to download it in full to play it.</string>

@@ -1230,4 +1230,6 @@
     <string name="DeleteProfileDescription">Вы действительно хотите удалить профиль? Это действие необратимо.</string>
     <string name="DeleteProfileConfirm">Удалить</string>
     <string name="NoPhotosYetBottomSheet">Пока нет фото</string>
+    <string name="NoVideos">Пока нет видео</string>
+    <string name="PermissionGalleryDeniedToast">Предоставьте доступ к фото и видео в настройках.</string>
 </resources>

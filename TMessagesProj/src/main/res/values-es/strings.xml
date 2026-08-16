@@ -2304,4 +2304,6 @@ crea uno nuevo.</string>
     <string name="DeleteProfileDescription">¿Estás seguro de que quieres eliminar tu perfil? Esta acción no se puede deshacer.</string>
     <string name="DeleteProfileConfirm">Eliminar</string>
     <string name="NoPhotosYetBottomSheet">Sin fotos aún</string>
+    <string name="NoVideos">Sin videos aún</string>
+    <string name="PermissionGalleryDeniedToast">Permite el acceso a fotos y videos en los ajustes.</string>
 </resources>

@@ -198,6 +198,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     private final NumberTextView topCaptionLimitView;
     public boolean forUser;
     public boolean isPhotoPicker;
+    public boolean allowAvatarConstructor = true; //DIVO
     public boolean isStickerMode;
     public Utilities.Callback2<String, TLRPC.InputDocument> customStickerHandler;
     private int currentLimit;
@@ -5616,6 +5617,10 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             }
             if (avatarPicker == 2) {
                 selectedTextView.setText(getString(R.string.ChoosePhotoOrVideo));
+                //DIVO--START
+            } else if (avatarPicker == 3) {
+                selectedTextView.setText(getString(R.string.AllVideos));
+                //DIVO--END
             } else {
                 selectedTextView.setText(getString(R.string.ChoosePhoto));
             }

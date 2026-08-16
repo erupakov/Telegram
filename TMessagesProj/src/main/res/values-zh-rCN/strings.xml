@@ -927,4 +927,6 @@
     <string name="DeleteProfileDescription">您确定要删除您的个人资料吗？此操作无法撤消。</string>
     <string name="DeleteProfileConfirm">删除</string>
     <string name="NoPhotosYetBottomSheet">暂无照片</string>
+    <string name="NoVideos">暂无视频</string>
+    <string name="PermissionGalleryDeniedToast">请在设置中开启照片和视频访问权限。</string>
 </resources>
