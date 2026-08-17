@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -37,14 +38,15 @@ fun SettingsItemRow(
         )
         Spacer(Modifier.width(10.dp))
         Text(
+            modifier = Modifier.weight(1f),
             text = item.title,
             style = AppTheme.typography.bodyLarge,
             color = AppTheme.colors.textPrimary,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Spacer(Modifier.weight(1f))
         if (value != null) {
+            Spacer(Modifier.width(8.dp))
             Text(
                 text = value,
                 style = AppTheme.typography.bodyLarge,
@@ -52,9 +54,10 @@ fun SettingsItemRow(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(Modifier.width(8.dp))
         }
+        Spacer(Modifier.width(8.dp))
         Icon(
+            modifier = Modifier.size(20.dp),
             painter = painterResource(R.drawable.ic_divo_arrow_right_20),
             contentDescription = null,
             tint = AppTheme.colors.backgroundDark

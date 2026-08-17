@@ -150,10 +150,6 @@ fun ToolBarContent(
                     onManageWorkExperienceClicked()
                 }))
             }
-            add(PopupMenuItem(R.string.DeleteProfile, {
-                DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOptionTapped(uiState.userId, "delete_profile"))
-                onDeleteProfileClicked()
-            }))
         }
     }
 

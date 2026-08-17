@@ -39,6 +39,7 @@ import org.telegram.divo.screen.settings.components.ContainerItems
 import org.telegram.divo.screen.settings.components.MeasuringSystemDialog
 import org.telegram.divo.screen.settings.components.ProfileRow
 import org.telegram.divo.screen.settings.components.QrCodeBottomSheet
+import org.telegram.divo.screen.settings.components.SavedProfilesBottomSheet
 import org.telegram.divo.screen.settings.components.SettingsItemRow
 import org.telegram.divo.screen.settings.components.SettingsTopBar
 import org.telegram.divo.style.AppTheme
@@ -147,7 +148,7 @@ fun SettingsScreen(
     }
 
     if (state.isSavedProfilesSheetVisible) {
-        org.telegram.divo.screen.settings.components.SavedProfilesBottomSheet(
+        SavedProfilesBottomSheet(
             paginator = viewModel.savedProfilesPaginator,
             onDismiss = { viewModel.setIntent(SettingsViewIntent.OnCloseSavedProfilesSheet) },
             onProfileClick = { userId -> navigateToProfile(userId) }
