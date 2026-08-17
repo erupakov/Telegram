@@ -6012,23 +6012,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     private void onCallClicked(boolean isVideoCall) {
         if (userId != 0) {
-            //DIVO--START
-            AlertsCreator.showSimpleAlert(this, LocaleController.getString(R.string.CallsComingSoon));
-            //TLRPC.User user = getMessagesController().getUser(userId);
-            //if (user != null) {
-            //    VoIPHelper.startCall(user, isVideoCall, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
-            //}
-            //DIVO--END
+            TLRPC.User user = getMessagesController().getUser(userId);
+            if (user != null) {
+                VoIPHelper.startCall(user, isVideoCall, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
+            }
         } else if (chatId != 0) {
-            //DIVO--START
-            AlertsCreator.showSimpleAlert(ProfileActivity.this, LocaleController.getString(R.string.CallsComingSoon));
-            //ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
-            //if (call == null) {
-            //    VoIPHelper.showGroupCallAlert(ProfileActivity.this, currentChat, null, false, getAccountInstance());
-            //} else {
-            //    VoIPHelper.startCall(currentChat, null, null, false, getParentActivity(), ProfileActivity.this, getAccountInstance());
-            //}
-            //DIVO--END
+            ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
+            if (call == null) {
+                VoIPHelper.showGroupCallAlert(ProfileActivity.this, currentChat, null, false, getAccountInstance());
+            } else {
+                VoIPHelper.startCall(currentChat, null, null, false, getParentActivity(), ProfileActivity.this, getAccountInstance());
+            }
         }
     }
 
@@ -11804,10 +11798,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     editItemVisible = true;
                 }
 
-                if (userInfo != null && userInfo.phone_calls_available) {
+                //DIVO--START
+                /*if (userInfo != null && userInfo.phone_calls_available) {
                     callItemVisible = true;
                     videoCallItemVisible = userInfo.video_calls_available;
-                }
+                }*/
+                //DIVO--END
                 if (isBot || getContactsController().contactsDict.get(userId) == null) {
                     if (MessagesController.isSupportUser(user)) {
                         if (userBlocked) {
@@ -11889,18 +11885,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 if (chatInfo != null) {
                     if (ChatObject.canManageCalls(chat) && chatInfo.call == null) {
                         //DIVO--START
-                        if (chat.megagroup && !chat.gigagroup) {
+                        /*if (chat.megagroup && !chat.gigagroup) {
                             otherItem.addSubItem(call_item, R.drawable.msg_voicechat, LocaleController.getString(R.string.StartVoipChat));
                             hasVoiceChatItem = true;
                             voiceChatAction = true;
-                        }
-                        //otherItem.addSubItem(call_item, R.drawable.msg_voicechat, chat.megagroup && !chat.gigagroup ? LocaleController.getString(R.string.StartVoipChat) : LocaleController.getString(R.string.StartVoipChannel));
-                        //hasVoiceChatItem = true;
-                        //if (chat.megagroup && !chat.gigagroup) {
-                        //    voiceChatAction = true;
-                        //} else {
-                        //    streamAction = true;
-                        //}
+                        }*/
                         //DIVO--END
                     }
                     if ((chatInfo.can_view_stats || chatInfo.can_view_revenue || chatInfo.can_view_stars_revenue || getMessagesController().getStoriesController().canPostStories(getDialogId())) && topicId == 0) {
@@ -11908,12 +11897,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                     ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
                     //DIVO--START
-                    if (chat.megagroup && !chat.gigagroup) {
+                    /*if (chat.megagroup && !chat.gigagroup) {
                         callItemVisible = call != null;
                         voiceChatAction = call != null || voiceChatAction;
-                    }
-                    //callItemVisible = call != null;
-                    //voiceChatAction = call != null || voiceChatAction;
+                    }*/
                     //DIVO--END
                 }
                 if (chat.megagroup) {
@@ -11976,14 +11963,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             } else {
                 if (chatInfo != null) {
-                    if (ChatObject.canManageCalls(chat) && chatInfo.call == null) {
+                    //DIVO--START
+                    /*if (ChatObject.canManageCalls(chat) && chatInfo.call == null) {
                         otherItem.addSubItem(call_item, R.drawable.msg_voicechat, LocaleController.getString(R.string.StartVoipChat));
                         hasVoiceChatItem = true;
                         voiceChatAction = true;
                     }
                     ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
                     callItemVisible = call != null;
-                    voiceChatAction = call != null || voiceChatAction;
+                    voiceChatAction = call != null || voiceChatAction;*/
+                    //DIVO--END
                 }
                 if (ChatObject.canChangeChatInfo(chat)) {
                     editItemVisible = true;
