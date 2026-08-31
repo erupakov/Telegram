@@ -37,6 +37,7 @@ import androidx.annotation.Keep;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.telegram.divo.dal.utils.DivoDeleteAccountHelper;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.BuildVars;
@@ -64,11 +65,9 @@ import org.telegram.ui.Cells.TextCheckCell;
 import org.telegram.ui.Cells.TextInfoPrivacyCell;
 import org.telegram.ui.Cells.TextSettingsCell;
 import org.telegram.ui.Components.AlertsCreator;
-import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.LayoutHelper;
-import org.telegram.ui.Components.Premium.PremiumGradient;
 import org.telegram.ui.Components.RecyclerListView;
 import org.telegram.ui.Components.TextStyleSpan;
 import org.telegram.ui.bots.BotBiometry;
@@ -135,6 +134,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
     private int advancedSectionRow;
     @Keep
     private int deleteAccountRow;
+    private int deleteProfileRow;
     private int deleteAccountDetailRow;
     private int botsSectionRow;
     private int passportRow;
@@ -405,6 +405,11 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                 }
                 builder.setNegativeButton(getString(R.string.Cancel), null);
                 showDialog(builder.create());
+            } else if (position == deleteProfileRow) {
+                if (getParentActivity() == null) {
+                    return;
+                }
+                DivoDeleteAccountHelper.showDeleteProfileDialog(PrivacySettingsActivity.this);
             } else if (position == lastSeenRow) {
                 presentFragment(new PrivacyControlActivity(ContactsController.PRIVACY_RULES_TYPE_LASTSEEN));
             } else if (position == phoneNumberRow) {
@@ -706,13 +711,13 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         rowCount = 0;
 
         securitySectionRow = rowCount++;
-        passwordRow = rowCount++;
+        passwordRow = -1; //DIVO rowCount++;
         autoDeleteMesages = rowCount++;
-        passcodeRow = rowCount++;
+        passcodeRow = -1; //DIVO rowCount++;
         if (getMessagesController().config.settingsDisplayPasskeys.get() && Build.VERSION.SDK_INT >= 28 && BuildVars.SUPPORTS_PASSKEYS) {
             passkeysRow = rowCount++;
         }
-        if (currentPassword != null ? currentPassword.login_email_pattern != null : SharedConfig.hasEmailLogin) {
+        if (false /*//DIVO currentPassword != null ? currentPassword.login_email_pattern != null : SharedConfig.hasEmailLogin */) {
             emailLoginRow = rowCount++;
         } else {
             emailLoginRow = -1;
@@ -744,7 +749,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
             noncontactsRow = -1;
         }
         birthdayRow = rowCount++;
-        giftsRow = rowCount++;
+        giftsRow = -1; //DIVO rowCount++;
         bioRow = rowCount++;
         // DIVO: hide Saved Music
         musicRow = -1; // rowCount++;
@@ -761,7 +766,8 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
             newChatsSectionRow = -1;
         }
         advancedSectionRow = rowCount++;
-        deleteAccountRow = rowCount++;
+        deleteAccountRow = -1; //DIVO rowCount++;
+        deleteProfileRow = rowCount++;
         deleteAccountDetailRow = rowCount++;
         botsSectionRow = rowCount++;
         if (getUserConfig().hasSecureData) {
@@ -1035,7 +1041,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                     position == newChatsRow && !getContactsController().getLoadingGlobalSettings() ||
                     position == emailLoginRow || position == paymentsClearRow || position == secretMapRow ||
                     position == contactsSyncRow || position == passportRow || position == contactsDeleteRow ||
-                    position == contactsSuggestRow || position == autoDeleteMesages || position == botsBiometryRow;
+                    position == contactsSuggestRow || position == autoDeleteMesages || position == botsBiometryRow || position == deleteProfileRow;
         }
 
         @Override
@@ -1199,8 +1205,10 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                                 value = formatPluralString("Days", ttl);
                             }
                         }
-                        textCell.setTextAndValue(getString("DeleteAccountIfAwayFor3", R.string.DeleteAccountIfAwayFor3), value, deleteAccountUpdate, false);
+                        textCell.setTextAndValue(getString("DeleteAccountIfAwayFor3", R.string.DeleteAccountIfAwayFor3), value, deleteAccountUpdate, true);
                         deleteAccountUpdate = false;
+                    } else if (position == deleteProfileRow) {
+                        textCell.setText(getString("DeleteProfile", R.string.DeleteProfile), false);
                     } else if (position == paymentsClearRow) {
                         textCell.setText(getString("PrivacyPaymentsClear", R.string.PrivacyPaymentsClear), true);
                     } else if (position == botsBiometryRow) {
@@ -1232,7 +1240,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
                     TextInfoPrivacyCell privacyCell = (TextInfoPrivacyCell) holder.itemView;
                     boolean last = position == getItemCount() - 1;
                     if (position == deleteAccountDetailRow) {
-                        privacyCell.setText(getString("DeleteAccountHelp", R.string.DeleteAccountHelp));
+                        privacyCell.setText(null);
                     } else if (position == groupsDetailRow) {
                         privacyCell.setText(getString("GroupsAndChannelsHelp", R.string.GroupsAndChannelsHelp));
                     } else if (position == sessionsDetailRow) {
@@ -1388,7 +1396,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         @Override
         public int getItemViewType(int position) {
             if (position == passportRow || position == lastSeenRow || position == phoneNumberRow ||
-                    position == deleteAccountRow || position == webSessionsRow || position == groupsRow || position == paymentsClearRow ||
+                    position == deleteAccountRow || position == deleteProfileRow || position == webSessionsRow || position == groupsRow || position == paymentsClearRow ||
                     position == secretMapRow || position == contactsDeleteRow || position == botsBiometryRow) {
                 return 0;
             } else if (position == privacyShadowRow || position == deleteAccountDetailRow || position == groupsDetailRow || position == sessionsDetailRow || position == secretDetailRow || position == botsDetailRow || position == contactsDetailRow || position == newChatsSectionRow) {

@@ -20274,7 +20274,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     result = null;
                     posts_between = null;
                 } else {
-                    if (res instanceof TLRPC.TL_messages_sponsoredMessages && (res.flags & 0x1) > 0) {
+                    if ((res.flags & 0x1) > 0) { //DIVO res instanceof TLRPC.TL_messages_sponsoredMessages && (res.flags & 0x1) > 0
                         posts_between = res.posts_between;
                     } else {
                         posts_between = null;

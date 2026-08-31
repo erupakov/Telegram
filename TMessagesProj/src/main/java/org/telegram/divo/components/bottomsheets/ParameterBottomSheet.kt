@@ -162,37 +162,11 @@ fun ParameterBottomSheet(
         sheetState = sheetState,
         title = paramType?.labelRes(measuringSystem)?.let { stringResource(it) }.orEmpty(),
         iconClose = iconClose,
+        isSaveMode = false,
+        isApplyEnable = false,
         onDismiss = onDismiss,
         contentPadding = PaddingValues(horizontal = 16.dp),
-        onSave = {
-            if (isAgePicker) {
-                onSave("$selectedMinAge-$selectedMaxAge")
-            } else if (isNumericRangePicker) {
-                val displayRange = "$selectedMinNumeric-$selectedMaxNumeric"
-                val savedRange = if (valuesInMetric && paramType != null) {
-                    MeasuringUnits.convertRangeToMetric(paramType, displayRange, measuringSystem)
-                } else {
-                    displayRange
-                }
-                onSave(savedRange)
-            } else if (isDatePicker) {
-                onSave("$selectedYear-$selectedMonth-$selectedDay")
-            } else if (options.isNullOrEmpty()) {
-                val savedValue = if (valuesInMetric && paramType != null) {
-                    MeasuringUnits.convertRangeToMetric(paramType, selectedIntPart, measuringSystem)
-                } else {
-                    selectedIntPart
-                }
-                onSave(savedValue)
-            } else {
-                val defaultOption = options.firstOrNull()
-                if (isMultiSelect && selectedOptions == setOf(defaultOption)) {
-                    onSave("")
-                } else {
-                    onSave(selectedOptions.joinToString(", "))
-                }
-            }
-        }
+        onReset = onDelete
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 
@@ -303,7 +277,7 @@ fun ParameterBottomSheet(
                         )
                     } else {
                         Row(
-                            modifier = Modifier.fillMaxWidth(0.8f),
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.Center
                         ) {
                             DivoWheelPicker(
@@ -311,7 +285,7 @@ fun ParameterBottomSheet(
                                 initialIndex = integerParts.indexOf(selectedIntPart)
                                     .coerceAtLeast(0),
                                 isCyclic = true,
-                                modifier = Modifier.width(70.dp),
+                                modifier = Modifier.width(140.dp),
                                 onItemSelected = { _, item -> selectedIntPart = item }
                             )
                         }
@@ -323,10 +297,38 @@ fun ParameterBottomSheet(
 
             UIButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(string.ResetParameter),
+                text = stringResource(string.ButtonApply),
                 height = 48.dp,
-                background = AppTheme.colors.buttonSecondary,
-                onClick = onDelete
+                background = AppTheme.colors.accentOrange,
+                onClick = {
+                    if (isAgePicker) {
+                        onSave("$selectedMinAge-$selectedMaxAge")
+                    } else if (isNumericRangePicker) {
+                        val displayRange = "$selectedMinNumeric-$selectedMaxNumeric"
+                        val savedRange = if (valuesInMetric && paramType != null) {
+                            MeasuringUnits.convertRangeToMetric(paramType, displayRange, measuringSystem)
+                        } else {
+                            displayRange
+                        }
+                        onSave(savedRange)
+                    } else if (isDatePicker) {
+                        onSave("$selectedYear-$selectedMonth-$selectedDay")
+                    } else if (options.isNullOrEmpty()) {
+                        val savedValue = if (valuesInMetric && paramType != null) {
+                            MeasuringUnits.convertRangeToMetric(paramType, selectedIntPart, measuringSystem)
+                        } else {
+                            selectedIntPart
+                        }
+                        onSave(savedValue)
+                    } else {
+                        val defaultOption = options.firstOrNull()
+                        if (isMultiSelect && selectedOptions == setOf(defaultOption)) {
+                            onSave("")
+                        } else {
+                            onSave(selectedOptions.joinToString(", "))
+                        }
+                    }
+                }
             )
         }
     }

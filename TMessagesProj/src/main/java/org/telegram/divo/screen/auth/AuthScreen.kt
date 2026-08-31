@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material.Text
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -43,31 +45,38 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
 import org.telegram.divo.common.controllers.AppSnackbarHost
 import org.telegram.divo.common.controllers.AppSnackbarHostState
 import org.telegram.divo.common.controllers.SnackbarEvent
-import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.dal.network.DivoApiConfig
 import org.telegram.divo.dal.utils.GoogleSignInHelper
 import org.telegram.divo.style.AppTheme
 import org.telegram.divo.style.DivoFont
 import org.telegram.messenger.R
-import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.TLRPC
 
 @Composable
 fun AuthScreen(
     viewModel: AuthViewModel = viewModel(),
     onAuthClicked: () -> Unit = {},
-    onGoogleUserNotFound: (firebaseUid: String, email: String, dummyPhone: String, authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization, firstName: String?, lastName: String?, photoUrl: String?) -> Unit = { _, _, _, _, _, _, _ -> },
-    onGoogleSuccess: (authResponse: org.telegram.tgnet.TLRPC.TL_auth_authorization) -> Unit = { _ -> }
+    onGoogleUserNotFound: (
+        firebaseUid: String,
+        email: String,
+        dummyPhone: String,
+        authResponse: TLRPC.TL_auth_authorization,
+        firstName: String?,
+        lastName: String?,
+        photoUrl: String?
+    ) -> Unit = { _, _, _, _, _, _, _ -> },
+    onGoogleSuccess: (authResponse: TLRPC.TL_auth_authorization) -> Unit = { _ -> }
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
     val isGoogleLoading = remember { mutableStateOf(false) }
 
-    val currentAccount = UserConfig.selectedAccount
     val snackbarHostState = remember { AppSnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -130,8 +139,15 @@ fun AuthScreen(
         }
     }
 
+    StatusBarIconColorEffect(useDarkIcons = true)
+
     Scaffold(
-        snackbarHost = { AppSnackbarHost(state = snackbarHostState) },
+        snackbarHost = {
+            AppSnackbarHost(
+                state = snackbarHostState,
+                bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+            )
+        },
         containerColor = AppTheme.colors.backgroundLight,
         contentWindowInsets = WindowInsets(0),
     ) { padding ->
@@ -224,9 +240,9 @@ fun AuthScreen(
                         color = AppTheme.colors.textPrimary,
                         fontSize = 16.sp
                     ),
-                    onClick = { 
+                    onClick = {
                         DivoAnalytics.logEvent(AnalyticsEvent.AuthMethodSelected("google"))
-                        viewModel.setIntent(AuthViewIntent.GoogleSignIn) 
+                        viewModel.setIntent(AuthViewIntent.GoogleSignIn)
                     }
                 )
             }

@@ -233,7 +233,8 @@ sealed class ProfileIntent : ViewIntent {
     class OnSelectAgencyModelForAdd(val model: AgencySearchModel?) : ProfileIntent()
     object OnCreateChannelClicked : ProfileIntent()
     class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
-    object OnFindSimilarProfiles : ProfileIntent()
+    class OnFindSimilarProfiles(val photoUrl: String, val profileId: Int) : ProfileIntent()
+    object OnDeleteProfileConfirmed : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
@@ -250,11 +251,12 @@ sealed class ProfileEffect : ViewEffect {
     class NavigateToEvent(val eventId: Int) : ProfileEffect()
     class NavigateToApplyConfirmation(val eventId: Int) : ProfileEffect()
     class ShowWithdrawConfirmation(val eventId: Int) : ProfileEffect()
-    class NavigateToFindSimilarProfiles(val photoUrl: String) : ProfileEffect()
+    class NavigateToFindSimilarProfiles(val photoUrl: String, val profileId: Int) : ProfileEffect()
     class NavigateToChat(val telegramId: Long, val telegramAccessHash: Long?, val telegramUsername: String?) : ProfileEffect()
     object NavigateToEditLinks : ProfileEffect()
     object NavigateToCreateEvent : ProfileEffect()
     data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : ProfileEffect()
     object AgencyModelAdded : ProfileEffect()
     class NavigateToCreateChannel(val id: String = java.util.UUID.randomUUID().toString()) : ProfileEffect()
+    object NavigateToLogout : ProfileEffect()
 }

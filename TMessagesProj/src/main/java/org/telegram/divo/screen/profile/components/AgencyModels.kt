@@ -75,6 +75,7 @@ fun AgencyModels(
     isLoadingSearchModels: Boolean,
     isLoadingMore: Boolean,
     hasMore: Boolean,
+    showBackButton: Boolean,
     searchModelsError: String?,
     isAddingAgencyModel: Boolean,
     selectedModelForAdd: AgencySearchModel?,
@@ -89,7 +90,8 @@ fun AgencyModels(
     onSelectModelForAdd: (AgencySearchModel?) -> Unit,
 ) {
     var modelToCancel by remember { mutableStateOf<AgencyModel?>(null) }
-    val bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 8.dp
+    val inset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val bottomPadding = if (!showBackButton) 76.dp + inset else inset
 
     if (models.isEmpty()) {
         EmptyModels(

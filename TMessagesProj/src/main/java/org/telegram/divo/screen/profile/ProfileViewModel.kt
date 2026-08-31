@@ -177,6 +177,19 @@ class ProfileViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            kotlinx.coroutines.flow.combine(
+                DivoApi.workHistory.cache,
+                DivoApi.workHistory.cachedUserIdFlow
+            ) { cached, cachedId ->
+                if (cachedId == userId) cached else null
+            }.collect { cached ->
+                if (cached != null) {
+                    val latest = cached.filter { it.id != -1 }.maxByOrNull { it.startDate }
+                    setState { copy(latestWorkExperience = latest) }
+                }
+            }
+        }
     }
 
     override fun handleIntent(intent: ProfileIntent) {
@@ -185,9 +198,9 @@ class ProfileViewModel(
             is ProfileIntent.OnRefresh -> refreshData()
             is ProfileIntent.OpenSocialLink -> openLink(intent.socialNetworkType)
             is ProfileIntent.OnBackgroundPhotoSelected -> { changeBackground(intent.file) }
-            is ProfileIntent.OnPortfolioPhotoSelected -> { 
+            is ProfileIntent.OnPortfolioPhotoSelected -> {
                 DivoAnalytics.logEvent(AnalyticsEvent.ProfileMediaUploadTapped("photo", state.value.userId))
-                uploadPhoto(intent.file) 
+                uploadPhoto(intent.file)
             }
             is ProfileIntent.OnVideoSelected -> {
                 DivoAnalytics.logEvent(AnalyticsEvent.ProfileMediaUploadTapped("video", state.value.userId))
@@ -217,8 +230,8 @@ class ProfileViewModel(
             is ProfileIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
             is ProfileIntent.OnFindSimilarProfiles -> {
-                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("profile", state.value.userId))
-                sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("profile", intent.profileId))
+                sendEffect(NavigateToFindSimilarProfiles(intent.photoUrl, intent.profileId))
             }
             is ProfileIntent.OnSendDMClicked -> {
                 val currentUserId = DivoApi.userRepository.currentUserFlow.value?.id ?: 0
@@ -253,6 +266,7 @@ class ProfileViewModel(
                 DivoAnalytics.logEvent(AnalyticsEvent.ChannelCreateStarted(state.value.userId))
                 sendEffect(ProfileEffect.NavigateToCreateChannel())
             }
+            ProfileIntent.OnDeleteProfileConfirmed -> deleteProfile()
         }
     }
 
@@ -414,9 +428,9 @@ class ProfileViewModel(
             engagement.currentSearchQuery = query
             engagement.searchPaginator.reset()
             engagement.searchPaginator.loadInitial()
-            
+
             val hasResults = engagement.searchPaginator.state.value.items.isNotEmpty()
-            
+
             DivoAnalytics.logEvent(
                 AnalyticsEvent.EngagementSearchPerformed(
                     state.value.activeStatsType?.name?.lowercase() ?: "unknown",
@@ -775,6 +789,20 @@ class ProfileViewModel(
                 },
                 onError = { sendEffect(ShowError(it)) }
             )
+        }
+    }
+
+    private fun deleteProfile() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            val result = DivoApi.userRepository.deleteAccount()
+            if (result is DivoResult.Success) {
+                setState { copy(isLoading = false) }
+                sendEffect(ProfileEffect.NavigateToLogout)
+            } else {
+                setState { copy(isLoading = false) }
+                sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
+            }
         }
     }
 

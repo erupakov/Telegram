@@ -14,6 +14,11 @@ interface AccessTokenProvider {
     fun getAccessToken(): String?
 
     /**
+     * Returns the access token for the specified account, or null if not authenticated.
+     */
+    fun getAccessToken(account: Int): String?
+
+    /**
      * Persists the latest access token. Passing null should clear any stored token.
      */
     fun setAccessToken(token: String?)

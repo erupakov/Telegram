@@ -119,7 +119,8 @@ fun ModelsNavGraph(
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToChat = onNavigateToChat,
                 onNavigateToCreateChannel = onNavigateToCreateChannel,
-                onNavigateBack = { nav.popBackStack() }
+                onNavigateBack = { nav.popBackStack() },
+                onNavigateToModels = { nav.popBackStack(ModelsRoute.Models.route, inclusive = false) }
             )
         }
 
@@ -169,6 +170,7 @@ fun ModelsNavGraph(
             val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
             FaceSearchScreen(
                 uri = uri,
+                profileId = null,
                 onNavigateSimilarProfiles = { url, fx, fy, resultsJson ->
                     nav.navigate(ModelsRoute.SimilarProfiles.createRoute(url, fx, fy, resultsJson = resultsJson)) {
                         popUpTo(ModelsRoute.FaceSearch.route) { inclusive = true }
@@ -202,7 +204,8 @@ fun ModelsNavGraph(
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onClose = { nav.popBackStack(ModelsRoute.Models.route, inclusive = false) }
             )
         }
 

@@ -11,7 +11,10 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import kotlin.collections.firstOrNull
 
-fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.UploadedFile>): CreateEventRequest {
+fun State.toCreateEventRequest(
+    uploadedFiles: List<org.telegram.divo.entity.UploadedFile>,
+    resolvedCityId: Int
+): CreateEventRequest {
     fun getAppearanceIds(options: List<org.telegram.divo.entity.AppearanceItem>, paramValue: String): List<Int> {
         if (paramValue.isEmpty() || paramValue.contains("All", ignoreCase = true)) {
             return options.mapNotNull { it.id }
@@ -29,24 +32,26 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
     }
 
     fun mapRoleLabelToApiType(roleValue: String): List<String> {
-        if (roleValue.isEmpty() || roleValue.contains("All", ignoreCase = true)) {
-            return listOf(
-                org.telegram.divo.entity.RoleType.MODEL.value,
-                org.telegram.divo.entity.RoleType.FAN.value,
-                org.telegram.divo.entity.RoleType.NEW_FACE.value
-            )
+        val allRoles = listOf(
+            org.telegram.divo.entity.RoleType.MODEL.value,
+            org.telegram.divo.entity.RoleType.FAN.value,
+            org.telegram.divo.entity.RoleType.NEW_FACE.value
+        )
+        if (roleValue.isEmpty()) {
+            return allRoles
         }
-        return roleValue
-            .split(",")
-            .map { it.trim().lowercase().replace(" ", "_") }
-            .map { role ->
-                when (role) {
-                    org.telegram.divo.entity.RoleType.NEW_TALENT.value -> org.telegram.divo.entity.RoleType.NEW_FACE.value
-                    "agency" -> org.telegram.divo.entity.RoleType.AGENCY.value
-                    else -> role
-                }
+        val mapped = org.telegram.divo.entity.mapRoleToEnglish(roleValue) ?: return allRoles
+        val list = mapped.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+        if (list.contains("all")) {
+            return allRoles
+        }
+        return list.map { role ->
+            when (role) {
+                org.telegram.divo.entity.RoleType.NEW_TALENT.value -> org.telegram.divo.entity.RoleType.NEW_FACE.value
+                "agency" -> org.telegram.divo.entity.RoleType.AGENCY.value
+                else -> role
             }
-            .filter { it.isNotEmpty() }
+        }
     }
 
     fun mapGenderLabelToApiType(genderValue: String): List<String> {
@@ -158,10 +163,10 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
             street = "Some street", // FIXME: Add address fields to UI
             house = "100B",
             apartment = "123",
-            formatted = selectedCountries.firstOrNull()?.name ?: "",
+            formatted = selectedCity?.name ?: "",
             latitude = 51.507351, // FIXME: Add geolocation
             longitude = -0.127758,
-            cityId = 1 // FIXME: Add city selection
+            cityId = resolvedCityId
         ),
         files = uploadedFiles.mapIndexed { index, file ->
             CreateEventFileRequest(
@@ -181,7 +186,7 @@ fun State.toCreateEventRequest(uploadedFiles: List<org.telegram.divo.entity.Uplo
         waist = blockNumericRangeToDto(ParametersType.WAIST, blockParams.find { it.type == ParametersType.WAIST }?.value.orEmpty()),
         hips = blockNumericRangeToDto(ParametersType.HIPS, blockParams.find { it.type == ParametersType.HIPS }?.value.orEmpty()),
         shoesSize = blockNumericRangeToDto(ParametersType.SHOE_SIZE, blockParams.find { it.type == ParametersType.SHOE_SIZE }?.value.orEmpty()),
-        measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem, // Default to user setting
+        measuringSystem = DivoSettings.measuringSystem, // Default to user setting
         hairColor = getAppearanceIds(hairColorOptions, hairColor.value),
         hairLength = getAppearanceIds(hairLengthOptions, hairLength.value),
         eyeColor = getAppearanceIds(eyeColorOptions, eyeColor.value),

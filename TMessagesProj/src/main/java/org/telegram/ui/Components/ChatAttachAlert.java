@@ -198,6 +198,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     private final NumberTextView topCaptionLimitView;
     public boolean forUser;
     public boolean isPhotoPicker;
+    public boolean allowAvatarConstructor = true; //DIVO
     public boolean isStickerMode;
     public Utilities.Callback2<String, TLRPC.InputDocument> customStickerHandler;
     private int currentLimit;
@@ -943,7 +944,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     protected int avatarPicker;
     protected boolean avatarSearch;
     protected Utilities.Callback0Return<PhotoViewer.PlaceProviderObject> avatarWithBulletin;
-    protected boolean typeButtonsAvailable;
+    public boolean typeButtonsAvailable; //DIVO
 
     private boolean stories;
     public boolean storyMediaPicker;
@@ -981,7 +982,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
     private boolean enterCommentEventSent;
 
     private View bottomFadeView;
-    protected FrameLayout buttonsRecyclerViewWrapper;
+    public FrameLayout buttonsRecyclerViewWrapper; //DIVO
     protected RecyclerListView buttonsRecyclerView;
 
     private LinearLayoutManager buttonsLayoutManager;
@@ -1001,13 +1002,14 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
 
     public final int currentAccount = UserConfig.selectedAccount;
 
-    private boolean documentsEnabled = true;
-    private boolean photosEnabled = true;
-    private boolean videosEnabled = true;
-    private boolean musicEnabled = true;
-    private boolean pollsEnabled = true;
-    private boolean todoEnabled = true;
-    private boolean plainTextEnabled = true;
+    public boolean documentsEnabled = true;
+    public boolean photosEnabled = true;
+    public boolean videosEnabled = true;
+    public boolean musicEnabled = true;
+    public boolean pollsEnabled = true;
+    public boolean todoEnabled = false; //DIVO
+    public boolean plainTextEnabled = true;
+    public boolean disableTypeButtons = false; //DIVO
 
     protected int maxSelectedPhotos = -1;
     protected boolean allowOrder = true;
@@ -5161,7 +5163,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             }
 
             boolean needsSearchItem = searchItem != null && false && (avatarSearch || currentAttachLayout == photoLayout && !menuShowed && baseFragment instanceof ChatActivity && ((ChatActivity) baseFragment).allowSendGifs() && ((ChatActivity) baseFragment).allowSendPhotos());
-            boolean needMoreItem = !isPhotoPicker && !storyMediaPicker && (avatarPicker != 0 || !menuShowed) && currentAttachLayout == photoLayout && (photosEnabled || videosEnabled);
+            boolean needMoreItem = !disableTypeButtons && !isPhotoPicker && !storyMediaPicker && (avatarPicker != 0 || !menuShowed) && currentAttachLayout == photoLayout && (photosEnabled || videosEnabled); //DIVO
             if (currentAttachLayout == restrictedLayout) {
                 needsSearchItem = false;
                 needMoreItem = false;
@@ -5441,12 +5443,12 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
                 videosEnabled = ChatObject.canSendVideo(chat);
                 musicEnabled = ChatObject.canSendMusic(chat);
                 pollsEnabled = ChatObject.canSendPolls(chat);
-                todoEnabled = !ChatObject.isChannelAndNotMegaGroup(chat) && ChatObject.canSendPolls(chat);
+                todoEnabled = false; ////DIVO !ChatObject.isChannelAndNotMegaGroup(chat) && ChatObject.canSendPolls(chat);
                 plainTextEnabled = ChatObject.canSendPlain(chat);
                 documentsEnabled = ChatObject.canSendDocument(chat);
             } else {
                 pollsEnabled = UserObject.isBot(user) || UserObject.isUserSelf(user);
-                todoEnabled = !(baseFragment instanceof ChatActivity) || ((ChatActivity) baseFragment).getCurrentEncryptedChat() == null;
+                todoEnabled = false; ////DIVO !(baseFragment instanceof ChatActivity) || ((ChatActivity) baseFragment).getCurrentEncryptedChat() == null;
             }
         }
         if (!(baseFragment instanceof ChatActivity && avatarPicker != 2)) {
@@ -5505,7 +5507,7 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             }
         } else {
             layoutToSet = photoLayout;
-            typeButtonsAvailable = avatarPicker == 0 && !storyMediaPicker;
+            typeButtonsAvailable = !disableTypeButtons && avatarPicker == 0 && !storyMediaPicker; //DIVO
             selectedId = 1;
         }
         buttonsRecyclerViewWrapper.setVisibility(typeButtonsAvailable ? View.VISIBLE : View.GONE);
@@ -5616,6 +5618,10 @@ public class ChatAttachAlert extends BottomSheet implements NotificationCenter.N
             }
             if (avatarPicker == 2) {
                 selectedTextView.setText(getString(R.string.ChoosePhotoOrVideo));
+                //DIVO--START
+            } else if (avatarPicker == 3) {
+                selectedTextView.setText(getString(R.string.AllVideos));
+                //DIVO--END
             } else {
                 selectedTextView.setText(getString(R.string.ChoosePhoto));
             }

@@ -149,6 +149,17 @@ private fun HeaderSection(
                 color = AppTheme.colors.accentOrange,
                 style = AppTheme.typography.helveticaNeueRegular
             )
+        } else {
+            RoundedButton(
+                modifier = Modifier
+                    .size(40.dp)
+                    .align(Alignment.CenterEnd),
+                resId = R.drawable.ic_divo_close_20,
+                iconSize = 28.dp,
+                background = AppTheme.colors.buttonSecondary,
+                iconTint = AppTheme.colors.onBackground,
+                onClick = { onReset() }
+            )
         }
     }
 }

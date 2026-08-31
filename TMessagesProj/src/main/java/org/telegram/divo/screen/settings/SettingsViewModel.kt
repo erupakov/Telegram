@@ -6,22 +6,35 @@ import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.common.DivoSettings
+import org.telegram.divo.common.arch.OffsetPaginator
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.messenger.UserConfig
 
 class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, SettingsViewEffect>() {
+
+    val savedProfilesPaginator = OffsetPaginator { offset, limit ->
+        val result = DivoApi.publicationRepository.getFollowing(limit = limit, offset = offset)
+        if (result is DivoResult.Success) {
+            result.value
+        } else {
+            throw Exception(result.getErrorMessage())
+        }
+    }
 
     init {
         DivoAnalytics.logEvent(AnalyticsEvent.SettingsOpened())
         viewModelScope.launch {
             DivoApi.userRepository.currentUserFlow.collect { user ->
                 user?.let {
+                    val tgUser = UserConfig.getInstance(UserConfig.selectedAccount).currentUser
+                    val displayUserName = if (!tgUser?.username.isNullOrEmpty()) "@${tgUser.username}" else ""
                     setState {
                         copy(
                             userId = it.id,
                             role = it.roleLabel,
-                            userName = it.fullName,
+                            userName = displayUserName,
                             avatarUrl = it.avatarUrl,
                             phoneNumber = it.phone,
                             isModel = it.role.isModel(),
@@ -48,7 +61,7 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             }
             SettingsViewIntent.OnOpenProfileClicked -> {
                 logOptionTapped("open_profile")
-                sendEffect(SettingsViewEffect.NavigateToProfile)
+                sendEffect(SettingsViewEffect.NavigateToProfile())
             }
             SettingsViewIntent.OnSetUsernameClicked -> {
                 logOptionTapped("set_username")
@@ -62,9 +75,15 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
                 logOptionTapped("promo")
                 sendEffect(SettingsViewEffect.NavigateToPromo)
             }
-            SettingsViewIntent.OnSavedMessagesClicked -> {
-                logOptionTapped("saved_messages")
-                sendEffect(SettingsViewEffect.NavigateToSavedMessages)
+            SettingsViewIntent.OnSavedProfilesClicked -> {
+                logOptionTapped("saved_profiles")
+                setState { copy(isSavedProfilesSheetVisible = true) }
+                viewModelScope.launch {
+                    savedProfilesPaginator.loadInitial()
+                }
+            }
+            SettingsViewIntent.OnCloseSavedProfilesSheet -> {
+                setState { copy(isSavedProfilesSheetVisible = false) }
             }
             SettingsViewIntent.OnNotificationsClicked -> {
                 logOptionTapped("notifications")
@@ -118,14 +137,16 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
 
     private fun loadUserData() {
         viewModelScope.launch {
-            setState { copy(isLoading = true) }
+            setState { copy(isLoading = userId == -1) }
             val result = DivoApi.userRepository.getCurrentUserInfo()
 
             if (result is DivoResult.Success) {
+                val tgUser = UserConfig.getInstance(UserConfig.selectedAccount).currentUser
+                val displayUserName = if (!tgUser?.username.isNullOrEmpty()) "@${tgUser.username}" else ""
                 setState {
                     copy(
                         userId = result.value.id,
-                        userName = result.value.fullName,
+                        userName = displayUserName,
                         avatarUrl = result.value.avatarUrl,
                         phoneNumber = result.value.phone,
                         isModel = result.value.role.isModel(),

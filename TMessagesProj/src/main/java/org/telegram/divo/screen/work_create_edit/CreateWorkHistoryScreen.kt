@@ -167,7 +167,7 @@ fun CreateWorkHistoryScreenView(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarState,
-                bottomPadding = 76.dp
+                bottomPadding = 72.dp
             )
         },
         containerColor = AppTheme.colors.backgroundLight

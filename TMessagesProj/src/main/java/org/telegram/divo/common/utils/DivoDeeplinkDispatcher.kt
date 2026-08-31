@@ -10,8 +10,6 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.navigation.NavController
-import org.telegram.divo.screen.event_list.EventRoute
-import org.telegram.divo.screen.models.ModelsRoute
 import org.telegram.messenger.ApplicationLoader
 import org.telegram.messenger.UserConfig
 import org.telegram.ui.ActionBar.INavigationLayout
@@ -83,32 +81,43 @@ object DivoDeeplinkDispatcher {
                 "profile" -> {
                     val profileId = data.pathSegments.getOrNull(1)?.toIntOrNull()
                     if (profileId != null) {
-                        val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is MainTabsActivity } as? MainTabsActivity
-                        mainTabs?.switchToTabPosition(0)
-                        pendingProfileId = profileId
+                        actionBarLayout?.presentFragment(org.telegram.divo.screen.profile.FragmentProfileN.newInstance(profileId))
                     }
                 }
                 "event" -> {
                     val eventId = data.pathSegments.getOrNull(1)?.toIntOrNull()
                     if (eventId != null) {
-                        val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is MainTabsActivity } as? MainTabsActivity
-                        mainTabs?.switchToTabPosition(1)
-                        pendingEventId = eventId
+                        actionBarLayout?.presentFragment(org.telegram.divo.screen.event_details.FragmentEventDetails.newInstance(eventId))
                     }
                 }
                 "channel" -> {
                     // Todo реализовать в будущем
-                    val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is MainTabsActivity } as? MainTabsActivity
-                    mainTabs?.switchToTabPosition(2)
+                    popToMainTabs(actionBarLayout, 2)
                 }
                 else -> {
-                    val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is MainTabsActivity } as? MainTabsActivity
-                    mainTabs?.switchToTabPosition(0)
+                    popToMainTabs(actionBarLayout, 0)
                 }
             }
             return true
         }
 
         return false
+    }
+
+    private fun popToMainTabs(actionBarLayout: INavigationLayout?, tabPosition: Int) {
+        val mainTabs = actionBarLayout?.fragmentStack?.lastOrNull { it is MainTabsActivity } as? MainTabsActivity
+        if (mainTabs != null && actionBarLayout != null) {
+            val stack = actionBarLayout.fragmentStack
+            val index = stack.indexOf(mainTabs)
+            if (index >= 0) {
+                while (stack.size > index + 2) {
+                    actionBarLayout.removeFragmentFromStack(stack[index + 1])
+                }
+                if (stack.size > index + 1) {
+                    actionBarLayout.closeLastFragment(true)
+                }
+            }
+            mainTabs.switchToTabPosition(tabPosition)
+        }
     }
 }

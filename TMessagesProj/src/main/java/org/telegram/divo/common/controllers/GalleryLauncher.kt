@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -42,29 +41,271 @@ import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import android.os.Build
+import android.provider.MediaStore
+import android.widget.Toast
+import org.telegram.messenger.AndroidUtilities
+import org.telegram.messenger.LocaleController
+import org.telegram.messenger.MediaController
+import org.telegram.ui.Components.Bulletin
+import org.telegram.ui.Components.BulletinFactory
+import org.telegram.ui.Components.ChatAttachAlert
+import org.telegram.ui.LaunchActivity
 import org.telegram.divo.components.inputs.UIButton
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 import java.io.File
+
+private fun hasMediaInMediaStore(context: android.content.Context, isVideo: Boolean): Boolean {
+    val uri = if (isVideo) MediaStore.Video.Media.EXTERNAL_CONTENT_URI else MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    return try {
+        context.contentResolver.query(uri, arrayOf(MediaStore.MediaColumns._ID), null, null, null)?.use { cursor ->
+            cursor.count > 0
+        } ?: false
+    } catch (e: Exception) {
+        false
+    }
+}
+
+private fun hasGalleryPermission(context: android.content.Context, isVideo: Boolean): Boolean {
+    return when {
+        Build.VERSION.SDK_INT >= 34 -> {
+            val visualSelectedGranted = ContextCompat.checkSelfPermission(
+                context,
+                "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
+            ) == PackageManager.PERMISSION_GRANTED
+            val imagesGranted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_MEDIA_IMAGES
+            ) == PackageManager.PERMISSION_GRANTED
+            val videoGranted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_MEDIA_VIDEO
+            ) == PackageManager.PERMISSION_GRANTED
+
+            if (isVideo) {
+                if (videoGranted) {
+                    true
+                } else if (visualSelectedGranted) {
+                    val allVideos = MediaController.allVideosAlbumEntry
+                    if (allVideos != null) allVideos.photos.isNotEmpty() else hasMediaInMediaStore(context, isVideo = true)
+                } else {
+                    false
+                }
+            } else {
+                if (imagesGranted) {
+                    true
+                } else if (visualSelectedGranted) {
+                    val allPhotos = MediaController.allPhotosAlbumEntry
+                    if (allPhotos != null) allPhotos.photos.isNotEmpty() else hasMediaInMediaStore(context, isVideo = false)
+                } else {
+                    false
+                }
+            }
+        }
+        Build.VERSION.SDK_INT >= 33 -> {
+            val imagesGranted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_MEDIA_IMAGES
+            ) == PackageManager.PERMISSION_GRANTED
+            val videoGranted = ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_MEDIA_VIDEO
+            ) == PackageManager.PERMISSION_GRANTED
+            if (isVideo) videoGranted else imagesGranted
+        }
+        else -> {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+}
+
+private fun getGalleryPermissions(): Array<String> {
+    return when {
+        Build.VERSION.SDK_INT >= 34 -> {
+            arrayOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO,
+                "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"
+            )
+        }
+        Build.VERSION.SDK_INT >= 33 -> {
+            arrayOf(
+                Manifest.permission.READ_MEDIA_IMAGES,
+                Manifest.permission.READ_MEDIA_VIDEO
+            )
+        }
+        else -> {
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+}
+
+private fun openTelegramPhotoPicker(
+    isVideo: Boolean,
+    maxItems: Int,
+    onPicked: (List<Uri>) -> Unit
+) {
+    val lastFragment = LaunchActivity.getLastFragment() ?: return
+    val activity = lastFragment.parentActivity ?: return
+
+    val chatAttachAlert = ChatAttachAlert(activity, lastFragment, false, false, false, null)
+    chatAttachAlert.setMaxSelectedPhotos(maxItems, false)
+    chatAttachAlert.allowAvatarConstructor = false
+    chatAttachAlert.disableTypeButtons = true
+    chatAttachAlert.documentsEnabled = false
+    chatAttachAlert.videosEnabled = isVideo
+    chatAttachAlert.photosEnabled = !isVideo
+    if (maxItems == 1) {
+        chatAttachAlert.setAvatarPicker(if (isVideo) 3 else 1, false, null)
+    } else {
+        chatAttachAlert.typeButtonsAvailable = false
+        chatAttachAlert.selectedTextView?.setText(LocaleController.getString(if (isVideo) R.string.ChoosePhotoOrVideo else R.string.ChoosePhoto))
+    }
+    chatAttachAlert.photoLayout?.loadGalleryPhotos()
+    chatAttachAlert.setDelegate(object : ChatAttachAlert.ChatAttachViewDelegate {
+        override fun didPressedButton(
+            button: Int,
+            arg: Boolean,
+            notify: Boolean,
+            scheduleDate: Int,
+            scheduleRepeatPeriod: Int,
+            effectId: Long,
+            invertMedia: Boolean,
+            forceDocument: Boolean,
+            payStars: Long
+        ) {
+            val photoLayout = chatAttachAlert.photoLayout ?: return
+            val selectedPhotos = photoLayout.selectedPhotos
+            val order = photoLayout.selectedPhotosOrder
+            if (selectedPhotos.isNullOrEmpty()) return
+            val uris = ArrayList<Uri>()
+            if (!order.isNullOrEmpty()) {
+                for (key in order) {
+                    val value = selectedPhotos[key]
+                    if (value is MediaController.PhotoEntry) {
+                        val path = value.imagePath ?: value.path
+                        if (path != null) {
+                            uris.add(
+                                if (path.startsWith("content://") || path.startsWith("file://")) {
+                                    Uri.parse(path)
+                                } else {
+                                    Uri.fromFile(File(path))
+                                }
+                            )
+                        }
+                    }
+                }
+            } else {
+                for (value in selectedPhotos.values) {
+                    if (value is MediaController.PhotoEntry) {
+                        val path = value.imagePath ?: value.path
+                        if (path != null) {
+                            uris.add(
+                                if (path.startsWith("content://") || path.startsWith("file://")) {
+                                    Uri.parse(path)
+                                } else {
+                                    Uri.fromFile(File(path))
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+            if (uris.isNotEmpty()) {
+                onPicked(uris)
+                chatAttachAlert.dismiss(true)
+            }
+        }
+
+        override fun selectItemOnClicking(): Boolean {
+            return maxItems == 1
+        }
+    })
+    chatAttachAlert.init()
+    chatAttachAlert.show()
+}
+
+private fun showPermissionToast(context: android.content.Context) {
+    val message = LocaleController.getString(R.string.PermissionGalleryDeniedToast)
+    try {
+        val lastFragment = LaunchActivity.getLastFragment()
+        val visibleFragment = LaunchActivity.getLastFragmentIncludeMainTabs()
+        val containerLayout = lastFragment?.layoutContainer
+
+        if (lastFragment != null) {
+            val delegate = object : Bulletin.Delegate {
+                override fun getBottomOffset(tag: Int): Int {
+                    val navHeight = maxOf(
+                        AndroidUtilities.navigationBarHeight,
+                        containerLayout?.let { AndroidUtilities.getViewInset(it) } ?: 0
+                    )
+                    return navHeight + AndroidUtilities.dp(80f)
+                }
+
+                override fun onHide(bulletin: Bulletin?) {
+                    Bulletin.removeDelegate(lastFragment)
+                    if (visibleFragment != null && visibleFragment != lastFragment) {
+                        Bulletin.removeDelegate(visibleFragment)
+                    }
+                    if (containerLayout != null) {
+                        Bulletin.removeDelegate(containerLayout)
+                    }
+                }
+            }
+
+            Bulletin.addDelegate(lastFragment, delegate)
+            if (visibleFragment != null && visibleFragment != lastFragment) {
+                Bulletin.addDelegate(visibleFragment, delegate)
+            }
+            if (containerLayout != null) {
+                Bulletin.addDelegate(containerLayout, delegate)
+            }
+
+            BulletinFactory.of(lastFragment).createErrorBulletin(message).show()
+        } else {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+    } catch (e: Exception) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+}
 
 @Composable
 fun rememberGalleryLauncher(
     isVideo: Boolean = false,
     onPicked: (Uri) -> Unit
 ): () -> Unit {
+    val context = LocalContext.current
 
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        uri?.let(onPicked)
+    fun launchTelegramPicker() {
+        openTelegramPhotoPicker(
+            isVideo = isVideo,
+            maxItems = 1,
+            onPicked = { uris -> uris.firstOrNull()?.let(onPicked) }
+        )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (hasGalleryPermission(context, isVideo)) {
+            MediaController.loadGalleryPhotosAlbums(0)
+            launchTelegramPicker()
+        } else {
+            showPermissionToast(context)
+        }
     }
 
     return {
-        val request = PickVisualMediaRequest(
-            if (isVideo) ActivityResultContracts.PickVisualMedia.VideoOnly
-            else ActivityResultContracts.PickVisualMedia.ImageOnly
-        )
-        launcher.launch(request)
+        if (hasGalleryPermission(context, isVideo)) {
+            launchTelegramPicker()
+        } else {
+            permissionLauncher.launch(getGalleryPermissions())
+        }
     }
 }
 
@@ -73,14 +314,33 @@ fun rememberMultipleGalleryLauncher(
     maxItems: Int = 9,
     onPicked: (List<Uri>) -> Unit
 ): () -> Unit {
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(maxItems)
-    ) { uris ->
-        if (uris.isNotEmpty()) onPicked(uris)
+    val context = LocalContext.current
+
+    fun launchTelegramPicker() {
+        openTelegramPhotoPicker(
+            isVideo = false,
+            maxItems = maxItems,
+            onPicked = onPicked
+        )
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        if (hasGalleryPermission(context, isVideo = false)) {
+            MediaController.loadGalleryPhotosAlbums(0)
+            launchTelegramPicker()
+        } else {
+            showPermissionToast(context)
+        }
     }
 
     return {
-        launcher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        if (hasGalleryPermission(context, isVideo = false)) {
+            launchTelegramPicker()
+        } else {
+            permissionLauncher.launch(getGalleryPermissions())
+        }
     }
 }
 

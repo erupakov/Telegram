@@ -2,6 +2,7 @@
 <resources>
     <!--divo view start-->
     <string name="AppName">Divo Global</string>
+    <string name="CallsComingSoon">This feature will be added later.</string>
     <string name="AppNameBeta">Divo Global</string>
     <string name="LanguageName">English</string>
     <string name="English">English</string>
@@ -12,11 +13,15 @@
     <string name="DivoMainTabsEvents">Events</string>
     <string name="DivoMainTabsChats">Chats</string>
     <string name="DivoMainTabsSettings">Settings</string>
+    <string name="DivoMainTabsProfile">Profile</string>
     <string name="ButtonBack">Back</string>
     <string name="ButtonCreate">Create</string>
     <string name="ButtonSave">Save</string>
     <string name="ButtonApply">Apply</string>
     <string name="ButtonApplied">Applied</string>
+    <string name="EventButtonInterested">Interested</string>
+    <string name="DivoPublicProfile">Public profile</string>
+    <string name="DivoUserNotFound">User profile not found in DIVO</string>
     <string name="ButtonClosed">Closed</string>
     <string name="ButtonOk">Ok</string>
     <string name="ButtonCancel">Cancel</string>
@@ -28,6 +33,7 @@
     <string name="RetryLabel">Retry</string>
     <string name="YourPhoneLabel">Your Phone</string>
     <string name="ChooseCountryLabel">Choose a country</string>
+    <string name="EventsTabTitle">EVENTS</string>
     <string name="SearchLabel">Search</string>
 
     <!--profile screen-->
@@ -398,6 +404,8 @@ while she is with another agency.</string>
     <string name="SetUsernameLabel">Set Username</string>
     <string name="FillYourParametersLabel">Fill your parameters</string>
     <string name="SavedMessagesLabel">Saved Messages</string>
+    <string name="SavedProfilesLabel">Saved Profiles</string>
+    <string name="SavedProfilesEmpty">No saved profiles yet</string>
     <string name="NotificationsAndSoundsLabel">Notifications and Sounds</string>
     <string name="PrivacyAndSecurityLabel">Privacy and Security</string>
     <string name="DataAndStorageLabel">Data and Storage</string>
@@ -3850,6 +3858,8 @@ while she is with another agency.</string>
     <string name="AllMedia">All media</string>
     <string name="AllVideos">All videos</string>
     <string name="NoPhotos">No photos yet</string>
+    <string name="NoVideos">No videos yet</string>
+    <string name="PermissionGalleryDeniedToast">Please grant access to photos and videos in settings.</string>
     <string name="PleaseDownload">Please download media first</string>
     <string name="PleaseStreamDownload">Please wait for the video to be fully downloaded.</string>
     <string name="VideoDoesNotSupportStreaming">This video is not optimized for streaming. You may need to download it in full to play it.</string>
@@ -11118,4 +11128,11 @@ while she is with another agency.</string>
     <string name="Followers_other">%1$d followers</string>
     <string name="ThereAreNoImagesYet">THERE ARE NO IMAGES YET</string>
     <string name="ThereAreNoVideosYet">THERE ARE NO VIDEOS YET</string>
+    <string name="DivoEnterYourWebsite">Enter your website</string>
+    <string name="DivoSaving">Saving...</string>
+    <string name="DeleteProfile">Delete profile</string>
+    <string name="DeleteProfileTitle">Delete Profile</string>
+    <string name="DeleteProfileDescription">Are you sure you want to delete your profile? This action cannot be undone.</string>
+    <string name="DeleteProfileConfirm">Delete</string>
+    <string name="NoPhotosYetBottomSheet">No photos yet</string>
 </resources>

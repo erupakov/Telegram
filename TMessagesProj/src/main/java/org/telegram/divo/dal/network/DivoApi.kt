@@ -13,6 +13,7 @@ import org.telegram.divo.dal.api.WorkHistory
 import org.telegram.divo.dal.db.AppDatabase
 import org.telegram.divo.dal.db.dao.FaceRecognitionDao
 import org.telegram.divo.dal.repository.AuthRepository
+import org.telegram.divo.dal.repository.LocationRepository
 import org.telegram.divo.dal.repository.EventRepository
 import org.telegram.divo.dal.repository.FaceRecognitionRepository
 import org.telegram.divo.dal.repository.PaymentRepository
@@ -102,6 +103,10 @@ object DivoApi {
 
     val geoService: GeoService by lazy {
         retrofit.create(GeoService::class.java)
+    }
+
+    val locationRepository: LocationRepository by lazy {
+        LocationRepository()
     }
 }
 

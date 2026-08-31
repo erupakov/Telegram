@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.profile.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,12 +19,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.common.compose.combinedClickableWithoutRipple
 import org.telegram.divo.common.utils.toShortString
 import org.telegram.divo.components.inputs.RoundedGlassContainer
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R.drawable
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EngagementsColumn(
     modifier: Modifier = Modifier,
@@ -33,9 +36,11 @@ fun EngagementsColumn(
     onStatsClicked: (StatsType) -> Unit,
 ) {
     Column(modifier = modifier) {
-        val backgroundColor = AppTheme.colors.onBackground.copy(alpha = 0.3f)
+        val backgroundColor = AppTheme.colors.backgroundDark.copy(alpha = 0.4f)
         val contentColor = if (uiState.userInfo.isLikedByUser) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
         val isFollowed = uiState.userInfo.isFollowed
+
+        val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
 
         // LIKES
         RoundedGlassContainer(
@@ -48,15 +53,18 @@ fun EngagementsColumn(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = if (uiState.isOwnProfile) {
                     Modifier.clickableWithoutRipple { onStatsClicked(StatsType.LIKES) }
-                } else Modifier
+                } else {
+                    Modifier.combinedClickableWithoutRipple(
+                        onLongClick = {
+                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                            onStatsClicked(StatsType.LIKES)
+                        },
+                        onClick = { onLikeClick() }
+                    )
+                }
             ) {
                 Icon(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .then(
-                            if (!uiState.isOwnProfile) Modifier.clickableWithoutRipple { onLikeClick() }
-                            else Modifier
-                        ),
+                    modifier = Modifier.size(16.dp),
                     painter = if (uiState.userInfo.isLikedByUser) painterResource(drawable.ic_divo_favorite_selected) else painterResource(drawable.ic_divo_favorite),
                     contentDescription = null,
                     tint = contentColor,
@@ -65,11 +73,7 @@ fun EngagementsColumn(
                 Text(
                     modifier = Modifier
                         .offset(y = 1.dp)
-                        .weight(1f)
-                        .then(
-                            if (!uiState.isOwnProfile) Modifier.clickableWithoutRipple { onStatsClicked(StatsType.LIKES) }
-                            else Modifier
-                        ),
+                        .weight(1f),
                     text = uiState.userInfo.statistic.likesCount.toShortString(),
                     style = AppTheme.typography.helveticaNeueRegular,
                     color = contentColor,
@@ -130,15 +134,18 @@ fun EngagementsColumn(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = if (uiState.isOwnProfile) {
                     Modifier.clickableWithoutRipple { onStatsClicked(StatsType.SAVES) }
-                } else Modifier
+                } else {
+                    Modifier.combinedClickableWithoutRipple(
+                        onLongClick = {
+                            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                            onStatsClicked(StatsType.SAVES)
+                        },
+                        onClick = { onBookmarkClick() }
+                    )
+                }
             ) {
                 Icon(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .then(
-                            if (!uiState.isOwnProfile) Modifier.clickableWithoutRipple { onBookmarkClick() }
-                            else Modifier
-                        ),
+                    modifier = Modifier.size(16.dp),
                     painter = painterResource(bookmarkIconRes),
                     contentDescription = null,
                     tint = bookmarkColor
@@ -147,11 +154,7 @@ fun EngagementsColumn(
                 Text(
                     modifier = Modifier
                         .offset(y = 1.dp)
-                        .weight(1f)
-                        .then(
-                            if (!uiState.isOwnProfile) Modifier.clickableWithoutRipple { onStatsClicked(StatsType.SAVES) }
-                            else Modifier
-                        ),
+                        .weight(1f),
                     text = uiState.userInfo.statistic.followersCount.toShortString(),
                     style = AppTheme.typography.helveticaNeueRegular,
                     color = bookmarkColor,

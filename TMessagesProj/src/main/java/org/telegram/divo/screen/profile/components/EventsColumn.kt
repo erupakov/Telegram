@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.profile.components
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -57,6 +58,7 @@ fun EventsColumn(
     isOwnProfile: Boolean,
     isModel: Boolean,
     isLoading: Boolean,
+    showBackButton: Boolean,
     isLoadingMore: Boolean,
     transitionProgress: Float = 1f,
     topPadding: Dp = 0.dp,
@@ -74,6 +76,9 @@ fun EventsColumn(
         }
     }
 
+    val inset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    val bottomPadding = if (!showBackButton) 76.dp + inset else inset + 8.dp
+
     LaunchedEffect(shouldLoadMore) {
         if (shouldLoadMore) {
             onLoadMore()
@@ -85,7 +90,7 @@ fun EventsColumn(
             isOwnProfile = isOwnProfile,
             transitionProgress = transitionProgress,
             topPadding = topPadding,
-            bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 8.dp,
+            bottomPadding = bottomPadding,
             onClick = onEventCreate
         )
     } else {
@@ -216,7 +221,7 @@ private fun EventItem(
                 UIButton(
                     modifier = Modifier
                         .height(32.dp),
-                    text = stringResource(R.string.ButtonApply),
+                    text = stringResource(R.string.EventButtonInterested),
                     paddingTop = 0.dp,
                     background = AppTheme.colors.accentOrange,
                     textStyle = AppTheme.typography.textButton.copy(
@@ -230,6 +235,7 @@ private fun EventItem(
     }
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 private fun EmptyEvent(
     isOwnProfile: Boolean,

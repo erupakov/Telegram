@@ -113,15 +113,17 @@ fun ToolBarContent(
     onManageWorkExperienceClicked: () -> Unit = {},
     onFindSimilarProfiles: () -> Unit = {},
     onReportProfile: () -> Unit = {},
+    onDeleteProfileClicked: () -> Unit = {},
     isSolid: Boolean = false,
+    showBackButton: Boolean = true,
     transitionProgress: Float = 0f,
 ) {
     var showEditMenu by remember { mutableStateOf(false) }
     var showMenu by remember { mutableStateOf(false) }
 
-    val buttonBgColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.2f), Color.White, transitionProgress)
+    val buttonBgColor = lerp(AppTheme.colors.backgroundDark.copy(alpha = 0.4f), Color.White, transitionProgress)
     val buttonIconColor = lerp(Color.White, Color.Black, transitionProgress)
-    val buttonBorderColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.4f), Color.Transparent, transitionProgress)
+    val buttonBorderColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.1f), Color.Transparent, transitionProgress)
 
     val options = listOf(
         PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec),
@@ -164,15 +166,17 @@ fun ToolBarContent(
             .padding(top = statusBarPadding.value + 8.dp, bottom = 8.dp),
         contentAlignment = Alignment.Center
     ) {
-        RoundedGlassButton(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .align(Alignment.CenterStart),
-            background = buttonBgColor,
-            iconTint = buttonIconColor,
-            borderColor = buttonBorderColor,
-            onClick = onNavigateBack
-        )
+        if (showBackButton) {
+            RoundedGlassButton(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .align(Alignment.CenterStart),
+                background = buttonBgColor,
+                iconTint = buttonIconColor,
+                borderColor = buttonBorderColor,
+                onClick = onNavigateBack
+            )
+        }
 
         Box(
             modifier = Modifier
@@ -224,9 +228,9 @@ fun ToolBarContent(
                 Icon(
                     modifier = Modifier
                         .size(16.dp)
-                        .clickableWithoutRipple { 
+                        .clickableWithoutRipple {
                             DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditMenuTapped(uiState.userId))
-                            showEditMenu = true 
+                            showEditMenu = true
                         },
                     painter = painterResource(R.drawable.ic_divo_edit_24),
                     contentDescription = null,

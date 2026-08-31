@@ -39,6 +39,16 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
         onResume()
     }
 
+    override fun onResume() {
+        super.onResume()
+        composeLifecycleOwner.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        composeLifecycleOwner.onPause()
+    }
+
     fun setMainTabsActivityController(controller: MainTabsActivityController) {
         this.mainTabsController = controller
     }

@@ -1,6 +1,7 @@
 package org.telegram.divo.dal.api
 
 import org.telegram.divo.dal.dto.common.EmptyResponse
+import org.telegram.divo.dal.dto.follower.FollowerListResponse
 import org.telegram.divo.dal.dto.publication.CreatePublicationRequest
 import org.telegram.divo.dal.dto.publication.CreatePublicationResponse
 import org.telegram.divo.dal.dto.publication.FollowRequest
@@ -57,6 +58,11 @@ interface PublicationService {
 
     @POST("follower/unfollow")
     suspend fun unmarkFavorite(@Body request: FollowRequest): EmptyResponse
+
+    @POST("follower/following")
+    suspend fun getFollowing(
+        @Body request: org.telegram.divo.dal.dto.follower.FollowerListRequest
+    ): FollowerListResponse
 }
 
 

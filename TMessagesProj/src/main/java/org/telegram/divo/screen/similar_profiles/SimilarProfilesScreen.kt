@@ -2,11 +2,9 @@ package org.telegram.divo.screen.similar_profiles
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -49,7 +47,8 @@ fun SimilarProfilesScreen(
     fx: Float? = null,
     fy: Float? = null,
     onProfileClicked: (Int) -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onClose: () -> Unit = {}
 ) {
 
 
@@ -60,6 +59,7 @@ fun SimilarProfilesScreen(
         viewModel.effect.collect {
             when (it) {
                 Effect.NavigateBack -> onBack()
+                Effect.NavigateHome -> onClose()
                 is Effect.ShowError -> snackbarState.show(Error(it.message))
                 is Effect.NavigateToProfile -> onProfileClicked(it.id)
             }
@@ -117,13 +117,10 @@ private fun SimilarProfilesContent(
                 },
                 actions = {
                     RoundedButton(
-                        modifier = Modifier.padding(end = 16.dp),
-                        resId = R.drawable.ic_divo_filter,
+                        modifier = Modifier.padding(end = 12.dp),
+                        resId = R.drawable.ic_divo_close_20,
                         iconSize = 24.dp,
-                        onClick = { 
-                            DivoAnalytics.logEvent(AnalyticsEvent.SimilarProfilesFiltersOpened())
-                            showBottomSheet = true 
-                        }
+                        onClick = { onIntent(Intent.OnCloseClicked) }
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -134,7 +131,6 @@ private fun SimilarProfilesContent(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarHostState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 66.dp
             )
         }
     ) { paddingValues ->
@@ -186,7 +182,11 @@ private fun SimilarProfilesContent(
                     activeFiltersCount = uiState.activeFiltersCount,
                     fx = fx,
                     fy = fy,
-                    onReset = { onIntent(Intent.OnParamsReset) }
+                    onReset = { onIntent(Intent.OnParamsReset) },
+                    onFilterClicked = {
+                        DivoAnalytics.logEvent(AnalyticsEvent.SimilarProfilesFiltersOpened())
+                        showBottomSheet = true
+                    }
                 )
             }
         }

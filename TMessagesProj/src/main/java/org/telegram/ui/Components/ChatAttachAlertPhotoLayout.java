@@ -253,7 +253,10 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     private boolean showAvatarConstructor;
 
     public void updateAvatarPicker() {
-        showAvatarConstructor = parentAlert.avatarPicker != 0 && !parentAlert.isPhotoPicker;
+        showAvatarConstructor = parentAlert.avatarPicker != 0 && parentAlert.allowAvatarConstructor && !parentAlert.isPhotoPicker; //DIVO
+        if (progressView != null) {
+            progressView.setText(LocaleController.getString(parentAlert.avatarPicker == 3 ? R.string.NoVideos : R.string.NoPhotos));
+        }
     }
 
     private class BasePhotoProvider extends PhotoViewer.EmptyPhotoViewerProvider {
@@ -726,7 +729,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.albumsDidLoad);
         NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.cameraInitied);
         FrameLayout container = alert.getContainer();
-        showAvatarConstructor = parentAlert.avatarPicker != 0;
+        showAvatarConstructor = parentAlert.avatarPicker != 0 && parentAlert.allowAvatarConstructor && !parentAlert.isPhotoPicker; //DIVO
 
         ActionBarMenu menu = parentAlert.actionBar.createMenu();
         dropDownContainer = new ActionBarMenuItem(context, menu, 0, 0, resourcesProvider) {
@@ -1114,7 +1117,7 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         occupyNavigationBar = true;
 
         progressView = new EmptyTextProgressView(context, null, resourcesProvider);
-        progressView.setText(LocaleController.getString(R.string.NoPhotos));
+        progressView.setText(LocaleController.getString(parentAlert.avatarPicker == 3 ? R.string.NoVideos : R.string.NoPhotos));
         progressView.setOnTouchListener(null);
         progressView.setTextSize(16);
         addView(progressView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
@@ -1502,7 +1505,9 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
 
     private void requestGalleryPermission() {
         try {
-            if (Build.VERSION.SDK_INT >= 33) {
+            if (Build.VERSION.SDK_INT >= 34) {
+                parentAlert.baseFragment.getParentActivity().requestPermissions(new String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO, "android.permission.READ_MEDIA_VISUAL_USER_SELECTED"}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
+            } else if (Build.VERSION.SDK_INT >= 33) {
                 parentAlert.baseFragment.getParentActivity().requestPermissions(new String[]{Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 parentAlert.baseFragment.getParentActivity().requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE);
@@ -1866,7 +1871,22 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
         dropDownContainer.removeAllSubItems();
         if (mediaEnabled) {
             ArrayList<MediaController.AlbumEntry> albums;
-            if (shouldLoadAllMedia()) {
+            //DIVO--START
+            if (parentAlert.avatarPicker == 3) {
+                albums = new ArrayList<>();
+                if (MediaController.allVideosAlbumEntry != null) {
+                    albums.add(MediaController.allVideosAlbumEntry);
+                }
+                if (MediaController.allMediaAlbums != null) {
+                    for (int a = 0; a < MediaController.allMediaAlbums.size(); a++) {
+                        MediaController.AlbumEntry entry = MediaController.allMediaAlbums.get(a);
+                        if (entry.videoOnly && entry != MediaController.allVideosAlbumEntry) {
+                            albums.add(entry);
+                        }
+                    }
+                }
+                //DIVO--END
+            } else if (shouldLoadAllMedia()) {
                 albums = MediaController.allMediaAlbums;
             } else {
                 albums = MediaController.allPhotoAlbums;
@@ -2533,7 +2553,11 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
 
     public void loadGalleryPhotos() {
         MediaController.AlbumEntry albumEntry;
-        if (shouldLoadAllMedia()) {
+        //DIVO--START
+        if (parentAlert.avatarPicker == 3) {
+            albumEntry = MediaController.allVideosAlbumEntry;
+            //DIVO--END
+        } else if (shouldLoadAllMedia()) {
             albumEntry = MediaController.allMediaAlbumEntry;
         } else {
             albumEntry = MediaController.allPhotosAlbumEntry;
@@ -3169,17 +3193,35 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
 
     private boolean isNoGalleryPermissions() {
         Activity activity = AndroidUtilities.findActivity(getContext());
-        if (activity == null) {
+        if (activity == null && parentAlert != null && parentAlert.baseFragment != null) {
             activity = parentAlert.baseFragment.getParentActivity();
         }
-        return Build.VERSION.SDK_INT >= 23 && (
-            activity == null ||
-                Build.VERSION.SDK_INT >= 33 && (
-                    activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED ||
-                        activity.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED
-                ) ||
-                Build.VERSION.SDK_INT < 33 && activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
-        );
+        if (activity == null) {
+            return Build.VERSION.SDK_INT >= 23;
+        }
+        if (Build.VERSION.SDK_INT >= 34) {
+            if (parentAlert != null && parentAlert.avatarPicker == 3) {
+                return activity.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED &&
+                       activity.checkSelfPermission("android.permission.READ_MEDIA_VISUAL_USER_SELECTED") != PackageManager.PERMISSION_GRANTED;
+            } else if (parentAlert != null && parentAlert.avatarPicker == 1) {
+                return activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED &&
+                       activity.checkSelfPermission("android.permission.READ_MEDIA_VISUAL_USER_SELECTED") != PackageManager.PERMISSION_GRANTED;
+            }
+            return activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED &&
+                   activity.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED &&
+                   activity.checkSelfPermission("android.permission.READ_MEDIA_VISUAL_USER_SELECTED") != PackageManager.PERMISSION_GRANTED;
+        } else if (Build.VERSION.SDK_INT >= 33) {
+            if (parentAlert != null && parentAlert.avatarPicker == 3) {
+                return activity.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED;
+            } else if (parentAlert != null && parentAlert.avatarPicker == 1) {
+                return activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED;
+            }
+            return activity.checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED ||
+                   activity.checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED;
+        } else if (Build.VERSION.SDK_INT >= 23) {
+            return activity.checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED;
+        }
+        return false;
     }
 
     public void checkStorage() {
@@ -3699,10 +3741,20 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
                 }
             }
         } else {
-            if (shouldLoadAllMedia()) {
+            //DIVO--START
+            if (parentAlert.avatarPicker == 3) {
+                galleryAlbumEntry = MediaController.allVideosAlbumEntry;
+                progressView.setText(LocaleController.getString(R.string.NoVideos));
+            } else if (!videoEnabled) {
+                galleryAlbumEntry = MediaController.allPhotosAlbumEntry;
+                progressView.setText(LocaleController.getString(R.string.NoPhotos));
+                //DIVO--END
+            } else if (shouldLoadAllMedia()) {
                 galleryAlbumEntry = MediaController.allMediaAlbumEntry;
+                progressView.setText(LocaleController.getString(R.string.NoPhotos));
             } else {
                 galleryAlbumEntry = MediaController.allPhotosAlbumEntry;
+                progressView.setText(LocaleController.getString(R.string.NoPhotos));
             }
         }
         if (Build.VERSION.SDK_INT >= 23) {
@@ -4206,12 +4258,20 @@ public class ChatAttachAlertPhotoLayout extends ChatAttachAlert.AttachAlertLayou
     public void didReceivedNotification(int id, int account, Object... args) {
         if (id == NotificationCenter.albumsDidLoad) {
             if (adapter != null) {
-                if (shouldLoadAllMedia()) {
+                //DIVO--START
+                if (parentAlert.avatarPicker == 3) {
+                    galleryAlbumEntry = MediaController.allVideosAlbumEntry;
+                    //DIVO--END
+                } else if (shouldLoadAllMedia()) {
                     galleryAlbumEntry = MediaController.allMediaAlbumEntry;
                 } else {
                     galleryAlbumEntry = MediaController.allPhotosAlbumEntry;
                 }
                 if (selectedAlbumEntry == null || parentAlert != null && parentAlert.isStickerMode) {
+                    //DIVO--START
+                    selectedAlbumEntry = galleryAlbumEntry;
+                } else if (parentAlert.avatarPicker == 3) {
+                    //DIVO--END
                     selectedAlbumEntry = galleryAlbumEntry;
                 } else if (shouldLoadAllMedia()) {
                     for (int a = 0; a < MediaController.allMediaAlbums.size(); a++) {

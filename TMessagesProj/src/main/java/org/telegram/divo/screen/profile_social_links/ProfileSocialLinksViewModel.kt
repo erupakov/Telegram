@@ -57,11 +57,21 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
         nickname: String
     ) {
         setState {
-            when (socialNetworkType) {
-                SocialNetworkType.WEBSITE -> copy(websiteUrl = nickname)
-                SocialNetworkType.INSTAGRAM -> copy(instagramUrl = "https://${socialNetworkType.value}$nickname")
-                SocialNetworkType.TIKTOK -> copy(tiktokUrl = "https://${socialNetworkType.value}$nickname")
-                SocialNetworkType.YOUTUBE -> copy(youtubeUrl = "https://${socialNetworkType.value}$nickname")
+            if (nickname.isBlank()) {
+                when (socialNetworkType) {
+                    SocialNetworkType.WEBSITE -> copy(websiteUrl = "")
+                    SocialNetworkType.INSTAGRAM -> copy(instagramUrl = "")
+                    SocialNetworkType.TIKTOK -> copy(tiktokUrl = "")
+                    SocialNetworkType.YOUTUBE -> copy(youtubeUrl = "")
+                }
+            } else {
+                val cleanNickname = nickname.removePrefix("@")
+                when (socialNetworkType) {
+                    SocialNetworkType.WEBSITE -> copy(websiteUrl = nickname)
+                    SocialNetworkType.INSTAGRAM -> copy(instagramUrl = "https://${socialNetworkType.value}$cleanNickname")
+                    SocialNetworkType.TIKTOK -> copy(tiktokUrl = "https://${socialNetworkType.value}@$cleanNickname")
+                    SocialNetworkType.YOUTUBE -> copy(youtubeUrl = "https://${socialNetworkType.value}@$cleanNickname")
+                }
             }
         }
     }

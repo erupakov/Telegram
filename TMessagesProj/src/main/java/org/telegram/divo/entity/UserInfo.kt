@@ -37,7 +37,28 @@ data class UserInfo(
     val channels: List<UserChannel> = emptyList()
 ) {
     val displayName: String
-        get() = if (role == RoleType.AGENCY) agency?.title?.takeIf { it.isNotBlank() } ?: fullName else fullName
+        get() {
+            val rawName = if (role == RoleType.AGENCY) agency?.title?.takeIf { it.isNotBlank() } ?: fullName else fullName
+            return rawName.toTitleCase()
+        }
+
+    private fun String.toTitleCase(): String {
+        val delimiters = charArrayOf(' ', '-')
+        var capitalizeNext = true
+        val result = StringBuilder(length)
+        for (char in this) {
+            if (char in delimiters) {
+                capitalizeNext = true
+                result.append(char)
+            } else if (capitalizeNext) {
+                result.append(char.uppercaseChar())
+                capitalizeNext = false
+            } else {
+                result.append(char.lowercaseChar())
+            }
+        }
+        return result.toString()
+    }
 }
 
 data class UserChannel(
@@ -63,15 +84,70 @@ fun mapGenderToEnglish(localizedGenders: String?): String? {
     val items = localizedGenders.split(",").map { it.trim() }.filter { it.isNotEmpty() }
     
     val mapped = items.map { item ->
+        val lower = item.lowercase()
         when {
-            item.equals(maleLocalized, ignoreCase = true) || item.equals("male", ignoreCase = true) -> "male"
-            item.equals(femaleLocalized, ignoreCase = true) || item.equals("female", ignoreCase = true) -> "female"
-            else -> item.lowercase()
+            item.equals(maleLocalized, ignoreCase = true) || lower in listOf("male", "мужской", "masculino", "masculin", "男性") -> "male"
+            item.equals(femaleLocalized, ignoreCase = true) || lower in listOf("female", "женский", "femenino", "feminino", "féminin", "女性") -> "female"
+            else -> lower
         }
     }
     
     return mapped.joinToString(",").takeIf { it.isNotEmpty() }
 }
+
+fun mapGenderToLocalized(genderId: String?): String? {
+    if (genderId.isNullOrBlank()) return null
+    val context = org.telegram.messenger.ApplicationLoader.applicationContext
+    val array = context.resources.getStringArray(org.telegram.messenger.R.array.GenderItems)
+    
+    return when (genderId.lowercase()) {
+        "male" -> array.getOrNull(1)
+        "female" -> array.getOrNull(2)
+        else -> null
+    }
+}
+
+fun mapRoleToEnglish(localizedRoles: String?): String? {
+    if (localizedRoles.isNullOrBlank()) return null
+    val context = org.telegram.messenger.ApplicationLoader.applicationContext
+    val array = context.resources.getStringArray(org.telegram.messenger.R.array.ModelNewTalentAgency)
+    
+    val allRolesLabel = array.getOrNull(0)
+    val modelLocalized = array.getOrNull(1)
+    val newTalentLocalized = array.getOrNull(2)
+    val agencyLocalized = array.getOrNull(3)
+    
+    val items = localizedRoles.split(",").map { it.trim() }.filter { it.isNotEmpty() }
+    
+    val mapped = items.map { item ->
+        val lower = item.lowercase().replace(" ", "_")
+        when {
+            item.equals(allRolesLabel, ignoreCase = true) || lower in listOf("all", "all_roles", "все_роли", "todos_los_roles", "tous_les_rôles", "todos_os_papéis", "所有角色") -> "all"
+            item.equals(modelLocalized, ignoreCase = true) || lower in listOf("model", "модель", "modelo", "modèle", "模特") -> "model"
+            item.equals(newTalentLocalized, ignoreCase = true) || lower in listOf("new_talent", "new_face", "новое_лицо", "новое лицо", "nuevo_talento", "nouveau_talent", "novo_talento", "新面孔") -> "new_face"
+            item.equals(agencyLocalized, ignoreCase = true) || lower in listOf("agency", "агентство", "agencia", "agence", "agência", "机构") -> "agency"
+            item.equals("fan", ignoreCase = true) || lower in listOf("fan", "фан", "fã", "爱好者") -> "fan"
+            else -> lower
+        }
+    }
+    
+    return mapped.joinToString(",").takeIf { it.isNotEmpty() }
+}
+
+fun mapRoleToLocalized(roleId: String?): String? {
+    if (roleId.isNullOrBlank()) return null
+    val context = org.telegram.messenger.ApplicationLoader.applicationContext
+    val array = context.resources.getStringArray(org.telegram.messenger.R.array.ModelNewTalentAgency)
+    
+    return when (roleId.lowercase().trim().replace(" ", "_")) {
+        "all", "all_roles" -> array.getOrNull(0)
+        "model" -> array.getOrNull(1)
+        "new_face", "new_talent" -> array.getOrNull(2)
+        "agency", "agency_employee" -> array.getOrNull(3)
+        else -> roleId
+    }
+}
+
 data class Model(
     val agency: Agency? = null,
     val education: String = "",

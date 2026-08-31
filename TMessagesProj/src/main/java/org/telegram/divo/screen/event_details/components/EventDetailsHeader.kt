@@ -133,7 +133,7 @@ private fun StatsSection(
             count = event?.likesCount ?: 0,
             tint = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             textColor = if (isLiked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
-            background = if (isLiked) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
+            background = if (isLiked) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
             onClick = if (isOwnEvent) null else onLikeClicked
         )
         Spacer(Modifier.height(10.dp))
@@ -148,7 +148,7 @@ private fun StatsSection(
             count = event?.favoritesCount ?: 0,
             tint = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
             textColor = if (isFavourite) AppTheme.colors.textPrimary else AppTheme.colors.onBackground,
-            background = if (isFavourite) AppTheme.colors.onBackground else Color.White.copy(alpha = 0.3f),
+            background = if (isFavourite) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
             onClick = if (isOwnEvent) null else onFavouriteClicked
         )
     }
@@ -225,7 +225,7 @@ private fun ContentSection(
                     if (statusText.isNotEmpty()) {
                         RoundedGlassContainer(
                             height = 36.dp,
-                            background = Color.White.copy(alpha = 0.3f),
+                            background = AppTheme.colors.backgroundDark.copy(0.4f),
                             contentPadding = PaddingValues(horizontal = 10.dp)
                         ) {
                             Text(
@@ -244,7 +244,7 @@ private fun ContentSection(
                     val buttonTextId = when {
                         isApplied -> R.string.ButtonApplied
                         isClosed -> R.string.ButtonClosed
-                        else -> R.string.ButtonApply
+                        else -> R.string.EventButtonInterested
                     }
                     val buttonIconResId = when {
                         isApplied -> R.drawable.divo_check_ic
@@ -286,7 +286,7 @@ private fun EngagementItem(
     count: Int,
     tint: Color = AppTheme.colors.onBackground,
     textColor: Color = AppTheme.colors.onBackground,
-    background: Color = Color.White.copy(alpha = 0.3f),
+    background: Color = AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
     onClick: (() -> Unit)? = null
 ) {
     val baseModifier = Modifier.width(56.dp)

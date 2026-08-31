@@ -7328,6 +7328,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             fragmentSearchField.editText.setSelection(query.length());
         }
     }
+    public void openSearchFromBottomBar() {
+        showSearch(true, false, true);
+    }
 
     private void showSearch(boolean show, boolean startFromDownloads, boolean animated) {
         showSearch(show, startFromDownloads, animated, false);

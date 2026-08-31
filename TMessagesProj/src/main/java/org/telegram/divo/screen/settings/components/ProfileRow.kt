@@ -54,16 +54,18 @@ fun ProfileRow(
 
         Spacer(Modifier.height(16.dp))
 
-        Text(
-            modifier = Modifier.padding(horizontal = 16.dp),
-            text = name,
-            style = AppTheme.typography.helveticaNeueRegular,
-            color = AppTheme.colors.textPrimary,
-            fontSize = 18.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Spacer(Modifier.height(10.dp))
+        if (name.isNotEmpty()) {
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = name,
+                style = AppTheme.typography.helveticaNeueRegular,
+                color = AppTheme.colors.textPrimary,
+                fontSize = 18.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(Modifier.height(10.dp))
+        }
         if (phone.isNotEmpty() && !DivoApi.accessTokenProvider.isGoogleLogin() && !phone.startsWith("999")) {
             Text(
                 text = "+${phone}",

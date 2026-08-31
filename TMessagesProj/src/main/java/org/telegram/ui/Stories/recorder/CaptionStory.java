@@ -82,6 +82,7 @@ public class CaptionStory extends CaptionContainerView {
         periodButton.setBackground(Theme.createSelectorDrawable(Theme.ACTION_BAR_WHITE_SELECTOR_COLOR, RIPPLE_MASK_CIRCLE_20DP, dp(18)));
         periodButton.setScaleType(ImageView.ScaleType.CENTER);
         setPeriod(86400, false);
+        periodButton.setVisibility(View.GONE); //DIVO
         addView(periodButton, LayoutHelper.createFrame(44, 44, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 11 + 44 - 4, 6));
         periodButton.setOnClickListener(e -> {
             if (periodPopup != null && periodPopup.isShown()) {
@@ -463,8 +464,8 @@ public class CaptionStory extends CaptionContainerView {
     }
 
     public void setPeriodVisible(boolean visible) {
-        periodVisible = visible;
-        periodButton.setVisibility(periodVisible && !keyboardShown ? View.VISIBLE : View.GONE);
+        periodVisible = false; //DIVO
+        periodButton.setVisibility(View.GONE); //DIVO
     }
 
     public void setPeriod(int period, boolean animated) {
@@ -502,7 +503,7 @@ public class CaptionStory extends CaptionContainerView {
     @Override
     protected void beforeUpdateShownKeyboard(boolean show) {
         if (!show) {
-            periodButton.setVisibility(periodVisible ? View.VISIBLE : View.GONE);
+            periodButton.setVisibility(View.GONE); //DIVO
             roundButton.setVisibility(View.VISIBLE);
         }
     }
@@ -515,11 +516,8 @@ public class CaptionStory extends CaptionContainerView {
 
     @Override
     protected void afterUpdateShownKeyboard(boolean show) {
-        periodButton.setVisibility(!show && periodVisible ? View.VISIBLE : View.GONE);
+        periodButton.setVisibility(View.GONE); //DIVO
         roundButton.setVisibility(!show ? View.VISIBLE : View.GONE);
-        if (show) {
-            periodButton.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -582,7 +580,7 @@ public class CaptionStory extends CaptionContainerView {
     private final Runnable doneCancel = () -> {
         setCollapsed(false, Integer.MIN_VALUE);
         roundButton.setVisibility(VISIBLE);
-        periodButton.setVisibility(VISIBLE);
+        periodButton.setVisibility(GONE); //DIVO
     };
 
     private boolean roundButtonTouchEvent(MotionEvent ev) {

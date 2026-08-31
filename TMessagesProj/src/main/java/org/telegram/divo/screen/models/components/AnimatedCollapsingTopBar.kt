@@ -60,7 +60,6 @@ import dev.chrisbanes.haze.HazeTint
 import dev.chrisbanes.haze.hazeEffect
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
-import org.telegram.divo.screen.models.ModelsViewState
 import org.telegram.divo.screen.models.Story
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.AndroidUtilities
@@ -87,10 +86,10 @@ fun AnimatedLargeStoriesOverlay(
     val collapsedHeight = 56.dp
     val currentHeight = lerp(expandedHeight, collapsedHeight, collapseFraction)
 
-    val lift = lerp(0.dp, (-10).dp, collapseFraction)
-    val overlayHeight = statusBarHeight + currentHeight + 16.dp + 60.dp
+    val lift = lerp(0.dp, 0.dp, collapseFraction)
+    val overlayHeight = statusBarHeight + currentHeight + 16.dp + 50.dp
 
-    val startYPx = with(density) { (overlayHeight * 0.15f).toPx() }
+    val startYPx = 0f
     val endYPx = with(density) { overlayHeight.toPx() }
 
     val listState = rememberLazyListState()
@@ -101,33 +100,51 @@ fun AnimatedLargeStoriesOverlay(
         }
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(overlayHeight)
-            .hazeEffect(
-                state = hazeState,
-                style = HazeStyle(
-                    backgroundColor = AppTheme.colors.backgroundLight,
-                    blurRadius = 40.dp,
-                    tints = listOf(
-                        HazeTint(AppTheme.colors.backgroundLight.copy(alpha = 0.75f))
+    val isBuggyXiaomi = android.os.Build.MANUFACTURER.equals("Xiaomi", ignoreCase = true) &&
+            android.os.Build.VERSION.SDK_INT == 33 // Android 13 (Tiramisu)
+
+    val overlayModifier = Modifier
+        .fillMaxWidth()
+        .height(overlayHeight)
+        .let {
+            if (isBuggyXiaomi) {
+                it.background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            AppTheme.colors.backgroundLight,
+                            AppTheme.colors.backgroundLight.copy(alpha = 0f)
+                        )
                     )
                 )
-            ) {
-                progressive = HazeProgressive.verticalGradient(
-                    startY = startYPx,
-                    startIntensity = 1f,
-                    endY = endYPx,
-                    endIntensity = 0f,
-                    easing = FastOutSlowInEasing,
-                )
+            } else {
+                it.hazeEffect(
+                    state = hazeState,
+                    style = HazeStyle(
+                        backgroundColor = AppTheme.colors.backgroundLight,
+                        blurRadius = 40.dp,
+                        tints = listOf(
+                            HazeTint(AppTheme.colors.backgroundLight.copy(alpha = 0.75f))
+                        )
+                    )
+                ) {
+                    progressive = HazeProgressive.verticalGradient(
+                        startY = startYPx,
+                        startIntensity = 1f,
+                        endY = endYPx,
+                        endIntensity = 0f,
+                        easing = FastOutSlowInEasing,
+                    )
+                }
             }
-    )
+        }
+
+    Box(modifier = overlayModifier)
 
     val baseY = statusBarHeight + 8.dp
 
     val account = UserConfig.selectedAccount
+
+    val hasOtherStories = stories.any { !it.isSelf }
 
     val visibleStories = if (stories.size == 1 && stories.first().isSelf) {
         stories.take(1)
@@ -339,12 +356,13 @@ fun AnimatedLargeStoriesOverlay(
                     story.userName
                 }
 
+                val isGray = story.isSelf && !story.hasStories && hasOtherStories
                 Text(
                     text = text,
                     fontSize = 11.5.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (story.isSelf && !story.hasStories) Color(0xFFB0B4BA) else Color.Black,
+                    color = if (isGray) Color(0xFFB0B4BA) else Color.Black,
                     modifier = Modifier.graphicsLayer { alpha = textAlpha }
                 )
             }

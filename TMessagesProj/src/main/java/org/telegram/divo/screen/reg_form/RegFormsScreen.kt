@@ -4,6 +4,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
 import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.components.inputs.RoundedButton
 import org.telegram.divo.components.inputs.UIButton
@@ -58,6 +61,7 @@ fun RegFormsScreen(
     onBack: () -> Unit,
     onBackToPhone: () -> Unit,
 ) {
+    StatusBarIconColorEffect(useDarkIcons = true)
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
@@ -130,7 +134,12 @@ private fun RegFormsScreenContent(
     }
 
     Scaffold(
-        snackbarHost = { AppSnackbarHost(state = snackbarHostState) },
+        snackbarHost = {
+            AppSnackbarHost(
+                state = snackbarHostState,
+                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
+            )
+        },
         topBar = {
             TopBar(
                 currentPage = state.currentStepIndex + 1,

@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -34,6 +35,7 @@ import org.telegram.divo.dal.dto.user.toEntities
 import org.telegram.divo.dal.dto.user.toEntity
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.dal.network.resultOf
 import org.telegram.divo.entity.Agency
 import org.telegram.divo.entity.AgencyModels
@@ -81,6 +83,8 @@ class UserRepository(
 
     private val _galleryCache = MutableStateFlow<Map<Int, UserGalleryList>>(emptyMap())
 
+    private val telegramUserCache = mutableMapOf<Long, UserInfo?>()
+
     suspend fun getCurrentUserInfo(forceRefresh: Boolean = false): DivoResult<UserInfo> = resultOf {
         if (!forceRefresh) {
             _currentUserCache.value?.let { 
@@ -123,6 +127,56 @@ class UserRepository(
         }
     }
 
+    fun getCachedUserByTelegram(telegramId: Long): UserInfo? = telegramUserCache[telegramId]
+
+    suspend fun getUserByTelegram(telegramId: Long): DivoResult<UserInfo> = resultOf {
+        telegramUserCache[telegramId]?.let { return@resultOf it }
+        val res = service.getUserByTelegram(telegramId)
+        val channels = try {
+            val entities = service.getChannels(res.data.id).data?.items?.toEntities() ?: emptyList()
+            entities.filter { it.id !in pendingDeletions }
+        } catch (e: Exception) { emptyList() }
+        val entity = res.toEntity(channels)
+        telegramUserCache[telegramId] = entity
+        entity
+    }
+
+    fun interface UserCallback {
+        fun onResult(user: UserInfo)
+    }
+
+    fun interface ErrorCallback {
+        fun onError(message: String)
+    }
+
+    @JvmOverloads
+    fun resolveUserByTelegram(
+        telegramId: Long,
+        onSuccess: UserCallback,
+        onError: ErrorCallback? = null
+    ) {
+        val cached = telegramUserCache[telegramId]
+        if (cached != null) {
+            onSuccess.onResult(cached)
+            return
+        }
+        scope.launch {
+            when (val res = getUserByTelegram(telegramId)) {
+                is DivoResult.Success -> {
+                    withContext(Dispatchers.Main) {
+                        onSuccess.onResult(res.value)
+                    }
+                }
+                else -> {
+                    val errorMsg = res.getErrorMessage()
+                    withContext(Dispatchers.Main) {
+                        onError?.onError(errorMsg)
+                    }
+                }
+            }
+        }
+    }
+
     suspend fun addChannel(telegramChatId: Long, username: String?, inviteLink: String?): DivoResult<Unit> = resultOf {
         service.addChannel(
             org.telegram.divo.dal.dto.user.AddChannelRequest(
@@ -162,7 +216,13 @@ class UserRepository(
                 fullName = userInfo.fullName,
                 phone = userInfo.phone,
                 timezone = TimeZone.getDefault().id,
-                gender = userInfo.gender?.id?.lowercase(java.util.Locale.US),
+                gender = userInfo.gender?.id?.let {
+                    if (it.lowercase() == "male" || it.lowercase() == "female") {
+                        it.lowercase()
+                    } else {
+                        org.telegram.divo.entity.mapGenderToEnglish(it) ?: "female"
+                    }
+                },
                 birthday = userInfo.birthday,
                 geoCityId = resolvedCityId?.takeIf { it > 0 },
                 measuringSystem = userInfo.measuringSystem,
@@ -178,6 +238,10 @@ class UserRepository(
         )
         val existingChannels = _currentUserCache.value?.channels ?: emptyList()
         result.toEntity(existingChannels).also { updateCacheAndPersist(it) }
+    }
+
+    suspend fun deleteAccount(): DivoResult<Unit> = resultOf {
+        service.deleteAccount()
     }
 
     suspend fun updateProfile(

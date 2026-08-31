@@ -125,6 +125,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import org.telegram.PhoneFormat.PhoneFormat;
+import org.telegram.divo.entity.UserInfo;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -642,6 +643,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int infoHeaderRowEmpty;
     private int infoEndRowEmpty;
     private int phoneRow;
+    private UserInfo divoUserInfo; //DIVO
     private int noteRow;
     private int locationRow;
     private int userInfoRow;
@@ -2108,6 +2110,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             getNotificationCenter().addObserver(this, NotificationCenter.userInfoDidLoad);
             getNotificationCenter().addObserver(this, NotificationCenter.privacyRulesUpdated);
             NotificationCenter.getGlobalInstance().addObserver(this, NotificationCenter.reloadInterface);
+            loadDivoUser(); //DIVO
 
             userBlocked = getMessagesController().blockePeers.indexOfKey(userId) >= 0;
             if (user.bot) {
@@ -2316,7 +2319,31 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             });
         }
     }
-
+    //DIVO--START
+    private void loadDivoUser() {
+        if (userId == 0) return;
+        long selfId = getUserConfig().getClientUserId();
+        if (userId == selfId) {
+            divoUserInfo = org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().getCurrentUserFlow().getValue();
+            if (divoUserInfo == null || TextUtils.isEmpty(divoUserInfo.getFullName())) {
+                org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().resolveUserByTelegram(userId, (resolvedUser) -> {
+                    divoUserInfo = resolvedUser;
+                    if (phoneRow >= 0 && listAdapter != null) {
+                        listAdapter.notifyItemChanged(phoneRow);
+                    }
+                }, null);
+            }
+        } else {
+            divoUserInfo = org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().getCachedUserByTelegram(userId);
+            org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().resolveUserByTelegram(userId, (resolvedUser) -> {
+                divoUserInfo = resolvedUser;
+                if (phoneRow >= 0 && listAdapter != null) {
+                    listAdapter.notifyItemChanged(phoneRow);
+                }
+            }, null);
+        }
+    }
+    //DIVO--END
     @Override
     public boolean isActionBarCrossfadeEnabled() {
         return !isPulledDown;
@@ -4241,6 +4268,30 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return;
             }
             listView.stopScroll();
+            //DIVO--START
+            if (position == phoneRow) {
+                if (userId != 0) {
+                    boolean isOwn = (userId == getUserConfig().getClientUserId());
+                    if (divoUserInfo != null && divoUserInfo.getId() > 0) {
+                        presentFragment(org.telegram.divo.screen.profile.FragmentProfileN.Companion.newInstance(divoUserInfo.getId(), isOwn));
+                    } else {
+                        org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().resolveUserByTelegram(userId, (resolvedUser) -> {
+                            divoUserInfo = resolvedUser;
+                            if (resolvedUser.getId() > 0) {
+                                presentFragment(org.telegram.divo.screen.profile.FragmentProfileN.Companion.newInstance(resolvedUser.getId(), isOwn));
+                            } else if (getParentActivity() != null) {
+                                Toast.makeText(getParentActivity(), LocaleController.getString(R.string.DivoUserNotFound), Toast.LENGTH_SHORT).show();
+                            }
+                        }, (errorMsg) -> {
+                            if (getParentActivity() != null) {
+                                Toast.makeText(getParentActivity(), !TextUtils.isEmpty(errorMsg) ? errorMsg : LocaleController.getString(R.string.DivoUserNotFound), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+                return;
+            }
+            //DIVO--END
             if (position == affiliateRow) {
                 TLRPC.User user = getMessagesController().getUser(userId);
                 if (userInfo != null && userInfo.starref_program != null) {
@@ -7185,69 +7236,58 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             return true;
         } else if (position == noteRow) {
 
-        } else if (position == phoneRow || position == numberRow) {
+        } else if (position == phoneRow) { //DIVO
             if (editRow(view, position)) return true;
 
+            final TLRPC.User user = getMessagesController().getUser(userId);
+            final String text = divoUserInfo != null && !TextUtils.isEmpty(divoUserInfo.getFullName()) ? divoUserInfo.getFullName() : (user != null ? UserObject.getUserName(user) : ""); //DIVO
+
+            final ItemOptions o = ItemOptions.makeOptions(this, view);
+            o.setScrimViewBackground(listView.getClipBackground(view));
+            //DIVO--START
+            o.add(R.drawable.msg_openprofile, getString(R.string.DivoPublicProfile), () -> {
+                boolean isOwn = (userId == getUserConfig().getClientUserId());
+                if (divoUserInfo != null && divoUserInfo.getId() > 0) {
+                    presentFragment(org.telegram.divo.screen.profile.FragmentProfileN.Companion.newInstance(divoUserInfo.getId(), isOwn));
+                } else {
+                    org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().resolveUserByTelegram(userId, (resolvedUser) -> {
+                        divoUserInfo = resolvedUser;
+                        if (resolvedUser.getId() > 0) {
+                            presentFragment(org.telegram.divo.screen.profile.FragmentProfileN.Companion.newInstance(resolvedUser.getId(), isOwn));
+                        } else if (getParentActivity() != null) {
+                            Toast.makeText(getParentActivity(), LocaleController.getString(R.string.DivoUserNotFound), Toast.LENGTH_SHORT).show();
+                        }
+                    }, (errorMsg) -> {
+                        if (getParentActivity() != null) {
+                            Toast.makeText(getParentActivity(), !TextUtils.isEmpty(errorMsg) ? errorMsg : LocaleController.getString(R.string.DivoUserNotFound), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            });
+            if (!TextUtils.isEmpty(text)) {
+                o.add(R.drawable.msg_copy, getString(R.string.Copy), () -> {
+                    try {
+                        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                        android.content.ClipData clip = android.content.ClipData.newPlainText("label", text);
+                        clipboard.setPrimaryClip(clip);
+                        if (AndroidUtilities.shouldShowClipboardToast()) {
+                            BulletinFactory.of(this).createCopyBulletin(LocaleController.getString(R.string.TextCopied)).show();
+                        }
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
+                });
+            }
+            o.show();
+            return true;
+        } else if (position == numberRow) {
             final TLRPC.User user = getMessagesController().getUser(userId);
             if (user == null || user.phone == null || user.phone.length() == 0 || getParentActivity() == null) {
                 return false;
             }
-
-            if (position == phoneRow && user.phone.startsWith("888")) {
-                final TL_fragment.TL_inputCollectiblePhone input = new TL_fragment.TL_inputCollectiblePhone();
-                final String phone = input.phone = user.phone;
-                final TL_fragment.TL_getCollectibleInfo req = new TL_fragment.TL_getCollectibleInfo();
-                req.collectible = input;
-                int reqId = getConnectionsManager().sendRequest(req, (res, err) -> AndroidUtilities.runOnUIThread(() -> {
-                    if (res instanceof TL_fragment.TL_collectibleInfo) {
-                        FragmentUsernameBottomSheet.open(getContext(), FragmentUsernameBottomSheet.TYPE_PHONE, phone, user, (TL_fragment.TL_collectibleInfo) res, getResourceProvider());
-                    } else {
-                        BulletinFactory.showError(err);
-                    }
-                }));
-                getConnectionsManager().bindRequestToGuid(reqId, getClassGuid());
-                return true;
-            }
-
             final ItemOptions o = ItemOptions.makeOptions(this, view);
             o.setScrimViewBackground(listView.getClipBackground(view));
-            if (position == phoneRow) {
-                if (userInfo != null && userInfo.phone_calls_available) {
-                    o.add(R.drawable.msg_calls, getString(R.string.CallViaTelegram), () -> {
-                        if (getParentActivity() == null) return;
-                        VoIPHelper.startCall(user, false, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
-                    });
-                    if (userInfo.video_calls_available) {
-                        o.add(R.drawable.msg_videocall, getString(R.string.VideoCallViaTelegram), () -> {
-                            if (getParentActivity() == null) return;
-                            VoIPHelper.startCall(user, true, userInfo != null && userInfo.video_calls_available, getParentActivity(), userInfo, getAccountInstance());
-                        });
-                    }
-                }
-                if (!isFragmentPhoneNumber) {
-                    o.add(R.drawable.msg_calls_regular, getString(R.string.Call), () -> {
-                        try {
-                            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:+" + user.phone));
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            getParentActivity().startActivityForResult(intent, 500);
-                        } catch (Exception e) {
-                            FileLog.e(e);
-                        }
-                    });
-                }
-            }
-            o.add(R.drawable.msg_copy, getString(R.string.Copy), () -> {
-                try {
-                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
-                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", "+" + user.phone);
-                    clipboard.setPrimaryClip(clip);
-                    if (AndroidUtilities.shouldShowClipboardToast()) {
-                        BulletinFactory.of(this).createCopyBulletin(LocaleController.getString(R.string.PhoneCopied)).show();
-                    }
-                } catch (Exception e) {
-                    FileLog.e(e);
-                }
-            });
+            //DIVO--END
             if (isFragmentPhoneNumber) {
                 final SpannableStringBuilder spanned = new SpannableStringBuilder(AndroidUtilities.replaceTags(LocaleController.getString(R.string.AnonymousNumberNotice)));
                 final int startIndex = TextUtils.indexOf(spanned, '*');
@@ -7271,6 +7311,20 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     });
                 }
             }
+            //DIVO--START
+            o.add(R.drawable.msg_copy, getString(R.string.Copy), () -> {
+                try {
+                    android.content.ClipboardManager clipboard = (android.content.ClipboardManager) ApplicationLoader.applicationContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                    android.content.ClipData clip = android.content.ClipData.newPlainText("label", "+" + user.phone);
+                    clipboard.setPrimaryClip(clip);
+                    if (AndroidUtilities.shouldShowClipboardToast()) {
+                        BulletinFactory.of(this).createCopyBulletin(LocaleController.getString(R.string.PhoneCopied)).show();
+                    }
+                } catch (Exception e) {
+                    FileLog.e(e);
+                }
+            });
+            //DIVO--END
             o.show();
             return true;
         } else if (position == channelInfoRow || position == userInfoRow || position == locationRow || position == bioRow) {
@@ -8906,8 +8960,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     avatarImage.setHasStories(needInsetForStories());
                 }
                 if (chatId != 0) {
-                    boolean gift = !BuildVars.IS_BILLING_UNAVAILABLE && !getMessagesController().premiumPurchaseBlocked() && chatInfo != null && chatInfo.stargifts_available;
-                    otherItem.setSubItemShown(gift_premium, gift);
+                    boolean gift = false; //DIVO !BuildVars.IS_BILLING_UNAVAILABLE && !getMessagesController().premiumPurchaseBlocked() && chatInfo != null && chatInfo.stargifts_available;
+                    otherItem.setSubItemShown(gift_premium, false /*//DIVO gift */);
                     if (actionsView != null) {
                         actionsView.set(ProfileActionsView.KEY_GIFT, gift);
                     }
@@ -10009,8 +10063,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
         fetchUsersFromChannelInfo();
         if (chatId != 0) {
-            boolean gift = !BuildVars.IS_BILLING_UNAVAILABLE && !getMessagesController().premiumPurchaseBlocked() && chatInfo != null && chatInfo.stargifts_available;
-            otherItem.setSubItemShown(gift_premium, gift);
+            boolean gift = false; //DIVO !BuildVars.IS_BILLING_UNAVAILABLE && !getMessagesController().premiumPurchaseBlocked() && chatInfo != null && chatInfo.stargifts_available;
+            otherItem.setSubItemShown(gift_premium, false /* gift */); //DIVO
             if (actionsView != null) {
                 actionsView.set(ProfileActionsView.KEY_GIFT, gift);
             }
@@ -10365,7 +10419,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 }
                 infoStartRow = rowCount;
-                if (!isBot && (hasPhone || !hasInfo)) {
+                if (!isBot && (hasPhone || !hasInfo || userId != 0)) { //DIVO
                     phoneRow = rowCount++;
                 }
                 if (userInfo != null && !TextUtils.isEmpty(userInfo.about)) {
@@ -11744,10 +11798,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     editItemVisible = true;
                 }
 
-                if (userInfo != null && userInfo.phone_calls_available) {
+                //DIVO--START
+                /*if (userInfo != null && userInfo.phone_calls_available) {
                     callItemVisible = true;
                     videoCallItemVisible = userInfo.video_calls_available;
-                }
+                }*/
+                //DIVO--END
                 if (isBot || getContactsController().contactsDict.get(userId) == null) {
                     if (MessagesController.isSupportUser(user)) {
                         if (userBlocked) {
@@ -11797,7 +11853,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     otherItem.addSubItem(delete_contact, R.drawable.msg_delete, LocaleController.getString(R.string.DeleteContact));
                 }
                 if (!UserObject.isDeleted(user) && !isBot && currentEncryptedChat == null && !userBlocked && userId != 333000 && userId != 777000 && userId != 42777) {
-                    if (!BuildVars.IS_BILLING_UNAVAILABLE && !user.self && !user.bot && !MessagesController.isSupportUser(user) && !getMessagesController().premiumPurchaseBlocked()) {
+                    if (false /*//DIVO !BuildVars.IS_BILLING_UNAVAILABLE && !user.self && !user.bot && !MessagesController.isSupportUser(user) && !getMessagesController().premiumPurchaseBlocked() */) {
                         StarsController.getInstance(currentAccount).loadStarGifts();
                         otherItem.addSubItem(gift_premium, R.drawable.msg_gift_premium, LocaleController.getString(R.string.ProfileSendAGift));
                         giftAction = true;
@@ -11828,20 +11884,24 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 if (chatInfo != null) {
                     if (ChatObject.canManageCalls(chat) && chatInfo.call == null) {
-                        otherItem.addSubItem(call_item, R.drawable.msg_voicechat, chat.megagroup && !chat.gigagroup ? LocaleController.getString(R.string.StartVoipChat) : LocaleController.getString(R.string.StartVoipChannel));
-                        hasVoiceChatItem = true;
-                        if (chat.megagroup && !chat.gigagroup) {
+                        //DIVO--START
+                        /*if (chat.megagroup && !chat.gigagroup) {
+                            otherItem.addSubItem(call_item, R.drawable.msg_voicechat, LocaleController.getString(R.string.StartVoipChat));
+                            hasVoiceChatItem = true;
                             voiceChatAction = true;
-                        } else {
-                            streamAction = true;
-                        }
+                        }*/
+                        //DIVO--END
                     }
                     if ((chatInfo.can_view_stats || chatInfo.can_view_revenue || chatInfo.can_view_stars_revenue || getMessagesController().getStoriesController().canPostStories(getDialogId())) && topicId == 0) {
                         otherItem.addSubItem(statistics, R.drawable.msg_stats, LocaleController.getString(R.string.Statistics));
                     }
                     ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
-                    callItemVisible = call != null;
-                    voiceChatAction = call != null || voiceChatAction;
+                    //DIVO--START
+                    /*if (chat.megagroup && !chat.gigagroup) {
+                        callItemVisible = call != null;
+                        voiceChatAction = call != null || voiceChatAction;
+                    }*/
+                    //DIVO--END
                 }
                 if (chat.megagroup) {
                     if (chatInfo == null || !chatInfo.participants_hidden || ChatObject.hasAdminRights(chat)) {
@@ -11878,7 +11938,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (!BuildVars.IS_BILLING_UNAVAILABLE && !getMessagesController().premiumPurchaseBlocked()) {
                         StarsController.getInstance(currentAccount).loadStarGifts();
                         otherItem.addSubItem(gift_premium, R.drawable.msg_gift_premium, LocaleController.getString(R.string.ProfileSendAGiftToChannel));
-                        otherItem.setSubItemShown(gift_premium, chatInfo != null && chatInfo.stargifts_available);
+                        otherItem.setSubItemShown(gift_premium, false /*//DIVO chatInfo != null && chatInfo.stargifts_available */);
                         giftAction = true;
                     }
                     if (chatInfo != null && chatInfo.linked_chat_id != 0) {
@@ -11903,14 +11963,16 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
             } else {
                 if (chatInfo != null) {
-                    if (ChatObject.canManageCalls(chat) && chatInfo.call == null) {
+                    //DIVO--START
+                    /*if (ChatObject.canManageCalls(chat) && chatInfo.call == null) {
                         otherItem.addSubItem(call_item, R.drawable.msg_voicechat, LocaleController.getString(R.string.StartVoipChat));
                         hasVoiceChatItem = true;
                         voiceChatAction = true;
                     }
                     ChatObject.Call call = getMessagesController().getGroupCall(chatId, false);
                     callItemVisible = call != null;
-                    voiceChatAction = call != null || voiceChatAction;
+                    voiceChatAction = call != null || voiceChatAction;*/
+                    //DIVO--END
                 }
                 if (ChatObject.canChangeChatInfo(chat)) {
                     editItemVisible = true;
@@ -13078,26 +13140,15 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                     } else if (position == phoneRow) {
                         String text;
-                        TLRPC.User user = getMessagesController().getUser(userId);
-                        String phoneNumber;
-                        if (user != null && !TextUtils.isEmpty(vcardPhone)) {
-                            text = PhoneFormat.getInstance().format("+" + vcardPhone);
-                            phoneNumber = vcardPhone;
-                        } else if (user != null && !TextUtils.isEmpty(user.phone)) {
-                            // DIVO: show "Hidden" for dummy numbers instead of formatting them
-                            if (user.phone.startsWith("999")) {
-                                text = LocaleController.getString(R.string.MobileHidden);
-                                phoneNumber = null;
-                            } else {
-                                text = PhoneFormat.getInstance().format("+" + user.phone);
-                                phoneNumber = user.phone;
-                            }
+                        //DIVO--START
+                        if (divoUserInfo != null && !TextUtils.isEmpty(divoUserInfo.getFullName())) {
+                            text = divoUserInfo.getFullName();
                         } else {
-                            text = LocaleController.getString(R.string.PhoneHidden);
-                            phoneNumber = null;
+                            TLRPC.User user = getMessagesController().getUser(userId);
+                            text = user != null ? UserObject.getUserName(user) : "";
                         }
-                        isFragmentPhoneNumber = phoneNumber != null && phoneNumber.matches("888\\d{8}");
-                        detailCell.setTextAndValue(text, LocaleController.getString(isFragmentPhoneNumber ? R.string.AnonymousNumber : R.string.PhoneMobile), false);
+                        detailCell.setTextAndValue(text, LocaleController.getString(R.string.DivoPublicProfile), false);
+                        //DIVO--END
                     } else if (position == noteRow) {
                         final TLRPC.UserFull userInfo = getMessagesController().getUserFull(userId);
                         if (userInfo == null) return;
@@ -15845,7 +15896,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             if (textToCopy != null) textToCopy = "@" + textToCopy;
             copyButton = getString(R.string.ProfileCopyUsername);
         } else if (position == phoneRow) {
-            textToCopy = user.phone;
+            textToCopy = divoUserInfo != null && !TextUtils.isEmpty(divoUserInfo.getFullName()) ? divoUserInfo.getFullName() : (user != null ? UserObject.getUserName(user) : ""); //DIVO
         } else if (position == birthdayRow) {
             textToCopy = UserInfoActivity.birthdayString(userInfo.birthday);
         }
@@ -15937,8 +15988,26 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 presentFragment(new UserInfoActivity());
             });
         } else if (position == phoneRow) {
-            itemOptions.add(R.drawable.menu_storage_path, getString(R.string.ProfilePhoneEdit), () -> {
-                presentFragment(new ActionIntroActivity(ActionIntroActivity.ACTION_TYPE_CHANGE_PHONE_NUMBER));
+            //DIVO--START
+            itemOptions.add(R.drawable.msg_openprofile, getString(R.string.DivoPublicProfile), () -> {
+                boolean isOwn = (userId == getUserConfig().getClientUserId());
+                if (divoUserInfo != null && divoUserInfo.getId() > 0) {
+                    presentFragment(org.telegram.divo.screen.profile.FragmentProfileN.Companion.newInstance(divoUserInfo.getId(), isOwn));
+                } else {
+                    org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().resolveUserByTelegram(userId, (resolvedUser) -> {
+                        divoUserInfo = resolvedUser;
+                        if (resolvedUser.getId() > 0) {
+                            presentFragment(org.telegram.divo.screen.profile.FragmentProfileN.Companion.newInstance(resolvedUser.getId(), isOwn));
+                        } else if (getParentActivity() != null) {
+                            Toast.makeText(getParentActivity(), LocaleController.getString(R.string.DivoUserNotFound), Toast.LENGTH_SHORT).show();
+                        }
+                    }, (errorMsg) -> {
+                        if (getParentActivity() != null) {
+                            Toast.makeText(getParentActivity(), !TextUtils.isEmpty(errorMsg) ? errorMsg : LocaleController.getString(R.string.DivoUserNotFound), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+                //DIVO--END
             });
         } else if (position == birthdayRow) {
             itemOptions.add(R.drawable.msg_edit, getString(R.string.ProfileBirthdayChange), () -> {

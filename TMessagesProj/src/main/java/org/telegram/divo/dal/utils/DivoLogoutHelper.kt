@@ -15,11 +15,21 @@ object DivoLogoutHelper {
     @JvmStatic
     fun cleanDivoData(currentAccount: Int) {
         CoroutineScope(Dispatchers.IO).launch {
+            val divoUserId = DivoApi.userRepository.currentUserFlow.value?.id
+
             val result = DivoApi.authRepository.logout()
             if (result is DivoResult.Success) {
-                val userId = UserConfig.getInstance(currentAccount).clientUserId
+                try {
+                    if (divoUserId != null) {
+                        DivoApi.faceRecognitionRepository.clearHistory(divoUserId)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+                val tgUserId = UserConfig.getInstance(currentAccount).clientUserId
                 val prefs = ApplicationLoader.applicationContext.getSharedPreferences("divo_auth", Context.MODE_PRIVATE)
-                prefs.edit { remove("auth_completed_$userId") }
+                prefs.edit { remove("auth_completed_$tgUserId") }
             }
         }
     }

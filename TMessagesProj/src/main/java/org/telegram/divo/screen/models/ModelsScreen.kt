@@ -79,7 +79,7 @@ import org.telegram.messenger.R
 import kotlin.math.roundToInt
 
 private val HeaderExpandedHeight = 114.dp
-private val HeaderCollapsedHeight = 50.dp
+private val HeaderCollapsedHeight = 60.dp
 private val HeaderSpacerAdditional = 34.dp
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -117,7 +117,7 @@ fun ModelsHomeScreen(
         with(density) { (HeaderExpandedHeight - HeaderCollapsedHeight).toPx() }
     }
 
-    val headerScrollOffset by remember {
+    val headerScrollOffset by remember(maxScrollOffsetPx) {
         derivedStateOf {
             val page = pagerState.currentPage
             val offsetFraction = pagerState.currentPageOffsetFraction
@@ -156,7 +156,7 @@ fun ModelsHomeScreen(
         }
     }
 
-    val collapseFraction = headerScrollOffset / maxScrollOffsetPx
+    val collapseFraction = if (maxScrollOffsetPx > 0f) headerScrollOffset / maxScrollOffsetPx else 0f
     val statusBarHeight = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     val bottomInset = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
 
@@ -402,7 +402,7 @@ private fun rememberHeaderSnapNestedScroll(
     listStates: Map<Tab, LazyListState>,
     pagerState: PagerState,
     maxScrollOffsetPx: Float
-): NestedScrollConnection = remember(pagerState.currentPage) {
+): NestedScrollConnection = remember(pagerState.currentPage, maxScrollOffsetPx) {
     object : NestedScrollConnection {
         override suspend fun onPostFling(consumed: Velocity, available: Velocity): Velocity {
             val activeList = listStates[Tab.entries[pagerState.currentPage]] ?: return super.onPostFling(consumed, available)
