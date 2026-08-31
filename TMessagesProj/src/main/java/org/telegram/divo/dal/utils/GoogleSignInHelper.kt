@@ -38,13 +38,6 @@ object GoogleSignInHelper {
 
     private const val TAG = "GoogleSignInHelper"
 
-    /**
-     * Web Client ID from Firebase Console (client_type: 3).
-     * Project: divo-2-stage
-     */
-    private const val WEB_CLIENT_ID =
-        "121062802243-9hajm212lfu3cpejssjgtkbpqb3j4jlp.apps.googleusercontent.com"
-
     private const val DEBUG_HARDCODED_CODE = "12345"
 
     interface GoogleSignInCallback {
@@ -164,11 +157,11 @@ object GoogleSignInHelper {
                         }
                     }
                 }
-            } catch (e: GetCredentialCancellationException) {
+            } catch (_: GetCredentialCancellationException) {
                 callback.onCancelled()
-            } catch (e: NoCredentialException) {
+            } catch (_: NoCredentialException) {
                 callback.onError(context.getString(R.string.ErrorGoogleNoAccount))
-            } catch (e: GetCredentialException) {
+            } catch (_: GetCredentialException) {
                 callback.onError(context.getString(R.string.ErrorGoogleSignInFailed))
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
@@ -214,39 +207,45 @@ object GoogleSignInHelper {
                                     continuation.resume(null as TLRPC.TL_auth_authorization?)
                                     return@sendRequest
                                 }
-                                if (signInResponse is TLRPC.TL_auth_authorization) {
-                                    UserConfig.getInstance(currentAccount).clientUserId = signInResponse.user.id
-                                    UserConfig.getInstance(currentAccount).currentUser = signInResponse.user
-                                    UserConfig.getInstance(currentAccount).saveConfig(true)
-                                    MessagesController.getInstance(currentAccount).putUser(signInResponse.user, false)
-                                    continuation.resume(signInResponse)
-                                } else if (signInResponse is TLRPC.TL_auth_authorizationSignUpRequired) {
-                                    // Номер не зарегистрирован — делаем signup с dummy-данными
-                                    val signUp = TLRPC.TL_auth_signUp().apply {
-                                        phone_number = phone
-                                        phone_code_hash = response.phone_code_hash
-                                        first_name = "User"
-                                        last_name = ""
+                                when (signInResponse) {
+                                    is TLRPC.TL_auth_authorization -> {
+                                        UserConfig.getInstance(currentAccount).clientUserId = signInResponse.user.id
+                                        UserConfig.getInstance(currentAccount).currentUser = signInResponse.user
+                                        UserConfig.getInstance(currentAccount).saveConfig(true)
+                                        MessagesController.getInstance(currentAccount).putUser(signInResponse.user, false)
+                                        continuation.resume(signInResponse)
                                     }
-                                    ConnectionsManager.getInstance(currentAccount).sendRequest(
-                                        signUp,
-                                        { signUpResponse, signUpError ->
-                                            if (signUpError != null || signUpResponse !is TLRPC.TL_auth_authorization) {
-                                                continuation.resume(null)
-                                                return@sendRequest
-                                            }
-                                            UserConfig.getInstance(currentAccount).apply {
-                                                clientUserId = signUpResponse.user.id
-                                                currentUser = signUpResponse.user
-                                                saveConfig(true)
-                                            }
-                                            MessagesController.getInstance(currentAccount)
-                                                .putUser(signUpResponse.user, false)
-                                            continuation.resume(signUpResponse)
-                                        }, ConnectionsManager.RequestFlagWithoutLogin
-                                    )
-                                } else {
-                                    continuation.resume(null as TLRPC.TL_auth_authorization?)
+
+                                    is TLRPC.TL_auth_authorizationSignUpRequired -> {
+                                        // Номер не зарегистрирован — делаем signup с dummy-данными
+                                        val signUp = TLRPC.TL_auth_signUp().apply {
+                                            phone_number = phone
+                                            phone_code_hash = response.phone_code_hash
+                                            first_name = "User"
+                                            last_name = ""
+                                        }
+                                        ConnectionsManager.getInstance(currentAccount).sendRequest(
+                                            signUp,
+                                            { signUpResponse, signUpError ->
+                                                if (signUpError != null || signUpResponse !is TLRPC.TL_auth_authorization) {
+                                                    continuation.resume(null)
+                                                    return@sendRequest
+                                                }
+                                                UserConfig.getInstance(currentAccount).apply {
+                                                    clientUserId = signUpResponse.user.id
+                                                    currentUser = signUpResponse.user
+                                                    saveConfig(true)
+                                                }
+                                                MessagesController.getInstance(currentAccount)
+                                                    .putUser(signUpResponse.user, false)
+                                                continuation.resume(signUpResponse)
+                                            }, ConnectionsManager.RequestFlagWithoutLogin
+                                        )
+                                    }
+
+                                    else -> {
+                                        continuation.resume(null as TLRPC.TL_auth_authorization?)
+                                    }
                                 }
                             }, ConnectionsManager.RequestFlagWithoutLogin
                         )
@@ -262,9 +261,14 @@ object GoogleSignInHelper {
      * Step 1: Present Google account picker and get the ID token.
      */
     private suspend fun getGoogleIdToken(context: Context): GoogleIdTokenCredential? {
-        val credentialManager = CredentialManager.create(context)
+        val webClientId = context.getString(R.string.default_web_client_id)
+        if (webClientId.isBlank() || webClientId == "default_web_client_id") {
+            Log.e(TAG, "Invalid default_web_client_id resource. Make sure google-services.json is configured properly.")
+            return null
+        }
 
-        val googleIdOption = GetSignInWithGoogleOption.Builder(WEB_CLIENT_ID)
+        val credentialManager = CredentialManager.create(context)
+        val googleIdOption = GetSignInWithGoogleOption.Builder(webClientId)
             .build()
 
         val request = GetCredentialRequest.Builder()

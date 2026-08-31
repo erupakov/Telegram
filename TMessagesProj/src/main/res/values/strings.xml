@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--divo view start-->
+    <string name="default_web_client_id" translatable="false">default_web_client_id</string>
     <string name="AppName">Divo Global</string>
     <string name="CallsComingSoon">This feature will be added later.</string>
     <string name="AppNameBeta">Divo Global</string>
