@@ -38,8 +38,6 @@ object GoogleSignInHelper {
 
     private const val TAG = "GoogleSignInHelper"
 
-    private const val DEBUG_HARDCODED_CODE = "12345"
-
     interface GoogleSignInCallback {
         /** User exists on backend — fully authenticated, accessToken saved. */
         fun onSuccess(authResponse: TLRPC.TL_auth_authorization)
@@ -195,10 +193,10 @@ object GoogleSignInHelper {
                     }
                     if (response is TLRPC.TL_auth_sentCode) {
                         val signIn = TLRPC.TL_auth_signIn().apply {
-                            flags = 1 // Required to serialize phone_code
+                            flags = 1
                             phone_number = phone
                             phone_code_hash = response.phone_code_hash
-                            phone_code = DEBUG_HARDCODED_CODE
+                            phone_code = "12345"
                         }
                         ConnectionsManager.getInstance(currentAccount).sendRequest(
                             signIn,
