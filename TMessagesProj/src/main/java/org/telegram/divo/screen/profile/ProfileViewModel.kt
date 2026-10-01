@@ -21,6 +21,10 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.AgencyModelStatus
+import org.telegram.divo.entity.instagramLink
+import org.telegram.divo.entity.tiktokLink
+import org.telegram.divo.entity.websiteLink
+import org.telegram.divo.entity.youtubeLink
 import org.telegram.divo.entity.AgencySearchModelStatus
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
@@ -1000,13 +1004,16 @@ class ProfileViewModel(
 
     private fun openLink(socialNetworkType: SocialNetworkType) {
         val url = when (socialNetworkType) {
-            SocialNetworkType.TIKTOK -> state.value.userInfo.model?.tiktokUrl ?: state.value.userInfo.agency?.tiktokUrl.orEmpty()
-            SocialNetworkType.INSTAGRAM -> state.value.userInfo.model?.instagramUrl ?: state.value.userInfo.agency?.instagramUrl.orEmpty()
-            SocialNetworkType.WEBSITE -> state.value.userInfo.model?.websiteUrl ?: state.value.userInfo.agency?.websiteUrl.orEmpty()
-            SocialNetworkType.YOUTUBE -> state.value.userInfo.model?.youtubeUrl ?: state.value.userInfo.agency?.youtubeUrl.orEmpty()
+            SocialNetworkType.TIKTOK -> state.value.userInfo.tiktokLink
+            SocialNetworkType.INSTAGRAM -> state.value.userInfo.instagramLink
+            SocialNetworkType.WEBSITE -> state.value.userInfo.websiteLink
+            SocialNetworkType.YOUTUBE -> state.value.userInfo.youtubeLink
         }
+        if (url.isBlank()) return
 
-        sendEffect(ProfileEffect.OpenUrl(url))
+        // A website may be stored without a scheme (e.g. agency.site), which ACTION_VIEW can't open
+        val openUrl = if (url.startsWith("http://", ignoreCase = true) || url.startsWith("https://", ignoreCase = true)) url else "https://$url"
+        sendEffect(ProfileEffect.OpenUrl(openUrl))
     }
 
     private fun getGalleryItemIndex(url: String, isVideo: Boolean): Int {
