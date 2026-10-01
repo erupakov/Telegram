@@ -22,6 +22,11 @@ interface AccessTokenProvider {
      * Persists the latest access token. Passing null should clear any stored token.
      */
     fun setAccessToken(token: String?)
+
+    /**
+     * Removes the token and all auth flags stored for the specified account.
+     */
+    fun clearAccount(account: Int)
     fun isGoogleLogin(): Boolean
     fun setGoogleLogin(isGoogle: Boolean)
 }

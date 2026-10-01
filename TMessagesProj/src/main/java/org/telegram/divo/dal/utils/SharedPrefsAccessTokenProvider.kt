@@ -82,6 +82,13 @@ class SharedPrefsAccessTokenProvider(
         }
     }
 
+    override fun clearAccount(account: Int) {
+        getPrefsForAccount(account).edit {
+            remove(KEY_ACCESS_TOKEN)
+            remove(KEY_IS_GOOGLE_LOGIN)
+        }
+    }
+
     override fun isGoogleLogin(): Boolean {
         return prefs.getBoolean(KEY_IS_GOOGLE_LOGIN, false)
     }
