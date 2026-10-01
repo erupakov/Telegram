@@ -2,6 +2,7 @@ package org.telegram.divo.screen.event_create
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
@@ -23,10 +24,14 @@ import org.telegram.messenger.ApplicationLoader
 
 class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
 
+    // Dictionaries the edited event is matched against; edit data must wait for them
+    private val countriesJob: Job
+    private val eventTypesJob: Job
+
     init {
-        loadCountries()
+        countriesJob = loadCountries()
         loadCities()
-        getEventTypes()
+        eventTypesJob = getEventTypes()
         loadAppearances()
         loadPaymentTypes()
         loadCurrentUser()
@@ -51,8 +56,8 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
         }
     }
 
-    private fun getEventTypes() {
-        viewModelScope.launch {
+    private fun getEventTypes(): Job {
+        return viewModelScope.launch {
             val res = DivoApi.eventRepository.getEventTypes()
             if (res is DivoResult.Success) {
                 setState { copy(eventTypes = res.value) }
@@ -137,8 +142,12 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
     private fun loadEventForEdit(eventId: Int) {
         viewModelScope.launch {
             when (val result = DivoApi.eventRepository.getEvent(eventId)) {
-                is DivoResult.Success -> setState {
-                    copyFromEvent(eventId, result.value)
+                is DivoResult.Success -> {
+                    // The event may arrive before countries / event types are loaded; matching it
+                    // against empty lists left the country unset, so "Continue" stayed disabled
+                    countriesJob.join()
+                    eventTypesJob.join()
+                    setState { copyFromEvent(eventId, result.value) }
                 }
                 else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
             }
@@ -181,27 +190,31 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
         val eyeColorValue = attrs?.eyeColors?.joinToString(", ") ?: ""
         val skinColorValue = attrs?.skinColors?.joinToString(", ") ?: ""
 
-        val countryObj = allCountries.find {
-            it.name.equals(event.address?.countryName, ignoreCase = true) ||
-            it.shortName.equals(event.address?.countryCode, ignoreCase = true)
-        }
-        val countries = if (countryObj != null) listOf(countryObj) else selectedCountries
-
+        val address = event.address
         val cityObj = allCities.find {
-            it.name.equals(event.address?.cityName, ignoreCase = true)
-        } ?: if (!event.address?.cityName.isNullOrBlank()) {
+            it.name.equals(address?.cityName, ignoreCase = true)
+        } ?: if (!address?.cityName.isNullOrBlank()) {
             LocalCity(
                 id = 0L,
-                name = event.address?.cityName.orEmpty(),
-                asciiName = event.address?.cityName.orEmpty(),
+                name = address?.cityName.orEmpty(),
+                asciiName = address?.cityName.orEmpty(),
                 alternateNames = "",
-                countryCode = event.address?.countryCode.takeIf { !it.isNullOrBlank() }
-                    ?: countryObj?.shortName.orEmpty(),
+                countryCode = address?.countryCode.orEmpty(),
                 population = 0
             )
         } else {
             selectedCity
         }
+
+        // Country names are localized on the device, so prefer matching by code (also the city's one)
+        val countryObj = allCountries.find {
+            !address?.countryCode.isNullOrBlank() && it.shortName.equals(address?.countryCode, ignoreCase = true)
+        } ?: allCountries.find {
+            !cityObj?.countryCode.isNullOrBlank() && it.shortName.equals(cityObj?.countryCode, ignoreCase = true)
+        } ?: allCountries.find {
+            !address?.countryName.isNullOrBlank() && it.name.equals(address?.countryName, ignoreCase = true)
+        }
+        val countries = if (countryObj != null) listOf(countryObj) else selectedCountries
 
         return copy(
             editingEventId = eventId,
@@ -330,8 +343,8 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
         }
     }
 
-    private fun loadCountries() {
-        viewModelScope.launch {
+    private fun loadCountries(): Job {
+        return viewModelScope.launch {
             val list = DivoApi.locationRepository.getCountries()
             setState { copy(allCountries = list) }
         }
