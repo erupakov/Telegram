@@ -11927,11 +11927,12 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         }
                     }
                 } else {
-                    if (chat.creator || chat.admin_rights != null && chat.admin_rights.edit_stories) {
+                    //DIVO--START: hide "Stories Archive" menu item and "Add Story" action button for channels
+                    /*if (chat.creator || chat.admin_rights != null && chat.admin_rights.edit_stories) {
                         otherItem.addSubItem(channel_stories, R.drawable.msg_archive, LocaleController.getString(R.string.OpenChannelArchiveStories));
-                        //DIVO: hide "Add Story" action button for channels
-                        //addStoryAction = true;
-                    }
+                        addStoryAction = true;
+                    }*/
+                    //DIVO--END
                     if (ChatObject.isPublic(chat)) {
                         otherItem.addSubItem(share, R.drawable.msg_share, LocaleController.getString(R.string.BotShare));
                         shareAction = !chat.creator;
