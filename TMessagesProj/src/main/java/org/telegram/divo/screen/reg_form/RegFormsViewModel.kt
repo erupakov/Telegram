@@ -10,7 +10,7 @@ import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.common.utils.AdditionalInfoKeys
 import org.telegram.divo.common.utils.TelegramProfileHelper
 import org.telegram.divo.dal.dto.auth.RegistrationRequest
-import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
+import org.telegram.divo.dal.utils.DivoTelegramLinker
 import org.telegram.divo.dal.dto.common.CustomerDto
 import org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest
 import org.telegram.divo.dal.dto.user.UpdateProfileModelDto
@@ -274,15 +274,14 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     // 3. Divo Link (REST)
                     val tgUserId = profileUpdateResult?.id ?: tgUser?.id ?: 0L
 
-                    val linkRequest = TelegramLinkRequest(
+                    val linkResponse = DivoTelegramLinker.link(
+                        account = state.value.currentAccount,
                         divoUserId = divoUserId,
                         telegramUserId = tgUserId,
-                        phone = rawPhone,
+                        fallbackPhone = rawPhone,
                         deviceId = deviceId,
                         deviceType = deviceType
                     )
-                    
-                    val linkResponse = DivoApi.authRepository.linkTelegramAccount(linkRequest)
                     if (linkResponse !is DivoResult.Success) {
                         val errorMessage = linkResponse.getErrorMessage()
                         DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))

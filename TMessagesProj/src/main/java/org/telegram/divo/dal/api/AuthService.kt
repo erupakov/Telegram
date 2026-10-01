@@ -26,7 +26,7 @@ interface AuthService {
 
     @POST("auth/telegram-link")
     suspend fun linkTelegramAccount(
-        @Header("Authorization") authHeader: String,
+        @Header("Authorization") authHeader: String?,
         @Body body: TelegramLinkRequest
     ): TelegramLinkResponse
 
