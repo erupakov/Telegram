@@ -9,6 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.DivoSettings
 import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.components.items.ParametersType
@@ -43,7 +44,9 @@ class SimilarProfilesViewModel(
 
     override fun createInitialState(): State = State(
         imageUrl = imageUrl,
-        isHistoryMode = resultsJson == null
+        isHistoryMode = resultsJson == null,
+        // Keep the similarity filter the user chose last time, also across app restarts
+        similarityPercent = DivoSettings.faceSearchSimilarityPercent ?: MIN_SIMILARITY
     )
 
     override fun handleIntent(intent: Intent) {
@@ -61,6 +64,7 @@ class SimilarProfilesViewModel(
                     role = ProfileParameter(ParametersType.ROLE, ""),
                     blockParams = state.value.getDefaultBlockParams()
                 )
+                DivoSettings.faceSearchSimilarityPercent = null
                 val filtered = filterProfiles(newState)
                 val updatedState = newState.copy(profiles = filtered)
                 setState { updatedState }
@@ -74,6 +78,7 @@ class SimilarProfilesViewModel(
                     role = intent.role,
                     blockParams = intent.blockParams
                 )
+                DivoSettings.faceSearchSimilarityPercent = intent.similarityPercent
 
                 val activeFiltersStr = getActiveFiltersString(newState)
                 DivoAnalytics.logEvent(AnalyticsEvent.SimilarProfilesFiltersApplied(activeFiltersStr))
