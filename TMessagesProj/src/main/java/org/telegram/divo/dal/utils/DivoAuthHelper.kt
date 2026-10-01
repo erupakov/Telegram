@@ -8,7 +8,6 @@ import kotlinx.coroutines.withContext
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.dal.dto.auth.LoginRequest
-import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
@@ -69,7 +68,7 @@ object DivoAuthHelper {
             DivoAnalytics.logEvent(AnalyticsEvent.SignInStart("phone"))
             val loginResult = DivoApi.authRepository.login(request)
             val result = if (loginResult is DivoResult.Success && telegramUserId != 0L) {
-                ensureTelegramLink(phone, telegramUserId, deviceId, deviceType)
+                ensureTelegramLink(account, phone, telegramUserId, deviceId, deviceType)
             } else {
                 loginResult
             }
@@ -92,6 +91,7 @@ object DivoAuthHelper {
     }
 
     private suspend fun ensureTelegramLink(
+        account: Int,
         phone: String,
         telegramUserId: Long,
         deviceId: String,
@@ -106,14 +106,13 @@ object DivoAuthHelper {
         if (divoUser.telegramId == telegramUserId) {
             return userResult
         }
-        val linkResult = DivoApi.authRepository.linkTelegramAccount(
-            TelegramLinkRequest(
-                divoUserId = divoUser.id.toLong(),
-                telegramUserId = telegramUserId,
-                phone = phone,
-                deviceId = deviceId,
-                deviceType = deviceType
-            )
+        val linkResult = DivoTelegramLinker.link(
+            account = account,
+            divoUserId = divoUser.id.toLong(),
+            telegramUserId = telegramUserId,
+            fallbackPhone = phone,
+            deviceId = deviceId,
+            deviceType = deviceType
         )
         if (linkResult !is DivoResult.Success) {
             DivoApi.userRepository.clearCache()

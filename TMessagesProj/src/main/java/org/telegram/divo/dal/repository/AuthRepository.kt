@@ -45,8 +45,10 @@ class AuthRepository(
     }
 
     suspend fun linkTelegramAccount(request: TelegramLinkRequest): DivoResult<TelegramLinkResponse> {
-        val token = accessTokenProvider.getAccessToken() ?: ""
-        val bearerToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+        // Send the Divo token when we have one: without it the backend links by divoUserId only if the
+        // profile phone matches the proof phone. No token -> no header (Retrofit omits null headers).
+        val token = accessTokenProvider.getAccessToken()?.takeIf { it.isNotBlank() }
+        val bearerToken = token?.let { if (it.startsWith("Bearer ")) it else "Bearer $it" }
         val result = resultOf { service.linkTelegramAccount(bearerToken, request) }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
