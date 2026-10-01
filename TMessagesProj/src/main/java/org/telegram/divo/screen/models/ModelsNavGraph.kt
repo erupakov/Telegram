@@ -1,5 +1,7 @@
 package org.telegram.divo.screen.models
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -73,6 +75,7 @@ sealed class ModelsRoute(val route: String) {
 
 @Composable
 fun ModelsNavGraph(
+    scrollToTopEvents: Flow<Unit> = emptyFlow(),
     onNavControllerReady: (NavController) -> Unit,
     onInnerNavControllerReady: (NavController?) -> Unit,
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
@@ -98,6 +101,7 @@ fun ModelsNavGraph(
     ) {
         composable(ModelsRoute.Models.route) {
             ModelsHomeScreen(
+                scrollToTopEvents = scrollToTopEvents,
                 onClick = { userId ->
                     nav.navigate(ModelsRoute.Profile.createRoute(userId))
                 },

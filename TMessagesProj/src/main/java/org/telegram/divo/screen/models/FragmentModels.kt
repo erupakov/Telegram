@@ -11,6 +11,7 @@ import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
 import androidx.navigation.NavController
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher
 import org.telegram.divo.common.utils.FragmentLifecycleOwner
@@ -30,6 +31,9 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
     private var profileNavController: NavController? = null
 
     private val isOnHomeScreen = mutableStateOf(true)
+
+    // Re-tap on the "Models" bottom tab; no replay, so it is not re-delivered when the screen recomposes
+    private val scrollToTopEvents = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private var mainTabsController: MainTabsActivityController? = null
     
@@ -71,6 +75,7 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
                     LocalOnBackPressedDispatcherOwner provides composeLifecycleOwner
                 ) {
                     ModelsNavGraph(
+                        scrollToTopEvents = scrollToTopEvents,
                         onNavControllerReady = { navController ->
                             this@FragmentModels.modelsNavController = navController
                             DivoDeeplinkDispatcher.modelsNavController = navController
@@ -128,6 +133,12 @@ class FragmentModels : BaseFragment(), MainTabsActivity.TabFragmentDelegate {
         }
 
         return super.onBackPressed(invoked)
+    }
+
+    override fun onParentScrollToTop() {
+        if (isOnHomeScreen.value) {
+            scrollToTopEvents.tryEmit(Unit)
+        }
     }
 
     fun openSearchFromBottomBar() {

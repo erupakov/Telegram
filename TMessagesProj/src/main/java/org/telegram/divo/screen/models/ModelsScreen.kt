@@ -1,5 +1,7 @@
 package org.telegram.divo.screen.models
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -90,6 +92,7 @@ fun ModelsHomeScreen(
     ),
     onClick: (Int) -> Unit = {},
     onPhotoClicked: (List<GalleryItem>, Int, Int) -> Unit = { _, _, _ -> },
+    scrollToTopEvents: Flow<Unit> = emptyFlow(),
 ) {
     val state by viewModel.state.collectAsState()
     val density = LocalDensity.current
@@ -188,6 +191,13 @@ fun ModelsHomeScreen(
                     }
                 }
             }
+        }
+    }
+
+    // Re-tap on the "Models" bottom tab scrolls the current feed back to the beginning
+    LaunchedEffect(scrollToTopEvents) {
+        scrollToTopEvents.collect {
+            listStates[Tab.entries[pagerState.currentPage]]?.animateScrollToItem(0)
         }
     }
 
