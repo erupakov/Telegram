@@ -37,7 +37,7 @@ interface AuthService {
     suspend fun registrationSocial(@Body body: SocialRegistrationRequest): SocialAuthResponse
 
     @POST("auth/logout")
-    suspend fun logout()
+    suspend fun logout(@Header("Authorization") authHeader: String)
 
     @retrofit2.http.GET("auth/dummy_phone")
     suspend fun getDummyPhone(): org.telegram.divo.dal.dto.auth.DummyPhoneResponse

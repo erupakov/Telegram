@@ -163,8 +163,15 @@ fun UserDataDto.toEntity(channels: List<org.telegram.divo.entity.UserChannel> = 
         } else null
     }
 
+    // additionalInfo keeps Telegram data captured at registration. If the Divo account was later
+    // re-linked to another Telegram user (e.g. Telegram account deleted and re-created with the same
+    // phone), that data belongs to the old, deleted Telegram user and must not be used.
+    val infoTgId = (info?.get(AdditionalInfoKeys.TELEGRAM_ID) as? Number)?.toLong()
+    val isInfoTgDataActual = infoTgId == null || telegramId == null || infoTgId == telegramId
     val resolvedTgAccessHash = (info?.get(AdditionalInfoKeys.TELEGRAM_ACCESS_HASH) as? Number)?.toLong()
-    val resolvedTgUsername = info?.get(AdditionalInfoKeys.TELEGRAM_USERNAME) as? String
+        ?.takeIf { isInfoTgDataActual }
+    val resolvedTgUsername = (info?.get(AdditionalInfoKeys.TELEGRAM_USERNAME) as? String)
+        ?.takeIf { isInfoTgDataActual }
 
     return UserInfo(
         id = id,

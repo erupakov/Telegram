@@ -72,6 +72,8 @@ object DivoApi {
     val userRepository: UserRepository
         get() = userRepositoryInstances[UserConfig.selectedAccount]
 
+    fun userRepositoryFor(account: Int): UserRepository = userRepositoryInstances[account]
+
     val publicationRepository: PublicationRepository by lazy {
         val service = retrofit.create(PublicationService::class.java)
         val thumbnailProcessor = ThumbnailProcessor()

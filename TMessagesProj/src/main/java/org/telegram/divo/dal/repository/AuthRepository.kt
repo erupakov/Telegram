@@ -77,16 +77,17 @@ class AuthRepository(
         return resultOf { service.getDummyPhone() }
     }
 
-    suspend fun logout(): DivoResult<Unit> {
-        val result = resultOf { service.logout() }
-        if (result is DivoResult.Success) {
-            accessTokenProvider.setAccessToken(null)
-            _authStateFlow.tryEmit(false)
-            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                DivoApi.userRepository.clearCache()
-            }
-        }
-        return result
+    /**
+     * Invalidates [token] on the server. Local data is cleared by the caller beforehand
+     * (see DivoLogoutHelper), so the result is informational only.
+     */
+    suspend fun logout(token: String): DivoResult<Unit> {
+        val bearerToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+        return resultOf { service.logout(bearerToken) }
+    }
+
+    fun notifyLoggedOut() {
+        _authStateFlow.tryEmit(false)
     }
 }
 

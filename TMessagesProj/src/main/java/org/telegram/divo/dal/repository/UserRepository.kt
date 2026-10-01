@@ -270,9 +270,11 @@ class UserRepository(
     }
 
     fun clearCache() {
-        DivoApi.accessTokenProvider.setAccessToken(null)
+        DivoApi.accessTokenProvider.clearAccount(accountIndex)
         _currentUserCache.value = null
         _galleryCache.value = emptyMap()
+        telegramUserCache.clear()
+        pendingDeletions.clear()
         prefs.edit { clear() }
         scope.launch {
             NotificationCenter.getInstance(accountIndex).postNotificationName(NotificationCenter.divo_userInfoUpdated)
