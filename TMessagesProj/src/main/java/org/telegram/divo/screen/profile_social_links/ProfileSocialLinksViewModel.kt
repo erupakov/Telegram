@@ -9,6 +9,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.SocialNetworkType
+import org.telegram.divo.common.utils.withHttpsScheme
 import org.telegram.divo.entity.instagramLink
 import org.telegram.divo.entity.tiktokLink
 import org.telegram.divo.entity.websiteLink
@@ -90,15 +91,15 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
                         instagramUrl = buildUrl(state.value.instagramUser, state.value.instagramUrl),
                         tiktokUrl = buildUrl(state.value.tiktokUser, state.value.tiktokUrl),
                         youtubeUrl = buildUrl(state.value.youtubeUser, state.value.youtubeUrl),
-                        websiteUrl = state.value.website,
+                        websiteUrl = state.value.website.withHttpsScheme(),
                     ),
                     agency = state.value.userFull.agency?.copy(
                         instagramUrl = buildUrl(state.value.instagramUser, state.value.instagramUrl),
                         tiktokUrl = buildUrl(state.value.tiktokUser, state.value.tiktokUrl),
                         youtubeUrl = buildUrl(state.value.youtubeUser, state.value.youtubeUrl),
-                        websiteUrl = state.value.website,
+                        websiteUrl = state.value.website.withHttpsScheme(),
                         // agency.site is where the website is stored at registration; keep it in sync
-                        site = state.value.website,
+                        site = state.value.website.withHttpsScheme(),
                     )
                 )
             )
