@@ -63,7 +63,12 @@ object DivoDeleteAccountHelper {
                             } catch (e: Exception) {
                                 FileLog.e(e)
                             }
-                            if (response is TLRPC.TL_boolTrue) {
+                            // A lost response + retry comes back as 401 (AUTH_KEY_UNREGISTERED / SESSION_REVOKED):
+                            // teamgram unbinds the auth key right after deleting, so treat it as success
+                            val alreadyDeleted = error != null && (error.code == 401 ||
+                                error.text?.contains("AUTH_KEY_UNREGISTERED") == true ||
+                                error.text?.contains("SESSION_REVOKED") == true)
+                            if (response is TLRPC.TL_boolTrue || alreadyDeleted) {
                                 MessagesController.getInstance(currentAccount).performLogout(0)
                             } else if (error == null || error.code != -1000) {
                                 var errorText = LocaleController.getString(R.string.ErrorOccurred)

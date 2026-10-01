@@ -12,6 +12,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.common.utils.TelegramProfileHelper
+import org.telegram.messenger.FileLog
 import org.telegram.messenger.UserConfig
 import java.security.MessageDigest
 
@@ -115,8 +116,11 @@ object DivoAuthHelper {
             deviceType = deviceType
         )
         if (linkResult !is DivoResult.Success) {
-            DivoApi.userRepository.clearCache()
-            return linkResult
+            // The backend can't re-link a Divo account already linked to another Telegram user (409) and
+            // has no unlink API; 403/404 mean no valid proof or no account for the phone. The login itself
+            // succeeded, so keep the user in their Divo account instead of failing the sign-in.
+            FileLog.e("Divo telegram re-link failed: ${linkResult.getErrorMessage()}")
+            return DivoResult.Success(Unit)
         }
         DivoApi.userRepository.getCurrentUserInfo(forceRefresh = true)
         syncTelegramName(divoUser.fullName)
