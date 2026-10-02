@@ -31,6 +31,8 @@ import org.telegram.ui.ActionBar.Theme;
 public class TermsOfServiceView extends FrameLayout {
 
     private TextView textView;
+    private TextView declineTextView;
+    private TextView acceptTextView;
     private TermsOfServiceViewDelegate delegate;
     private TLRPC.TL_help_termsOfService currentTos;
     @SuppressWarnings("FieldCanBeLocal")
@@ -49,10 +51,11 @@ public class TermsOfServiceView extends FrameLayout {
         setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
         final int top = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? AndroidUtilities.statusBarHeight : 0;
+        final int bottom = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? AndroidUtilities.navigationBarHeight : 0;
 
         if (top > 0) {
             View view = new View(context);
-            view.setBackgroundColor(0xff000000);
+            view.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
             addView(view, new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, top));
         }
 
@@ -60,8 +63,8 @@ public class TermsOfServiceView extends FrameLayout {
         linearLayout.setOrientation(LinearLayout.VERTICAL);
 
         ImageView imageView = new ImageView(context);
-        imageView.setImageResource(R.drawable.logo_middle);
-        linearLayout.addView(imageView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT, 0, 28, 0, 0));
+        imageView.setImageResource(R.drawable.divo_logo_content); //DIVO
+        linearLayout.addView(imageView, LayoutHelper.createLinear(100, 100, Gravity.LEFT, 0, 28, 0, 0));
 
         titleTextView = new TextView(context);
         titleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
@@ -82,11 +85,11 @@ public class TermsOfServiceView extends FrameLayout {
         scrollView = new ScrollView(context);
         scrollView.setVerticalScrollBarEnabled(false);
         scrollView.setOverScrollMode(OVER_SCROLL_NEVER);
-        scrollView.setPadding(AndroidUtilities.dp(24f), top, AndroidUtilities.dp(24f), AndroidUtilities.dp(75f));
+        scrollView.setPadding(AndroidUtilities.dp(24f), top, AndroidUtilities.dp(24f), AndroidUtilities.dp(75f) + bottom);
         scrollView.addView(linearLayout, new LayoutParams(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
         addView(scrollView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        TextView declineTextView = new TextView(context);
+        declineTextView = new TextView(context);
         declineTextView.setText(LocaleController.getString(R.string.Decline).toUpperCase());
         declineTextView.setGravity(Gravity.CENTER);
         declineTextView.setTypeface(AndroidUtilities.bold());
@@ -94,60 +97,59 @@ public class TermsOfServiceView extends FrameLayout {
         declineTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         declineTextView.setBackground(Theme.getRoundRectSelectorDrawable(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText)));
         declineTextView.setPadding(AndroidUtilities.dp(20), AndroidUtilities.dp(10), AndroidUtilities.dp(20), AndroidUtilities.dp(10));
-        addView(declineTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 16));
+        FrameLayout.LayoutParams declineParams = LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.LEFT | Gravity.BOTTOM, 16, 0, 16, 16);
+        declineParams.bottomMargin += bottom;
+        addView(declineTextView, declineParams);
         declineTextView.setOnClickListener(view -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
             builder.setTitle(LocaleController.getString(R.string.TermsOfService));
             builder.setPositiveButton(LocaleController.getString(R.string.DeclineDeactivate), (dialog, which) -> {
-                AlertDialog.Builder builder12 = new AlertDialog.Builder(getContext());
-                builder12.setMessage(LocaleController.getString(R.string.TosDeclineDeleteAccount));
-                builder12.setTitle(LocaleController.getString(R.string.AppName));
-                builder12.setPositiveButton(LocaleController.getString(R.string.Deactivate), (dialogInterface, i) -> {
-                    DivoAnalytics.INSTANCE.logEvent(new AnalyticsEvent.TermsDeclined()); // DIVO
-                    final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
-                    progressDialog.setCanCancel(false);
+                //DIVO--START
+                final AlertDialog progressDialog = new AlertDialog(getContext(), AlertDialog.ALERT_TYPE_SPINNER);
+                progressDialog.setCanCancel(false);
 
-                    TL_account.deleteAccount req = new TL_account.deleteAccount();
-                    req.reason = "Decline ToS update";
-                    ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                        try {
-                            progressDialog.dismiss();
-                        } catch (Exception e) {
-                            FileLog.e(e);
+                TL_account.deleteAccount req = new TL_account.deleteAccount();
+                req.reason = "Decline ToS update";
+                ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                    try {
+                        progressDialog.dismiss();
+                    } catch (Exception e) {
+                        FileLog.e(e);
+                    }
+                    if (response instanceof TLRPC.TL_boolTrue) {
+                        MessagesController.getInstance(currentAccount).performLogout(0);
+                        delegate.onDeclineTerms(currentAccount); //DIVO
+                    } else if (error == null || error.code != -1000) {
+                        String errorText = LocaleController.getString(R.string.ErrorOccurred);
+                        if (error != null) {
+                            errorText += "\n" + error.text;
                         }
-                        if (response instanceof TLRPC.TL_boolTrue) {
-                            MessagesController.getInstance(currentAccount).performLogout(0);
-                        } else if (error == null || error.code != -1000) {
-                            String errorText = LocaleController.getString(R.string.ErrorOccurred);
-                            if (error != null) {
-                                errorText += "\n" + error.text;
-                            }
-                            AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
-                            builder1.setTitle(LocaleController.getString(R.string.AppName));
-                            builder1.setMessage(errorText);
-                            builder1.setPositiveButton(LocaleController.getString(R.string.OK), null);
-                            builder1.show();
-                        }
-                    }));
-                    progressDialog.show();
-                });
-                builder12.setNegativeButton(LocaleController.getString(R.string.Cancel), null);
-                builder12.show();
+                        AlertDialog.Builder builder1 = new AlertDialog.Builder(getContext());
+                        builder1.setTitle(LocaleController.getString(R.string.AppName));
+                        builder1.setMessage(errorText);
+                        builder1.setPositiveButton(LocaleController.getString(R.string.OK), null);
+                        builder1.show();
+                    }
+                }));
+                progressDialog.show();
+                //DIVO--END
             });
             builder.setNegativeButton(LocaleController.getString(R.string.Back), null);
             builder.setMessage(LocaleController.getString(R.string.TosUpdateDecline));
             builder.show();
         });
 
-        TextView acceptTextView = new TextView(context);
+        acceptTextView = new TextView(context);
         acceptTextView.setText(LocaleController.getString(R.string.Accept));
         acceptTextView.setGravity(Gravity.CENTER);
         acceptTextView.setTypeface(AndroidUtilities.bold());
         acceptTextView.setTextColor(0xffffffff);
         acceptTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-        acceptTextView.setBackgroundDrawable(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(4), 0xff50a8eb, 0xff439bde));
+        acceptTextView.setBackgroundDrawable(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(4), 0xffff772d, 0xffe66725));
         acceptTextView.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
-        addView(acceptTextView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 42, Gravity.RIGHT | Gravity.BOTTOM, 16, 0, 16, 16));
+        FrameLayout.LayoutParams acceptParams = LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, 42, Gravity.RIGHT | Gravity.BOTTOM, 16, 0, 16, 16);
+        acceptParams.bottomMargin += bottom;
+        addView(acceptTextView, acceptParams);
         acceptTextView.setOnClickListener(view -> {
             if (currentTos.min_age_confirm != 0) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
@@ -164,7 +166,7 @@ public class TermsOfServiceView extends FrameLayout {
         final View lineView = new View(context);
         lineView.setBackgroundColor(Theme.getColor(Theme.key_divider));
         final LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1);
-        params.bottomMargin = AndroidUtilities.dp(75f);
+        params.bottomMargin = AndroidUtilities.dp(75f) + bottom;
         params.gravity = Gravity.BOTTOM;
         addView(lineView, params);
     }
@@ -185,7 +187,7 @@ public class TermsOfServiceView extends FrameLayout {
         }
         SpannableStringBuilder builder = new SpannableStringBuilder(tos.text);
         MessageObject.addEntitiesToText(builder, tos.entities, false, false, false, false);
-        addBulletsToText(builder, '-', AndroidUtilities.dp(10f), 0xff50a8eb, AndroidUtilities.dp(4f));
+        addBulletsToText(builder, '-', AndroidUtilities.dp(10f), 0xffff772d, AndroidUtilities.dp(4f)); //DIVO
         textView.setText(builder);
         currentTos = tos;
         currentAccount = account;

@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -104,8 +105,11 @@ sealed class ProfileRoute(val route: String) {
         }
     }
 
-    data object FaceSearch : ProfileRoute("face_search/{uri}") {
-        fun createRoute(uri: String) = "face_search/${Uri.encode(uri)}"
+    data object FaceSearch : ProfileRoute("face_search/{uri}?profileId={profileId}") {
+        fun createRoute(uri: String, profileId: Int? = null): String {
+            val encodedUri = Uri.encode(uri)
+            return if (profileId != null) "face_search/$encodedUri?profileId=$profileId" else "face_search/$encodedUri"
+        }
     }
     data object EventPreview : ProfileRoute("event_preview")
 }
@@ -114,10 +118,13 @@ sealed class ProfileRoute(val route: String) {
 fun ProfileNavGraph(
     userId: Int,
     isOwnProfile: Boolean = false,
+    hasBottomBar: Boolean = false,
+    showRootBackButton: Boolean = true,
     onNavControllerReady: (NavController) -> Unit = {},
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
     onNavigateToCreateChannel: () -> Unit = {},
     onNavigateBack: () -> Unit = {},
+    onNavigateToModels: () -> Unit = { onNavigateBack() }
 ) {
     val nav = rememberNavController()
 
@@ -154,10 +161,14 @@ fun ProfileNavGraph(
                 }
             }
 
+            val bottomBarPadding = if (nav.previousBackStackEntry == null && currentIsOwnProfile && hasBottomBar) 74.dp else 0.dp
+
             ProfileScreen(
                 viewModel = profileViewModel,
                 userId = currentUserId,
                 isOwnProfile = currentIsOwnProfile,
+                bottomBarPadding = bottomBarPadding,
+                showBackButton = if (nav.previousBackStackEntry == null) showRootBackButton else true,
                 onEditClicked = { isModel, initialPage ->
                     nav.navigate(ProfileRoute.Edit.createRoute(isModel, initialPage)) },
                 onEditLinksClicked = { nav.navigate(ProfileRoute.EditLinks.route) },
@@ -179,8 +190,8 @@ fun ProfileNavGraph(
                 onEventCreateClicked = {
                     nav.navigate(ProfileRoute.CreateEvent.route)
                 },
-                onFindSimilarProfiles = {
-                    nav.navigate(ProfileRoute.FaceSearch.createRoute(it))
+                onFindSimilarProfiles = { uri, profileId ->
+                    nav.navigate(ProfileRoute.FaceSearch.createRoute(uri, profileId))
                 },
                 onNavigateToApplyConfirmation = {
                     nav.navigate(ProfileRoute.ApplyConfirmation.createRoute(it))
@@ -328,16 +339,22 @@ fun ProfileNavGraph(
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ProfileRoute.Profile.createRoute(it)) },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onClose = { onNavigateToModels() }
             )
         }
         composable(
             route = ProfileRoute.FaceSearch.route,
-            arguments = listOf(navArgument("uri") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
+            arguments = listOf(
+                navArgument("uri") { type = NavType.StringType },
+                navArgument("profileId") { type = NavType.IntType; defaultValue = -1 }
+            )
+        ) {
+            val uri = Uri.decode(it.arguments?.getString("uri")).orEmpty()
+            val profileId = it.arguments?.getInt("profileId")?.takeIf { id -> id != -1 }
             FaceSearchScreen(
                 uri = uri,
+                profileId = profileId,
                 onNavigateSimilarProfiles = { url, fx, fy, resultsJson ->
                     nav.navigate(ProfileRoute.SimilarProfiles.createRoute(url, fx, fy, resultsJson = resultsJson)) {
                         popUpTo(ProfileRoute.FaceSearch.route) { inclusive = true }

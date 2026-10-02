@@ -39,6 +39,7 @@ import org.telegram.divo.screen.settings.components.ContainerItems
 import org.telegram.divo.screen.settings.components.MeasuringSystemDialog
 import org.telegram.divo.screen.settings.components.ProfileRow
 import org.telegram.divo.screen.settings.components.QrCodeBottomSheet
+import org.telegram.divo.screen.settings.components.SavedProfilesBottomSheet
 import org.telegram.divo.screen.settings.components.SettingsItemRow
 import org.telegram.divo.screen.settings.components.SettingsTopBar
 import org.telegram.divo.style.AppTheme
@@ -69,6 +70,7 @@ fun SettingsScreen(
     var showQrBottomSheet by remember { mutableStateOf(false) }
 
     LifecycleResumeEffect(Unit) {
+        viewModel.setIntent(SettingsViewIntent.OnRefresh)
         onPauseOrDispose { }
     }
 
@@ -103,21 +105,11 @@ fun SettingsScreen(
                     navigateToPrivacy()
                 }
 
-                SettingsViewEffect.NavigateToProfile -> {
-                    navigateToProfile(state.userId)
-                }
-
+                is SettingsViewEffect.NavigateToProfile -> navigateToProfile(it.userId ?: state.userId)
                 SettingsViewEffect.NavigateToPromo -> {
                     // TODO: Implement promo screen
                 }
-
-                SettingsViewEffect.NavigateToSavedMessages -> {
-                    navigateToSavedMessages()
-                }
-
-                SettingsViewEffect.NavigateToSetUsername -> {
-                    navigateToSetUsername()
-                }
+                SettingsViewEffect.NavigateToSetUsername -> navigateToSetUsername()
 
                 is SettingsViewEffect.ShowError -> {
                     snackbarState.show(
@@ -155,6 +147,14 @@ fun SettingsScreen(
         )
     }
 
+    if (state.isSavedProfilesSheetVisible) {
+        SavedProfilesBottomSheet(
+            paginator = viewModel.savedProfilesPaginator,
+            onDismiss = { viewModel.setIntent(SettingsViewIntent.OnCloseSavedProfilesSheet) },
+            onProfileClick = { userId -> navigateToProfile(userId) }
+        )
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -168,7 +168,7 @@ fun SettingsScreen(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 74.dp
+                bottomPadding = 74.dp
             )
         }
     ) { padding ->
@@ -235,9 +235,9 @@ fun SettingsScreen(
                 ContainerItems {
                     SettingsItemRow(
                         item = SettingsItem(
-                            title = stringResource(R.string.SavedMessagesLabel),
+                            title = stringResource(R.string.SavedProfilesLabel),
                             iconResId = R.drawable.ic_divo_saved_message_icon,
-                            intent = SettingsViewIntent.OnSavedMessagesClicked
+                            intent = SettingsViewIntent.OnSavedProfilesClicked
                         ),
                         viewModel = viewModel
                     )

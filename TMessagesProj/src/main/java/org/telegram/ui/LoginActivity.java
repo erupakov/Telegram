@@ -119,6 +119,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.components.items.RegButtonView;
+import org.telegram.divo.dal.network.DivoApi;
 import org.telegram.divo.dal.utils.DivoAuthHelper;
 import org.telegram.divo.screen.reg_select_role.RoleSelectionView;
 import org.telegram.messenger.AccountInstance;
@@ -629,7 +630,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
                 int statusBarHeight = AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight;
                 marginLayoutParams = (MarginLayoutParams) backButtonView.getLayoutParams();
-                marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
+                marginLayoutParams.topMargin = AndroidUtilities.dp(8) + statusBarHeight;
 
                 marginLayoutParams = (MarginLayoutParams) proxyButtonView.getLayoutParams();
                 marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
@@ -840,15 +841,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         backButtonView.setImageResource(R.drawable.ic_divo_back);
         backButtonView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         backButtonView.setColorFilter(new android.graphics.PorterDuffColorFilter(0xff212121, android.graphics.PorterDuff.Mode.SRC_IN));
-        GradientDrawable bgShape = new GradientDrawable();
-        bgShape.setShape(GradientDrawable.OVAL);
+        android.graphics.drawable.GradientDrawable bgShape = new android.graphics.drawable.GradientDrawable();
+        bgShape.setShape(android.graphics.drawable.GradientDrawable.OVAL);
         bgShape.setColor(0xFFFFFFFF);
-        bgShape.setSize(AndroidUtilities.dp(40), AndroidUtilities.dp(40));
-        ColorStateList rippleColor = ColorStateList.valueOf(Theme.getColor(Theme.key_listSelector));
-        RippleDrawable rippleDrawable = new RippleDrawable(rippleColor, bgShape, null);
-        int p = AndroidUtilities.dp(12);
+        bgShape.setSize(org.telegram.messenger.AndroidUtilities.dp(40), org.telegram.messenger.AndroidUtilities.dp(40));
+        android.content.res.ColorStateList rippleColor = android.content.res.ColorStateList.valueOf(org.telegram.ui.ActionBar.Theme.getColor(org.telegram.ui.ActionBar.Theme.key_listSelector));
+        android.graphics.drawable.RippleDrawable rippleDrawable = new android.graphics.drawable.RippleDrawable(rippleColor, bgShape, null);
+        
+        android.graphics.drawable.InsetDrawable insetDrawable = new android.graphics.drawable.InsetDrawable(rippleDrawable, org.telegram.messenger.AndroidUtilities.dp(8));
+        backButtonView.setBackground(insetDrawable);
+        
+        int p = org.telegram.messenger.AndroidUtilities.dp(20);
         backButtonView.setPadding(p, p, p, p);
-        backButtonView.setBackground(rippleDrawable);
         //DIVO--END
         backButtonView.setOnClickListener(v -> {
             if (onBackPressed(true)) {
@@ -860,7 +864,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         });
         backButtonView.setContentDescription(getString(R.string.Back));
-        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(40, 40, Gravity.LEFT | Gravity.TOP, 16, 16, 0, 0));
+        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(56, 56, Gravity.LEFT | Gravity.TOP, 8, 8, 0, 0));
 
         if (emailChangeSkipCallback != null && !emailChangeNonSkippable && emailChangeIsSuggestion) {
             emailChangeSkipButton = new TextView(context);
@@ -1281,6 +1285,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                 }
                 clearCurrentState();
+                // DIVO--START: If returning from role selection / registration before completion, clean up incomplete session
+                if (currentViewNum == VIEW_REGISTER) {
+                    String token = DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(currentAccount);
+                    if (TextUtils.isEmpty(token)) {
+                        UserConfig.getInstance(currentAccount).clearConfig();
+                        ConnectionsManager.getInstance(currentAccount).cleanup(false);
+                        MessagesController.getInstance(currentAccount).cleanup();
+                        forceRoleSelection = false;
+                        initialRoleSelectionPhone = null;
+                    }
+                }
+                // DIVO--END
                 if (parentLayout != null && parentLayout.getFragmentStack().size() <= 1) {
                     presentFragment(new org.telegram.divo.screen.auth.AuthFragment(), true);
                     return false;
@@ -1893,6 +1909,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     private AlertDialog divoAuthProgressDialog;
+    // DIVO: Divo account was already resolved (logged in and linked) for the current Telegram authorization
+    private boolean divoAccountResolved;
 
     private void onAuthSuccess(TLRPC.TL_auth_authorization res) {
         onAuthSuccess(res, false);
@@ -1940,7 +1958,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
                 }
             } else {
-                if (currentViewNum == VIEW_REGISTER) {
+                if (currentViewNum == VIEW_REGISTER || divoAccountResolved) {
+                    divoAccountResolved = false;
                     needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
                 } else {
                     if (divoAuthProgressDialog == null) {
@@ -1950,7 +1969,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     divoAuthProgressDialog.show();
 
                     divoAuthRequest = DivoAuthHelper.checkDivoUserExists(
+                        currentAccount,
                         res.user.phone,
+                        res.user.id,
                         new DivoAuthHelper.DivoAuthCallback() {
                             @Override
                             public void onSuccess() {
@@ -3424,6 +3445,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (!userConfig.isClientActivated()) {
                             continue;
                         }
+                        // DIVO--START: Do not treat accounts with uncompleted Divo registration as already logged in
+                        String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(a);
+                        if (android.text.TextUtils.isEmpty(token)) {
+                            if (a == currentAccount) {
+                                userConfig.clearConfig();
+                                ConnectionsManager.getInstance(a).cleanup(false);
+                                MessagesController.getInstance(a).cleanup();
+                            }
+                            continue;
+                        }
+                        // DIVO--END
                         String userPhone = userConfig.getCurrentUser().phone;
                         if (PhoneNumberUtils.compare(phone, userPhone) && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
                             final int num = a;
@@ -3822,6 +3854,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (!userConfig.isClientActivated()) {
                             continue;
                         }
+                        // DIVO--START
+                        String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(a);
+                        if (android.text.TextUtils.isEmpty(token)) {
+                            if (a == currentAccount) {
+                                userConfig.clearConfig();
+                                ConnectionsManager.getInstance(a).cleanup(false);
+                                MessagesController.getInstance(a).cleanup();
+                            }
+                            continue;
+                        }
+                        // DIVO--END
                         if (userConfig.getClientUserId() == userId && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
                             if (UserConfig.selectedAccount != a) {
                                 ((LaunchActivity) getParentActivity()).switchToAccount(a, true);
@@ -5323,7 +5366,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 TLRPC.TL_auth_signUp signUpReq = new TLRPC.TL_auth_signUp();
                                 signUpReq.phone_code_hash = phoneHash;
                                 signUpReq.phone_number = requestPhone;
-                                signUpReq.first_name = "Divo User";
+                                signUpReq.first_name = DivoAuthHelper.TELEGRAM_PLACEHOLDER_FIRST_NAME;
                                 signUpReq.last_name = "";
 
                                 needShowProgress(0, false);
@@ -5341,8 +5384,43 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                             MessagesStorage.getInstance(currentAccount).cleanup(true);
                                             
                                             params.putLong("telegramUserId", authResult.user.id);
-                                            org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("phone"));
-                                            animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
+
+                                            // DIVO: the Telegram account is new, but a Divo account for this phone may already
+                                            // exist (e.g. the Telegram account was deleted earlier). Use and re-link it instead
+                                            // of registering a second profile; register only when there is none.
+                                            String divoPhone = !TextUtils.isEmpty(authResult.user.phone) ? authResult.user.phone : PhoneFormat.stripExceptNumbers(requestPhone);
+                                            needShowProgress(0, false);
+                                            divoAuthRequest = DivoAuthHelper.checkDivoUserExists(
+                                                currentAccount,
+                                                divoPhone,
+                                                authResult.user.id,
+                                                new DivoAuthHelper.DivoAuthCallback() {
+                                                    @Override
+                                                    public void onSuccess() {
+                                                        needHideProgress(false);
+                                                        divoAccountResolved = true;
+                                                        animateSuccess(() -> onAuthSuccess(authResult, true));
+                                                    }
+
+                                                    @Override
+                                                    public void onUserNotFound() {
+                                                        needHideProgress(false);
+                                                        openRegistration();
+                                                    }
+
+                                                    @Override
+                                                    public void onError(@androidx.annotation.NonNull String error) {
+                                                        needHideProgress(false);
+                                                        FileLog.e("Divo account lookup failed: " + error);
+                                                        openRegistration();
+                                                    }
+
+                                                    private void openRegistration() {
+                                                        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("phone"));
+                                                        animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
+                                                    }
+                                                }
+                                            );
                                         } else {
                                             String msg = "SignUp Error";
                                             if (errorTest != null) msg += ": " + errorTest.text;

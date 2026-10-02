@@ -21,6 +21,9 @@ data class AgencySelection(val name: String, val avatarUrl: String?)
 class WorkHistoryRepository(
     val service: WorkHistory
 ) {
+    private val _cachedUserIdFlow = MutableStateFlow<Int>(-1)
+    val cachedUserIdFlow: StateFlow<Int> = _cachedUserIdFlow.asStateFlow()
+
     private val _cache = MutableStateFlow<List<WorkExperience>?>(null)
     val cache: StateFlow<List<WorkExperience>?> = _cache.asStateFlow()
 
@@ -28,7 +31,12 @@ class WorkHistoryRepository(
     val selectedAgency: StateFlow<AgencySelection?> = _selectedAgency.asStateFlow()
 
     suspend fun getWorkHistory(userId: Int): DivoResult<List<WorkExperience>> {
-        _cache.value?.let { return DivoResult.Success(it) }
+        if (_cachedUserIdFlow.value == userId) {
+            _cache.value?.let { return DivoResult.Success(it) }
+        } else {
+            _cache.value = null
+            _cachedUserIdFlow.value = userId
+        }
 
         return resultOf {
             val items = service.getWorkHistory(userId)
@@ -146,6 +154,12 @@ class WorkHistoryRepository(
     }
 
     fun clearSelectedAgency() {
+        _selectedAgency.value = null
+    }
+
+    fun clearCache() {
+        _cache.value = null
+        _cachedUserIdFlow.value = -1
         _selectedAgency.value = null
     }
 }

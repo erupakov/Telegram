@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.settings.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -16,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,6 +71,7 @@ fun SettingsTopBar(
                 .clickableWithoutRipple { onAction() },
             text = stringResource(R.string.EditBtn),
             style = AppTheme.typography.helveticaNeueRegular,
+            textAlign = TextAlign.End,
             fontSize = 15.sp,
             color = AppTheme.colors.accentOrange,
             maxLines = 1,

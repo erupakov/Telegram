@@ -39,7 +39,6 @@ fun ParametersBlock(
     onClick: (ProfileParameter) -> Unit,
     valuesInMetric: Boolean = false,
 ) {
-    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -58,7 +57,7 @@ fun ParametersBlock(
             ) {
                 Text(
                     modifier = Modifier
-                        .weight(0.4f)
+                        .weight(0.65f)
                         .padding(top = 2.dp),
                     text = stringResource(item.type.labelRes()),
                     style = AppTheme.typography.bodyLarge,
@@ -72,7 +71,7 @@ fun ParametersBlock(
                 Row(
                     modifier = Modifier
                         .height(46.dp)
-                        .weight(0.6f),
+                        .weight(0.35f),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End
                 ) {

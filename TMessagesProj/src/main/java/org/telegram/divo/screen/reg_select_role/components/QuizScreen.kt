@@ -3,6 +3,8 @@ package org.telegram.divo.screen.reg_select_role.components
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -103,7 +105,7 @@ fun QuizScreen(
         containerColor = AppTheme.colors.backgroundLight,
         contentWindowInsets = WindowInsets(0),
         snackbarHost = {
-            AppSnackbarHost(state = snackbarState, bottomPadding = 76.dp)
+            AppSnackbarHost(state = snackbarState, bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 76.dp)
         },
     ) { padding ->
         Box(

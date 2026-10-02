@@ -13,6 +13,7 @@ import org.telegram.divo.dal.api.WorkHistory
 import org.telegram.divo.dal.db.AppDatabase
 import org.telegram.divo.dal.db.dao.FaceRecognitionDao
 import org.telegram.divo.dal.repository.AuthRepository
+import org.telegram.divo.dal.repository.LocationRepository
 import org.telegram.divo.dal.repository.EventRepository
 import org.telegram.divo.dal.repository.FaceRecognitionRepository
 import org.telegram.divo.dal.repository.PaymentRepository
@@ -71,6 +72,8 @@ object DivoApi {
     val userRepository: UserRepository
         get() = userRepositoryInstances[UserConfig.selectedAccount]
 
+    fun userRepositoryFor(account: Int): UserRepository = userRepositoryInstances[account]
+
     val publicationRepository: PublicationRepository by lazy {
         val service = retrofit.create(PublicationService::class.java)
         val thumbnailProcessor = ThumbnailProcessor()
@@ -102,6 +105,10 @@ object DivoApi {
 
     val geoService: GeoService by lazy {
         retrofit.create(GeoService::class.java)
+    }
+
+    val locationRepository: LocationRepository by lazy {
+        LocationRepository()
     }
 }
 

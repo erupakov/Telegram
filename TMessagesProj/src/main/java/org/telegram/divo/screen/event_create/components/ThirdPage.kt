@@ -147,7 +147,7 @@ fun ThirdPage(
         )
         Spacer(Modifier.height(6.dp))
         SectionHeader(
-            modifier = Modifier.padding(start = 16.dp),
+            //modifier = Modifier.padding(start = 16.dp),
             text = stringResource(R.string.EventVisibleToAllUsers)
         )
 

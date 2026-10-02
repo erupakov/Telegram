@@ -9,6 +9,11 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.SocialNetworkType
+import org.telegram.divo.common.utils.withHttpsScheme
+import org.telegram.divo.entity.instagramLink
+import org.telegram.divo.entity.tiktokLink
+import org.telegram.divo.entity.websiteLink
+import org.telegram.divo.entity.youtubeLink
 
 class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>() {
 
@@ -39,10 +44,10 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
                     copy(
                         isLoading = false,
                         userFull = result.value,
-                        instagramUrl = result.value.model?.instagramUrl ?: result.value.agency?.instagramUrl.orEmpty(),
-                        tiktokUrl = result.value.model?.tiktokUrl ?: result.value.agency?.tiktokUrl.orEmpty(),
-                        youtubeUrl = result.value.model?.youtubeUrl ?: result.value.agency?.youtubeUrl.orEmpty(),
-                        websiteUrl = result.value.model?.websiteUrl ?: result.value.agency?.websiteUrl.orEmpty(),
+                        instagramUrl = result.value.instagramLink,
+                        tiktokUrl = result.value.tiktokLink,
+                        youtubeUrl = result.value.youtubeLink,
+                        websiteUrl = result.value.websiteLink,
                         errorMessage = null
                     )
                 }
@@ -57,11 +62,21 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
         nickname: String
     ) {
         setState {
-            when (socialNetworkType) {
-                SocialNetworkType.WEBSITE -> copy(websiteUrl = nickname)
-                SocialNetworkType.INSTAGRAM -> copy(instagramUrl = "https://${socialNetworkType.value}$nickname")
-                SocialNetworkType.TIKTOK -> copy(tiktokUrl = "https://${socialNetworkType.value}$nickname")
-                SocialNetworkType.YOUTUBE -> copy(youtubeUrl = "https://${socialNetworkType.value}$nickname")
+            if (nickname.isBlank()) {
+                when (socialNetworkType) {
+                    SocialNetworkType.WEBSITE -> copy(websiteUrl = "")
+                    SocialNetworkType.INSTAGRAM -> copy(instagramUrl = "")
+                    SocialNetworkType.TIKTOK -> copy(tiktokUrl = "")
+                    SocialNetworkType.YOUTUBE -> copy(youtubeUrl = "")
+                }
+            } else {
+                val cleanNickname = nickname.removePrefix("@")
+                when (socialNetworkType) {
+                    SocialNetworkType.WEBSITE -> copy(websiteUrl = nickname)
+                    SocialNetworkType.INSTAGRAM -> copy(instagramUrl = "https://${socialNetworkType.value}$cleanNickname")
+                    SocialNetworkType.TIKTOK -> copy(tiktokUrl = "https://${socialNetworkType.value}@$cleanNickname")
+                    SocialNetworkType.YOUTUBE -> copy(youtubeUrl = "https://${socialNetworkType.value}@$cleanNickname")
+                }
             }
         }
     }
@@ -76,13 +91,15 @@ class ProfileSocialLinksViewModel : BaseViewModel<UiViewState, Intent, Effect>()
                         instagramUrl = buildUrl(state.value.instagramUser, state.value.instagramUrl),
                         tiktokUrl = buildUrl(state.value.tiktokUser, state.value.tiktokUrl),
                         youtubeUrl = buildUrl(state.value.youtubeUser, state.value.youtubeUrl),
-                        websiteUrl = state.value.website,
+                        websiteUrl = state.value.website.withHttpsScheme(),
                     ),
                     agency = state.value.userFull.agency?.copy(
                         instagramUrl = buildUrl(state.value.instagramUser, state.value.instagramUrl),
                         tiktokUrl = buildUrl(state.value.tiktokUser, state.value.tiktokUrl),
                         youtubeUrl = buildUrl(state.value.youtubeUser, state.value.youtubeUrl),
-                        websiteUrl = state.value.website,
+                        websiteUrl = state.value.website.withHttpsScheme(),
+                        // agency.site is where the website is stored at registration; keep it in sync
+                        site = state.value.website.withHttpsScheme(),
                     )
                 )
             )

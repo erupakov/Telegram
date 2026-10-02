@@ -106,7 +106,11 @@ fun WorkHistoryScreen(
         AppSnackbarHost(
             modifier = Modifier.align(Alignment.BottomCenter),
             state = snackbarState,
-            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
+            bottomPadding = if (isFromEditScreen) {
+                64.dp
+            } else {
+                WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 64.dp
+            }
         )
     }
 }
@@ -231,6 +235,7 @@ private fun WorkHistoryEmpty(
             if (isOwnProfile) {
                 Spacer(Modifier.height(2.dp))
                 Text(
+                    modifier = Modifier.padding(horizontal = 16.dp),
                     text = stringResource(R.string.WorkHistoryEmptySubtitle),
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
@@ -245,7 +250,7 @@ private fun WorkHistoryEmpty(
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp, start = 16.dp, end = 16.dp),
+                    .padding(bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 8.dp, start = 16.dp, end = 16.dp),
                 text = stringResource(R.string.AddWorkExperience),
                 onClick = {
                     onCreateClicked()

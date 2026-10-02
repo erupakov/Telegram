@@ -45,8 +45,10 @@ class AuthRepository(
     }
 
     suspend fun linkTelegramAccount(request: TelegramLinkRequest): DivoResult<TelegramLinkResponse> {
-        val token = accessTokenProvider.getAccessToken() ?: ""
-        val bearerToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+        // Send the Divo token when we have one: without it the backend links by divoUserId only if the
+        // profile phone matches the proof phone. No token -> no header (Retrofit omits null headers).
+        val token = accessTokenProvider.getAccessToken()?.takeIf { it.isNotBlank() }
+        val bearerToken = token?.let { if (it.startsWith("Bearer ")) it else "Bearer $it" }
         val result = resultOf { service.linkTelegramAccount(bearerToken, request) }
         if (result is DivoResult.Success) {
             accessTokenProvider.setAccessToken(result.value.data?.accessToken)
@@ -77,16 +79,17 @@ class AuthRepository(
         return resultOf { service.getDummyPhone() }
     }
 
-    suspend fun logout(): DivoResult<Unit> {
-        val result = resultOf { service.logout() }
-        if (result is DivoResult.Success) {
-            accessTokenProvider.setAccessToken(null)
-            _authStateFlow.tryEmit(false)
-            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
-                DivoApi.userRepository.clearCache()
-            }
-        }
-        return result
+    /**
+     * Invalidates [token] on the server. Local data is cleared by the caller beforehand
+     * (see DivoLogoutHelper), so the result is informational only.
+     */
+    suspend fun logout(token: String): DivoResult<Unit> {
+        val bearerToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
+        return resultOf { service.logout(bearerToken) }
+    }
+
+    fun notifyLoggedOut() {
+        _authStateFlow.tryEmit(false)
     }
 }
 

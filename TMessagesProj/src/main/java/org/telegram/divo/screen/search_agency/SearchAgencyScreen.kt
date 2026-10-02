@@ -44,7 +44,7 @@ fun SearchAgencyScreen(
         AppSnackbarHost(
             modifier = Modifier.align(Alignment.BottomCenter),
             state = snackbarState,
-            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 56.dp
+            bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 74.dp
         )
     }
 }

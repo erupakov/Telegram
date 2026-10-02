@@ -149,7 +149,7 @@ fun ProfileHeadlineContent(
                     ) {
                         RoundedGlassContainer(
                             height = 40.dp,
-                            background = AppTheme.colors.onBackground.copy(alpha = 0.3f),
+                            background = AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
                             contentPadding = PaddingValues(horizontal = 14.dp)
                         ) {
                             Row(

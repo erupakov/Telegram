@@ -574,7 +574,7 @@ public class SelfStoryViewsPage extends FrameLayout implements NotificationCente
             if (currentModel != null && isAttachedToWindow) {
                 currentModel.addListener(this);
             }
-            if ((currentModel != null && currentModel.isExpiredViews && !UserConfig.getInstance(currentAccount).isPremium()) || (!currentModel.loading && !currentModel.hasNext && currentModel.views.isEmpty() && currentModel.reactions.isEmpty() && TextUtils.isEmpty(currentModel.state.searchQuery))) {
+            if ((currentModel != null && currentModel.isExpiredViews) || (!currentModel.loading && !currentModel.hasNext && currentModel.views.isEmpty() && currentModel.reactions.isEmpty() && TextUtils.isEmpty(currentModel.state.searchQuery))) {
                 showSearch = false;
                 showReactionsSort = false;
                 showContactsFilter = false;
@@ -889,11 +889,14 @@ public class SelfStoryViewsPage extends FrameLayout implements NotificationCente
                         emptyView.title.setVisibility(View.GONE);
                         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
                         spannableStringBuilder.append(AndroidUtilities.replaceTags(LocaleController.getString(R.string.ExpiredViewsStub)));
+                        //DIVO
+                        /*
                         if (!MessagesController.getInstance(currentAccount).premiumFeaturesBlocked()) {
                             spannableStringBuilder.append("\n\n");
                             spannableStringBuilder.append(AndroidUtilities.replaceSingleTag(LocaleController.getString(R.string.ExpiredViewsStubPremiumDescription), SelfStoryViewsPage.this::showPremiumAlert));
                             emptyView.createButtonLayout(LocaleController.getString(R.string.LearnMore), SelfStoryViewsPage.this::showPremiumAlert);
                         }
+                        */
                         emptyView.subtitle.setText(spannableStringBuilder);
                     } else {
                         emptyView.title.setVisibility(View.VISIBLE);
@@ -1039,7 +1042,8 @@ public class SelfStoryViewsPage extends FrameLayout implements NotificationCente
                             items.add(new Item(FLICKER_LOADING_ITEM));
                         }
                     } else if (model != null && model.showReactionOnly) {
-                        items.add(new Item(SUBSCRIBE_TO_PREMIUM_TEXT_HINT));
+                        //DIVO
+                        //items.add(new Item(SUBSCRIBE_TO_PREMIUM_TEXT_HINT));
                     } else if (model != null && model.getCount() < model.totalCount && TextUtils.isEmpty(model.state.searchQuery) && !model.state.contactsOnly) {
                         items.add(new Item(SERVER_CANT_RETURN_TEXT_HINT));
                     }
@@ -1120,7 +1124,8 @@ public class SelfStoryViewsPage extends FrameLayout implements NotificationCente
             if (totalCount < 200) {
                 useLocalFilters = true;
             }
-            isExpiredViews = StoriesUtilities.hasExpiredViews(storyItem) && !UserConfig.getInstance(currentAccount).isPremium();
+            //DIVO: viewers list of expired stories is available without Premium
+            isExpiredViews = false; // StoriesUtilities.hasExpiredViews(storyItem) && !UserConfig.getInstance(currentAccount).isPremium();
             if (isExpiredViews && storyItem.views != null && storyItem.views.reactions_count > 0) {
                 isExpiredViews = false;
                 showReactionOnly = true;

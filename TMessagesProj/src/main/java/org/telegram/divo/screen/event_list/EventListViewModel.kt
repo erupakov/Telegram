@@ -61,7 +61,7 @@ class EventListViewModel :
 
     init {
         NotificationCenter.getGlobalInstance().addObserver(languageObserver, NotificationCenter.reloadInterface)
-        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.EventListOpened())
+        DivoAnalytics.logEvent(AnalyticsEvent.EventListOpened())
         setIntent(EventListIntent.OnLoad)
         viewModelScope.launch {
             launch { loadCountries() }
@@ -165,7 +165,7 @@ class EventListViewModel :
                 val newFilters = state.value.searchFilters.copy(query = intent.query)
                 setState { copy(searchFilters = newFilters) }
                 performSearch()
-                
+
                 searchLogJob?.cancel()
                 searchLogJob = viewModelScope.launch {
                     kotlinx.coroutines.delay(1000)
@@ -185,7 +185,7 @@ class EventListViewModel :
             is EventListIntent.OnApplyFilters -> {
                 DivoAnalytics.logEvent(
                     AnalyticsEvent.SearchFiltersApplied(
-                        target = "events", 
+                        target = "events",
                         activeFilters = intent.filters.toActiveFiltersString()
                     )
                 )
@@ -449,67 +449,16 @@ class EventListViewModel :
         }
     }
     private fun loadCountries() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val list = mutableListOf<LocalCountry>()
-            try {
-                val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
-                val reader = BufferedReader(InputStreamReader(stream))
-                reader.forEachLine { line ->
-                    val args = line.split(";")
-                    if (args.size >= 3) {
-                        val code = args[0]
-                        val shortname = args[1]
-                        val defaultName = args[2]
-                        val locName = LocaleController.getCountryName(shortname)
-                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
-                        val flag = LocaleController.getLanguageFlag(shortname)
-                        list.add(
-                            LocalCountry(
-                                code = code,
-                                shortName = shortname,
-                                name = name,
-                                flag = flag
-                            )
-                        )
-                    }
-                }
-                reader.close()
-                stream.close()
-
-                list.sortBy { it.name }
-
-                setState { copy(allCountries = list) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCountries()
+            setState { copy(allCountries = list) }
         }
     }
 
     private fun loadCities() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val cities = mutableListOf<LocalCity>()
-                val stream = ApplicationLoader.applicationContext.assets.open("cities.txt")
-                stream.bufferedReader().forEachLine { line ->
-                    val cols = line.split("\t")
-                    if (cols.size > 14) {
-                        cities.add(
-                            LocalCity(
-                                id = cols[0].toLongOrNull() ?: return@forEachLine,
-                                name = cols[1],
-                                asciiName = cols[2],
-                                alternateNames = cols[3],
-                                countryCode = cols[8],
-                                population = cols[14].toIntOrNull() ?: 0
-                            )
-                        )
-                    }
-                }
-                stream.close()
-                setState { copy(allCities = cities) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        viewModelScope.launch {
+            val cities = DivoApi.locationRepository.getCities()
+            setState { copy(allCities = cities) }
         }
     }
 }

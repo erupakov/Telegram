@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--divo view start-->
+    <string name="CallsComingSoon">Данный функционал будет добавлен позже.</string>
     <string name="DivoMainTabsModels">Модели</string>
     <string name="DivoMainTabsEvents">События</string>
     <string name="DivoMainTabsChats">Чаты</string>
     <string name="DivoMainTabsSettings">Настройки</string>
+    <string name="DivoMainTabsProfile">Профиль</string>
     <string name="ButtonBack">Назад</string>
     <string name="ButtonCreate">Создать</string>
     <string name="ButtonSave">Сохранить</string>
     <string name="ButtonApply">Применить</string>
     <string name="ButtonApplied">Подано</string>
+    <string name="EventButtonInterested">Интересно</string>
+    <string name="DivoPublicProfile">Публичный профиль</string>
+    <string name="DivoUserNotFound">Профиль пользователя в DIVO не найден</string>
     <string name="ButtonClosed">Закрыто</string>
     <string name="ButtonOk">ОК</string>
     <string name="ButtonCancel">Отмена</string>
@@ -21,6 +26,7 @@
     <string name="RetryLabel">Повторить</string>
     <string name="YourPhoneLabel">Ваш номер телефона</string>
     <string name="ChooseCountryLabel">Выберите страну</string>
+    <string name="EventsTabTitle">СОБЫТИЯ</string>
     <string name="SearchLabel">Поиск</string>
 
     <!--profile screen-->
@@ -156,6 +162,7 @@
     <string name="WorkHistoryEmptySubtitle">Нажмите кнопку ниже,
 чтобы добавить опыт работы</string>
     <string name="SaveChanges">Сохранить изменения</string>
+    <string name="DiscardChanges">Отменить изменения</string>
     <string name="WorkExperienceSaved">Опыт работы успешно добавлен</string>
     <string name="PresentLabel">По настоящее время</string>
     <string name="EndDateCannotBeEarly">Дата окончания не может быть раньше даты начала</string>
@@ -394,11 +401,11 @@
         <item quantity="other">%d результатов</item>
     </plurals>
 
-    <string-array name="ModelFunNewTalent">
+    <string-array name="ModelNewTalentAgency">
         <item>Все роли</item>
         <item>Модель</item>
-        <item>Фан</item>
         <item>Новое лицо</item>
+        <item>Агентство</item>
     </string-array>
 
     <!--settings screen-->
@@ -410,6 +417,8 @@
     <string name="SetUsernameLabel">Задать имя пользователя</string>
     <string name="FillYourParametersLabel">Заполнить параметры</string>
     <string name="SavedMessagesLabel">Сохраненные сообщения</string>
+    <string name="SavedProfilesLabel">Сохраненные профили</string>
+    <string name="SavedProfilesEmpty">Пока нет сохраненных профилей</string>
     <string name="NotificationsAndSoundsLabel">Уведомления и звуки</string>
     <string name="PrivacyAndSecurityLabel">Конфиденциальность и безопасность</string>
     <string name="DataAndStorageLabel">Данные и память</string>
@@ -992,6 +1001,13 @@
     <string name="FollowersOnlineText">%1$s подписчиков</string>
     <string name="SubmitApplicationTitle">ПОДАТЬ ЗАЯВКУ</string>
     <string name="SubmitButton">Подать</string>
+    <string name="Cancel">Отмена</string>
+    <string name="Close">Закрыть</string>
+    <string name="Done">Готово</string>
+    <string name="Save">Сохранить</string>
+    <string name="Delete">Удалить</string>
+    <string name="Back">Назад</string>
+    <string name="OK">ОК</string>
     <string name="ParamWeight">Вес</string>
     <string name="ParamBreastSize">Размер груди</string>
     <string name="ParamWaist">Талия</string>
@@ -1218,4 +1234,13 @@
     <string name="StoryCameraHint">Нажмите на %s, чтобы опубликовать историю для своих контактов.</string>
     <string name="ThereAreNoImagesYet">ЕЩЕ НЕТ ФОТО</string>
     <string name="ThereAreNoVideosYet">ЕЩЕ НЕТ ВИДЕО</string>
+    <string name="DivoEnterYourWebsite">Введите ваш веб-сайт</string>
+    <string name="DivoSaving">Сохранение...</string>
+    <string name="DeleteProfile">Удалить профиль</string>
+    <string name="DeleteProfileTitle">Удаление профиля</string>
+    <string name="DeleteProfileDescription">Вы действительно хотите удалить профиль? Это действие необратимо.</string>
+    <string name="DeleteProfileConfirm">Удалить</string>
+    <string name="NoPhotosYetBottomSheet">Пока нет фото</string>
+    <string name="NoVideos">Пока нет видео</string>
+    <string name="PermissionGalleryDeniedToast">Предоставьте доступ к фото и видео в настройках.</string>
 </resources>

@@ -1225,6 +1225,8 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
                     items.add(ItemInner.asShadow(null));
                     pad.subtractHeight += dp(12);
                 }
+                //DIVO--START
+                /*
                 if (keepOnMyPage && !isLive && !liveSettings) {
                     long dialogId = getDialogId();
                     getStoriesController().getStoryAlbumsList(dialogId);
@@ -1251,6 +1253,8 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
                     items.add(ItemInner.asButton(OPTION_EDIT_ALBUMS, getString(R.string.StoriesAlbum), sb));
                     pad.subtractHeight += dp(50);
                 }
+                */
+                //DIVO--END
                 if (!isEdit && !(allowCover && whenCoverClicked != null) && !isLive && !liveSettings) {
                     CharSequence info;
                     if (isLive) {

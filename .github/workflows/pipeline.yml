@@ -94,7 +94,7 @@ jobs:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message: |
             🛠 **Divo Global (Debug)**
-            Версия: ${{ env.APP_VERSION }} (Билд #${{ github.run_number }})
+            Версия: ${{ env.APP_VERSION }}
             PR/Ветка: ${{ github.head_ref || github.ref_name }}
             
             📥 **Скачать APK (Artifacts):**
@@ -108,7 +108,8 @@ jobs:
           token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           message: |
             🔍 **Divo Global (Release)**
-            Версия: ${{ env.APP_VERSION }} (Билд #${{ github.run_number }})
+            Версия: ${{ env.APP_VERSION }}
+            Тэг: v${{ env.APP_VERSION }}-build${{ github.run_number }}
             PR/Ветка: ${{ github.head_ref || github.ref_name }}
             
             📥 **Скачать APK и AAB (Release):**

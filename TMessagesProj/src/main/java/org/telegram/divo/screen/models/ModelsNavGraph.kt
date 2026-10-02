@@ -1,5 +1,7 @@
 package org.telegram.divo.screen.models
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -73,6 +75,7 @@ sealed class ModelsRoute(val route: String) {
 
 @Composable
 fun ModelsNavGraph(
+    scrollToTopEvents: Flow<Unit> = emptyFlow(),
     onNavControllerReady: (NavController) -> Unit,
     onInnerNavControllerReady: (NavController?) -> Unit,
     onNavigateToChat: (tgId: Long, tgHash: Long?, tgUsername: String?) -> Unit = { _, _, _ -> },
@@ -98,6 +101,7 @@ fun ModelsNavGraph(
     ) {
         composable(ModelsRoute.Models.route) {
             ModelsHomeScreen(
+                scrollToTopEvents = scrollToTopEvents,
                 onClick = { userId ->
                     nav.navigate(ModelsRoute.Profile.createRoute(userId))
                 },
@@ -119,7 +123,8 @@ fun ModelsNavGraph(
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToChat = onNavigateToChat,
                 onNavigateToCreateChannel = onNavigateToCreateChannel,
-                onNavigateBack = { nav.popBackStack() }
+                onNavigateBack = { nav.popBackStack() },
+                onNavigateToModels = { nav.popBackStack(ModelsRoute.Models.route, inclusive = false) }
             )
         }
 
@@ -169,6 +174,7 @@ fun ModelsNavGraph(
             val uri = Uri.decode(backStackEntry.arguments?.getString("uri")).orEmpty()
             FaceSearchScreen(
                 uri = uri,
+                profileId = null,
                 onNavigateSimilarProfiles = { url, fx, fy, resultsJson ->
                     nav.navigate(ModelsRoute.SimilarProfiles.createRoute(url, fx, fy, resultsJson = resultsJson)) {
                         popUpTo(ModelsRoute.FaceSearch.route) { inclusive = true }
@@ -202,7 +208,8 @@ fun ModelsNavGraph(
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                onClose = { nav.popBackStack(ModelsRoute.Models.route, inclusive = false) }
             )
         }
 

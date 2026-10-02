@@ -23,7 +23,6 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.telegram.divo.dal.utils.DivoLogoutHelper;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.DownloadController;
 import org.telegram.messenger.LocaleController;
@@ -166,9 +165,7 @@ public class LogoutActivity extends BaseFragment {
         builder.setMessage(LocaleController.getString(R.string.AreYouSureLogout));
         builder.setTitle(LocaleController.getString(R.string.LogOut));
         builder.setPositiveButton(LocaleController.getString(R.string.LogOut), (dialogInterface, i) -> {
-            //Очистка данных Divo
-            DivoLogoutHelper.cleanDivoData(currentAccount);
-
+            // Divo data is cleaned inside performLogout()
             MessagesController.getInstance(currentAccount).performLogout(1);
         });
         builder.setNegativeButton(LocaleController.getString(R.string.Cancel), null);

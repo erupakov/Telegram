@@ -105,7 +105,7 @@ fun ProfileSocialLinksScreenView(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarHostState,
-                bottomPadding = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 8.dp
+                bottomPadding = 16.dp
             )
         }
     ) { paddingValues ->
@@ -155,7 +155,7 @@ fun ProfileSocialLinksScreenView(
 
                 SocialLinkField(
                     prefix = SocialNetworkType.WEBSITE.value,
-                    placeholder = "Enter your website",
+                    placeholder = stringResource(R.string.DivoEnterYourWebsite),
                     value = uiState.website,
                     isLoading = uiState.isLoading,
                     onValueChange = {
@@ -167,7 +167,7 @@ fun ProfileSocialLinksScreenView(
 
                 UIButton(
                     modifier = Modifier.fillMaxWidth(),
-                    text = if (uiState.isUploading) "Saving..." else "Save",
+                    text = if (uiState.isUploading) stringResource(R.string.DivoSaving) else stringResource(org.telegram.messenger.R.string.Save),
                     enabled = !uiState.isUploading,
                     onClick = {
                         onIntent(Intent.OnSaveClicked)

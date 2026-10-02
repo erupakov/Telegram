@@ -2,7 +2,7 @@ package org.telegram.divo.screen.event_create
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
@@ -15,19 +15,23 @@ import org.telegram.divo.dal.dto.event.toCreateEventRequest
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.City
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.entity.UploadedFile
+import org.telegram.divo.screen.search.LocalCity
 import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.LocaleController
-import java.io.BufferedReader
-import java.io.InputStreamReader
 
 class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
 
+    // Dictionaries the edited event is matched against; edit data must wait for them
+    private val countriesJob: Job
+    private val eventTypesJob: Job
+
     init {
-        loadCountries()
-        getEventTypes()
+        countriesJob = loadCountries()
+        loadCities()
+        eventTypesJob = getEventTypes()
         loadAppearances()
         loadPaymentTypes()
         loadCurrentUser()
@@ -52,8 +56,8 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
         }
     }
 
-    private fun getEventTypes() {
-        viewModelScope.launch {
+    private fun getEventTypes(): Job {
+        return viewModelScope.launch {
             val res = DivoApi.eventRepository.getEventTypes()
             if (res is DivoResult.Success) {
                 setState { copy(eventTypes = res.value) }
@@ -85,7 +89,14 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             }
             is Intent.OnEventDateChanged -> setState { copy(eventDate = intent.value) }
             is Intent.OnEventTimeChanged -> setState { copy(eventTime = intent.value) }
-            is Intent.OnCountriesChanged -> setState { copy(selectedCountries = intent.countries) }
+            is Intent.OnCountriesChanged -> setState { copy(selectedCountries = intent.countries, selectedCity = null) }
+            is Intent.OnCitySelected -> setState {
+                val country = allCountries.find { it.shortName.equals(intent.city.countryCode, ignoreCase = true) }
+                copy(
+                    selectedCity = intent.city,
+                    selectedCountries = if (country != null) listOf(country) else selectedCountries
+                )
+            }
 
             // Second page
             is Intent.OnRoleChanged -> setState { copy(role = intent.param) }
@@ -131,8 +142,12 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
     private fun loadEventForEdit(eventId: Int) {
         viewModelScope.launch {
             when (val result = DivoApi.eventRepository.getEvent(eventId)) {
-                is DivoResult.Success -> setState {
-                    copyFromEvent(eventId, result.value)
+                is DivoResult.Success -> {
+                    // The event may arrive before countries / event types are loaded; matching it
+                    // against empty lists left the country unset, so "Continue" stayed disabled
+                    countriesJob.join()
+                    eventTypesJob.join()
+                    setState { copyFromEvent(eventId, result.value) }
                 }
                 else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
             }
@@ -168,12 +183,38 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             return MeasuringUnits.formatStoredRange(type, from, to, storedSystem)
         }
 
-        val roleValue = attrs?.roles?.joinToString(", ") ?: ""
-        val genderValue = attrs?.genders?.joinToString(", ") ?: ""
+        val roleValue = attrs?.roles?.mapNotNull { org.telegram.divo.entity.mapRoleToLocalized(it) }?.joinToString(", ") ?: ""
+        val genderValue = attrs?.genders?.mapNotNull { org.telegram.divo.entity.mapGenderToLocalized(it) }?.joinToString(", ") ?: ""
         val hairLengthValue = attrs?.hairLengths?.joinToString(", ") ?: ""
         val hairColorValue = attrs?.hairColors?.joinToString(", ") ?: ""
         val eyeColorValue = attrs?.eyeColors?.joinToString(", ") ?: ""
         val skinColorValue = attrs?.skinColors?.joinToString(", ") ?: ""
+
+        val address = event.address
+        val cityObj = allCities.find {
+            it.name.equals(address?.cityName, ignoreCase = true)
+        } ?: if (!address?.cityName.isNullOrBlank()) {
+            LocalCity(
+                id = 0L,
+                name = address?.cityName.orEmpty(),
+                asciiName = address?.cityName.orEmpty(),
+                alternateNames = "",
+                countryCode = address?.countryCode.orEmpty(),
+                population = 0
+            )
+        } else {
+            selectedCity
+        }
+
+        // Country names are localized on the device, so prefer matching by code (also the city's one)
+        val countryObj = allCountries.find {
+            !address?.countryCode.isNullOrBlank() && it.shortName.equals(address?.countryCode, ignoreCase = true)
+        } ?: allCountries.find {
+            !cityObj?.countryCode.isNullOrBlank() && it.shortName.equals(cityObj?.countryCode, ignoreCase = true)
+        } ?: allCountries.find {
+            !address?.countryName.isNullOrBlank() && it.name.equals(address?.countryName, ignoreCase = true)
+        }
+        val countries = if (countryObj != null) listOf(countryObj) else selectedCountries
 
         return copy(
             editingEventId = eventId,
@@ -183,7 +224,8 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             selectedEventType = eventTypes.find { it.title == event.type } ?: selectedEventType,
             eventDate = datePart,
             eventTime = timePart,
-            selectedCountries = allCountries.filter { it.name == event.address?.countryName }.ifEmpty { selectedCountries },
+            selectedCountries = countries,
+            selectedCity = cityObj,
             deadlineDate = deadlineDatePart,
             deadlineTime = deadlineTimePart,
             isPaid = event.cost?.isNotBlank() == true,
@@ -205,7 +247,8 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             ),
             galleryUris = gallery,
             existingGalleryFiles = sortedFiles,
-            eventRequirements = event.description.orEmpty()
+            maxParticipants = event.maxAttendees ?: maxParticipants,
+            eventRequirements = event.requirements ?: event.description.orEmpty()
         )
     }
 
@@ -234,7 +277,24 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
                     }
                 }
                 
-                val request = state.value.toCreateEventRequest(uploadedFiles)
+                var resolvedCityId: Int? = null
+                val selectedCity = state.value.selectedCity
+                if (selectedCity != null) {
+                    try {
+                        val geoResponse = DivoApi.geoService.searchByAddressName(selectedCity.name)
+                        resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                
+                if (resolvedCityId == null) {
+                    sendEffect(Effect.ShowError("City not supported by server. Please try another city."))
+                    setState { copy(isUploading = false) }
+                    return@launch
+                }
+                
+                val request = state.value.toCreateEventRequest(uploadedFiles, resolvedCityId)
                 val result = state.value.editingEventId?.let { eventId ->
                     DivoApi.eventRepository.updateEvent(eventId, request)
                 } ?: DivoApi.eventRepository.createEvent(request)
@@ -276,40 +336,17 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
         }
     }
 
-    private fun loadCountries() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val list = mutableListOf<LocalCountry>()
-            try {
-                val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
-                val reader = BufferedReader(InputStreamReader(stream))
-                reader.forEachLine { line ->
-                    val args = line.split(";")
-                    if (args.size >= 3) {
-                        val code = args[0]
-                        val shortname = args[1]
-                        val defaultName = args[2]
-                        val locName = LocaleController.getCountryName(shortname)
-                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
-                        val flag = LocaleController.getLanguageFlag(shortname)
-                        list.add(
-                            LocalCountry(
-                                code = code,
-                                shortName = shortname,
-                                name = name,
-                                flag = flag
-                            )
-                        )
-                    }
-                }
-                reader.close()
-                stream.close()
+    private fun loadCities() {
+        viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCities()
+            setState { copy(allCities = list) }
+        }
+    }
 
-                list.sortBy { it.name }
-
-                setState { copy(allCountries = list) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+    private fun loadCountries(): Job {
+        return viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCountries()
+            setState { copy(allCountries = list) }
         }
     }
 

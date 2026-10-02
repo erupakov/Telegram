@@ -20,6 +20,7 @@ data class SettingsViewState(
     val userName: String = "",
     val phoneNumber: String = "",
     val measuringSystem: String = "",
+    val isSavedProfilesSheetVisible: Boolean = false,
 ) : ViewState
 
 sealed class SettingsViewIntent : ViewIntent {
@@ -28,7 +29,8 @@ sealed class SettingsViewIntent : ViewIntent {
     data object OnSetUsernameClicked : SettingsViewIntent()
     data object OnFillParametersClicked : SettingsViewIntent()
     data object OnPromoClicked : SettingsViewIntent()
-    data object OnSavedMessagesClicked : SettingsViewIntent()
+    data object OnSavedProfilesClicked : SettingsViewIntent()
+    data object OnCloseSavedProfilesSheet : SettingsViewIntent()
     data object OnNotificationsClicked : SettingsViewIntent()
     data object OnPrivacyClicked : SettingsViewIntent()
     data object OnDataStorageClicked : SettingsViewIntent()
@@ -43,11 +45,10 @@ sealed class SettingsViewIntent : ViewIntent {
 
 sealed class SettingsViewEffect : ViewEffect {
     data object NavigateToEditProfile : SettingsViewEffect()
-    data object NavigateToProfile : SettingsViewEffect()
+    data class NavigateToProfile(val userId: Int? = null) : SettingsViewEffect()
     data object NavigateToSetUsername : SettingsViewEffect()
     data object NavigateToFillParameters : SettingsViewEffect()
     data object NavigateToPromo : SettingsViewEffect()
-    data object NavigateToSavedMessages : SettingsViewEffect()
     data object NavigateToNotifications : SettingsViewEffect()
     data object NavigateToPrivacy : SettingsViewEffect()
     data object NavigateToDataStorage : SettingsViewEffect()

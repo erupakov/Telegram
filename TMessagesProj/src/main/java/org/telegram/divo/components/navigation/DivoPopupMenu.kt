@@ -43,6 +43,8 @@ fun DivoPopupMenu(
     alignment: Alignment = Alignment.TopEnd,
     offset: IntOffset = IntOffset(x = -32, y = 146),
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val configuration = androidx.compose.ui.platform.LocalConfiguration.current
     if (!visible) return
 
     Popup(
@@ -51,63 +53,68 @@ fun DivoPopupMenu(
         onDismissRequest = onDismiss,
         properties = PopupProperties(focusable = true)
     ) {
-        Surface(
-            modifier = modifier.width(250.dp),
-            shape = RoundedCornerShape(16.dp),
-            color = Color(0xFFEEEEEE),
-            shadowElevation = 8.dp,
-            tonalElevation = 0.dp
+        androidx.compose.runtime.CompositionLocalProvider(
+            androidx.compose.ui.platform.LocalContext provides context,
+            androidx.compose.ui.platform.LocalConfiguration provides configuration
         ) {
-            Column {
-                items.forEachIndexed { index, item ->
-                    val color = if (item.titleRes == R.string.BlockProfile || item.titleRes == R.string.DeleteEvent) {
-                        Color.Red
-                    } else {
-                        AppTheme.colors.textPrimary
-                    }
-
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(item.titleRes),
-                                style = AppTheme.typography.manropeRegular,
-                                fontSize = 16.sp,
-                                color = color,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        },
-                        onClick = {
-                            onDismiss()
-                            item.onClick()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(
-                            horizontal = 16.dp,
-                            vertical = 11.dp
-                        ),
-                        trailingIcon = item.iconRes?.let {
-                            {
-                                Icon(
-                                    modifier = Modifier.size(20.dp),
-                                    painter = painterResource(it),
-                                    contentDescription = null,
-                                    tint = color
-                                )
-                            }
+            Surface(
+                modifier = modifier.width(250.dp),
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFFEEEEEE),
+                shadowElevation = 8.dp,
+                tonalElevation = 0.dp
+            ) {
+                Column {
+                    items.forEachIndexed { index, item ->
+                        val color = if (item.titleRes == R.string.BlockProfile || item.titleRes == R.string.DeleteEvent || item.titleRes == R.string.DeleteProfile) {
+                            Color.Red
+                        } else {
+                            AppTheme.colors.textPrimary
                         }
-                    )
 
-                    if (index == 0 && items.size > 1 && item.iconRes != null && item.titleRes != R.string.DeleteEvent) {
-                        HorizontalDivider(
-                            color = Color.LightGray,
-                            thickness = 7.dp
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(item.titleRes),
+                                    style = AppTheme.typography.manropeRegular,
+                                    fontSize = 16.sp,
+                                    color = color,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            },
+                            onClick = {
+                                onDismiss()
+                                item.onClick()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(
+                                horizontal = 16.dp,
+                                vertical = 11.dp
+                            ),
+                            trailingIcon = item.iconRes?.let {
+                                {
+                                    Icon(
+                                        modifier = Modifier.size(20.dp),
+                                        painter = painterResource(it),
+                                        contentDescription = null,
+                                        tint = color
+                                    )
+                                }
+                            }
                         )
-                    } else if (index < items.lastIndex) {
-                        HorizontalDivider(
-                            color = Color.LightGray,
-                            thickness = 0.5.dp
-                        )
+
+                        if (index == 0 && items.size > 1 && item.iconRes != null && item.titleRes != R.string.DeleteEvent) {
+                            HorizontalDivider(
+                                color = Color.LightGray,
+                                thickness = 7.dp
+                            )
+                        } else if (index < items.lastIndex) {
+                            HorizontalDivider(
+                                color = Color.LightGray,
+                                thickness = 0.5.dp
+                            )
+                        }
                     }
                 }
             }
