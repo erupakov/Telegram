@@ -503,7 +503,9 @@ public class JoinCallAlert extends BottomSheet {
         if (type == TYPE_CREATE) {
             RLottieImageView imageView = new RLottieImageView(context);
             imageView.setAutoRepeat(true);
-            imageView.setAnimation(R.raw.utyan_schedule, 120, 120);
+//            imageView.setAnimation(R.raw.utyan_schedule, 120, 120);
+            //DIVO
+            imageView.setImageResource(R.drawable.divo_logo_content);
             imageView.playAnimation();
             internalLayout.addView(imageView, LayoutHelper.createLinear(160, 160, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 17, 8, 17, 0));
         }

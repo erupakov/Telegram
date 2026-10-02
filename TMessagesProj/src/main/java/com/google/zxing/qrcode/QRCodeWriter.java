@@ -63,6 +63,14 @@ public final class QRCodeWriter {
   }
 
   public Bitmap encode(String contents, int width, int height, Map<EncodeHintType, ?> hints, Bitmap bitmap, float radiusFactor, int backgroundColor, int color) throws WriterException {
+    return encode(contents, width, height, hints, bitmap, radiusFactor, backgroundColor, color, null);
+  }
+
+  public Bitmap encode(String contents, int width, int height, Map<EncodeHintType, ?> hints, Bitmap bitmap, float radiusFactor, int backgroundColor, int color, Bitmap icon) throws WriterException {
+    return encode(contents, width, height, hints, bitmap, radiusFactor, backgroundColor, color, icon, 0);
+  }
+
+  public Bitmap encode(String contents, int width, int height, Map<EncodeHintType, ?> hints, Bitmap bitmap, float radiusFactor, int backgroundColor, int color, Bitmap icon, int iconOffsetY) throws WriterException {
 
     if (contents.isEmpty()) {
       throw new IllegalArgumentException("Found empty contents");
@@ -188,9 +196,18 @@ public final class QRCodeWriter {
       }
     }
 
-    Bitmap icon = SvgHelper.getBitmap(readRes(R.raw.qr_logo), imageSize, imageSize, false);
-    canvas.drawBitmap(icon, imageX, imageX, null);
-    icon.recycle();
+    if (icon == null) {
+      icon = SvgHelper.getBitmap(readRes(R.raw.qr_logo), imageSize, imageSize, false);
+      canvas.drawBitmap(icon, imageX, imageX, null);
+      icon.recycle();
+    } else {
+        float scale = Math.min((float) imageSize / icon.getWidth(), (float) imageSize / icon.getHeight());
+        int w = (int) (icon.getWidth() * scale);
+        int h = (int) (icon.getHeight() * scale);
+        android.graphics.Rect src = new android.graphics.Rect(0, 0, icon.getWidth(), icon.getHeight());
+        android.graphics.Rect dst = new android.graphics.Rect((size - w) / 2, (size - h) / 2 + iconOffsetY, (size + w) / 2, (size + h) / 2 + iconOffsetY);
+        canvas.drawBitmap(icon, src, dst, new Paint(Paint.FILTER_BITMAP_FLAG));
+    }
 
     canvas.setBitmap(null);
 

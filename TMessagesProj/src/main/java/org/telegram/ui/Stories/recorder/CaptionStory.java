@@ -16,7 +16,6 @@ import android.graphics.PixelFormat;
 import android.graphics.RectF;
 import android.graphics.drawable.AnimatedVectorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.Gravity;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
@@ -35,7 +34,6 @@ import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.R;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.Utilities;
-import org.telegram.messenger.camera.CameraView;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.AnimatedFloat;
@@ -74,7 +72,7 @@ public class CaptionStory extends CaptionContainerView {
         roundButton.setImageResource(R.drawable.input_video_story);
         roundButton.setBackground(Theme.createSelectorDrawable(Theme.ACTION_BAR_WHITE_SELECTOR_COLOR, RIPPLE_MASK_CIRCLE_20DP, dp(18)));
         roundButton.setScaleType(ImageView.ScaleType.CENTER);
-        addView(roundButton, LayoutHelper.createFrame(44, 44, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 11, 10));
+        addView(roundButton, LayoutHelper.createFrame(44, 44, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 11, 6));
         roundButton.setOnClickListener(e -> {
             showRemoveRoundAlert();
         });
@@ -84,7 +82,8 @@ public class CaptionStory extends CaptionContainerView {
         periodButton.setBackground(Theme.createSelectorDrawable(Theme.ACTION_BAR_WHITE_SELECTOR_COLOR, RIPPLE_MASK_CIRCLE_20DP, dp(18)));
         periodButton.setScaleType(ImageView.ScaleType.CENTER);
         setPeriod(86400, false);
-        addView(periodButton, LayoutHelper.createFrame(44, 44, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 11 + 44 - 4, 10));
+        periodButton.setVisibility(View.GONE); //DIVO
+        addView(periodButton, LayoutHelper.createFrame(44, 44, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 11 + 44 - 4, 6));
         periodButton.setOnClickListener(e -> {
             if (periodPopup != null && periodPopup.isShown()) {
                 return;
@@ -130,11 +129,7 @@ public class CaptionStory extends CaptionContainerView {
 
     private void checkFlipButton() {
         if (flipButton != null) return;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            flipButton = (AnimatedVectorDrawable) ContextCompat.getDrawable(getContext(), R.drawable.avd_flip);
-        } else {
-            flipButton = getContext().getResources().getDrawable(R.drawable.vd_flip).mutate();
-        }
+        flipButton = ContextCompat.getDrawable(getContext(), R.drawable.avd_flip);
     }
 
     private boolean hasRoundVideo;
@@ -469,8 +464,8 @@ public class CaptionStory extends CaptionContainerView {
     }
 
     public void setPeriodVisible(boolean visible) {
-        periodVisible = visible;
-        periodButton.setVisibility(periodVisible && !keyboardShown ? View.VISIBLE : View.GONE);
+        periodVisible = false; //DIVO
+        periodButton.setVisibility(View.GONE); //DIVO
     }
 
     public void setPeriod(int period, boolean animated) {
@@ -508,7 +503,7 @@ public class CaptionStory extends CaptionContainerView {
     @Override
     protected void beforeUpdateShownKeyboard(boolean show) {
         if (!show) {
-            periodButton.setVisibility(periodVisible ? View.VISIBLE : View.GONE);
+            periodButton.setVisibility(View.GONE); //DIVO
             roundButton.setVisibility(View.VISIBLE);
         }
     }
@@ -521,11 +516,8 @@ public class CaptionStory extends CaptionContainerView {
 
     @Override
     protected void afterUpdateShownKeyboard(boolean show) {
-        periodButton.setVisibility(!show && periodVisible ? View.VISIBLE : View.GONE);
+        periodButton.setVisibility(View.GONE); //DIVO
         roundButton.setVisibility(!show ? View.VISIBLE : View.GONE);
-        if (show) {
-            periodButton.setVisibility(View.GONE);
-        }
     }
 
     @Override
@@ -557,7 +549,7 @@ public class CaptionStory extends CaptionContainerView {
                 if (AndroidUtilities.rectTmp.contains(ev.getX(i), ev.getY(i))) {
                     if (ev.getAction() == MotionEvent.ACTION_DOWN || ev.getActionMasked() == MotionEvent.ACTION_POINTER_DOWN) {
                         currentRecorder.cameraView.switchCamera();
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && flipButton instanceof AnimatedVectorDrawable) {
+                        if (flipButton instanceof AnimatedVectorDrawable) {
                             ((AnimatedVectorDrawable) flipButton).start();
                         }
                     }
@@ -588,7 +580,7 @@ public class CaptionStory extends CaptionContainerView {
     private final Runnable doneCancel = () -> {
         setCollapsed(false, Integer.MIN_VALUE);
         roundButton.setVisibility(VISIBLE);
-        periodButton.setVisibility(VISIBLE);
+        periodButton.setVisibility(GONE); //DIVO
     };
 
     private boolean roundButtonTouchEvent(MotionEvent ev) {

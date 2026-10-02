@@ -40,14 +40,12 @@ import org.telegram.messenger.voip.VideoCapturerDevice;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.ui.ActionBar.BaseFragment;
-import org.telegram.ui.Adapters.DrawerLayoutAdapter;
 import org.telegram.ui.Components.ForegroundDetector;
-import org.telegram.ui.IUpdateButton;
+import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.IUpdateLayout;
 import org.telegram.ui.LauncherIconController;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Locale;
 
 public class ApplicationLoader extends Application {
@@ -290,6 +288,19 @@ public class ApplicationLoader extends Application {
         }
 
         super.onCreate();
+
+        try {
+            com.facebook.FacebookSdk.sdkInitialize(applicationContext);
+            com.facebook.appevents.AppEventsLogger.activateApp(this);
+            if (BuildVars.DEBUG_VERSION) {
+                com.facebook.FacebookSdk.setIsDebugEnabled(true);
+                com.facebook.FacebookSdk.addLoggingBehavior(com.facebook.LoggingBehavior.APP_EVENTS);
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+
+        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.init(); //DIVO
 
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("app start time = " + (startTime = SystemClock.elapsedRealtime()));
@@ -643,11 +654,7 @@ public class ApplicationLoader extends Application {
         return false;
     }
 
-    public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenu, ViewGroup sideMenuContainer) {
-        return null;
-    }
-
-    public IUpdateButton takeUpdateButton(Context context) {
+    public IUpdateLayout takeUpdateLayout(Activity activity, ViewGroup sideMenuContainer) {
         return null;
     }
 
@@ -667,8 +674,8 @@ public class ApplicationLoader extends Application {
         return false;
     }
 
-    public boolean extendDrawer(ArrayList<DrawerLayoutAdapter.Item> items) {
-        return false;
+    public void addItemOptions(ItemOptions itemOptions) {
+
     }
 
     public boolean checkRequestPermissionResult(int requestCode, String[] permissions, int[] grantResults) {

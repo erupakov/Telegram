@@ -1,0 +1,322 @@
+package org.telegram.divo.screen.auth
+
+import android.app.Activity
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.compose.StatusBarIconColorEffect
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.dal.network.DivoApiConfig
+import org.telegram.divo.dal.utils.GoogleSignInHelper
+import org.telegram.divo.style.AppTheme
+import org.telegram.divo.style.DivoFont
+import org.telegram.messenger.R
+import org.telegram.tgnet.TLRPC
+
+@Composable
+fun AuthScreen(
+    viewModel: AuthViewModel = viewModel(),
+    onAuthClicked: () -> Unit = {},
+    onGoogleUserNotFound: (
+        firebaseUid: String,
+        email: String,
+        dummyPhone: String,
+        authResponse: TLRPC.TL_auth_authorization,
+        firstName: String?,
+        lastName: String?,
+        photoUrl: String?
+    ) -> Unit = { _, _, _, _, _, _, _ -> },
+    onGoogleSuccess: (authResponse: TLRPC.TL_auth_authorization) -> Unit = { _ -> }
+) {
+    val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+    val isGoogleLoading = remember { mutableStateOf(false) }
+
+    val snackbarHostState = remember { AppSnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            launch {
+                when (effect) {
+                    is AuthViewEffect.ShowError -> {
+                        scope.launch {
+                            snackbarHostState.show(SnackbarEvent.Error(effect.message))
+                        }
+                    }
+                    is AuthViewEffect.LoginSuccess -> {
+                        onAuthClicked()
+                    }
+                    is AuthViewEffect.GoogleSignInRequested -> {
+                        var currentContext = context
+                        var activity: Activity? = null
+                        while (currentContext is android.content.ContextWrapper) {
+                            if (currentContext is Activity) {
+                                activity = currentContext
+                                break
+                            }
+                            currentContext = currentContext.baseContext
+                        }
+                        
+                        if (activity == null) {
+                            scope.launch {
+                                snackbarHostState.show(SnackbarEvent.Error("Context is not an Activity"))
+                            }
+                            return@launch
+                        }
+
+                        isGoogleLoading.value = true
+                        GoogleSignInHelper.signInWithGoogle(
+                            context = activity,
+                            callback = object : GoogleSignInHelper.GoogleSignInCallback {
+                                override fun onSuccess(authResponse: TLRPC.TL_auth_authorization) {
+                                    isGoogleLoading.value = false
+                                    onGoogleSuccess(authResponse)
+                                }
+                                override fun onUserNotFound(firebaseUid: String, email: String, dummyPhone: String, authResponse: TLRPC.TL_auth_authorization, firstName: String?, lastName: String?, photoUrl: String?) {
+                                    isGoogleLoading.value = false
+                                    onGoogleUserNotFound(firebaseUid, email, dummyPhone, authResponse, firstName, lastName, photoUrl)
+                                }
+                                override fun onError(error: String) {
+                                    isGoogleLoading.value = false
+                                    scope.launch {
+                                        snackbarHostState.show(SnackbarEvent.Error(error))
+                                    }
+                                }
+                                override fun onCancelled() {
+                                    isGoogleLoading.value = false
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    StatusBarIconColorEffect(useDarkIcons = true)
+
+    Scaffold(
+        snackbarHost = {
+            AppSnackbarHost(
+                state = snackbarHostState,
+                bottomPadding = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+            )
+        },
+        containerColor = AppTheme.colors.backgroundLight,
+        contentWindowInsets = WindowInsets(0),
+    ) { padding ->
+        if (state.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                LottieProgressIndicator(modifier = Modifier.size(32.dp))
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize().padding(padding).padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+            Text(
+                modifier = Modifier.padding(top = 120.dp),
+                text = stringResource(R.string.WelcomeToDivo).uppercase(),
+                fontSize = 32.sp,
+                lineHeight = 36.sp,
+                style = AppTheme.typography.helveticaNeueLtCom,
+                textAlign = TextAlign.Center
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                modifier = Modifier,
+                text = stringResource(R.string.SignOrCreateAccount),
+                style = AppTheme.typography.bodyLarge,
+                color = AppTheme.colors.textPrimary.copy(0.8f)
+            )
+            Spacer(Modifier.height(32.dp))
+            Column(modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)) {
+                UIButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.ContinueWithPhoneNumber),
+                    textStyle = AppTheme.typography.textButton.copy(
+                        color = AppTheme.colors.buttonTextColor,
+                        fontFamily = DivoFont.HelveticaNeueLtCom77,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 19.sp
+                    ),
+                    paddingTop = 1.dp,
+                    enabled = !isGoogleLoading.value,
+                    onClick = {
+                        DivoAnalytics.logEvent(AnalyticsEvent.AuthMethodSelected("phone"))
+                        onAuthClicked()
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            Row(
+                modifier = Modifier.padding(horizontal = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    modifier = Modifier.padding(horizontal = 20.dp),
+                    text = stringResource(R.string.OnboardingOrLabel),
+                    style = AppTheme.typography.bodyLarge,
+                    fontSize = 12.sp,
+                    color = AppTheme.colors.textPrimary.copy(0.8f)
+                )
+                HorizontalDivider(
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            if (isGoogleLoading.value) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().height(56.dp).clip(RoundedCornerShape(99.dp)).background(AppTheme.colors.onBackground),
+                    contentAlignment = Alignment.Center
+                ) {
+                    LottieProgressIndicator(color = AppTheme.colors.textPrimary)
+                }
+            } else {
+                UIButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.OnboardingSignInWithGoogle),
+                    background = AppTheme.colors.onBackground,
+                    leadingIcon = R.drawable.google,
+                    leadingIconSize = 20,
+                    isLoading = isGoogleLoading.value,
+                    textStyle = AppTheme.typography.textButton.copy(
+                        color = AppTheme.colors.textPrimary,
+                        fontSize = 16.sp
+                    ),
+                    onClick = {
+                        DivoAnalytics.logEvent(AnalyticsEvent.AuthMethodSelected("google"))
+                        viewModel.setIntent(AuthViewIntent.GoogleSignIn)
+                    }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(28.dp))
+            TermsText()
+        }
+    }
+    }
+}
+
+@Composable
+private fun TermsText() {
+    val prefix = stringResource(R.string.TermsPrefix)
+    val terms = stringResource(R.string.OnboardingTermsOfService)
+    val privacy = stringResource(R.string.OnboardingPrivacyPolicy)
+    val andText = stringResource(R.string.OnboardingAnd)
+
+    val termsUrl = DivoApiConfig.TERMS_URL
+    val privacyUrl = DivoApiConfig.PRIVACY_URL
+
+    val annotatedString = buildAnnotatedString {
+
+        append(prefix)
+        append(" ")
+
+        withLink(
+            LinkAnnotation.Url(
+                url = termsUrl,
+                linkInteractionListener = androidx.compose.ui.text.LinkInteractionListener {
+                    DivoAnalytics.logEvent(AnalyticsEvent.TermsLinkClicked())
+                }
+            )
+        ) {
+            withStyle(
+                SpanStyle(
+                    textDecoration = TextDecoration.Underline
+                )
+            ) {
+                append(terms)
+            }
+        }
+
+        append(" ")
+        append(andText)
+        append(" ")
+
+        withLink(
+            LinkAnnotation.Url(
+                url = privacyUrl,
+                linkInteractionListener = androidx.compose.ui.text.LinkInteractionListener {
+                    DivoAnalytics.logEvent(AnalyticsEvent.PrivacyPolicyLinkClicked())
+                }
+            )
+        ) {
+            withStyle(
+                SpanStyle(
+                    textDecoration = TextDecoration.Underline
+                )
+            ) {
+                append(privacy)
+            }
+        }
+
+        append(".")
+    }
+
+    Text(
+        text = annotatedString,
+        style = TextStyle(
+            color = AppTheme.colors.textPrimary,
+            fontSize = 14.sp,
+            textAlign = TextAlign.Center
+        ),
+        modifier = Modifier.fillMaxWidth()
+    )
+}

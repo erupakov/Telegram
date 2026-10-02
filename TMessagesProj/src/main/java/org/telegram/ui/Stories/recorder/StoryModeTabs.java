@@ -75,6 +75,7 @@ public class StoryModeTabs extends FrameLayout implements FlashViews.Invertable 
         layout.addView(liveLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.FILL_VERTICAL, 0, 0, 6.66f, 0));
         liveLayout.setOnClickListener(v -> switchModeInternal(-1));
         ScaleStateListAnimator.apply(liveLayout);
+        liveLayout.setVisibility(View.GONE); //DIVO
 
         photoLayout = new FrameLayout(context);
         photo = new TextView(context);
@@ -116,6 +117,7 @@ public class StoryModeTabs extends FrameLayout implements FlashViews.Invertable 
     }
 
     private void switchModeInternal(int targetMode) {
+        if (targetMode == -1) targetMode = 0; //DIVO
         if (toMode == targetMode) return;
         switchMode(targetMode);
         if (onSwitchModeListener != null) {
@@ -124,6 +126,7 @@ public class StoryModeTabs extends FrameLayout implements FlashViews.Invertable 
     }
 
     public void switchMode(int newMode) {
+        if (newMode == -1) newMode = 0; //DIVO
         if (toMode == newMode) return;
         toMode = newMode;
         if (animator != null) {

@@ -1,0 +1,58 @@
+package org.telegram.divo.screen.event_details
+
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
+import org.telegram.divo.entity.Event
+import org.telegram.divo.entity.EventDetails
+import org.telegram.divo.screen.gallery.GalleryItem
+
+data class EventDetailsViewState(
+    val eventId: Int,
+    val isOwnProfile: Boolean,
+    val isModel: Boolean = false,
+    val isRoleLoading: Boolean = false,
+    val isOwnEvent: Boolean = false,
+    val eventDetails: EventDetails? = null,
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+
+    val events: List<Event> = emptyList(),
+    val isLoadingEvents: Boolean = false,
+    val isLoadingMore: Boolean = false,
+    val hasMore: Boolean = true,
+) : ViewState
+
+sealed class EventDetailsIntent : ViewIntent {
+    data object OnLoad : EventDetailsIntent()
+    data object OnSearchClicked : EventDetailsIntent()
+    data object OnAddEventClicked : EventDetailsIntent()
+    data object OnMenuClicked : EventDetailsIntent()
+    data object OnBackClicked : EventDetailsIntent()
+    data object OnEditEventClick : EventDetailsIntent()
+    data object OnCloseApplicationsConfirmed : EventDetailsIntent()
+    data object OnCancelEventConfirmed : EventDetailsIntent()
+    data object OnDeleteEventConfirmed : EventDetailsIntent()
+    data object OnParamsClick : EventDetailsIntent()
+    data object OnLikeClicked : EventDetailsIntent()
+    data object OnFavouriteClicked : EventDetailsIntent()
+    data class OnEventCardClicked(val eventId: Int) : EventDetailsIntent()
+    data class OnEventCtaClicked(val eventId: Int) : EventDetailsIntent()
+    data class ConfirmWithdraw(val id: Int) : EventDetailsIntent()
+    data class OnPrevEventClicked(val eventId: Int) : EventDetailsIntent()
+    data class OnPhotoClick(val items: List<GalleryItem>, val id: Int) : EventDetailsIntent()
+}
+
+sealed class EventDetailsEffect : ViewEffect {
+    data object Back : EventDetailsEffect()
+    data object NavigateToParams : EventDetailsEffect()
+    data class NavigateToEditEvent(val eventId: Int) : EventDetailsEffect()
+    data class NavigateToGallery(val items: List<GalleryItem>, val id: Int) : EventDetailsEffect()
+    data class NavigateToPrevEvent(val id: Int) : EventDetailsEffect()
+    data object EventDeleted : EventDetailsEffect()
+    data class NavigateToApplyConfirmation(val eventId: Int) : EventDetailsEffect()
+    data class ShowWithdrawConfirmation(val eventId: Int) : EventDetailsEffect()
+    data object ApplicationsClosed : EventDetailsEffect()
+    data class ShowError(val message: String, val canRetry: Boolean = true) : EventDetailsEffect()
+    data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : EventDetailsEffect()
+}

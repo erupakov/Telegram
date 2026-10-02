@@ -1,0 +1,51 @@
+package org.telegram.divo.screen.edit_my_profile
+
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
+import org.telegram.divo.entity.LocalCountry
+import org.telegram.divo.entity.UserInfo
+import org.telegram.tgnet.TLRPC
+import org.telegram.divo.screen.search.LocalCity
+import java.io.File
+
+data class EventListViewState(
+    val isModel: Boolean,
+    val fName: String = "",
+    val lName: String = "",
+    val bio: String = "",
+    val avatarUrl: String = "",
+    val userFull: UserInfo? = null,
+    val isLoading: Boolean = true,
+    val isSaved: Boolean = false,
+    val country: String = "",
+    val countryCode: String = "",
+    val city: LocalCity? = null,
+    val allCountries: List<LocalCountry> = emptyList(),
+    val allCities: List<LocalCity> = emptyList()
+) : ViewState
+
+sealed class EditMyProfileIntent : ViewIntent {
+    data class OnSaveClicked(val fName: String, val lName: String, val bio: String, val file: Result<File>?) :
+        EditMyProfileIntent()
+        
+    data class OnLocationChanged(val country: String, val countryCode: String, val city: LocalCity?) : EditMyProfileIntent()
+
+    data object OnLoad : EditMyProfileIntent()
+    data class OnAvatarUploaded(
+        val photo: TLRPC.InputFile?,
+        val video: TLRPC.InputFile?,
+        val videoStartTimestamp: Double,
+        val videoPath: String?,
+        val bigSize: TLRPC.PhotoSize?,
+        val smallSize: TLRPC.PhotoSize?,
+        val isVideo: Boolean,
+        val emojiMarkup: TLRPC.VideoSize?
+    ) : EditMyProfileIntent()
+}
+
+sealed class Effect : ViewEffect {
+    data object NavigateBack : Effect()
+    data object SaveSuccess : Effect()
+    data class ShowError(val message: String) : Effect()
+}

@@ -46,6 +46,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import org.telegram.divo.common.utils.DivoChannelHelper;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ChatObject;
 import org.telegram.messenger.FileLog;
@@ -377,6 +378,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
                                     AndroidUtilities.runOnUIThread(enableDoneLoading, 200);
                                     MessagesController.getInstance(currentAccount).updateChannelUserName(ChannelCreateActivity.this, chatId, lastCheckName, () -> {
                                         updateDoneProgress(false);
+                                        DivoChannelHelper.onChannelCreated(chatId, lastCheckName, null); //DIVO
                                         if (onFinishListener != null) {
                                             onFinishListener.run(ChannelCreateActivity.this, chatId);
                                         }
@@ -388,14 +390,20 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
                                     });
                                 }
                             }
-                        } else if (onFinishListener != null) {
-                            onFinishListener.run(ChannelCreateActivity.this, chatId);
+                        } else { //DIVO
+                            DivoChannelHelper.onChannelCreated(chatId, null, invite != null ? invite.link : null);
+                            if (onFinishListener != null) {
+                                onFinishListener.run(ChannelCreateActivity.this, chatId);
+                            }
                         }
                         if (onFinishListener == null) {
                             Bundle args = new Bundle();
                             args.putInt("step", 2);
                             args.putLong("chatId", chatId);
                             args.putInt("chatType", ChatObject.CHAT_TYPE_CHANNEL);
+                            if (arguments.containsKey("local_avatar_path")) {
+                                args.putString("local_avatar_path", arguments.getString("local_avatar_path"));
+                            }
                             presentFragment(new GroupCreateActivity(args), true);
                         }
                     }
@@ -634,7 +642,7 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
                     avatarOverlay.invalidate();
                 }
             };
-             avatarProgressView.setSize(AndroidUtilities.dp(30));
+            avatarProgressView.setSize(AndroidUtilities.dp(30));
             avatarProgressView.setProgressColor(0xffffffff);
             avatarProgressView.setNoProgress(false);
             frameLayout.addView(avatarProgressView, LayoutHelper.createFrame(64, 64, Gravity.TOP | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT), LocaleController.isRTL ? 0 : 16, 12, LocaleController.isRTL ? 16 : 0, 12));
@@ -1187,6 +1195,10 @@ public class ChannelCreateActivity extends BaseFragment implements NotificationC
             bundle.putBoolean("canCreatePublic", canCreatePublic);
             if (forcePublic != null) {
                 bundle.putBoolean("forcePublic", forcePublic);
+            }
+            //DIVO
+            if (imageUpdater != null && imageUpdater.currentPicturePath != null) {
+                bundle.putString("local_avatar_path", imageUpdater.currentPicturePath);
             }
             if (inputPhoto != null || inputVideo != null || inputEmojiMarkup != null) {
                 MessagesController.getInstance(currentAccount).changeChatAvatar(chat_id, null, inputPhoto, inputVideo, inputEmojiMarkup, videoTimestamp, inputVideoPath, avatar, avatarBig, null);

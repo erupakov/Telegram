@@ -1,0 +1,142 @@
+package org.telegram.divo.screen.profile.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.telegram.divo.components.media.DivoAsyncImage
+import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.divo.common.utils.toAge
+import org.telegram.divo.common.utils.toCountryFlagEmoji
+import org.telegram.divo.entity.SimilarFace
+import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
+
+@Composable
+fun SimilarProfilesRow(
+    modifier: Modifier = Modifier,
+    similarItems: List<SimilarFace>,
+    onClicked: (Int) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            modifier = Modifier.padding(start = 16.dp),
+            text = stringResource(R.string.SimilarProfiles),
+            style = AppTheme.typography.helveticaNeueLtCom,
+            fontSize = 18.sp,
+            color = Color.Black,
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+        ) {
+            items(
+                items = similarItems,
+                key = { it.userId }
+            ) { model ->
+                Column(
+                    modifier = Modifier
+                        .width(147.dp)
+                        .shadow(
+                            elevation = 6.dp,
+                            shape = RoundedCornerShape(18.dp),
+                            ambientColor = Color(0x17000000),
+                            spotColor = Color(0x17000000)
+                        )
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(Color.White)
+                        .clickableWithoutRipple {
+                            onClicked(model.userId)
+                        }
+                ) {
+                    DivoAsyncImage(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(124.dp)
+                            .padding(3.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                        model = model.image,
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(46.dp)
+                            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = model.fullName.uppercase(),
+                            style = AppTheme.typography.helveticaNeueLtCom,
+                            fontSize = 14.sp,
+                            color = Color.Black
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            val age = model.birthday.toAge()
+
+                            age?.let {
+                                Text(
+                                    text = org.telegram.messenger.LocaleController.formatPluralString("Years", it),
+                                    style = AppTheme.typography.helveticaNeueRegular,
+                                    fontSize = 12.sp,
+                                    color = AppTheme.colors.textPrimary,
+                                )
+                            }
+
+                            if (age != null && model.countryCode.isNotBlank()) {
+                                Text(
+                                   text = " · ",
+                                )
+                            }
+                            Text(
+                                text = model.countryCode.toCountryFlagEmoji(),
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = model.countryName,
+                                style = AppTheme.typography.helveticaNeueRegular,
+                                fontSize = 12.sp,
+                                color = AppTheme.colors.textPrimary,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

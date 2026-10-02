@@ -135,7 +135,9 @@ public class DialogsEmptyCell extends LinearLayout {
         switch (currentType) {
             case TYPE_WELCOME_WITH_CONTACTS:
             case TYPE_WELCOME_NO_CONTACTS:
-                icon = R.raw.utyan_newborn;
+//                icon = R.raw.utyan_newborn;
+                //DIVO
+                icon = R.drawable.divo_logo_content;
                 help = LocaleController.getString(R.string.NoChatsHelp);
                 titleView.setText(LocaleController.getString(R.string.NoChats));
                 break;
@@ -174,8 +176,17 @@ public class DialogsEmptyCell extends LinearLayout {
                 }
             }
             if (prevIcon != icon) {
-                imageView.setAnimation(icon, 100, 100);
-                imageView.playAnimation();
+//                imageView.setAnimation(icon, 100, 100);
+//                imageView.playAnimation();
+                //DIVO
+                if (icon == R.drawable.divo_logo_content) {
+                    imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    imageView.setImageResource(icon);
+                } else {
+                    imageView.setScaleType(ImageView.ScaleType.CENTER);
+                    imageView.setAnimation(icon, 100, 100);
+                    imageView.playAnimation();
+                }
                 prevIcon = icon;
             }
         } else {

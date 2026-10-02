@@ -76,7 +76,9 @@ public class GigagroupConvertAlert extends BottomSheet {
 
         RLottieImageView lottieImageView = new RLottieImageView(context);
         lottieImageView.setAutoRepeat(true);
-        lottieImageView.setAnimation(R.raw.utyan_gigagroup, 120, 120);
+//        lottieImageView.setAnimation(R.raw.utyan_gigagroup, 120, 120);
+        //DIVO
+        lottieImageView.setImageResource(R.drawable.divo_logo_content);
         lottieImageView.playAnimation();
         linearLayout.addView(lottieImageView, LayoutHelper.createLinear(160, 160, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 17, 30, 17, 0));
 

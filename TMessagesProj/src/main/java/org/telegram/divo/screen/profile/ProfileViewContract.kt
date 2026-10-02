@@ -1,0 +1,266 @@
+package org.telegram.divo.screen.profile
+
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import org.telegram.divo.common.arch.ViewEffect
+import org.telegram.divo.common.arch.ViewIntent
+import org.telegram.divo.common.arch.ViewState
+import org.telegram.divo.components.navigation.TabConfig
+import org.telegram.divo.entity.AgencyModel
+import org.telegram.divo.entity.AgencySearchModel
+import org.telegram.divo.entity.EngagementUser
+import org.telegram.divo.entity.Event
+import org.telegram.divo.entity.Publication
+import org.telegram.divo.entity.SimilarFace
+import org.telegram.divo.entity.SocialNetworkType
+import org.telegram.divo.entity.UserGalleryItem
+import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.entity.instagramLink
+import org.telegram.divo.entity.tiktokLink
+import org.telegram.divo.entity.websiteLink
+import org.telegram.divo.entity.youtubeLink
+import org.telegram.divo.screen.profile.components.ProfileDestination
+import org.telegram.divo.screen.profile.components.ProfileInfoDestination
+import org.telegram.divo.screen.profile.components.StatsType
+import org.telegram.messenger.R
+import java.io.File
+
+data class ProfileViewState(
+    val userId: Int = -1,
+    val isOwnProfile: Boolean = false,
+    val userInfo: UserInfo = UserInfo(),
+    val latestWorkExperience: org.telegram.divo.entity.WorkExperience? = null,
+    val hasBackgroundReady: Boolean = false,
+
+    val userGalleryItems: List<UserGalleryItem> = listOf(),
+    val isLoadingMoreImages: Boolean = false,
+    val hasMoreImages: Boolean = true,
+    val isLoadingImages: Boolean = false,
+
+    val videoItems: PersistentList<Publication> = persistentListOf(),
+    val isLoadingVideos: Boolean = false,
+    val isLoadingMoreVideos: Boolean = false,
+    val hasMoreVideos: Boolean = true,
+
+    val events: List<Event> = emptyList(),
+    val isLoadingEvents: Boolean = false,
+    val isLoadingMoreEvents: Boolean = false,
+    val hasMoreEvents: Boolean = true,
+
+    val agencyModels: List<AgencyModel> = emptyList(),
+    val isLoadingAgencyModels: Boolean = false,
+    val isLoadingMoreAgencyModels: Boolean = false,
+    val hasMoreAgencyModels: Boolean = true,
+    val isAddingAgencyModel: Boolean = false,
+    val selectedAgencyModelForAdd: AgencySearchModel? = null,
+    val selectedAgencyModelInfo: UserInfo? = null,
+
+    val searchModelsQuery: String = "",
+    val searchModels: List<AgencySearchModel> = emptyList(),
+    val isLoadingSearchModels: Boolean = false,
+    val isLoadingMoreSearchModels: Boolean = false,
+    val hasMoreSearchModels: Boolean = false,
+    val searchModelsError: String? = null,
+    val isAgencySearchSheetVisible: Boolean = false,
+
+    val isLoading: Boolean = false,
+    val errorMessage: String? = null,
+
+    val reportTypes: Map<String, String>? = null,
+    val showReportSheet: Boolean = false,
+
+    val portfolioLoading: Boolean = false,
+    val mediaUploading: Boolean = false,
+    val isLoadingAllUsers: Boolean = false,
+    val isLoadingStats: Boolean = false,
+    val backgroundChanging: Boolean = false,
+
+    val searchQuery: String = "",
+    val searchResults: List<EngagementUser> = emptyList(),
+    val isSearchMode: Boolean = false,
+    val isLoadingSearch: Boolean = false,
+    val searchHasMore: Boolean = true,
+    val isLoadingMoreSearch: Boolean = false,
+
+    val likedItems: List<EngagementUser> = emptyList(),
+    val viewedItems: List<EngagementUser> = emptyList(),
+    val followedItems: List<EngagementUser> = emptyList(),
+    val isLoadingLiked: Boolean = false,
+    val isLoadingViewed: Boolean = false,
+    val isLoadingFollowed: Boolean = false,
+    val hasMoreLiked: Boolean = true,
+    val hasMoreViewed: Boolean = true,
+    val hasMoreFollowed: Boolean = true,
+    val activeStatsType: StatsType = StatsType.LIKES,
+
+    val similarProfiles: List<SimilarFace> = emptyList(),
+    val socialLinks: SocialLinks = SocialLinks(),
+    val physicalParams: PhysicalParams = PhysicalParams(),
+    val statistic: UserStatistic = UserStatistic()
+) : ViewState {
+
+    val isModel: Boolean
+        get() = userInfo.role.isModel()
+
+    val pageCount: Int
+        get() = when {
+            !isModel -> 5
+            //isModel && isOwnProfile -> 2
+            else -> 3
+        }
+
+    val destinationTabs: List<TabConfig>
+        get() = when (pageCount) {
+            2 -> listOf(
+                TabConfig(id = ProfileDestination.SONGS.name, iconResId = R.drawable.divo_profile_tab_1),
+                TabConfig(id = ProfileDestination.ALBUM.name, iconResId = R.drawable.divo_profile_tab_2)
+            )
+            3 -> listOf(
+                TabConfig(id = ProfileDestination.SONGS.name, iconResId = R.drawable.divo_profile_tab_1),
+                TabConfig(id = ProfileDestination.ALBUM.name, iconResId = R.drawable.divo_profile_tab_2),
+                TabConfig(id = ProfileDestination.PLAYLISTS.name, iconResId = R.drawable.divo_profile_tab_3)
+            )
+            else -> listOf(
+                TabConfig(id = ProfileDestination.SONGS.name, iconResId = R.drawable.divo_profile_tab_1),
+                TabConfig(id = ProfileDestination.ALBUM.name, iconResId = R.drawable.divo_profile_tab_2),
+                TabConfig(id = ProfileDestination.AGENCY.name, iconResId = R.drawable.ic_divo_tab_agency),
+                TabConfig(id = ProfileDestination.PLAYLISTS.name, iconResId = R.drawable.divo_profile_tab_3),
+                TabConfig(id = ProfileDestination.EVENT.name, iconResId = R.drawable.ic_divo_event)
+            )
+        }
+
+    val destinationInfoTabs: List<TabConfig>
+        get() = listOf(
+            TabConfig(
+                id = ProfileInfoDestination.BIOGRAPHY.name,
+                textResId = R.string.TabBiography,
+            ),
+            TabConfig(
+                id = ProfileInfoDestination.APPEARANCE.name,
+                textResId = R.string.TabAppearance
+            ),
+            TabConfig(
+                id = ProfileInfoDestination.EXPERIENCE.name,
+                textResId = R.string.TabExperience
+            )
+        )
+
+    val instagramUser get() = userInfo.instagramLink.trimEnd('/').substringAfterLast("/")
+    val tiktokUser get() = userInfo.tiktokLink.trimEnd('/').substringAfterLast("/")
+    val youtubeUser get() = userInfo.youtubeLink.trimEnd('/').substringAfterLast("/")
+    val website get() = userInfo.websiteLink.removePrefix("https://").removePrefix("http://")
+
+    val isVisibleSocialLinks: Boolean
+        get() = instagramUser.isEmpty() && tiktokUser.isEmpty() && youtubeUser.isEmpty() && website.isEmpty()
+}
+
+data class SocialLinks(
+    val instagram: String = "",
+    val tiktok: String = "",
+    val youtube: String = "",
+    val website: String = ""
+)
+
+data class PhysicalParams(
+    val gender: String = "",
+    val age: String = "",
+    val height: Float = 0f,
+    val weight: Float = 0f,
+    val waist: Int = 0,
+    val hips: Int = 0,
+    val shoeSize: Float = 0f,
+    val hairLength: String = "",
+    val hairColor: String = "",
+    val eyeColor: String = "",
+    val skinColor: String = "",
+    val breastSize: String = "",
+    val measuringSystem: String = "",
+)
+
+data class UserStatistic(
+    val followers: Int = 0,
+    val following: Int = 0,
+    val views: Int = 0,
+)
+
+sealed class ProfileIntent : ViewIntent {
+    data object OnLoad : ProfileIntent()
+    data object OnRefresh : ProfileIntent()
+    object OnClearPortfolioUpload : ProfileIntent()
+    class OnLoadMoreEngagementStats(
+        val type: StatsType
+    ) : ProfileIntent()
+    class OnStatsTabOpened(val type: StatsType) : ProfileIntent()
+    object OnBookmarkClick : ProfileIntent()
+    object OnLikeClick : ProfileIntent()
+
+    class OnPortfolioPhotoSelected(
+        val file: Result<File>
+    ) : ProfileIntent()
+
+    class OnVideoSelected(
+        val file: Result<File>
+    ) : ProfileIntent()
+
+    class OnBackgroundPhotoSelected(
+        val file: Result<File>
+    ) : ProfileIntent()
+
+    class OpenSocialLink(val socialNetworkType: SocialNetworkType) : ProfileIntent()
+    class OnSearchQueryChanged(val query: String) : ProfileIntent()
+    object OnLoadMoreSearchResults : ProfileIntent()
+    class OnSearchModelsQueryChanged(val query: String) : ProfileIntent()
+    object OnLoadMoreSearchModels : ProfileIntent()
+    object OnLoadMorePortfolio : ProfileIntent()
+    object OnLoadMoreVideos : ProfileIntent()
+    object OnLoadMoreEvents : ProfileIntent()
+    class OnEditClicked(val initialPage: Int) : ProfileIntent()
+    data class ConfirmWithdraw(val id: Int) : ProfileIntent()
+    object OnEditLinksClicked : ProfileIntent()
+
+    object OnNavigateBack : ProfileIntent()
+    object OnShowWorkHistory : ProfileIntent()
+    object OnBackgroundReady : ProfileIntent()
+    object OnShowAppearances : ProfileIntent()
+    class OnGalleryClicked(val url: String, val isVideo: Boolean) : ProfileIntent()
+    class OnProfileClicked(val profileId: Int) : ProfileIntent()
+    class OnEventClicked(val eventId: Int) : ProfileIntent()
+    class OnEventApplied(val eventId: Int) : ProfileIntent()
+    class OnSendDMClicked(val telegramId: Long, val telegramAccessHash: Long?, val telegramUsername: String?) : ProfileIntent()
+    object OnEventCreate : ProfileIntent()
+    object OnReportProfileClicked : ProfileIntent()
+    object OnDismissReportSheet : ProfileIntent()
+    class OnReportOptionSelected(val reportKey: String) : ProfileIntent()
+    object OnLoadMoreAgencyModels : ProfileIntent()
+    data class OnCancelAgencyModelRequest(val modelId: Int) : ProfileIntent()
+    data class OnToggleAgencySearch(val visible: Boolean) : ProfileIntent()
+    class OnSelectAgencyModelForAdd(val model: AgencySearchModel?) : ProfileIntent()
+    object OnCreateChannelClicked : ProfileIntent()
+    class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
+    class OnFindSimilarProfiles(val photoUrl: String, val profileId: Int) : ProfileIntent()
+    object OnDeleteProfileConfirmed : ProfileIntent()
+}
+
+sealed class ProfileEffect : ViewEffect {
+    class OpenUrl(val url: String) : ProfileEffect()
+    class ShowError(val message: String, val hasRetry: Boolean = false) : ProfileEffect()
+    class NavigateToEdit(val isModel: Boolean, val initialPage: Int) : ProfileEffect()
+    class SaveSuccess(val stringId: Int) : ProfileEffect()
+    
+    object NavigateBack : ProfileEffect()
+    class ShowWorkHistory(val userId: Int) : ProfileEffect()
+    object ShowAppearances : ProfileEffect()
+    class NavigateToGallery(val index: Int, val isVideo: Boolean) : ProfileEffect()
+    class NavigateToProfile(val profileId: Int) : ProfileEffect()
+    class NavigateToEvent(val eventId: Int) : ProfileEffect()
+    class NavigateToApplyConfirmation(val eventId: Int) : ProfileEffect()
+    class ShowWithdrawConfirmation(val eventId: Int) : ProfileEffect()
+    class NavigateToFindSimilarProfiles(val photoUrl: String, val profileId: Int) : ProfileEffect()
+    class NavigateToChat(val telegramId: Long, val telegramAccessHash: Long?, val telegramUsername: String?) : ProfileEffect()
+    object NavigateToEditLinks : ProfileEffect()
+    object NavigateToCreateEvent : ProfileEffect()
+    data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : ProfileEffect()
+    object AgencyModelAdded : ProfileEffect()
+    class NavigateToCreateChannel(val id: String = java.util.UUID.randomUUID().toString()) : ProfileEffect()
+    object NavigateToLogout : ProfileEffect()
+}

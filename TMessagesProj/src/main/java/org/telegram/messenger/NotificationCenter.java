@@ -138,6 +138,7 @@ public class NotificationCenter {
     public static final int stickersImportProgressChanged = totalEvents++;
     public static final int stickersImportComplete = totalEvents++;
     public static final int dialogDeleted = totalEvents++;
+    public static final int cancelUndoView = totalEvents++; //DIVO
     public static final int webViewResultSent = totalEvents++;
     public static final int voiceTranscriptionUpdate = totalEvents++;
     public static final int animatedEmojiDocumentLoaded = totalEvents++;
@@ -373,6 +374,9 @@ public class NotificationCenter {
     public static final int botForumDraftUpdate = totalEvents++;
     public static final int botForumDraftDelete = totalEvents++;
     public static final int tlSchemeParseException = totalEvents++;
+    public static final int callTabsVisibleToggled = totalEvents++;
+    public static final int divo_userInfoUpdated = totalEvents++; //DIVO
+
 
     public static boolean alreadyLogged;
 
@@ -690,6 +694,14 @@ public class NotificationCenter {
                 }
                 addAfterBroadcast.clear();
             }
+        }
+    }
+
+    public void updateObserver(boolean add, NotificationCenterDelegate observer, int id) {
+        if (add) {
+            addObserver(observer, id);
+        } else {
+            removeObserver(observer, id);
         }
     }
 

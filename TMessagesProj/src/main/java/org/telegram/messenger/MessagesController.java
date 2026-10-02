@@ -55,6 +55,7 @@ import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.SQLite.SQLiteDatabase;
 import org.telegram.SQLite.SQLiteException;
 import org.telegram.SQLite.SQLitePreparedStatement;
+import org.telegram.divo.dal.utils.DivoLogoutHelper;
 import org.telegram.messenger.browser.Browser;
 import org.telegram.messenger.support.LongSparseIntArray;
 import org.telegram.messenger.support.LongSparseLongArray;
@@ -99,6 +100,7 @@ import org.telegram.ui.Components.TranscribeButton;
 import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.EditWidgetActivity;
 import org.telegram.ui.LaunchActivity;
+import org.telegram.ui.MainTabsActivity;
 import org.telegram.ui.PremiumPreviewFragment;
 import org.telegram.ui.ProfileActivity;
 import org.telegram.ui.SecretMediaViewer;
@@ -709,6 +711,7 @@ public class MessagesController extends BaseController implements NotificationCe
     public long tonStakeddiceStakeAmountMin;
     public long tonStakeddiceStakeAmountMax;
     public long[] tonStakediceStakeSuggestedAmounts;
+    public int[][] stargiftsCraftAttributesPermilles;
 
     private final SharedPreferences notificationsPreferences;
     private final SharedPreferences mainPreferences;
@@ -1504,7 +1507,7 @@ public class MessagesController extends BaseController implements NotificationCe
         maxFaveStickersCount = mainPreferences.getInt("maxFaveStickersCount", 5);
         maxEditTime = mainPreferences.getInt("maxEditTime", 3600);
         ratingDecay = mainPreferences.getInt("ratingDecay", 2419200);
-        linkPrefix = mainPreferences.getString("linkPrefix", "t.me");
+        linkPrefix = mainPreferences.getString("linkPrefix", "t.divo.global");
         callReceiveTimeout = mainPreferences.getInt("callReceiveTimeout", 20000);
         callRingTimeout = mainPreferences.getInt("callRingTimeout", 90000);
         callConnectTimeout = mainPreferences.getInt("callConnectTimeout", 30000);
@@ -1727,6 +1730,11 @@ public class MessagesController extends BaseController implements NotificationCe
         tonStakeddiceStakeAmountMin = mainPreferences.getLong("tonStakeddiceStakeAmountMin", 100000000L);
         tonStakeddiceStakeAmountMax = mainPreferences.getLong("tonStakeddiceStakeAmountMax", 50000000000L);
         tonStakediceStakeSuggestedAmounts = Arrays.stream(mainPreferences.getString("tonStakediceStakeSuggestedAmounts", "100000000,1000000000,2000000000,5000000000,10000000000,20000000000").split(",")).mapToLong(Long::parseLong).toArray();
+        stargiftsCraftAttributesPermilles = Arrays.stream(mainPreferences.getString("stargiftsCraftAttributesPermilles", "90,,80,200,,70,190,460,,60,180,450,1000").split(",,"))
+                .map(r -> Arrays.stream(r.split(","))
+                    .mapToInt(Integer::parseInt)
+                    .toArray())
+                .toArray(int[][]::new);
         config.load(mainPreferences);
 
         final boolean paidReactionsActual = (System.currentTimeMillis() - paidReactionsPrivacyTime) < 1000 * 60 * 60 * 2;
@@ -4918,6 +4926,33 @@ public class MessagesController extends BaseController implements NotificationCe
                         }
                         if (!Arrays.equals(values, tonStakediceStakeSuggestedAmounts)) {
                             editor.putString("tonStakeddiceStakeSuggestedAmounts", Arrays.stream(tonStakediceStakeSuggestedAmounts = values).mapToObj(String::valueOf).collect(Collectors.joining(",")));
+                            changed = true;
+                        }
+                    }
+                    break;
+                }
+                case "stargifts_craft_attribute_permilles": {
+                    if (value.value instanceof TLRPC.TL_jsonArray) {
+                        final TLRPC.TL_jsonArray arr = (TLRPC.TL_jsonArray) value.value;
+                        final int[][] values = new int[arr.value.size()][];
+                        for (int i = 0; i < arr.value.size(); ++i) {
+                            if (arr.value.get(i) instanceof TLRPC.TL_jsonArray) {
+                                final TLRPC.TL_jsonArray darr = (TLRPC.TL_jsonArray) arr.value.get(i);
+                                values[i] = new int[darr.value.size()];
+                                for (int j = 0; j < darr.value.size(); ++j) {
+                                    if (darr.value.get(j) instanceof TLRPC.TL_jsonNumber)
+                                        values[i][j] = (int) ((TLRPC.TL_jsonNumber) darr.value.get(j)).value;
+                                }
+                            }
+                        }
+                        if (!Arrays.deepEquals(values, stargiftsCraftAttributesPermilles)) {
+                            editor.putString("stargiftsCraftAttributesPermilles",
+                                Arrays.stream(stargiftsCraftAttributesPermilles = values)
+                                    .map(row -> Arrays.stream(row)
+                                        .mapToObj(String::valueOf)
+                                        .collect(Collectors.joining(",")))
+                                    .collect(Collectors.joining(",,"))
+                            );
                             changed = true;
                         }
                     }
@@ -8409,6 +8444,7 @@ public class MessagesController extends BaseController implements NotificationCe
         if (totalBlockedCount >= 0) {
             totalBlockedCount++;
         }
+        
         getNotificationCenter().postNotificationName(NotificationCenter.blockedUsersDidLoad);
         TLRPC.TL_contacts_block req = new TLRPC.TL_contacts_block();
         if (user != null) {
@@ -8590,6 +8626,7 @@ public class MessagesController extends BaseController implements NotificationCe
         }
         totalBlockedCount--;
         blockePeers.delete(id);
+        
         if (user != null) {
             req.id = getInputPeer(user);
         } else {
@@ -14167,7 +14204,8 @@ public class MessagesController extends BaseController implements NotificationCe
                         putUsers(res.updates.users, false);
                         putChats(res.updates.chats, false);
                         if (res.updates.chats != null && !res.updates.chats.isEmpty()) {
-                            getNotificationCenter().postNotificationName(NotificationCenter.chatDidCreated, res.updates.chats.get(0).id);
+                            long createdChatId = res.updates.chats.get(0).id; //DIVO
+                            getNotificationCenter().postNotificationName(NotificationCenter.chatDidCreated, createdChatId); //DIVO
                             AlertsCreator.checkRestrictedInviteUsers(currentAccount, res.updates.chats.get(0), res);
                         } else {
                             getNotificationCenter().postNotificationName(NotificationCenter.chatDidFailCreate);
@@ -14207,7 +14245,8 @@ public class MessagesController extends BaseController implements NotificationCe
                     putUsers(updates.users, false);
                     putChats(updates.chats, false);
                     if (updates.chats != null && !updates.chats.isEmpty()) {
-                        getNotificationCenter().postNotificationName(NotificationCenter.chatDidCreated, updates.chats.get(0).id);
+                        TLRPC.Chat newChat = updates.chats.get(0);
+                        getNotificationCenter().postNotificationName(NotificationCenter.chatDidCreated, newChat.id);
                     } else {
                         getNotificationCenter().postNotificationName(NotificationCenter.chatDidFailCreate);
                     }
@@ -14361,13 +14400,13 @@ public class MessagesController extends BaseController implements NotificationCe
                 AndroidUtilities.runOnUIThread(() -> AlertsCreator.processError(currentAccount, error, fragment, req, true));
                 return;
             }
-            if (response instanceof TLRPC.TL_messages_invitedUsers) {
-                TLRPC.TL_messages_invitedUsers res = (TLRPC.TL_messages_invitedUsers) response;
-                processUpdates(res.updates, false);
+            //DIVO
+            if (response instanceof TLRPC.Updates) {
+                TLRPC.Updates res = (TLRPC.Updates) response;
+                processUpdates(res, false);
                 AndroidUtilities.runOnUIThread(() -> {
-                    putUsers(res.updates.users, false);
-                    putChats(res.updates.chats, false);
-                    AlertsCreator.checkRestrictedInviteUsers(currentAccount, getChat(chatId), res);
+                    putUsers(res.users, false);
+                    putChats(res.chats, false);
                 });
             }
         });
@@ -15111,6 +15150,7 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public void performLogout(int type) {
+        DivoLogoutHelper.cleanDivoData(currentAccount); //DIVO
         if (type == 1) {
             unregistedPush();
             TLRPC.TL_auth_logOut req = new TLRPC.TL_auth_logOut();
@@ -15129,6 +15169,10 @@ public class MessagesController extends BaseController implements NotificationCe
         }
         getUserConfig().clearConfig();
         SharedPrefsHelper.cleanupAccount(currentAccount);
+        // DIVO--START
+        ApplicationLoader.applicationContext.getSharedPreferences("logininfo2_" + currentAccount, Context.MODE_PRIVATE).edit().clear().commit();
+        ApplicationLoader.applicationContext.getSharedPreferences("logininfo2", Context.MODE_PRIVATE).edit().clear().commit();
+        // DIVO--END
 
         boolean shouldHandle = true;
         ArrayList<NotificationCenter.NotificationCenterDelegate> observers = getNotificationCenter().getObservers(NotificationCenter.appDidLogout);
@@ -20230,7 +20274,7 @@ public class MessagesController extends BaseController implements NotificationCe
                     result = null;
                     posts_between = null;
                 } else {
-                    if (res instanceof TLRPC.TL_messages_sponsoredMessages && (res.flags & 0x1) > 0) {
+                    if ((res.flags & 0x1) > 0) { //DIVO res instanceof TLRPC.TL_messages_sponsoredMessages && (res.flags & 0x1) > 0
                         posts_between = res.posts_between;
                     } else {
                         posts_between = null;
@@ -21270,7 +21314,8 @@ public class MessagesController extends BaseController implements NotificationCe
             }
         }
         boolean doNotCloseLast = false;
-        if (LaunchActivity.getLastFragment() instanceof DialogsActivity) {
+        BaseFragment lastFragment = LaunchActivity.getLastFragment();
+        if (lastFragment instanceof DialogsActivity || lastFragment instanceof MainTabsActivity) {
             doNotCloseLast = true;
         }
         if (reason != null) {

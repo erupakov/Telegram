@@ -1,0 +1,361 @@
+package org.telegram.divo.screen.event_create
+
+import android.net.Uri
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.arch.BaseViewModel
+import org.telegram.divo.common.utils.MeasuringUnits
+import org.telegram.divo.common.utils.uriToFile
+import org.telegram.divo.components.items.ParametersType
+import org.telegram.divo.components.items.ProfileParameter
+import org.telegram.divo.dal.dto.event.toCreateEventRequest
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.getErrorMessage
+import org.telegram.divo.entity.City
+import org.telegram.divo.entity.EventDetails
+import org.telegram.divo.entity.LocalCountry
+import org.telegram.divo.entity.UploadedFile
+import org.telegram.divo.screen.search.LocalCity
+import org.telegram.messenger.ApplicationLoader
+
+class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
+
+    // Dictionaries the edited event is matched against; edit data must wait for them
+    private val countriesJob: Job
+    private val eventTypesJob: Job
+
+    init {
+        countriesJob = loadCountries()
+        loadCities()
+        eventTypesJob = getEventTypes()
+        loadAppearances()
+        loadPaymentTypes()
+        loadCurrentUser()
+    }
+
+    override fun createInitialState(): State = State()
+
+    private fun loadAppearances() {
+        viewModelScope.launch {
+            val result = DivoApi.userRepository.getAppearances()
+            if (result is DivoResult.Success) {
+                val dict = result.value
+                setState {
+                    copy(
+                        hairLengthOptions = dict.hairLength.orEmpty(),
+                        hairColorOptions  = dict.hairColor.orEmpty(),
+                        eyeColorOptions   = dict.eyeColor.orEmpty(),
+                        skinColorOptions  = dict.skinColor.orEmpty()
+                    )
+                }
+            }
+        }
+    }
+
+    private fun getEventTypes(): Job {
+        return viewModelScope.launch {
+            val res = DivoApi.eventRepository.getEventTypes()
+            if (res is DivoResult.Success) {
+                setState { copy(eventTypes = res.value) }
+            } else {
+                sendEffect(Effect.ShowError(res.getErrorMessage()))
+            }
+        }
+    }
+
+    override fun handleIntent(intent: Intent) {
+        when (intent) {
+            Intent.Load -> {}
+            is Intent.OnInitEdit -> initEditMode(intent.eventId)
+            Intent.OnBackClicked -> sendEffect(Effect.NavigateBack)
+            Intent.OnPreviewClicked -> {
+                DivoAnalytics.logEvent(AnalyticsEvent.EventCreatePreviewOpened())
+                sendEffect(Effect.NavigateToPreview)
+            }
+            Intent.OnEditFromPreviewClicked -> setState { copy(resetPagerToFirstPage = true) }
+            Intent.OnFirstPageReached -> setState { copy(resetPagerToFirstPage = false) }
+            Intent.OnPublishClicked -> publishEvent()
+
+            is Intent.OnEventTypeSelected -> setState { copy(selectedEventType = intent.eventType) }
+            is Intent.OnEventNameChanged -> setState { copy(eventName = intent.value) }
+            is Intent.OnEventDescriptionChanged -> setState { copy(eventDescription = intent.value) }
+            is Intent.OnAvatarSelected -> setState {
+                val rest = galleryUris.drop(1)
+                copy(galleryUris = listOf(intent.uri) + rest)
+            }
+            is Intent.OnEventDateChanged -> setState { copy(eventDate = intent.value) }
+            is Intent.OnEventTimeChanged -> setState { copy(eventTime = intent.value) }
+            is Intent.OnCountriesChanged -> setState { copy(selectedCountries = intent.countries, selectedCity = null) }
+            is Intent.OnCitySelected -> setState {
+                val country = allCountries.find { it.shortName.equals(intent.city.countryCode, ignoreCase = true) }
+                copy(
+                    selectedCity = intent.city,
+                    selectedCountries = if (country != null) listOf(country) else selectedCountries
+                )
+            }
+
+            // Second page
+            is Intent.OnRoleChanged -> setState { copy(role = intent.param) }
+            is Intent.OnGenderChanged -> setState { copy(gender = intent.param) }
+            is Intent.OnHairLengthChanged -> setState { copy(hairLength = intent.param) }
+            is Intent.OnHairColorChanged -> setState { copy(hairColor = intent.param) }
+            is Intent.OnEyeColorChanged -> setState { copy(eyeColor = intent.param) }
+            is Intent.OnSkinColorChanged -> setState { copy(skinColor = intent.param) }
+            is Intent.OnBlockParamChanged -> setState {
+                val base = blockParams.ifEmpty { getDefaultBlockParams() }
+                copy(blockParams = base.map {
+                    if (it.type == intent.param.type) intent.param else it
+                })
+            }
+            is Intent.OnRequirementsChanged -> setState { copy(eventRequirements = intent.value) }
+            is Intent.OnNdaToggled -> setState { copy(isNdaRequired = intent.value) }
+            is Intent.OnMaxParticipantsChanged -> setState { copy(maxParticipants = intent.value) }
+
+            // Third page
+            is Intent.OnDeadlineDateChanged -> setState { copy(deadlineDate = intent.value) }
+            is Intent.OnDeadlineTimeChanged -> setState { copy(deadlineTime = intent.value) }
+            is Intent.OnIsPaidToggled -> setState { copy(isPaid = intent.value) }
+            is Intent.OnEventRateChanged -> setState { copy(eventRate = intent.value) }
+            is Intent.OnPaymentTypeSelected -> setState { copy(selectedPaymentType = intent.paymentType) }
+            is Intent.OnPaymentFrequencySelected -> setState { copy(selectedPaymentFrequency = intent.paymentFrequency) }
+            is Intent.OnIsPublicToggled -> setState { copy(isPublicEvent = intent.value) }
+            is Intent.OnGalleryPhotosAdded -> setState { copy(galleryUris = galleryUris + intent.uris) }
+            is Intent.OnGalleryPhotoRemoved -> setState {
+                copy(
+                    galleryUris = galleryUris - intent.uri,
+                    existingGalleryFiles = existingGalleryFiles.filterNot { it.fullUrl == intent.uri.toString() }
+                )
+            }
+        }
+    }
+
+    private fun initEditMode(eventId: Int?) {
+        if (eventId == null) return
+        if (state.value.isEditDataLoaded && state.value.editingEventId == eventId) return
+        loadEventForEdit(eventId)
+    }
+
+    private fun loadEventForEdit(eventId: Int) {
+        viewModelScope.launch {
+            when (val result = DivoApi.eventRepository.getEvent(eventId)) {
+                is DivoResult.Success -> {
+                    // The event may arrive before countries / event types are loaded; matching it
+                    // against empty lists left the country unset, so "Continue" stayed disabled
+                    countriesJob.join()
+                    eventTypesJob.join()
+                    setState { copyFromEvent(eventId, result.value) }
+                }
+                else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
+    private fun State.copyFromEvent(eventId: Int, event: EventDetails): State {
+        val eventDate = event.date.orEmpty()
+        val deadlineDate = event.applicationDeadline.orEmpty()
+        fun formatDateFromApi(apiDateStr: String): Pair<String, String> {
+            if (apiDateStr.isBlank()) return "" to ""
+            try {
+                val sdfIn = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.US)
+                val date = sdfIn.parse(apiDateStr) ?: return "" to ""
+                val sdfOutDate = java.text.SimpleDateFormat("dd.MM.yyyy", java.util.Locale.US)
+                val sdfOutTime = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.US)
+                return sdfOutDate.format(date) to sdfOutTime.format(date).uppercase(java.util.Locale.US)
+            } catch (e: Exception) {
+                return apiDateStr.substringBefore(" ", "") to apiDateStr.substringAfter(" ", "")
+            }
+        }
+
+        val (datePart, timePart) = formatDateFromApi(eventDate)
+        val (deadlineDatePart, deadlineTimePart) = formatDateFromApi(deadlineDate)
+
+        val sortedFiles = event.files.sortedBy { it.order }
+        val gallery = sortedFiles.map { Uri.parse(it.fullUrl) }
+
+        val attrs = event.modelAttributes
+        val storedSystem = MeasuringUnits.resolveStoredSystem(attrs?.measuringSystem)
+        fun rangeToStr(type: ParametersType, from: Int?, to: Int?): String {
+            if (from == null && to == null) return ""
+            return MeasuringUnits.formatStoredRange(type, from, to, storedSystem)
+        }
+
+        val roleValue = attrs?.roles?.mapNotNull { org.telegram.divo.entity.mapRoleToLocalized(it) }?.joinToString(", ") ?: ""
+        val genderValue = attrs?.genders?.mapNotNull { org.telegram.divo.entity.mapGenderToLocalized(it) }?.joinToString(", ") ?: ""
+        val hairLengthValue = attrs?.hairLengths?.joinToString(", ") ?: ""
+        val hairColorValue = attrs?.hairColors?.joinToString(", ") ?: ""
+        val eyeColorValue = attrs?.eyeColors?.joinToString(", ") ?: ""
+        val skinColorValue = attrs?.skinColors?.joinToString(", ") ?: ""
+
+        val address = event.address
+        val cityObj = allCities.find {
+            it.name.equals(address?.cityName, ignoreCase = true)
+        } ?: if (!address?.cityName.isNullOrBlank()) {
+            LocalCity(
+                id = 0L,
+                name = address?.cityName.orEmpty(),
+                asciiName = address?.cityName.orEmpty(),
+                alternateNames = "",
+                countryCode = address?.countryCode.orEmpty(),
+                population = 0
+            )
+        } else {
+            selectedCity
+        }
+
+        // Country names are localized on the device, so prefer matching by code (also the city's one)
+        val countryObj = allCountries.find {
+            !address?.countryCode.isNullOrBlank() && it.shortName.equals(address?.countryCode, ignoreCase = true)
+        } ?: allCountries.find {
+            !cityObj?.countryCode.isNullOrBlank() && it.shortName.equals(cityObj?.countryCode, ignoreCase = true)
+        } ?: allCountries.find {
+            !address?.countryName.isNullOrBlank() && it.name.equals(address?.countryName, ignoreCase = true)
+        }
+        val countries = if (countryObj != null) listOf(countryObj) else selectedCountries
+
+        return copy(
+            editingEventId = eventId,
+            isEditDataLoaded = true,
+            eventName = event.title.orEmpty(),
+            eventDescription = event.description.orEmpty(),
+            selectedEventType = eventTypes.find { it.title == event.type } ?: selectedEventType,
+            eventDate = datePart,
+            eventTime = timePart,
+            selectedCountries = countries,
+            selectedCity = cityObj,
+            deadlineDate = deadlineDatePart,
+            deadlineTime = deadlineTimePart,
+            isPaid = event.cost?.isNotBlank() == true,
+            eventRate = event.cost.orEmpty(),
+            role = role.copy(value = roleValue),
+            gender = gender.copy(value = genderValue),
+            hairLength = hairLength.copy(value = hairLengthValue),
+            hairColor = hairColor.copy(value = hairColorValue),
+            eyeColor = eyeColor.copy(value = eyeColorValue),
+            skinColor = skinColor.copy(value = skinColorValue),
+            blockParams = listOf(
+                ProfileParameter(ParametersType.AGE, rangeToStr(ParametersType.AGE, attrs?.ageFrom, attrs?.ageTo)),
+                ProfileParameter(ParametersType.HEIGHT, rangeToStr(ParametersType.HEIGHT, attrs?.heightFrom, attrs?.heightTo)),
+                ProfileParameter(ParametersType.WEIGHT, rangeToStr(ParametersType.WEIGHT, attrs?.weightFrom, attrs?.weightTo)),
+                ProfileParameter(ParametersType.WAIST, rangeToStr(ParametersType.WAIST, attrs?.waistFrom, attrs?.waistTo)),
+                ProfileParameter(ParametersType.HIPS, rangeToStr(ParametersType.HIPS, attrs?.hipsFrom, attrs?.hipsTo)),
+                ProfileParameter(ParametersType.SHOE_SIZE, rangeToStr(ParametersType.SHOE_SIZE, attrs?.shoesSizeFrom, attrs?.shoesSizeTo)),
+                ProfileParameter(ParametersType.BREAST_SIZE, rangeToStr(ParametersType.BREAST_SIZE, attrs?.breastSizeFrom, attrs?.breastSizeTo))
+            ),
+            galleryUris = gallery,
+            existingGalleryFiles = sortedFiles,
+            maxParticipants = event.maxAttendees ?: maxParticipants,
+            eventRequirements = event.requirements ?: event.description.orEmpty()
+        )
+    }
+
+    private fun publishEvent() {
+        viewModelScope.launch {
+            setState { copy(isUploading = true) }
+            try {
+                val uploadedFiles = mutableListOf<UploadedFile>()
+                val uris = state.value.galleryUris
+                val existingByUrl = state.value.existingGalleryFiles.associateBy { it.fullUrl }
+                
+                if (uris.isNotEmpty()) {
+                    for (uri in uris) {
+                        val existing = existingByUrl[uri.toString()]
+                        if (existing != null) {
+                            uploadedFiles.add(UploadedFile(existing.fileUuid, existing.fullUrl))
+                            continue
+                        }
+                        val fileResult = ApplicationLoader.applicationContext.uriToFile(uri)
+                        fileResult.getOrNull()?.let { file ->
+                            val uploadResult = DivoApi.userRepository.uploadPhoto(file)
+                            if (uploadResult is DivoResult.Success) {
+                                uploadedFiles.add(uploadResult.value)
+                            }
+                        }
+                    }
+                }
+                
+                var resolvedCityId: Int? = null
+                val selectedCity = state.value.selectedCity
+                if (selectedCity != null) {
+                    try {
+                        val geoResponse = DivoApi.geoService.searchByAddressName(selectedCity.name)
+                        resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+                
+                if (resolvedCityId == null) {
+                    sendEffect(Effect.ShowError("City not supported by server. Please try another city."))
+                    setState { copy(isUploading = false) }
+                    return@launch
+                }
+                
+                val request = state.value.toCreateEventRequest(uploadedFiles, resolvedCityId)
+                val result = state.value.editingEventId?.let { eventId ->
+                    DivoApi.eventRepository.updateEvent(eventId, request)
+                } ?: DivoApi.eventRepository.createEvent(request)
+                if (result is DivoResult.Success) {
+                    if (state.value.editingEventId != null) {
+                        DivoAnalytics.logEvent(AnalyticsEvent.EventEdited(state.value.editingEventId!!.toLong()))
+                    } else {
+                        DivoAnalytics.logEvent(AnalyticsEvent.EventCreateSuccess(result.value.id.toLong()))
+                    }
+                    sendEffect(Effect.EventPublished)
+                    setState { copy(isUploading = false) }
+                } else {
+                    sendEffect(Effect.ShowError(result.getErrorMessage()))
+                    setState { copy(isUploading = false) }
+                }
+            } catch (e: Exception) {
+                sendEffect(Effect.ShowError(e.message ?: "Unknown error"))
+                setState { copy(isUploading = false) }
+            }
+        }
+    }
+
+    private fun loadPaymentTypes() {
+        viewModelScope.launch {
+            val result = DivoApi.paymentRepository.getPayments()
+            if (result is DivoResult.Success) {
+                val payments = result.value.data
+                setState {
+                    copy(
+                        paymentTypes = payments.paymentType,
+                        paymentFrequencies = payments.paymentFrequency,
+                        selectedPaymentType = payments.paymentType.find { it.title == "Free" },
+                        selectedPaymentFrequency = payments.paymentFrequency.firstOrNull()
+                    )
+                }
+            } else {
+                sendEffect(Effect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
+    private fun loadCities() {
+        viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCities()
+            setState { copy(allCities = list) }
+        }
+    }
+
+    private fun loadCountries(): Job {
+        return viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCountries()
+            setState { copy(allCountries = list) }
+        }
+    }
+
+    private fun loadCurrentUser() {
+        viewModelScope.launch {
+            when (val result = DivoApi.userRepository.getCurrentUserInfo()) {
+                is DivoResult.Success -> setState { copy(currentUser = result.value) }
+                else -> sendEffect(Effect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+}

@@ -20,7 +20,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.StateListAnimator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -31,13 +30,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
@@ -45,6 +45,8 @@ import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
@@ -61,11 +63,9 @@ import android.text.Layout;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.method.PasswordTransformationMethod;
-import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.ImageSpan;
 import android.text.style.ReplacementSpan;
@@ -77,7 +77,6 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -91,7 +90,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Space;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import androidx.annotation.IntDef;
@@ -120,6 +118,10 @@ import com.google.android.play.core.integrity.IntegrityTokenResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.telegram.PhoneFormat.PhoneFormat;
+import org.telegram.divo.components.items.RegButtonView;
+import org.telegram.divo.dal.network.DivoApi;
+import org.telegram.divo.dal.utils.DivoAuthHelper;
+import org.telegram.divo.screen.reg_select_role.RoleSelectionView;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -130,10 +132,8 @@ import org.telegram.messenger.CallReceiver;
 import org.telegram.messenger.ContactsController;
 import org.telegram.messenger.Emoji;
 import org.telegram.messenger.FileLog;
-import org.telegram.messenger.ImageLocation;
 import org.telegram.messenger.LocaleController;
 import org.telegram.messenger.MediaDataController;
-import org.telegram.messenger.MessageObject;
 import org.telegram.messenger.MessagesController;
 import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.NotificationCenter;
@@ -151,6 +151,7 @@ import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_account;
 import org.telegram.ui.ActionBar.ActionBar;
+import org.telegram.ui.ActionBar.ActionBarLayout;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
@@ -158,22 +159,20 @@ import org.telegram.ui.ActionBar.ThemeDescription;
 import org.telegram.ui.Cells.CheckBoxCell;
 import org.telegram.ui.Components.AlertsCreator;
 import org.telegram.ui.Components.AnimatedPhoneNumberEditText;
-import org.telegram.ui.Components.AvatarDrawable;
-import org.telegram.ui.Components.BackupImageView;
 import org.telegram.ui.Components.Bulletin;
 import org.telegram.ui.Components.BulletinFactory;
-import org.telegram.ui.Components.CombinedDrawable;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.CustomPhoneKeyboardView;
 import org.telegram.ui.Components.Easings;
 import org.telegram.ui.Components.EditTextBoldCursor;
-import org.telegram.ui.Components.ImageUpdater;
+import org.telegram.ui.Components.FragmentFloatingButton;
 import org.telegram.ui.Components.ItemOptions;
 import org.telegram.ui.Components.LayoutHelper;
 import org.telegram.ui.Components.LinkPath;
 import org.telegram.ui.Components.LinkSpanDrawable;
 import org.telegram.ui.Components.LoadingDrawable;
 import org.telegram.ui.Components.LoginOrView;
+import org.telegram.ui.Components.OutlineTextContainerDivoView;
 import org.telegram.ui.Components.OutlineTextContainerView;
 import org.telegram.ui.Components.Premium.GLIcon.GLIconRenderer;
 import org.telegram.ui.Components.Premium.GLIcon.GLIconTextureView;
@@ -182,7 +181,6 @@ import org.telegram.ui.Components.Premium.StarParticlesView;
 import org.telegram.ui.Components.ProxyDrawable;
 import org.telegram.ui.Components.RLottieDrawable;
 import org.telegram.ui.Components.RLottieImageView;
-import org.telegram.ui.Components.RadialProgressView;
 import org.telegram.ui.Components.ScaleStateListAnimator;
 import org.telegram.ui.Components.SimpleThemeDescription;
 import org.telegram.ui.Components.SizeNotifierFrameLayout;
@@ -192,6 +190,7 @@ import org.telegram.ui.Components.TextViewSwitcher;
 import org.telegram.ui.Components.TransformableLoginButtonView;
 import org.telegram.ui.Components.URLSpanNoUnderline;
 import org.telegram.ui.Components.VerticalPositionAutoAnimator;
+import org.telegram.ui.Components.chat.ViewPositionWatcher;
 import org.telegram.ui.Components.spoilers.SpoilersTextView;
 import org.telegram.ui.Stars.ExplainStarsSheet;
 import org.telegram.ui.Stories.recorder.ButtonWithCounterView;
@@ -216,10 +215,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicReference;
 
+import kotlin.Unit;
+
 @SuppressLint("HardwareIds")
 public class LoginActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate {
     public final static boolean ENABLE_PASTED_TEXT_PROCESSING = false;
     private final static int SHOW_DELAY = SharedConfig.getDevicePerformanceClass() <= SharedConfig.PERFORMANCE_CLASS_AVERAGE ? 150 : 100;
+
+    private Runnable divoAuthRequest;
 
     public static final boolean TEST_BACKEND_IN_STORE = false;
 
@@ -316,7 +319,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     @ViewNumber
     private int currentViewNum;
-    private final SlideView[] views = new SlideView[19];
+    private SlideView[] views = new SlideView[19];
     private CustomPhoneKeyboardView keyboardView;
     private ValueAnimator keyboardAnimator;
     private boolean paid;
@@ -344,9 +347,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private AnimatorSet[] showDoneAnimation = new AnimatorSet[2];
     private AnimatorSet doneItemAnimation;
     private TransformableLoginButtonView floatingButtonIcon;
-    private FrameLayout floatingButtonContainer;
+    private FragmentFloatingButton floatingButton;
     private VerticalPositionAutoAnimator floatingAutoAnimator;
-    private RadialProgressView floatingProgressView;
     private int progressRequestId;
     private boolean[] doneButtonVisible = new boolean[] {true, false};
 
@@ -356,12 +358,13 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private Runnable keyboardHideCallback;
 
     private ImageView backButtonView;
-    private RadialProgressView radialProgressView;
+    private RLottieImageView radialProgressView;
 
     private ImageView proxyButtonView;
     private ProxyDrawable proxyDrawable;
 
     // Open animation stuff
+    private Space statusBarSpacer;
     private LinearLayout keyboardLinearLayout;
     private FrameLayout slideViewsContainer;
     private View introView;
@@ -461,6 +464,42 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
     }
 
+    private String googleFirebaseUid;
+    private String googleEmail;
+    private String googleDummyPhone;
+    private boolean googleAutoLogin;
+    private boolean forceRoleSelection;
+    private TLRPC.TL_auth_authorization googleAuthResponse;
+    private boolean isGoogleFlow;
+    private String googleFirstName;//DIVO
+    private String googleLastName;//DIVO
+    private String googlePhotoUrl;//DIVO
+
+    //DIVO
+    public LoginActivity setGoogleRegistrationParams(String firebaseUid, String email, String dummyPhone, TLRPC.TL_auth_authorization authResponse, boolean autoLogin, String firstName, String lastName, String photoUrl) {
+        this.googleFirebaseUid = firebaseUid;
+        this.googleEmail = email;
+        this.googleDummyPhone = dummyPhone;
+        this.googleAuthResponse = authResponse;
+        this.googleAutoLogin = autoLogin;
+        this.googleFirstName = firstName;
+        this.googleLastName = lastName;
+        this.googlePhotoUrl = photoUrl;
+        this.isGoogleFlow = true;
+        forceRoleSelection = true;
+        // DIVO: log sign up start (Google Flow)
+        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("google"));
+        return this;
+    }
+
+    public LoginActivity setGoogleLoginSuccess(TLRPC.TL_auth_authorization authResponse) {
+        this.googleAuthResponse = authResponse;
+        this.isGoogleFlow = true;
+        return this;
+    }
+
+    private String initialRoleSelectionPhone;
+
     public LoginActivity() {
         super();
     }
@@ -469,6 +508,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         super();
         currentAccount = account;
         newAccount = true;
+    }
+
+    public LoginActivity startInRoleSelection(String phone) {
+        forceRoleSelection = true;
+        initialRoleSelectionPhone = phone;
+        return this;
     }
 
     public LoginActivity changeEmail(Runnable onFinishCallback) {
@@ -508,6 +553,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     @Override
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
+        
+        if (divoAuthRequest != null) {
+            divoAuthRequest.run();
+            divoAuthRequest = null;
+        }
+        
         for (int a = 0; a < views.length; a++) {
             if (views[a] != null) {
                 views[a].onDestroyActivity();
@@ -534,6 +585,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     private View cachedFragmentView;
+    private Bundle pendingRegisterParams;
+
     @Override
     public View createView(Context context) {
         if (cachedFragmentView != null) {
@@ -563,21 +616,21 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         sizeNotifierFrameLayout = new SizeNotifierFrameLayout(context) {
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-                MarginLayoutParams marginLayoutParams = (MarginLayoutParams) floatingButtonContainer.getLayoutParams();
-                int keyboardOffset = isCustomKeyboardVisible() ? AndroidUtilities.dp(CustomPhoneKeyboardView.KEYBOARD_HEIGHT_DP) : 0;
+                MarginLayoutParams marginLayoutParams = (MarginLayoutParams) floatingButton.getLayoutParams();
+                int keyboardOffset = isCustomKeyboardVisible() ? AndroidUtilities.dp(CustomPhoneKeyboardView.KEYBOARD_HEIGHT_DP - 4) : 0;
                 if (isCustomKeyboardVisible() && measureKeyboardHeight() > AndroidUtilities.dp(20)) {
                     keyboardOffset -= measureKeyboardHeight();
                 }
                 if (Bulletin.getVisibleBulletin() != null && Bulletin.getVisibleBulletin().isShowing()) {
                     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-                    marginLayoutParams.bottomMargin = dp(16) + Bulletin.getVisibleBulletin().getLayout().getMeasuredHeight() - dp(10) + keyboardOffset;
+                    marginLayoutParams.bottomMargin = dp(14) + Bulletin.getVisibleBulletin().getLayout().getMeasuredHeight() - dp(10) + keyboardOffset;
                 } else {
-                    marginLayoutParams.bottomMargin = dp(16) + keyboardOffset;
+                    marginLayoutParams.bottomMargin = dp(14) + keyboardOffset;
                 }
 
                 int statusBarHeight = AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight;
                 marginLayoutParams = (MarginLayoutParams) backButtonView.getLayoutParams();
-                marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
+                marginLayoutParams.topMargin = AndroidUtilities.dp(8) + statusBarHeight;
 
                 marginLayoutParams = (MarginLayoutParams) proxyButtonView.getLayoutParams();
                 marginLayoutParams.topMargin = AndroidUtilities.dp(16) + statusBarHeight;
@@ -627,36 +680,40 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         keyboardLinearLayout.setOrientation(LinearLayout.VERTICAL);
         scrollView.addView(keyboardLinearLayout, LayoutHelper.createScroll(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | Gravity.LEFT));
 
-        Space spacer = new Space(context);
-        spacer.setMinimumHeight(AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight);
-        keyboardLinearLayout.addView(spacer);
+        statusBarSpacer = new Space(context);
+        statusBarSpacer.setMinimumHeight(AndroidUtilities.isTablet() ? 0 : AndroidUtilities.statusBarHeight);
+        keyboardLinearLayout.addView(statusBarSpacer);
         slideViewsContainer = new FrameLayout(context) {
             @Override
             protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
                 super.onLayout(changed, left, top, right, bottom);
-                for (SlideView slideView : views) {
-                    MarginLayoutParams params = (MarginLayoutParams) slideView.getLayoutParams();
-                    int childBottom = getHeight() + AndroidUtilities.dp(16);
-                    if (!slideView.hasCustomKeyboard() && keyboardView.getVisibility() == VISIBLE) {
-                        childBottom += AndroidUtilities.dp(CustomPhoneKeyboardView.KEYBOARD_HEIGHT_DP);
-                    }
-                    slideView.layout(params.leftMargin, params.topMargin, getWidth() - params.rightMargin, childBottom);
-                }
+                //DIVO--START
+                //for (SlideView slideView : views) {
+                //    MarginLayoutParams params = (MarginLayoutParams) slideView.getLayoutParams();
+                //    int childBottom = getHeight() + AndroidUtilities.dp(16);
+                //    if (!slideView.hasCustomKeyboard() && keyboardView.getVisibility() == VISIBLE) {
+                //        childBottom += AndroidUtilities.dp(CustomPhoneKeyboardView.KEYBOARD_HEIGHT_DP);
+                //    }
+                //    slideView.layout(params.leftMargin, params.topMargin, getWidth() - params.rightMargin, childBottom);
+                //}
+                //DIVO--END
             }
 
             @Override
             protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
                 super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-                int width = getMeasuredWidth(), height = getMeasuredHeight();
+                //DIVO--START
+                //int width = getMeasuredWidth(), height = getMeasuredHeight();
 
-                for (SlideView slideView : views) {
-                    MarginLayoutParams params = (MarginLayoutParams) slideView.getLayoutParams();
-                    int childHeight = height - params.topMargin + AndroidUtilities.dp(16);
-                    if (!slideView.hasCustomKeyboard() && keyboardView.getVisibility() == VISIBLE) {
-                        childHeight += AndroidUtilities.dp(CustomPhoneKeyboardView.KEYBOARD_HEIGHT_DP);
-                    }
-                    slideView.measure(MeasureSpec.makeMeasureSpec(width - params.rightMargin - params.leftMargin, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
-                }
+                //for (SlideView slideView : views) {
+                //    MarginLayoutParams params = (MarginLayoutParams) slideView.getLayoutParams();
+                //   int childHeight = height - params.topMargin + AndroidUtilities.dp(16);
+                //    if (!slideView.hasCustomKeyboard() && keyboardView.getVisibility() == VISIBLE) {
+                //        childHeight += AndroidUtilities.dp(CustomPhoneKeyboardView.KEYBOARD_HEIGHT_DP);
+                //    }
+                //    slideView.measure(MeasureSpec.makeMeasureSpec(width - params.rightMargin - params.leftMargin, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeight, MeasureSpec.EXACTLY));
+                //}
+                //DIVO--END
             }
         };
         keyboardLinearLayout.addView(slideViewsContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 0, 1f));
@@ -664,12 +721,36 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         keyboardView.setViewToFindFocus(slideViewsContainer);
         keyboardLinearLayout.addView(keyboardView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, CustomPhoneKeyboardView.KEYBOARD_HEIGHT_DP));
 
+        //DIVO--START
+        RoleSelectionView roleSelectionView = new RoleSelectionView(context, currentAccount);
+//        roleSelectionView.setOnSelect(role -> {
+//            // обработка выбора роли
+//            // ... твой код ...
+//            return Unit.INSTANCE; // важно вернуть Unit для Kotlin-функции
+//        });
+//
+        roleSelectionView.setOnBack(() -> {
+            if (onBackPressed(true)) {
+                if (parentLayout != null && parentLayout.getFragmentStack().size() <= 1) {
+                    presentFragment(new org.telegram.divo.screen.auth.AuthFragment(), true);
+                } else {
+                    finishFragment();
+                }
+            }
+            return Unit.INSTANCE;
+        });
+        roleSelectionView.setOnFinish((TLRPC.TL_auth_authorization authResponse) -> {
+            forceRoleSelection = false;
+            onAuthSuccess(authResponse, true);
+            return kotlin.Unit.INSTANCE;
+        });
+
         views[VIEW_PHONE_INPUT] = new PhoneView(context);
         views[VIEW_CODE_MESSAGE] = new LoginActivitySmsView(context, AUTH_TYPE_MESSAGE);
         views[VIEW_CODE_SMS] = new LoginActivitySmsView(context, AUTH_TYPE_SMS);
         views[VIEW_CODE_FLASH_CALL] = new LoginActivitySmsView(context, AUTH_TYPE_FLASH_CALL);
         views[VIEW_CODE_CALL] = new LoginActivitySmsView(context, AUTH_TYPE_CALL);
-        views[VIEW_REGISTER] = new LoginActivityRegisterView(context);
+        //views[VIEW_REGISTER] = new LoginActivityRegisterView(context);
         views[VIEW_PASSWORD] = new LoginActivityPasswordView(context);
         views[VIEW_RECOVER] = new LoginActivityRecoverView(context);
         views[VIEW_RESET_WAIT] = new LoginActivityResetWaitView(context);
@@ -683,11 +764,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         views[VIEW_CODE_WORD] = new LoginActivityPhraseView(context, AUTH_TYPE_WORD);
         views[VIEW_CODE_PHRASE] = new LoginActivityPhraseView(context, AUTH_TYPE_PHRASE);
         views[VIEW_PAY] = new LoginPayView(context);
+        views[VIEW_REGISTER] = roleSelectionView;
 
         for (int a = 0; a < views.length; a++) {
             views[a].setVisibility(a == 0 ? View.VISIBLE : View.GONE);
             final boolean needsTopMargin = a != VIEW_PAY;
-            slideViewsContainer.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER, AndroidUtilities.isTablet() ? 26 : 18, needsTopMargin ? 30 : 0, AndroidUtilities.isTablet() ? 26 : 18, 0));
+            if (views[a] instanceof RoleSelectionView) {
+                //DIVO
+                sizeNotifierFrameLayout.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+            } else {
+                slideViewsContainer.addView(views[a], LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.CENTER, AndroidUtilities.isTablet() ? 26 : 18, needsTopMargin ? 30 : 0, AndroidUtilities.isTablet() ? 26 : 18, 0));
+            }
         }
 
         Bundle savedInstanceState = activityMode == MODE_LOGIN ? loadCurrentState(newAccount, currentAccount) : null;
@@ -699,6 +786,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         if (savedInstanceState != null) {
             currentViewNum = savedInstanceState.getInt("currentViewNum", 0);
             syncContacts = savedInstanceState.getInt("syncContacts", 1) == 1;
+            //DIVO
+            if (!isGoogleFlow && savedInstanceState.containsKey("isGoogleFlow")) isGoogleFlow = savedInstanceState.getBoolean("isGoogleFlow", false);
+            if (!googleAutoLogin && savedInstanceState.containsKey("googleAutoLogin")) googleAutoLogin = savedInstanceState.getBoolean("googleAutoLogin", false);
+            if (!forceRoleSelection && savedInstanceState.containsKey("forceRoleSelection")) forceRoleSelection = savedInstanceState.getBoolean("forceRoleSelection", false);
+            if (googleFirebaseUid == null && savedInstanceState.containsKey("googleFirebaseUid")) googleFirebaseUid = savedInstanceState.getString("googleFirebaseUid");
+            if (googleEmail == null && savedInstanceState.containsKey("googleEmail")) googleEmail = savedInstanceState.getString("googleEmail");
+            if (googleDummyPhone == null && savedInstanceState.containsKey("googleDummyPhone")) googleDummyPhone = savedInstanceState.getString("googleDummyPhone");
+            if (googleFirstName == null && savedInstanceState.containsKey("googleFirstName")) googleFirstName = savedInstanceState.getString("googleFirstName");
+            if (googleLastName == null && savedInstanceState.containsKey("googleLastName")) googleLastName = savedInstanceState.getString("googleLastName");
+            if (googlePhotoUrl == null && savedInstanceState.containsKey("googlePhotoUrl")) googlePhotoUrl = savedInstanceState.getString("googlePhotoUrl");
+
             if (currentViewNum >= VIEW_CODE_MESSAGE && currentViewNum <= VIEW_CODE_CALL) {
                 int time = savedInstanceState.getInt("open");
                 if (time != 0 && Math.abs(System.currentTimeMillis() / 1000 - time) >= 24 * 60 * 60) {
@@ -723,25 +821,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         }
 
-        floatingButtonContainer = new FrameLayout(context);
-        floatingButtonContainer.setVisibility(doneButtonVisible[DONE_TYPE_FLOATING] ? View.VISIBLE : View.GONE);
-        if (Build.VERSION.SDK_INT >= 21) {
-            StateListAnimator animator = new StateListAnimator();
-            animator.addState(new int[]{android.R.attr.state_pressed}, ObjectAnimator.ofFloat(floatingButtonIcon, "translationZ", AndroidUtilities.dp(2), AndroidUtilities.dp(4)).setDuration(200));
-            animator.addState(new int[]{}, ObjectAnimator.ofFloat(floatingButtonIcon, "translationZ", AndroidUtilities.dp(4), AndroidUtilities.dp(2)).setDuration(200));
-            floatingButtonContainer.setStateListAnimator(animator);
-            floatingButtonContainer.setOutlineProvider(new ViewOutlineProvider() {
-                @SuppressLint("NewApi")
-                @Override
-                public void getOutline(View view, Outline outline) {
-                    outline.setOval(0, 0, AndroidUtilities.dp(56), AndroidUtilities.dp(56));
-                }
-            });
+        if (forceRoleSelection) {
+            currentViewNum = VIEW_REGISTER;
         }
-        floatingAutoAnimator = VerticalPositionAutoAnimator.attach(floatingButtonContainer);
-        sizeNotifierFrameLayout.addView(floatingButtonContainer, LayoutHelper.createFrame(Build.VERSION.SDK_INT >= 21 ? 56 : 60, Build.VERSION.SDK_INT >= 21 ? 56 : 60, Gravity.RIGHT | Gravity.BOTTOM, 0, 0, 24, 16));
-//        ScaleStateListAnimator.apply(floatingButtonContainer, .1f, 1.4f);
-        floatingButtonContainer.setOnClickListener(view -> onDoneButtonPressed());
+
+        floatingButton = new FragmentFloatingButton(context, resourceProvider);
+        floatingButton.setButtonVisible(doneButtonVisible[DONE_TYPE_FLOATING], false);
+        floatingAutoAnimator = VerticalPositionAutoAnimator.attach(floatingButton);
+        sizeNotifierFrameLayout.addView(floatingButton, FragmentFloatingButton.createDefaultLayoutParamsBig());
+        floatingButton.setOnClickListener(view -> onDoneButtonPressed());
         floatingAutoAnimator.addUpdateListener((animation, value, velocity) -> {
             if (phoneNumberConfirmView != null) {
                 phoneNumberConfirmView.updateFabPosition();
@@ -749,16 +837,34 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         });
 
         backButtonView = new ImageView(context);
-        backButtonView.setImageResource(R.drawable.ic_ab_back);
+        //DIVO--START
+        backButtonView.setImageResource(R.drawable.ic_divo_back);
+        backButtonView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        backButtonView.setColorFilter(new android.graphics.PorterDuffColorFilter(0xff212121, android.graphics.PorterDuff.Mode.SRC_IN));
+        android.graphics.drawable.GradientDrawable bgShape = new android.graphics.drawable.GradientDrawable();
+        bgShape.setShape(android.graphics.drawable.GradientDrawable.OVAL);
+        bgShape.setColor(0xFFFFFFFF);
+        bgShape.setSize(org.telegram.messenger.AndroidUtilities.dp(40), org.telegram.messenger.AndroidUtilities.dp(40));
+        android.content.res.ColorStateList rippleColor = android.content.res.ColorStateList.valueOf(org.telegram.ui.ActionBar.Theme.getColor(org.telegram.ui.ActionBar.Theme.key_listSelector));
+        android.graphics.drawable.RippleDrawable rippleDrawable = new android.graphics.drawable.RippleDrawable(rippleColor, bgShape, null);
+        
+        android.graphics.drawable.InsetDrawable insetDrawable = new android.graphics.drawable.InsetDrawable(rippleDrawable, org.telegram.messenger.AndroidUtilities.dp(8));
+        backButtonView.setBackground(insetDrawable);
+        
+        int p = org.telegram.messenger.AndroidUtilities.dp(20);
+        backButtonView.setPadding(p, p, p, p);
+        //DIVO--END
         backButtonView.setOnClickListener(v -> {
             if (onBackPressed(true)) {
-                finishFragment();
+                if (parentLayout != null && parentLayout.getFragmentStack().size() <= 1) {
+                    presentFragment(new org.telegram.divo.screen.auth.AuthFragment(), true);
+                } else {
+                    finishFragment();
+                }
             }
         });
         backButtonView.setContentDescription(getString(R.string.Back));
-        int padding = AndroidUtilities.dp(4);
-        backButtonView.setPadding(padding, padding, padding, padding);
-        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(32, 32, Gravity.LEFT | Gravity.TOP, 16, 16, 0, 0));
+        sizeNotifierFrameLayout.addView(backButtonView, LayoutHelper.createFrame(56, 56, Gravity.LEFT | Gravity.TOP, 8, 8, 0, 0));
 
         if (emailChangeSkipCallback != null && !emailChangeNonSkippable && emailChangeIsSuggestion) {
             emailChangeSkipButton = new TextView(context);
@@ -785,9 +891,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         sizeNotifierFrameLayout.addView(proxyButtonView, LayoutHelper.createFrame(32, 32, Gravity.RIGHT | Gravity.TOP, 16, 16, 16, 16));
         updateProxyButton(false, true);
 
-        radialProgressView = new RadialProgressView(context);
-        radialProgressView.setSize(AndroidUtilities.dp(20));
-        radialProgressView.setAlpha(0);
+        radialProgressView = new RLottieImageView(context);
+        radialProgressView.setAnimation(org.telegram.messenger.R.raw.loading_animation, 32, 32);
+        radialProgressView.setAutoRepeat(true);
+        radialProgressView.playAnimation();
+        radialProgressView.setAlpha(0f);
         radialProgressView.setScaleX(0.1f);
         radialProgressView.setScaleY(0.1f);
         sizeNotifierFrameLayout.addView(radialProgressView, LayoutHelper.createFrame(32, 32, Gravity.RIGHT | Gravity.TOP, 0, 16, 16, 0));
@@ -796,16 +904,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         floatingButtonIcon.setTransformType(TransformableLoginButtonView.TRANSFORM_OPEN_ARROW);
         floatingButtonIcon.setProgress(1f);
         floatingButtonIcon.setDrawBackground(false);
-        floatingButtonContainer.setContentDescription(getString("Done", R.string.Done));
-        floatingButtonContainer.addView(floatingButtonIcon, LayoutHelper.createFrame(Build.VERSION.SDK_INT >= 21 ? 56 : 60, Build.VERSION.SDK_INT >= 21 ? 56 : 60));
-
-        floatingProgressView = new RadialProgressView(context);
-        floatingProgressView.setSize(AndroidUtilities.dp(22));
-        floatingProgressView.setAlpha(0.0f);
-        floatingProgressView.setScaleX(0.1f);
-        floatingProgressView.setScaleY(0.1f);
-        floatingProgressView.setVisibility(View.INVISIBLE);
-        floatingButtonContainer.addView(floatingProgressView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
+        floatingButton.setContentDescription(getString(R.string.Done));
+        floatingButton.addView(floatingButtonIcon, LayoutHelper.createFrame(56, 56, Gravity.CENTER));
+        floatingButton.addAdditionalView(floatingButtonIcon);
 
         if (savedInstanceState != null) {
             restoringState = true;
@@ -822,6 +923,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }
             }
             if (currentViewNum == a) {
+                if (a == VIEW_REGISTER && initialRoleSelectionPhone != null) {
+                    Bundle b = new Bundle();
+                    b.putString("phoneFormated", initialRoleSelectionPhone);
+                    //DIVO
+                    if (googleFirebaseUid != null) b.putString("firebaseUid", googleFirebaseUid);
+                    if (googleEmail != null) b.putString("googleEmail", googleEmail);
+                    if (googleFirstName != null) b.putString("googleFirstName", googleFirstName);
+                    if (googleLastName != null) b.putString("googleLastName", googleLastName);
+                    if (googlePhotoUrl != null) b.putString("googlePhotoUrl", googlePhotoUrl);
+
+                    v.setParams(b, false);
+                }
                 backButtonView.setVisibility(v.needBackButton() || newAccount || activityMode == MODE_CHANGE_PHONE_NUMBER ? View.VISIBLE : View.GONE);
                 v.setVisibility(View.VISIBLE);
                 v.onShow();
@@ -829,9 +942,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 setCustomKeyboardVisible(v.hasCustomKeyboard(), false);
 
                 currentDoneType = DONE_TYPE_FLOATING;
-                boolean needFloatingButton = a == VIEW_PHONE_INPUT || a == VIEW_REGISTER ||
+                //DIVO--START: VIEW_PHONE_INPUT handled by RegButtonView (buttonView) inside PhoneView
+                boolean needFloatingButton = //a == VIEW_PHONE_INPUT ||
+                        //a == VIEW_REGISTER ||
                         a == VIEW_PASSWORD || a == VIEW_NEW_PASSWORD_STAGE_1 || a == VIEW_NEW_PASSWORD_STAGE_2 ||
                         a == VIEW_ADD_EMAIL;
+                //DIVO--END
                 showDoneButton(needFloatingButton, false);
                 if (a == VIEW_CODE_MESSAGE || a == VIEW_CODE_SMS || a == VIEW_CODE_FLASH_CALL || a == VIEW_CODE_CALL) {
                     currentDoneType = DONE_TYPE_ACTION;
@@ -849,6 +965,29 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         if (isInCancelAccountDeletionMode()) {
             fillNextCodeParams(cancelDeletionParams, cancelDeletionCode, false);
+        }
+
+        if (statusBarSpacer != null) {
+            statusBarSpacer.setVisibility(views[currentViewNum] instanceof RoleSelectionView ? View.GONE : View.VISIBLE);
+        }
+
+        // DIVO--START: Восстанавливаем edge-to-edge при загрузке из SharedPreferences
+        if (parentLayout instanceof ActionBarLayout) {
+            ActionBarLayout actionBarLayout = (ActionBarLayout) parentLayout;
+            boolean needEdgeToEdge = (currentViewNum == VIEW_REGISTER);
+            if (actionBarLayout.containerView != null) {
+                actionBarLayout.containerView.setShouldHandleBottomInsets(needEdgeToEdge);
+                actionBarLayout.containerView.setDrawNavigationBar(!needEdgeToEdge);
+            }
+        }
+        if (isGoogleFlow && !forceRoleSelection) {
+            if (fragmentView instanceof ViewGroup) {
+                ViewGroup vg = (ViewGroup) fragmentView;
+                for (int i = 0; i < vg.getChildCount(); i++) {
+                    vg.getChildAt(i).setVisibility(View.INVISIBLE);
+                }
+            }
+            fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
         }
 
         return fragmentView;
@@ -970,6 +1109,28 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         if (currentViewNum >= 0 && currentViewNum < views.length) {
             views[currentViewNum].onResume();
         }
+
+        // DIVO--START: Обновляем инсеты и навбар при возврате в приложение
+        if (parentLayout instanceof ActionBarLayout) {
+            ActionBarLayout actionBarLayout = (ActionBarLayout) parentLayout;
+            boolean needEdgeToEdge = (currentViewNum == VIEW_REGISTER);
+            if (actionBarLayout.containerView != null) {
+                actionBarLayout.containerView.setShouldHandleBottomInsets(needEdgeToEdge);
+                actionBarLayout.containerView.setDrawNavigationBar(!needEdgeToEdge);
+                // Просим перерисовать layout, чтобы отступы обновились сразу
+                actionBarLayout.containerView.requestLayout();
+            }
+        }
+        // DIVO--END
+    }
+
+    @Override
+    public void onTransitionAnimationEnd(boolean isOpen, boolean backward) {
+        super.onTransitionAnimationEnd(isOpen, backward);
+        if (isOpen && googleAuthResponse != null) {
+            onAuthSuccess(googleAuthResponse, false);
+            googleAuthResponse = null; // Prevent re-triggering
+        }
     }
 
     @Override
@@ -998,13 +1159,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
         } else if (requestCode == BasePermissionsActivity.REQUEST_CODE_OPEN_CAMERA) {
             if (granted) {
-                LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
-                registerView.imageUpdater.openCamera();
+                //DIVO
+//                LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
+//                registerView.imageUpdater.openCamera();
             }
         } else if (requestCode == BasePermissionsActivity.REQUEST_CODE_EXTERNAL_STORAGE_FOR_AVATAR) {
             if (granted) {
-                LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
-                registerView.post(() -> registerView.imageUpdater.openGallery());
+                //DIVO
+//                LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
+//                registerView.post(() -> registerView.imageUpdater.openGallery());
             }
         }
     }
@@ -1114,7 +1277,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             return false;
         }
 
-        if (currentViewNum == VIEW_PHONE_INPUT || activityMode == MODE_CHANGE_LOGIN_EMAIL && currentViewNum == VIEW_ADD_EMAIL) {
+        if (currentViewNum == VIEW_PHONE_INPUT || currentViewNum == VIEW_REGISTER || activityMode == MODE_CHANGE_LOGIN_EMAIL && currentViewNum == VIEW_ADD_EMAIL) {
             if (invoked) {
                 for (int a = 0; a < views.length; a++) {
                     if (views[a] != null) {
@@ -1122,6 +1285,22 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                 }
                 clearCurrentState();
+                // DIVO--START: If returning from role selection / registration before completion, clean up incomplete session
+                if (currentViewNum == VIEW_REGISTER) {
+                    String token = DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(currentAccount);
+                    if (TextUtils.isEmpty(token)) {
+                        UserConfig.getInstance(currentAccount).clearConfig();
+                        ConnectionsManager.getInstance(currentAccount).cleanup(false);
+                        MessagesController.getInstance(currentAccount).cleanup();
+                        forceRoleSelection = false;
+                        initialRoleSelectionPhone = null;
+                    }
+                }
+                // DIVO--END
+                if (parentLayout != null && parentLayout.getFragmentStack().size() <= 1) {
+                    presentFragment(new org.telegram.divo.screen.auth.AuthFragment(), true);
+                    return false;
+                }
             }
             return true;
         } else if (currentViewNum == VIEW_PASSWORD) {
@@ -1138,11 +1317,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (invoked && views[currentViewNum].onBackPressed(false)) {
                 setPage(VIEW_PHONE_INPUT, true, null, true);
             }
-        } else if (currentViewNum == VIEW_REGISTER) {
-            if (invoked) {
-                ((LoginActivityRegisterView) views[currentViewNum]).wrongNumber.callOnClick();
-            }
-        } else if (currentViewNum == VIEW_NEW_PASSWORD_STAGE_1) {
+        }
+        //DIVO
+        else if (currentViewNum == VIEW_NEW_PASSWORD_STAGE_1) {
             if (invoked) {
                 views[currentViewNum].onBackPressed(true);
                 setPage(VIEW_RECOVER, true, null, true);
@@ -1167,10 +1344,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
     @Override
     public void onActivityResultFragment(int requestCode, int resultCode, Intent data) {
-        LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
-        if (registerView != null) {
-            registerView.imageUpdater.onActivityResult(requestCode, resultCode, data);
-        }
+        //DIVO
+        //LoginActivityRegisterView registerView = (LoginActivityRegisterView) views[VIEW_REGISTER];
+//        if (registerView != null) {
+//            registerView.imageUpdater.onActivityResult(requestCode, resultCode, data);
+//        }
     }
 
     private void needShowAlert(String title, String text) {
@@ -1276,7 +1454,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
                 Intent mailer = new Intent(Intent.ACTION_SENDTO);
                 mailer.setData(Uri.parse("mailto:"));
-                mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{banned ? "recover@telegram.org" : "login@stel.com"});
+                mailer.putExtra(Intent.EXTRA_EMAIL, new String[]{"Support@divo.global"});
                 if (banned) {
                     mailer.putExtra(Intent.EXTRA_SUBJECT, "Banned phone number: " + phoneNumber);
                     mailer.putExtra(Intent.EXTRA_TEXT, "I'm trying to use my mobile phone number: " + phoneNumber + "\nBut Telegram says it's banned. Please help.\n\nApp version: " + version + "\nOS version: SDK " + Build.VERSION.SDK_INT + "\nDevice Name: " + Build.MANUFACTURER + Build.MODEL + "\nLocale: " + Locale.getDefault());
@@ -1312,50 +1490,19 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         doneButtonVisible[currentDoneType] = show;
         if (animated) {
             showDoneAnimation[currentDoneType] = new AnimatorSet();
-            if (show) {
-                if (floating) {
-                    if (floatingButtonContainer.getVisibility() != View.VISIBLE) {
-                        floatingAutoAnimator.setOffsetY(AndroidUtilities.dpf2(70f));
-                        floatingButtonContainer.setVisibility(View.VISIBLE);
-                    }
-                    ValueAnimator offsetAnimator = ValueAnimator.ofFloat(floatingAutoAnimator.getOffsetY(), 0);
-                    offsetAnimator.addUpdateListener(animation -> {
-                        float val = (Float) animation.getAnimatedValue();
-                        floatingAutoAnimator.setOffsetY(val);
-                        floatingButtonContainer.setAlpha(1f - (val / AndroidUtilities.dpf2(70f)));
-                    });
-                    showDoneAnimation[currentDoneType].play(offsetAnimator);
-                }
-            } else {
-                if (floating) {
-                    ValueAnimator offsetAnimator = ValueAnimator.ofFloat(floatingAutoAnimator.getOffsetY(), AndroidUtilities.dpf2(70f));
-                    offsetAnimator.addUpdateListener(animation -> {
-                        float val = (Float) animation.getAnimatedValue();
-                        floatingAutoAnimator.setOffsetY(val);
-                        floatingButtonContainer.setAlpha(1f - (val / AndroidUtilities.dpf2(70f)));
-                    });
-                    showDoneAnimation[currentDoneType].play(offsetAnimator);
-                }
+            if (floating) {
+                floatingButton.setButtonVisible(show, animated);
             }
             showDoneAnimation[currentDoneType].addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     if (showDoneAnimation[floating ? 0 : 1] != null && showDoneAnimation[floating ? 0 : 1].equals(animation)) {
                         if (!show) {
-                            if (floating) {
-                                floatingButtonContainer.setVisibility(View.GONE);
-                            }
-
                             if (floating && floatingButtonIcon.getAlpha() != 1f) {
                                 floatingButtonIcon.setAlpha(1f);
                                 floatingButtonIcon.setScaleX(1f);
                                 floatingButtonIcon.setScaleY(1f);
                                 floatingButtonIcon.setVisibility(View.VISIBLE);
-                                floatingButtonContainer.setEnabled(true);
-                                floatingProgressView.setAlpha(0f);
-                                floatingProgressView.setScaleX(0.1f);
-                                floatingProgressView.setScaleY(0.1f);
-                                floatingProgressView.setVisibility(View.INVISIBLE);
                             }
                         }
                     }
@@ -1386,21 +1533,20 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             showDoneAnimation[currentDoneType].setInterpolator(interpolator);
             showDoneAnimation[currentDoneType].start();
         } else {
-            if (show) {
-                if (floating) {
-                    floatingButtonContainer.setVisibility(View.VISIBLE);
-                    floatingAutoAnimator.setOffsetY(0f);
-                }
-            } else {
-                if (floating) {
-                    floatingButtonContainer.setVisibility(View.GONE);
-                    floatingAutoAnimator.setOffsetY(AndroidUtilities.dpf2(70f));
-                }
+            if (floating) {
+                floatingButton.setButtonVisible(show, animated);
             }
         }
     }
 
     private void onDoneButtonPressed() {
+        //DIVO--START
+        if (currentViewNum == 0) {
+            views[currentViewNum].onNextPressed(null);
+            return;
+        }
+        //DIVO--END
+
         if (!doneButtonVisible[currentDoneType]) {
             return;
         }
@@ -1464,6 +1610,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             doneItemAnimation.cancel();
         }
 
+        if (floating) {
+            //DIVO--START: for PhoneView use RegButtonView instead of FAB to avoid FAB anchor issues
+            if (currentViewNum == VIEW_PHONE_INPUT && views[VIEW_PHONE_INPUT] instanceof PhoneView) {
+                ((PhoneView) views[VIEW_PHONE_INPUT]).setButtonLoading(show);
+                return; // skip FAB entirely — it is hidden on phone screen
+            }
+            //DIVO--END
+            floatingButton.setProgressVisible(show, animated);
+            return;
+        }
+
         if (animated) {
             doneItemAnimation = new AnimatorSet();
             ValueAnimator animator = ValueAnimator.ofFloat(show ? 0 : 1, show ? 1 : 0);
@@ -1471,28 +1628,13 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 @Override
                 public void onAnimationStart(Animator animation) {
                     if (show) {
-                        if (floating) {
-                            floatingButtonIcon.setVisibility(View.VISIBLE);
-                            floatingProgressView.setVisibility(View.VISIBLE);
-                            floatingButtonContainer.setEnabled(false);
-                        } else {
-                            radialProgressView.setVisibility(View.VISIBLE);
-                        }
+                        radialProgressView.setVisibility(View.VISIBLE);
                     }
                 }
 
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    if (floating) {
-                        if (!show) {
-                            floatingProgressView.setVisibility(View.INVISIBLE);
-                            floatingButtonIcon.setVisibility(View.VISIBLE);
-                            floatingButtonContainer.setEnabled(true);
-                        } else {
-                            floatingButtonIcon.setVisibility(View.INVISIBLE);
-                            floatingProgressView.setVisibility(View.VISIBLE);
-                        }
-                    } else if (!show) {
+                    if (!show) {
                         radialProgressView.setVisibility(View.INVISIBLE);
                     }
 
@@ -1503,63 +1645,26 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             });
             animator.addUpdateListener(animation -> {
                 float val = (float) animation.getAnimatedValue();
-
-                if (floating) {
-                    float scale = 0.1f + 0.9f * (1f - val);
-                    floatingButtonIcon.setScaleX(scale);
-                    floatingButtonIcon.setScaleY(scale);
-                    floatingButtonIcon.setAlpha(1f - val);
-
-                    scale = 0.1f + 0.9f * val;
-                    floatingProgressView.setScaleX(scale);
-                    floatingProgressView.setScaleY(scale);
-                    floatingProgressView.setAlpha(val);
-                } else {
-                    float scale = 0.1f + 0.9f * val;
-                    radialProgressView.setScaleX(scale);
-                    radialProgressView.setScaleY(scale);
-                    radialProgressView.setAlpha(val);
-                }
+                float scale = 0.1f + 0.9f * val;
+                radialProgressView.setScaleX(scale);
+                radialProgressView.setScaleY(scale);
+                radialProgressView.setAlpha(val);
             });
             doneItemAnimation.playTogether(animator);
             doneItemAnimation.setDuration(150);
             doneItemAnimation.start();
         } else {
             if (show) {
-                if (floating) {
-                    floatingProgressView.setVisibility(View.VISIBLE);
-                    floatingButtonIcon.setVisibility(View.INVISIBLE);
-                    floatingButtonContainer.setEnabled(false);
-                    floatingButtonIcon.setScaleX(0.1f);
-                    floatingButtonIcon.setScaleY(0.1f);
-                    floatingButtonIcon.setAlpha(0.0f);
-                    floatingProgressView.setScaleX(1.0f);
-                    floatingProgressView.setScaleY(1.0f);
-                    floatingProgressView.setAlpha(1.0f);
-                } else {
-                    radialProgressView.setVisibility(View.VISIBLE);
-                    radialProgressView.setScaleX(1.0f);
-                    radialProgressView.setScaleY(1.0f);
-                    radialProgressView.setAlpha(1.0f);
-                }
+                radialProgressView.setVisibility(View.VISIBLE);
+                radialProgressView.setScaleX(1.0f);
+                radialProgressView.setScaleY(1.0f);
+                radialProgressView.setAlpha(1.0f);
             } else {
                 radialProgressView.setTag(null);
-                if (floating) {
-                    floatingProgressView.setVisibility(View.INVISIBLE);
-                    floatingButtonIcon.setVisibility(View.VISIBLE);
-                    floatingButtonContainer.setEnabled(true);
-                    floatingProgressView.setScaleX(0.1f);
-                    floatingProgressView.setScaleY(0.1f);
-                    floatingProgressView.setAlpha(0.0f);
-                    floatingButtonIcon.setScaleX(1.0f);
-                    floatingButtonIcon.setScaleY(1.0f);
-                    floatingButtonIcon.setAlpha(1.0f);
-                } else {
-                    radialProgressView.setVisibility(View.INVISIBLE);
-                    radialProgressView.setScaleX(0.1f);
-                    radialProgressView.setScaleY(0.1f);
-                    radialProgressView.setAlpha(0.0f);
-                }
+                radialProgressView.setVisibility(View.INVISIBLE);
+                radialProgressView.setScaleX(0.1f);
+                radialProgressView.setScaleY(0.1f);
+                radialProgressView.setAlpha(0.0f);
             }
         }
     }
@@ -1605,7 +1710,39 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     public void setPage(@ViewNumber int page, boolean animated, Bundle params, boolean back) {
-        boolean needFloatingButton = page == VIEW_PHONE_INPUT || page == VIEW_REGISTER || page == VIEW_PASSWORD ||
+        //DIVO--START: Динамически переключаем edge-to-edge только для RoleSelectionView
+        // containerView — public поле ActionBarLayout, setShouldHandleBottomInsets — public метод
+        if (parentLayout instanceof ActionBarLayout) {
+            ActionBarLayout actionBarLayout = (ActionBarLayout) parentLayout;
+            boolean needEdgeToEdge = (page == VIEW_REGISTER);
+            if (actionBarLayout.containerView != null) {
+                actionBarLayout.containerView.setShouldHandleBottomInsets(needEdgeToEdge);
+                actionBarLayout.containerView.setDrawNavigationBar(!needEdgeToEdge);
+            }
+        }
+        
+        if (page == VIEW_REGISTER && googleFirebaseUid != null) {
+            if (params == null) {
+                params = new Bundle();
+            }
+            params.putString("firebaseUid", googleFirebaseUid);
+            params.putString("googleEmail", googleEmail);
+            //DIVO
+            if (googleFirstName != null) params.putString("googleFirstName", googleFirstName);
+            if (googleLastName != null) params.putString("googleLastName", googleLastName);
+            if (googlePhotoUrl != null) params.putString("googlePhotoUrl", googlePhotoUrl);
+            if (googleDummyPhone != null) {
+                params.putString("phoneFormated", googleDummyPhone);
+            }
+        }
+        //DIVO--END
+
+        if (statusBarSpacer != null) {
+            statusBarSpacer.setVisibility(views[page] instanceof RoleSelectionView ? View.GONE : View.VISIBLE);
+        }
+
+        //DIVO: VIEW_PHONE_INPUT excluded — it uses RegButtonView instead of FAB
+        boolean needFloatingButton = /*page == VIEW_PHONE_INPUT ||*/ page == VIEW_PASSWORD ||
                 page == VIEW_NEW_PASSWORD_STAGE_1 || page == VIEW_NEW_PASSWORD_STAGE_2 || page == VIEW_ADD_EMAIL || page == VIEW_CODE_PHRASE || page == VIEW_CODE_WORD;
         if (page == currentViewNum) {
             animated = false;
@@ -1685,6 +1822,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             Bundle bundle = new Bundle();
             bundle.putInt("currentViewNum", currentViewNum);
             bundle.putInt("syncContacts", syncContacts ? 1 : 0);
+            //DIVO
+            bundle.putBoolean("isGoogleFlow", isGoogleFlow);
+            bundle.putBoolean("googleAutoLogin", googleAutoLogin);
+            bundle.putBoolean("forceRoleSelection", forceRoleSelection);
+            if (googleFirebaseUid != null) bundle.putString("googleFirebaseUid", googleFirebaseUid);
+            if (googleEmail != null) bundle.putString("googleEmail", googleEmail);
+            if (googleDummyPhone != null) bundle.putString("googleDummyPhone", googleDummyPhone);
+            if (googleFirstName != null) bundle.putString("googleFirstName", googleFirstName);
+            if (googleLastName != null) bundle.putString("googleLastName", googleLastName);
+            if (googlePhotoUrl != null) bundle.putString("googlePhotoUrl", googlePhotoUrl);
+
             for (int a = 0; a <= currentViewNum; a++) {
                 SlideView v = views[a];
                 if (v != null) {
@@ -1710,25 +1858,39 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (newAccount) {
                 newAccount = false;
                 pendingSwitchingAccount = true;
-                ((LaunchActivity) getParentActivity()).switchToAccount(currentAccount, false, obj -> {
+                ((LaunchActivity) getParentActivity()).switchToAccount(currentAccount, true, obj -> {
                     Bundle args = new Bundle();
                     args.putBoolean("afterSignup", afterSignup);
-                    return new DialogsActivity(args);
+                    MainTabsActivity mainTabsActivity = new MainTabsActivity();
+                    mainTabsActivity.prepareDialogsActivity(args);
+                    return mainTabsActivity;
                 });
                 pendingSwitchingAccount = false;
                 finishFragment();
             } else {
-
                 if (afterSignup && showSetPasswordConfirm) {
                     TwoStepVerificationSetupActivity twoStepVerification = new TwoStepVerificationSetupActivity(TwoStepVerificationSetupActivity.TYPE_INTRO, null);
                     twoStepVerification.setBlockingAlert(otherwiseRelogin);
                     twoStepVerification.setFromRegistration(true);
-                    presentFragment(twoStepVerification, true);
+                    org.telegram.ui.ActionBar.INavigationLayout layout = parentLayout;
+                    if (layout != null) {
+                        layout.removeAllFragments();
+                        layout.presentFragment(twoStepVerification, false, true, true, false);
+                    } else {
+                        presentFragment(twoStepVerification, true);
+                    }
                 } else {
                     Bundle args = new Bundle();
                     args.putBoolean("afterSignup", afterSignup);
-                    DialogsActivity dialogsActivity = new DialogsActivity(args);
-                    presentFragment(dialogsActivity, true);
+                    MainTabsActivity mainTabsActivity = new MainTabsActivity();
+                    mainTabsActivity.prepareDialogsActivity(args);
+                    org.telegram.ui.ActionBar.INavigationLayout layout = parentLayout;
+                    if (layout != null) {
+                        layout.removeAllFragments();
+                        layout.presentFragment(mainTabsActivity, false, true, true, false);
+                    } else {
+                        presentFragment(mainTabsActivity, true);
+                    }
                 }
 
                 NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.mainUserInfoChanged);
@@ -1745,6 +1907,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         res.user = UserConfig.getInstance(0).getCurrentUser();
         onAuthSuccess(res);
     }
+
+    private AlertDialog divoAuthProgressDialog;
+    // DIVO: Divo account was already resolved (logged in and linked) for the current Telegram authorization
+    private boolean divoAccountResolved;
 
     private void onAuthSuccess(TLRPC.TL_auth_authorization res) {
         onAuthSuccess(res, false);
@@ -1781,8 +1947,66 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             MessagesController.getInstance(currentAccount).putDialogsEndReachedAfterRegistration();
         }
         MediaDataController.getInstance(currentAccount).loadStickersByEmojiOrName(AndroidUtilities.STICKERS_PLACEHOLDER_PACK_NAME, false, true);
+        // DIVO--START
+        if (res.user != null && res.user.phone != null) {
+            if (isGoogleFlow) {
+                if (forceRoleSelection) {
+                    Bundle b = new Bundle();
+                    if (res.user.phone != null) b.putString("phoneFormated", res.user.phone);
+                    setPage(VIEW_REGISTER, true, b, true);
+                } else {
+                    needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+                }
+            } else {
+                if (currentViewNum == VIEW_REGISTER || divoAccountResolved) {
+                    divoAccountResolved = false;
+                    needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+                } else {
+                    if (divoAuthProgressDialog == null) {
+                        divoAuthProgressDialog = new AlertDialog(getParentActivity(), 3);
+                        divoAuthProgressDialog.setCanCancel(false);
+                    }
+                    divoAuthProgressDialog.show();
 
-        needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+                    divoAuthRequest = DivoAuthHelper.checkDivoUserExists(
+                        currentAccount,
+                        res.user.phone,
+                        res.user.id,
+                        new DivoAuthHelper.DivoAuthCallback() {
+                            @Override
+                            public void onSuccess() {
+                                if (divoAuthProgressDialog != null) {
+                                    try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                                }
+                                needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+                            }
+
+                            @Override
+                            public void onUserNotFound() {
+                                if (divoAuthProgressDialog != null) {
+                                    try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                                }
+                                Bundle b = new Bundle();
+                                if (res.user.phone != null) b.putString("phoneFormated", res.user.phone);
+                                org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("phone"));
+                                setPage(VIEW_REGISTER, true, b, true);
+                            }
+
+                            @Override
+                            public void onError(@androidx.annotation.NonNull String error) {
+                                if (divoAuthProgressDialog != null) {
+                                    try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                                }
+                                needShowAlert(getString(R.string.AppName), error);
+                            }
+                        }
+                    );
+                }
+            }
+        } else {
+            needFinishActivity(afterSignup, res.setup_password_required, res.otherwise_relogin_days);
+        }
+        //DIVO--END
     }
 
     private void fillNextCodeParams(Bundle params, TL_account.sentEmailCode res) {
@@ -2060,14 +2284,19 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private AnimatedPhoneNumberEditText phoneField;
         private TextView titleView;
         private TextViewSwitcher countryButton;
-        private OutlineTextContainerView countryOutlineView;
-        private OutlineTextContainerView phoneOutlineView;
+        private OutlineTextContainerDivoView countryOutlineView;
+        private OutlineTextContainerDivoView phoneOutlineView;
         private TextView plusTextView;
-        private LinkSpanDrawable.LinksTextView subtitleView;
+        private TextView subtitleView;
         private View codeDividerView;
         private ImageView chevronRight;
         private CheckBoxCell syncContactsBox;
         private CheckBoxCell testBackendCheckBox;
+        private RegButtonView buttonView;
+        //DIVO--START: inline country prefix (replaces separate countryOutlineView)
+        private LinearLayout countryPrefixLayout;
+        private TextView prefixFlagView;
+        //DIVO--END
 
         @CountryState
         private int countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
@@ -2084,84 +2313,38 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private boolean nextPressed = false;
         private boolean confirmedNumber = false;
 
-        private int titleClickCount = 0;
-        private long lastTitleClick = 0;
-        private Toast lastTitleToast;
-        private void showDebugMenu() {
-            new AlertDialog.Builder(getContext())
-                .setTitle(LocaleController.getString(R.string.SettingsDebug))
-                .setItems(new String[] {
-                    BuildVars.LOGS_ENABLED ? LocaleController.getString(R.string.DebugMenuDisableLogs) : LocaleController.getString(R.string.DebugMenuEnableLogs),
-                    LocaleController.getString(R.string.DebugSendLogs)
-                }, (di, b) -> {
-                    if (b == 0) {
-                        BuildVars.LOGS_ENABLED = !BuildVars.LOGS_ENABLED;
-                        ApplicationLoader.applicationContext.getSharedPreferences("systemConfig", Context.MODE_PRIVATE).edit().putBoolean("logsEnabled", BuildVars.LOGS_ENABLED).commit();
-                        BulletinFactory.of(LoginActivity.this).createSimpleBulletin(R.raw.chats_infotip, BuildVars.LOGS_ENABLED ? "Logs enabled." : "Logs disabled.").show();
-                        if (BuildVars.LOGS_ENABLED) {
-                            FileLog.d("app start time = " + ApplicationLoader.startTime);
-                            try {
-                                FileLog.d("buildVersion = " + ApplicationLoader.applicationContext.getPackageManager().getPackageInfo(ApplicationLoader.applicationContext.getPackageName(), 0).versionCode);
-                            } catch (Exception e) {
-                                FileLog.e(e);
-                            }
-                        }
-                    } else {
-                        ProfileActivity.sendLogs(getParentActivity(), false);
-                    }
-                })
-                .show();
-        }
-
         public PhoneView(Context context) {
             super(context);
-
             setOrientation(VERTICAL);
-            setGravity(Gravity.CENTER);
+            setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
 
             titleView = new TextView(context);
-            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-            titleView.setTypeface(AndroidUtilities.bold());
+            //DIVO--START
+            titleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 32);
+            titleView.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
+            titleView.setAllCaps(true);
             titleView.setText(getString(activityMode == MODE_CHANGE_PHONE_NUMBER ? R.string.ChangePhoneNewNumber : R.string.YourNumber));
-            titleView.setGravity(Gravity.CENTER);
-            titleView.setLineSpacing(dp(2), 1.0f);
-            addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 32, 0, 32, 0));
-            titleView.setOnClickListener(v -> {
-                if (lastTitleToast != null) {
-                    lastTitleToast.cancel();
-                    lastTitleToast = null;
-                }
-                final long now = System.currentTimeMillis();
-                if (titleClickCount > 0 && now - lastTitleClick > 1500) {
-                    titleClickCount = 0;
-                }
-                titleClickCount++;
-                lastTitleClick = now;
+            titleView.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL);
+            titleView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 0, 48, 0, 28));
 
-                if (titleClickCount >= 5) {
-                    titleClickCount = 0;
-                    lastTitleClick = 0;
-                    showDebugMenu();
-                } else if (titleClickCount > 1) {
-                    lastTitleToast = Toast.makeText(context, LocaleController.formatPluralString("DebugMenuLoginToast", 5 - titleClickCount), Toast.LENGTH_SHORT);
-                    lastTitleToast.show();
-                }
-            });
+            subtitleView = new TextView(context);
 
-            subtitleView = new LinkSpanDrawable.LinksTextView(context);
             subtitleView.setText(getString(activityMode == MODE_CHANGE_PHONE_NUMBER ? R.string.ChangePhoneHelp : R.string.StartText));
-            subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            subtitleView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            subtitleView.setTypeface(AndroidUtilities.helveticaNeueMedium());
             subtitleView.setGravity(Gravity.CENTER);
-            subtitleView.setLineSpacing(dp(2), 1.0f);
-            addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 32, 8, 32, 0));
+            subtitleView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+            //addView(subtitleView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 32, 8, 32, 0));
 
             countryButton = new TextViewSwitcher(context);
             countryButton.setFactory(() -> {
                 TextView tv = new TextView(context);
-                tv.setPadding(dp(16), dp(12), dp(16), dp(12));
+                tv.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(12), AndroidUtilities.dp(16), AndroidUtilities.dp(12));
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-                tv.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                tv.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
+                tv.setTextColor(ContextCompat.getColor(context, R.color.divo_text_color));
+                tv.setHintTextColor(ContextCompat.getColor(context, R.color.divo_text_color));
+                //DIVO--END
                 tv.setMaxLines(1);
                 tv.setSingleLine(true);
                 tv.setEllipsize(TextUtils.TruncateAt.END);
@@ -2181,15 +2364,16 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             countryButtonLinearLayout.setGravity(Gravity.CENTER_VERTICAL);
             countryButtonLinearLayout.addView(countryButton, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 0, 0, 0, 0));
             countryButtonLinearLayout.addView(chevronRight, LayoutHelper.createLinearRelatively(24, 24, 0, 0, 0, 14, 0));
-
-            countryOutlineView = new OutlineTextContainerView(context);
+            //DIVO--START
+            countryOutlineView = new OutlineTextContainerDivoView(context);
             countryOutlineView.setText(getString(R.string.Country));
             countryOutlineView.addView(countryButtonLinearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.TOP, 0, 0, 0, 0));
             countryOutlineView.setForceUseCenter(true);
             countryOutlineView.setFocusable(true);
             countryOutlineView.setContentDescription(getString(R.string.Country));
             countryOutlineView.setOnFocusChangeListener((v, hasFocus) -> countryOutlineView.animateSelection(hasFocus ? 1 : 0));
-            addView(countryOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 24, 16, 14));
+            //DIVO: countryOutlineView hidden — country picker is now inline inside phoneOutlineView
+            //addView(countryOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 24, 16, 14));
             countryOutlineView.setOnClickListener(view -> {
                 CountrySelectActivity fragment = new CountrySelectActivity(true, countriesArray);
                 fragment.setCountrySelectActivityDelegate((country) -> {
@@ -2203,17 +2387,56 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             LinearLayout linearLayout = new LinearLayout(context);
             linearLayout.setOrientation(HORIZONTAL);
-
-            phoneOutlineView = new OutlineTextContainerView(context);
-            phoneOutlineView.addView(linearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 16, 8, 16, 8));
-            phoneOutlineView.setText(getString(R.string.PhoneNumber));
-            addView(phoneOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 58, 16, 8, 16, 8));
+            //DIVO--START
+            phoneOutlineView = new OutlineTextContainerDivoView(context);
+            phoneOutlineView.addView(linearLayout, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL, 16, 0, 16, 0)); //DIVO: 12dp side padding
+            phoneOutlineView.setText(""); //DIVO: no floating label
+            //DIVO--START: pill-shaped white field, no border
+            phoneOutlineView.setBackgroundFill(Color.WHITE);
+            phoneOutlineView.setCornerRadius(100);
+            phoneOutlineView.hideOutline();
+            phoneOutlineView.setPadding(0, 0, 0, 0); // remove top gap reserved for label
+            //DIVO--END
+            addView(phoneOutlineView, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, 56, 0, 8, 0, 18)); //DIVO: 0 outer horizontal margin
 
             plusTextView = new TextView(context);
             plusTextView.setText("+");
             plusTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            plusTextView.setTextColor(Color.BLACK); // DIVO
             plusTextView.setFocusable(false);
-            linearLayout.addView(plusTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+            //DIVO: plusTextView hidden — replaced by prefixCodeView inside countryPrefixLayout
+            //linearLayout.addView(plusTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+
+            //DIVO--START: inline country prefix button (flag + code + arrow)
+            countryPrefixLayout = new LinearLayout(context);
+            countryPrefixLayout.setOrientation(HORIZONTAL);
+            countryPrefixLayout.setGravity(Gravity.CENTER_VERTICAL);
+
+            prefixFlagView = new TextView(context);
+            prefixFlagView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
+            prefixFlagView.setPadding(0, 0, AndroidUtilities.dp(4), 0);
+            countryPrefixLayout.addView(prefixFlagView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+            countryPrefixLayout.addView(plusTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+
+            ImageView prefixChevron = new ImageView(context);
+            prefixChevron.setImageResource(R.drawable.msg_inputarrow);
+            prefixChevron.setRotation(90f);
+            prefixChevron.setColorFilter(Color.BLACK, android.graphics.PorterDuff.Mode.SRC_ATOP); //DIVO
+            prefixChevron.setPadding(6, 0, 0, 0);
+            countryPrefixLayout.addView(prefixChevron, LayoutHelper.createLinear(20, 20, Gravity.CENTER_VERTICAL));
+
+            countryPrefixLayout.setOnClickListener(v -> {
+                CountrySelectActivity fragment = new CountrySelectActivity(true, countriesArray);
+                fragment.setCountrySelectActivityDelegate((country) -> {
+                    selectCountry(country);
+                    AndroidUtilities.runOnUIThread(() -> showKeyboard(phoneField), 300);
+                    phoneField.requestFocus();
+                    phoneField.setSelection(phoneField.length());
+                });
+                presentFragment(fragment);
+            });
+            linearLayout.addView(countryPrefixLayout, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL));
+            //DIVO--END
 
             codeField = new AnimatedPhoneNumberEditText(context) {
                 @Override
@@ -2229,18 +2452,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             codeField.setInputType(InputType.TYPE_CLASS_PHONE);
             codeField.setCursorSize(AndroidUtilities.dp(20));
             codeField.setCursorWidth(1.5f);
-            codeField.setPadding(AndroidUtilities.dp(10), 0, 0, 0);
+            codeField.setPadding(0, 0, 0, 0); // DIVO: removed left padding
             codeField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
+            codeField.setTextColor(Color.BLACK); // DIVO
             codeField.setMaxLines(1);
             codeField.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             codeField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             codeField.setBackground(null);
-//            codeField.setLineColors(getThemedColor(Theme.key_windowBackgroundWhiteInputField), getThemedColor(Theme.key_windowBackgroundWhiteInputFieldActivated), getThemedColor(Theme.key_text_RedRegular));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                codeField.setShowSoftInputOnFocus(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
-            }
+            codeField.setMinWidth(AndroidUtilities.dp(20)); // DIVO: expand area when empty so user can click it
+            // codeField.setShowSoftInputOnFocus(false); // DIVO: restored keyboard
             codeField.setContentDescription(getString(R.string.LoginAccessibilityCountryCode));
-            linearLayout.addView(codeField, LayoutHelper.createLinear(55, 36, -9, 0, 0, 0));
+            // codeField.setVisibility(View.GONE); // DIVO: restored visibility
+            countryPrefixLayout.addView(codeField, 2, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
             codeField.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence charSequence, int i, int i2, int i3) {
@@ -2384,8 +2607,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 public boolean onKeyDown(int keyCode, KeyEvent event) {
                     if (keyCode == KeyEvent.KEYCODE_DEL && phoneField.length() == 0) {
                         codeField.requestFocus();
-                        codeField.setSelection(codeField.length());
                         codeField.dispatchKeyEvent(event);
+                        return true;
                     }
                     return super.onKeyDown(keyCode, event);
                 }
@@ -2430,10 +2653,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             phoneField.setGravity(Gravity.LEFT | Gravity.CENTER_VERTICAL);
             phoneField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
             phoneField.setBackground(null);
-//            phoneField.setLineColors(getThemedColor(Theme.key_windowBackgroundWhiteInputField), getThemedColor(Theme.key_windowBackgroundWhiteInputFieldActivated), getThemedColor(Theme.key_text_RedRegular));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                phoneField.setShowSoftInputOnFocus(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
-            }
+            phoneField.setTextColor(Color.BLACK); //DIVO
+            phoneField.setHintTextColor(0xFF999999); //DIVO
+            phoneField.setShowSoftInputOnFocus(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
             phoneField.setContentDescription(getString(R.string.PhoneNumber));
             linearLayout.addView(phoneField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 36));
             phoneField.addTextChangedListener(new TextWatcher() {
@@ -2550,7 +2772,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             phoneField.setOnEditorActionListener((textView, i, keyEvent) -> {
                 if (i == EditorInfo.IME_ACTION_NEXT) {
                     if (phoneNumberConfirmView != null) {
-                        phoneNumberConfirmView.popupFabContainer.callOnClick();
+                        phoneNumberConfirmView.fabButton.callOnClick();
                         return true;
                     }
                     onNextPressed(null);
@@ -2563,7 +2785,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (newAccount && activityMode == MODE_LOGIN) {
                 syncContactsBox = new CheckBoxCell(context, 2);
                 syncContactsBox.setText(getString("SyncContacts", R.string.SyncContacts), "", syncContacts, false);
-                addView(syncContactsBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
+                addView(syncContactsBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? 56 : 0), 0));
                 bottomMargin -= 24;
                 syncContactsBox.setOnClickListener(v -> {
                     if (getParentActivity() == null) {
@@ -2580,11 +2802,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 });
             }
 
-            final boolean allowTestBackend = (BuildVars.DEBUG_VERSION || TEST_BACKEND_IN_STORE) || getConnectionsManager().isTestBackend();
+            //DIVO--START
+            final boolean allowTestBackend = false;//BuildVars.DEBUG_VERSION;
             if (allowTestBackend && activityMode == MODE_LOGIN) {
                 testBackendCheckBox = new CheckBoxCell(context, 2);
                 testBackendCheckBox.setText(getString(R.string.DebugTestBackend), "", testBackend = getConnectionsManager().isTestBackend(), false);
-                addView(testBackendCheckBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
+                addView(testBackendCheckBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? 56 : 0), 0));
                 bottomMargin -= 24;
                 testBackendCheckBox.setOnClickListener(v -> {
                     if (getParentActivity() == null) {
@@ -2602,6 +2825,19 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 });
             }
 
+            //DIVO--START
+            buttonView = new RegButtonView(context, context.getString(R.string.ButtonContinue));
+            buttonView.setOnClick(() -> {
+                // DIVO: set confirmedNumber=true to skip PhoneNumberConfirmView which
+                // is tightly coupled with the FAB anchor — we don't use FAB on this screen
+                confirmedNumber = true;
+                onDoneButtonPressed();
+                return kotlin.Unit.INSTANCE;
+            });
+            addView(buttonView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
+
+//            addView(buttonView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? Build.VERSION.SDK_INT >= 21 ? 56 : 60 : 0), 0));
+            //DIVO--END
             if (bottomMargin > 0 && !AndroidUtilities.isSmallScreen()) {
                 Space bottomSpacer = new Space(context);
                 bottomSpacer.setMinimumHeight(AndroidUtilities.dp(bottomMargin));
@@ -2619,13 +2855,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     countryWithCode.name = args[2];
                     countryWithCode.code = args[0];
                     countryWithCode.shortname = args[1];
-                    if (!TextUtils.equals(countryWithCode.code, "FT")) {
-                        final String localizedName = LocaleController.getCountryName(countryWithCode.shortname);
-                        if (!TextUtils.isEmpty(localizedName) && !TextUtils.equals(countryWithCode.shortname, localizedName)) {
-                            countryWithCode.defaultName = countryWithCode.name;
-                            countryWithCode.name = localizedName;
-                        }
-                    }
                     countriesArray.add(0, countryWithCode);
 
                     List<CountrySelectActivity.Country> countryList = codesMap.get(args[0]);
@@ -2651,15 +2880,37 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             try {
                 TelephonyManager telephonyManager = (TelephonyManager) ApplicationLoader.applicationContext.getSystemService(Context.TELEPHONY_SERVICE);
                 if (telephonyManager != null) {
-                    country = null;//telephonyManager.getSimCountryIso().toUpperCase();
+                    //DIVO: try SIM country first (most accurate)
+                    String simIso = telephonyManager.getSimCountryIso();
+                    if (!TextUtils.isEmpty(simIso)) {
+                        country = simIso.toUpperCase();
+                    }
+                    //DIVO: fallback 2 — network country if SIM not available
+                    if (TextUtils.isEmpty(country)) {
+                        String netIso = telephonyManager.getNetworkCountryIso();
+                        if (!TextUtils.isEmpty(netIso)) {
+                            country = netIso.toUpperCase();
+                        }
+                    }
                 }
             } catch (Exception e) {
                 FileLog.e(e);
             }
 
+            //DIVO: fallback 3 — device locale (language settings)
+            if (TextUtils.isEmpty(country)) {
+                String localeCountry = Locale.getDefault().getCountry();
+                if (!TextUtils.isEmpty(localeCountry)) {
+                    country = localeCountry.toUpperCase();
+                }
+            }
+
             if (country != null) {
                 setCountry(languageMap, country.toUpperCase());
-            } else {
+            }
+
+            if (codeField.length() == 0) {
+                //DIVO: fallback 4 — IP geolocation via Telegram getNearestDc
                 TLRPC.TL_help_getNearestDc req = new TLRPC.TL_help_getNearestDc();
                 getAccountInstance().getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                     if (response == null) {
@@ -2672,8 +2923,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }), ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagFailOnServerErrors);
             }
             if (codeField.length() == 0) {
-                setCountryButtonText(null);
-                phoneField.setHintText(null);
+                //DIVO: don't clear hint here - it hasn't been set yet, async callback will populate
                 countryState = COUNTRY_STATE_EMPTY;
             }
 
@@ -2693,11 +2943,14 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             getConnectionsManager().sendRequest(req, (response, error) -> {
                 AndroidUtilities.runOnUIThread(() -> {
                     if (error == null) {
+                        TLRPC.TL_help_countriesList help_countriesList = (TLRPC.TL_help_countriesList) response;
+                        if (help_countriesList.countries.isEmpty()) {
+                            return; // Если стран нет, ничего не чистим и выходим -- временно
+                        }
                         countriesArray.clear();
                         codesMap.clear();
                         phoneFormatMap.clear();
 
-                        TLRPC.TL_help_countriesList help_countriesList = (TLRPC.TL_help_countriesList) response;
                         for (int i = 0; i < help_countriesList.countries.size(); i++) {
                             TLRPC.TL_help_country c = help_countriesList.countries.get(i);
                             for (int k = 0; k < c.country_codes.size(); k++) {
@@ -2775,28 +3028,32 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         @Override
         public void updateColors() {
-            titleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            subtitleView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
-            subtitleView.setLinkTextColor(Theme.getColor(Theme.key_chat_messageLinkIn));
+            //DIVO--START
+            fragmentView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.divo_screen_background_light));
+
+            titleView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
+            subtitleView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_subtitle_color));
+
             for (int i = 0; i < countryButton.getChildCount(); i++) {
                 TextView textView = (TextView) countryButton.getChildAt(i);
-                textView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-                textView.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
+                textView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
+                textView.setHintTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
             }
 
-            chevronRight.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
+            chevronRight.setColorFilter(ContextCompat.getColor(getContext(), R.color.divo_text_color));
             chevronRight.setBackground(Theme.createSelectorDrawable(getThemedColor(Theme.key_listSelector), 1));
 
-            plusTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            plusTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_color));
 
-            codeField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            codeField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated));
+            //DIVO: fields are on white background — fixed colors, not theme-dependent
+            codeField.setTextColor(Color.BLACK);
+            codeField.setCursorColor(Color.BLACK);
 
-            codeDividerView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputField));
+            codeDividerView.setBackgroundColor(0xFF999999); // placeholder gray
 
-            phoneField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            phoneField.setHintTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteHintText));
-            phoneField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated));
+            phoneField.setTextColor(Color.BLACK);
+            phoneField.setHintTextColor(0xFF999999);
+            phoneField.setCursorColor(Color.BLACK);
 
             if (syncContactsBox != null) {
                 syncContactsBox.setSquareCheckBoxColor(Theme.key_checkboxSquareUnchecked, Theme.key_checkboxSquareBackground, Theme.key_checkboxSquareCheck);
@@ -2806,9 +3063,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 testBackendCheckBox.setSquareCheckBoxColor(Theme.key_checkboxSquareUnchecked, Theme.key_checkboxSquareBackground, Theme.key_checkboxSquareCheck);
                 testBackendCheckBox.updateTextColor();
             }
-
+//            countryOutlineView.setOutlineFixedColor(ContextCompat.getColor(getContext(),R.color.divo_hint_color));
+//            phoneOutlineView.setOutlineFixedColor(ContextCompat.getColor(getContext(),R.color.divo_hint_color));
+            //DIVO--END
             phoneOutlineView.updateColor();
             countryOutlineView.updateColor();
+            //DIVO--END
+            // prefix text colors are fixed to black in constructor, not theme-dependent
+        }
+
+        @Override
+        public boolean needBackButton() {
+            return true;
         }
 
         @Override
@@ -2860,6 +3126,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             setCountryButtonText(Emoji.replaceEmoji(sb, countryButton.getCurrentView().getPaint().getFontMetricsInt(), false));
             countryCodeForHint = code;
             wasCountryHintIndex = -1;
+            //DIVO--START: update inline country prefix
+            if (prefixFlagView != null) {
+                prefixFlagView.setText(flag != null ? flag : "");
+            }
+            // DIVO: removed prefixCodeView logic, handled naturally by codeField
+            //DIVO--END
             invalidateCountryHint();
         }
 
@@ -2867,6 +3139,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private void invalidateCountryHint() {
             String code = countryCodeForHint;
             String str = phoneField.getText() != null ? phoneField.getText().toString().replace(" ", "") : "";
+            //DIVO: when field is empty, reset so hint is always re-applied (avoids disappear on full delete)
+            if (str.isEmpty()) {
+                wasCountryHintIndex = -1;
+            }
 
             if (phoneFormatMap.get(code) != null && !phoneFormatMap.get(code).isEmpty()) {
                 int index = -1;
@@ -2921,22 +3197,29 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             countryOutlineView.animateSelection(cs != null ? 1f : 0f);
         }
 
-        private void setCountry(HashMap<String, String> languageMap, String country) {
-            String name = languageMap.get(country);
-            if (name != null && countriesArray != null) {
-                CountrySelectActivity.Country countryWithCode = null;
-                for (int i = 0; i < countriesArray.size(); i++) {
-                    if (countriesArray.get(i) != null && countriesArray.get(i).name.equals(country)) {
-                        countryWithCode = countriesArray.get(i);
-                        break;
-                    }
-                }
-                if (countryWithCode != null) {
-                    codeField.setText(countryWithCode.code);
-                    countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
+        private void setCountry(HashMap<String, String> languageMap, String countryIso) {
+            //DIVO: fixed — search by shortname (ISO code) instead of buggy name comparison
+            CountrySelectActivity.Country countryWithCode = null;
+            for (int i = 0; i < countriesArray.size(); i++) {
+                CountrySelectActivity.Country c = countriesArray.get(i);
+                if (c != null && countryIso.equalsIgnoreCase(c.shortname)) {
+                    countryWithCode = c;
+                    break;
                 }
             }
+            if (countryWithCode != null) {
+                codeField.setText(countryWithCode.code);
+                countryState = COUNTRY_STATE_NOT_SET_OR_VALID;
+            }
         }
+
+        //DIVO--START
+        public void setButtonLoading(boolean loading) {
+            if (buttonView != null) {
+                buttonView.setLoading(loading);
+            }
+        }
+        //DIVO--END
 
         @Override
         public void onCancelPressed() {
@@ -2982,7 +3265,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     return;
                 }
 
-                phoneNumberConfirmView = new PhoneNumberConfirmView(fragmentView.getContext(), (ViewGroup) fragmentView, floatingButtonContainer, phoneNumber, new PhoneNumberConfirmView.IConfirmDialogCallback() {
+                phoneNumberConfirmView = new PhoneNumberConfirmView(fragmentView.getContext(), (ViewGroup) fragmentView, floatingButton, phoneNumber, new PhoneNumberConfirmView.IConfirmDialogCallback() {
                     @Override
                     public void onFabPressed(PhoneNumberConfirmView confirmView, TransformableLoginButtonView fab) {
                         onConfirm(confirmView);
@@ -3070,7 +3353,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             confirmView.dismiss();
                             AndroidUtilities.runOnUIThread(()-> {
                                 onNextPressed(code);
-                                floatingProgressView.sync(confirmView.floatingProgressView);
+                                // floatingButton.progressView.sync(confirmView.fabButton.progressView);
                             }, 150);
                         });
                     }
@@ -3144,11 +3427,13 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             }
 
             if (countryState == COUNTRY_STATE_EMPTY) {
-                needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ChooseCountry", R.string.ChooseCountry));
+                needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ChooseCountry", R.string.ChooseCountryLabel));
                 needHideProgress(false);
                 return;
-            } else if (countryState == COUNTRY_STATE_INVALID && !BuildVars.DEBUG_VERSION && !TEST_BACKEND_IN_STORE) {
-                needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString(R.string.WrongCountry));
+                //DIVO--START
+            } else if (countryState == COUNTRY_STATE_INVALID && !BuildVars.DEBUG_VERSION) {
+                needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("WrongCountry", R.string.WrongCountry));
+                //DIVO--END
                 needHideProgress(false);
                 return;
             }
@@ -3160,6 +3445,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (!userConfig.isClientActivated()) {
                             continue;
                         }
+                        // DIVO--START: Do not treat accounts with uncompleted Divo registration as already logged in
+                        String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(a);
+                        if (android.text.TextUtils.isEmpty(token)) {
+                            if (a == currentAccount) {
+                                userConfig.clearConfig();
+                                ConnectionsManager.getInstance(a).cleanup(false);
+                                MessagesController.getInstance(a).cleanup();
+                            }
+                            continue;
+                        }
+                        // DIVO--END
                         String userPhone = userConfig.getCurrentUser().phone;
                         if (PhoneNumberUtils.compare(phone, userPhone) && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
                             final int num = a;
@@ -3168,7 +3464,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             builder.setMessage(getString("AccountAlreadyLoggedIn", R.string.AccountAlreadyLoggedIn));
                             builder.setPositiveButton(getString("AccountSwitch", R.string.AccountSwitch), (dialog, which) -> {
                                 if (UserConfig.selectedAccount != num) {
-                                    ((LaunchActivity) getParentActivity()).switchToAccount(num, false);
+                                    ((LaunchActivity) getParentActivity()).switchToAccount(num, true);
                                 }
                                 finishFragment();
                             });
@@ -3263,6 +3559,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 sendCode.api_hash = BuildVars.APP_HASH;
                 sendCode.api_id = BuildVars.APP_ID;
                 sendCode.phone_number = phone;
+                settings.token = "test"; //DIVO
                 sendCode.settings = settings;
                 req = sendCode;
             }
@@ -3284,7 +3581,23 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             phoneInputData.phoneNumber = "+" + codeField.getText() + " " + phoneField.getText();
             phoneInputData.country = currentCountry;
             phoneInputData.patterns = phoneFormatMap.get(codeField.getText().toString());
-            int reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+            //DIVO--START
+            final int[] reqId = new int[1];
+            Runnable timeoutRunnable = () -> {
+                if (nextPressed) {
+                    ConnectionsManager.getInstance(currentAccount).cancelRequest(reqId[0], true);
+                    nextPressed = false;
+                    needHideProgress(false);
+                    if (slideViewsContainer != null) {
+                        BulletinFactory.of(slideViewsContainer, null).createErrorBulletin(LocaleController.getString("DivoCheckInternetConnection", R.string.DivoCheckInternetConnection)).show();
+                    }
+                }
+            };
+            AndroidUtilities.runOnUIThread(timeoutRunnable, 20000);
+
+            reqId[0] = ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+                AndroidUtilities.cancelRunOnUIThread(timeoutRunnable);
+                //DIVO--END
                 nextPressed = false;
                 if (error == null) {
                     if (response instanceof TLRPC.TL_auth_sentCodeSuccess) {
@@ -3294,7 +3607,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                             if (authorization.terms_of_service != null) {
                                 currentTermsOfService = authorization.terms_of_service;
                             }
-                            setPage(VIEW_REGISTER, true, params, false);
+                            //DIVO--START
+                            // setPage(VIEW_REGISTER, true, params, false);
                         } else {
                             onAuthSuccess((TLRPC.TL_auth_authorization) auth);
                         }
@@ -3309,6 +3623,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 nextPressed = false;
                                 showDoneButton(false, true);
                                 if (error1 == null) {
+                                    //DIVO--START
                                     TL_account.Password password = (TL_account.Password) response1;
                                     if (!TwoStepVerificationActivity.canHandleCurrentPassword(password, true)) {
                                         AlertsCreator.showUpdateAppAlert(getParentActivity(), getString("UpdateAppAlert", R.string.UpdateAppAlert), true);
@@ -3349,12 +3664,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     needHideProgress(false);
                 }
             }), ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagTryDifferentDc | ConnectionsManager.RequestFlagEnableUnauthorized);
-            needShowProgress(reqId);
+            needShowProgress(reqId[0]);
         }
 
         private boolean numberFilled;
         public void fillNumber() {
-            if (numberFilled || activityMode != MODE_LOGIN) {
+            if (numberFilled || activityMode != MODE_LOGIN || isGoogleFlow) {
                 return;
             }
             try {
@@ -3539,9 +3854,20 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (!userConfig.isClientActivated()) {
                             continue;
                         }
+                        // DIVO--START
+                        String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(a);
+                        if (android.text.TextUtils.isEmpty(token)) {
+                            if (a == currentAccount) {
+                                userConfig.clearConfig();
+                                ConnectionsManager.getInstance(a).cleanup(false);
+                                MessagesController.getInstance(a).cleanup();
+                            }
+                            continue;
+                        }
+                        // DIVO--END
                         if (userConfig.getClientUserId() == userId && ConnectionsManager.getInstance(a).isTestBackend() == testBackend) {
                             if (UserConfig.selectedAccount != a) {
-                                ((LaunchActivity) getParentActivity()).switchToAccount(a, false);
+                                ((LaunchActivity) getParentActivity()).switchToAccount(a, true);
                             }
                             finishFragment();
                             needHideProgress(false);
@@ -3582,7 +3908,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
         @Override
         public String getHeaderName() {
-            return getString("YourPhone", R.string.YourPhone);
+            return getString("YourPhone", R.string.YourPhoneLabel);
         }
 
         @Override
@@ -3666,6 +3992,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private CodeFieldContainer codeFieldContainer;
         private TextView prevTypeTextView;
         private TextView confirmTextView;
+        private TextView titleTextView1;
         private TextView titleTextView;
         private ImageView blackImageView;
         private RLottieImageView blueImageView;
@@ -3747,6 +4074,14 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             confirmTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
             confirmTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
 
+
+            titleTextView1 = new TextView(context);
+            titleTextView1.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 32);
+            titleTextView1.setTypeface(AndroidUtilities.helveticaNeueLtCom77BoldCondensed());
+            titleTextView1.setText(getString(R.string.OnboardingEnterCode).toUpperCase());
+            titleTextView1.setGravity(Gravity.CENTER);
+            titleTextView1.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
+
             titleTextView = new TextView(context);
             titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
             titleTextView.setTypeface(AndroidUtilities.bold());
@@ -3771,14 +4106,18 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 FrameLayout frameLayout = new FrameLayout(context);
                 missedCallArrowIcon = new ImageView(context);
                 missedCallPhoneIcon = new ImageView(context);
-                frameLayout.addView(missedCallArrowIcon);
-                frameLayout.addView(missedCallPhoneIcon);
+                //DIVO
+//                frameLayout.addView(missedCallArrowIcon);
+//                frameLayout.addView(missedCallPhoneIcon);
 
                 missedCallArrowIcon.setImageResource(R.drawable.login_arrow1);
                 missedCallPhoneIcon.setImageResource(R.drawable.login_phone1);
 
                 addView(frameLayout, LayoutHelper.createLinear(64, 64, Gravity.CENTER_HORIZONTAL, 0, 16, 0, 0));
-                addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 8, 0, 0));
+
+
+                addView(titleTextView1, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 8, 0, 0));
+                //addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 8, 0, 0));
 
                 missedCallDescriptionSubtitle = new TextView(context);
                 missedCallDescriptionSubtitle.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
@@ -3860,9 +4199,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 if (currentType == AUTH_TYPE_MESSAGE && !AndroidUtilities.isSmallScreen()) {
                     blueImageView.setTranslationY(-AndroidUtilities.dp(24));
                 }
-                frameLayout.addView(blueImageView, LayoutHelper.createFrame(size, size, Gravity.LEFT | Gravity.TOP, 0, 0, 0, currentType == AUTH_TYPE_MESSAGE && !AndroidUtilities.isSmallScreen() ? -AndroidUtilities.dp(16) : 0));
+                //frameLayout.addView(blueImageView, LayoutHelper.createFrame(size, size, Gravity.LEFT | Gravity.TOP, 0, 0, 0, currentType == AUTH_TYPE_MESSAGE && !AndroidUtilities.isSmallScreen() ? -AndroidUtilities.dp(16) : 0));
                 titleTextView.setText(overrideTitle != null ? overrideTitle : getString(currentType == AUTH_TYPE_MESSAGE ? R.string.SentAppCodeTitle : R.string.SentSmsCodeTitle));
-                addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 18, 0, 0));
+
+                addView(titleTextView1, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 48, 0, 0));
+                //addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, 0, 18, 0, 0));
                 int sideMargin = currentType == AUTH_TYPE_FRAGMENT_SMS ? 16 : 0;
                 addView(confirmTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL | Gravity.TOP, sideMargin, 17, sideMargin, 0));
             }
@@ -3874,7 +4215,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     }
                 };
 
-                addView(codeFieldContainer, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 42, Gravity.CENTER_HORIZONTAL, 0, 32, 0, 0));
+                addView(codeFieldContainer, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, 42, Gravity.CENTER_HORIZONTAL, 0, 28, 0, 0));
             }
             if (currentType == AUTH_TYPE_FLASH_CALL) {
                 codeFieldContainer.setVisibility(GONE);
@@ -3902,9 +4243,9 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     return getVisibility() == View.VISIBLE && !(time > 0 && timeTimer != null);
                 }
             };
-            timeText.setLinkTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText));
+            timeText.setLinkTextColor(getContext().getResources().getColor(R.color.divo_dark_text_color));
             timeText.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            timeText.setPadding(AndroidUtilities.dp(14), AndroidUtilities.dp(8), AndroidUtilities.dp(14), AndroidUtilities.dp(16));
+            timeText.setPadding(AndroidUtilities.dp(14), AndroidUtilities.dp(8), AndroidUtilities.dp(14), AndroidUtilities.dp(0));
             timeText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 15);
             timeText.setGravity(Gravity.TOP | Gravity.LEFT);
             timeText.setOnClickListener(v -> {
@@ -3916,7 +4257,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 }
                 isResendingCode = true;
                 timeText.invalidate();
-                timeText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteValueText));
+                timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
 
                 if (nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_SMS || nextType == AUTH_TYPE_PHRASE || nextType == AUTH_TYPE_WORD || nextType == AUTH_TYPE_MISSED_CALL || nextType == AUTH_TYPE_FRAGMENT_SMS) {
 //                    timeText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
@@ -4213,7 +4554,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         public void updateColors() {
             confirmTextView.setTextColor(Theme.getColor(isInCancelAccountDeletionMode() ? Theme.key_windowBackgroundWhiteBlackText : Theme.key_windowBackgroundWhiteGrayText6));
             confirmTextView.setLinkTextColor(Theme.getColor(Theme.key_chats_actionBackground));
-            titleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+            titleTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_text_subtitle_color));
+            titleTextView1.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
 
             if (currentType == AUTH_TYPE_MISSED_CALL) {
                 missedCallDescriptionSubtitle.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText));
@@ -4236,10 +4578,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (timeTextColorTag == null) {
                 timeTextColorTag = Theme.key_windowBackgroundWhiteGrayText6;
             }
-            timeText.setTextColor(Theme.getColor(timeTextColorTag));
+            //DIVO
+            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
 
             if (currentType != AUTH_TYPE_FRAGMENT_SMS) {
-                problemText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
+                problemText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
             }
             wrongCode.setTextColor(Theme.getColor(Theme.key_text_RedBold));
         }
@@ -4321,9 +4664,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             if (codeFieldContainer != null && codeFieldContainer.codeField != null) {
                 for (CodeNumberField f : codeFieldContainer.codeField) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        f.setShowSoftInputOnFocusCompat(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
-                    }
+                    f.setShowSoftInputOnFocusCompat(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
                 }
             }
         }
@@ -4461,9 +4802,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 
             codeFieldContainer.setNumbersCount(length, currentType);
             for (CodeNumberField f : codeFieldContainer.codeField) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    f.setShowSoftInputOnFocusCompat(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
-                }
+                f.setShowSoftInputOnFocusCompat(!(hasCustomKeyboard() && !isCustomKeyboardForceDisabled()));
                 f.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -4538,16 +4877,16 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (currentType != AUTH_TYPE_FRAGMENT_SMS) {
                 if (currentType == AUTH_TYPE_MESSAGE) {
                     if (nextType == AUTH_TYPE_FLASH_CALL || nextType == AUTH_TYPE_CALL || nextType == AUTH_TYPE_MISSED_CALL) {
-                        problemText.setText(getString(R.string.DidNotGetTheCodePhone));
+                        problemText.setText(getString("DidNotGetTheCodePhone", R.string.DidNotGetTheCodePhone));
                     } else if (nextType == AUTH_TYPE_FRAGMENT_SMS) {
-                        problemText.setText(getString(R.string.DidNotGetTheCodeFragment));
+                        problemText.setText(getString("DidNotGetTheCodeFragment", R.string.DidNotGetTheCodeFragment));
                     } else if (nextType == 0) {
-                        problemText.setText(getString(R.string.DidNotGetTheCode));
+                        problemText.setText(getString("DidNotGetTheCode", R.string.DidNotGetTheCode));
                     } else {
-                        problemText.setText(getString(R.string.DidNotGetTheCodeSms));
+                        problemText.setText(getString("DidNotGetTheCodeSms", R.string.DidNotGetTheCodeSms));
                     }
                 } else {
-                    problemText.setText(getString(R.string.DidNotGetTheCode));
+                    problemText.setText(getString("DidNotGetTheCode", R.string.DidNotGetTheCode));
                 }
             }
 
@@ -4728,7 +5067,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (timeTimer != null) {
                 return;
             }
-            timeText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
+            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
             timeText.setTag(R.id.color_key_tag, Theme.key_windowBackgroundWhiteGrayText6);
             if (progressView != null) {
                 progressView.resetProgressAnimation();
@@ -4768,7 +5107,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 } else {
                                     timeText.setText(getString("RequestSmsButton", R.string.RequestSmsButton));
                                 }
-                                timeText.setTextColor(Theme.getColor(Theme.key_chats_actionBackground));
+                                timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
                                 timeText.setTag(R.id.color_key_tag, Theme.key_chats_actionBackground);
                             }
                         }
@@ -4778,7 +5117,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
         private void destroyTimer() {
-            timeText.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
+            timeText.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_dark_text_color));
             timeText.setTag(R.id.color_key_tag, Theme.key_windowBackgroundWhiteGrayText6);
             try {
                 synchronized (timerSync) {
@@ -5006,12 +5345,91 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                 if (authorization.terms_of_service != null) {
                                     currentTermsOfService = authorization.terms_of_service;
                                 }
+                                //DIVO--START--временно -- пользователь ввел правильный код из СМС, но аккаунта на этот номер телефона еще не существует
+                                
+//                                TLRPC.TL_auth_authorization dummyAuth = new TLRPC.TL_auth_authorization();
+//                                dummyAuth.user = new TLRPC.TL_user();
+//                                dummyAuth.user.id = 123456789L;
+//                                dummyAuth.user.first_name = "Divo";
+//                                dummyAuth.user.last_name = "User";
+//                                dummyAuth.user.phone = requestPhone;
+//                                dummyAuth.user.self = true;
+//                                dummyAuth.user.flags = 1024 | 2 | 4 | 16;
+//
+//                                animateSuccess(() -> onAuthSuccess(dummyAuth, true));
                                 Bundle params = new Bundle();
                                 params.putString("phoneFormated", requestPhone);
                                 params.putString("phoneHash", phoneHash);
                                 params.putString("code", req.phone_code);
+                                pendingRegisterParams = params;
 
-                                animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
+                                TLRPC.TL_auth_signUp signUpReq = new TLRPC.TL_auth_signUp();
+                                signUpReq.phone_code_hash = phoneHash;
+                                signUpReq.phone_number = requestPhone;
+                                signUpReq.first_name = DivoAuthHelper.TELEGRAM_PLACEHOLDER_FIRST_NAME;
+                                signUpReq.last_name = "";
+
+                                needShowProgress(0, false);
+                                ConnectionsManager.getInstance(currentAccount).sendRequest(signUpReq, (responseTest, errorTest) -> {
+                                    AndroidUtilities.runOnUIThread(() -> {
+                                        needHideProgress(false);
+                                        if (errorTest == null && responseTest instanceof TLRPC.TL_auth_authorization) {
+                                            TLRPC.TL_auth_authorization authResult = (TLRPC.TL_auth_authorization) responseTest;
+                                            
+                                            // DIVO: explicitly save the Telegram user to UserConfig so MTProto connection is preserved
+                                            ConnectionsManager.getInstance(currentAccount).setUserId(authResult.user.id);
+                                            UserConfig.getInstance(currentAccount).clearConfig();
+                                            UserConfig.getInstance(currentAccount).setCurrentUser(authResult.user);
+                                            UserConfig.getInstance(currentAccount).saveConfig(true);
+                                            MessagesStorage.getInstance(currentAccount).cleanup(true);
+                                            
+                                            params.putLong("telegramUserId", authResult.user.id);
+
+                                            // DIVO: the Telegram account is new, but a Divo account for this phone may already
+                                            // exist (e.g. the Telegram account was deleted earlier). Use and re-link it instead
+                                            // of registering a second profile; register only when there is none.
+                                            String divoPhone = !TextUtils.isEmpty(authResult.user.phone) ? authResult.user.phone : PhoneFormat.stripExceptNumbers(requestPhone);
+                                            needShowProgress(0, false);
+                                            divoAuthRequest = DivoAuthHelper.checkDivoUserExists(
+                                                currentAccount,
+                                                divoPhone,
+                                                authResult.user.id,
+                                                new DivoAuthHelper.DivoAuthCallback() {
+                                                    @Override
+                                                    public void onSuccess() {
+                                                        needHideProgress(false);
+                                                        divoAccountResolved = true;
+                                                        animateSuccess(() -> onAuthSuccess(authResult, true));
+                                                    }
+
+                                                    @Override
+                                                    public void onUserNotFound() {
+                                                        needHideProgress(false);
+                                                        openRegistration();
+                                                    }
+
+                                                    @Override
+                                                    public void onError(@androidx.annotation.NonNull String error) {
+                                                        needHideProgress(false);
+                                                        FileLog.e("Divo account lookup failed: " + error);
+                                                        openRegistration();
+                                                    }
+
+                                                    private void openRegistration() {
+                                                        org.telegram.divo.analytics.DivoAnalytics.INSTANCE.logEvent(new org.telegram.divo.analytics.AnalyticsEvent.SignUpStart("phone"));
+                                                        animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
+                                                    }
+                                                }
+                                            );
+                                        } else {
+                                            String msg = "SignUp Error";
+                                            if (errorTest != null) msg += ": " + errorTest.text;
+                                            needShowAlert(getString(R.string.AppName), msg);
+                                            nextPressed = false;
+                                        }
+                                    });
+                                }, ConnectionsManager.RequestFlagFailOnServerErrors | ConnectionsManager.RequestFlagWithoutLogin);
+                                //DIVO--END
                             } else {
                                 animateSuccess(() -> onAuthSuccess((TLRPC.TL_auth_authorization) response));
                             }
@@ -5416,9 +5834,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         @Override
         public boolean onTouchEvent(MotionEvent event) {
             if (isRippleEnabled() && event.getAction() == MotionEvent.ACTION_DOWN) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    rippleDrawable.setHotspot(event.getX(), event.getY());
-                }
+                rippleDrawable.setHotspot(event.getX(), event.getY());
                 rippleDrawable.setState(new int[]{android.R.attr.state_enabled, android.R.attr.state_pressed});
             } else if (event.getAction() == MotionEvent.ACTION_UP || event.getAction() == MotionEvent.ACTION_UP) {
                 rippleDrawable.setState(new int[]{});
@@ -5512,7 +5928,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             cancelButton.setPadding(AndroidUtilities.dp(16), 0, AndroidUtilities.dp(16), 0);
 
             FrameLayout bottomContainer = new FrameLayout(context);
-            bottomContainer.addView(cancelButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, (Build.VERSION.SDK_INT >= 21 ? 56 : 60), Gravity.BOTTOM, 0, 0, 0, 32));
+            bottomContainer.addView(cancelButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 56, Gravity.BOTTOM, 0, 0, 0, 32));
             addView(bottomContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.BOTTOM));
             VerticalPositionAutoAnimator.attach(cancelButton);
 
@@ -5878,7 +6294,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                     params.putString("phoneFormated", requestPhone);
                                     params.putString("phoneHash", phoneHash);
                                     params.putString("code", phoneCode);
-                                    setPage(VIEW_REGISTER, true, params, false);
+                                    // setPage(VIEW_REGISTER, true, params, false);
                                 } else {
                                     if (error.text.equals("2FA_RECENT_CONFIRM")) {
                                         needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ResetAccountCancelledAlert", R.string.ResetAccountCancelledAlert));
@@ -6991,7 +7407,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         if (authorization.terms_of_service != null) {
                             currentTermsOfService = authorization.terms_of_service;
                         }
-                        animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
+                        //animateSuccess(() -> setPage(VIEW_REGISTER, true, params, false));
                     } else {
                         animateSuccess(() -> {
                             if (response instanceof TL_account.TL_emailVerified && activityMode == MODE_CHANGE_LOGIN_EMAIL) {
@@ -7598,7 +8014,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             cancelButton.setText(getString(R.string.YourEmailSkip));
 
             FrameLayout bottomContainer = new FrameLayout(context);
-            bottomContainer.addView(cancelButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, (Build.VERSION.SDK_INT >= 21 ? 56 : 60), Gravity.BOTTOM, 0, 0, 0, 32));
+            bottomContainer.addView(cancelButton, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 56, Gravity.BOTTOM, 0, 0, 0, 32));
             addView(bottomContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.BOTTOM));
             VerticalPositionAutoAnimator.attach(cancelButton);
 
@@ -7821,645 +8237,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
     }
 
-    public class LoginActivityRegisterView extends SlideView implements ImageUpdater.ImageUpdaterDelegate {
-        private OutlineTextContainerView firstNameOutlineView, lastNameOutlineView;
-
-        private EditTextBoldCursor firstNameField;
-        private EditTextBoldCursor lastNameField;
-        private BackupImageView avatarImage;
-        private AvatarDrawable avatarDrawable;
-        private View avatarOverlay;
-        private RLottieImageView avatarEditor;
-        private RadialProgressView avatarProgressView;
-        private AnimatorSet avatarAnimation;
-        private TextView descriptionTextView;
-        private TextView wrongNumber;
-        private TextView privacyView;
-        private TextView titleTextView;
-        private FrameLayout editTextContainer;
-        private String requestPhone;
-        private String phoneHash;
-        private Bundle currentParams;
-        private boolean nextPressed = false;
-
-        private RLottieDrawable cameraDrawable;
-        private RLottieDrawable cameraWaitDrawable;
-        private boolean isCameraWaitAnimationAllowed = true;
-
-        private ImageUpdater imageUpdater;
-
-        private TLRPC.FileLocation avatar;
-        private TLRPC.FileLocation avatarBig;
-
-        private boolean createAfterUpload;
-
-        public class LinkSpan extends ClickableSpan {
-            @Override
-            public void updateDrawState(TextPaint ds) {
-                super.updateDrawState(ds);
-                ds.setUnderlineText(false);
-            }
-
-            @Override
-            public void onClick(View widget) {
-                showTermsOfService(false);
-            }
-        }
-
-        private void showTermsOfService(boolean needAccept) {
-            if (currentTermsOfService == null) {
-                return;
-            }
-            AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-            builder.setTitle(getString("TermsOfService", R.string.TermsOfService));
-
-            if (needAccept) {
-                builder.setPositiveButton(getString("Accept", R.string.Accept), (dialog, which) -> {
-                    currentTermsOfService.popup = false;
-                    onNextPressed(null);
-                });
-                builder.setNegativeButton(getString("Decline", R.string.Decline), (dialog, which) -> {
-                    AlertDialog.Builder builder1 = new AlertDialog.Builder(getParentActivity());
-                    builder1.setTitle(getString("TermsOfService", R.string.TermsOfService));
-                    builder1.setMessage(getString("TosDecline", R.string.TosDecline));
-                    builder1.setPositiveButton(getString("SignUp", R.string.SignUp), (dialog1, which1) -> {
-                        currentTermsOfService.popup = false;
-                        onNextPressed(null);
-                    });
-                    builder1.setNegativeButton(getString("Decline", R.string.Decline), (dialog12, which12) -> {
-                        onBackPressed(true);
-                        setPage(VIEW_PHONE_INPUT, true, null, true);
-                    });
-                    showDialog(builder1.create());
-                });
-            } else {
-                builder.setPositiveButton(getString("OK", R.string.OK), null);
-            }
-
-            SpannableStringBuilder text = new SpannableStringBuilder(currentTermsOfService.text);
-            MessageObject.addEntitiesToText(text, currentTermsOfService.entities, false, false, false, false);
-            builder.setMessage(text);
-
-            showDialog(builder.create());
-        }
-
-        public LoginActivityRegisterView(Context context) {
-            super(context);
-
-            setOrientation(VERTICAL);
-
-            imageUpdater = new ImageUpdater(false, ImageUpdater.FOR_TYPE_USER, false);
-            imageUpdater.setOpenWithFrontfaceCamera(true);
-            imageUpdater.setSearchAvailable(false);
-            imageUpdater.setUploadAfterSelect(false);
-            imageUpdater.parentFragment = LoginActivity.this;
-            imageUpdater.setDelegate(this);
-
-            FrameLayout avatarContainer = new FrameLayout(context);
-            addView(avatarContainer, LayoutHelper.createLinear(78, 78, Gravity.CENTER_HORIZONTAL));
-
-            avatarDrawable = new AvatarDrawable();
-
-            avatarImage = new BackupImageView(context) {
-                @Override
-                public void invalidate() {
-                    if (avatarOverlay != null) {
-                        avatarOverlay.invalidate();
-                    }
-                    super.invalidate();
-                }
-
-                @Override
-                public void invalidate(int l, int t, int r, int b) {
-                    if (avatarOverlay != null) {
-                        avatarOverlay.invalidate();
-                    }
-                    super.invalidate(l, t, r, b);
-                }
-            };
-            avatarImage.setRoundRadius(AndroidUtilities.dp(64));
-            avatarDrawable.setAvatarType(AvatarDrawable.AVATAR_TYPE_REGISTER);
-            avatarDrawable.setInfo(5, null, null);
-            avatarImage.setImageDrawable(avatarDrawable);
-            avatarContainer.addView(avatarImage, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-
-            Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            paint.setColor(0x55000000);
-
-            avatarOverlay = new View(context) {
-                @Override
-                protected void onDraw(Canvas canvas) {
-                    if (avatarImage != null && avatarProgressView.getVisibility() == VISIBLE) {
-                        paint.setAlpha((int) (0x55 * avatarImage.getImageReceiver().getCurrentAlpha() * avatarProgressView.getAlpha()));
-                        canvas.drawCircle(getMeasuredWidth() / 2.0f, getMeasuredHeight() / 2.0f, getMeasuredWidth() / 2.0f, paint);
-                    }
-                }
-            };
-            avatarContainer.addView(avatarOverlay, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-            avatarOverlay.setOnClickListener(view -> {
-                imageUpdater.openMenu(avatar != null, () -> {
-                    avatar = null;
-                    avatarBig = null;
-                    showAvatarProgress(false, true);
-                    avatarImage.setImage(null, null, avatarDrawable, null);
-                    avatarEditor.setAnimation(cameraDrawable);
-                    cameraDrawable.setCurrentFrame(0);
-                    isCameraWaitAnimationAllowed = true;
-                }, dialog -> {
-                    if (!imageUpdater.isUploadingImage()) {
-                        avatarEditor.setAnimation(cameraDrawable);
-                        cameraDrawable.setCustomEndFrame(86);
-                        avatarEditor.setOnAnimationEndListener(() -> isCameraWaitAnimationAllowed = true);
-                        avatarEditor.playAnimation();
-                    } else {
-                        avatarEditor.setAnimation(cameraDrawable);
-                        cameraDrawable.setCurrentFrame(0, false);
-                        isCameraWaitAnimationAllowed = true;
-                    }
-                }, 0);
-                isCameraWaitAnimationAllowed = false;
-                avatarEditor.setAnimation(cameraDrawable);
-                cameraDrawable.setCurrentFrame(0);
-                cameraDrawable.setCustomEndFrame(43);
-                avatarEditor.playAnimation();
-            });
-
-            cameraDrawable = new RLottieDrawable(R.raw.camera, String.valueOf(R.raw.camera), AndroidUtilities.dp(70), AndroidUtilities.dp(70), false, null);
-            cameraWaitDrawable = new RLottieDrawable(R.raw.camera_wait, String.valueOf(R.raw.camera_wait), AndroidUtilities.dp(70), AndroidUtilities.dp(70), false, null);
-
-            avatarEditor = new RLottieImageView(context) {
-                @Override
-                public void invalidate(int l, int t, int r, int b) {
-                    super.invalidate(l, t, r, b);
-                    avatarOverlay.invalidate();
-                }
-
-                @Override
-                public void invalidate() {
-                    super.invalidate();
-                    avatarOverlay.invalidate();
-                }
-            };
-            avatarEditor.setScaleType(ImageView.ScaleType.CENTER);
-            avatarEditor.setAnimation(cameraDrawable);
-            avatarEditor.setEnabled(false);
-            avatarEditor.setClickable(false);
-            avatarContainer.addView(avatarEditor, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-
-            avatarEditor.addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
-                private long lastRun = System.currentTimeMillis();
-                private boolean isAttached;
-                private Runnable cameraWaitCallback = () -> {
-                    if (isAttached) {
-                        if (isCameraWaitAnimationAllowed && System.currentTimeMillis() - lastRun >= 10000) {
-                            avatarEditor.setAnimation(cameraWaitDrawable);
-                            cameraWaitDrawable.setCurrentFrame(0, false);
-                            cameraWaitDrawable.setOnAnimationEndListener(() -> AndroidUtilities.runOnUIThread(()->{
-                                cameraDrawable.setCurrentFrame(0, false);
-                                avatarEditor.setAnimation(cameraDrawable);
-                            }));
-                            avatarEditor.playAnimation();
-                            lastRun = System.currentTimeMillis();
-                        }
-
-                        avatarEditor.postDelayed(this.cameraWaitCallback, 1000);
-                    }
-                };
-
-                @Override
-                public void onViewAttachedToWindow(View v) {
-                    isAttached = true;
-                    v.post(cameraWaitCallback);
-                }
-
-                @Override
-                public void onViewDetachedFromWindow(View v) {
-                    isAttached = false;
-                    v.removeCallbacks(cameraWaitCallback);
-                }
-            });
-
-            avatarProgressView = new RadialProgressView(context) {
-                @Override
-                public void setAlpha(float alpha) {
-                    super.setAlpha(alpha);
-                    avatarOverlay.invalidate();
-                }
-            };
-            avatarProgressView.setSize(AndroidUtilities.dp(30));
-            avatarProgressView.setProgressColor(0xffffffff);
-            avatarContainer.addView(avatarProgressView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-
-            showAvatarProgress(false, false);
-
-            titleTextView = new TextView(context);
-            titleTextView.setText(getString(R.string.RegistrationProfileInfo));
-            titleTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-            titleTextView.setTypeface(AndroidUtilities.bold());
-            titleTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            titleTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-            addView(titleTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 12, 8, 0));
-
-            descriptionTextView = new TextView(context);
-            descriptionTextView.setText(getString("RegisterText2", R.string.RegisterText2));
-            descriptionTextView.setGravity(Gravity.CENTER_HORIZONTAL);
-            descriptionTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            descriptionTextView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            addView(descriptionTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_HORIZONTAL, 8, 6, 8, 0));
-
-            editTextContainer = new FrameLayout(context);
-            addView(editTextContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, 8, 21, 8, 0));
-
-            firstNameOutlineView = new OutlineTextContainerView(context);
-            firstNameOutlineView.setText(getString(R.string.FirstName));
-
-            firstNameField = new EditTextBoldCursor(context);
-            firstNameField.setCursorSize(AndroidUtilities.dp(20));
-            firstNameField.setCursorWidth(1.5f);
-            firstNameField.setImeOptions(EditorInfo.IME_ACTION_NEXT | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-            firstNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
-            firstNameField.setMaxLines(1);
-            firstNameField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-            firstNameField.setOnFocusChangeListener((v, hasFocus) -> firstNameOutlineView.animateSelection(hasFocus ? 1f : 0f));
-            firstNameField.setBackground(null);
-            firstNameField.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16));
-
-            firstNameOutlineView.attachEditText(firstNameField);
-            firstNameOutlineView.addView(firstNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
-
-            firstNameField.setOnEditorActionListener((textView, i, keyEvent) -> {
-                if (i == EditorInfo.IME_ACTION_NEXT) {
-                    lastNameField.requestFocus();
-                    return true;
-                }
-                return false;
-            });
-
-            lastNameOutlineView = new OutlineTextContainerView(context);
-            lastNameOutlineView.setText(getString(R.string.LastName));
-
-            lastNameField = new EditTextBoldCursor(context);
-            lastNameField.setCursorSize(AndroidUtilities.dp(20));
-            lastNameField.setCursorWidth(1.5f);
-            lastNameField.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
-            lastNameField.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 17);
-            lastNameField.setMaxLines(1);
-            lastNameField.setInputType(InputType.TYPE_TEXT_FLAG_CAP_WORDS);
-            lastNameField.setOnFocusChangeListener((v, hasFocus) -> lastNameOutlineView.animateSelection(hasFocus ? 1f : 0f));
-            lastNameField.setBackground(null);
-            lastNameField.setPadding(AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16), AndroidUtilities.dp(16));
-
-            lastNameOutlineView.attachEditText(lastNameField);
-            lastNameOutlineView.addView(lastNameField, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP));
-
-            lastNameField.setOnEditorActionListener((textView, i, keyEvent) -> {
-                if (i == EditorInfo.IME_ACTION_DONE || i == EditorInfo.IME_ACTION_NEXT) {
-                    onNextPressed(null);
-                    return true;
-                }
-                return false;
-            });
-            buildEditTextLayout(AndroidUtilities.isSmallScreen());
-
-            wrongNumber = new TextView(context);
-            wrongNumber.setText(getString("CancelRegistration", R.string.CancelRegistration));
-            wrongNumber.setGravity((LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT) | Gravity.CENTER_HORIZONTAL);
-            wrongNumber.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            wrongNumber.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            wrongNumber.setPadding(0, AndroidUtilities.dp(24), 0, 0);
-            wrongNumber.setVisibility(GONE);
-            addView(wrongNumber, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP | (LocaleController.isRTL ? Gravity.RIGHT : Gravity.LEFT), 0, 20, 0, 0));
-            wrongNumber.setOnClickListener(view -> {
-                if (radialProgressView.getTag() != null) {
-                    return;
-                }
-                onBackPressed(false);
-            });
-
-            FrameLayout privacyLayout = new FrameLayout(context);
-            addView(privacyLayout, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.BOTTOM));
-
-            privacyView = new TextView(context);
-            privacyView.setMovementMethod(new AndroidUtilities.LinkMovementMethodMy());
-            privacyView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, AndroidUtilities.isSmallScreen() ? 13 : 14);
-            privacyView.setLineSpacing(AndroidUtilities.dp(2), 1.0f);
-            privacyView.setGravity(Gravity.CENTER_VERTICAL);
-            privacyLayout.addView(privacyView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP ? 56 : 60, Gravity.LEFT | Gravity.BOTTOM, 14, 0, 70, 32));
-            VerticalPositionAutoAnimator.attach(privacyView);
-
-            String str = getString("TermsOfServiceLogin", R.string.TermsOfServiceLogin);
-            SpannableStringBuilder text = new SpannableStringBuilder(str);
-            int index1 = str.indexOf('*');
-            int index2 = str.lastIndexOf('*');
-            if (index1 != -1 && index2 != -1 && index1 != index2) {
-                text.replace(index2, index2 + 1, "");
-                text.replace(index1, index1 + 1, "");
-                text.setSpan(new LinkSpan(), index1, index2 - 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-            privacyView.setText(text);
-        }
-
-        @Override
-        public void updateColors() {
-            avatarDrawable.invalidateSelf();
-            titleTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            descriptionTextView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
-            firstNameField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            firstNameField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated));
-            lastNameField.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-            lastNameField.setCursorColor(Theme.getColor(Theme.key_windowBackgroundWhiteInputFieldActivated));
-            wrongNumber.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteBlueText4));
-            privacyView.setTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteGrayText6));
-            privacyView.setLinkTextColor(Theme.getColor(Theme.key_windowBackgroundWhiteLinkText));
-
-            firstNameOutlineView.updateColor();
-            lastNameOutlineView.updateColor();
-        }
-
-        private void buildEditTextLayout(boolean small) {
-            boolean firstHasFocus = firstNameField.hasFocus(), lastHasFocus = lastNameField.hasFocus();
-            editTextContainer.removeAllViews();
-
-            if (small) {
-                LinearLayout linearLayout = new LinearLayout(getParentActivity());
-                linearLayout.setOrientation(HORIZONTAL);
-
-                firstNameOutlineView.setText(getString(R.string.FirstNameSmall));
-                lastNameOutlineView.setText(getString(R.string.LastNameSmall));
-
-                linearLayout.addView(firstNameOutlineView, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 0, 0, 8, 0));
-                linearLayout.addView(lastNameOutlineView, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f, 8, 0, 0, 0));
-
-                editTextContainer.addView(linearLayout);
-
-                if (firstHasFocus) {
-                    firstNameField.requestFocus();
-                    AndroidUtilities.showKeyboard(firstNameField);
-                } else if (lastHasFocus) {
-                    lastNameField.requestFocus();
-                    AndroidUtilities.showKeyboard(lastNameField);
-                }
-            } else {
-                firstNameOutlineView.setText(getString(R.string.FirstName));
-                lastNameOutlineView.setText(getString(R.string.LastName));
-
-                editTextContainer.addView(firstNameOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 0, 8, 0));
-                editTextContainer.addView(lastNameOutlineView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.TOP, 8, 82, 8, 0));
-            }
-        }
-
-        @Override
-        public void didUploadPhoto(final TLRPC.InputFile photo, final TLRPC.InputFile video, double videoStartTimestamp, String videoPath, final TLRPC.PhotoSize bigSize, final TLRPC.PhotoSize smallSize, boolean isVideo, TLRPC.VideoSize emojiMarkup) {
-            AndroidUtilities.runOnUIThread(() -> {
-                avatar = smallSize.location;
-                avatarBig = bigSize.location;
-                avatarImage.setImage(ImageLocation.getForLocal(avatar), "50_50", avatarDrawable, null);
-            });
-        }
-
-        private void showAvatarProgress(boolean show, boolean animated) {
-            if (avatarEditor == null) {
-                return;
-            }
-            if (avatarAnimation != null) {
-                avatarAnimation.cancel();
-                avatarAnimation = null;
-            }
-            if (animated) {
-                avatarAnimation = new AnimatorSet();
-                if (show) {
-                    avatarProgressView.setVisibility(View.VISIBLE);
-
-                    avatarAnimation.playTogether(ObjectAnimator.ofFloat(avatarEditor, View.ALPHA, 0.0f),
-                            ObjectAnimator.ofFloat(avatarProgressView, View.ALPHA, 1.0f));
-                } else {
-                    avatarEditor.setVisibility(View.VISIBLE);
-
-                    avatarAnimation.playTogether(ObjectAnimator.ofFloat(avatarEditor, View.ALPHA, 1.0f),
-                            ObjectAnimator.ofFloat(avatarProgressView, View.ALPHA, 0.0f));
-                }
-                avatarAnimation.setDuration(180);
-                avatarAnimation.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        if (avatarAnimation == null || avatarEditor == null) {
-                            return;
-                        }
-                        if (show) {
-                            avatarEditor.setVisibility(View.INVISIBLE);
-                        } else {
-                            avatarProgressView.setVisibility(View.INVISIBLE);
-                        }
-                        avatarAnimation = null;
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        avatarAnimation = null;
-                    }
-                });
-                avatarAnimation.start();
-            } else {
-                if (show) {
-                    avatarEditor.setAlpha(1.0f);
-                    avatarEditor.setVisibility(View.INVISIBLE);
-                    avatarProgressView.setAlpha(1.0f);
-                    avatarProgressView.setVisibility(View.VISIBLE);
-                } else {
-                    avatarEditor.setAlpha(1.0f);
-                    avatarEditor.setVisibility(View.VISIBLE);
-                    avatarProgressView.setAlpha(0.0f);
-                    avatarProgressView.setVisibility(View.INVISIBLE);
-                }
-            }
-        }
-
-        @Override
-        public boolean onBackPressed(boolean force) {
-            if (!force) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getParentActivity());
-                builder.setTitle(getString(R.string.Warning));
-                builder.setMessage(getString("AreYouSureRegistration", R.string.AreYouSureRegistration));
-                builder.setNegativeButton(getString("Stop", R.string.Stop), (dialogInterface, i) -> {
-                    onBackPressed(true);
-                    setPage(VIEW_PHONE_INPUT, true, null, true);
-                    hidePrivacyView();
-                });
-                builder.setPositiveButton(getString("Continue", R.string.Continue), null);
-                showDialog(builder.create());
-                return false;
-            }
-            needHideProgress(true);
-            nextPressed = false;
-            currentParams = null;
-            return true;
-        }
-
-        @Override
-        public String getHeaderName() {
-            return getString("YourName", R.string.YourName);
-        }
-
-        @Override
-        public void onCancelPressed() {
-            nextPressed = false;
-        }
-
-        @Override
-        public boolean needBackButton() {
-            return true;
-        }
-
-        @Override
-        public void onShow() {
-            super.onShow();
-            if (privacyView != null) {
-                if (restoringState) {
-                    privacyView.setAlpha(1f);
-                } else {
-                    privacyView.setAlpha(0f);
-                    privacyView.animate().alpha(1f).setDuration(200).setStartDelay(300).setInterpolator(AndroidUtilities.decelerateInterpolator).start();
-                }
-            }
-            if (firstNameField != null) {
-                firstNameField.requestFocus();
-                firstNameField.setSelection(firstNameField.length());
-                AndroidUtilities.showKeyboard(firstNameField);
-            }
-            AndroidUtilities.runOnUIThread(() -> {
-                if (firstNameField != null) {
-                    firstNameField.requestFocus();
-                    firstNameField.setSelection(firstNameField.length());
-                    AndroidUtilities.showKeyboard(firstNameField);
-                }
-            }, SHOW_DELAY);
-        }
-
-        @Override
-        public void setParams(Bundle params, boolean restore) {
-            if (params == null) {
-                return;
-            }
-            firstNameField.setText("");
-            lastNameField.setText("");
-            requestPhone = params.getString("phoneFormated");
-            phoneHash = params.getString("phoneHash");
-            currentParams = params;
-        }
-
-        @Override
-        public void onNextPressed(String code) {
-            if (nextPressed) {
-                return;
-            }
-            if (currentTermsOfService != null && currentTermsOfService.popup) {
-                showTermsOfService(true);
-                return;
-            }
-            if (firstNameField.length() == 0) {
-                onFieldError(firstNameOutlineView, true);
-                return;
-            }
-            nextPressed = true;
-            TLRPC.TL_auth_signUp req = new TLRPC.TL_auth_signUp();
-            req.phone_code_hash = phoneHash;
-            req.phone_number = requestPhone;
-            req.first_name = firstNameField.getText().toString();
-            req.last_name = lastNameField.getText().toString();
-            needShowProgress(0);
-            ConnectionsManager.getInstance(currentAccount).sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
-                nextPressed = false;
-                if (response instanceof TLRPC.TL_auth_authorization) {
-                    hidePrivacyView();
-                    showDoneButton(false, true);
-                    postDelayed(() -> {
-                        needHideProgress(false, false);
-                        AndroidUtilities.hideKeyboard(fragmentView.findFocus());
-                        onAuthSuccess((TLRPC.TL_auth_authorization) response, true);
-                        if (avatarBig != null) {
-                            TLRPC.FileLocation avatar = avatarBig;
-                            Utilities.cacheClearQueue.postRunnable(()-> MessagesController.getInstance(currentAccount).uploadAndApplyUserAvatar(avatar));
-                        }
-                    }, 150);
-                } else {
-                    needHideProgress(false);
-                    if (error.text.contains("PHONE_NUMBER_INVALID")) {
-                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidPhoneNumber", R.string.InvalidPhoneNumber));
-                    } else if (error.text.contains("PHONE_CODE_EMPTY") || error.text.contains("PHONE_CODE_INVALID")) {
-                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidCode", R.string.InvalidCode));
-                    } else if (error.text.contains("PHONE_CODE_EXPIRED")) {
-                        onBackPressed(true);
-                        setPage(VIEW_PHONE_INPUT, true, null, true);
-                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("CodeExpired", R.string.CodeExpired));
-                    } else if (error.text.contains("FIRSTNAME_INVALID")) {
-                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidFirstName", R.string.InvalidFirstName));
-                    } else if (error.text.contains("LASTNAME_INVALID")) {
-                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("InvalidLastName", R.string.InvalidLastName));
-                    } else {
-                        needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), error.text);
-                    }
-                }
-            }), ConnectionsManager.RequestFlagWithoutLogin | ConnectionsManager.RequestFlagFailOnServerErrors);
-        }
-
-        @Override
-        public void saveStateParams(Bundle bundle) {
-            String first = firstNameField.getText().toString();
-            if (first.length() != 0) {
-                bundle.putString("registerview_first", first);
-            }
-            String last = lastNameField.getText().toString();
-            if (last.length() != 0) {
-                bundle.putString("registerview_last", last);
-            }
-            if (currentTermsOfService != null) {
-                SerializedData data = new SerializedData(currentTermsOfService.getObjectSize());
-                currentTermsOfService.serializeToStream(data);
-                String str = Base64.encodeToString(data.toByteArray(), Base64.DEFAULT);
-                bundle.putString("terms", str);
-                data.cleanup();
-            }
-            if (currentParams != null) {
-                bundle.putBundle("registerview_params", currentParams);
-            }
-        }
-
-        @Override
-        public void restoreStateParams(Bundle bundle) {
-            currentParams = bundle.getBundle("registerview_params");
-            if (currentParams != null) {
-                setParams(currentParams, true);
-            }
-
-            try {
-                String terms = bundle.getString("terms");
-                if (terms != null) {
-                    byte[] arr = Base64.decode(terms, Base64.DEFAULT);
-                    if (arr != null) {
-                        SerializedData data = new SerializedData(arr);
-                        currentTermsOfService = TLRPC.TL_help_termsOfService.TLdeserialize(data, data.readInt32(false), false);
-                        data.cleanup();
-                    }
-                }
-            } catch (Exception e) {
-                FileLog.e(e);
-            }
-
-            String first = bundle.getString("registerview_first");
-            if (first != null) {
-                firstNameField.setText(first);
-            }
-            String last = bundle.getString("registerview_last");
-            if (last != null) {
-                lastNameField.setText(last);
-            }
-        }
-
-        private void hidePrivacyView() {
-            privacyView.animate().alpha(0f).setDuration(150).setStartDelay(0).setInterpolator(AndroidUtilities.accelerateInterpolator).start();
-        }
-    }
-
     private boolean showKeyboard(View editText) {
         if (!isCustomKeyboardVisible()) {
             return AndroidUtilities.showKeyboard(editText);
@@ -8468,9 +8245,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     }
 
     public LoginActivity setIntroView(View intro, TextView startButton) {
-        introView = intro;
-        startMessagingButton = startButton;
-        isAnimatingIntro = true;
+        //DIVO мб стоит расскоментировать
+        //introView = intro;
+        //startMessagingButton = startButton;
+        //isAnimatingIntro = true;
         return this;
     }
 
@@ -8498,15 +8276,15 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             transformButton.setTranslationX(fromX);
             transformButton.setTranslationY(fromY);
 
-            int toX = getParentLayout().getView().getWidth() - floatingButtonIcon.getLayoutParams().width - ((ViewGroup.MarginLayoutParams)floatingButtonContainer.getLayoutParams()).rightMargin - getParentLayout().getView().getPaddingLeft() - getParentLayout().getView().getPaddingRight(),
-                    toY = getParentLayout().getView().getHeight() - floatingButtonIcon.getLayoutParams().height - ((ViewGroup.MarginLayoutParams)floatingButtonContainer.getLayoutParams()).bottomMargin -
+            int toX = getParentLayout().getView().getWidth() - floatingButtonIcon.getLayoutParams().width - dp(20) - getParentLayout().getView().getPaddingLeft() - getParentLayout().getView().getPaddingRight(),
+                    toY = getParentLayout().getView().getHeight() - floatingButtonIcon.getLayoutParams().height - dp(14) -
                             (isCustomKeyboardVisible() ? AndroidUtilities.dp(CustomPhoneKeyboardView.KEYBOARD_HEIGHT_DP) : 0) - getParentLayout().getView().getPaddingTop() - getParentLayout().getView().getPaddingBottom();
 
             ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
             animator.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationStart(Animator animation) {
-                    floatingButtonContainer.setVisibility(View.INVISIBLE);
+                    floatingButton.setButtonVisible(false, false);
                     keyboardLinearLayout.setAlpha(0);
                     fragmentView.setBackgroundColor(Color.TRANSPARENT);
                     startMessagingButton.setVisibility(View.INVISIBLE);
@@ -8520,7 +8298,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     keyboardLinearLayout.setAlpha(1);
                     startMessagingButton.setVisibility(View.VISIBLE);
                     fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
-                    floatingButtonContainer.setVisibility(View.VISIBLE);
+                    floatingButton.setButtonVisible(true, false);
 
                     FrameLayout frameLayout = (FrameLayout) fragmentView;
                     frameLayout.removeView(transformButton);
@@ -8545,7 +8323,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 slideViewsContainer.setTranslationY(AndroidUtilities.dp(20) * inverted);
                 if (!isCustomKeyboardForceDisabled()) {
                     keyboardView.setTranslationY(keyboardView.getLayoutParams().height * inverted);
-                    floatingButtonContainer.setTranslationY(keyboardView.getLayoutParams().height * inverted);
+                    floatingButton.setTranslationY(keyboardView.getLayoutParams().height * inverted);
                 }
 
                 introView.setTranslationY(-AndroidUtilities.dp(20) * val);
@@ -8575,30 +8353,17 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private void updateColors() {
         fragmentView.setBackgroundColor(Theme.getColor(Theme.key_windowBackgroundWhite));
 
-        Context context = getParentActivity();
-        Drawable drawable = Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(56), Theme.getColor(Theme.key_chats_actionBackground), Theme.getColor(Theme.key_chats_actionPressedBackground));
-        if (Build.VERSION.SDK_INT < 21) {
-            Drawable shadowDrawable = context.getResources().getDrawable(R.drawable.floating_shadow).mutate();
-            shadowDrawable.setColorFilter(new PorterDuffColorFilter(0xff000000, PorterDuff.Mode.MULTIPLY));
-            CombinedDrawable combinedDrawable = new CombinedDrawable(shadowDrawable, drawable, 0, 0);
-            combinedDrawable.setIconSize(AndroidUtilities.dp(56), AndroidUtilities.dp(56));
-            drawable = combinedDrawable;
-        }
-        floatingButtonContainer.setBackground(drawable);
-
-        backButtonView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-        backButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
+        //DIVO backButtonView.setColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
+        //DIVO backButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
 
         proxyDrawable.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_windowBackgroundWhiteBlackText), PorterDuff.Mode.SRC_IN));
-        proxyDrawable.setColorKey(Theme.key_windowBackgroundWhiteBlackText);
         proxyButtonView.setBackground(Theme.createSelectorDrawable(Theme.getColor(Theme.key_listSelector)));
 
-        radialProgressView.setProgressColor(Theme.getColor(Theme.key_chats_actionBackground));
+        radialProgressView.setColorFilter(new PorterDuffColorFilter(Theme.getColor(Theme.key_chats_actionBackground), PorterDuff.Mode.SRC_IN));
 
+        floatingButton.updateColors();
         floatingButtonIcon.setColor(Theme.getColor(Theme.key_chats_actionIcon));
         floatingButtonIcon.setBackgroundColor(Theme.getColor(Theme.key_chats_actionBackground));
-
-        floatingProgressView.setProgressColor(Theme.getColor(Theme.key_chats_actionIcon));
 
         for (SlideView slideView : views) {
             slideView.updateColors();
@@ -8643,7 +8408,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     params.putString("phoneFormated", requestPhone);
                     params.putString("phoneHash", phoneHash);
                     params.putString("code", phoneCode);
-                    setPage(VIEW_REGISTER, true, params, false);
+                    // setPage(VIEW_REGISTER, true, params, false);
                 } else {
                     if (error.text.equals("2FA_RECENT_CONFIRM")) {
                         needShowAlert(getString(R.string.RestorePasswordNoEmailTitle), getString("ResetAccountCancelledAlert", R.string.ResetAccountCancelledAlert));
@@ -8673,8 +8438,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         private View blurredView;
         private View dimmView;
         private TransformableLoginButtonView fabTransform;
-        private RadialProgressView floatingProgressView;
-        private FrameLayout popupFabContainer;
+        private FragmentFloatingButton fabButton;
 
         private TextView confirmMessageView;
         private TextView numberView;
@@ -8705,19 +8469,13 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             fabTransform.setTransformType(TransformableLoginButtonView.TRANSFORM_ARROW_CHECK);
             fabTransform.setDrawBackground(false);
 
-            popupFabContainer = new FrameLayout(context);
-            popupFabContainer.addView(fabTransform, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-            popupFabContainer.setOnClickListener(v -> callback.onFabPressed(this, fabTransform));
 
-            floatingProgressView = new RadialProgressView(context);
-            floatingProgressView.setSize(AndroidUtilities.dp(22));
-            floatingProgressView.setAlpha(0.0f);
-            floatingProgressView.setScaleX(0.1f);
-            floatingProgressView.setScaleY(0.1f);
-            popupFabContainer.addView(floatingProgressView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
-
-            popupFabContainer.setContentDescription(getString(R.string.Done));
-            addView(popupFabContainer, LayoutHelper.createFrame(Build.VERSION.SDK_INT >= 21 ? 56 : 60, Build.VERSION.SDK_INT >= 21 ? 56 : 60));
+            fabButton = new FragmentFloatingButton(context, null);
+            fabButton.addView(fabTransform, LayoutHelper.createFrame(56, 56, Gravity.CENTER));
+            fabButton.addAdditionalView(fabTransform);
+            fabButton.setOnClickListener(v -> callback.onFabPressed(this, fabTransform));
+            fabButton.setContentDescription(getString(R.string.Done));
+            addView(fabButton, LayoutHelper.createFrame(56, 56, Gravity.TOP | Gravity.LEFT));
 
             popupLayout = new FrameLayout(context);
 
@@ -8763,14 +8521,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             updateColors();
         }
 
+        private final PointF pointF = new PointF();
         private void updateFabPosition() {
-            int[] loc = new int[2];
-            fragmentView.getLocationInWindow(loc);
-            int fragmentX = loc[0], fragmentY = loc[1];
-
-            fabContainer.getLocationInWindow(loc);
-            popupFabContainer.setTranslationX(loc[0] - fragmentX);
-            popupFabContainer.setTranslationY(loc[1] - fragmentY);
+            ViewPositionWatcher.computeCoordinatesInParent(fabContainer, fragmentView, pointF);
+            fabButton.setTranslationX(pointF.x);
+            fabButton.setTranslationY(pointF.y);
             requestLayout();
         }
 
@@ -8780,10 +8535,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             popupLayout.setBackground(Theme.createRoundRectDrawable(AndroidUtilities.dp(12), Theme.getColor(Theme.key_dialogBackground)));
             confirmMessageView.setTextColor(Theme.getColor(Theme.key_dialogTextGray2));
             numberView.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
-            editTextView.setTextColor(Theme.getColor(Theme.key_changephoneinfo_image2));
-            confirmTextView.setTextColor(Theme.getColor(Theme.key_changephoneinfo_image2));
-            popupFabContainer.setBackground(Theme.createSimpleSelectorCircleDrawable(AndroidUtilities.dp(56), Theme.getColor(Theme.key_chats_actionBackground), Theme.getColor(Theme.key_chats_actionPressedBackground)));
-            floatingProgressView.setProgressColor(Theme.getColor(Theme.key_chats_actionIcon));
+            //DIVO
+            editTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            confirmTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.divo_positive_button_color));
+            fabButton.updateColors();
         }
 
         @Override
@@ -8791,15 +8546,11 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             super.onLayout(changed, left, top, right, bottom);
 
             int height = popupLayout.getMeasuredHeight();
-            int popupBottom = (int) (popupFabContainer.getTranslationY() - AndroidUtilities.dp(32));
+            int popupBottom = (int) (fabButton.getTranslationY() - AndroidUtilities.dp(32));
             popupLayout.layout(popupLayout.getLeft(), popupBottom - height, popupLayout.getRight(), popupBottom);
         }
 
         private void show() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ObjectAnimator.ofFloat(fabContainer, View.TRANSLATION_Z, fabContainer.getTranslationZ(), 0).setDuration(150).start();
-            }
-
             ValueAnimator anim = ValueAnimator.ofFloat(0, 1).setDuration(250);
             anim.addListener(new AnimatorListenerAdapter() {
                 @Override
@@ -8826,7 +8577,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     if (AndroidUtilities.isAccessibilityTouchExplorationEnabled()) {
-                        popupFabContainer.requestFocus();
+                        fabButton.requestFocus();
                     }
                 }
             });
@@ -8846,28 +8597,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         }
 
         private void animateProgress(Runnable callback) {
-            ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-            animator.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    callback.run();
-                }
-            });
-            animator.addUpdateListener(animation -> {
-                float val = (float) animation.getAnimatedValue();
-
-                float scale = 0.1f + 0.9f * (1f - val);
-                fabTransform.setScaleX(scale);
-                fabTransform.setScaleY(scale);
-                fabTransform.setAlpha(1f - val);
-
-                scale = 0.1f + 0.9f * val;
-                floatingProgressView.setScaleX(scale);
-                floatingProgressView.setScaleY(scale);
-                floatingProgressView.setAlpha(val);
-            });
-            animator.setDuration(150);
-            animator.start();
+            fabButton.setProgressVisible(true, true);
+            AndroidUtilities.runOnUIThread(callback, 400);
         }
 
         private void dismiss() {
@@ -8882,10 +8613,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 public void onAnimationEnd(Animator animation) {
                     if (getParent() instanceof ViewGroup) {
                         ((ViewGroup) getParent()).removeView(PhoneNumberConfirmView.this);
-                    }
-
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                        ObjectAnimator.ofFloat(fabContainer, View.TRANSLATION_Z, 0, AndroidUtilities.dp(2)).setDuration(150).start();
                     }
                     fabContainer.setVisibility(VISIBLE);
                 }
@@ -9319,7 +9046,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
 //            cancelButton.setText(getString(R.string.YourEmailSkip));
 
             FrameLayout bottomContainer = new FrameLayout(context);
-            bottomContainer.addView(timeText, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, (Build.VERSION.SDK_INT >= 21 ? 56 : 60), Gravity.BOTTOM, 6, 0, 60, 28));
+            bottomContainer.addView(timeText, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 56, Gravity.BOTTOM, 6, 0, 60, 28));
             addView(bottomContainer, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.BOTTOM));
             VerticalPositionAutoAnimator.attach(timeText);
 
@@ -9541,8 +9268,20 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             req.phone_code = code;
             req.phone_code_hash = phoneHash;
             req.flags |= 1;
+
+            if (divoAuthProgressDialog == null) {
+                divoAuthProgressDialog = new AlertDialog(getParentActivity(), 3);
+                divoAuthProgressDialog.setCanCancel(false);
+            }
+            divoAuthProgressDialog.show();
+
             int reqId = getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 needHideProgress(false, true);
+                if (!(response instanceof TLRPC.TL_auth_authorization)) {
+                    if (divoAuthProgressDialog != null) {
+                        try { divoAuthProgressDialog.dismiss(); } catch (Exception ignore) {}
+                    }
+                }
 
                 boolean ok = false;
 
@@ -9562,7 +9301,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                         params.putString("phoneHash", phoneHash);
                         params.putString("code", req.phone_code);
 
-                        setPage(VIEW_REGISTER, true, params, false);
+                        //setPage(VIEW_REGISTER, true, params, false);
                     } else {
                         onAuthSuccess((TLRPC.TL_auth_authorization) response);
                     }

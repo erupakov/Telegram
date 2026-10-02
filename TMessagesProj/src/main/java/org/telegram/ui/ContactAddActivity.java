@@ -310,17 +310,20 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         firstNameField.setText(firstNameFromCard);
 
         lastNameField = new EditTextCell(context, getString(R.string.LastName), false, false, -1, resourcesProvider);
-        lastNameField.editText.setImeOptions(EditorInfo.IME_ACTION_NEXT);
+        lastNameField.editText.setImeOptions(EditorInfo.IME_ACTION_DONE); // DIVO: changed from IME_ACTION_NEXT
         lastNameField.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundWhite));
         lastNameField.editText.setOnEditorActionListener((textView, i, keyEvent) -> {
-            if (i == EditorInfo.IME_ACTION_DONE) {
+            if (i == EditorInfo.IME_ACTION_DONE || i == EditorInfo.IME_ACTION_NEXT) {
                 doneButton.performClick();
                 return true;
-            } else if (i == EditorInfo.IME_ACTION_NEXT) {
+            }
+            /* DIVO: skip noteField
+            else if (i == EditorInfo.IME_ACTION_NEXT) {
                 noteField.editText.requestFocus();
                 noteField.editText.setSelection(lastNameField.editText.length());
                 return true;
             }
+            */
             return false;
         });
         lastNameField.setText(lastNameFromCard);
@@ -482,7 +485,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
                         }));
                     },
                     null,
-                    false, resourcesProvider
+                    false, false, resourcesProvider
                 ).create());
             });
 
@@ -499,6 +502,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         }
 
         listView = new UniversalRecyclerView(this, this::fillItems, this::onItemClick, null);
+        listView.setSections();
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -509,11 +513,17 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
         });
         listView.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
         frameLayout.addView(listView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT, Gravity.FILL));
+        actionBar.setAdaptiveBackground(listView);
+
+        if (addContact && needAddException) {
+            checkShare = true;
+        }
+        listView.adapter.update(false);
 
         return fragmentView = frameLayout;
     }
 
-    private boolean checkShare = true;
+    private boolean checkShare = false;
 
     private boolean firstSet = true;
     private void fillItems(ArrayList<UItem> items, UniversalAdapter adapter) {
@@ -538,8 +548,9 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
             items.add(UItem.asShadow(formatString(R.string.AddContactShareNumberInfo, UserObject.getFirstName(user))));
         }
 
-        items.add(UItem.asCustom(noteField));
-        items.add(UItem.asShadow(getString(R.string.AddNotesInfo)));
+        // DIVO: hide notes because the backend doesn't support it yet
+        // items.add(UItem.asCustom(noteField));
+        // items.add(UItem.asShadow(getString(R.string.AddNotesInfo)));
 
         if (!addContact) {
             final TLRPC.UserFull userInfo = getMessagesController().getUserFull(user_id);
@@ -706,7 +717,12 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
 
     private String getPhone() {
         TLRPC.User user = getMessagesController().getUser(user_id);
-        return user != null && !TextUtils.isEmpty(user.phone) ? user.phone : phone;
+        //DIVO
+        String p = user != null && !TextUtils.isEmpty(user.phone) ? user.phone : phone;
+        if (p != null && p.startsWith("999")) {
+            return null;
+        }
+        return p;
     }
 
     public void didReceivedNotification(int id, int account, Object... args) {
@@ -991,7 +1007,7 @@ public class ContactAddActivity extends BaseFragment implements NotificationCent
 
         themeDescriptions.add(new ThemeDescription(fragmentView, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_windowBackgroundWhite));
 
-        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
+//        themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_BACKGROUND, null, null, null, null, Theme.key_actionBarDefault));
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_ITEMSCOLOR, null, null, null, null, Theme.key_actionBarDefaultIcon));
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_TITLECOLOR, null, null, null, null, Theme.key_actionBarDefaultTitle));
         themeDescriptions.add(new ThemeDescription(actionBar, ThemeDescription.FLAG_AB_SELECTORCOLOR, null, null, null, null, Theme.key_actionBarDefaultSelector));

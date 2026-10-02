@@ -822,12 +822,12 @@ public class ReportBottomSheet extends BottomSheet {
     }
 
     public static void openStory(
-        int currentAccount,
-        Context context,
-        TL_stories.StoryItem storyItem,
-        BulletinFactory bulletinFactory,
-        Theme.ResourcesProvider resourceProvider,
-        Utilities.Callback<Boolean> whenDone
+            int currentAccount,
+            Context context,
+            TL_stories.StoryItem storyItem,
+            BulletinFactory bulletinFactory,
+            Theme.ResourcesProvider resourceProvider,
+            Utilities.Callback<Boolean> whenDone
     ) {
         final ArrayList<Integer> storyIds = new ArrayList<>(Collections.singleton(storyItem.id));
         open(currentAccount, context, storyItem.dialogId, true, storyIds, bulletinFactory, resourceProvider, new byte[]{}, null, whenDone);

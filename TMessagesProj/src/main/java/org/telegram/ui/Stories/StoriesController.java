@@ -17,6 +17,8 @@ import com.google.android.exoplayer2.util.Consumer;
 import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.SQLite.SQLiteDatabase;
 import org.telegram.SQLite.SQLitePreparedStatement;
+import org.telegram.divo.analytics.AnalyticsEvent;
+import org.telegram.divo.analytics.DivoAnalytics;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
 import org.telegram.messenger.ApplicationLoader;
@@ -2315,7 +2317,7 @@ public class StoriesController {
 
                     req = addPreviewMedia;
                 } else {
-                    TL_stories.TL_stories_sendStory sendStory = new TL_stories.TL_stories_sendStory();
+                    TL_stories.TL_stories_sendStory sendStory = new TL_stories.TL_stories_sendStory_layer199();
                     sendStory.random_id = random_id;
                     sendStory.peer = MessagesController.getInstance(currentAccount).getInputPeer(dialogId);
                     sendStory.media = media;
@@ -2453,6 +2455,10 @@ public class StoriesController {
                             }
                             if (!edit) {
                                 invalidateStoryLimit();
+                                //DIVO
+                                DivoAnalytics.INSTANCE.logEvent(
+                                    new AnalyticsEvent.StoryUploaded(isVideo)
+                                );
                             }
                         });
                         MessagesController.getInstance(currentAccount).processUpdateArray(updates.updates, updates.users, updates.chats, false, updates.date);

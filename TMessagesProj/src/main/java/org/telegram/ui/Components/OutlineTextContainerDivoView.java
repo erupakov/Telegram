@@ -69,6 +69,10 @@ public class OutlineTextContainerDivoView extends FrameLayout {
 
     private EditText attachedEditText;
     private boolean forceUseCenter, forceForceUseCenter;
+    //DIVO--START: customization
+    private float cornerRadius = AndroidUtilities.dp(8);
+    private boolean showOutline = true;
+    //DIVO--END
 
     private final Theme.ResourcesProvider resourcesProvider;
 
@@ -107,6 +111,25 @@ public class OutlineTextContainerDivoView extends FrameLayout {
         invalidate();
     }
 
+    //DIVO--START: styling helpers
+    public void setCornerRadius(float dp) {
+        this.cornerRadius = AndroidUtilities.dp(dp);
+        invalidate();
+    }
+
+    public void setBackgroundFill(int color) {
+        backgroundPaint.setColor(color);
+        invalidate();
+    }
+
+    public void hideOutline() {
+        showOutline = false;
+        outlinePaint.setStrokeWidth(0);
+        mText = "";
+        invalidate();
+    }
+    //DIVO--END
+
     public EditText getAttachedEditText() {
         return attachedEditText;
     }
@@ -127,20 +150,20 @@ public class OutlineTextContainerDivoView extends FrameLayout {
     }
 
     public void updateColor() {
-        int normalColor   = ContextCompat.getColor(getContext(), R.color.outline_normal);   // e.g. #343434
-        int selectedColor = ContextCompat.getColor(getContext(), R.color.outline_selected); // e.g. black
-        int errorColor    = ContextCompat.getColor(getContext(), R.color.outline_error);    // e.g. red
+        int normalColor   = ContextCompat.getColor(getContext(), R.color.outline_normal);
+        int selectedColor = ContextCompat.getColor(getContext(), R.color.outline_selected);
+        int errorColor    = ContextCompat.getColor(getContext(), R.color.outline_error);
 
-        // blend between normal/selected depending on selectionProgress
         int selectionBlend = ColorUtils.blendARGB(normalColor, selectedColor, selectionProgress);
-
-        // blend in error color if errorProgress > 0
         int finalColor = ColorUtils.blendARGB(selectionBlend, errorColor, errorProgress);
 
-        outlinePaint.setColor(finalColor);
+        if (showOutline) {
+            outlinePaint.setColor(finalColor);
+        }
         textPaint.setColor(finalColor);
 
-        invalidate(); }
+        invalidate();
+    }
 
     public void animateSelection(boolean selected) {
         animateSelection(selected ? 1f : 0f, selected ? 1f : 0f, true);
@@ -219,10 +242,11 @@ public class OutlineTextContainerDivoView extends FrameLayout {
         float textWidth = textPaint.measureText(mText) * scaleX;
 
         canvas.save();
-        rect.set(getPaddingLeft() + AndroidUtilities.dp(PADDING_LEFT - PADDING_TEXT), getPaddingTop(), getWidth() - AndroidUtilities.dp(PADDING_LEFT + PADDING_TEXT) - getPaddingRight(), getPaddingTop() + stroke * 2);
-        canvas.clipRect(rect, Region.Op.DIFFERENCE);
-        rect.set(getPaddingLeft() + stroke, getPaddingTop() + stroke, getWidth() - stroke - getPaddingRight(), getHeight() - stroke - getPaddingBottom());
-
+        if (showOutline) {
+            // clip out the label gap at the top of the border
+            rect.set(getPaddingLeft() + AndroidUtilities.dp(PADDING_LEFT - PADDING_TEXT), getPaddingTop(), getWidth() - AndroidUtilities.dp(PADDING_LEFT + PADDING_TEXT) - getPaddingRight(), getPaddingTop() + stroke * 2);
+            canvas.clipRect(rect, Region.Op.DIFFERENCE);
+        }
 
         rect.set(
                 getPaddingLeft() + stroke,
@@ -230,25 +254,29 @@ public class OutlineTextContainerDivoView extends FrameLayout {
                 getWidth() - stroke - getPaddingRight(),
                 getHeight() - stroke - getPaddingBottom()
         );
-        canvas.drawRoundRect(rect, AndroidUtilities.dp(8), AndroidUtilities.dp(8), backgroundPaint);
+        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, backgroundPaint);
 
-
-        canvas.drawRoundRect(rect, AndroidUtilities.dp(8), AndroidUtilities.dp(8), outlinePaint);
+        if (showOutline) {
+            canvas.drawRoundRect(rect, cornerRadius, cornerRadius, outlinePaint);
+        }
         canvas.restore();
 
-        float left = getPaddingLeft() + AndroidUtilities.dp(PADDING_LEFT - PADDING_TEXT), lineY = getPaddingTop() + stroke,
-                right = getWidth() - stroke - getPaddingRight() - AndroidUtilities.dp(6);
+        if (showOutline) {
+            float left = getPaddingLeft() + AndroidUtilities.dp(PADDING_LEFT - PADDING_TEXT);
+            float lineY = getPaddingTop() + stroke;
+            float right = getWidth() - stroke - getPaddingRight() - AndroidUtilities.dp(6);
 
-        float activeLeft = left + textWidth + AndroidUtilities.dp(PADDING_LEFT - PADDING_TEXT);
-        float fromLeft = left + textWidth / 2f;
-        canvas.drawLine(fromLeft + (activeLeft - fromLeft) * (useCenter ? titleProgress : 1f), lineY, right, lineY, outlinePaint);
+            float activeLeft = left + textWidth + AndroidUtilities.dp(PADDING_LEFT - PADDING_TEXT);
+            float fromLeft = left + textWidth / 2f;
+            canvas.drawLine(fromLeft + (activeLeft - fromLeft) * (useCenter ? titleProgress : 1f), lineY, right, lineY, outlinePaint);
 
-        float fromRight = left + textWidth / 2f + AndroidUtilities.dp(PADDING_TEXT);
-        canvas.drawLine(left, lineY, fromRight + (left - fromRight) * (useCenter ? titleProgress : 1f), lineY, outlinePaint);
+            float fromRight = left + textWidth / 2f + AndroidUtilities.dp(PADDING_TEXT);
+            canvas.drawLine(left, lineY, fromRight + (left - fromRight) * (useCenter ? titleProgress : 1f), lineY, outlinePaint);
 
-        canvas.save();
-        canvas.scale(scaleX, scaleX, getPaddingLeft() + AndroidUtilities.dp(PADDING_LEFT + PADDING_TEXT), textY);
-        canvas.drawText(mText, getPaddingLeft() + AndroidUtilities.dp(PADDING_LEFT) + textX, textY, textPaint);
-        canvas.restore();
+            canvas.save();
+            canvas.scale(scaleX, scaleX, getPaddingLeft() + AndroidUtilities.dp(PADDING_LEFT + PADDING_TEXT), textY);
+            canvas.drawText(mText, getPaddingLeft() + AndroidUtilities.dp(PADDING_LEFT) + textX, textY, textPaint);
+            canvas.restore();
+        }
     }
 }

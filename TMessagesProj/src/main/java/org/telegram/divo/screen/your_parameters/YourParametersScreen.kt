@@ -1,0 +1,249 @@
+package org.telegram.divo.screen.your_parameters
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringArrayResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import org.telegram.divo.common.controllers.AppSnackbarHost
+import org.telegram.divo.common.controllers.AppSnackbarHostState
+import org.telegram.divo.common.controllers.SnackbarEvent.Error
+import org.telegram.divo.common.controllers.SnackbarEvent.Success
+import org.telegram.divo.components.media.LottieProgressIndicator
+import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.components.bottomsheets.ParameterBottomSheet
+import org.telegram.divo.components.items.ParameterItem
+import org.telegram.divo.components.items.ParametersBlock
+import org.telegram.divo.components.items.ParametersType
+import org.telegram.divo.screen.your_parameters.components.ParametersTopBar
+import org.telegram.divo.style.AppTheme
+import org.telegram.messenger.R
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun YourParametersScreen(
+    viewModel: YourParametersViewModel = viewModel(),
+    showTitle: Boolean = true,
+    showTopBar: Boolean = false,
+    onSaved: () -> Unit = {},
+    onBack: () -> Unit = {}
+) {
+    val state by viewModel.state.collectAsState()
+    val parametersSavedText = stringResource(R.string.ParametersSaved)
+
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+    var currentParam by remember { mutableStateOf<ParametersType?>(null) }
+    var currentParamOptions by remember { mutableStateOf<List<String>?>(null) }
+    var currentValue by remember { mutableStateOf("") }
+
+    val openBottomSheet = { param: ParametersType, options: List<String>?, value: String ->
+        currentParam = param
+        currentParamOptions = options
+        currentValue = value
+        showBottomSheet = true
+    }
+
+    val snackbarState = remember { AppSnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.setIntent(YourParametersIntent.OnLoad)
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                is YourParametersEffect.SaveSuccess -> {
+                    snackbarState.show(Success(parametersSavedText))
+                }
+                is YourParametersEffect.NavigateBack -> {
+                    onBack()
+                }
+                is YourParametersEffect.Error -> {
+                    snackbarState.show(Error(effect.message))
+                }
+            }
+        }
+    }
+
+    if (showBottomSheet) {
+        ParameterBottomSheet(
+            paramType = currentParam,
+            options = currentParamOptions,
+            initialValue = currentValue,
+            onDismiss = { showBottomSheet = false },
+            onSave = { selectedValue ->
+                currentParam?.let { paramType ->
+                    viewModel.setIntent(YourParametersIntent.OnParamValueChanged(paramType, selectedValue))
+                }
+                showBottomSheet = false
+            },
+            onDelete = {
+                currentParam?.let { paramType ->
+                    viewModel.setIntent(YourParametersIntent.OnParamCleared(paramType))
+                }
+                showBottomSheet = false
+            }
+        )
+    }
+
+    Column(
+        modifier = Modifier.background(AppTheme.colors.backgroundLight)
+    ) {
+        if (showTopBar) {
+            ParametersTopBar(
+                onBack = { viewModel.setIntent(YourParametersIntent.OnBackClicked) }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            when {
+                state.isLoading -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        LottieProgressIndicator()
+                    }
+                }
+                else -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        val headerHeight = 44.dp
+
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp)
+                                .verticalScroll(rememberScrollState()),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (showTitle) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(headerHeight)
+                                        .padding(horizontal = 16.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.YourParameters).uppercase(),
+                                        style = AppTheme.typography.helveticaNeueLtCom,
+                                        color = Color.White,
+                                        fontSize = 20.sp,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 12.dp)
+                                    )
+                                }
+                            }
+                            val genders = stringArrayResource(R.array.GenderItems).toList()
+                            val breastSizes = stringArrayResource(R.array.BreastSizeItems).toList()
+
+                            ParameterItem(
+                                param = state.gender,
+                                onClick = { openBottomSheet(ParametersType.GENDER, genders, state.gender?.value.orEmpty()) }
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            ParametersBlock(
+                                items = state.blockParams,
+                                onClick = { openBottomSheet(it.type, null, it.value) }
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            ParameterItem(
+                                param = state.hairLength,
+                                hasPrefix = true,
+                                onClick = { openBottomSheet(ParametersType.HAIR_LENGTH, state.hairLengthOptions.map { it.title.orEmpty() }, state.hairLength?.value.orEmpty()) }
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            ParameterItem(
+                                param = state.hairColor,
+                                hasPrefix = true,
+                                onClick = { openBottomSheet(ParametersType.HAIR_COLOR, state.hairColorOptions.map { it.title.orEmpty() }, state.hairColor?.value.orEmpty()) }
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            ParameterItem(
+                                param = state.eyeColor,
+                                hasPrefix = true,
+                                onClick = { openBottomSheet(ParametersType.EYE_COLOR, state.eyeColorOptions.map { it.title.orEmpty() }, state.eyeColor?.value.orEmpty()) }
+                            )
+                            Spacer(Modifier.height(16.dp))
+                            ParameterItem(
+                                param = state.skinColor,
+                                hasPrefix = true,
+                                onClick = { openBottomSheet(ParametersType.SKIN_COLOR, state.skinColorOptions.map { it.title.orEmpty() }, state.skinColor?.value.orEmpty()) }
+                            )
+
+                            val gender = state.gender
+                            if (gender != null && gender.value == stringResource(R.string.Female)) {
+                                Spacer(Modifier.height(16.dp))
+                                ParameterItem(
+                                    param = state.breastSize,
+                                    hasPrefix = true,
+                                    onClick = { openBottomSheet(ParametersType.BREAST_SIZE, breastSizes, state.breastSize?.value.orEmpty()) }
+                                )
+                            }
+
+                            Spacer(Modifier.height(96.dp))
+                        }
+
+                        UIButton(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomCenter)
+                                .then(
+                                    if (showTopBar) Modifier.navigationBarsPadding() else Modifier
+                                )
+                                .padding(bottom = 8.dp, start = 16.dp, end = 16.dp),
+                            enabled = !state.isSaving,
+                            onClick = { viewModel.setIntent(YourParametersIntent.OnSaveClicked(showTitle)) }
+                        )
+                    }
+                }
+            }
+
+            AppSnackbarHost(
+                modifier = Modifier.align(Alignment.BottomCenter),
+                state = snackbarState,
+                bottomPadding = if (!showTopBar) 74.dp else WindowInsets.systemBars.asPaddingValues().calculateBottomPadding() + 74.dp
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun YourParametersScreenPreview() {
+    YourParametersScreen()
+}

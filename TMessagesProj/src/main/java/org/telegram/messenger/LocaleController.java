@@ -221,6 +221,19 @@ public class LocaleController {
         return chatDate;
     }
 
+    private volatile FastDateFormat chatDateShort;
+    public FastDateFormat getChatDateShort() {
+        if (chatDateShort == null) {
+            synchronized (this) {
+                if (chatDateShort == null) {
+                    final Locale locale = currentLocale == null ? Locale.getDefault() : currentLocale;
+                    chatDateShort = createFormatter(locale, getStringInternal("chatDateShort", R.string.chatDateShort), "d MMM");
+                }
+            }
+        }
+        return chatDateShort;
+    }
+
     private volatile FastDateFormat chatFullDate;
     public FastDateFormat getChatFullDate() {
         if (chatFullDate == null) {
@@ -555,10 +568,10 @@ public class LocaleController {
         languagesDict.put(localeInfo.shortName, localeInfo);
 
         localeInfo = new LocaleInfo();
-        localeInfo.name = "Italiano";
-        localeInfo.nameEnglish = "Italian";
-        localeInfo.shortName = localeInfo.pluralLangCode = "it";
-        localeInfo.pathToFile = null;
+        localeInfo.name = "Русский";
+        localeInfo.nameEnglish = "Russian";
+        localeInfo.shortName = localeInfo.pluralLangCode = "ru";
+        localeInfo.pathToFile = "remote";
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
@@ -567,35 +580,8 @@ public class LocaleController {
         localeInfo.name = "Español";
         localeInfo.nameEnglish = "Spanish";
         localeInfo.shortName = localeInfo.pluralLangCode = "es";
+        localeInfo.pathToFile = "remote";
         localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.shortName, localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "Deutsch";
-        localeInfo.nameEnglish = "German";
-        localeInfo.shortName = localeInfo.pluralLangCode = "de";
-        localeInfo.pathToFile = null;
-        localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.shortName, localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "Nederlands";
-        localeInfo.nameEnglish = "Dutch";
-        localeInfo.shortName = localeInfo.pluralLangCode = "nl";
-        localeInfo.pathToFile = null;
-        localeInfo.builtIn = true;
-        languages.add(localeInfo);
-        languagesDict.put(localeInfo.shortName, localeInfo);
-
-        localeInfo = new LocaleInfo();
-        localeInfo.name = "العربية";
-        localeInfo.nameEnglish = "Arabic";
-        localeInfo.shortName = localeInfo.pluralLangCode = "ar";
-        localeInfo.pathToFile = null;
-        localeInfo.builtIn = true;
-        localeInfo.isRtl = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
 
@@ -603,16 +589,16 @@ public class LocaleController {
         localeInfo.name = "Português (Brasil)";
         localeInfo.nameEnglish = "Portuguese (Brazil)";
         localeInfo.shortName = localeInfo.pluralLangCode = "pt_br";
-        localeInfo.pathToFile = null;
+        localeInfo.pathToFile = "remote";
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
 
         localeInfo = new LocaleInfo();
-        localeInfo.name = "한국어";
-        localeInfo.nameEnglish = "Korean";
-        localeInfo.shortName = localeInfo.pluralLangCode = "ko";
-        localeInfo.pathToFile = null;
+        localeInfo.name = "Français";
+        localeInfo.nameEnglish = "French";
+        localeInfo.shortName = localeInfo.pluralLangCode = "fr";
+        localeInfo.pathToFile = "remote";
         localeInfo.builtIn = true;
         languages.add(localeInfo);
         languagesDict.put(localeInfo.shortName, localeInfo);
@@ -2455,7 +2441,7 @@ public class LocaleController {
             } else if (dateDay + 1 == day && year == dateYear) {
                 return LocaleController.formatString(R.string.YesterdayAtFormatted, getInstance().getFormatterDay().format(new Date(date)));
             } else if (Math.abs(System.currentTimeMillis() - date) < 31536000000L) {
-                return LocaleController.formatString(R.string.formatDateAtTime, getInstance().getChatDate().format(new Date(date)), getInstance().getFormatterDay().format(new Date(date)));
+                return LocaleController.formatString(R.string.formatDateAtTime, getInstance().getChatDateShort().format(new Date(date)), getInstance().getFormatterDay().format(new Date(date)));
             } else {
                 return LocaleController.formatString(R.string.formatDateAtTime, getInstance().getChatFullDate().format(new Date(date)), getInstance().getFormatterDay().format(new Date(date)));
             }

@@ -1487,7 +1487,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                             return;
                         }
 
-                        if ((isSelf || storiesController.canEditStories(dialogId)) && !currentStory.isLive) {
+                        if (false /*//DIVO (isSelf || storiesController.canEditStories(dialogId)) && !currentStory.isLive */) {
                             addAlbumsLayout(popupLayout, true);
                         }
 
@@ -1723,7 +1723,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                             });
                         }
 
-                        if ((isSelf || (isChannel && MessagesController.getInstance(currentAccount).getStoriesController().canEditStories(storyItem.dialogId))) && !currentStory.isLive) {
+                        if (false /*DIVO (isSelf || (isChannel && MessagesController.getInstance(currentAccount).getStoriesController().canEditStories(storyItem.dialogId))) && !currentStory.isLive */) {
                             final boolean pin = !storyItem.pinned;
                             String title;
                             if (isSelf) {
@@ -1761,7 +1761,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
 
                         addViewStatistics(popupLayout, storyItem);
 
-                        if (!unsupported && !currentStory.isLive) {
+                        if (false /*DIVO !unsupported && !currentStory.isLive */) {
                             final String str = currentStory.isVideo() ? getString(R.string.SaveVideo) : getString(R.string.SaveImage);
                             ActionBarMenuItem.addItem(popupLayout, R.drawable.msg_gallery, str, false, resourcesProvider).setOnClickListener(v -> {
                                 saveToGallery();
@@ -1771,7 +1771,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                             });
                         }
 
-                        if (!MessagesController.getInstance(currentAccount).premiumFeaturesBlocked() && !currentStory.isLive && !isChannel) {
+                        if (false /*//DIVO !MessagesController.getInstance(currentAccount).premiumFeaturesBlocked() && !currentStory.isLive && !isChannel */) {
                             createStealthModeItem(popupLayout);
                         }
 
@@ -2008,7 +2008,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                             createQualityItem(popupLayout);
                         }
 
-                        if (!unsupported && allowShare && !currentStory.isLive) {
+                        if (false /*DIVO !unsupported && allowShare && !currentStory.isLive */) {
                             if (UserConfig.getInstance(currentAccount).isPremium()) {
                                 ActionBarMenuItem.addItem(popupLayout, R.drawable.msg_gallery, getString(R.string.SaveToGallery), false, resourcesProvider).setOnClickListener(v -> {
                                     saveToGallery();
@@ -2045,7 +2045,7 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                             }
                         }
 
-                        if (!MessagesController.getInstance(currentAccount).premiumFeaturesBlocked() && !isChannel) {
+                        if (false /*//DIVO !MessagesController.getInstance(currentAccount).premiumFeaturesBlocked() && !isChannel */) {
                             createStealthModeItem(popupLayout);
                         }
                         if (allowShareLink) {
@@ -6499,8 +6499,13 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
     public boolean checkReactionEvent(MotionEvent ev) {
         if (likesReactionLayout != null) {
             View view = likesReactionLayout;
-            float xOffset = getX();
-            float yOffset = getY() + ((View) getParent()).getY();
+            float xOffset = 0, yOffset = 0;
+            View rview = this;
+            while (rview != null && rview.getParent() instanceof View) {
+                xOffset += rview.getX();
+                yOffset += rview.getY();
+                rview = (View) rview.getParent();
+            }
             if (likesReactionLayout.getReactionsWindow() != null && likesReactionLayout.getReactionsWindow().windowView != null) {
                 ev.offsetLocation(-xOffset, -yOffset - likesReactionLayout.getReactionsWindow().windowView.getTranslationY());
                 likesReactionLayout.getReactionsWindow().windowView.dispatchTouchEvent(ev);

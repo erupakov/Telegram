@@ -54,6 +54,7 @@ import org.telegram.messenger.R;
 import org.telegram.messenger.SavedMessagesController;
 import org.telegram.messenger.UserConfig;
 import org.telegram.messenger.UserObject;
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.tgnet.ConnectionsManager;
 import org.telegram.tgnet.TLObject;
 import org.telegram.tgnet.TLRPC;
@@ -99,6 +100,7 @@ public class UndoView extends FrameLayout {
     private ArrayList<Long> currentDialogIds;
     private Runnable currentActionRunnable;
     private Runnable currentCancelRunnable;
+    private Runnable fallbackRunnable = () -> hide(true, 1); //DIVO
 
     private long lastUpdateTime;
 
@@ -197,6 +199,8 @@ public class UndoView extends FrameLayout {
     public final static int ACTION_BOOSTING_SELECTOR_WARNING_COUNTRY = 92;
     public final static int ACTION_BOOSTING_AWAIT = 93;
     public final static int ACTION_BOOSTING_ONLY_RECIPIENT_CODE = 94;
+
+    public final static int ACTION_LEAVE = 95;
 
     private CharSequence infoText;
     private int hideAnimationType = 1;
@@ -300,6 +304,10 @@ public class UndoView extends FrameLayout {
                 return;
             }
             hide(false, 1);
+            //DIVO
+            if (currentAction == ACTION_DELETE || currentAction == ACTION_LEAVE || currentAction == ACTION_CLEAR || currentAction == ACTION_DELETE_FEW || currentAction == ACTION_CLEAR_FEW) {
+                NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.cancelUndoView);
+            }
         });
 
         undoImageView = new ImageView(context);
@@ -311,7 +319,7 @@ public class UndoView extends FrameLayout {
         undoTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
         undoTextView.setTypeface(AndroidUtilities.bold());
         undoTextView.setTextColor(getThemedColor(Theme.key_undo_cancelColor));
-        undoTextView.setText(LocaleController.getString(R.string.Undo));
+        undoTextView.setText(LocaleController.getString(R.string.UndoNoCaps));
         undoButton.addView(undoTextView, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER_VERTICAL | Gravity.LEFT, 6, 4, 8, 4));
 
         rect = new RectF(AndroidUtilities.dp(15), AndroidUtilities.dp(15), AndroidUtilities.dp(15 + 18), AndroidUtilities.dp(15 + 18));
@@ -398,7 +406,8 @@ public class UndoView extends FrameLayout {
             }
             currentCancelRunnable = null;
         }
-        if (currentAction == ACTION_CLEAR || currentAction == ACTION_DELETE || currentAction == ACTION_CLEAR_FEW || currentAction == ACTION_DELETE_FEW) {
+        AndroidUtilities.cancelRunOnUIThread(fallbackRunnable); //DIVO
+        if (currentAction == ACTION_CLEAR || currentAction == ACTION_DELETE || currentAction == ACTION_LEAVE || currentAction == ACTION_CLEAR_FEW || currentAction == ACTION_DELETE_FEW) {
             for (int a = 0; a < currentDialogIds.size(); a++) {
                 long did = currentDialogIds.get(a);
                 MessagesController.getInstance(currentAccount).removeDialogAction(did, currentAction == ACTION_CLEAR || currentAction == ACTION_CLEAR_FEW, apply);
@@ -481,7 +490,7 @@ public class UndoView extends FrameLayout {
         currentInfoObject = infoObject;
         currentInfoObject2 = infoObject2;
         lastUpdateTime = SystemClock.elapsedRealtime();
-        undoTextView.setText(LocaleController.getString(R.string.Undo));
+        undoTextView.setText(LocaleController.getString(R.string.UndoNoCaps));
         undoImageView.setVisibility(VISIBLE);
         leftImageView.setPadding(0, 0, 0, 0);
         leftImageView.setScaleX(1);
@@ -1510,6 +1519,19 @@ public class UndoView extends FrameLayout {
                 infoTextView.setText(LocaleController.getString(R.string.HistoryClearedUndo));
             } else if (currentAction == ACTION_DELETE_FEW) {
                 infoTextView.setText(LocaleController.getString(R.string.ChatsDeletedUndo));
+            } else if (currentAction == ACTION_LEAVE) {
+                if (DialogObject.isChatDialog(did)) {
+                    TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-did);
+                    if (ChatObject.isMonoForum(chat)) {
+                        infoTextView.setText(LocaleController.getString(R.string.MonoforumDeletedUndo));
+                    } else if (ChatObject.isChannel(chat) && !chat.megagroup) {
+                        infoTextView.setText(LocaleController.getString(R.string.ChannelLeftUndo));
+                    } else {
+                        infoTextView.setText(LocaleController.getString(R.string.GroupLeftUndo));
+                    }
+                } else {
+                    infoTextView.setText(LocaleController.getString(R.string.ChatDeletedUndo));
+                }
             } else {
                 if (DialogObject.isChatDialog(did)) {
                     TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-did);
@@ -1571,6 +1593,8 @@ public class UndoView extends FrameLayout {
             animatorSet.setDuration(180);
             animatorSet.start();
         }
+        AndroidUtilities.cancelRunOnUIThread(fallbackRunnable); //DIVO
+        AndroidUtilities.runOnUIThread(fallbackRunnable, timeLeft + 1000); //DIVO
     }
 
     private int enterOffsetMargin = AndroidUtilities.dp(8);
@@ -1627,7 +1651,7 @@ public class UndoView extends FrameLayout {
             backgroundDrawable.draw(canvas);
         }
 
-        if (currentAction == ACTION_DELETE || currentAction == ACTION_CLEAR || currentAction == ACTION_DELETE_FEW || currentAction == ACTION_CLEAR_FEW || currentAction == ACTION_CLEAR_DATES || currentAction == ACTION_SHARED_FOLDER_DELETED) {
+        if (currentAction == ACTION_DELETE || currentAction == ACTION_LEAVE || currentAction == ACTION_CLEAR || currentAction == ACTION_DELETE_FEW || currentAction == ACTION_CLEAR_FEW || currentAction == ACTION_CLEAR_DATES || currentAction == ACTION_SHARED_FOLDER_DELETED) {
             int newSeconds = timeLeft > 0 ? (int) Math.ceil(timeLeft / 1000.0f) : 0;
             if (prevSeconds != newSeconds) {
                 prevSeconds = newSeconds;
@@ -1685,6 +1709,9 @@ public class UndoView extends FrameLayout {
         lastUpdateTime = newTime;
         if (timeLeft <= 0) {
             hide(true, hideAnimationType);
+        } else { //DIVO
+            AndroidUtilities.cancelRunOnUIThread(fallbackRunnable);
+            AndroidUtilities.runOnUIThread(fallbackRunnable, timeLeft + 1000);
         }
 
         if (currentAction != ACTION_PREVIEW_MEDIA_DESELECTED) {

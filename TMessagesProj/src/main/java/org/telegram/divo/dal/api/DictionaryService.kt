@@ -1,7 +1,6 @@
 package org.telegram.divo.dal.api
 
-import okhttp3.ResponseBody
-import retrofit2.Response
+import org.telegram.divo.dal.dto.payment.PaymentsResponse
 import retrofit2.http.GET
 
 /**
@@ -9,13 +8,10 @@ import retrofit2.http.GET
  */
 interface DictionaryService {
 
-    @GET("dictionary/gender")
-    suspend fun getGenders(): Response<ResponseBody>
-
-    @GET("dictionary/appearances")
-    suspend fun getAppearances(): Response<ResponseBody>
-
     @GET("dictionary/payments")
-    suspend fun getPayments(): Response<ResponseBody>
+    suspend fun getPayments(): PaymentsResponse
+
+    @GET("dictionary/feed-report-types")
+    suspend fun getFeedReportTypes(): org.telegram.divo.dal.dto.user.ReportTypesResponse
 }
 

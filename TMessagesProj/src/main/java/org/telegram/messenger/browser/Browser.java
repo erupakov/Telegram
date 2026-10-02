@@ -207,14 +207,14 @@ public class Browser {
         if (link.startsWith("@")) {
             return link.substring(1);
         }
-        if (link.startsWith("t.me/")) {
-            return link.substring(5);
+        if (link.startsWith("t.me/") || link.startsWith("t.divo.global/")) {
+            return link.substring(link.indexOf('/') + 1);
         }
-        if (link.startsWith("http://t.me/")) {
-            return link.substring(12);
+        if (link.startsWith("http://t.me/") || link.startsWith("http://t.divo.global/")) {
+            return link.substring(link.indexOf("://") + 3 + link.substring(link.indexOf("://") + 3).indexOf('/') + 1);
         }
-        if (link.startsWith("https://t.me/")) {
-            return link.substring(13);
+        if (link.startsWith("https://t.me/") || link.startsWith("https://t.divo.global/")) {
+            return link.substring(link.indexOf("://") + 3 + link.substring(link.indexOf("://") + 3).indexOf('/') + 1);
         }
         Matcher prefixMatcher = LaunchActivity.PREFIX_T_ME_PATTERN.matcher(link);
         if (prefixMatcher.find()) {
@@ -680,7 +680,7 @@ public class Browser {
 
         Matcher prefixMatcher = LaunchActivity.PREFIX_T_ME_PATTERN.matcher(host);
         if (prefixMatcher.find()) {
-            uri = Uri.parse("https://t.me/" + prefixMatcher.group(1) + (TextUtils.isEmpty(uri.getPath()) ? "" : "/" + uri.getPath()) + (TextUtils.isEmpty(uri.getQuery()) ? "" : "?" + uri.getQuery()));
+            uri = Uri.parse("https://t.divo.global/" + prefixMatcher.group(1) + (TextUtils.isEmpty(uri.getPath()) ? "" : "/" + uri.getPath()) + (TextUtils.isEmpty(uri.getQuery()) ? "" : "?" + uri.getQuery()));
 
             host = uri.getHost();
             host = host != null ? host.toLowerCase() : "";
@@ -697,7 +697,7 @@ public class Browser {
 
             }
             return true;
-        } else if ("tg".equals(uri.getScheme())) {
+        } else if ("tg".equals(uri.getScheme()) || "dg".equals(uri.getScheme())) {
             return true;
         } else if ("telegram.dog".equals(host)) {
             String path = uri.getPath();
@@ -714,7 +714,7 @@ public class Browser {
                 }
                 return true;
             }
-        } else if ("telegram.me".equals(host) || "t.me".equals(host)) {
+        } else if ("telegram.me".equals(host) || "t.me".equals(host) || "t.divo.global".equals(host) || "divo.global".equals(host)) {
             String path = uri.getPath();
             if (path != null && path.length() > 1) {
                 if (all) {

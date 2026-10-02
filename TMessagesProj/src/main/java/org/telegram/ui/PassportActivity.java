@@ -2887,7 +2887,7 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
                     }
                     return true;
                 });
-                inputFields[a].setText(LocaleController.getString(R.string.ChooseCountry));
+                inputFields[a].setText(LocaleController.getString(R.string.ChooseCountryLabel));
                 inputFields[a].setInputType(0);
                 inputFields[a].setFocusable(false);
             } else {
@@ -2936,7 +2936,7 @@ public class PassportActivity extends BaseFragment implements NotificationCenter
                         if (text.length() == 0) {
                             phoneField.setHintText(null);
                             phoneField.setHint(LocaleController.getString(R.string.PaymentShippingPhoneNumber));
-                            inputFields[FIELD_PHONECOUNTRY].setText(LocaleController.getString(R.string.ChooseCountry));
+                            inputFields[FIELD_PHONECOUNTRY].setText(LocaleController.getString(R.string.ChooseCountryLabel));
                         } else {
                             String country;
                             boolean ok = false;
