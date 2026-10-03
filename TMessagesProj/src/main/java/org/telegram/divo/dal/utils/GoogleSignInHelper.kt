@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.dal.dto.auth.SocialLoginRequest
@@ -37,6 +38,7 @@ import kotlin.coroutines.resume
 object GoogleSignInHelper {
 
     private const val TAG = "GoogleSignInHelper"
+    private const val TELEGRAM_AUTH_TIMEOUT_MS = 30_000L
 
     interface GoogleSignInCallback {
         /** User exists on backend — fully authenticated, accessToken saved. */
@@ -119,7 +121,7 @@ object GoogleSignInHelper {
                         return@launch
                     }
 
-                    val authResponse = doTelegramAuth(dummyPhone, currentAccount)
+                    val authResponse = doTelegramAuthWithTimeout(dummyPhone, currentAccount)
                     
                     withContext(Dispatchers.Main) {
                         if (authResponse != null) {
@@ -145,7 +147,7 @@ object GoogleSignInHelper {
                         return@launch
                     }
 
-                    val authResponse = doTelegramAuth(newDummyPhone, currentAccount)
+                    val authResponse = doTelegramAuthWithTimeout(newDummyPhone, currentAccount)
                     
                     withContext(Dispatchers.Main) {
                         if (authResponse != null) {
@@ -170,8 +172,28 @@ object GoogleSignInHelper {
         return Runnable { job.cancel() }
     }
 
+    /**
+     * The Teamgram requests have no timeout of their own: if the server is unreachable the client keeps
+     * reconnecting forever and the Google button spins endlessly. Give up after [TELEGRAM_AUTH_TIMEOUT_MS]
+     * and report an error instead (null -> ErrorTelegramAuthFailed).
+     */
+    private suspend fun doTelegramAuthWithTimeout(phone: String, currentAccount: Int): TLRPC.TL_auth_authorization? {
+        val result = withTimeoutOrNull(TELEGRAM_AUTH_TIMEOUT_MS) { doTelegramAuth(phone, currentAccount) }
+        if (result == null) {
+            Log.e(TAG, "Teamgram auth failed or timed out for $phone")
+        }
+        return result
+    }
+
     private suspend fun doTelegramAuth(phone: String, currentAccount: Int): TLRPC.TL_auth_authorization? {
         return suspendCancellableCoroutine { continuation ->
+            // Id of the request in flight, so a timeout can cancel it
+            var pendingRequestId = 0
+            continuation.invokeOnCancellation {
+                if (pendingRequestId != 0) {
+                    ConnectionsManager.getInstance(currentAccount).cancelRequest(pendingRequestId, true)
+                }
+            }
             val sendCode = TLRPC.TL_auth_sendCode().apply {
                 api_hash = BuildVars.APP_HASH
                 api_id = BuildVars.APP_ID
@@ -184,7 +206,7 @@ object GoogleSignInHelper {
                 }
             }
             
-            ConnectionsManager.getInstance(currentAccount).sendRequest(
+            pendingRequestId = ConnectionsManager.getInstance(currentAccount).sendRequest(
                 sendCode,
                 { response, error ->
                     if (error != null) {
@@ -198,7 +220,7 @@ object GoogleSignInHelper {
                             phone_code_hash = response.phone_code_hash
                             phone_code = "12345"
                         }
-                        ConnectionsManager.getInstance(currentAccount).sendRequest(
+                        pendingRequestId = ConnectionsManager.getInstance(currentAccount).sendRequest(
                             signIn,
                             { signInResponse, signInError ->
                                 if (signInError != null) {
@@ -222,7 +244,7 @@ object GoogleSignInHelper {
                                             first_name = "User"
                                             last_name = ""
                                         }
-                                        ConnectionsManager.getInstance(currentAccount).sendRequest(
+                                        pendingRequestId = ConnectionsManager.getInstance(currentAccount).sendRequest(
                                             signUp,
                                             { signUpResponse, signUpError ->
                                                 if (signUpError != null || signUpResponse !is TLRPC.TL_auth_authorization) {
