@@ -329,7 +329,8 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         telegramLogoView.setTextSize(24);
         telegramLogoView.setTextColor(0xFF222222);
         telegramLogoView.setTypeface(AndroidUtilities.getTypeface("fonts/helvetica_neue_lt_com_77_bold_condensed.ttf"));
-        telegramLogoView.setText(context.getString(R.string.Chats).toUpperCase());
+        // Same localized title as the chats action bar (DialogsActivity), not the system-locale resource
+        telegramLogoView.setText(LocaleController.getString(R.string.DivoMainTabsChats).toUpperCase());
         addView(telegramLogoView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
 
         statusDrawable = new AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable(null, dp(26));
@@ -917,7 +918,13 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
             titleView.setScaleY(lerp(1f, 0.95f, subtitleOverlayContainer.getTotalVisibility()));
             titleView.setTranslationY(bottomY + AndroidUtilities.dp(14) - offset + AndroidUtilities.dp(FAKE_TOP_PADDING) - dp(6) * subtitleOverlayContainer.getTotalVisibility());
             int cellWidth = dp(72);
-            lastViewRight += -cellWidth + getAvatarRight(cellWidth, collapsedProgress) + dp(12);
+            if (lastViewRight == 0) {
+                // DIVO: the row is shown even without stories; with no mini avatars put the title where the
+                // action bar title is instead of computing it from a non-existent avatar (went off-screen)
+                lastViewRight = dp(AndroidUtilities.isTablet() ? 26 : 18);
+            } else {
+                lastViewRight += -cellWidth + getAvatarRight(cellWidth, collapsedProgress) + dp(12);
+            }
             titleView.setTranslationX(lastViewRight);
             titleView.getDrawable().setRightPadding(lastViewRight - dp(12) + actionBar.menu.getVisibleItemsMeasuredWidthWithAlpha() * progress);
 
