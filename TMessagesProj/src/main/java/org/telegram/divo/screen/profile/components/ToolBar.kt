@@ -113,6 +113,8 @@ fun ToolBarContent(
     onManageWorkExperienceClicked: () -> Unit = {},
     onFindSimilarProfiles: () -> Unit = {},
     onReportProfile: () -> Unit = {},
+    onBlockProfile: () -> Unit = {},
+    onUnblockProfile: () -> Unit = {},
     onDeleteProfileClicked: () -> Unit = {},
     isSolid: Boolean = false,
     showBackButton: Boolean = true,
@@ -127,7 +129,12 @@ fun ToolBarContent(
 
     val options = listOf(
         PopupMenuItem(R.string.FindSimilarProfiles, onFindSimilarProfiles, R.drawable.ic_divo_face_rec),
-        PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report)
+        PopupMenuItem(R.string.ReportThisProfile, onReportProfile, R.drawable.ic_divo_report),
+        if (uiState.isBlocked) {
+            PopupMenuItem(R.string.DivoUnblockUser, onUnblockProfile, R.drawable.ic_divo_block)
+        } else {
+            PopupMenuItem(R.string.BlockProfile, onBlockProfile, R.drawable.ic_divo_block)
+        }
     )
 
     val editOptions = remember(uiState.userId, uiState.isModel) {

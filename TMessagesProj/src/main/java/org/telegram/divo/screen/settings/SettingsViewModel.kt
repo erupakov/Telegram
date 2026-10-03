@@ -23,6 +23,15 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
         }
     }
 
+    val blockedUsersPaginator = OffsetPaginator { offset, limit ->
+        val result = DivoApi.userRepository.getBlockedUsers(offset = offset, limit = limit)
+        if (result is DivoResult.Success) {
+            result.value
+        } else {
+            throw Exception(result.getErrorMessage())
+        }
+    }
+
     init {
         DivoAnalytics.logEvent(AnalyticsEvent.SettingsOpened())
         viewModelScope.launch {
@@ -85,6 +94,17 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
             SettingsViewIntent.OnCloseSavedProfilesSheet -> {
                 setState { copy(isSavedProfilesSheetVisible = false) }
             }
+            SettingsViewIntent.OnBlockedUsersClicked -> {
+                logOptionTapped("blocked_users")
+                setState { copy(isBlockedUsersSheetVisible = true) }
+                viewModelScope.launch {
+                    blockedUsersPaginator.loadInitial()
+                }
+            }
+            SettingsViewIntent.OnCloseBlockedUsersSheet -> {
+                setState { copy(isBlockedUsersSheetVisible = false) }
+            }
+            is SettingsViewIntent.OnUnblockUser -> unblockUser(intent.userId)
             SettingsViewIntent.OnNotificationsClicked -> {
                 logOptionTapped("notifications")
                 sendEffect(SettingsViewEffect.NavigateToNotifications)
@@ -131,6 +151,18 @@ class SettingsViewModel : BaseViewModel<SettingsViewState, SettingsViewIntent, S
                         DivoApi.userRepository.updateProfile(updatedUser)
                     }
                 }
+            }
+        }
+    }
+
+    private fun unblockUser(userId: Int) {
+        viewModelScope.launch {
+            val result = DivoApi.userRepository.unblockUser(userId)
+            if (result is DivoResult.Success) {
+                DivoAnalytics.logEvent(AnalyticsEvent.UserUnblocked(userId.toLong()))
+                blockedUsersPaginator.loadInitial(clearItems = false)
+            } else {
+                sendEffect(SettingsViewEffect.ShowError(result.getErrorMessage()))
             }
         }
     }

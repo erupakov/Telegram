@@ -68,6 +68,7 @@ data class ProfileViewState(
 
     val reportTypes: Map<String, String>? = null,
     val showReportSheet: Boolean = false,
+    val isBlocked: Boolean = false,
 
     val portfolioLoading: Boolean = false,
     val mediaUploading: Boolean = false,
@@ -239,6 +240,8 @@ sealed class ProfileIntent : ViewIntent {
     class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
     class OnFindSimilarProfiles(val photoUrl: String, val profileId: Int) : ProfileIntent()
     object OnDeleteProfileConfirmed : ProfileIntent()
+    object OnBlockConfirmed : ProfileIntent()
+    object OnUnblockClicked : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
