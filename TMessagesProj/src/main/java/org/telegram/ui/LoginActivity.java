@@ -741,7 +741,10 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
         });
         roleSelectionView.setOnFinish((TLRPC.TL_auth_authorization authResponse) -> {
             forceRoleSelection = false;
-            onAuthSuccess(authResponse, true);
+            // DIVO: registration finish also runs for Telegram accounts that already exist (new device,
+            // Google login, unfinished Divo profile). Treat it as a sign-up only when this flow really
+            // created the Telegram account, otherwise dialogs/channels would never load from the server.
+            onAuthSuccess(authResponse, telegramAccountCreated);
             return kotlin.Unit.INSTANCE;
         });
 
@@ -790,6 +793,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             if (!isGoogleFlow && savedInstanceState.containsKey("isGoogleFlow")) isGoogleFlow = savedInstanceState.getBoolean("isGoogleFlow", false);
             if (!googleAutoLogin && savedInstanceState.containsKey("googleAutoLogin")) googleAutoLogin = savedInstanceState.getBoolean("googleAutoLogin", false);
             if (!forceRoleSelection && savedInstanceState.containsKey("forceRoleSelection")) forceRoleSelection = savedInstanceState.getBoolean("forceRoleSelection", false);
+            if (!telegramAccountCreated) telegramAccountCreated = savedInstanceState.getBoolean("telegramAccountCreated", false);
             if (googleFirebaseUid == null && savedInstanceState.containsKey("googleFirebaseUid")) googleFirebaseUid = savedInstanceState.getString("googleFirebaseUid");
             if (googleEmail == null && savedInstanceState.containsKey("googleEmail")) googleEmail = savedInstanceState.getString("googleEmail");
             if (googleDummyPhone == null && savedInstanceState.containsKey("googleDummyPhone")) googleDummyPhone = savedInstanceState.getString("googleDummyPhone");
@@ -1826,6 +1830,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
             bundle.putBoolean("isGoogleFlow", isGoogleFlow);
             bundle.putBoolean("googleAutoLogin", googleAutoLogin);
             bundle.putBoolean("forceRoleSelection", forceRoleSelection);
+            bundle.putBoolean("telegramAccountCreated", telegramAccountCreated);
             if (googleFirebaseUid != null) bundle.putString("googleFirebaseUid", googleFirebaseUid);
             if (googleEmail != null) bundle.putString("googleEmail", googleEmail);
             if (googleDummyPhone != null) bundle.putString("googleDummyPhone", googleDummyPhone);
@@ -1911,6 +1916,8 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
     private AlertDialog divoAuthProgressDialog;
     // DIVO: Divo account was already resolved (logged in and linked) for the current Telegram authorization
     private boolean divoAccountResolved;
+    // DIVO: true only when auth.signUp created the Telegram account in this login flow
+    private boolean telegramAccountCreated;
 
     private void onAuthSuccess(TLRPC.TL_auth_authorization res) {
         onAuthSuccess(res, false);
@@ -5384,6 +5391,7 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                                             MessagesStorage.getInstance(currentAccount).cleanup(true);
                                             
                                             params.putLong("telegramUserId", authResult.user.id);
+                                            telegramAccountCreated = true;
 
                                             // DIVO: the Telegram account is new, but a Divo account for this phone may already
                                             // exist (e.g. the Telegram account was deleted earlier). Use and re-link it instead
