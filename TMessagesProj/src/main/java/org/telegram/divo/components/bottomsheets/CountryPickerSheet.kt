@@ -125,7 +125,7 @@ fun CountryPickerSheet(
                         .background(AppTheme.colors.onBackground),
                     contentPadding = PaddingValues(bottom = 8.dp)
                 ) {
-                    itemsIndexed(filteredList, key = { i, c -> c.code }) { index, item ->
+                    itemsIndexed(filteredList, key = { _, c -> "${c.shortName}_${c.code}" }) { index, item ->
                         val isSelected = currentSelection.contains(item)
 
                         Row(
