@@ -42,14 +42,15 @@ class UserDataDto(
     @SerializedName("isRegistrationFinished") val isRegistrationFinished: Boolean,
     @SerializedName("model") val model: ModelDto?,
     @SerializedName("agency") val agency: AgencyDto?,
-    @SerializedName("statistic") val statistic: StatisticDto,
+    // Null for some profiles (e.g. a blocked user), so keep these nullable
+    @SerializedName("statistic") val statistic: StatisticDto?,
     @SerializedName("isFavorite") val isFavorite: Boolean,
     @SerializedName("isFollowed") val isFollowed: Boolean,
     @SerializedName("isLikedByUser") val isLikedByUser: Boolean?,
     @SerializedName("is_premium") val isPremium: Boolean,
     @SerializedName("isVerified") val isVerified: Boolean?,
     @SerializedName("userRatingStatus") val userRatingStatus: String?,
-    @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>,
+    @SerializedName("userSocialNetworks") val userSocialNetworks: List<UserSocialNetworkDto>?,
     @SerializedName("customer") val customer: CustomerDto?,
     @SerializedName("agencyEmployee") val agencyEmployee: AgencyEmployeeDto?,
     @SerializedName("telegramId") val telegramId: Long?,
@@ -196,7 +197,7 @@ fun UserDataDto.toEntity(channels: List<org.telegram.divo.entity.UserChannel> = 
         customer = resolvedCustomer,
         agency = resolvedAgency,
 //        agencyEmployee = agencyEmployee,
-        statistic = statistic.toEntity(),
+        statistic = statistic?.toEntity() ?: Statistic(),
         isFavorite = isFavorite,
         isFollowed = isFollowed,
         isLikedByUser = isLikedByUser ?: false,
@@ -206,7 +207,7 @@ fun UserDataDto.toEntity(channels: List<org.telegram.divo.entity.UserChannel> = 
         telegramId = telegramId,
         telegramAccessHash = resolvedTgAccessHash,
         telegramUsername = resolvedTgUsername,
-        userSocialNetworks = userSocialNetworks.toEntities(),
+        userSocialNetworks = userSocialNetworks.orEmpty().toEntities(),
         channels = channels
     )
 }

@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.event_list
 
+import org.telegram.divo.common.compose.popBackStackOrElse
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -113,7 +114,7 @@ fun EventsNavGraph(
                 },
                 onCloseSearch = {
                     viewModel.handleIntent(EventListIntent.OnCloseSearch)
-                    nav.popBackStack()
+                    nav.popBackStackOrElse()
                 },
                 onSearchQueryChanged = {
                     viewModel.handleIntent(EventListIntent.OnSearchQueryChanged(it))
@@ -142,7 +143,7 @@ fun EventsNavGraph(
             val editingEventId = entry.arguments?.getInt("eventId")?.takeIf { it > 0 }
             CreateEventScreen(
                 editingEventId = editingEventId,
-                onBack = { nav.popBackStack() },
+                onBack = { nav.popBackStackOrElse() },
                 onPreviewClicked = {
                     nav.navigate(EventRoute.EventPreview.route)
                 },
@@ -163,7 +164,7 @@ fun EventsNavGraph(
                 onPublish = {
                     nav.popBackStack(EventRoute.Events.route, inclusive = false)
                 },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStackOrElse() }
             )
         }
         composable(
@@ -179,9 +180,9 @@ fun EventsNavGraph(
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToEditEvent = { nav.navigate(EventRoute.CreateEvent.createRoute(it)) },
                 onEventDeleted = {
-                    nav.popBackStack()
+                    nav.popBackStackOrElse()
                 },
-                onNavigateBack = { nav.popBackStack() },
+                onNavigateBack = { nav.popBackStackOrElse() },
             )
         }
         composable(
@@ -191,8 +192,8 @@ fun EventsNavGraph(
             val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
             org.telegram.divo.screen.apply_confirmation.ApplyConfirmationScreen(
                 eventId = eventId,
-                onSuccessDismiss = { nav.popBackStack() },
-                onBack = { nav.popBackStack() }
+                onSuccessDismiss = { nav.popBackStackOrElse() },
+                onBack = { nav.popBackStackOrElse() }
             )
         }
     }

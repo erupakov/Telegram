@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.profile
 
+import org.telegram.divo.common.compose.popBackStackOrElse
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -172,7 +173,7 @@ fun ProfileNavGraph(
                 onEditClicked = { isModel, initialPage ->
                     nav.navigate(ProfileRoute.Edit.createRoute(isModel, initialPage)) },
                 onEditLinksClicked = { nav.navigate(ProfileRoute.EditLinks.route) },
-                onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() },
+                onNavigateBack = { nav.popBackStackOrElse(onNavigateBack) },
                 showWorkHistory = { nav.navigate(ProfileRoute.WorkHistory.create(it)) },
                 onGalleryClicked = { index, isVideo ->
                     if (isVideo) {
@@ -219,13 +220,13 @@ fun ProfileNavGraph(
                 isModel = isModel,
                 initialPage = initialPage,
                 onCreateWorkHistoryClicked = { nav.navigate(ProfileRoute.CreateWorkHistory.create(it)) },
-                onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
+                onCloseScreen = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
 
         composable(ProfileRoute.EditLinks.route) {
             ProfileSocialLinksScreen(
-                onCloseScreen = { if (!nav.popBackStack()) onNavigateBack() }
+                onCloseScreen = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
 
@@ -241,7 +242,7 @@ fun ProfileNavGraph(
                 onCreateClicked = { id ->
                     nav.navigate(ProfileRoute.CreateWorkHistory.create(id))
                 },
-                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+                onBack = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
 
@@ -254,7 +255,7 @@ fun ProfileNavGraph(
             CreateWorkHistoryScreen(
                 editId = editId,
                 onNavigateToSearch = { nav.navigate(ProfileRoute.Search.route) },
-                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+                onBack = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
 
@@ -279,7 +280,7 @@ fun ProfileNavGraph(
             GalleryViewerScreen(
                 source = source,
                 isOwnProfile = isOwnProfile,
-                onBack = { if (!nav.popBackStack()) onNavigateBack() },
+                onBack = { nav.popBackStackOrElse(onNavigateBack) },
             )
         }
 
@@ -287,7 +288,7 @@ fun ProfileNavGraph(
             route = ProfileRoute.Search.route,
         ) {
             SearchAgencyScreen(
-                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+                onBack = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
 
@@ -295,7 +296,7 @@ fun ProfileNavGraph(
             YourParametersScreen(
                 showTitle = false,
                 showTopBar = true,
-                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+                onBack = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
         composable(
@@ -311,9 +312,9 @@ fun ProfileNavGraph(
                 onNavigateToEditEvent = { nav.navigate(ProfileRoute.CreateEvent.createRoute(it)) },
                 onEventDeleted = {
                     nav.previousBackStackEntry?.savedStateHandle?.set("needsRefresh", true)
-                    if (!nav.popBackStack()) onNavigateBack()
+                    nav.popBackStackOrElse(onNavigateBack)
                 },
-                onNavigateBack = { if (!nav.popBackStack()) onNavigateBack() }
+                onNavigateBack = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
         composable(
@@ -339,7 +340,7 @@ fun ProfileNavGraph(
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ProfileRoute.Profile.createRoute(it)) },
-                onBack = { nav.popBackStack() },
+                onBack = { nav.popBackStackOrElse() },
                 onClose = { onNavigateToModels() }
             )
         }
@@ -361,7 +362,7 @@ fun ProfileNavGraph(
                     }
                 },
                 onNavigateToSearch = {  },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStackOrElse() }
             )
         }
         composable(
@@ -375,7 +376,7 @@ fun ProfileNavGraph(
 
             AppearanceScreen(
                 params = ParamsHolder.params,
-                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+                onBack = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
         composable(
@@ -391,7 +392,7 @@ fun ProfileNavGraph(
                 onPreviewClicked = {
                     nav.navigate(ProfileRoute.EventPreview.route)
                 },
-                onBack = { nav.popBackStack() },
+                onBack = { nav.popBackStackOrElse() },
                 onEventPublished = {
                     nav.popBackStack(ProfileRoute.Profile.route, inclusive = false)
                 }
@@ -409,7 +410,7 @@ fun ProfileNavGraph(
                 onPublish = {
                     nav.popBackStack(ProfileRoute.Profile.route, inclusive = false)
                 },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStackOrElse() }
             )
         }
         composable(
@@ -419,8 +420,8 @@ fun ProfileNavGraph(
             val eventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
             org.telegram.divo.screen.apply_confirmation.ApplyConfirmationScreen(
                 eventId = eventId,
-                onSuccessDismiss = { nav.popBackStack() },
-                onBack = { nav.popBackStack() }
+                onSuccessDismiss = { nav.popBackStackOrElse() },
+                onBack = { nav.popBackStackOrElse() }
             )
         }
     }

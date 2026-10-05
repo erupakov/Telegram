@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.models
 
+import org.telegram.divo.common.compose.popBackStackOrElse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import android.net.Uri
@@ -123,7 +124,7 @@ fun ModelsNavGraph(
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToChat = onNavigateToChat,
                 onNavigateToCreateChannel = onNavigateToCreateChannel,
-                onNavigateBack = { nav.popBackStack() },
+                onNavigateBack = { nav.popBackStackOrElse() },
                 onNavigateToModels = { nav.popBackStack(ModelsRoute.Models.route, inclusive = false) }
             )
         }
@@ -149,7 +150,7 @@ fun ModelsNavGraph(
 
             GalleryViewerScreen(
                 source = source,
-                onBack = { nav.popBackStack() },
+                onBack = { nav.popBackStackOrElse() },
             )
         }
 
@@ -163,7 +164,7 @@ fun ModelsNavGraph(
                 onNavigateToSimilarProfiles = { uri, filtersJson ->
                     nav.navigate(ModelsRoute.SimilarProfiles.createRoute(uri, filtersJson = filtersJson))
                 },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStackOrElse() }
             )
         }
 
@@ -181,7 +182,7 @@ fun ModelsNavGraph(
                     }
                 },
                 onNavigateToSearch = {  },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStackOrElse() }
             )
         }
 
@@ -208,7 +209,7 @@ fun ModelsNavGraph(
                 fx = fx,
                 fy = fy,
                 onProfileClicked = { nav.navigate(ModelsRoute.Profile.createRoute(it)) },
-                onBack = { nav.popBackStack() },
+                onBack = { nav.popBackStackOrElse() },
                 onClose = { nav.popBackStack(ModelsRoute.Models.route, inclusive = false) }
             )
         }
@@ -220,7 +221,7 @@ fun ModelsNavGraph(
                 onSimilarityProfileClicked = { uri, filtersJson ->
                     nav.navigate(ModelsRoute.SimilarProfiles.createRoute(uri, filtersJson = filtersJson))
                 },
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStackOrElse() }
             )
         }
     }
