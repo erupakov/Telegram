@@ -46,7 +46,7 @@ import kotlinx.coroutines.launch
 import org.telegram.divo.common.controllers.AppSnackbarHost
 import org.telegram.divo.common.controllers.AppSnackbarHostState
 import org.telegram.divo.common.controllers.SnackbarEvent.*
-import org.telegram.divo.common.controllers.rememberGalleryLauncher
+import org.telegram.divo.common.controllers.rememberAvatarCropLauncher
 import org.telegram.divo.common.utils.uriToFile
 import org.telegram.divo.components.bottomsheets.CountryPickerSheet
 import org.telegram.divo.components.navigation.DivoTabSelector
@@ -247,13 +247,16 @@ fun EditMyProfileScreenView(
     var fName by rememberSaveable { mutableStateOf(uiState.fName) }
     var lName by rememberSaveable { mutableStateOf(uiState.lName) }
     var bio by rememberSaveable { mutableStateOf(uiState.bio) }
+    // Original photo (profile header, cards) and its circle crop (avatar)
+    var selectedPhotoUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     var selectedAvatarUri by rememberSaveable { mutableStateOf<Uri?>(null) }
     
     var showCountrySheet by rememberSaveable { mutableStateOf(false) }
     var showCitySheet by rememberSaveable { mutableStateOf(false) }
 
-    val openGallery = rememberGalleryLauncher { uri ->
-        selectedAvatarUri = uri
+    val openGallery = rememberAvatarCropLauncher { original, cropped ->
+        selectedPhotoUri = original
+        selectedAvatarUri = cropped
     }
     val context = LocalContext.current
 
@@ -455,7 +458,8 @@ fun EditMyProfileScreenView(
                                     fName = fName,
                                     lName = lName,
                                     bio = bio,
-                                    file = selectedAvatarUri?.let { context.uriToFile(it) }
+                                    file = selectedPhotoUri?.let { context.uriToFile(it) },
+                                    avatarFile = selectedAvatarUri?.takeIf { it != selectedPhotoUri }?.let { context.uriToFile(it) }
                                 )
                             )
                         })
