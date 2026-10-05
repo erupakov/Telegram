@@ -691,8 +691,22 @@ private fun ProfileScreenContent(
             isTabsPinned = isTabsPinned
         )
 
+        // Background: pick, then crop to the header's shape (full width x half the screen height)
+        var backgroundToCrop by remember { mutableStateOf<android.net.Uri?>(null) }
         val openGalleryForBg = rememberGalleryLauncher { uri ->
-            onIntent(ProfileIntent.OnBackgroundPhotoSelected(context.uriToFile(uri)))
+            backgroundToCrop = uri
+        }
+        backgroundToCrop?.let { uri ->
+            val configuration = LocalConfiguration.current
+            org.telegram.divo.components.media.ImageCropDialog(
+                uri = uri,
+                aspectRatio = configuration.screenWidthDp / (configuration.screenHeightDp * 0.5f),
+                onCropped = { file ->
+                    backgroundToCrop = null
+                    onIntent(ProfileIntent.OnBackgroundPhotoSelected(Result.success(file)))
+                },
+                onDismiss = { backgroundToCrop = null }
+            )
         }
 
         ToolBarContent(
