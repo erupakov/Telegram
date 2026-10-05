@@ -124,6 +124,8 @@ data class RegistrationFormData(
     val showreelUrl: String = "",
     // Photo
     val photoUri: Uri? = null,
+    // Circle crop of photoUri, used as the avatar (null: photoUri is the avatar too)
+    val avatarUri: Uri? = null,
 )
 
 // Шаги — определяются по subRole
