@@ -50,7 +50,11 @@ import org.telegram.messenger.R
 fun SavedProfilesBottomSheet(
     paginator: OffsetPaginator<SavedProfile>,
     onDismiss: () -> Unit,
-    onProfileClick: (Int) -> Unit
+    onProfileClick: (Int) -> Unit,
+    title: String = stringResource(R.string.SavedProfilesLabel),
+    emptyText: String = stringResource(R.string.SavedProfilesEmpty),
+    actionLabel: String? = null,
+    onAction: ((Int) -> Unit)? = null,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val paginatorState by paginator.state.collectAsState()
@@ -84,7 +88,7 @@ fun SavedProfilesBottomSheet(
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = stringResource(R.string.SavedProfilesLabel),
+                text = title,
                 style = AppTheme.typography.helveticaNeueLtCom,
                 fontSize = 20.sp,
                 color = Color.Black
@@ -100,7 +104,7 @@ fun SavedProfilesBottomSheet(
                 Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                     Text(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        text = stringResource(R.string.SavedProfilesEmpty),
+                        text = emptyText,
                         style = AppTheme.typography.helveticaNeueLtCom,
                         fontSize = 24.sp,
                         color = AppTheme.colors.textPrimary
@@ -135,7 +139,9 @@ fun SavedProfilesBottomSheet(
                             onClick = {
                                 onProfileClick(profile.id)
                                 onDismiss()
-                            }
+                            },
+                            actionLabel = actionLabel,
+                            onAction = onAction?.let { action -> { action(profile.id) } }
                         )
                     }
 
@@ -155,7 +161,9 @@ fun SavedProfilesBottomSheet(
 @Composable
 private fun SavedProfileItem(
     profile: SavedProfile,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    actionLabel: String? = null,
+    onAction: (() -> Unit)? = null,
 ) {
     Row(
         modifier = Modifier
@@ -174,7 +182,7 @@ private fun SavedProfileItem(
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = profile.fullName,
                 style = AppTheme.typography.bodyLarge,
@@ -191,6 +199,26 @@ private fun SavedProfileItem(
                 fontSize = 14.sp,
                 color = AppTheme.colors.textHintColor
             )
+        }
+
+        if (actionLabel != null && onAction != null) {
+            Spacer(modifier = Modifier.width(12.dp))
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(100.dp))
+                    .background(AppTheme.colors.textPrimary.copy(alpha = 0.08f))
+                    .clickable(onClick = onAction)
+                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = actionLabel,
+                    style = AppTheme.typography.bodyMedium,
+                    fontSize = 14.sp,
+                    color = AppTheme.colors.textPrimary,
+                    maxLines = 1
+                )
+            }
         }
     }
 }

@@ -60,6 +60,14 @@
     <string name="ReportThisProfile">Пожаловаться на профиль</string>
     <string name="ReportSent">Жалоба отправлена</string>
     <string name="BlockProfile">Заблокировать пользователя</string>
+    <string name="DivoUnblockUser">Разблокировать пользователя</string>
+    <string name="DivoUnblock">Разблокировать</string>
+    <string name="DivoBlockUserTitle">Заблокировать %1$s?</string>
+    <string name="DivoBlockUserDescription">Пользователь не сможет видеть ваш профиль и писать вам, взаимные подписки будут отменены. Он не получит уведомления.</string>
+    <string name="DivoUserBlocked">Пользователь заблокирован</string>
+    <string name="DivoUserUnblocked">Пользователь разблокирован</string>
+    <string name="DivoBlockedUsers">Заблокированные</string>
+    <string name="DivoBlockedUsersEmpty">Нет заблокированных пользователей</string>
     <string name="SearchByName">Поиск по имени или @нику</string>
     <string name="YearsOld">лет</string>
     <string name="NotBio">Эта модель еще не заполнила раздел \"О себе\"</string>

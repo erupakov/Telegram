@@ -155,6 +155,18 @@ fun SettingsScreen(
         )
     }
 
+    if (state.isBlockedUsersSheetVisible) {
+        SavedProfilesBottomSheet(
+            paginator = viewModel.blockedUsersPaginator,
+            title = stringResource(R.string.DivoBlockedUsers),
+            emptyText = stringResource(R.string.DivoBlockedUsersEmpty),
+            actionLabel = stringResource(R.string.DivoUnblock),
+            onAction = { userId -> viewModel.setIntent(SettingsViewIntent.OnUnblockUser(userId)) },
+            onDismiss = { viewModel.setIntent(SettingsViewIntent.OnCloseBlockedUsersSheet) },
+            onProfileClick = { userId -> navigateToProfile(userId) }
+        )
+    }
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize(),
@@ -260,6 +272,15 @@ fun SettingsScreen(
                             title = stringResource(R.string.PrivacyAndSecurityLabel),
                             iconResId = R.drawable.ic_divo_settings_privacy_and_security,
                             intent = SettingsViewIntent.OnPrivacyClicked
+                        ),
+                        viewModel = viewModel
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(start = 39.dp), color = dividerColor)
+                    SettingsItemRow(
+                        item = SettingsItem(
+                            title = stringResource(R.string.DivoBlockedUsers),
+                            iconResId = R.drawable.ic_divo_block,
+                            intent = SettingsViewIntent.OnBlockedUsersClicked
                         ),
                         viewModel = viewModel
                     )
