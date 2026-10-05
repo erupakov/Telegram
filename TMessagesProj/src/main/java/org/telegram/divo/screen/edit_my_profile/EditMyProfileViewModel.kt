@@ -113,10 +113,6 @@ class EditMyProfileViewModel(
                 var photoUuid = userInfo.photoUuid
                 var uploadedUuid = userInfo.avatarUuid
                 if (file != null) {
-                    // Telegram avatar is round, so it gets the crop as well
-                    (avatarFile ?: file).getOrNull()?.let {
-                        org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatar(currentAccount, it)
-                    }
                     photoUuid = uploadOrReport(file) ?: return@launch
                     uploadedUuid = if (avatarFile != null) uploadOrReport(avatarFile) ?: return@launch else photoUuid
                 }
@@ -161,6 +157,13 @@ class EditMyProfileViewModel(
 
                 when (result) {
                     is DivoResult.Success -> {
+                        if (file != null) {
+                            // Telegram avatar is round, so it gets the crop as well. Runs after the Divo
+                            // save (bottom bar avatar updates right away) and survives leaving the screen.
+                            (avatarFile ?: file).getOrNull()?.let {
+                                org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatarInBackground(currentAccount, it)
+                            }
+                        }
                         // Update TG profile name as well
                         org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramName(
                             currentAccount = currentAccount,
