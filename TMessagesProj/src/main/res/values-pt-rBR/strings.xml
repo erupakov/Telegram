@@ -67,6 +67,14 @@
     <string name="ReportThisProfile">Denunciar este perfil</string>
     <string name="ReportSent">Denúncia enviada</string>
     <string name="BlockProfile">Bloquear usuário</string>
+    <string name="DivoUnblockUser">Desbloquear usuário</string>
+    <string name="DivoUnblock">Desbloquear</string>
+    <string name="DivoBlockUserTitle">Bloquear %1$s?</string>
+    <string name="DivoBlockUserDescription">Essa pessoa não poderá ver seu perfil nem enviar mensagens, e vocês deixarão de se seguir. Ela não será notificada.</string>
+    <string name="DivoUserBlocked">Usuário bloqueado</string>
+    <string name="DivoUserUnblocked">Usuário desbloqueado</string>
+    <string name="DivoBlockedUsers">Usuários bloqueados</string>
+    <string name="DivoBlockedUsersEmpty">Nenhum usuário bloqueado</string>
     <string name="SearchByName">Buscar por nome ou @usuario</string>
     <string name="YearsOld">anos</string>
     <string name="NotBio">Este modelo não preencheu sua biografia</string>

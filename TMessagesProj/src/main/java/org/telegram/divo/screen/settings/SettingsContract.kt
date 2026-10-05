@@ -21,6 +21,7 @@ data class SettingsViewState(
     val phoneNumber: String = "",
     val measuringSystem: String = "",
     val isSavedProfilesSheetVisible: Boolean = false,
+    val isBlockedUsersSheetVisible: Boolean = false,
 ) : ViewState
 
 sealed class SettingsViewIntent : ViewIntent {
@@ -41,6 +42,9 @@ sealed class SettingsViewIntent : ViewIntent {
     data object OnMeasuringSystemClicked : SettingsViewIntent()
     data class OnChangeMeasuringSystem(val system: String) : SettingsViewIntent()
     data object OnQrCodeClicked : SettingsViewIntent()
+    data object OnBlockedUsersClicked : SettingsViewIntent()
+    data object OnCloseBlockedUsersSheet : SettingsViewIntent()
+    data class OnUnblockUser(val userId: Int) : SettingsViewIntent()
 }
 
 sealed class SettingsViewEffect : ViewEffect {

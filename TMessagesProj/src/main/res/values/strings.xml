@@ -69,6 +69,14 @@
     <string name="ReportThisProfile">Report this profile</string>
     <string name="ReportSent">Report sent</string>
     <string name="BlockProfile">Block user</string>
+    <string name="DivoUnblockUser">Unblock user</string>
+    <string name="DivoUnblock">Unblock</string>
+    <string name="DivoBlockUserTitle">Block %1$s?</string>
+    <string name="DivoBlockUserDescription">They won\'t be able to see your profile or message you, and you will stop following each other. They won\'t be notified.</string>
+    <string name="DivoUserBlocked">User blocked</string>
+    <string name="DivoUserUnblocked">User unblocked</string>
+    <string name="DivoBlockedUsers">Blocked users</string>
+    <string name="DivoBlockedUsersEmpty">No blocked users</string>
     <string name="SearchByName">Search by name or @handle</string>
     <string name="YearsOld">y.o.</string>
     <string name="NotBio">This model hasn\'t filled in their bio</string>

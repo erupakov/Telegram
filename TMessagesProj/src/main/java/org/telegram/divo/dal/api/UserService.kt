@@ -134,6 +134,21 @@ interface UserService {
         @Body request: org.telegram.divo.dal.dto.user.ReportProfileRequest
     ): EmptyResponse
 
+    @POST("user/block")
+    suspend fun blockUser(
+        @Body request: org.telegram.divo.dal.dto.user.UserBlockRequest
+    ): EmptyResponse
+
+    @POST("user/unblock")
+    suspend fun unblockUser(
+        @Body request: org.telegram.divo.dal.dto.user.UserBlockRequest
+    ): EmptyResponse
+
+    @POST("user/blocked")
+    suspend fun getBlockedUsers(
+        @Body request: org.telegram.divo.dal.dto.user.UserBlockedListRequest
+    ): com.google.gson.JsonObject
+
     @GET("channels/list")
     suspend fun getChannels(
         @Query("user_id") userId: Int

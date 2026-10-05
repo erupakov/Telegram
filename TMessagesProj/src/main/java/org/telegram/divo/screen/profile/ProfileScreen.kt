@@ -86,6 +86,7 @@ import org.telegram.divo.screen.profile.components.ToolBarBackground
 import org.telegram.divo.screen.profile.components.ToolBarContent
 import org.telegram.divo.screen.profile.components.VideoGrid
 import org.telegram.divo.style.AppTheme
+import androidx.compose.ui.res.stringResource
 import org.telegram.messenger.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -117,6 +118,7 @@ fun ProfileScreen(
     val snackbarState = remember { AppSnackbarHostState() }
     var withdrawEventId by remember { mutableStateOf<Int?>(null) }
     var showDeleteProfileDialog by remember { mutableStateOf(false) }
+    var showBlockProfileDialog by remember { mutableStateOf(false) }
 
     var isRefreshing by remember { mutableStateOf(false) }
 
@@ -233,6 +235,7 @@ fun ProfileScreen(
                         isRefreshing = isRefreshing,
                         showBackButton = showBackButton,
                         onDeleteProfileClicked = { showDeleteProfileDialog = true },
+                        onBlockProfileClicked = { showBlockProfileDialog = true },
                         onIntent = { intent ->
                             viewModel.setIntent(intent)
                         }
@@ -278,6 +281,19 @@ fun ProfileScreen(
                 }
             )
         }
+
+        if (showBlockProfileDialog) {
+            org.telegram.divo.screen.profile.components.DestructiveConfirmationDialog(
+                title = stringResource(R.string.DivoBlockUserTitle, uiState.userInfo.displayName),
+                description = stringResource(R.string.DivoBlockUserDescription),
+                confirmText = stringResource(R.string.BlockProfile),
+                onDismissRequest = { showBlockProfileDialog = false },
+                onConfirm = {
+                    showBlockProfileDialog = false
+                    viewModel.setIntent(ProfileIntent.OnBlockConfirmed)
+                }
+            )
+        }
     }
 }
 
@@ -289,6 +305,7 @@ private fun ProfileScreenContent(
     isRefreshing: Boolean,
     showBackButton: Boolean,
     onDeleteProfileClicked: () -> Unit,
+    onBlockProfileClicked: () -> Unit,
     onIntent: (ProfileIntent) -> Unit
 ) {
     val pageCount = uiState.pageCount
@@ -711,6 +728,8 @@ private fun ProfileScreenContent(
             onNavigateBack = { onIntent(ProfileIntent.OnNavigateBack) },
             onFindSimilarProfiles = { onIntent(ProfileIntent.OnFindSimilarProfiles(uiState.userInfo.photoUrl, uiState.userId)) },
             onReportProfile = { onIntent(ProfileIntent.OnReportProfileClicked) },
+            onBlockProfile = onBlockProfileClicked,
+            onUnblockProfile = { onIntent(ProfileIntent.OnUnblockClicked) },
             onDeleteProfileClicked = onDeleteProfileClicked
         )
 

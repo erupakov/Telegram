@@ -271,6 +271,8 @@ class ProfileViewModel(
                 sendEffect(ProfileEffect.NavigateToCreateChannel())
             }
             ProfileIntent.OnDeleteProfileConfirmed -> deleteProfile()
+            ProfileIntent.OnBlockConfirmed -> setBlocked(true)
+            ProfileIntent.OnUnblockClicked -> setBlocked(false)
         }
     }
 
@@ -615,6 +617,7 @@ class ProfileViewModel(
             observeOwnProfile()
         } else {
             loadOtherUserProfile()
+            loadBlockedState()
         }
     }
 
@@ -806,6 +809,43 @@ class ProfileViewModel(
             } else {
                 setState { copy(isLoading = false) }
                 sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
+    private fun loadBlockedState() {
+        viewModelScope.launch {
+            val result = DivoApi.userRepository.isUserBlocked(state.value.userId)
+            if (result is DivoResult.Success) {
+                setState { copy(isBlocked = result.value) }
+            }
+        }
+    }
+
+    private fun setBlocked(block: Boolean) {
+        val userId = state.value.userId
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            val result = if (block) {
+                DivoApi.userRepository.blockUser(userId)
+            } else {
+                DivoApi.userRepository.unblockUser(userId)
+            }
+            setState { copy(isLoading = false) }
+            if (result is DivoResult.Success) {
+                DivoAnalytics.logEvent(
+                    if (block) AnalyticsEvent.UserBlocked(userId.toLong()) else AnalyticsEvent.UserUnblocked(userId.toLong())
+                )
+                setState {
+                    copy(
+                        isBlocked = block,
+                        // Blocking also removes mutual follows on the backend
+                        userInfo = if (block) userInfo.copy(isFollowed = false) else userInfo
+                    )
+                }
+                sendEffect(ProfileEffect.SaveSuccess(if (block) R.string.DivoUserBlocked else R.string.DivoUserUnblocked))
+            } else {
+                sendEffect(ShowError(result.getErrorMessage()))
             }
         }
     }

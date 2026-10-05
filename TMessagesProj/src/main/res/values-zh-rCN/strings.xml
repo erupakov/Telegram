@@ -67,6 +67,14 @@
     <string name="ReportThisProfile">举报此主页</string>
     <string name="ReportSent">举报已发送</string>
     <string name="BlockProfile">屏蔽用户</string>
+    <string name="DivoUnblockUser">解除屏蔽</string>
+    <string name="DivoUnblock">解除屏蔽</string>
+    <string name="DivoBlockUserTitle">屏蔽 %1$s？</string>
+    <string name="DivoBlockUserDescription">对方将无法查看您的主页或给您发消息，你们之间的关注也将被取消。对方不会收到通知。</string>
+    <string name="DivoUserBlocked">已屏蔽该用户</string>
+    <string name="DivoUserUnblocked">已解除屏蔽</string>
+    <string name="DivoBlockedUsers">已屏蔽的用户</string>
+    <string name="DivoBlockedUsersEmpty">没有已屏蔽的用户</string>
     <string name="SearchByName">按姓名或 @用户名 搜索</string>
     <string name="YearsOld">岁</string>
     <string name="NotBio">该模特尚未填写简介</string>

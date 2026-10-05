@@ -27,6 +27,9 @@ import org.telegram.divo.dal.dto.common.toEntity
 import org.telegram.divo.dal.dto.user.AddGalleryRequest
 import org.telegram.divo.dal.dto.user.AgencyModelsRequest
 import org.telegram.divo.dal.dto.user.ReportProfileRequest
+import org.telegram.divo.dal.dto.user.UserBlockRequest
+import org.telegram.divo.dal.dto.user.UserBlockedListRequest
+import org.telegram.divo.dal.dto.user.toBlockedUsers
 import org.telegram.divo.dal.dto.user.UpdateProfileRequest
 import org.telegram.divo.dal.dto.user.UpsertSocialNetworkRequest
 import org.telegram.divo.dal.dto.user.UserGalleryListRequest
@@ -42,6 +45,7 @@ import org.telegram.divo.entity.AgencyModels
 import org.telegram.divo.entity.AgencySearchModel
 import org.telegram.divo.entity.Appearances
 import org.telegram.divo.entity.Engagement
+import org.telegram.divo.entity.SavedProfile
 import org.telegram.divo.entity.UploadedFile
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserGalleryList
@@ -465,6 +469,34 @@ class UserRepository(
         service.getAppearances().data.toEntity()
     }
 
+    suspend fun blockUser(userId: Int): DivoResult<Unit> = resultOf {
+        service.blockUser(UserBlockRequest(userId))
+    }
+
+    suspend fun unblockUser(userId: Int): DivoResult<Unit> = resultOf {
+        service.unblockUser(UserBlockRequest(userId))
+    }
+
+    suspend fun getBlockedUsers(
+        offset: Int = 0,
+        limit: Int = 20,
+    ): DivoResult<PaginatedResult<SavedProfile>> = resultOf {
+        service.getBlockedUsers(UserBlockedListRequest(offset, limit)).toBlockedUsers(offset, limit)
+    }
+
+    /** The backend has no per-user block flag, so look the user up in the blocked list. */
+    suspend fun isUserBlocked(userId: Int): DivoResult<Boolean> = resultOf {
+        val pageSize = 100
+        var offset = 0
+        var found = false
+        do {
+            val page = service.getBlockedUsers(UserBlockedListRequest(offset, pageSize)).toBlockedUsers(offset, pageSize)
+            found = page.items.any { it.id == userId }
+            offset += page.items.size
+        } while (!found && page.items.isNotEmpty() && offset < page.totalCount && offset < MAX_BLOCKED_LOOKUP)
+        found
+    }
+
     suspend fun reportProfile(userId: Int, reportKey: String): DivoResult<Unit> = resultOf {
         service.reportProfile(
             ReportProfileRequest(
@@ -501,3 +533,4 @@ class UserRepository(
     }
 }
 
+private const val MAX_BLOCKED_LOOKUP = 1000

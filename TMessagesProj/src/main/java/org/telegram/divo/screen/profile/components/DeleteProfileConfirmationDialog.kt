@@ -27,9 +27,26 @@ import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteProfileConfirmationDialog(
+    onDismissRequest: () -> Unit,
+    onConfirm: () -> Unit
+) {
+    DestructiveConfirmationDialog(
+        title = stringResource(R.string.DeleteProfileTitle),
+        description = stringResource(R.string.DeleteProfileDescription),
+        confirmText = stringResource(R.string.DeleteProfileConfirm),
+        onDismissRequest = onDismissRequest,
+        onConfirm = onConfirm
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DestructiveConfirmationDialog(
+    title: String,
+    description: String,
+    confirmText: String,
     onDismissRequest: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -54,14 +71,14 @@ fun DeleteProfileConfirmationDialog(
                 ) {
                     Spacer(Modifier.height(16.dp))
                     Text(
-                        text = stringResource(R.string.DeleteProfileTitle),
+                        text = title,
                         style = AppTheme.typography.bodyMedium,
                         color = AppTheme.colors.textPrimary
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
                         modifier = Modifier.padding(horizontal = 24.dp),
-                        text = stringResource(R.string.DeleteProfileDescription),
+                        text = description,
                         style = AppTheme.typography.bodyMedium,
                         color = AppTheme.colors.textPrimary.copy(0.6f),
                         textAlign = TextAlign.Center
@@ -76,7 +93,7 @@ fun DeleteProfileConfirmationDialog(
                     ) {
                         Text(
                             modifier = Modifier.padding(vertical = 20.dp),
-                            text = stringResource(R.string.DeleteProfileConfirm),
+                            text = confirmText,
                             style = AppTheme.typography.helveticaNeueRegular,
                             fontSize = 17.sp,
                             color = Color.Red
