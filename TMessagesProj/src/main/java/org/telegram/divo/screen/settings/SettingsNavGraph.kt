@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.settings
 
+import org.telegram.divo.common.compose.popBackStackOrElse
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.navigation.NavController
@@ -73,7 +74,7 @@ fun SettingsNavGraph(
                 onNavControllerReady = { onInnerNavControllerReady(it) },
                 onNavigateToChat = onNavigateToChat,
                 onNavigateToCreateChannel = onNavigateToCreateChannel,
-                onNavigateBack = { nav.popBackStack() }
+                onNavigateBack = { nav.popBackStackOrElse() }
             )
         }
 
@@ -84,10 +85,10 @@ fun SettingsNavGraph(
                 showTopBar = true,
                 showTitle = false,
                 onSaved = {
-                    nav.popBackStack()
+                    nav.popBackStackOrElse()
                 },
                 onBack = {
-                    nav.popBackStack()
+                    nav.popBackStackOrElse()
                 }
             )
         }
