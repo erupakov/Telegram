@@ -1,8 +1,11 @@
 package org.telegram.divo.common.utils
 
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.telegram.messenger.FileLoader
 import org.telegram.messenger.MessagesController
+import org.telegram.messenger.MessagesStorage
+import org.telegram.messenger.NotificationCenter
 import org.telegram.messenger.UserConfig
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLRPC
@@ -10,6 +13,13 @@ import java.io.File
 import kotlin.coroutines.resume
 
 object TelegramProfileHelper {
+
+    // Outlives the screen that started the upload, so leaving it doesn't cancel the avatar change
+    private val backgroundScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Main)
+
+    fun updateTelegramAvatarInBackground(currentAccount: Int, photoFile: File) {
+        backgroundScope.launch { updateTelegramAvatar(currentAccount, photoFile) }
+    }
 
     suspend fun updateTelegramAvatar(currentAccount: Int, photoFile: File): Boolean {
         var tempFileToUpload: File? = null
@@ -65,24 +75,9 @@ object TelegramProfileHelper {
                 }
                 
                 if (photoResult != null) {
-                    val uc = UserConfig.getInstance(currentAccount)
-                    val currentUser = uc.currentUser
-                    if (currentUser != null && photoResult.photo != null) {
-                        val bigSize = FileLoader.getClosestPhotoSizeWithSize(photoResult.photo.sizes, 800)
-                        val smallSize = FileLoader.getClosestPhotoSizeWithSize(photoResult.photo.sizes, 150)
-                        if (smallSize != null && bigSize != null) {
-                            if (currentUser.photo == null) {
-                                currentUser.photo = TLRPC.TL_userProfilePhoto()
-                            }
-                            currentUser.photo.photo_id = photoResult.photo.id
-                            currentUser.photo.photo_small = smallSize.location
-                            currentUser.photo.photo_big = bigSize.location
-                            currentUser.photo.dc_id = photoResult.photo.dc_id
-                            uc.setCurrentUser(currentUser)
-                            uc.saveConfig(true)
-                        }
+                    kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                        applyNewProfilePhoto(currentAccount, photoResult)
                     }
-                    MessagesController.getInstance(currentAccount).putUsers(photoResult.users, false)
                     true
                 } else {
                     false
@@ -100,6 +95,42 @@ object TelegramProfileHelper {
                 e.printStackTrace()
             }
         }
+    }
+
+    /**
+     * Applies a freshly uploaded profile photo locally the way ProfileActivity does, so every
+     * Telegram screen (own profile, settings, chats, drawer) shows it without a restart.
+     * Must run on the main thread.
+     */
+    private fun applyNewProfilePhoto(currentAccount: Int, photosPhoto: TLRPC.TL_photos_photo) {
+        val uc = UserConfig.getInstance(currentAccount)
+        val mc = MessagesController.getInstance(currentAccount)
+        mc.putUsers(photosPhoto.users, false)
+
+        val photo = photosPhoto.photo ?: return
+        val user = mc.getUser(uc.clientUserId) ?: uc.currentUser ?: return
+        val smallSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 150)
+        val bigSize = FileLoader.getClosestPhotoSizeWithSize(photo.sizes, 800)
+        user.photo = TLRPC.TL_userProfilePhoto().apply {
+            photo_id = photo.id
+            dc_id = photo.dc_id
+            smallSize?.let { photo_small = it.location }
+            bigSize?.let { photo_big = it.location }
+        }
+        mc.putUser(user, false)
+        uc.setCurrentUser(user)
+        uc.saveConfig(true)
+
+        mc.getDialogPhotos(user.id).addPhotoAtStart(photo)
+        MessagesStorage.getInstance(currentAccount).putUsersAndChats(arrayListOf(user), null, false, true)
+        mc.getUserFull(user.id)?.let { userFull ->
+            userFull.profile_photo = photo
+            MessagesStorage.getInstance(currentAccount).updateUserInfo(userFull, false)
+        }
+
+        val nc = NotificationCenter.getInstance(currentAccount)
+        nc.postNotificationName(NotificationCenter.updateInterfaces, MessagesController.UPDATE_MASK_ALL)
+        nc.postNotificationName(NotificationCenter.mainUserInfoChanged)
     }
 
     suspend fun updateTelegramName(currentAccount: Int, firstName: String, lastName: String): TLRPC.User? {
