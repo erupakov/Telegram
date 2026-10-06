@@ -91,19 +91,24 @@ object DivoApiClient {
         }
 
         private fun shouldSkipAuth(path: String): Boolean {
-            if (path.startsWith("/auth/") && !path.startsWith("/auth/logout")) {
+            // encodedPath includes the base path ("/api/auth/login" on stage, "/v2/auth/login" on prod),
+            // so match on the part after it; before, none of these exclusions ever applied
+            val relativePath = path.replaceFirst(BASE_PATH_PREFIX, "")
+            if (relativePath.startsWith("/auth/") && !relativePath.startsWith("/auth/logout")) {
                 return true
             }
-            if (path.startsWith("/geo/")) {
+            if (relativePath.startsWith("/geo/")) {
                 return true
             }
-            if (path.startsWith("/file/upload-file") || path.startsWith("/file/upload-files")) {
-                return true
-            }
-            if (path.startsWith("/crypto/webhook")) {
+            // File uploads keep the token: they are public in the spec, but have always been sent with it
+            if (relativePath.startsWith("/crypto/webhook")) {
                 return true
             }
             return false
+        }
+
+        private companion object {
+            val BASE_PATH_PREFIX = Regex("^/(api|v\\d+)(?=/)")
         }
     }
 
