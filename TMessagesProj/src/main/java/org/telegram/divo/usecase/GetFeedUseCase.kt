@@ -21,6 +21,7 @@ class GetFeedUseCase(
             offset = offset,
             limit = lim,
             role = role,
+            isProfiles = true,
 //            subscribedOnly = subscribedOnly,
 //            modelsOnly = modelsOnly,
         )
