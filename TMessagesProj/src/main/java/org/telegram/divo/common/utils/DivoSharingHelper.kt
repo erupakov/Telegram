@@ -1,7 +1,9 @@
 package org.telegram.divo.common.utils
 
+import android.app.Activity
 import android.content.ClipData
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import androidx.core.content.FileProvider
 import kotlinx.coroutines.CoroutineScope
@@ -77,6 +79,22 @@ object DivoSharingHelper {
         }
 
         val shareIntent = Intent.createChooser(sendIntent, org.telegram.messenger.LocaleController.getString("ShareFile", org.telegram.messenger.R.string.ShareFile))
-        context.startActivity(shareIntent)
+        // DIVO: Compose may hand over a wrapped or non-Activity context; starting the chooser
+        // from it without NEW_TASK throws, so resolve the Activity and never crash on share
+        val activity = context.findActivity()
+        if (activity == null) {
+            shareIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            (activity ?: context).startActivity(shareIntent)
+        } catch (e: Exception) {
+            org.telegram.messenger.FileLog.e(e)
+        }
     }
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

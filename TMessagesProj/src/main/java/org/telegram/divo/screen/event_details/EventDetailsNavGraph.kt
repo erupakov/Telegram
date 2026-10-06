@@ -1,5 +1,6 @@
 package org.telegram.divo.screen.event_details
 
+import org.telegram.divo.common.compose.popBackStackOrElse
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -99,7 +100,7 @@ fun EventDetailsNavGraph(
                     nav.navigate(EventDetailsRoute.ApplyConfirmation.createRoute(it))
                 },
                 onEventDeleted = onEventDeleted,
-                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+                onBack = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
         composable(
@@ -123,7 +124,7 @@ fun EventDetailsNavGraph(
 
             GalleryViewerScreen(
                 source = source,
-                onBack = { if (!nav.popBackStack()) onNavigateBack() },
+                onBack = { nav.popBackStackOrElse(onNavigateBack) },
             )
         }
         composable(
@@ -139,7 +140,7 @@ fun EventDetailsNavGraph(
             EventParametersScreen(
                 params = EventParamsHolder.params,
                 isNdaRequired = EventParamsHolder.isNdaRequired,
-                onBack = { if (!nav.popBackStack()) onNavigateBack() }
+                onBack = { nav.popBackStackOrElse(onNavigateBack) }
             )
         }
         composable(
@@ -149,8 +150,8 @@ fun EventDetailsNavGraph(
             val applyEventId = backStackEntry.arguments?.getInt("eventId") ?: return@composable
             org.telegram.divo.screen.apply_confirmation.ApplyConfirmationScreen(
                 eventId = applyEventId,
-                onBack = { nav.popBackStack() },
-                onSuccessDismiss = { nav.popBackStack() }
+                onBack = { nav.popBackStackOrElse() },
+                onSuccessDismiss = { nav.popBackStackOrElse() }
             )
         }
     }

@@ -26,7 +26,14 @@ data class EventListViewState(
 ) : ViewState
 
 sealed class EditMyProfileIntent : ViewIntent {
-    data class OnSaveClicked(val fName: String, val lName: String, val bio: String, val file: Result<File>?) :
+    /** [file] is the original photo, [avatarFile] its circle crop (null: use [file] as the avatar too). */
+    data class OnSaveClicked(
+        val fName: String,
+        val lName: String,
+        val bio: String,
+        val file: Result<File>?,
+        val avatarFile: Result<File>? = null,
+    ) :
         EditMyProfileIntent()
         
     data class OnLocationChanged(val country: String, val countryCode: String, val city: LocalCity?) : EditMyProfileIntent()

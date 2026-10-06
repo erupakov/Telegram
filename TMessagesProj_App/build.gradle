@@ -155,7 +155,11 @@ android {
         }
     }
 
-    defaultConfig.versionCode = Integer.parseInt(APP_VERSION_CODE)
+    // DIVO: build number grows with every CI build (BUILD_NUMBER = github.run_number), so each new build
+    // gets a higher versionCode and installs over the previous one. Local builds use 0 unless
+    // -PBUILD_NUMBER=<n> or the BUILD_NUMBER env variable is given.
+    def buildNumber = Integer.parseInt((System.getenv("BUILD_NUMBER") ?: (project.hasProperty("BUILD_NUMBER") ? BUILD_NUMBER : "0")).toString().trim())
+    defaultConfig.versionCode = Integer.parseInt(APP_VERSION_CODE) + buildNumber
 
     applicationVariants.all { variant ->
         variant.outputs.all { output ->

@@ -60,6 +60,15 @@
     <string name="ReportThisProfile">Пожаловаться на профиль</string>
     <string name="ReportSent">Жалоба отправлена</string>
     <string name="BlockProfile">Заблокировать пользователя</string>
+    <string name="DivoLinkProofMissing">Не удалось подтвердить аккаунт Telegram: сервер мессенджера не выдал подтверждение привязки. Попробуйте позже.</string>
+    <string name="DivoUnblockUser">Разблокировать пользователя</string>
+    <string name="DivoUnblock">Разблокировать</string>
+    <string name="DivoBlockUserTitle">Заблокировать %1$s?</string>
+    <string name="DivoBlockUserDescription">Пользователь не сможет видеть ваш профиль и писать вам, взаимные подписки будут отменены. Он не получит уведомления.</string>
+    <string name="DivoUserBlocked">Пользователь заблокирован</string>
+    <string name="DivoUserUnblocked">Пользователь разблокирован</string>
+    <string name="DivoBlockedUsers">Заблокированные</string>
+    <string name="DivoBlockedUsersEmpty">Нет заблокированных пользователей</string>
     <string name="SearchByName">Поиск по имени или @нику</string>
     <string name="YearsOld">лет</string>
     <string name="NotBio">Эта модель еще не заполнила раздел \"О себе\"</string>
@@ -477,10 +486,10 @@
     <string name="RoleResultDescriptionPerformer">Ваш профиль свяжет вас с модными мероприятиями, рекламными кампаниями и креативными проектами, где нужны артисты.</string>
 
     <string name="RoleResultTitleCreativeProfessional">Вы — креативный специалист</string>
-    <string name="RoleResultDescriptionCreativeProfessional">Наш профиль продемонстрирует ваше портфолио, позволит публиковать проекты и связываться с моделями, брендами и агентствами по обе стороны рынка.</string>
+    <string name="RoleResultDescriptionCreativeProfessional">Ваш профиль продемонстрирует ваше портфолио, позволит публиковать проекты и связываться с моделями, брендами и агентствами по обе стороны рынка.</string>
 
     <string name="RoleResultTitleFindTalent">Вы здесь, чтобы найти таланты</string>
-    <string name="RoleResultDescriptionFindTalent">Профиль будет настроен для поиска, публикации кастингов и прямого общения с моделями и криэйторами — будь вы глобальным агентством или локальным брендом.</string>
+    <string name="RoleResultDescriptionFindTalent">Ваш профиль будет настроен для поиска, публикации кастингов и прямого общения с моделями и криэйторами — будь вы глобальным агентством или локальным брендом.</string>
 
     <string name="RoleResultTitleIndustryProfessional">Вы — профессионал индустрии талантов</string>
     <string name="RoleResultDescriptionIndustryProfessional">Ваш профиль предоставит прямой доступ к базе талантов DIVO, расширенным инструментам поиска и процессу кастинга — созданным специально для работы профессионалов.</string>

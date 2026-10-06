@@ -67,6 +67,15 @@
     <string name="ReportThisProfile">Denunciar este perfil</string>
     <string name="ReportSent">Denúncia enviada</string>
     <string name="BlockProfile">Bloquear usuário</string>
+    <string name="DivoLinkProofMissing">Não foi possível confirmar sua conta do Telegram: o servidor de mensagens não emitiu a confirmação de vinculação. Tente novamente mais tarde.</string>
+    <string name="DivoUnblockUser">Desbloquear usuário</string>
+    <string name="DivoUnblock">Desbloquear</string>
+    <string name="DivoBlockUserTitle">Bloquear %1$s?</string>
+    <string name="DivoBlockUserDescription">Essa pessoa não poderá ver seu perfil nem enviar mensagens, e vocês deixarão de se seguir. Ela não será notificada.</string>
+    <string name="DivoUserBlocked">Usuário bloqueado</string>
+    <string name="DivoUserUnblocked">Usuário desbloqueado</string>
+    <string name="DivoBlockedUsers">Usuários bloqueados</string>
+    <string name="DivoBlockedUsersEmpty">Nenhum usuário bloqueado</string>
     <string name="SearchByName">Buscar por nome ou @usuario</string>
     <string name="YearsOld">anos</string>
     <string name="NotBio">Este modelo não preencheu sua biografia</string>
@@ -469,10 +478,10 @@ enquanto ela estiver com outra agência.</string>
     <string name="RoleResultDescriptionPerformer">Seu perfil conectará você com eventos de moda, campanhas de marcas e projetos criativos que buscam talentos para apresentações ao vivo.</string>
 
     <string name="RoleResultTitleCreativeProfessional">Você é um Profissional Criativo</string>
-    <string name="RoleResultDescriptionCreativeProfessional">Nosso perfil mostrará seu portfólio, permitirá que você publique projetos e se conecte com modelos, marcas e agências — em ambos os lados do mercado.</string>
+    <string name="RoleResultDescriptionCreativeProfessional">Seu perfil mostrará seu portfólio, permitirá que você publique projetos e se conecte com modelos, marcas e agências — em ambos os lados do mercado.</string>
 
     <string name="RoleResultTitleFindTalent">Você Está Aqui Para Encontrar Talentos</string>
-    <string name="RoleResultDescriptionFindTalent">Nosso perfil será configurado para pesquisar, publicar castings e se conectar diretamente com modelos e criativos — seja você uma agência global ou uma marca local.</string>
+    <string name="RoleResultDescriptionFindTalent">Seu perfil será configurado para pesquisar, publicar castings e se conectar diretamente com modelos e criativos — seja você uma agência global ou uma marca local.</string>
 
     <string name="RoleResultTitleIndustryProfessional">Você é um Profissional da Indústria</string>
     <string name="RoleResultDescriptionIndustryProfessional">Seu perfil lhe dará acesso direto ao banco de dados de talentos do DIVO, ferramentas avançadas de pesquisa e fluxo de trabalho de castings — criados para a maneira como os profissionais realmente trabalham.</string>

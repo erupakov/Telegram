@@ -83,30 +83,38 @@ class EditMyProfileViewModel(
         }
     }
 
-    private fun updateProfile(fNameRaw: String, lNameRaw: String, aboutRaw: String, file: Result<File>?) {
+    private suspend fun uploadOrReport(file: Result<File>): String? {
+        val uploadResult = file.fold(
+            onSuccess = { DivoApi.userRepository.uploadPhoto(it) },
+            onFailure = { DivoResult.UnknownError(it) }
+        )
+        if (uploadResult !is DivoResult.Success) {
+            setState { copy(isSaved = false) }
+            sendEffect(Effect.ShowError(uploadResult.getErrorMessage()))
+            return null
+        }
+        return uploadResult.value.uuid
+    }
+
+    private fun updateProfile(
+        fNameRaw: String,
+        lNameRaw: String,
+        aboutRaw: String,
+        file: Result<File>?,
+        avatarFile: Result<File>?,
+    ) {
         viewModelScope.launch {
             val staleUserInfo = state.value.userFull
             val userInfo = DivoApi.userRepository.currentUserFlow.value ?: staleUserInfo
             if (userInfo != null) {
                 setState { copy(isSaved = true) }
 
-                val uploadedUuid = if (file != null) {
-                    val uploadResult = file.fold(
-                        onSuccess = { 
-                            // Update TG avatar as well
-                            org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatar(currentAccount, it)
-                            DivoApi.userRepository.uploadPhoto(it)
-                        },
-                        onFailure = { DivoResult.UnknownError(it) }
-                    )
-                    if (uploadResult !is DivoResult.Success) {
-                        setState { copy(isSaved = false) }
-                        sendEffect(Effect.ShowError(uploadResult.getErrorMessage()))
-                        return@launch
-                    }
-                    uploadResult.value.uuid
-                } else {
-                    userInfo.avatarUuid
+                // New photo: the original is the main photo (header, cards), its circle crop the avatar
+                var photoUuid = userInfo.photoUuid
+                var uploadedUuid = userInfo.avatarUuid
+                if (file != null) {
+                    photoUuid = uploadOrReport(file) ?: return@launch
+                    uploadedUuid = if (avatarFile != null) uploadOrReport(avatarFile) ?: return@launch else photoUuid
                 }
                 val isModel = state.value.isModel
                 val fullNameStr = listOf(fNameRaw.trim(), lNameRaw.trim()).filter { it.isNotBlank() }.joinToString(" ")
@@ -115,6 +123,7 @@ class EditMyProfileViewModel(
                         userInfo = userInfo.copy(
                             fullName = fullNameStr,
                             model = userInfo.model?.copy(description = aboutRaw),
+                            photoUuid = photoUuid,
                             avatarUuid = uploadedUuid,
                             city = state.value.city?.let {
                                 val isNewCity = it.id != userInfo.city?.id?.toLong()
@@ -137,6 +146,7 @@ class EditMyProfileViewModel(
                     DivoApi.userRepository.updateProfile(userInfo.copy(
                         agency = updatedAgency,
                         fullName = fullNameStr,
+                        photoUuid = photoUuid,
                         avatarUuid = uploadedUuid,
                         city = state.value.city?.let {
                             val isNewCity = it.id != userInfo.city?.id?.toLong()
@@ -147,6 +157,13 @@ class EditMyProfileViewModel(
 
                 when (result) {
                     is DivoResult.Success -> {
+                        if (file != null) {
+                            // Telegram avatar is round, so it gets the crop as well. Runs after the Divo
+                            // save (bottom bar avatar updates right away) and survives leaving the screen.
+                            (avatarFile ?: file).getOrNull()?.let {
+                                org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatarInBackground(currentAccount, it)
+                            }
+                        }
                         // Update TG profile name as well
                         org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramName(
                             currentAccount = currentAccount,
@@ -190,7 +207,7 @@ class EditMyProfileViewModel(
         when (intent) {
             EditMyProfileIntent.OnLoad -> Unit
             is EditMyProfileIntent.OnSaveClicked -> {
-                updateProfile(intent.fName, intent.lName, intent.bio, intent.file)
+                updateProfile(intent.fName, intent.lName, intent.bio, intent.file, intent.avatarFile)
             }
             is EditMyProfileIntent.OnLocationChanged -> {
                 setState {

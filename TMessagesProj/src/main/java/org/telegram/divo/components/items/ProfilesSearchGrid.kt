@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -260,14 +261,16 @@ private fun ProfileItem(
                 }
                 Spacer(Modifier.width(8.dp))
                 RoundedGlassContainer(
-                    space = 10.dp,
+                    space = 2.dp,
                     height = 22.dp,
                     background = if (showSocialStats && profile.isMarked) AppTheme.colors.onBackground else AppTheme.colors.backgroundDark.copy(alpha = 0.4f),
-                    contentPadding = PaddingValues(horizontal = 8.dp)
+                    contentPadding = PaddingValues(horizontal = 4.dp)
                 ) {
-                    Icon(
+                    // DIVO: tap areas cover the whole pill height, not only the 16dp icons,
+                    // otherwise taps next to an icon fall through to the card
+                    Box(
                         modifier = Modifier
-                            .size(16.dp)
+                            .fillMaxHeight()
                             .clickableWithoutRipple {
                                 DivoSharingHelper.share(
                                     context = context,
@@ -277,20 +280,32 @@ private fun ProfileItem(
                                     customMessage = "${profile.name} - ${profile.roleLabel}",
                                     imageUrl = profile.photo
                                 )
-                            },
-                        painter = painterResource(R.drawable.ic_divo_share_model),
-                        contentDescription = null,
-                        tint = if (showSocialStats && profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
-                    )
-                    if (showSocialStats) {
+                            }
+                            .padding(horizontal = 4.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
                         Icon(
-                            modifier = Modifier
-                                .size(16.dp)
-                                .clickableWithoutRipple { onMarkClicked() },
-                            painter = painterResource(if (profile.isMarked) R.drawable.ic_divo_bookmark_glass_selected else R.drawable.ic_divo_bookmark_glass),
-                            contentDescription = null,
-                            tint = if (profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+                            modifier = Modifier.size(16.dp),
+                            painter = painterResource(R.drawable.ic_divo_share_model),
+                            contentDescription = stringResource(R.string.ShareFile),
+                            tint = if (showSocialStats && profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
                         )
+                    }
+                    if (showSocialStats) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .clickableWithoutRipple { onMarkClicked() }
+                                .padding(horizontal = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(16.dp),
+                                painter = painterResource(if (profile.isMarked) R.drawable.ic_divo_bookmark_glass_selected else R.drawable.ic_divo_bookmark_glass),
+                                contentDescription = null,
+                                tint = if (profile.isMarked) AppTheme.colors.textPrimary else AppTheme.colors.onBackground
+                            )
+                        }
                     }
                 }
             }

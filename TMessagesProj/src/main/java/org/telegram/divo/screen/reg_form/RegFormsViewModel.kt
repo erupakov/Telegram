@@ -25,6 +25,8 @@ import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.mapGenderToEnglish
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.LocaleController
+import org.telegram.messenger.R
 import org.telegram.tgnet.TLRPC
 
 class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsEffect>() {
@@ -83,38 +85,26 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
 
             viewModelScope.launch {
                 var telegramPhotoFile: java.io.File? = null
+                val tempFiles = mutableListOf<java.io.File>()
                 try {
                     // 0. Upload Photo (can be done without auth)
                     var uploadedPhotoUuid: String? = null
                     var uploadedPhotoUrl: String? = null
                     data.photoUri?.let { uri ->
-                        try {
-                            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                                val context = ApplicationLoader.applicationContext
-                                val inputStream = if (uri.scheme == "http" || uri.scheme == "https") {
-                                    val request = okhttp3.Request.Builder().url(uri.toString()).build()
-                                    val response = okhttp3.OkHttpClient().newCall(request).execute()
-                                    response.body?.byteStream()
-                                } else {
-                                    context.contentResolver.openInputStream(uri)
-                                }
-                                if (inputStream != null) {
-                                    val tempFile = java.io.File(context.cacheDir, "upload_avatar_${System.currentTimeMillis()}.jpg")
-                                    val outputStream = java.io.FileOutputStream(tempFile)
-                                    inputStream.copyTo(outputStream)
-                                    inputStream.close()
-                                    outputStream.close()
-                                    
-                                    val uploadResult = DivoApi.userRepository.uploadPhoto(tempFile)
-                                    if (uploadResult is DivoResult.Success) {
-                                        uploadedPhotoUuid = uploadResult.value.uuid
-                                        uploadedPhotoUrl = uploadResult.value.fullUrl
-                                    }
-                                    telegramPhotoFile = tempFile
-                                }
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                        uploadRegistrationPhoto(uri)?.let { (uploaded, file) ->
+                            uploadedPhotoUuid = uploaded.uuid
+                            uploadedPhotoUrl = uploaded.fullUrl
+                            tempFiles += file
+                            telegramPhotoFile = file
+                        }
+                    }
+                    // Circle crop of the photo: used as the avatar (and the round Telegram avatar)
+                    var uploadedAvatarUuid: String? = uploadedPhotoUuid
+                    data.avatarUri?.takeIf { it != data.photoUri && uploadedPhotoUuid != null }?.let { uri ->
+                        uploadRegistrationPhoto(uri)?.let { (uploaded, file) ->
+                            uploadedAvatarUuid = uploaded.uuid
+                            tempFiles += file
+                            telegramPhotoFile = file
                         }
                     }
 
@@ -288,7 +278,15 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))
 
                         DivoApi.accessTokenProvider.setAccessToken(null)
-                        sendEffect(RegFormsEffect.ShowError("Linking failed: $errorMessage"))
+                        sendEffect(
+                            RegFormsEffect.ShowError(
+                                if (DivoTelegramLinker.isProofMissing(linkResponse)) {
+                                    LocaleController.getString(R.string.DivoLinkProofMissing)
+                                } else {
+                                    "Linking failed: $errorMessage"
+                                }
+                            )
+                        )
                         setState { copy(isLoading = false) }
                         return@launch
                     }
@@ -296,6 +294,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     // 4. Divo Update Profile (REST)
                     val fullName = listOf(firstName, lastName).filter { it.isNotBlank() }.joinToString(" ")
                     val photoContainer = uploadedPhotoUuid?.let { org.telegram.divo.dal.dto.common.UuidContainerDto(it) }
+                    val avatarContainer = uploadedAvatarUuid?.let { org.telegram.divo.dal.dto.common.UuidContainerDto(it) }
 
                     // Resolve geoCityId from city name via geo API
                     var resolvedCityId: Int? = null
@@ -348,7 +347,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                 site = data.websiteUrl.takeIf { it.isNotBlank() }?.withHttpsScheme(),
                                 address = null,
                                 background = null,
-                                photo = photoContainer,
+                                photo = avatarContainer,
                                 tiktokUrl = null,
                                 youtubeUrl = data.showreelUrl.takeIf { it.isNotBlank() }?.withHttpsScheme(),
                                 telegramUrl = null,
@@ -369,7 +368,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         pushNotifications = true,
                         isRegistrationFinished = true,
                         photo = photoContainer,
-                        avatar = photoContainer,
+                        avatar = avatarContainer,
                         model = modelDto,
                         agency = agencyDto,
                         customer = customerDto
@@ -382,7 +381,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         sendEffect(RegFormsEffect.ShowError(errorMessage))
                     } else if (mappedRole == RoleType.AGENCY.value) {
                         try {
-                            val agencyPhoto = uploadedPhotoUuid?.let {
+                            val agencyPhoto = uploadedAvatarUuid?.let {
                                 Photo(photoId = 0, fileUuid = it)
                             }
                             val agencyTitle = data.companyName.takeIf { it.isNotBlank() } ?: fullName
@@ -419,12 +418,40 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         sendEffect(RegFormsEffect.ShowError(e.message ?: "Unknown error occurred"))
                     }
                 } finally {
-                    telegramPhotoFile?.delete()
+                    tempFiles.forEach { it.delete() }
                 }
             }
         } else {
             setState { copy(currentStepIndex = currentStepIndex + 1) }
         }
+    }
+
+    /** Copies [uri] (local or http) to a temp file and uploads it; null if that failed. */
+    private suspend fun uploadRegistrationPhoto(uri: Uri): Pair<org.telegram.divo.entity.UploadedFile, java.io.File>? = try {
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+            val context = ApplicationLoader.applicationContext
+            val inputStream = if (uri.scheme == "http" || uri.scheme == "https") {
+                val request = okhttp3.Request.Builder().url(uri.toString()).build()
+                val response = okhttp3.OkHttpClient().newCall(request).execute()
+                response.body?.byteStream()
+            } else {
+                context.contentResolver.openInputStream(uri)
+            }
+            inputStream?.let { input ->
+                val tempFile = java.io.File(context.cacheDir, "upload_avatar_${System.nanoTime()}.jpg")
+                java.io.FileOutputStream(tempFile).use { output -> input.use { it.copyTo(output) } }
+                val uploadResult = DivoApi.userRepository.uploadPhoto(tempFile)
+                if (uploadResult is DivoResult.Success) {
+                    uploadResult.value to tempFile
+                } else {
+                    tempFile.delete()
+                    null
+                }
+            }
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
     }
 
     private fun onBack() {

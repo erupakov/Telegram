@@ -67,6 +67,15 @@
     <string name="ReportThisProfile">Denunciar este perfil</string>
     <string name="ReportSent">Reporte enviado</string>
     <string name="BlockProfile">Bloquear usuario</string>
+    <string name="DivoLinkProofMissing">No se pudo confirmar tu cuenta de Telegram: el servidor de mensajería no emitió la confirmación de vinculación. Inténtalo más tarde.</string>
+    <string name="DivoUnblockUser">Desbloquear usuario</string>
+    <string name="DivoUnblock">Desbloquear</string>
+    <string name="DivoBlockUserTitle">¿Bloquear a %1$s?</string>
+    <string name="DivoBlockUserDescription">No podrá ver tu perfil ni enviarte mensajes, y dejaréis de seguiros mutuamente. No recibirá ninguna notificación.</string>
+    <string name="DivoUserBlocked">Usuario bloqueado</string>
+    <string name="DivoUserUnblocked">Usuario desbloqueado</string>
+    <string name="DivoBlockedUsers">Usuarios bloqueados</string>
+    <string name="DivoBlockedUsersEmpty">No hay usuarios bloqueados</string>
     <string name="SearchByName">Buscar por nombre o @usuario</string>
     <string name="YearsOld">años</string>
     <string name="NotBio">Este modelo no ha rellenado su biografía</string>

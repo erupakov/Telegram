@@ -69,6 +69,15 @@
     <string name="ReportThisProfile">Report this profile</string>
     <string name="ReportSent">Report sent</string>
     <string name="BlockProfile">Block user</string>
+    <string name="DivoLinkProofMissing">Couldn\'t confirm your Telegram account: the messenger server didn\'t issue a link confirmation. Please try again later.</string>
+    <string name="DivoUnblockUser">Unblock user</string>
+    <string name="DivoUnblock">Unblock</string>
+    <string name="DivoBlockUserTitle">Block %1$s?</string>
+    <string name="DivoBlockUserDescription">They won\'t be able to see your profile or message you, and you will stop following each other. They won\'t be notified.</string>
+    <string name="DivoUserBlocked">User blocked</string>
+    <string name="DivoUserUnblocked">User unblocked</string>
+    <string name="DivoBlockedUsers">Blocked users</string>
+    <string name="DivoBlockedUsersEmpty">No blocked users</string>
     <string name="SearchByName">Search by name or @handle</string>
     <string name="YearsOld">y.o.</string>
     <string name="NotBio">This model hasn\'t filled in their bio</string>
@@ -464,10 +473,10 @@ while she is with another agency.</string>
     <string name="RoleResultDescriptionPerformer">Your profile will connect you with fashion events, brand campaigns and creative projects looking for live performance talent.</string>
 
     <string name="RoleResultTitleCreativeProfessional">You\'re a Creative Professional</string>
-    <string name="RoleResultDescriptionCreativeProfessional">Our profile will showcase your portfolio, let you post projects and connect with models, brands and agencies — on both sides of the market.</string>
+    <string name="RoleResultDescriptionCreativeProfessional">Your profile will showcase your portfolio, let you post projects and connect with models, brands and agencies — on both sides of the market.</string>
 
     <string name="RoleResultTitleFindTalent">You\'re Here to Find Talent</string>
-    <string name="RoleResultDescriptionFindTalent">Our profile will be set up to search, post castings and connect directly with models and creatives — whether you\'re a global agency or a local brand.</string>
+    <string name="RoleResultDescriptionFindTalent">Your profile will be set up to search, post castings and connect directly with models and creatives — whether you\'re a global agency or a local brand.</string>
 
     <string name="RoleResultTitleIndustryProfessional">You\'re a Talent Industry Professional</string>
     <string name="RoleResultDescriptionIndustryProfessional">Your profile will give you direct access to DIVO\'s talent database, advanced search tools and casting workflow — built for the way professionals actually work.</string>

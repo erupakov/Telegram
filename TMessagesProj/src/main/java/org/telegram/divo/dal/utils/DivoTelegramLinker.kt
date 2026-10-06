@@ -89,13 +89,31 @@ object DivoTelegramLinker {
             }
         } ?: return null
 
-        val json = config.config as? TLRPC.TL_jsonObject ?: return null
+        val json = config.config as? TLRPC.TL_jsonObject
+        if (json == null) {
+            FileLog.d("divo link proof: getAppConfig returned no json object")
+            return null
+        }
         val proof = json.stringValue(KEY_PROOF)
         val phone = json.stringValue(KEY_PHONE)
+        // Presence only, never the values: tells whether teamgram issues the proof at all
+        FileLog.d("divo link proof: $KEY_PROOF=${!proof.isNullOrBlank()} $KEY_PHONE=${!phone.isNullOrBlank()} (${json.value.size} config keys)")
         if (proof.isNullOrBlank() || phone.isNullOrBlank()) return null
         return LinkProof(proof, phone)
     }
 
+    /**
+     * True when the backend rejected the link because no proof was sent: teamgram didn't issue
+     * `divo_link_proof` (link secret not configured, 2FA, no phone), not a problem with the user's data.
+     */
+    fun isProofMissing(result: DivoResult<*>): Boolean =
+        result is DivoResult.HttpError && result.code == 422 && result.body?.errors?.containsKey("proof") == true
+
     private fun TLRPC.TL_jsonObject.stringValue(key: String): String? =
-        (value.firstOrNull { it.key == key }?.value as? TLRPC.TL_jsonString)?.value
+        when (val v = value.firstOrNull { it.key == key }?.value) {
+            is TLRPC.TL_jsonString -> v.value
+            // A phone may come as a JSON number; render it without exponent or fraction
+            is TLRPC.TL_jsonNumber -> java.math.BigDecimal(v.value).toBigInteger().toString()
+            else -> null
+        }
 }
