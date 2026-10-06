@@ -69,6 +69,7 @@
     <string name="ReportThisProfile">Report this profile</string>
     <string name="ReportSent">Report sent</string>
     <string name="BlockProfile">Block user</string>
+    <string name="DivoLinkProofMissing">Couldn\'t confirm your Telegram account: the messenger server didn\'t issue a link confirmation. Please try again later.</string>
     <string name="DivoUnblockUser">Unblock user</string>
     <string name="DivoUnblock">Unblock</string>
     <string name="DivoBlockUserTitle">Block %1$s?</string>
