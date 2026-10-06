@@ -6,6 +6,7 @@ import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
 import org.telegram.divo.dal.dto.auth.TelegramLinkResponse
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
+import org.telegram.divo.dal.network.isLinkProofMissing
 import org.telegram.messenger.FileLog
 import org.telegram.tgnet.ConnectionsManager
 import org.telegram.tgnet.TLRPC
@@ -106,8 +107,7 @@ object DivoTelegramLinker {
      * True when the backend rejected the link because no proof was sent: teamgram didn't issue
      * `divo_link_proof` (link secret not configured, 2FA, no phone), not a problem with the user's data.
      */
-    fun isProofMissing(result: DivoResult<*>): Boolean =
-        result is DivoResult.HttpError && result.code == 422 && result.body?.errors?.containsKey("proof") == true
+    fun isProofMissing(result: DivoResult<*>): Boolean = result.isLinkProofMissing()
 
     private fun TLRPC.TL_jsonObject.stringValue(key: String): String? =
         when (val v = value.firstOrNull { it.key == key }?.value) {

@@ -1,0 +1,33 @@
+{
+  "message": null,
+  "data": {
+    "id": 4242,
+    "fullName": "Blocked User",
+    "gender": null,
+    "birthday": null,
+    "city": null,
+    "email": null,
+    "phone": null,
+    "telegramId": null,
+    "photo": null,
+    "avatar": null,
+    "role": "model",
+    "subrole": null,
+    "roleLabel": null,
+    "measuringSystem": null,
+    "pushNotifications": false,
+    "isRegistrationFinished": true,
+    "model": null,
+    "customer": null,
+    "agency": null,
+    "agencyEmployee": null,
+    "statistic": null,
+    "isFavorite": false,
+    "isFollowed": false,
+    "isLikedByUser": null,
+    "userRatingStatus": null,
+    "userSocialNetworks": null,
+    "is_premium": false
+  },
+  "errors": null
+}

@@ -31,6 +31,10 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Divo API tests
+        # JVM tests of the client <-> backend contract; fail fast before the long APK build
+        run: ./gradlew -p divo-api-tests test
+
       - name: Decode Google Services JSON
         env:
           GOOGLE_SERVICES_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}

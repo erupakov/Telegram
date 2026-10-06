@@ -134,15 +134,17 @@ interface UserService {
         @Body request: org.telegram.divo.dal.dto.user.ReportProfileRequest
     ): EmptyResponse
 
+    // Unit: the body isn't used, and an empty 200 / 204 is still a success
     @POST("user/block")
     suspend fun blockUser(
         @Body request: org.telegram.divo.dal.dto.user.UserBlockRequest
-    ): EmptyResponse
+    )
 
+    // Unit: the body isn't used, and an empty 200 / 204 is still a success
     @POST("user/unblock")
     suspend fun unblockUser(
         @Body request: org.telegram.divo.dal.dto.user.UserBlockRequest
-    ): EmptyResponse
+    )
 
     @POST("user/blocked")
     suspend fun getBlockedUsers(

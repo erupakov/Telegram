@@ -28,7 +28,7 @@ class AuthRepository(
     suspend fun login(request: LoginRequest): DivoResult<LoginResponse> {
         val result = resultOf { service.login(request) }
         if (result is DivoResult.Success) {
-            accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+            saveToken(result.value.data?.accessToken)
             _authStateFlow.tryEmit(true)
         }
         return result
@@ -38,7 +38,7 @@ class AuthRepository(
         val result = resultOf { service.registration(request) }
         if (result is DivoResult.Success) {
             val token = result.value.data?.accessToken ?: result.value.data?.token
-            accessTokenProvider.setAccessToken(token)
+            saveToken(token)
             _authStateFlow.tryEmit(true)
         }
         return result
@@ -51,7 +51,7 @@ class AuthRepository(
         val bearerToken = token?.let { if (it.startsWith("Bearer ")) it else "Bearer $it" }
         val result = resultOf { service.linkTelegramAccount(bearerToken, request) }
         if (result is DivoResult.Success) {
-            accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+            saveToken(result.value.data?.accessToken)
             _authStateFlow.tryEmit(true)
         }
         return result
@@ -60,7 +60,7 @@ class AuthRepository(
     suspend fun loginSocial(request: SocialLoginRequest): DivoResult<SocialAuthResponse> {
         val result = resultOf { service.loginSocial(request) }
         if (result is DivoResult.Success) {
-            accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+            saveToken(result.value.data?.accessToken)
             _authStateFlow.tryEmit(true)
         }
         return result
@@ -69,7 +69,7 @@ class AuthRepository(
     suspend fun registrationSocial(request: SocialRegistrationRequest): DivoResult<SocialAuthResponse> {
         val result = resultOf { service.registrationSocial(request) }
         if (result is DivoResult.Success) {
-            accessTokenProvider.setAccessToken(result.value.data?.accessToken)
+            saveToken(result.value.data?.accessToken)
             _authStateFlow.tryEmit(true)
         }
         return result
@@ -86,6 +86,11 @@ class AuthRepository(
     suspend fun logout(token: String): DivoResult<Unit> {
         val bearerToken = if (token.startsWith("Bearer ")) token else "Bearer $token"
         return resultOf { service.logout(bearerToken) }
+    }
+
+    // A success without a token must not wipe the stored one (that would silently log the user out)
+    private fun saveToken(token: String?) {
+        if (!token.isNullOrBlank()) accessTokenProvider.setAccessToken(token)
     }
 
     fun notifyLoggedOut() {
