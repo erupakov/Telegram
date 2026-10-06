@@ -72,6 +72,7 @@ data class State(
 
 sealed interface Intent : ViewIntent {
     data object OnBackClicked : Intent
+    data object OnCloseClicked : Intent
     data class OnLikeChanged(val id: Int) : Intent
     data class OnMarkChanged(val id: Int) : Intent
     data class OnProfileClicked(val id: Int) : Intent
@@ -87,6 +88,7 @@ sealed interface Intent : ViewIntent {
 
 sealed interface Effect : ViewEffect {
     data object NavigateBack : Effect
+    data object NavigateHome : Effect
     data class ShowError(val message: String) : Effect
     data class NavigateToProfile(val id: Int) : Effect
 }

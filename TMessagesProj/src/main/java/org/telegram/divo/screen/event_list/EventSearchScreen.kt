@@ -91,7 +91,7 @@ fun EventSearchScreen(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarState,
-                bottomPadding = bottomInset + 74.dp
+                bottomPadding = 74.dp
             )
         }
     ) {

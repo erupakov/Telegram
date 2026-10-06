@@ -117,10 +117,10 @@ fun EditMyProfileScreen(
             when (action) {
                 Effect.NavigateBack -> onCloseScreen()
                 Effect.SaveSuccess -> {
-                    val page = tabs.indexOfFirst {
-                        it.id == ProfileDestination.APPEARANCE.name
-                    }.coerceAtLeast(0)
-                    pagerState.scrollToPage(page)
+//                    val page = tabs.indexOfFirst {
+//                        it.id == ProfileDestination.APPEARANCE.name
+//                    }.coerceAtLeast(0)
+                    //pagerState.scrollToPage(page)
 
                     snackbarState.show(Success(parametersSavedText))
                 }
@@ -161,7 +161,7 @@ fun EditMyProfileScreen(
         snackbarHost = {
             AppSnackbarHost(
                 state = snackbarState,
-                bottomPadding = 76.dp
+                bottomPadding = 74.dp
             )
         },
     ) { paddingValues ->
@@ -336,6 +336,7 @@ fun EditMyProfileScreenView(
                     avatarUrl = uiState.avatarUrl,
                     localUri = selectedAvatarUri,
                     background = AppTheme.colors.onBackground,
+                    usePlaceholder = true,
                     showBorder = false,
                     size = 94.dp,
                     smallIconResId = R.drawable.ic_divo_camera_rounded,

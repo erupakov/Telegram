@@ -2,6 +2,7 @@
 <resources>
     <!--divo view start-->
     <string name="AppName">Divo Global</string>
+    <string name="CallsComingSoon">Esta función estará disponible más adelante.</string>
     <string name="AppNameBeta">Divo Global</string>
     <string name="LanguageName">Español</string>
     <string name="English">Inglés</string>
@@ -12,11 +13,15 @@
     <string name="DivoMainTabsEvents">Eventos</string>
     <string name="DivoMainTabsChats">Chats</string>
     <string name="DivoMainTabsSettings">Ajustes</string>
+    <string name="DivoMainTabsProfile">Perfil</string>
     <string name="ButtonBack">Atrás</string>
     <string name="ButtonCreate">Crear</string>
     <string name="ButtonSave">Guardar</string>
     <string name="ButtonApply">Aplicar</string>
     <string name="ButtonApplied">Aplicado</string>
+    <string name="EventButtonInterested">Me interesa</string>
+    <string name="DivoPublicProfile">Perfil público</string>
+    <string name="DivoUserNotFound">Perfil de usuario no encontrado en DIVO</string>
     <string name="ButtonClosed">Cerrado</string>
     <string name="ButtonOk">Aceptar</string>
     <string name="ButtonCancel">Cancelar</string>
@@ -28,6 +33,7 @@
     <string name="RetryLabel">Reintentar</string>
     <string name="YourPhoneLabel">Tu teléfono</string>
     <string name="ChooseCountryLabel">Elige un país</string>
+    <string name="EventsTabTitle">EVENTOS</string>
     <string name="SearchLabel">Buscar</string>
 
     <!--profile screen-->
@@ -163,6 +169,7 @@ experiencia laboral</string>
     <string name="WorkHistoryEmptySubtitle">Haz clic en el botón de abajo
 para añadir tu experiencia laboral</string>
     <string name="SaveChanges">Guardar cambios</string>
+    <string name="DiscardChanges">Descartar cambios</string>
     <string name="WorkExperienceSaved">Experiencia laboral añadida con éxito</string>
     <string name="PresentLabel">Presente</string>
     <string name="EndDateCannotBeEarly">La fecha de fin no puede ser anterior a la fecha de inicio</string>
@@ -387,11 +394,11 @@ mientras esté con otra agencia.</string>
         <item quantity="other">%d resultados</item>
     </plurals>
 
-    <string-array name="ModelFunNewTalent">
+    <string-array name="ModelNewTalentAgency">
         <item>Todos los roles</item>
         <item>Modelo</item>
-        <item>Diversión</item>
-        <item>New face</item>
+        <item>Nuevo talento</item>
+        <item>Agencia</item>
     </string-array>
 
     <!--settings screen-->
@@ -403,6 +410,8 @@ mientras esté con otra agencia.</string>
     <string name="SetUsernameLabel">Establecer nombre de usuario</string>
     <string name="FillYourParametersLabel">Rellena tus parámetros</string>
     <string name="SavedMessagesLabel">Mensajes guardados</string>
+    <string name="SavedProfilesLabel">Perfiles guardados</string>
+    <string name="SavedProfilesEmpty">Aún no hay perfiles guardados</string>
     <string name="NotificationsAndSoundsLabel">Notificaciones y sonidos</string>
     <string name="PrivacyAndSecurityLabel">Privacidad y seguridad</string>
     <string name="DataAndStorageLabel">Datos y almacenamiento</string>
@@ -2292,4 +2301,13 @@ crea uno nuevo.</string>
     <string name="StoryCameraHint">Toca %s para publicar una historia para tus contactos.</string>
     <string name="ThereAreNoImagesYet">AÚN NO HAY IMÁGENES</string>
     <string name="ThereAreNoVideosYet">AÚN NO HAY VIDEOS</string>
+    <string name="DivoEnterYourWebsite">Introduce tu sitio web</string>
+    <string name="DivoSaving">Guardando...</string>
+    <string name="DeleteProfile">Eliminar perfil</string>
+    <string name="DeleteProfileTitle">Eliminar perfil</string>
+    <string name="DeleteProfileDescription">¿Estás seguro de que quieres eliminar tu perfil? Esta acción no se puede deshacer.</string>
+    <string name="DeleteProfileConfirm">Eliminar</string>
+    <string name="NoPhotosYetBottomSheet">Sin fotos aún</string>
+    <string name="NoVideos">Sin videos aún</string>
+    <string name="PermissionGalleryDeniedToast">Permite el acceso a fotos y videos en los ajustes.</string>
 </resources>

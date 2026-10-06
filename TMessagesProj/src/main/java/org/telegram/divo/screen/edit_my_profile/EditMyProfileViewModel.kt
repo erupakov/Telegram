@@ -4,20 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.screen.search.LocalCity
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.LocaleController
 import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
-import org.telegram.divo.entity.LocalCountry
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLoader
 import org.telegram.messenger.MessagesController
@@ -41,8 +35,8 @@ class EditMyProfileViewModel(
         viewModelScope.launch {
             setState { copy(isLoading = true) }
             val userResultDeferred = async { DivoApi.userRepository.getCurrentUserInfo() }
-            val countriesDeferred = async(Dispatchers.IO) { loadCountriesFromAssets() }
-            val citiesDeferred = async(Dispatchers.IO) { loadCitiesFromAssets() }
+            val countriesDeferred = async { DivoApi.locationRepository.getCountries() }
+            val citiesDeferred = async { DivoApi.locationRepository.getCities() }
             
             val result = userResultDeferred.await()
             val allCountries = countriesDeferred.await()
@@ -91,7 +85,8 @@ class EditMyProfileViewModel(
 
     private fun updateProfile(fNameRaw: String, lNameRaw: String, aboutRaw: String, file: Result<File>?) {
         viewModelScope.launch {
-            val userInfo = state.value.userFull
+            val staleUserInfo = state.value.userFull
+            val userInfo = DivoApi.userRepository.currentUserFlow.value ?: staleUserInfo
             if (userInfo != null) {
                 setState { copy(isSaved = true) }
 
@@ -159,7 +154,7 @@ class EditMyProfileViewModel(
                             lastName = lNameRaw.trim()
                         )
 
-                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ProfileEditSaved())
+                        DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditSaved())
                         setState { copy(isSaved = false) }
                         sendEffect(Effect.SaveSuccess)
                     }
@@ -277,7 +272,7 @@ class EditMyProfileViewModel(
                     }
 
                     if (response is TLRPC.TL_photos_photo) {
-                        org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.ProfileAvatarUploaded())
+                        DivoAnalytics.logEvent(AnalyticsEvent.ProfileAvatarUploaded())
                         MessagesController
                             .getInstance(currentAccount)
                             .putUsers(response.users, false)
@@ -363,59 +358,6 @@ class EditMyProfileViewModel(
         )
 
         sendEffect(Effect.NavigateBack)
-    }
-
-    private fun loadCountriesFromAssets(): List<LocalCountry> {
-        val list = mutableListOf<LocalCountry>()
-        try {
-            val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
-            val reader = BufferedReader(InputStreamReader(stream))
-            reader.forEachLine { line ->
-                val args = line.split(";")
-                if (args.size >= 3) {
-                    val code = args[0]
-                    val shortname = args[1]
-                    val defaultName = args[2]
-                    val locName = LocaleController.getCountryName(shortname)
-                    val name = if (!locName.isNullOrEmpty()) locName else defaultName
-                    val flag = LocaleController.getLanguageFlag(shortname)
-                    list.add(LocalCountry(code, shortname, name, flag))
-                }
-            }
-            reader.close()
-            stream.close()
-            list.sortBy { it.name }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return list
-    }
-
-    private fun loadCitiesFromAssets(): List<LocalCity> {
-        val cities = mutableListOf<LocalCity>()
-        try {
-            val stream = ApplicationLoader.applicationContext.assets.open("cities.txt")
-            stream.bufferedReader().forEachLine { line ->
-                val cols = line.split("\t")
-                if (cols.size > 14) {
-                    cities.add(
-                        LocalCity(
-                            id = cols[0].toLongOrNull() ?: return@forEachLine,
-                            name = cols[1],
-                            asciiName = cols[2],
-                            alternateNames = cols[3],
-                            countryCode = cols[8],
-                            population = cols[14].toIntOrNull() ?: 0,
-                            matchedName = ""
-                        )
-                    )
-                }
-            }
-            stream.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return cities
     }
 
     companion object {

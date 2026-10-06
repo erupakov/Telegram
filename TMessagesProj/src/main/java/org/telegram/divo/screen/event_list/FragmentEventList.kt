@@ -74,4 +74,8 @@ class FragmentEventList : BaseFragment() {
 
         return super.onBackPressed(invoked)
     }
+
+    fun openSearchFromBottomBar() {
+        eventsNavController?.navigate(EventRoute.Search.route)
+    }
 }

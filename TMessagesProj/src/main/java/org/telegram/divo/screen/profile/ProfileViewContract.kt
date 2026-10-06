@@ -15,6 +15,10 @@ import org.telegram.divo.entity.SimilarFace
 import org.telegram.divo.entity.SocialNetworkType
 import org.telegram.divo.entity.UserGalleryItem
 import org.telegram.divo.entity.UserInfo
+import org.telegram.divo.entity.instagramLink
+import org.telegram.divo.entity.tiktokLink
+import org.telegram.divo.entity.websiteLink
+import org.telegram.divo.entity.youtubeLink
 import org.telegram.divo.screen.profile.components.ProfileDestination
 import org.telegram.divo.screen.profile.components.ProfileInfoDestination
 import org.telegram.divo.screen.profile.components.StatsType
@@ -141,10 +145,10 @@ data class ProfileViewState(
             )
         )
 
-    val instagramUser get() = (userInfo.model?.instagramUrl ?: userInfo.agency?.instagramUrl)?.trimEnd('/')?.substringAfterLast("/").orEmpty()
-    val tiktokUser get() = (userInfo.model?.tiktokUrl ?: userInfo.agency?.tiktokUrl)?.trimEnd('/')?.substringAfterLast("/").orEmpty()
-    val youtubeUser get() = (userInfo.model?.youtubeUrl ?: userInfo.agency?.youtubeUrl)?.trimEnd('/')?.substringAfterLast("/").orEmpty()
-    val website get() = (userInfo.model?.websiteUrl ?: userInfo.agency?.websiteUrl)?.removePrefix("https://")?.removePrefix("http://").orEmpty()
+    val instagramUser get() = userInfo.instagramLink.trimEnd('/').substringAfterLast("/")
+    val tiktokUser get() = userInfo.tiktokLink.trimEnd('/').substringAfterLast("/")
+    val youtubeUser get() = userInfo.youtubeLink.trimEnd('/').substringAfterLast("/")
+    val website get() = userInfo.websiteLink.removePrefix("https://").removePrefix("http://")
 
     val isVisibleSocialLinks: Boolean
         get() = instagramUser.isEmpty() && tiktokUser.isEmpty() && youtubeUser.isEmpty() && website.isEmpty()
@@ -233,7 +237,8 @@ sealed class ProfileIntent : ViewIntent {
     class OnSelectAgencyModelForAdd(val model: AgencySearchModel?) : ProfileIntent()
     object OnCreateChannelClicked : ProfileIntent()
     class OnAddAgencyModel(val userId: Int, val note: String? = null) : ProfileIntent()
-    object OnFindSimilarProfiles : ProfileIntent()
+    class OnFindSimilarProfiles(val photoUrl: String, val profileId: Int) : ProfileIntent()
+    object OnDeleteProfileConfirmed : ProfileIntent()
 }
 
 sealed class ProfileEffect : ViewEffect {
@@ -250,11 +255,12 @@ sealed class ProfileEffect : ViewEffect {
     class NavigateToEvent(val eventId: Int) : ProfileEffect()
     class NavigateToApplyConfirmation(val eventId: Int) : ProfileEffect()
     class ShowWithdrawConfirmation(val eventId: Int) : ProfileEffect()
-    class NavigateToFindSimilarProfiles(val photoUrl: String) : ProfileEffect()
+    class NavigateToFindSimilarProfiles(val photoUrl: String, val profileId: Int) : ProfileEffect()
     class NavigateToChat(val telegramId: Long, val telegramAccessHash: Long?, val telegramUsername: String?) : ProfileEffect()
     object NavigateToEditLinks : ProfileEffect()
     object NavigateToCreateEvent : ProfileEffect()
     data class ActionChanged(val resDrawableId: Int, val resStringId: Int) : ProfileEffect()
     object AgencyModelAdded : ProfileEffect()
     class NavigateToCreateChannel(val id: String = java.util.UUID.randomUUID().toString()) : ProfileEffect()
+    object NavigateToLogout : ProfileEffect()
 }

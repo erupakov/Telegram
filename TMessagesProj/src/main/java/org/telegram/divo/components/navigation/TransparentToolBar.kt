@@ -89,9 +89,9 @@ fun TransparentToolBarContent(
     titleContent: @Composable (BoxScope.(progress: Float) -> Unit)? = null,
     actionsContent: @Composable (BoxScope.(progress: Float, buttonBgColor: Color, buttonIconColor: Color, buttonBorderColor: Color) -> Unit)? = null,
 ) {
-    val buttonBgColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.2f), Color.White, transitionProgress)
+    val buttonBgColor = lerp(AppTheme.colors.backgroundDark.copy(alpha = 0.4f), Color.White, transitionProgress)
     val buttonIconColor = lerp(Color.White, Color.Black, transitionProgress)
-    val buttonBorderColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.4f), Color.Transparent, transitionProgress)
+    val buttonBorderColor = lerp(AppTheme.colors.onBackground.copy(alpha = 0.1f), Color.Transparent, transitionProgress)
 
     val rawTopPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
     var statusBarPadding by remember { mutableStateOf(rawTopPadding) }

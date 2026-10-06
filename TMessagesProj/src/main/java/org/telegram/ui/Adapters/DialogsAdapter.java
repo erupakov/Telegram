@@ -110,6 +110,8 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
 
     private Context mContext;
     private ArchiveHintCell archiveHintCell;
+    // DIVO: the "Your contacts" block under the chat list showed contacts unrelated to the user, so it is hidden
+    private static final boolean SHOW_CONTACTS_BLOCK = false;
     private ArrayList<TLRPC.TL_contact> onlineContacts;
     private boolean forceUpdatingContacts;
     private int dialogsCount;
@@ -952,7 +954,7 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
                         if (!cell.isUtyanAnimationTriggered()) {
                             cell.startUtyanCollapseAnimation(true);
                         }
-                    } else if (forceUpdatingContacts) {
+                    } else if (SHOW_CONTACTS_BLOCK && forceUpdatingContacts) {
                         if (dialogsCount == 0) {
                             cell.startUtyanCollapseAnimation(false);
                         }
@@ -1476,7 +1478,9 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
             return;
         }
 
-        if (!hasHints && dialogsType == 0 && folderId == 0 && messagesController.isDialogsEndReached(folderId) && !forceUpdatingContacts) {
+        if (!SHOW_CONTACTS_BLOCK) { //DIVO
+            onlineContacts = null;
+        } else if (!hasHints && dialogsType == 0 && folderId == 0 && messagesController.isDialogsEndReached(folderId) && !forceUpdatingContacts) {
             if (messagesController.getAllFoldersDialogsCount() <= 10 && ContactsController.getInstance(currentAccount).doneLoadingContacts && !ContactsController.getInstance(currentAccount).contacts.isEmpty()) {
                 onlineContacts = new ArrayList<>(ContactsController.getInstance(currentAccount).contacts);
                 long selfId = UserConfig.getInstance(currentAccount).clientUserId;
@@ -1560,7 +1564,7 @@ public class DialogsAdapter extends RecyclerListView.SelectionAdapter implements
         }
 
         boolean stopUpdate = false;
-        if (dialogsCount == 0 && forceUpdatingContacts) {
+        if (SHOW_CONTACTS_BLOCK && dialogsCount == 0 && forceUpdatingContacts) {
             isEmpty = true;
             if (requestPeerType != null) {
                 itemInternals.add(new ItemInternal(VIEW_TYPE_REQUIRED_EMPTY));

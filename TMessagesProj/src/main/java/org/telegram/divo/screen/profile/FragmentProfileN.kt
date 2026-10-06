@@ -36,6 +36,13 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
 
     private var navController: NavController? = null
     
+    private val isOnHomeScreen = androidx.compose.runtime.mutableStateOf(true)
+    private var mainTabsController: org.telegram.ui.MainTabsActivityController? = null
+
+    fun setMainTabsActivityController(controller: org.telegram.ui.MainTabsActivityController) {
+        this.mainTabsController = controller
+    }
+    
     private val composeLifecycleOwner = FragmentLifecycleOwner().apply {
         onCreate()
         onStart()
@@ -84,8 +91,16 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
                 ) {
                     ProfileNavGraph(
                         userId = targetUserId,
-                        isOwnProfile = true,
-                        onNavControllerReady = { navController = it },
+                        isOwnProfile = arguments?.getBoolean(ARG_OWN_PROFILE, false) ?: false,
+                        hasBottomBar = mainTabsController != null,
+                        showRootBackButton = mainTabsController == null,
+                        onNavControllerReady = { nav -> 
+                            navController = nav 
+                            nav.addOnDestinationChangedListener { _, destination, _ ->
+                                isOnHomeScreen.value = destination.route?.startsWith("profile/") == true
+                                mainTabsController?.setTabsVisible(isOnHomeScreen.value)
+                            }
+                        },
                         onNavigateToChat = { tgId, tgHash, tgUsername ->
                             val currentAccount = UserConfig.selectedAccount
                             var user = MessagesController.getInstance(currentAccount).getUser(tgId)
@@ -112,7 +127,16 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
             }
         }
 
-        val container = FrameLayout(context)
+        val container = object : FrameLayout(context) {
+            override fun dispatchApplyWindowInsets(insets: android.view.WindowInsets): android.view.WindowInsets {
+                var currentInsets = insets
+                for (i in 0 until childCount) {
+                    val child = getChildAt(i)
+                    currentInsets = child.dispatchApplyWindowInsets(currentInsets)
+                }
+                return currentInsets
+            }
+        }
         container.addView(composeView, FrameLayout.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT, 
             ViewGroup.LayoutParams.MATCH_PARENT
@@ -128,6 +152,14 @@ class FragmentProfileN : BaseFragment(), NotificationCenter.NotificationCenterDe
         
         fragmentView = container
         return fragmentView
+    }
+
+    override fun isLightStatusBar(): Boolean {
+        return true
+    }
+
+    override fun isSupportEdgeToEdge(): Boolean {
+        return true
     }
 
     override fun didReceivedNotification(id: Int, account: Int, vararg args: Any) {

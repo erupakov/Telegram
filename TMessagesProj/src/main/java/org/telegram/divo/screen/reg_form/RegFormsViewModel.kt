@@ -1,36 +1,31 @@
 package org.telegram.divo.screen.reg_form
 
-import android.os.Build
 import android.net.Uri
+import android.os.Build
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.telegram.divo.common.arch.BaseViewModel
-import org.telegram.divo.screen.search.LocalCity
-import org.telegram.messenger.ApplicationLoader
-import org.telegram.messenger.LocaleController
-import java.io.InputStreamReader
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
+import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.common.utils.AdditionalInfoKeys
 import org.telegram.divo.common.utils.TelegramProfileHelper
-import org.telegram.tgnet.TLRPC
-import org.telegram.divo.dal.network.DivoApi
-import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.dto.auth.RegistrationRequest
-import org.telegram.divo.dal.dto.auth.TelegramLinkRequest
+import org.telegram.divo.dal.utils.DivoTelegramLinker
+import org.telegram.divo.common.utils.withHttpsScheme
 import org.telegram.divo.dal.dto.common.CustomerDto
 import org.telegram.divo.dal.dto.user.UpdateProfileAgencyRequest
 import org.telegram.divo.dal.dto.user.UpdateProfileModelDto
 import org.telegram.divo.dal.dto.user.UpdateProfileRequest
-import org.telegram.divo.dal.utils.DivoAuthHelper
+import org.telegram.divo.dal.network.DivoApi
+import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
-import org.telegram.divo.entity.LocalCountry
+import org.telegram.divo.dal.utils.DivoAuthHelper
 import org.telegram.divo.entity.Photo
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.mapGenderToEnglish
 import org.telegram.divo.screen.reg_select_role.SubRole
-import java.io.BufferedReader
+import org.telegram.messenger.ApplicationLoader
+import org.telegram.tgnet.TLRPC
 
 class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsEffect>() {
 
@@ -81,7 +76,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                 )
             )
         }
-        
+
         if (state.value.isLastStep) {
             setState { copy(isLoading = true) }
             val data = state.value.formData ?: return
@@ -147,7 +142,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     if (data.firstName.isNotBlank()) additionalInfo[AdditionalInfoKeys.FIRST_NAME] = data.firstName
                     if (data.lastName.isNotBlank()) additionalInfo[AdditionalInfoKeys.LAST_NAME] = data.lastName
                     if (!data.dateOfBirth.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.DATE_OF_BIRTH] = data.dateOfBirth
-                    if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = data.gender.lowercase(java.util.Locale.US)
+                    if (!data.gender.isNullOrBlank()) additionalInfo[AdditionalInfoKeys.GENDER] = mapGenderToEnglish(data.gender) ?: "female"
                     if (data.country.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY] = data.country
                     if (data.countryCode.isNotBlank()) additionalInfo[AdditionalInfoKeys.COUNTRY_CODE] = data.countryCode
                     if (data.city != null) additionalInfo[AdditionalInfoKeys.CITY] = data.city.name
@@ -280,15 +275,14 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     // 3. Divo Link (REST)
                     val tgUserId = profileUpdateResult?.id ?: tgUser?.id ?: 0L
 
-                    val linkRequest = TelegramLinkRequest(
+                    val linkResponse = DivoTelegramLinker.link(
+                        account = state.value.currentAccount,
                         divoUserId = divoUserId,
                         telegramUserId = tgUserId,
-                        phone = rawPhone,
+                        fallbackPhone = rawPhone,
                         deviceId = deviceId,
                         deviceType = deviceType
                     )
-                    
-                    val linkResponse = DivoApi.authRepository.linkTelegramAccount(linkRequest)
                     if (linkResponse !is DivoResult.Success) {
                         val errorMessage = linkResponse.getErrorMessage()
                         DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))
@@ -330,9 +324,9 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                 hasActingEducation = false,
                                 appearance = null,
                                 tiktokUrl = null,
-                                youtubeUrl = data.showreelUrl.takeIf { it.isNotBlank() },
-                                instagramUrl = data.instagramUrl.takeIf { it.isNotBlank() },
-                                websiteUrl = data.websiteUrl.takeIf { it.isNotBlank() } ?: data.portfolioUrl.takeIf { it.isNotBlank() },
+                                youtubeUrl = data.showreelUrl.takeIf { it.isNotBlank() }?.withHttpsScheme(),
+                                instagramUrl = data.instagramUrl.takeIf { it.isNotBlank() }?.withHttpsScheme(),
+                                websiteUrl = (data.websiteUrl.takeIf { it.isNotBlank() } ?: data.portfolioUrl.takeIf { it.isNotBlank() })?.withHttpsScheme(),
                             )
                         } else null
 
@@ -351,15 +345,15 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                 agencyId = null,
                                 title = data.companyName.takeIf { it.isNotBlank() } ?: fullName,
                                 description = null,
-                                site = data.websiteUrl.takeIf { it.isNotBlank() },
+                                site = data.websiteUrl.takeIf { it.isNotBlank() }?.withHttpsScheme(),
                                 address = null,
                                 background = null,
                                 photo = photoContainer,
                                 tiktokUrl = null,
-                                youtubeUrl = data.showreelUrl.takeIf { it.isNotBlank() },
+                                youtubeUrl = data.showreelUrl.takeIf { it.isNotBlank() }?.withHttpsScheme(),
                                 telegramUrl = null,
-                                instagramUrl = data.instagramUrl.takeIf { it.isNotBlank() },
-                                websiteUrl = data.websiteUrl.takeIf { it.isNotBlank() } ?: data.portfolioUrl.takeIf { it.isNotBlank() },
+                                instagramUrl = data.instagramUrl.takeIf { it.isNotBlank() }?.withHttpsScheme(),
+                                websiteUrl = (data.websiteUrl.takeIf { it.isNotBlank() } ?: data.portfolioUrl.takeIf { it.isNotBlank() })?.withHttpsScheme(),
                             )
                         } else null
                     
@@ -392,10 +386,14 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                                 Photo(photoId = 0, fileUuid = it)
                             }
                             val agencyTitle = data.companyName.takeIf { it.isNotBlank() } ?: fullName
-                            val agency = org.telegram.divo.entity.Agency(
+                            // /agency/update treats null *Url as "clear the link", so start from the agency
+                            // the profile update just saved (with its links) instead of an empty one
+                            val savedAgency = updateResponse.value.agency ?: org.telegram.divo.entity.Agency()
+                            val agency = savedAgency.copy(
                                 title = agencyTitle,
-                                site = data.websiteUrl.takeIf { it.isNotBlank() } ?: data.portfolioUrl,
-                                photo = agencyPhoto
+                                site = data.websiteUrl.takeIf { it.isNotBlank() }?.withHttpsScheme()
+                                    ?: data.portfolioUrl.withHttpsScheme(),
+                                photo = agencyPhoto ?: savedAgency.photo
                             )
                             val agencyResponse = DivoApi.userRepository.updateAgency(agency)
                             if (agencyResponse !is DivoResult.Success) {
@@ -438,67 +436,16 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
     }
 
     private fun loadCountries() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val list = mutableListOf<LocalCountry>()
-            try {
-                val stream = ApplicationLoader.applicationContext.assets.open("countries.txt")
-                val reader = BufferedReader(InputStreamReader(stream))
-                reader.forEachLine { line ->
-                    val args = line.split(";")
-                    if (args.size >= 3) {
-                        val code = args[0]
-                        val shortname = args[1]
-                        val defaultName = args[2]
-                        val locName = LocaleController.getCountryName(shortname)
-                        val name = if (!locName.isNullOrEmpty()) locName else defaultName
-                        val flag = LocaleController.getLanguageFlag(shortname)
-                        list.add(
-                            LocalCountry(
-                                code = code,
-                                shortName = shortname,
-                                name = name,
-                                flag = flag
-                            )
-                        )
-                    }
-                }
-                reader.close()
-                stream.close()
-
-                list.sortBy { it.name }
-
-                setState { copy(allCountries = list) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        viewModelScope.launch {
+            val list = DivoApi.locationRepository.getCountries()
+            setState { copy(allCountries = list) }
         }
     }
 
     private fun loadCities() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val cities = mutableListOf<LocalCity>()
-                val stream = ApplicationLoader.applicationContext.assets.open("cities.txt")
-                stream.bufferedReader().forEachLine { line ->
-                    val cols = line.split("\t")
-                    if (cols.size > 14) {
-                        cities.add(
-                            LocalCity(
-                                id = cols[0].toLongOrNull() ?: return@forEachLine,
-                                name = cols[1],
-                                asciiName = cols[2],
-                                alternateNames = cols[3],
-                                countryCode = cols[8],
-                                population = cols[14].toIntOrNull() ?: 0
-                            )
-                        )
-                    }
-                }
-                stream.close()
-                setState { copy(allCities = cities) }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+        viewModelScope.launch {
+            val cities = DivoApi.locationRepository.getCities()
+            setState { copy(allCities = cities) }
         }
     }
 

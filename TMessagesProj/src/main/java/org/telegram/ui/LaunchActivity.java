@@ -92,6 +92,7 @@ import com.google.firebase.appindexing.builders.AssistActionBuilder;
 
 import org.telegram.PhoneFormat.PhoneFormat;
 import org.telegram.divo.common.utils.DivoDeeplinkDispatcher;
+import org.telegram.divo.dal.network.DivoApi;
 import org.telegram.divo.screen.auth.AuthFragment;
 import org.telegram.messenger.AccountInstance;
 import org.telegram.messenger.AndroidUtilities;
@@ -568,7 +569,7 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                 actionBarLayout.addFragmentToStack(getClientNotActivatedFragment());
             } else {
                 // DIVO--START
-                String token = org.telegram.divo.dal.network.DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken();
+                String token = DivoApi.INSTANCE.getAccessTokenProvider().getAccessToken(currentAccount);
                 if (android.text.TextUtils.isEmpty(token)) {
                     // Divo token is missing (registration not finished)
                     TLRPC.User currentUser = UserConfig.getInstance(currentAccount).getCurrentUser();
@@ -1128,6 +1129,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                     int color = Theme.getColor(Theme.key_actionBarDefault, null, true);
                     enable = ColorUtils.calculateLuminance(color) > 0.7f;
                 }
+                if (termsOfServiceView != null && termsOfServiceView.getVisibility() == View.VISIBLE) {
+                    int color = Theme.getColor(Theme.key_windowBackgroundWhite, null, true);
+                    enable = ColorUtils.calculateLuminance(color) > 0.7f;
+                }
                 AndroidUtilities.setLightStatusBar(getWindow(), enable, forceLightStatusBar);
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && checkNavigationBar && (!useCurrentFragment || currentFragment == null || !currentFragment.isInPreviewMode())) {
@@ -1391,13 +1396,21 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
                             .alpha(0f)
                             .setDuration(150)
                             .setInterpolator(AndroidUtilities.accelerateInterpolator)
-                            .withEndAction(() -> termsOfServiceView.setVisibility(View.GONE))
+                            .withEndAction(() -> {
+                                termsOfServiceView.setVisibility(View.GONE);
+                                checkSystemBarColors(false); //DIVO
+                            })
                             .start();
                 }
 
                 @Override
                 public void onDeclineTerms(int account) {
-                    termsOfServiceView.setVisibility(View.GONE);
+                    //DIVO--START
+                    getSharedPreferences("logininfo2", Context.MODE_PRIVATE).edit().clear().apply();
+                    getSharedPreferences("logininfo2_" + account, Context.MODE_PRIVATE).edit().clear().apply();
+                    ApplicationLoader.applicationContext.getSharedPreferences("kit_prefs", Context.MODE_PRIVATE).edit().putBoolean("onboarding_seen", true).apply();
+                    finishAffinity();
+                    //DIVO--END
                 }
             });
         }
@@ -1406,8 +1419,10 @@ public class LaunchActivity extends BasePermissionsActivity implements INavigati
             UserConfig.getInstance(account).unacceptedTermsOfService = tos;
             UserConfig.getInstance(account).saveConfig(false);
         }
+        termsOfServiceView.setVisibility(View.VISIBLE); //DIVO
         termsOfServiceView.show(account, tos);
         termsOfServiceView.animate().alpha(1f).setDuration(150).setInterpolator(AndroidUtilities.decelerateInterpolator).setListener(null).start();
+        checkSystemBarColors(false); //DIVO
     }
 
     public void showPasscodeActivity(boolean fingerprint, boolean animated, int x, int y, Runnable onShow, Runnable onStart) {

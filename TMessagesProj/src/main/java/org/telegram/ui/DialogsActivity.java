@@ -7328,6 +7328,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             fragmentSearchField.editText.setSelection(query.length());
         }
     }
+    public void openSearchFromBottomBar() {
+        showSearch(true, false, true);
+    }
 
     private void showSearch(boolean show, boolean startFromDownloads, boolean animated) {
         showSearch(show, startFromDownloads, animated, false);
@@ -12229,7 +12232,8 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (isArchive()) {
             newVisibility = !getStoriesController().getHiddenList().isEmpty();
         } else {
-            newVisibility = !onlySelfStories && getStoriesController().hasStories();
+            //DIVO: always show the stories row in chats (with the "add story" item), like on the Models screen
+            newVisibility = true; // !onlySelfStories && getStoriesController().hasStories();
             onlySelfStories = getStoriesController().hasOnlySelfStories();
         }
 

@@ -77,7 +77,7 @@ object DivoApiClient {
                 .addHeader("App-Version", "(126)")
                 .addHeader("Accept-Language", currentLanguage)
 
-            if (!shouldSkipAuth(path)) {
+            if (!shouldSkipAuth(path) && originalRequest.header("Authorization") == null) {
                 val token = runBlocking { accessTokenProvider.getAccessToken() }
 
                 if (!token.isNullOrEmpty()) {

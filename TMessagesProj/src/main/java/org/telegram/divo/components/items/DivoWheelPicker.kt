@@ -88,7 +88,7 @@ fun DivoWheelPicker(
                     modifier = Modifier
                         .height(itemHeight)
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 4.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -98,7 +98,7 @@ fun DivoWheelPicker(
                         color = if (isSelected) Color.Black else Color.Gray,
                         modifier = Modifier.alpha(if (isSelected) 1f else 0.4f),
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        softWrap = false
                     )
                 }
             }

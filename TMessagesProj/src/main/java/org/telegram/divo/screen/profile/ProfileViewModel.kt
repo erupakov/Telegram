@@ -21,6 +21,10 @@ import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.flatMap
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.AgencyModelStatus
+import org.telegram.divo.entity.instagramLink
+import org.telegram.divo.entity.tiktokLink
+import org.telegram.divo.entity.websiteLink
+import org.telegram.divo.entity.youtubeLink
 import org.telegram.divo.entity.AgencySearchModelStatus
 import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.SocialNetworkType
@@ -177,6 +181,19 @@ class ProfileViewModel(
                 }
             }
         }
+        viewModelScope.launch {
+            kotlinx.coroutines.flow.combine(
+                DivoApi.workHistory.cache,
+                DivoApi.workHistory.cachedUserIdFlow
+            ) { cached, cachedId ->
+                if (cachedId == userId) cached else null
+            }.collect { cached ->
+                if (cached != null) {
+                    val latest = cached.filter { it.id != -1 }.maxByOrNull { it.startDate }
+                    setState { copy(latestWorkExperience = latest) }
+                }
+            }
+        }
     }
 
     override fun handleIntent(intent: ProfileIntent) {
@@ -185,9 +202,9 @@ class ProfileViewModel(
             is ProfileIntent.OnRefresh -> refreshData()
             is ProfileIntent.OpenSocialLink -> openLink(intent.socialNetworkType)
             is ProfileIntent.OnBackgroundPhotoSelected -> { changeBackground(intent.file) }
-            is ProfileIntent.OnPortfolioPhotoSelected -> { 
+            is ProfileIntent.OnPortfolioPhotoSelected -> {
                 DivoAnalytics.logEvent(AnalyticsEvent.ProfileMediaUploadTapped("photo", state.value.userId))
-                uploadPhoto(intent.file) 
+                uploadPhoto(intent.file)
             }
             is ProfileIntent.OnVideoSelected -> {
                 DivoAnalytics.logEvent(AnalyticsEvent.ProfileMediaUploadTapped("video", state.value.userId))
@@ -217,8 +234,8 @@ class ProfileViewModel(
             is ProfileIntent.ConfirmWithdraw -> confirmWithdraw(intent.id)
             is ProfileIntent.OnEventClicked -> sendEffect(NavigateToEvent(intent.eventId))
             is ProfileIntent.OnFindSimilarProfiles -> {
-                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("profile", state.value.userId))
-                sendEffect(NavigateToFindSimilarProfiles(state.value.userInfo.photoUrl))
+                DivoAnalytics.logEvent(AnalyticsEvent.FaceRecognitionOpened("profile", intent.profileId))
+                sendEffect(NavigateToFindSimilarProfiles(intent.photoUrl, intent.profileId))
             }
             is ProfileIntent.OnSendDMClicked -> {
                 val currentUserId = DivoApi.userRepository.currentUserFlow.value?.id ?: 0
@@ -253,6 +270,7 @@ class ProfileViewModel(
                 DivoAnalytics.logEvent(AnalyticsEvent.ChannelCreateStarted(state.value.userId))
                 sendEffect(ProfileEffect.NavigateToCreateChannel())
             }
+            ProfileIntent.OnDeleteProfileConfirmed -> deleteProfile()
         }
     }
 
@@ -414,9 +432,9 @@ class ProfileViewModel(
             engagement.currentSearchQuery = query
             engagement.searchPaginator.reset()
             engagement.searchPaginator.loadInitial()
-            
+
             val hasResults = engagement.searchPaginator.state.value.items.isNotEmpty()
-            
+
             DivoAnalytics.logEvent(
                 AnalyticsEvent.EngagementSearchPerformed(
                     state.value.activeStatsType?.name?.lowercase() ?: "unknown",
@@ -778,6 +796,20 @@ class ProfileViewModel(
         }
     }
 
+    private fun deleteProfile() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            val result = DivoApi.userRepository.deleteAccount()
+            if (result is DivoResult.Success) {
+                setState { copy(isLoading = false) }
+                sendEffect(ProfileEffect.NavigateToLogout)
+            } else {
+                setState { copy(isLoading = false) }
+                sendEffect(ProfileEffect.ShowError(result.getErrorMessage()))
+            }
+        }
+    }
+
     private fun reportProfile(reportKey: String) {
         viewModelScope.launch {
             setState { copy(showReportSheet = false, isLoading = true) }
@@ -972,13 +1004,16 @@ class ProfileViewModel(
 
     private fun openLink(socialNetworkType: SocialNetworkType) {
         val url = when (socialNetworkType) {
-            SocialNetworkType.TIKTOK -> state.value.userInfo.model?.tiktokUrl ?: state.value.userInfo.agency?.tiktokUrl.orEmpty()
-            SocialNetworkType.INSTAGRAM -> state.value.userInfo.model?.instagramUrl ?: state.value.userInfo.agency?.instagramUrl.orEmpty()
-            SocialNetworkType.WEBSITE -> state.value.userInfo.model?.websiteUrl ?: state.value.userInfo.agency?.websiteUrl.orEmpty()
-            SocialNetworkType.YOUTUBE -> state.value.userInfo.model?.youtubeUrl ?: state.value.userInfo.agency?.youtubeUrl.orEmpty()
+            SocialNetworkType.TIKTOK -> state.value.userInfo.tiktokLink
+            SocialNetworkType.INSTAGRAM -> state.value.userInfo.instagramLink
+            SocialNetworkType.WEBSITE -> state.value.userInfo.websiteLink
+            SocialNetworkType.YOUTUBE -> state.value.userInfo.youtubeLink
         }
+        if (url.isBlank()) return
 
-        sendEffect(ProfileEffect.OpenUrl(url))
+        // A website may be stored without a scheme (e.g. agency.site), which ACTION_VIEW can't open
+        val openUrl = if (url.startsWith("http://", ignoreCase = true) || url.startsWith("https://", ignoreCase = true)) url else "https://$url"
+        sendEffect(ProfileEffect.OpenUrl(openUrl))
     }
 
     private fun getGalleryItemIndex(url: String, isVideo: Boolean): Int {

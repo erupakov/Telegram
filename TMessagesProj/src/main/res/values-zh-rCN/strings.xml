@@ -2,6 +2,7 @@
 <resources>
     <!--divo view start-->
     <string name="AppName">Divo Global</string>
+    <string name="CallsComingSoon">该功能将在稍后推出。</string>
     <string name="AppNameBeta">Divo Global</string>
     <string name="LanguageName">中文 (简体)</string>
     <string name="English">英文</string>
@@ -12,11 +13,15 @@
     <string name="DivoMainTabsEvents">活动</string>
     <string name="DivoMainTabsChats">聊天</string>
     <string name="DivoMainTabsSettings">设置</string>
+    <string name="DivoMainTabsProfile">个人资料</string>
     <string name="ButtonBack">返回</string>
     <string name="ButtonCreate">创建</string>
     <string name="ButtonSave">保存</string>
     <string name="ButtonApply">应用</string>
     <string name="ButtonApplied">已申请</string>
+    <string name="EventButtonInterested">感兴趣</string>
+    <string name="DivoPublicProfile">公开资料</string>
+    <string name="DivoUserNotFound">在 DIVO 中未找到用户资料</string>
     <string name="ButtonClosed">已关闭</string>
     <string name="ButtonOk">确定</string>
     <string name="ButtonCancel">取消</string>
@@ -28,6 +33,7 @@
     <string name="RetryLabel">重试</string>
     <string name="YourPhoneLabel">您的手机</string>
     <string name="ChooseCountryLabel">选择国家/地区</string>
+    <string name="EventsTabTitle">活动</string>
     <string name="SearchLabel">搜索</string>
 
     <!--profile screen-->
@@ -162,6 +168,7 @@
     <string name="WorkHistoryEmptySubtitle">点击下方按钮
 添加您的工作经历</string>
     <string name="SaveChanges">保存更改</string>
+    <string name="DiscardChanges">放弃更改</string>
     <string name="WorkExperienceSaved">工作经历添加成功</string>
     <string name="PresentLabel">至今</string>
     <string name="EndDateCannotBeEarly">结束日期不能早于开始日期</string>
@@ -385,11 +392,11 @@
         <item quantity="other">%d 个结果</item>
     </plurals>
 
-    <string-array name="ModelFunNewTalent">
+    <string-array name="ModelNewTalentAgency">
         <item>所有角色</item>
         <item>模特</item>
-        <item>爱好者</item>
         <item>新面孔</item>
+        <item>机构</item>
     </string-array>
 
     <!--settings screen-->
@@ -401,6 +408,8 @@
     <string name="SetUsernameLabel">设置用户名</string>
     <string name="FillYourParametersLabel">填写您的参数</string>
     <string name="SavedMessagesLabel">收藏的消息</string>
+    <string name="SavedProfilesLabel">保存的个人资料</string>
+    <string name="SavedProfilesEmpty">暂无保存的个人主页</string>
     <string name="NotificationsAndSoundsLabel">通知与声音</string>
     <string name="PrivacyAndSecurityLabel">隐私与安全</string>
     <string name="DataAndStorageLabel">数据与存储</string>
@@ -679,6 +688,13 @@
     <string name="FollowersOnlineText">%1$s 粉丝</string>
     <string name="SubmitApplicationTitle">提交申请</string>
     <string name="SubmitButton">提交</string>
+    <string name="Cancel">取消</string>
+    <string name="Close">关闭</string>
+    <string name="Done">完成</string>
+    <string name="Save">保存</string>
+    <string name="Delete">删除</string>
+    <string name="Back">返回</string>
+    <string name="OK">确定</string>
     <string name="ParamWeight">体重</string>
     <string name="ParamBreastSize">胸围</string>
     <string name="ParamWaist">腰围</string>
@@ -915,4 +931,13 @@
     <string name="StoryCameraHint">点击 %s 为您的联系人发布快拍。</string>
     <string name="ThereAreNoImagesYet">尚无图片</string>
     <string name="ThereAreNoVideosYet">尚无视频</string>
+    <string name="DivoEnterYourWebsite">输入您的网站</string>
+    <string name="DivoSaving">正在保存...</string>
+    <string name="DeleteProfile">删除个人资料</string>
+    <string name="DeleteProfileTitle">删除个人资料</string>
+    <string name="DeleteProfileDescription">您确定要删除您的个人资料吗？此操作无法撤消。</string>
+    <string name="DeleteProfileConfirm">删除</string>
+    <string name="NoPhotosYetBottomSheet">暂无照片</string>
+    <string name="NoVideos">暂无视频</string>
+    <string name="PermissionGalleryDeniedToast">请在设置中开启照片和视频访问权限。</string>
 </resources>

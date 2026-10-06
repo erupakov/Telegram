@@ -24,6 +24,8 @@ data class EventDetails(
     val isPublic: Boolean,
     val ndaRequired: Boolean,
     val applicationDeadline: String?,
+    val maxAttendees: Int?,
+    val requirements: String?,
     val address: EventAddress?,
     val files: List<EventFile>,
     val modelAttributes: EventModelAttributes?,
