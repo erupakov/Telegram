@@ -67,6 +67,7 @@
     <string name="ReportThisProfile">举报此主页</string>
     <string name="ReportSent">举报已发送</string>
     <string name="BlockProfile">屏蔽用户</string>
+    <string name="DivoLinkProofMissing">无法确认您的 Telegram 账户：消息服务器未签发绑定确认。请稍后再试。</string>
     <string name="DivoUnblockUser">解除屏蔽</string>
     <string name="DivoUnblock">解除屏蔽</string>
     <string name="DivoBlockUserTitle">屏蔽 %1$s？</string>

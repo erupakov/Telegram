@@ -25,6 +25,8 @@ import org.telegram.divo.entity.RoleType
 import org.telegram.divo.entity.mapGenderToEnglish
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.messenger.ApplicationLoader
+import org.telegram.messenger.LocaleController
+import org.telegram.messenger.R
 import org.telegram.tgnet.TLRPC
 
 class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsEffect>() {
@@ -276,7 +278,15 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))
 
                         DivoApi.accessTokenProvider.setAccessToken(null)
-                        sendEffect(RegFormsEffect.ShowError("Linking failed: $errorMessage"))
+                        sendEffect(
+                            RegFormsEffect.ShowError(
+                                if (DivoTelegramLinker.isProofMissing(linkResponse)) {
+                                    LocaleController.getString(R.string.DivoLinkProofMissing)
+                                } else {
+                                    "Linking failed: $errorMessage"
+                                }
+                            )
+                        )
                         setState { copy(isLoading = false) }
                         return@launch
                     }

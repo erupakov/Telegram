@@ -60,6 +60,7 @@
     <string name="ReportThisProfile">Пожаловаться на профиль</string>
     <string name="ReportSent">Жалоба отправлена</string>
     <string name="BlockProfile">Заблокировать пользователя</string>
+    <string name="DivoLinkProofMissing">Не удалось подтвердить аккаунт Telegram: сервер мессенджера не выдал подтверждение привязки. Попробуйте позже.</string>
     <string name="DivoUnblockUser">Разблокировать пользователя</string>
     <string name="DivoUnblock">Разблокировать</string>
     <string name="DivoBlockUserTitle">Заблокировать %1$s?</string>

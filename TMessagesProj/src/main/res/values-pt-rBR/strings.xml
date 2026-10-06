@@ -67,6 +67,7 @@
     <string name="ReportThisProfile">Denunciar este perfil</string>
     <string name="ReportSent">Denúncia enviada</string>
     <string name="BlockProfile">Bloquear usuário</string>
+    <string name="DivoLinkProofMissing">Não foi possível confirmar sua conta do Telegram: o servidor de mensagens não emitiu a confirmação de vinculação. Tente novamente mais tarde.</string>
     <string name="DivoUnblockUser">Desbloquear usuário</string>
     <string name="DivoUnblock">Desbloquear</string>
     <string name="DivoBlockUserTitle">Bloquear %1$s?</string>
