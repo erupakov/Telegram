@@ -186,6 +186,30 @@ class PublicationRepository(
         publicationWithThumbnails
     }
 
+    /**
+     * Likes / unlikes one video publication of [userId]. The cache is updated right away (the viewer
+     * and the grid follow it) and reverted if the request fails.
+     */
+    suspend fun setPublicationLiked(userId: Int, publicationId: Int, liked: Boolean): DivoResult<Unit> {
+        fun apply(isLiked: Boolean) = _publicationCache.update { cache ->
+            val existing = cache[userId] ?: return@update cache
+            cache + (userId to existing.copy(items = existing.items.map { item ->
+                if (item.id != publicationId || item.isLikedByUser == isLiked) item
+                else item.copy(
+                    isLikedByUser = isLiked,
+                    likesCount = (item.likesCount + if (isLiked) 1 else -1).coerceAtLeast(0)
+                )
+            }))
+        }
+        apply(liked)
+        val request = org.telegram.divo.dal.dto.publication.LikeRequest(publicationId)
+        val result = resultOf {
+            if (liked) service.likePublication(request) else service.unlikePublication(request)
+        }
+        if (result !is DivoResult.Success) apply(!liked)
+        return result
+    }
+
     suspend fun deletePublication(id: Int, userId: Int): DivoResult<Unit> = resultOf {
         service.deletePublication(id)
         _publicationCache.update { cache ->

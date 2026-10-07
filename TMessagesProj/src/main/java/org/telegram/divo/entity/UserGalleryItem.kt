@@ -11,4 +11,5 @@ data class UserGalleryItem(
     val previewUrl: String,
     val likesCount: Int,
     val isLikedByUser: Boolean,
+    val viewsCount: Int? = null,
 )

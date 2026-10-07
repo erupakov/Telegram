@@ -14,7 +14,8 @@ data class Publication(
     val type: String,
     val likesCount: Int,
     val isLikedByUser: Boolean,
-    val files: List<PublicationFile>
+    val files: List<PublicationFile>,
+    val viewsCount: Int? = null,
 )
 
 data class PublicationFile(
