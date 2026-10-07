@@ -470,8 +470,8 @@
     <string name="RoleResultTitleActor">您是一位演员</string>
     <string name="RoleResultDescriptionActor">您的主页将把您与正在为广告、时尚短片和现场活动寻找演员的品牌及机构联系起来。</string>
 
-    <string name="RoleResultTitleDancer">您是一位舞者</string>
-    <string name="RoleResultDescriptionDancer">您的主页将把您与各种寻求各类舞蹈人才的演出、宣传和活动联系起来。</string>
+    <string name="RoleResultTitleDancer">您是一位 AI creator</string>
+    <string name="RoleResultDescriptionDancer">AI — 适合为真人和角色打造 AI 形象的创作者：您让数字人格鲜活起来，并教会它们交流</string>
 
     <string name="RoleResultTitlePerformer">您是一位表演者</string>
     <string name="RoleResultDescriptionPerformer">您的主页将把您与寻找现场表演人才的时尚活动、品牌宣传及创意项目联系起来。</string>
@@ -510,7 +510,7 @@
     <string name="SubRoleModel">模特</string>
     <string name="SubRoleNewTalent">新面孔</string>
     <string name="SubRoleActor">演员</string>
-    <string name="SubRoleDancer">舞者</string>
+    <string name="SubRoleDancer">AI creator</string>
     <string name="SubRoleSingerOrPerformer">歌手或表演者</string>
     <!-- Audience (E) -->
     <string name="SubRoleFan">爱好者</string>

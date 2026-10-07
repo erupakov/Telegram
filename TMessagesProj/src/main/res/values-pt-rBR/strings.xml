@@ -471,8 +471,8 @@ enquanto ela estiver com outra agência.</string>
     <string name="RoleResultTitleActor">Você é um(a) Ator/Atriz</string>
     <string name="RoleResultDescriptionActor">Seu perfil conectará você com marcas e agências que buscam talentos de atuação para campanhas, filmes de moda e eventos ao vivo.</string>
 
-    <string name="RoleResultTitleDancer">Você é um(a) Dançarino(a)</string>
-    <string name="RoleResultDescriptionDancer">Seu perfil conectará você com shows, campanhas e eventos que buscam talentos de dança em todos os estilos.</string>
+    <string name="RoleResultTitleDancer">Você é AI creator</string>
+    <string name="RoleResultDescriptionDancer">AI — para quem cria perfis de IA de pessoas e personagens: você dá vida a personalidades digitais e as ensina a conversar</string>
 
     <string name="RoleResultTitlePerformer">Você é um(a) Artista</string>
     <string name="RoleResultDescriptionPerformer">Seu perfil conectará você com eventos de moda, campanhas de marcas e projetos criativos que buscam talentos para apresentações ao vivo.</string>
@@ -511,7 +511,7 @@ enquanto ela estiver com outra agência.</string>
     <string name="SubRoleModel">Modelo</string>
     <string name="SubRoleNewTalent">New Face / Novo Talento</string>
     <string name="SubRoleActor">Ator ou Atriz</string>
-    <string name="SubRoleDancer">Dançarino(a)</string>
+    <string name="SubRoleDancer">AI creator</string>
     <string name="SubRoleSingerOrPerformer">Cantor(a) ou Artista</string>
     <!-- Audience (E) -->
     <string name="SubRoleFan">Fã</string>

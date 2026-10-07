@@ -479,8 +479,8 @@
     <string name="RoleResultTitleActor">Вы — актёр</string>
     <string name="RoleResultDescriptionActor">Ваш профиль свяжет вас с брендами и агентствами, ищущими актёров для рекламных кампаний, фэшн-фильмов и мероприятий.</string>
 
-    <string name="RoleResultTitleDancer">Вы — танцор</string>
-    <string name="RoleResultDescriptionDancer">Ваш профиль свяжет вас с шоу, рекламными кампаниями и мероприятиями, ищущими танцоров во всех стилях.</string>
+    <string name="RoleResultTitleDancer">Вы — AI creator</string>
+    <string name="RoleResultDescriptionDancer">AI — для тех, кто создаёт AI-профили людей и персонажей: оживляете цифровые личности, обучаете их общаться</string>
 
     <string name="RoleResultTitlePerformer">Вы — исполнитель</string>
     <string name="RoleResultDescriptionPerformer">Ваш профиль свяжет вас с модными мероприятиями, рекламными кампаниями и креативными проектами, где нужны артисты.</string>
@@ -519,7 +519,7 @@
     <string name="SubRoleModel">Модель</string>
     <string name="SubRoleNewTalent">Новое лицо</string>
     <string name="SubRoleActor">Актер / Актриса</string>
-    <string name="SubRoleDancer">Танцор</string>
+    <string name="SubRoleDancer">AI creator</string>
     <string name="SubRoleSingerOrPerformer">Певец / Исполнитель</string>
     <!-- Audience (E) -->
     <string name="SubRoleFan">Фанат</string>
