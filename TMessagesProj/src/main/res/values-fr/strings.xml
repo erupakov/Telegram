@@ -470,8 +470,8 @@ pendant que vous êtes dans une autre agence.</string>
     <string name="RoleResultTitleActor">Est-ce que vous agissez ou agissez ?</string>
     <string name="RoleResultDescriptionActor">Votre profil vous mettra en contact avec des marques et des agences à la recherche de talents d\'acteur pour des campagnes, des films de mode et des événements en direct.</string>
 
-    <string name="RoleResultTitleDancer">Tu es danseur</string>
-    <string name="RoleResultDescriptionDancer">Votre profil vous connectera aux spectacles, à la campagne et aux événements. Vous recherchez les talents de danseur dans tous les styles.</string>
+    <string name="RoleResultTitleDancer">Tu es AI creator</string>
+    <string name="RoleResultDescriptionDancer">Ton profil te mettra en relation avec des marques, des agences et des campagnes à la recherche de visuels générés par IA, de modèles virtuels et de contenu numérique.</string>
 
     <string name="RoleResultTitlePerformer">Tu es un artiste</string>
     <string name="RoleResultDescriptionPerformer">Votre profil vous connectera à des événements de mode, des campagnes de marque et des projets créatifs pour rechercher des talents pour des performances live.</string>
@@ -510,7 +510,7 @@ pendant que vous êtes dans une autre agence.</string>
     <string name="SubRoleModel">Modèle</string>
     <string name="SubRoleNewTalent">De nouveaux talents</string>
     <string name="SubRoleActor">Acteur ou actrice</string>
-    <string name="SubRoleDancer">Danseuse / Danseuse</string>
+    <string name="SubRoleDancer">AI creator</string>
     <string name="SubRoleSingerOrPerformer">Chanteur ou artiste</string>
     <!-- Audience (E) -->
     <string name="SubRoleFan">Ventilateur</string>
