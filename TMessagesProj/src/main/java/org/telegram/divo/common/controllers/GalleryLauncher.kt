@@ -3,6 +3,7 @@ package org.telegram.divo.common.controllers
 import android.Manifest
 import android.app.Activity
 import android.content.ContextWrapper
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -216,8 +217,7 @@ private fun openTelegramPhotoPicker(
                 }
             }
             if (uris.isNotEmpty()) {
-                onPicked(uris)
-                chatAttachAlert.dismiss(true)
+                deliverAfterDismiss(chatAttachAlert) { onPicked(uris) }
             }
         }
 
@@ -227,6 +227,25 @@ private fun openTelegramPhotoPicker(
     })
     chatAttachAlert.init()
     chatAttachAlert.show()
+}
+
+/**
+ * Dismisses [alert] and runs [action] once the sheet is gone. Opening another full-screen editor
+ * (the avatar crop) while the sheet is still animating out leaves that editor without its controls
+ * on some devices (seen on Samsung, Android 15).
+ */
+private fun deliverAfterDismiss(alert: ChatAttachAlert, action: () -> Unit) {
+    var delivered = false
+    val deliver = Runnable {
+        if (!delivered) {
+            delivered = true
+            action()
+        }
+    }
+    alert.setOnDismissListener(DialogInterface.OnDismissListener { deliver.run() })
+    // The dialog callback doesn't fire if the sheet is attached to a fragment instead of a window
+    AndroidUtilities.runOnUIThread(deliver, 600)
+    alert.dismiss(true)
 }
 
 private fun showPermissionToast(context: android.content.Context) {
