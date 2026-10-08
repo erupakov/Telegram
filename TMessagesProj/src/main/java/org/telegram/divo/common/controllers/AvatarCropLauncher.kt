@@ -26,10 +26,35 @@ fun rememberAvatarCropLauncher(
     val currentOnPicked by rememberUpdatedState(onPicked)
     return rememberGalleryLauncher { original ->
         val path = original.toFilePath()
-        if (path == null || !openAvatarCrop(path) { croppedPath -> currentOnPicked(original, Uri.fromFile(File(croppedPath))) }) {
+        if (path == null) {
             currentOnPicked(original, original)
+        } else {
+            openAvatarCropWhenIdle(path, onFailed = { currentOnPicked(original, original) }) { croppedPath ->
+                currentOnPicked(original, Uri.fromFile(File(croppedPath)))
+            }
         }
     }
+}
+
+private const val IDLE_CHECK_DELAY_MS = 100L
+private const val IDLE_CHECK_ATTEMPTS = 10
+
+/**
+ * PhotoViewer is a singleton: reopening it while it is still closing (e.g. after the picker's own
+ * viewer) shows the photo without any controls. Waits until it is idle, then opens the crop.
+ */
+private fun openAvatarCropWhenIdle(
+    path: String,
+    onFailed: () -> Unit,
+    attempt: Int = 0,
+    onCropped: (String) -> Unit
+) {
+    val busy = PhotoViewer.hasInstance() && PhotoViewer.getInstance().isVisibleOrAnimating
+    if (busy && attempt < IDLE_CHECK_ATTEMPTS) {
+        AndroidUtilities.runOnUIThread({ openAvatarCropWhenIdle(path, onFailed, attempt + 1, onCropped) }, IDLE_CHECK_DELAY_MS)
+        return
+    }
+    if (!openAvatarCrop(path, onCropped)) onFailed()
 }
 
 private fun Uri.toFilePath(): String? = when (scheme) {
@@ -47,6 +72,8 @@ private fun openAvatarCrop(path: String, onCropped: (String) -> Unit): Boolean {
         val photos = arrayListOf<Any>(entry)
         val viewer = PhotoViewer.getInstance()
         viewer.setParentActivity(fragment)
+        // Left over from the picker's own viewer; the crop has no attach alert behind it
+        viewer.setParentAlert(null)
         val opened = viewer.openPhotoForSelect(photos, 0, PhotoViewer.SELECT_TYPE_AVATAR, false, object : PhotoViewer.EmptyPhotoViewerProvider() {
             override fun sendButtonPressed(
                 index: Int,
