@@ -105,6 +105,12 @@ interface UserService {
         @Part files: List<MultipartBody.Part>
     ): UploadFilesResponse
 
+    @POST("user-gallery/like")
+    suspend fun likeGalleryItem(@Body request: org.telegram.divo.dal.dto.publication.LikeRequest)
+
+    @POST("user-gallery/unlike")
+    suspend fun unlikeGalleryItem(@Body request: org.telegram.divo.dal.dto.publication.LikeRequest)
+
     @POST("user-gallery/add")
     suspend fun addToGallery(
         @Body request: AddGalleryRequest

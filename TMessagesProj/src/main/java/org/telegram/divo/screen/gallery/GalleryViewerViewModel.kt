@@ -3,6 +3,8 @@ package org.telegram.divo.screen.gallery
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import org.telegram.divo.analytics.AnalyticsEvent
+import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.arch.BaseViewModel
 import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
@@ -25,6 +27,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
             is GalleryIntent.OnLoad -> load(intent.source)
             is GalleryIntent.OnLoadMore -> loadMore()
             is GalleryIntent.OnDelete -> delete(intent.id)
+            is GalleryIntent.OnToggleLike -> toggleLike(intent.item)
         }
     }
 
@@ -91,7 +94,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                         .collect { data ->
                             setState {
                                 copy(
-                                    items = data.items.map { GalleryItem(it.id, it.photoUrl, isVideo = false) },
+                                    items = data.items.map { it.toGalleryItem() },
                                     hasMore = data.hasMore(),
                                 )
                             }
@@ -103,9 +106,7 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
                         .collect { data ->
                             setState {
                                 copy(
-                                    items = data.items.flatMap { publication ->
-                                        publication.files.map { GalleryItem(publication.id, it.fullUrl, isVideo = true) }
-                                    },
+                                    items = data.items.flatMap { it.toGalleryItems() },
                                     hasMore = data.hasMore(),
                                 )
                             }
@@ -159,13 +160,11 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
             is GallerySource.Portfolio -> DivoApi.userRepository
                 .getGalleryCache(source.userId)
                 ?.items
-                ?.map { GalleryItem(it.id, it.photoUrl, isVideo = false) }
+                ?.map { it.toGalleryItem() }
             is GallerySource.Video -> DivoApi.publicationRepository
                 .getPublicationCache(source.userId)
                 ?.items
-                ?.flatMap { publication ->
-                    publication.files.map { GalleryItem(publication.id, it.fullUrl, isVideo = true) }
-                }
+                ?.flatMap { it.toGalleryItems() }
                 ?.takeIf { it.isNotEmpty() }
             is GallerySource.Feed -> null
         }
@@ -187,6 +186,31 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
 
     private fun PublicationList.hasMore(): Boolean {
         return (pagination?.totalCount ?: 0) > items.size
+    }
+
+    private fun toggleLike(item: GalleryItem) {
+        val source = state.value.source ?: return
+        val liked = !item.isLiked
+        viewModelScope.launch {
+            // The repositories update their cache optimistically; the viewer follows it via observeCache
+            val result = when (source) {
+                is GallerySource.Portfolio -> DivoApi.userRepository.setGalleryItemLiked(source.userId, item.id, liked)
+                is GallerySource.Video -> DivoApi.publicationRepository.setPublicationLiked(source.userId, item.id, liked)
+                is GallerySource.Feed -> return@launch
+            }
+            if (result is DivoResult.Success) {
+                DivoAnalytics.logEvent(
+                    AnalyticsEvent.GalleryItemLikeToggled(
+                        targetUserId = source.userId,
+                        mediaId = item.id,
+                        mediaType = if (item.isVideo) "video" else "photo",
+                        isLiked = liked,
+                    )
+                )
+            } else {
+                sendEffect(ShowError(result.getErrorMessage()))
+            }
+        }
     }
 
     private fun delete(id: Int) {

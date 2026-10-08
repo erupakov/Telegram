@@ -357,6 +357,20 @@ sealed class AnalyticsEvent(
         }
     }
     
+    class GalleryItemLikeToggled(
+        targetUserId: Int,
+        mediaId: Int,
+        mediaType: String,
+        isLiked: Boolean
+    ) : AnalyticsEvent("gallery_item_like_toggled") {
+        init {
+            parameters["target_user_id"] = targetUserId
+            parameters["media_id"] = mediaId
+            parameters["media_type"] = mediaType
+            parameters["is_liked"] = isLiked
+        }
+    }
+
     class StoryAddClicked(screenName: String) : AnalyticsEvent("story_add_clicked", screenName)
     class StoryOpened(source: String) : AnalyticsEvent("story_opened") {
         init { parameters["source"] = source }

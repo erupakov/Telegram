@@ -8,7 +8,9 @@ class GalleryItemDto(
     @SerializedName("photo") val photo: PhotoDto,
     @SerializedName("likesCount") val likesCount: Int,
     @SerializedName("isLikedByUser") val isLikedByUser: Boolean,
-    @SerializedName("preview") val preview: PhotoDto
+    @SerializedName("preview") val preview: PhotoDto,
+    // Per-photo views: not sent by the backend yet; null hides the counter
+    @SerializedName("viewsCount") val viewsCount: Int? = null,
 )
 
 fun GalleryItemDto.toEntity(): UserGalleryItem =
@@ -17,5 +19,6 @@ fun GalleryItemDto.toEntity(): UserGalleryItem =
         photoUrl = photo.fullUrl.orEmpty(),
         previewUrl = preview.fullUrl.orEmpty(),
         likesCount = likesCount,
-        isLikedByUser = isLikedByUser
+        isLikedByUser = isLikedByUser,
+        viewsCount = viewsCount,
     )

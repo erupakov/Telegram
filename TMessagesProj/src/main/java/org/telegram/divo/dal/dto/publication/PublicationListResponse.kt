@@ -23,7 +23,9 @@ class PublicationItemDto(
     @SerializedName("type") val type: String,
     @SerializedName("likesCount") val likesCount: Int,
     @SerializedName("isLikedByUser") val isLikedByUser: Boolean,
-    @SerializedName("files") val files: List<PublicationFileDto>
+    @SerializedName("files") val files: List<PublicationFileDto>,
+    // Per-video views: not sent by the backend yet; null hides the counter
+    @SerializedName("viewsCount") val viewsCount: Int? = null,
 )
 
 class PublicationFileDto(
@@ -48,7 +50,8 @@ fun PublicationItemDto.toEntity() = Publication(
     type = type,
     likesCount = likesCount,
     isLikedByUser = isLikedByUser,
-    files = files.map { it.toEntity() }
+    files = files.map { it.toEntity() },
+    viewsCount = viewsCount,
 )
 
 fun PublicationFileDto.toEntity() = PublicationFile(

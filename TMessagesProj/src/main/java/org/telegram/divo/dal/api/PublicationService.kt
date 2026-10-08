@@ -47,6 +47,12 @@ interface PublicationService {
         @Path("id") id: Int
     ): EmptyResponse
 
+    @POST("publication/like")
+    suspend fun likePublication(@Body request: org.telegram.divo.dal.dto.publication.LikeRequest)
+
+    @POST("publication/unlike")
+    suspend fun unlikePublication(@Body request: org.telegram.divo.dal.dto.publication.LikeRequest)
+
     @POST("user/like")
     suspend fun likePost(@Body request: UserLikeRequest): EmptyResponse
 

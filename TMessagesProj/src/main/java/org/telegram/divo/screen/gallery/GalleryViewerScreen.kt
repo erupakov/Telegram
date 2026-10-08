@@ -119,7 +119,8 @@ fun GalleryViewerScreen(
             isOwnProfile = isOwnProfile,
             onLoadMore = { viewModel.setIntent(GalleryIntent.OnLoadMore) },
             onBack = onBack,
-            onDelete = { viewModel.setIntent(GalleryIntent.OnDelete(it)) }
+            onDelete = { viewModel.setIntent(GalleryIntent.OnDelete(it)) },
+            onToggleLike = { viewModel.setIntent(GalleryIntent.OnToggleLike(it)) }
         )
 
         AppSnackbarHost(
@@ -138,6 +139,7 @@ private fun GalleryPagerContent(
     onLoadMore: () -> Unit,
     onBack: () -> Unit,
     onDelete: (Int) -> Unit,
+    onToggleLike: (GalleryItem) -> Unit,
 ) {
     val pagerState = rememberPagerState(
         initialPage = uiState.initialIndex,
@@ -268,6 +270,26 @@ private fun GalleryPagerContent(
                 ),
             )
         )
+
+        // Likes / views of the current photo or video. Feed items aren't gallery entries, so no counters there
+        val currentItem = uiState.items.getOrNull(pagerState.currentPage)
+        val hasEngagement = uiState.source is GallerySource.Portfolio || uiState.source is GallerySource.Video
+        if (hasEngagement && currentItem != null) {
+            AnimatedVisibility(
+                visible = controlsVisible,
+                enter = fadeIn(tween(200)),
+                exit = fadeOut(tween(200)),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp),
+            ) {
+                MediaEngagementColumn(
+                    item = currentItem,
+                    canLike = !isOwnProfile,
+                    onLikeClick = { onToggleLike(currentItem) },
+                )
+            }
+        }
 
         val isPhotoSource = uiState.source is GallerySource.Portfolio || uiState.source is GallerySource.Feed
         if (isPhotoSource && uiState.items.size > 1) {
