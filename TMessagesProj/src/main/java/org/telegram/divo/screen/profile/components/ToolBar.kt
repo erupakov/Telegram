@@ -40,6 +40,7 @@ import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.formattedAge
 import org.telegram.divo.common.utils.toCountryFlagEmoji
+import org.telegram.divo.components.items.roleChipLabel
 import org.telegram.divo.components.navigation.DivoPopupMenu
 import org.telegram.divo.components.navigation.PopupMenuItem
 import org.telegram.divo.components.inputs.RoundedGlassButton
@@ -293,7 +294,8 @@ private fun TitleContent(
         ) {
             uiState.userInfo.let { userInfo ->
                 Text(
-                    text = userInfo.roleLabel.lowercase(),
+                    // "AI creator" keeps its capitals; backend role labels are shown lowercased
+                    text = if (userInfo.isAiCreator) userInfo.roleChipLabel() else userInfo.roleLabel.lowercase(),
                     color = AppTheme.colors.textPrimary,
                     style = AppTheme.typography.helveticaNeueRegular,
                     fontSize = 12.sp,

@@ -10,6 +10,7 @@ import org.telegram.divo.dal.dto.user.UserInfoResponse
 import org.telegram.divo.dal.dto.user.toEntity
 import org.telegram.divo.entity.RoleType
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -72,6 +73,19 @@ class UserProfileParsingTest {
     fun `unknown role maps to UNKNOWN instead of failing`() {
         val json = fixtureJson("user_model.json").withDataField("role", JsonPrimitive("photographer_v2"))
         assertEquals(RoleType.UNKNOWN, parse(json.toString()).role)
+    }
+
+    @Test
+    fun `AI creator is recognised from additionalInfo subRole`() {
+        fun withSubRole(subRole: String?) = fixtureJson("user_model.json")
+            .withDataField("role", JsonPrimitive("new_face"))
+            .withDataField("additionalInfo", JsonObject().apply { subRole?.let { addProperty("subRole", it) } })
+            .toString()
+        assertTrue(parse(withSubRole("dancer")).isAiCreator)
+        assertTrue(parse(withSubRole("DANCER")).isAiCreator)
+        assertFalse(parse(withSubRole("new_talent")).isAiCreator)
+        assertFalse(parse(withSubRole(null)).isAiCreator)
+        assertFalse(parse(fixtureJson("user_model.json").withDataField("additionalInfo", null).toString()).isAiCreator)
     }
 
     @Test

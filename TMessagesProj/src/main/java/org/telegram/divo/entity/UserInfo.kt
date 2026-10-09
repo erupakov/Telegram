@@ -16,6 +16,8 @@ data class UserInfo(
     val role: RoleType = RoleType.UNKNOWN,
     val subrole: String = "",
     val roleLabel: String = "",
+    /** The backend knows this role only as new_face; the AI creator sub-role lives in additionalInfo */
+    val isAiCreator: Boolean = false,
     val measuringSystem: String = "",
     val pushNotifications: Boolean = false,
     val isRegistrationFinished: Boolean = false,
