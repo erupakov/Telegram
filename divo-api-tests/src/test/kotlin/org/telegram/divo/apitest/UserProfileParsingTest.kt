@@ -86,6 +86,12 @@ class UserProfileParsingTest {
         assertFalse(parse(withSubRole("new_talent")).isAiCreator)
         assertFalse(parse(withSubRole(null)).isAiCreator)
         assertFalse(parse(fixtureJson("user_model.json").withDataField("additionalInfo", null).toString()).isAiCreator)
+        // The backend now stores the sub-role in `subrole`
+        val withSubrole = fixtureJson("user_model.json")
+            .withDataField("role", JsonPrimitive("new_face"))
+            .withDataField("subrole", JsonPrimitive("ai_creator"))
+            .withDataField("additionalInfo", null)
+        assertTrue(parse(withSubrole.toString()).isAiCreator)
     }
 
     @Test

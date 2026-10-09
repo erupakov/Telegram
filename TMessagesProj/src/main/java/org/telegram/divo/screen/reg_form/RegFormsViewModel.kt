@@ -22,6 +22,7 @@ import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.dal.utils.DivoAuthHelper
 import org.telegram.divo.entity.Photo
 import org.telegram.divo.entity.RoleType
+import org.telegram.divo.entity.Subrole
 import org.telegram.divo.entity.mapGenderToEnglish
 import org.telegram.divo.screen.reg_select_role.SubRole
 import org.telegram.messenger.ApplicationLoader
@@ -485,12 +486,13 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
             SubRole.SCOUT -> RoleType.AGENCY.value to null //"scout"
             SubRole.BOOKER -> RoleType.AGENCY.value to null //"booker"
             SubRole.CASTING_DIRECTOR, SubRole.TALENT_MANAGER -> RoleType.AGENCY.value to null //"agent"
-            SubRole.PHOTOGRAPHER -> RoleType.NEW_FACE.value to null //"photographer"
-            SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER -> RoleType.NEW_FACE.value to null //"stylist"
-            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR -> RoleType.NEW_FACE.value to null //"media"
-            SubRole.STUDIO -> RoleType.NEW_FACE.value to null //"place"
+            // new_face sub-roles are stored by the backend in `subrole`, which drives roleLabel and the subrole filter
+            SubRole.PHOTOGRAPHER, SubRole.STYLIST, SubRole.MUA, SubRole.HAIR_STYLIST, SubRole.FASHION_DESIGNER,
+            SubRole.VIDEOGRAPHER, SubRole.CREATIVE_DIRECTOR, SubRole.STUDIO,
+            SubRole.NEW_TALENT, SubRole.ACTOR, SubRole.SINGER -> RoleType.NEW_FACE.value to this.name.lowercase()
+            // AI creator is still the DANCER sub-role in the app
+            SubRole.DANCER -> RoleType.NEW_FACE.value to Subrole.AI_CREATOR
             SubRole.MODEL -> RoleType.MODEL.value to null
-            SubRole.NEW_TALENT, SubRole.ACTOR, SubRole.DANCER, SubRole.SINGER -> RoleType.NEW_FACE.value to null
             SubRole.FAN -> RoleType.FAN.value to null //"fan"
         }
     }

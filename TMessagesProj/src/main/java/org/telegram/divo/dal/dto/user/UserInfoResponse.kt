@@ -15,6 +15,7 @@ import org.telegram.divo.entity.Customer
 import org.telegram.divo.entity.Gender
 import org.telegram.divo.entity.Model
 import org.telegram.divo.entity.RoleType
+import org.telegram.divo.entity.Subrole
 import org.telegram.divo.entity.Statistic
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.common.utils.AdditionalInfoKeys
@@ -190,8 +191,9 @@ fun UserDataDto.toEntity(channels: List<org.telegram.divo.entity.UserChannel> = 
         role = roleEnum,
         subrole = subrole.orEmpty(),
         roleLabel = roleLabel.orEmpty(),
-        isAiCreator = (info?.get(AdditionalInfoKeys.SUB_ROLE) as? String)
-            .equals(AdditionalInfoKeys.SUB_ROLE_AI_CREATOR, ignoreCase = true),
+        // Registrations before the backend stored new_face sub-roles have it only in additionalInfo
+        isAiCreator = subrole.equals(Subrole.AI_CREATOR, ignoreCase = true) ||
+            (info?.get(AdditionalInfoKeys.SUB_ROLE) as? String).equals(AdditionalInfoKeys.SUB_ROLE_AI_CREATOR, ignoreCase = true),
         measuringSystem = measuringSystem.orEmpty(),
         pushNotifications = pushNotifications,
         isRegistrationFinished = isRegistrationFinished,
