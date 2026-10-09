@@ -31,6 +31,8 @@ object AdditionalInfoKeys {
     const val TIMEZONE = "timezone"
     const val MEASURING_SYSTEM = "measuringSystem"
     const val SUB_ROLE = "subRole"
+    /** [SUB_ROLE] of the AI creator role: it is still the DANCER sub-role, sent to the backend as new_face */
+    const val SUB_ROLE_AI_CREATOR = "dancer"
     const val SUBROLE_MAPPED = "subrole"
     const val TELEGRAM_ID = "telegramId"
     const val TELEGRAM_USERNAME = "telegramUsername"

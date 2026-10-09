@@ -22,3 +22,8 @@ enum class RoleType(val value: String) {
         }
     }
 }
+
+/** `subrole` values the backend stores for [RoleType.NEW_FACE] users. */
+object Subrole {
+    const val AI_CREATOR = "ai_creator"
+}

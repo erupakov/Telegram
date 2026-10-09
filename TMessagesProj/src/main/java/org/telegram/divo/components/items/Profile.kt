@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -59,6 +60,7 @@ import org.telegram.divo.components.media.DivoAvatar
 import org.telegram.divo.components.inputs.DivoChip
 import org.telegram.divo.screen.profile.ProfileViewState
 import org.telegram.divo.style.AppTheme
+import org.telegram.divo.entity.UserInfo
 import org.telegram.messenger.R
 import org.telegram.ui.LaunchActivity
 import org.telegram.ui.Stories.recorder.StoryRecorder
@@ -458,7 +460,7 @@ fun ProfileNameItem(
                 val age = uiState.userInfo.birthday
                 val city = uiState.userInfo.city
                 DivoChip(
-                    text = uiState.userInfo.roleLabel,
+                    text = uiState.userInfo.roleChipLabel(),
                     resId = if (uiState.userInfo.role.isModel()) R.drawable.ic_divo_person_heart else R.drawable.ic_divo_agency,
                     background = Color(0xFF2262D8),
                     textColor = Color.White
@@ -492,3 +494,8 @@ fun ProfileNameItem(
         }
     }
 }
+
+/** Role shown on the profile: the backend labels AI creators as new_face, so name them from additionalInfo. */
+@Composable
+fun UserInfo.roleChipLabel(): String =
+    if (isAiCreator) stringResource(R.string.SubRoleDancer) else roleLabel
