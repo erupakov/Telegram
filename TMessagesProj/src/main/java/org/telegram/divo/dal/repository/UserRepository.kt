@@ -424,6 +424,21 @@ class UserRepository(
         return result
     }
 
+    /** Reports a view of a gallery photo and bumps its cached counter; the counter is restored if the call fails. */
+    suspend fun markGalleryItemViewed(userId: Int, itemId: Int): DivoResult<Unit> {
+        fun apply(delta: Int) = _galleryCache.update { cache ->
+            val existing = cache[userId] ?: return@update cache
+            cache + (userId to existing.copy(items = existing.items.map { item ->
+                if (item.id != itemId) item
+                else item.copy(viewsCount = ((item.viewsCount ?: 0) + delta).coerceAtLeast(0))
+            }))
+        }
+        apply(1)
+        val result = resultOf { service.viewGalleryItem(org.telegram.divo.dal.dto.publication.LikeRequest(itemId)) }
+        if (result !is DivoResult.Success) apply(-1)
+        return result
+    }
+
     suspend fun deleteFromGallery(id: Int): DivoResult<Unit> = resultOf {
         service.deleteFromGallery(id)
         _currentUserCache.value?.id?.let { userId ->

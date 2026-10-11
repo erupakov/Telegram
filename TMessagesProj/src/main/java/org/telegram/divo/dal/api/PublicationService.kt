@@ -53,6 +53,10 @@ interface PublicationService {
     @POST("publication/unlike")
     suspend fun unlikePublication(@Body request: org.telegram.divo.dal.dto.publication.LikeRequest)
 
+    /** Counts one view of a publication (video) by the current user. */
+    @POST("publication/view")
+    suspend fun viewPublication(@Body request: org.telegram.divo.dal.dto.publication.LikeRequest)
+
     @POST("user/like")
     suspend fun likePost(@Body request: UserLikeRequest): EmptyResponse
 

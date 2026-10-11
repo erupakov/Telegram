@@ -120,7 +120,8 @@ fun GalleryViewerScreen(
             onLoadMore = { viewModel.setIntent(GalleryIntent.OnLoadMore) },
             onBack = onBack,
             onDelete = { viewModel.setIntent(GalleryIntent.OnDelete(it)) },
-            onToggleLike = { viewModel.setIntent(GalleryIntent.OnToggleLike(it)) }
+            onToggleLike = { viewModel.setIntent(GalleryIntent.OnToggleLike(it)) },
+            onItemShown = { viewModel.setIntent(GalleryIntent.OnItemShown(it)) }
         )
 
         AppSnackbarHost(
@@ -140,6 +141,7 @@ private fun GalleryPagerContent(
     onBack: () -> Unit,
     onDelete: (Int) -> Unit,
     onToggleLike: (GalleryItem) -> Unit,
+    onItemShown: (GalleryItem) -> Unit,
 ) {
     val pagerState = rememberPagerState(
         initialPage = uiState.initialIndex,
@@ -176,11 +178,15 @@ private fun GalleryPagerContent(
         }
     }
 
-    // 4. Аналитика просмотра фото/видео
-    LaunchedEffect(pagerState.currentPage, uiState.items) {
+    // 4. Аналитика просмотра фото/видео и учёт просмотра.
+    // Keyed by the shown item's id, not the list: a like or a view count changes the list
+    // and must not count the same photo again
+    val shownItemId = uiState.items.getOrNull(pagerState.currentPage.coerceIn(0, (uiState.items.size - 1).coerceAtLeast(0)))?.id
+    LaunchedEffect(pagerState.currentPage, shownItemId) {
         if (uiState.items.isNotEmpty() && uiState.source != null) {
             val index = pagerState.currentPage.coerceIn(0, uiState.items.lastIndex)
             val item = uiState.items[index]
+            onItemShown(item)
             DivoAnalytics.logEvent(
                 AnalyticsEvent.GalleryItemViewed(
                     targetUserId = uiState.source.userId,

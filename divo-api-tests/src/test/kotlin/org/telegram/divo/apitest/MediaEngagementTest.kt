@@ -55,6 +55,22 @@ class MediaEngagementTest {
     }
 
     @Test
+    fun `photo and video views post the item id`() = runTest {
+        backend.enqueueJson("""{"status":"success"}""")
+        backend.enqueue(okhttp3.mockwebserver.MockResponse().setResponseCode(204))
+        assertIs<DivoResult.Success<*>>(resultOf { backend.service<UserService>().viewGalleryItem(LikeRequest(30101)) })
+        assertIs<DivoResult.Success<*>>(resultOf { backend.service<PublicationService>().viewPublication(LikeRequest(55)) })
+
+        val photo = backend.takeRequest()
+        assertEquals("/api/user-gallery/view", photo.path)
+        assertEquals("POST", photo.method)
+        assertEquals(30101, JsonParser.parseString(photo.body.readUtf8()).asJsonObject["id"].asInt)
+        val video = backend.takeRequest()
+        assertEquals("/api/publication/view", video.path)
+        assertEquals(55, JsonParser.parseString(video.body.readUtf8()).asJsonObject["id"].asInt)
+    }
+
+    @Test
     fun `gallery list without viewsCount hides views, with it shows them`() {
         val item = """{"id":1,"photo":{"fullUrl":"https://x/p.png"},"likesCount":7,"isLikedByUser":true,"preview":{"fullUrl":"https://x/t.png"}%s}"""
         fun parse(extra: String) = appGson.fromJson(
