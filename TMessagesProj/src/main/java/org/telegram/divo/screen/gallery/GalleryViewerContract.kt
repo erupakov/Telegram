@@ -17,6 +17,8 @@ sealed class GalleryIntent : ViewIntent {
     data class OnLoad(val source: GallerySource) : GalleryIntent()
     data class OnDelete(val id: Int) : GalleryIntent()
     data class OnToggleLike(val item: GalleryItem) : GalleryIntent()
+    /** The item became the current page; counts a view of someone else's photo / video once per viewer. */
+    data class OnItemShown(val item: GalleryItem) : GalleryIntent()
     object OnLoadMore : GalleryIntent()
 }
 
@@ -39,7 +41,7 @@ data class GalleryItem(
     val isVideo: Boolean,
     val likesCount: Int = 0,
     val isLiked: Boolean = false,
-    // null: the backend doesn't report views for this item, the counter is hidden
+    // null: the backend doesn't report views for this item yet; shown as 0
     val viewsCount: Int? = null,
 )
 

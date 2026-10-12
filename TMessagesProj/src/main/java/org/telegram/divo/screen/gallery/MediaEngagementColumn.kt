@@ -25,7 +25,7 @@ import org.telegram.messenger.R.drawable
 
 /**
  * Likes and views of one photo / video, styled like the profile's EngagementsColumn.
- * The like toggles only on someone else's media; views are shown only when the backend reports them.
+ * The like toggles only on someone else's media; views read 0 until the backend reports them.
  */
 @Composable
 fun MediaEngagementColumn(
@@ -71,35 +71,33 @@ fun MediaEngagementColumn(
         }
 
         // VIEWS
-        val views = item.viewsCount
-        if (views != null) {
-            Spacer(Modifier.height(10.dp))
-            RoundedGlassContainer(
-                modifier = Modifier.width(63.dp),
-                height = 30.dp,
-                background = backgroundColor,
-                contentPadding = PaddingValues(horizontal = 8.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        modifier = Modifier.size(16.dp),
-                        painter = painterResource(drawable.ic_divo_visibility),
-                        contentDescription = null,
-                        tint = AppTheme.colors.onBackground
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        modifier = Modifier
-                            .offset(y = 1.dp)
-                            .weight(1f),
-                        text = views.toShortString(),
-                        style = AppTheme.typography.helveticaNeueRegular,
-                        color = AppTheme.colors.onBackground,
-                        fontSize = 12.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+        val views = item.viewsCount ?: 0
+        Spacer(Modifier.height(10.dp))
+        RoundedGlassContainer(
+            modifier = Modifier.width(63.dp),
+            height = 30.dp,
+            background = backgroundColor,
+            contentPadding = PaddingValues(horizontal = 8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(drawable.ic_divo_visibility),
+                    contentDescription = null,
+                    tint = AppTheme.colors.onBackground
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    modifier = Modifier
+                        .offset(y = 1.dp)
+                        .weight(1f),
+                    text = views.toShortString(),
+                    style = AppTheme.typography.helveticaNeueRegular,
+                    color = AppTheme.colors.onBackground,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }

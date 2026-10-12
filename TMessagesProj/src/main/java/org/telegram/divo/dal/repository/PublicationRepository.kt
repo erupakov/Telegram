@@ -210,6 +210,21 @@ class PublicationRepository(
         return result
     }
 
+    /** Reports a view of a publication and bumps its cached counter; the counter is restored if the call fails. */
+    suspend fun markPublicationViewed(userId: Int, publicationId: Int): DivoResult<Unit> {
+        fun apply(delta: Int) = _publicationCache.update { cache ->
+            val existing = cache[userId] ?: return@update cache
+            cache + (userId to existing.copy(items = existing.items.map { item ->
+                if (item.id != publicationId) item
+                else item.copy(viewsCount = ((item.viewsCount ?: 0) + delta).coerceAtLeast(0))
+            }))
+        }
+        apply(1)
+        val result = resultOf { service.viewPublication(org.telegram.divo.dal.dto.publication.LikeRequest(publicationId)) }
+        if (result !is DivoResult.Success) apply(-1)
+        return result
+    }
+
     suspend fun deletePublication(id: Int, userId: Int): DivoResult<Unit> = resultOf {
         service.deletePublication(id)
         _publicationCache.update { cache ->

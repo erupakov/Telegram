@@ -111,6 +111,10 @@ interface UserService {
     @POST("user-gallery/unlike")
     suspend fun unlikeGalleryItem(@Body request: org.telegram.divo.dal.dto.publication.LikeRequest)
 
+    /** Counts one view of a gallery photo by the current user. */
+    @POST("user-gallery/view")
+    suspend fun viewGalleryItem(@Body request: org.telegram.divo.dal.dto.publication.LikeRequest)
+
     @POST("user-gallery/add")
     suspend fun addToGallery(
         @Body request: AddGalleryRequest

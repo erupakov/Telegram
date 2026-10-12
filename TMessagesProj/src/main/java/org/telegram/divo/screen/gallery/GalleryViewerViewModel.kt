@@ -28,6 +28,25 @@ class GalleryViewerViewModel : BaseViewModel<GalleryViewerState, GalleryIntent, 
             is GalleryIntent.OnLoadMore -> loadMore()
             is GalleryIntent.OnDelete -> delete(intent.id)
             is GalleryIntent.OnToggleLike -> toggleLike(intent.item)
+            is GalleryIntent.OnItemShown -> markViewed(intent.item)
+        }
+    }
+
+    /** Items already counted in this viewer, so swiping back and forth counts each one once. */
+    private val viewedIds = mutableSetOf<Int>()
+
+    private fun markViewed(item: GalleryItem) {
+        val source = state.value.source ?: return
+        // Your own media doesn't get views from you
+        if (source.userId == DivoApi.userRepository.currentUserFlow.value?.id) return
+        if (!viewedIds.add(item.id)) return
+        viewModelScope.launch {
+            // Fire and forget: the repositories update their cache, the viewer follows it via observeCache
+            when (source) {
+                is GallerySource.Portfolio -> DivoApi.userRepository.markGalleryItemViewed(source.userId, item.id)
+                is GallerySource.Video -> DivoApi.publicationRepository.markPublicationViewed(source.userId, item.id)
+                is GallerySource.Feed -> Unit
+            }
         }
     }
 
