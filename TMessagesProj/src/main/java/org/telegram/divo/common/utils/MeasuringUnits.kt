@@ -202,7 +202,7 @@ private fun ParametersType.numericFilterRangeMetric(): IntRange? = when (this) {
     ParametersType.WEIGHT -> 35..150
     ParametersType.WAIST -> 58..130
     ParametersType.HIPS -> 68..147
-    ParametersType.SHOE_SIZE -> 32..45
+    ParametersType.SHOE_SIZE -> 32..55
     ParametersType.BREAST_SIZE -> 65..127
     else -> null
 }
