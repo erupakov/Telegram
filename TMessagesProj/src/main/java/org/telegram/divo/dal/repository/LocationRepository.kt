@@ -64,7 +64,8 @@ class LocationRepository {
                                 asciiName = columns[2],
                                 alternateNames = columns[3],
                                 countryCode = columns[8],
-                                population = columns[14].toIntOrNull() ?: 0
+                                population = columns[14].toIntOrNull() ?: 0,
+                                adminCode = columns[10],
                             )
                         )
                     }
