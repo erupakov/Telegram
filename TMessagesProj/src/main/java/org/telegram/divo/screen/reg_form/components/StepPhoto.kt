@@ -83,7 +83,9 @@ fun StepPhoto(
         ) {
             if (formData.photoUri != null) {
                 DivoAsyncImage(
-                    model = formData.photoUri,
+                    // Show the area picked in the crop (square, like this card); the uncropped
+                    // original is still uploaded as the main profile photo
+                    model = formData.avatarUri ?: formData.photoUri,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop,
