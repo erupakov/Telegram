@@ -14,7 +14,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -50,6 +51,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.telegram.divo.common.compose.clickableWithoutRipple
+import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.FileLog
 import org.telegram.messenger.R
 import java.io.File
@@ -147,7 +149,12 @@ private fun CropArea(
         val areaW = with(density) { maxWidth.toPx() }
         val areaH = with(density) { maxHeight.toPx() }
         val margin = with(density) { 16.dp.toPx() }
-        val controlsH = with(density) { 96.dp.toPx() }
+        // The dialog draws under the system bars, and its insets can come back empty (seen with
+        // 3-button navigation on Samsung, Android 15), which put Cancel / Done under the nav bar.
+        // Fall back to the system nav bar height so the buttons always stay above it.
+        val navBarPx = max(WindowInsets.navigationBars.getBottom(density), AndroidUtilities.navigationBarHeight)
+        val navBarInset = with(density) { navBarPx.toDp() }
+        val controlsH = with(density) { 96.dp.toPx() } + navBarPx
 
         // Frame: as wide as the screen allows, keeping the aspect ratio
         var frameW = areaW - margin * 2
@@ -233,7 +240,7 @@ private fun CropArea(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .navigationBarsPadding()
+                .padding(bottom = navBarInset)
                 .padding(horizontal = 24.dp, vertical = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

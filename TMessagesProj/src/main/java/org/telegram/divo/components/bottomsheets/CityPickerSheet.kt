@@ -80,6 +80,8 @@ fun CityPickerSheet(
 
                     matchesQuery && matchesCountry
                 }
+                // Biggest first, so of several same-named cities the best-known one leads
+                .sortedByDescending { it.population }
                 .take(50) // Не даем рендерить больше 50 штук за раз
                 .toList()
         }
@@ -133,6 +135,11 @@ fun CityPickerSheet(
                         style = AppTheme.typography.helveticaNeueRegular
                     )
                     Spacer(Modifier.height(12.dp))
+                    // Several cities share a name (Newark in NJ, DE, OH, CA): tell them apart by region
+                    val repeatedNames = remember(filteredList) {
+                        filteredList.groupingBy { "${it.countryCode}|${it.name}" }.eachCount()
+                            .filterValues { it > 1 }.keys
+                    }
                     LazyColumn(
                         contentPadding = PaddingValues(bottom = 8.dp)
                     ) {
@@ -189,8 +196,11 @@ fun CityPickerSheet(
                                     .padding(start = 16.dp, end = 16.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+                                // Region codes are readable letters in the US ("NJ") and a few other countries, numbers elsewhere
+                                val region = item.adminCode
+                                    .takeIf { "${item.countryCode}|${item.name}" in repeatedNames && it.any(Char::isLetter) }
                                 Text(
-                                    text = "$flag  $displayName".trimStart(),
+                                    text = "$flag  $displayName${region?.let { ", $it" }.orEmpty()}".trimStart(),
                                     style = AppTheme.typography.bodyLarge,
                                     modifier = Modifier.weight(1f)
                                 )
