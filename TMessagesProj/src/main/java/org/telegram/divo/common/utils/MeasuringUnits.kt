@@ -213,7 +213,7 @@ fun ParametersType.profilePickerRange(measuringSystem: String = DivoSettings.mea
         ParametersType.WEIGHT -> 35..150
         ParametersType.WAIST -> 58..130
         ParametersType.HIPS -> 68..147
-        ParametersType.SHOE_SIZE -> 32..45
+        ParametersType.SHOE_SIZE -> 32..55
         ParametersType.BREAST_SIZE -> 65..127
         else -> 0..250
     }.let { metricRange ->
