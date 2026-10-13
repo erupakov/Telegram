@@ -135,5 +135,7 @@ data class LocalCity(
     val alternateNames: String,
     val countryCode: String,
     val population: Int,
-    val matchedName: String? = null
+    val matchedName: String? = null,
+    /** GeoNames admin1 code: a US state like "NJ", often a number elsewhere. Tells same-named cities apart. */
+    val adminCode: String = "",
 )
