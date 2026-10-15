@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -84,6 +85,8 @@ fun ApplyConfirmationScreen(
         val toolbarHeight = statusBarHeight + 56.dp
         val toolbarHeightPx = with(density) { toolbarHeight.toPx() }
         val fadeRangePx = with(density) { 40.dp.toPx() }
+        // Height of the Cancel / Submit bar, nav bar inset included; the list scrolls clear of it
+        var bottomBarHeight by remember { mutableStateOf(76.dp) }
 
         val transitionProgress by remember {
             derivedStateOf {
@@ -157,7 +160,7 @@ fun ApplyConfirmationScreen(
                         LazyColumn(
                             state = lazyListState,
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(bottom = 76.dp)
+                            contentPadding = PaddingValues(bottom = bottomBarHeight + 16.dp)
                         ) {
                             item(key = "header") {
                                 Spacer(modifier = Modifier.height(imageHeight - 32.dp))
@@ -268,6 +271,7 @@ fun ApplyConfirmationScreen(
                             modifier = Modifier
                                 .align(Alignment.BottomCenter)
                                 .fillMaxWidth()
+                                .onSizeChanged { bottomBarHeight = with(density) { it.height.toDp() } }
                                 .background(
                                     Brush.verticalGradient(
                                         colors = listOf(
