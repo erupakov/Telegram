@@ -164,8 +164,8 @@ class EditMyProfileViewModel(
                                 org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramAvatarInBackground(currentAccount, it)
                             }
                         }
-                        // Update TG profile name as well
-                        org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramName(
+                        // Update TG profile name as well; in the background so closing the screen doesn't cancel it
+                        org.telegram.divo.common.utils.TelegramProfileHelper.updateTelegramNameInBackground(
                             currentAccount = currentAccount,
                             firstName = fNameRaw.trim(),
                             lastName = lNameRaw.trim()

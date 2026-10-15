@@ -14,11 +14,21 @@ import kotlin.coroutines.resume
 
 object TelegramProfileHelper {
 
+    private const val NAME_UPDATE_ATTEMPTS = 3
+    private const val NAME_UPDATE_TIMEOUT_MS = 10_000L
+    private const val RETRY_DELAY_MS = 2_000L
+
     // Outlives the screen that started the upload, so leaving it doesn't cancel the avatar change
     private val backgroundScope = kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.SupervisorJob() + kotlinx.coroutines.Dispatchers.Main)
 
     fun updateTelegramAvatarInBackground(currentAccount: Int, photoFile: File) {
-        backgroundScope.launch { updateTelegramAvatar(currentAccount, photoFile) }
+        backgroundScope.launch {
+            // One retry: right after a Divo save the MTProto connection may still be reconnecting
+            if (!updateTelegramAvatar(currentAccount, photoFile)) {
+                kotlinx.coroutines.delay(RETRY_DELAY_MS)
+                updateTelegramAvatar(currentAccount, photoFile)
+            }
+        }
     }
 
     suspend fun updateTelegramAvatar(currentAccount: Int, photoFile: File): Boolean {
@@ -133,40 +143,82 @@ object TelegramProfileHelper {
         nc.postNotificationName(NotificationCenter.mainUserInfoChanged)
     }
 
+    fun updateTelegramNameInBackground(currentAccount: Int, firstName: String, lastName: String) {
+        backgroundScope.launch { updateTelegramName(currentAccount, firstName, lastName) }
+    }
+
+    /**
+     * Renames the Telegram account. The name is applied locally right away (like ChangeNameActivity),
+     * so the in-app Telegram screens show it even before the server answers; the request is retried
+     * because right after a Divo save the MTProto connection may still be reconnecting.
+     */
     suspend fun updateTelegramName(currentAccount: Int, firstName: String, lastName: String): TLRPC.User? {
         return try {
-            val req = org.telegram.tgnet.tl.TL_account.updateProfile().apply {
-                flags = 1 or 2 // 1 = first_name, 2 = last_name
-                first_name = firstName
-                last_name = lastName
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                applyNewName(currentAccount, firstName, lastName)
             }
 
-            val profileUpdateResult = kotlinx.coroutines.withTimeoutOrNull(5000) {
-                suspendCancellableCoroutine<TLRPC.User?> { continuation ->
-                    val reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req) { response, error ->
-                        if (error == null && response is TLRPC.User) {
-                            continuation.resume(response)
-                        } else {
-                            continuation.resume(null)
+            var profileUpdateResult: TLRPC.User? = null
+            for (attempt in 0 until NAME_UPDATE_ATTEMPTS) {
+                if (attempt > 0) kotlinx.coroutines.delay(RETRY_DELAY_MS)
+                val req = org.telegram.tgnet.tl.TL_account.updateProfile().apply {
+                    flags = 1 or 2 // 1 = first_name, 2 = last_name
+                    first_name = firstName
+                    last_name = lastName
+                }
+                profileUpdateResult = kotlinx.coroutines.withTimeoutOrNull(NAME_UPDATE_TIMEOUT_MS) {
+                    suspendCancellableCoroutine<TLRPC.User?> { continuation ->
+                        val reqId = ConnectionsManager.getInstance(currentAccount).sendRequest(req) { response, error ->
+                            if (error == null && response is TLRPC.User) {
+                                continuation.resume(response)
+                            } else {
+                                continuation.resume(null)
+                            }
+                        }
+                        continuation.invokeOnCancellation {
+                            ConnectionsManager.getInstance(currentAccount).cancelRequest(reqId, true)
                         }
                     }
-                    continuation.invokeOnCancellation {
-                        ConnectionsManager.getInstance(currentAccount).cancelRequest(reqId, true)
-                    }
                 }
+                if (profileUpdateResult != null) break
             }
 
-            if (profileUpdateResult != null) {
-                val uc = UserConfig.getInstance(currentAccount)
-                uc.currentUser = profileUpdateResult
-                uc.saveConfig(true)
-                MessagesController.getInstance(currentAccount).putUser(profileUpdateResult, false)
+            profileUpdateResult?.let { result ->
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    // Only the names: replacing the whole user would drop a photo that the parallel
+                    // avatar upload has already applied
+                    if (!applyNewName(currentAccount, result.first_name.orEmpty(), result.last_name.orEmpty())) {
+                        // No cached own user yet (fresh sign-up): take the server's one as is
+                        MessagesController.getInstance(currentAccount).putUser(result, false)
+                    }
+                }
             }
             profileUpdateResult
         } catch (e: Exception) {
             e.printStackTrace()
             null
         }
+    }
+
+    /** Puts the new name on the cached own user and refreshes the Telegram UI. Must run on the main thread. */
+    private fun applyNewName(currentAccount: Int, firstName: String, lastName: String): Boolean {
+        val uc = UserConfig.getInstance(currentAccount)
+        val mc = MessagesController.getInstance(currentAccount)
+        val users = listOfNotNull(uc.currentUser, mc.getUser(uc.clientUserId)).distinct()
+        if (users.isEmpty()) return false
+        users.forEach {
+            it.first_name = firstName
+            it.last_name = lastName
+        }
+        uc.saveConfig(true)
+        val user = mc.getUser(uc.clientUserId) ?: users.first()
+        MessagesStorage.getInstance(currentAccount).putUsersAndChats(arrayListOf(user), null, false, true)
+        mc.getUserFull(user.id)?.let { it.user = user }
+
+        val nc = NotificationCenter.getInstance(currentAccount)
+        nc.postNotificationName(NotificationCenter.mainUserInfoChanged)
+        nc.postNotificationName(NotificationCenter.updateInterfaces, MessagesController.UPDATE_MASK_NAME)
+        return true
     }
 
     suspend fun updateTelegramBirthday(currentAccount: Int, year: Int?, month: Int?, day: Int?): Boolean {

@@ -32358,6 +32358,9 @@ public class TLRPC {
                 case TL_updateUserTyping.constructor:
                     result = new TL_updateUserTyping();
                     break;
+                case TL_updateUserTyping_layer158.constructor: //DIVO: still sent by the Teamgram server
+                    result = new TL_updateUserTyping_layer158();
+                    break;
                 case TL_stories.TL_updateReadStories.constructor:
                     result = new TL_stories.TL_updateReadStories();
                     break;
@@ -32396,6 +32399,9 @@ public class TLRPC {
                     break;
                 case TL_updateMessageReactions.constructor:
                     result = new TL_updateMessageReactions();
+                    break;
+                case TL_updateMessageReactions_layer178.constructor: //DIVO: still sent by the Teamgram server
+                    result = new TL_updateMessageReactions_layer178();
                     break;
                 case TL_updatePhoneCall.constructor:
                     result = new TL_updatePhoneCall();
@@ -33762,6 +33768,22 @@ public class TLRPC {
         }
     }
 
+    //DIVO: older layout the Teamgram server still sends: no flags, no top_msg_id
+    public static class TL_updateUserTyping_layer158 extends TL_updateUserTyping {
+        public static final int constructor = 0xc01e857f;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            user_id = stream.readInt64(exception);
+            action = SendMessageAction.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt64(user_id);
+            action.serializeToStream(stream);
+        }
+    }
+
     public static class TL_updateServiceNotification extends Update {
         public static final int constructor = 0xebe46819;
 
@@ -34131,6 +34153,32 @@ public class TLRPC {
             }
             if ((flags & 2) != 0) {
                 saved_peer_id.serializeToStream(stream);
+            }
+            reactions.serializeToStream(stream);
+        }
+    }
+
+    //DIVO: older layout the Teamgram server still sends: no saved_peer_id
+    public static class TL_updateMessageReactions_layer178 extends TL_updateMessageReactions {
+        public static final int constructor = 0x5e1b3cb8;
+
+        public void readParams(InputSerializedData stream, boolean exception) {
+            flags = stream.readInt32(exception);
+            peer = Peer.TLdeserialize(stream, stream.readInt32(exception), exception);
+            msg_id = stream.readInt32(exception);
+            if ((flags & 1) != 0) {
+                top_msg_id = stream.readInt32(exception);
+            }
+            reactions = MessageReactions.TLdeserialize(stream, stream.readInt32(exception), exception);
+        }
+
+        public void serializeToStream(OutputSerializedData stream) {
+            stream.writeInt32(constructor);
+            stream.writeInt32(flags);
+            peer.serializeToStream(stream);
+            stream.writeInt32(msg_id);
+            if ((flags & 1) != 0) {
+                stream.writeInt32(top_msg_id);
             }
             reactions.serializeToStream(stream);
         }
