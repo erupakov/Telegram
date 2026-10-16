@@ -277,6 +277,8 @@ public class MediaDataController extends BaseController {
     private HashSet<String> loadingDiceStickerSets = new HashSet<>();
     private LongSparseArray<Runnable> removingStickerSetsUndos = new LongSparseArray<>();
     private Runnable[] scheduledLoadStickers = new Runnable[7];
+    @SuppressWarnings("unchecked")
+    private Utilities.Callback<ArrayList<TLRPC.TL_messages_stickerSet>>[] scheduledLoadStickersOnFinish = new Utilities.Callback[7]; //DIVO
     private boolean[] loadingStickers = new boolean[7];
     private boolean[] stickersLoaded = new boolean[7];
     private long[] loadHash = new long[7];
@@ -2607,7 +2609,7 @@ public class MediaDataController extends BaseController {
                     newStickerArray.add(oldSet);
 
                     if (newStickerSets.size() == res.sets.size()) {
-                        processLoadedStickers(type, newStickerArray, false, (int) (System.currentTimeMillis() / 1000), res.hash2);
+                        processLoadedStickers(type, newStickerArray, false, (int) (System.currentTimeMillis() / 1000), res.hash2, onDone); //DIVO
                     }
                     continue;
                 }
@@ -2631,13 +2633,13 @@ public class MediaDataController extends BaseController {
                                 a1--;
                             }
                         }
-                        processLoadedStickers(type, newStickerArray, false, (int) (System.currentTimeMillis() / 1000), res.hash2);
+                        processLoadedStickers(type, newStickerArray, false, (int) (System.currentTimeMillis() / 1000), res.hash2, onDone); //DIVO
                     }
                 }));
             }
-            if (onDone != null) {
-                onDone.run();
-            }
+            //DIVO: onDone used to run here, before the new sets were fetched and applied. A freshly
+            // installed set then lost its "installing" mark while not yet in the installed list, and
+            // its button jumped back to "Add" until getStickerSet answered (slow on Teamgram).
         }
     }
 
@@ -2910,7 +2912,15 @@ public class MediaDataController extends BaseController {
     public void loadStickers(int type, boolean cache, boolean force, boolean scheduleIfLoading, Utilities.Callback<ArrayList<TLRPC.TL_messages_stickerSet>> onFinish) {
         if (loadingStickers[type]) {
             if (scheduleIfLoading) {
-                scheduledLoadStickers[type] = () -> loadStickers(type, false, force, false, onFinish);
+                //DIVO: only one reload can be scheduled; keep the callbacks of the ones it replaces,
+                // otherwise a set installed in between stays marked as "installing" forever
+                Utilities.Callback<ArrayList<TLRPC.TL_messages_stickerSet>> previous = scheduledLoadStickersOnFinish[type];
+                Utilities.Callback<ArrayList<TLRPC.TL_messages_stickerSet>> combined = previous == null ? onFinish : onFinish == null ? previous : sets -> {
+                    previous.run(sets);
+                    onFinish.run(sets);
+                };
+                scheduledLoadStickersOnFinish[type] = combined;
+                scheduledLoadStickers[type] = () -> loadStickers(type, false, force, false, combined);
             } else {
                 if (onFinish != null) {
                     onFinish.run(null);
@@ -3142,8 +3152,10 @@ public class MediaDataController extends BaseController {
             loadingStickers[type] = false;
             stickersLoaded[type] = true;
             if (scheduledLoadStickers[type] != null) {
-                scheduledLoadStickers[type].run();
+                Runnable scheduled = scheduledLoadStickers[type]; //DIVO
                 scheduledLoadStickers[type] = null;
+                scheduledLoadStickersOnFinish[type] = null;
+                scheduled.run();
             }
         });
         Utilities.stageQueue.postRunnable(() -> {
