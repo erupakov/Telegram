@@ -161,17 +161,7 @@ fun CityPickerSheet(
                                         }
                                         
                                         if (cyrillicMatches.isNotEmpty()) {
-                                            val russianSuffixes = listOf("а", "я", "ь", "о", "е", "ск", "град", "бург", "ий", "ый", "ов", "ин", "ев", "во", "но")
-                                            cyrillicMatches.maxByOrNull { name ->
-                                                var score = 0
-                                                val lower = name.lowercase()
-                                                if (lower.startsWith(query)) score += 50
-                                                if (name.length == query.length + 1) score += 10
-                                                if (name.length == query.length + 2) score += 5
-                                                if (russianSuffixes.any { lower.endsWith(it) }) score += 20
-                                                if (name.contains(" ")) score -= 50
-                                                score
-                                            } ?: cyrillicMatches.first()
+                                            bestCyrillicName(cyrillicMatches, query, item.asciiName)
                                         } else {
                                             alternates.find { it.lowercase().contains(query) } ?: item.name
                                         }
@@ -225,4 +215,49 @@ fun CityPickerSheet(
             }
         }
     }
+}
+
+private val CYRILLIC_TO_LATIN = mapOf(
+    'а' to "a", 'б' to "b", 'в' to "v", 'г' to "g", 'д' to "d", 'е' to "e", 'ё' to "e", 'ж' to "zh",
+    'з' to "z", 'и' to "i", 'й' to "y", 'к' to "k", 'л' to "l", 'м' to "m", 'н' to "n", 'о' to "o",
+    'п' to "p", 'р' to "r", 'с' to "s", 'т' to "t", 'у' to "u", 'ф' to "f", 'х' to "kh", 'ц' to "ts",
+    'ч' to "ch", 'ш' to "sh", 'щ' to "shch", 'ъ' to "", 'ы' to "y", 'ь' to "", 'э' to "e", 'ю' to "yu",
+    'я' to "ya"
+)
+
+private fun transliterate(text: String): String =
+    text.lowercase().map { CYRILLIC_TO_LATIN[it] ?: it.toString() }.joinToString("")
+
+private fun levenshtein(a: String, b: String): Int {
+    var prev = IntArray(b.length + 1) { it }
+    for (i in 1..a.length) {
+        val cur = IntArray(b.length + 1)
+        cur[0] = i
+        for (j in 1..b.length) {
+            val cost = if (a[i - 1] == b[j - 1]) 0 else 1
+            cur[j] = minOf(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + cost)
+        }
+        prev = cur
+    }
+    return prev[b.length]
+}
+
+/**
+ * GeoNames alternate names carry no language tags and include colloquial and foreign forms
+ * ("Челяба" for Chelyabinsk, Tatar "Казан" for Kazan). Of the Cyrillic names matching the query,
+ * pick the one whose transliteration is closest to the official ASCII name, preferring names that
+ * start with the query. Ties: hyphens over spaces ("Санкт-Петербург"), a final soft sign
+ * ("Казань"), no pre-reform hard sign ("Новосибирьскъ").
+ */
+private fun bestCyrillicName(candidates: List<String>, query: String, asciiName: String): String {
+    val official = asciiName.lowercase().replace(Regex("[^a-z]"), "")
+    return candidates.minByOrNull { name ->
+        val lower = name.lowercase()
+        var score = levenshtein(transliterate(name).replace(Regex("[^a-z]"), ""), official).toDouble()
+        if (!lower.startsWith(query)) score += 1000
+        if (' ' in name) score += 0.5
+        if ('ъ' in lower) score += 2
+        if (lower.endsWith('ь')) score -= 0.5
+        score
+    } ?: candidates.first()
 }
