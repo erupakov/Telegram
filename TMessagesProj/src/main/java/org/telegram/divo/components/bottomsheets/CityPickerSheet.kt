@@ -163,7 +163,9 @@ fun CityPickerSheet(
                                         if (cyrillicMatches.isNotEmpty()) {
                                             bestCyrillicName(cyrillicMatches, query, item.asciiName)
                                         } else {
-                                            alternates.find { it.lowercase().contains(query) } ?: item.name
+                                            // A Latin alternate is usually an old or foreign name ("Yunnanfu" for
+                                            // Kunming, "liji'anga  yunnana"): show the city's own name instead
+                                            item.name
                                         }
                                     } else {
                                         item.name
