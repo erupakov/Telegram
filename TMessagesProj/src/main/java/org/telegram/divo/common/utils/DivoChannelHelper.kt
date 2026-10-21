@@ -13,6 +13,9 @@ object DivoChannelHelper {
 
     @JvmStatic
     fun onChannelCreated(chatId: Long, username: String?, inviteLink: String?) {
+        // Only broadcast channels go to the profile's channel list, never groups (e.g. a discussion group)
+        val chat = org.telegram.messenger.MessagesController.getInstance(org.telegram.messenger.UserConfig.selectedAccount).getChat(chatId)
+        if (chat != null && (!org.telegram.messenger.ChatObject.isChannel(chat) || chat.megagroup)) return
         scope.launch {
             try {
                 val resolvedUsername = username?.takeIf { it.isNotBlank() }
