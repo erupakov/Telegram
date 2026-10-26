@@ -2089,6 +2089,7 @@ en créer un nouveau.</string>
     <string name="ApplyAnywaySuffix">Postuler quand même ?</string>
     <string name="MismatchMultipleApplyAnyway">Certains paramètres ne correspondent pas. Postuler quand même ?</string>
     <string name="ApplyConfirmationShareInfo">Nous partagerons avec l\'organisateur</string>
+    <string name="ApplyConfirmationOrganizer">Organisateur</string>
     <string name="ApplyConfirmationParametersTitle">Paramètres de la demande</string>
     <string name="PortfolioLinkTitle">LIEN VERS LE PORTEFEUILLE</string>
     <string name="FollowersOnlineText">%1$s abonnés</string>

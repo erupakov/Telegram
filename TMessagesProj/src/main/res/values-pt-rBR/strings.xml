@@ -2017,6 +2017,7 @@ crie um novo.</string>
     <string name="ApplyAnywaySuffix">Aplicar mesmo assim?</string>
     <string name="MismatchMultipleApplyAnyway">Alguns parâmetros não coincidem. Aplicar mesmo assim?</string>
     <string name="ApplyConfirmationShareInfo">Vamos partilhar com o organizador</string>
+    <string name="ApplyConfirmationOrganizer">Organizador</string>
     <string name="ApplyConfirmationParametersTitle">Parâmetros da candidatura</string>
     <string name="PortfolioLinkTitle">LINK DO PORTFÓLIO</string>
     <string name="FollowersOnlineText">%1$s seguidores</string>

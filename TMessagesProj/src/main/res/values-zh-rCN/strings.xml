@@ -693,6 +693,7 @@
     <string name="ApplyAnywaySuffix">仍然申请？</string>
     <string name="MismatchMultipleApplyAnyway">某些参数不符合。仍然申请？</string>
     <string name="ApplyConfirmationShareInfo">我们将与主办方分享</string>
+    <string name="ApplyConfirmationOrganizer">组织者</string>
     <string name="ApplyConfirmationParametersTitle">申请参数</string>
     <string name="PortfolioLinkTitle">作品集链接</string>
     <string name="FollowersOnlineText">%1$s 粉丝</string>

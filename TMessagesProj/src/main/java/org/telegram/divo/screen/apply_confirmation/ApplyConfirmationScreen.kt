@@ -33,7 +33,6 @@ import org.telegram.divo.common.controllers.AppSnackbarHost
 import org.telegram.divo.common.controllers.AppSnackbarHostState
 import org.telegram.divo.components.media.DivoAsyncImage
 import org.telegram.divo.common.controllers.SnackbarEvent
-import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.MeasuringUnits
 import org.telegram.divo.common.utils.toAge
 import org.telegram.divo.common.utils.toEventDisplayDate
@@ -45,6 +44,7 @@ import org.telegram.divo.components.media.LottieProgressIndicator
 import org.telegram.divo.components.media.TelegramPhotoBackground
 import org.telegram.divo.components.navigation.TransparentToolBarBackground
 import org.telegram.divo.components.navigation.TransparentToolBarContent
+import org.telegram.divo.entity.EventCreator
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.entity.UserInfo
 import org.telegram.divo.style.AppTheme
@@ -228,7 +228,7 @@ fun ApplyConfirmationScreen(
 
                                     Spacer(modifier = Modifier.height(32.dp))
                                     Text(
-                                        text = stringResource(R.string.ApplyConfirmationShareInfo),
+                                        text = stringResource(R.string.ApplyConfirmationOrganizer),
                                         style = AppTheme.typography.helveticaNeueRegular,
                                         fontSize = 16.sp,
                                         color = AppTheme.colors.textPrimary.copy(0.8f),
@@ -236,7 +236,8 @@ fun ApplyConfirmationScreen(
                                         textAlign = TextAlign.Start
                                     )
                                     Spacer(modifier = Modifier.height(12.dp))
-                                    UserInfoCard(userInfo = uiState.userInfo)
+                                    // The event's organizer (this used to show the applicant's own profile)
+                                    OrganizerInfoCard(creator = event.creator)
 
                                     Spacer(modifier = Modifier.height(24.dp))
                                     Text(
@@ -304,7 +305,7 @@ fun ApplyConfirmationScreen(
 
 
 @Composable
-private fun UserInfoCard(userInfo: UserInfo?) {
+private fun OrganizerInfoCard(creator: EventCreator?) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -319,7 +320,7 @@ private fun UserInfoCard(userInfo: UserInfo?) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             DivoAsyncImage(
-                model = userInfo?.avatarUrl,
+                model = creator?.avatar?.fullUrl ?: creator?.photo?.fullUrl,
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape),
@@ -329,12 +330,12 @@ private fun UserInfoCard(userInfo: UserInfo?) {
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = userInfo?.fullName.orEmpty(),
+                        text = creator?.fullName.orEmpty(),
                         style = AppTheme.typography.helveticaNeueRegular,
                         fontSize = 16.sp,
                         color = AppTheme.colors.textPrimary
                     )
-                    if (userInfo?.isVerified == true) {
+                    if (creator?.isVerified == true) {
                         Spacer(Modifier.width(4.dp))
                         Image(
                             painter = painterResource(R.drawable.ic_divo_verified),
@@ -343,34 +344,18 @@ private fun UserInfoCard(userInfo: UserInfo?) {
                         )
                     }
                 }
-                Spacer(Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                val roleLabel = creator?.roleLabel
+                if (!roleLabel.isNullOrBlank()) {
+                    Spacer(Modifier.height(8.dp))
                     DivoChip(
                         modifier = Modifier.height(20.dp),
-                        text = userInfo?.roleLabel.orEmpty(),
+                        text = roleLabel,
                         textColor = Color.White,
                         contentPadding = PaddingValues(horizontal = 6.dp, vertical = 0.dp)
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        text = stringResource(R.string.FollowersOnlineText, userInfo?.statistic?.followersCount ?: 0),
-                        style = AppTheme.typography.helveticaNeueRegular,
-                        fontSize = 14.sp,
-                        color = AppTheme.colors.textPrimary.copy(0.6f)
                     )
                 }
             }
         }
-        Text(
-            text = stringResource(R.string.PortfolioLinkTitle),
-            style = AppTheme.typography.helveticaNeueLtCom,
-            fontSize = 10.sp,
-            color = AppTheme.colors.textPrimary,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 8.dp, end = 16.dp)
-                .clickableWithoutRipple { /* TODO */ }
-        )
     }
 }
 

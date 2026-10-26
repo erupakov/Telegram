@@ -1006,6 +1006,7 @@
     <string name="ApplyAnywaySuffix">Все равно подать?</string>
     <string name="MismatchMultipleApplyAnyway">Некоторые параметры не подходят. Все равно подать?</string>
     <string name="ApplyConfirmationShareInfo">Мы передадим организатору</string>
+    <string name="ApplyConfirmationOrganizer">Организатор</string>
     <string name="ApplyConfirmationParametersTitle">Требования для участия</string>
     <string name="PortfolioLinkTitle">ССЫЛКА НА ПОРТФОЛИО</string>
     <string name="FollowersOnlineText">%1$s подписчиков</string>
