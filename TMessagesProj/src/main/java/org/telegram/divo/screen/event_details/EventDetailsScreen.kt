@@ -95,6 +95,7 @@ fun EventDetailsScreen(
     val context = LocalContext.current
     val snackbarState = remember { AppSnackbarHostState() }
     val retryText = stringResource(R.string.RetryLabel)
+    val applicationsClosedText = stringResource(R.string.EventApplicationsClosedSuccess)
     var isSolid by remember { mutableStateOf(false) }
     var withdrawEventId by remember { mutableStateOf<Int?>(null) }
 
@@ -126,7 +127,7 @@ fun EventDetailsScreen(
                 is EventDetailsEffect.NavigateToPrevEvent -> { onPrevEventClicked(action.id) }
                 EventDetailsEffect.ApplicationsClosed -> {
                     snackbarState.show(
-                        SnackbarEvent.Success("Applications closed successfully")
+                        SnackbarEvent.Success(applicationsClosedText)
                     )
                 }
                 is EventDetailsEffect.ActionChanged -> {

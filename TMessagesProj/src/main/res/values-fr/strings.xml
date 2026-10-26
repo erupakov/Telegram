@@ -2314,4 +2314,22 @@ en créer un nouveau.</string>
     <string name="NoPhotosYetBottomSheet">Aucune photo pour l\'instant</string>
     <string name="NoVideos">Aucune vidéo pour l\'instant</string>
     <string name="PermissionGalleryDeniedToast">Veuillez autoriser l\'accès aux photos et vidéos dans les paramètres.</string>
+    <!-- DIVO: localization audit -->
+    <string name="ChoosePhoto">Choisir une photo</string>
+    <string name="ChoosePhotoOrVideo">Choisir une photo ou une vidéo</string>
+    <string name="Confirm">Confirmer</string>
+    <string name="EditProfileFirstName">Prénom</string>
+    <string name="EditProfileLastName">Nom</string>
+    <string name="EventPublished">Événement publié</string>
+    <string name="EventUpdated">Événement mis à jour</string>
+    <string name="ShareFile">Partager</string>
+    <string name="OnboardingSkip">Passer</string>
+    <string name="ThereAreNoImagesYet">PAS ENCORE D\'IMAGES</string>
+    <string name="ThereAreNoVideosYet">PAS ENCORE DE VIDÉOS</string>
+    <string name="EventApplicationsClosedSuccess">Candidatures clôturées</string>
+    <string name="RoleSelectRequired">Veuillez choisir un rôle</string>
+    <string name="RegistrationFailed">Échec de l\'inscription : %1$s</string>
+    <string name="EventCityNotSupported">Cette ville n\'est pas encore prise en charge. Choisissez une autre ville.</string>
+    <string name="DivoNetworkError">Pas de connexion. Vérifiez votre connexion Internet et réessayez.</string>
+    <string name="RequestToJoinChannel">Demander à rejoindre</string>
 </resources>

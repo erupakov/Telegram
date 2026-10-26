@@ -951,4 +951,20 @@
     <string name="NoPhotosYetBottomSheet">暂无照片</string>
     <string name="NoVideos">暂无视频</string>
     <string name="PermissionGalleryDeniedToast">请在设置中开启照片和视频访问权限。</string>
+    <!-- DIVO: localization audit -->
+    <string name="ChoosePhoto">选择照片</string>
+    <string name="ChoosePhotoOrVideo">选择照片或视频</string>
+    <string name="Confirm">确认</string>
+    <string name="EditProfileFirstName">名字</string>
+    <string name="EditProfileLastName">姓氏</string>
+    <string name="EventPublished">活动已发布</string>
+    <string name="EventUpdated">活动已更新</string>
+    <string name="ShareFile">分享</string>
+    <string name="ErrorOccurred">发生错误。</string>
+    <string name="EventApplicationsClosedSuccess">已停止接受报名</string>
+    <string name="RoleSelectRequired">请选择角色</string>
+    <string name="RegistrationFailed">注册失败：%1$s</string>
+    <string name="EventCityNotSupported">暂不支持该城市，请选择其他城市。</string>
+    <string name="DivoNetworkError">无网络连接，请检查网络后重试。</string>
+    <string name="RequestToJoinChannel">申请加入</string>
 </resources>

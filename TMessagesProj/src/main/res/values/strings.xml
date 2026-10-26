@@ -11147,4 +11147,10 @@ while she is with another agency.</string>
     <string name="DeleteProfileDescription">Are you sure you want to delete your profile? This action cannot be undone.</string>
     <string name="DeleteProfileConfirm">Delete</string>
     <string name="NoPhotosYetBottomSheet">No photos yet</string>
+    <!-- DIVO: localization audit -->
+    <string name="EventApplicationsClosedSuccess">Applications closed</string>
+    <string name="RoleSelectRequired">Please select a role</string>
+    <string name="RegistrationFailed">Registration failed: %1$s</string>
+    <string name="EventCityNotSupported">This city isn\'t supported yet. Please choose another city.</string>
+    <string name="DivoNetworkError">No connection. Check your internet and try again.</string>
 </resources>
