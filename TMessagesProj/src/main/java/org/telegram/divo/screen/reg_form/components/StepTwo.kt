@@ -313,12 +313,18 @@ fun SubRole.stepTwoConfig(): StepTwoConfig = when (this) {
     )
     // Talent Actor/Dancer/Singer — Location + Specialisation
     SubRole.ACTOR,
-    SubRole.DANCER,
     SubRole.SINGER -> StepTwoConfig(
         titleRes = R.string.RegFormLocation,
         showCountry = true,
         showCity = true,
         showSpecialisation = true,
+    )
+    // AI creator (SubRole.DANCER): no specialisation for now; the dancer list stays for later
+    SubRole.DANCER -> StepTwoConfig(
+        titleRes = R.string.RegFormLocation,
+        showCountry = true,
+        showCity = true,
+        showSpecialisation = false,
     )
 
     SubRole.FAN -> StepTwoConfig(titleRes = R.string.RegFormLocation)
