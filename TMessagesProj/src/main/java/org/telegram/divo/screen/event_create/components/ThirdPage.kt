@@ -171,6 +171,7 @@ fun ThirdPage(
         EventDatePickerSheet(
             initialDate = state.deadlineDate,
             maxDate = state.eventDate,
+            title = stringResource(R.string.EventApplicationDeadlineDate),
             onDismiss = { showDeadlineDateSheet = false },
             onDateSelected = { date ->
                 onIntent(Intent.OnDeadlineDateChanged(date))
@@ -183,6 +184,7 @@ fun ThirdPage(
     if (showDeadlineTimeSheet) {
         EventTimePickerSheet(
             initialTime = state.deadlineTime,
+            title = stringResource(R.string.EventApplicationDeadlineTime),
             onDismiss = { showDeadlineTimeSheet = false },
             onTimeSelected = { time ->
                 onIntent(Intent.OnDeadlineTimeChanged(time))

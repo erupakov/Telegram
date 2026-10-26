@@ -33,6 +33,7 @@ import org.telegram.messenger.R
 @Composable
 fun EventTimePickerSheet(
     initialTime: String = "",
+    title: String? = null,
     onDismiss: () -> Unit,
     onTimeSelected: (String) -> Unit,
 ) {
@@ -51,7 +52,7 @@ fun EventTimePickerSheet(
     val itemHeight = 40.dp
 
     DivoBottomSheet(
-        title = stringResource(R.string.EventTime),
+        title = title ?: stringResource(R.string.EventTime),
         iconClose = R.drawable.ic_divo_back,
         contentPadding = PaddingValues(horizontal = 16.dp),
         onDismiss = onDismiss,

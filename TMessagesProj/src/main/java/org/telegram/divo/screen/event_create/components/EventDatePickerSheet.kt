@@ -41,6 +41,7 @@ import java.util.Locale
 fun EventDatePickerSheet(
     initialDate: String = "",
     maxDate: String = "",
+    title: String? = null,
     onDismiss: () -> Unit,
     onDateSelected: (String) -> Unit,
 ) {
@@ -172,7 +173,7 @@ fun EventDatePickerSheet(
     val itemHeight = 40.dp
 
     DivoBottomSheet(
-        title = stringResource(R.string.EventDate),
+        title = title ?: stringResource(R.string.EventDate),
         iconClose = R.drawable.ic_divo_back,
         isApplyEnable = daysList.isNotEmpty() && monthsList.isNotEmpty(),
         contentPadding = PaddingValues(horizontal = 16.dp),
