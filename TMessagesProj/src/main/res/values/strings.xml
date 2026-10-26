@@ -11096,6 +11096,7 @@ while she is with another agency.</string>
     <string name="ApplyAnywaySuffix">Apply anyway?</string>
     <string name="MismatchMultipleApplyAnyway">Some parameters don\'t match. Apply anyway?</string>
     <string name="ApplyConfirmationShareInfo">We\'ll share with the organiser</string>
+    <string name="ApplyConfirmationOrganizer">Organiser</string>
     <string name="ApplyConfirmationParametersTitle">Parameters for Applying</string>
     <string name="PortfolioLinkTitle">PORTFOLIO LINK</string>
     <string name="FollowersOnlineText">%1$s followers</string>
