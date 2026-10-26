@@ -4413,7 +4413,7 @@ public class ChatActivity extends BaseFragment implements
                 }
             }
             */
-            if (currentUser != null && currentUser.self && getDialogId() != UserObject.VERIFY) {
+            if (false && currentUser != null && currentUser.self && getDialogId() != UserObject.VERIFY) { //DIVO: no home screen shortcuts
                 headerItem.lazilyAddSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
             }
             if (!isTopic && !ChatObject.isMonoForum(currentChat)) {
