@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -336,10 +338,37 @@ fun SettingsScreen(
                     )
                 }
 
+                Spacer(Modifier.height(16.dp))
+                AppVersionText()
                 Spacer(Modifier.height(76.dp))
             }
         }
     }
+}
+
+/** "Divo 2.0.0 (build 133)" — the CI build number testers quote in bug reports; tap to copy. */
+@Composable
+private fun AppVersionText() {
+    val buildNumber = org.telegram.messenger.BuildConfig.DIVO_BUILD_NUMBER
+    val versionName = org.telegram.messenger.BuildVars.BUILD_VERSION_STRING
+    val text = if (buildNumber > 0) {
+        stringResource(R.string.DivoAppVersionBuild, versionName, buildNumber)
+    } else {
+        stringResource(R.string.DivoAppVersion, versionName)
+    }
+    androidx.compose.material3.Text(
+        text = text,
+        style = AppTheme.typography.helveticaNeueRegular,
+        fontSize = androidx.compose.ui.unit.TextUnit(13f, androidx.compose.ui.unit.TextUnitType.Sp),
+        color = AppTheme.colors.textPrimary.copy(alpha = 0.5f),
+        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                org.telegram.messenger.AndroidUtilities.addToClipboard(text)
+            }
+            .padding(vertical = 8.dp)
+    )
 }
 
 @Preview

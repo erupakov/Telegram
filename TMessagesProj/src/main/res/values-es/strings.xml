@@ -2320,4 +2320,6 @@ crea uno nuevo.</string>
     <string name="NoPhotosYetBottomSheet">Sin fotos aún</string>
     <string name="NoVideos">Sin videos aún</string>
     <string name="PermissionGalleryDeniedToast">Permite el acceso a fotos y videos en los ajustes.</string>
+    <string name="DivoAppVersion">Divo %1$s</string>
+    <string name="DivoAppVersionBuild">Divo %1$s (compilación %2$d)</string>
 </resources>

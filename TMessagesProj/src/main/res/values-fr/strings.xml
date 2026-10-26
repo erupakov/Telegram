@@ -2313,4 +2313,6 @@ en créer un nouveau.</string>
     <string name="NoPhotosYetBottomSheet">Aucune photo pour l\'instant</string>
     <string name="NoVideos">Aucune vidéo pour l\'instant</string>
     <string name="PermissionGalleryDeniedToast">Veuillez autoriser l\'accès aux photos et vidéos dans les paramètres.</string>
+    <string name="DivoAppVersion">Divo %1$s</string>
+    <string name="DivoAppVersionBuild">Divo %1$s (build %2$d)</string>
 </resources>

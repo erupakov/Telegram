@@ -166,6 +166,8 @@ android {
         }
         buildConfigField "int", "APP_ID", getProps("TELEGRAM_APP_ID", "17349")
         buildConfigField "String", "APP_HASH", "\"" + getProps("TELEGRAM_APP_HASH", "344583e45741c457fe1862106095a5eb") + "\""
+        // DIVO: CI build number (github.run_number), shown in Settings; 0 for local builds
+        buildConfigField "int", "DIVO_BUILD_NUMBER", (System.getenv("BUILD_NUMBER") ?: (project.hasProperty("BUILD_NUMBER") ? BUILD_NUMBER : "0")).toString().trim()
     }
 
     buildTypes {
