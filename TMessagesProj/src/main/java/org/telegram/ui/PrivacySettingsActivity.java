@@ -769,32 +769,19 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         deleteAccountRow = -1; //DIVO rowCount++;
         deleteProfileRow = rowCount++;
         deleteAccountDetailRow = rowCount++;
-        botsSectionRow = rowCount++;
-        if (getUserConfig().hasSecureData) {
-            passportRow = rowCount++;
-        } else {
-            passportRow = -1;
-        }
-        paymentsClearRow = rowCount++;
-        if (!biometryBots.isEmpty()) {
-            botsBiometryRow = rowCount++;
-        } else {
-            botsBiometryRow = -1;
-        }
-        if (webSessionsActivityPreload != null && webSessionsActivityPreload.getSessionsCount() > 0) {
-            webSessionsRow = rowCount++;
-            botsDetailRow = rowCount++;
-            botsAndWebsitesShadowRow = -1;
-        } else {
-            webSessionsRow = -1;
-            botsDetailRow = -1;
-            botsAndWebsitesShadowRow = rowCount++;
-        }
-        contactsSectionRow = rowCount++;
-        contactsDeleteRow = rowCount++;
-        contactsSyncRow = rowCount++;
-        contactsSuggestRow = rowCount++;
-        contactsDetailRow = rowCount++;
+        //DIVO: no "Bots and websites" and "Contacts" sections
+        botsSectionRow = -1;
+        passportRow = -1;
+        paymentsClearRow = -1;
+        botsBiometryRow = -1;
+        webSessionsRow = -1;
+        botsDetailRow = -1;
+        botsAndWebsitesShadowRow = -1;
+        contactsSectionRow = -1;
+        contactsDeleteRow = -1;
+        contactsSyncRow = -1;
+        contactsSuggestRow = -1;
+        contactsDetailRow = -1;
         secretSectionRow = rowCount++;
         secretMapRow = rowCount++;
         secretWebpageRow = rowCount++;
