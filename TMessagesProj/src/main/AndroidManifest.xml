@@ -281,6 +281,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="https" android:host="api.divo.fashion" />
+                <data android:scheme="https" android:host="api-stage.divo.fashion" />
                 <!--  -->
             </intent-filter>
             <intent-filter>
