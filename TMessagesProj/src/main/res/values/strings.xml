@@ -269,6 +269,7 @@
     <string name="ThereAreNoUpcomingEvents">There are no upcoming events at the moment</string>
     <string name="CheckBackLaterOrCreateEvents">Check back later or create\na new one</string>
     <string name="ClosesDate">Closes: %1$s</string>
+    <string name="StoryLinkNoUsername">Add a public username in Settings to share story links</string>
     <string name="ViewApplications">View applications</string>
     <string name="ApplyNowPreview">Apply now (preview only)</string>
     <plurals name="ParticipantsCount">

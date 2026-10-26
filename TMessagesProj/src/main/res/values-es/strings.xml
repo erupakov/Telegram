@@ -274,6 +274,7 @@ un modelo</string>
     <string name="CheckBackLaterOrCreateEvents">Vuelve más tarde o crea
 uno nuevo</string>
     <string name="ClosesDate">Cierra: %1$s</string>
+    <string name="StoryLinkNoUsername">Para compartir enlaces a historias, añade un nombre de usuario público en Ajustes</string>
     <string name="ViewApplications">Ver solicitudes</string>
     <string name="ApplyNowPreview">Aplicar ahora (solo vista previa)</string>
     <plurals name="ParticipantsCount">
