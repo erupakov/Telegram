@@ -745,6 +745,7 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         super.onTransitionAnimationEnd(isOpen, backward);
         if (isOpen) {
             org.telegram.divo.common.utils.DivoDeeplinkDispatcher.INSTANCE.processPendingDeeplink(parentLayout);
+            org.telegram.divo.common.utils.DivoPrivacyDefaults.ensureDefaults(currentAccount); //DIVO
         }
     }
 
