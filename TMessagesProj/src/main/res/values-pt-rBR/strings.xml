@@ -274,6 +274,7 @@ um modelo</string>
     <string name="CheckBackLaterOrCreateEvents">Volte mais tarde ou crie
 um novo</string>
     <string name="ClosesDate">Encerra: %1$s</string>
+    <string name="StoryLinkNoUsername">Para compartilhar links de stories, adicione um nome de usuário público nas Configurações</string>
     <string name="ViewApplications">Ver inscrições</string>
     <string name="ApplyNowPreview">Inscreva-se agora (apenas pré-visualização)</string>
     <plurals name="ParticipantsCount">

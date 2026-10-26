@@ -271,6 +271,7 @@
     <string name="CheckBackLaterOrCreateEvents">Зайдите позже или создайте
 новое</string>
     <string name="ClosesDate">Закрывается: %1$s</string>
+    <string name="StoryLinkNoUsername">Чтобы делиться ссылками на истории, задайте публичное имя пользователя в настройках</string>
     <string name="ViewApplications">Посмотреть заявки</string>
     <string name="ApplyNowPreview">Подать заявку (только предпросмотр)</string>
     <plurals name="ParticipantsCount">

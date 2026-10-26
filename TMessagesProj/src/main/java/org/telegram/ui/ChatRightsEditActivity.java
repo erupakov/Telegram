@@ -1212,15 +1212,8 @@ public class ChatRightsEditActivity extends BaseFragment implements Notification
                     channelEditMessagesRow = rowCount++;
                     channelDeleteMessagesRow = rowCount++;
                 }
-                channelStoriesRow = rowCount++;
-                if (channelStoriesExpanded) {
-                    channelPostStoriesRow = rowCount++;
-                    channelEditStoriesRow = rowCount++;
-                    channelDeleteStoriesRow = rowCount++;
-                }
-                manageDirectRow = rowCount++;
+                //DIVO: stories, live streams and channel direct messages aren't used in Divo
                 addUsersRow = rowCount++;
-                startVoiceChatRow = rowCount++;
                 addAdminsRow = rowCount++;
                 banUsersRow = rowCount++;
             } else {
@@ -1232,15 +1225,7 @@ public class ChatRightsEditActivity extends BaseFragment implements Notification
                 banUsersRow = rowCount++;
                 addUsersRow = rowCount++;
                 pinMessagesRow = rowCount++;
-                if (ChatObject.isChannel(currentChat)) {
-                    channelStoriesRow = rowCount++;
-                    if (channelStoriesExpanded) {
-                        channelPostStoriesRow = rowCount++;
-                        channelEditStoriesRow = rowCount++;
-                        channelDeleteStoriesRow = rowCount++;
-                    }
-                }
-                startVoiceChatRow = rowCount++;
+                //DIVO: stories and video chats aren't used in Divo
                 addAdminsRow = rowCount++;
                 anonymousRow = rowCount++;
                 if (isForum) {

@@ -226,7 +226,8 @@ fun AnimatedLargeStoriesOverlay(
                                 if (story.isSelf && !story.hasStories) {
                                     DivoAnalytics.logEvent(AnalyticsEvent.StoryAddClicked("models_feed"))
                                     StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
-                                } else {
+                                } else if (story.hasStories) {
+                                    // Without stories the viewer opens empty and a "reply" lands in the chat
                                     val peerIds = arrayListOf(story.dialogId)
                                     DivoAnalytics.logEvent(AnalyticsEvent.StoryOpened("models_feed"))
                                     fragment.getOrCreateStoryViewer().open(

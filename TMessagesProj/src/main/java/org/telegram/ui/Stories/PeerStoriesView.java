@@ -1777,7 +1777,13 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
 
                         if (isChannel && allowShareLink) {
                             ActionBarMenuItem.addItem(popupLayout, R.drawable.msg_link, getString(R.string.CopyLink), false, resourcesProvider).setOnClickListener(v -> {
-                                AndroidUtilities.addToClipboard(currentStory.createLink());
+                                //DIVO: show the result; an own story without a public username has no link
+                                final String link = currentStory.createLink();
+                                if (link != null && AndroidUtilities.addToClipboard(link)) {
+                                    BulletinFactory.of(storyContainer, resourcesProvider).createCopyLinkBulletin().show();
+                                } else {
+                                    BulletinFactory.of(storyContainer, resourcesProvider).createErrorBulletin(getString(R.string.StoryLinkNoUsername)).show();
+                                }
                                 onLinkCopied();
                                 if (popupMenu != null) {
                                     popupMenu.dismiss();
@@ -2050,7 +2056,13 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                         }
                         if (allowShareLink) {
                             ActionBarMenuItem.addItem(popupLayout, R.drawable.msg_link2, getString(R.string.CopyLink), false, resourcesProvider).setOnClickListener(v -> {
-                                AndroidUtilities.addToClipboard(currentStory.createLink());
+                                //DIVO: show the result; an own story without a public username has no link
+                                final String link = currentStory.createLink();
+                                if (link != null && AndroidUtilities.addToClipboard(link)) {
+                                    BulletinFactory.of(storyContainer, resourcesProvider).createCopyLinkBulletin().show();
+                                } else {
+                                    BulletinFactory.of(storyContainer, resourcesProvider).createErrorBulletin(getString(R.string.StoryLinkNoUsername)).show();
+                                }
                                 onLinkCopied();
                                 if (popupMenu != null) {
                                     popupMenu.dismiss();
@@ -6998,6 +7010,12 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
             return true;
         }
 
+        //DIVO: story links use the Divo link domain (t.divo.global), not t.me
+        private String linkHost() {
+            String prefix = MessagesController.getInstance(currentAccount).linkPrefix;
+            return TextUtils.isEmpty(prefix) ? "t.me" : prefix;
+        }
+
         public String createLink() {
             if (currentStory.storyItem == null) {
                 return null;
@@ -7008,18 +7026,18 @@ public class PeerStoriesView extends SizeNotifierFrameLayout implements Notifica
                     return null;
                 }
                 if (currentStory.isLive) {
-                    return String.format(Locale.US, "https://t.me/%1$s/s/live", UserObject.getPublicUsername(user));
+                    return String.format(Locale.US, "https://%2$s/%1$s/s/live", UserObject.getPublicUsername(user), linkHost()); //DIVO
                 }
-                return String.format(Locale.US, "https://t.me/%1$s/s/%2$s", UserObject.getPublicUsername(user), currentStory.storyItem.id);
+                return String.format(Locale.US, "https://%3$s/%1$s/s/%2$s", UserObject.getPublicUsername(user), currentStory.storyItem.id, linkHost()); //DIVO
             } else {
                 TLRPC.Chat chat = MessagesController.getInstance(currentAccount).getChat(-dialogId);
                 if (ChatObject.getPublicUsername(chat) == null) {
                     return null;
                 }
                 if (currentStory.isLive) {
-                    return String.format(Locale.US, "https://t.me/%1$s/s/live", ChatObject.getPublicUsername(chat));
+                    return String.format(Locale.US, "https://%2$s/%1$s/s/live", ChatObject.getPublicUsername(chat), linkHost()); //DIVO
                 }
-                return String.format(Locale.US, "https://t.me/%1$s/s/%2$s", ChatObject.getPublicUsername(chat), currentStory.storyItem.id);
+                return String.format(Locale.US, "https://%3$s/%1$s/s/%2$s", ChatObject.getPublicUsername(chat), currentStory.storyItem.id, linkHost()); //DIVO
             }
         }
 

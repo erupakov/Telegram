@@ -351,7 +351,8 @@ fun ProfileNameItem(
                         if (uiState.isOwnProfile && !hasStories) {
                             DivoAnalytics.logEvent(AnalyticsEvent.StoryAddClicked("profile"))
                             StoryRecorder.getInstance(fragment.parentActivity, account).open(null)
-                        } else if (dialogId != 0L) {
+                        } else if (dialogId != 0L && hasStories) {
+                            // Without stories the viewer opens empty and a "reply" lands in the chat
                             val peerIds = arrayListOf(dialogId)
                             DivoAnalytics.logEvent(AnalyticsEvent.StoryOpened("profile_details"))
                             fragment.getOrCreateStoryViewer().open(

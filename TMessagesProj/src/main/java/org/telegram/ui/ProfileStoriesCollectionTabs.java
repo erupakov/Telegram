@@ -107,7 +107,7 @@ public class ProfileStoriesCollectionTabs extends BlurredFrameLayout implements 
         });
         addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 42, Gravity.TOP));
 
-        setVisibility(!collections.collections.isEmpty(), false, true);
+        setVisibility(false /*DIVO: no story albums*/ && !collections.collections.isEmpty(), false, true);
     }
 
     protected void updatedReordering(boolean reordering) {
@@ -160,7 +160,7 @@ public class ProfileStoriesCollectionTabs extends BlurredFrameLayout implements 
 
             adapter.canCreateNewAlbum = collections.canCreateNewAlbum();
             viewPager.fillTabs(true);
-            setVisibility(!collections.collections.isEmpty(), true, false);
+            setVisibility(false /*DIVO: no story albums*/ && !collections.collections.isEmpty(), true, false);
 
             if (initialAlbumId > 0) {
                 final int position = adapter.getItemPosition(initialAlbumId);

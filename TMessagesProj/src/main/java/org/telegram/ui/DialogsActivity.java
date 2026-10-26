@@ -5122,14 +5122,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                     filterOptions.add(R.drawable.msg_stories_add, LocaleController.getString(R.string.AddStory), Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, () -> {
                         dialogStoriesCell.openStoryRecorder();
                     });
-                    filterOptions.add(R.drawable.msg_stories_archive, LocaleController.getString(R.string.ArchivedStories), Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, () -> {
-                        Bundle args = new Bundle();
-                        args.putLong("dialog_id", UserConfig.getInstance(currentAccount).getClientUserId());
-                        args.putInt("type", MediaActivity.TYPE_STORIES);
-                        args.putInt("start_from", SharedMediaLayout.TAB_ARCHIVED_STORIES);
-                        MediaActivity mediaActivity = new MediaActivity(args, null);
-                        presentFragment(mediaActivity);
-                    });
+                    //DIVO: no story archive ("Archived stories" item removed)
                     filterOptions.add(R.drawable.msg_stories_saved, LocaleController.getString(R.string.SavedStories), Theme.key_actionBarDefaultSubmenuItemIcon, Theme.key_actionBarDefaultSubmenuItem, () -> {
                         Bundle args = new Bundle();
                         args.putLong("dialog_id", UserConfig.getInstance(currentAccount).getClientUserId());

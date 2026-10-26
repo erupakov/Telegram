@@ -4635,6 +4635,7 @@ public class StoriesController {
     }
 
     public boolean canEditStoryAlbums(long dialogId) {
+        if (true) return false; //DIVO: no story albums
         return UserConfig.getInstance(currentAccount).getClientUserId() == dialogId || canEditStories(dialogId);
     }
 
@@ -4808,6 +4809,7 @@ public class StoriesController {
         }
 
         public boolean canCreateNewAlbum() {
+            if (true) return false; //DIVO: no story albums
             if (!isSelf && !canEditStoryAlbums(dialogId)) {
                 return false;
             }
