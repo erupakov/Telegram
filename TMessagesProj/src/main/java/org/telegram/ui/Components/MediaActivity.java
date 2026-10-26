@@ -743,6 +743,12 @@ public class MediaActivity extends BaseFragment implements SharedMediaLayout.Sha
             showSubtitle(1, false, false);
         }
 
+        //DIVO: no story archive: no "My stories / Archive" tabs and no "Archive" button
+        if (type == TYPE_STORIES) {
+            tabsView = null;
+            buttonContainer = null;
+            button = null;
+        }
         if (tabsView != null) {
             fragmentView.addView(tabsView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT, Gravity.BOTTOM | Gravity.FILL_HORIZONTAL));
         }
@@ -910,7 +916,7 @@ public class MediaActivity extends BaseFragment implements SharedMediaLayout.Sha
                 showSubtitle(0, false, true);
             }
 
-            if (type == TYPE_STORIES) {
+            if (false && type == TYPE_STORIES) { //DIVO: no story archive
                 count = sharedMediaLayout.getStoriesCount(SharedMediaLayout.TAB_ARCHIVED_STORIES);
                 if (count > 0) {
                     showSubtitle(1, true, true);

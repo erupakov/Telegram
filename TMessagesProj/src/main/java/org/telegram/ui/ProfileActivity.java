@@ -16297,7 +16297,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
         } else {
             if (count > 0 || !MessagesController.getInstance(currentAccount).storiesEnabled()) {
-                bottomButton[0].setText(formatPluralString("ArchiveStories", count), animated);
+                bottomButton[0].setText(getString(R.string.ProfilePlaylistRemoveFromProfile), animated); //DIVO: no story archive
             } else {
                 bottomButton[0].setText(bottomButtonPostText, animated);
             }
