@@ -66,9 +66,9 @@ inline fun <T, R> DivoResult<T>.map(
 fun DivoResult<*>.getErrorMessage(): String {
     return when (this) {
         is DivoResult.Success -> ""
-        is DivoResult.NetworkError -> exception.message ?: "Network error"
+        is DivoResult.NetworkError -> org.telegram.messenger.LocaleController.getString(org.telegram.messenger.R.string.DivoNetworkError)
         is DivoResult.HttpError -> {
-            val baseMsg = body?.message ?: "HTTP error: $code"
+            val baseMsg = body?.message ?: org.telegram.messenger.LocaleController.getString(org.telegram.messenger.R.string.ErrorOccurred)
             val validationErrors = body?.errors?.mapNotNull { (field, errors) ->
                 val errorList = (errors as? List<*>)?.joinToString(", ") ?: errors.toString()
                 "$field: $errorList"
@@ -80,7 +80,7 @@ fun DivoResult<*>.getErrorMessage(): String {
                 baseMsg
             }
         }
-        is DivoResult.UnknownError -> throwable.message ?: "Unknown error"
+        is DivoResult.UnknownError -> throwable.message ?: org.telegram.messenger.LocaleController.getString(org.telegram.messenger.R.string.ErrorOccurred)
     }
 }
 

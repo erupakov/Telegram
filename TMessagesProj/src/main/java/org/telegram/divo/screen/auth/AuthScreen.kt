@@ -105,7 +105,7 @@ fun AuthScreen(
                         
                         if (activity == null) {
                             scope.launch {
-                                snackbarHostState.show(SnackbarEvent.Error("Context is not an Activity"))
+                                snackbarHostState.show(SnackbarEvent.Error(org.telegram.messenger.LocaleController.getString(org.telegram.messenger.R.string.ErrorOccurred)))
                             }
                             return@launch
                         }

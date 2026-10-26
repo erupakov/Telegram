@@ -289,7 +289,7 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
                 }
                 
                 if (resolvedCityId == null) {
-                    sendEffect(Effect.ShowError("City not supported by server. Please try another city."))
+                    sendEffect(Effect.ShowError(org.telegram.messenger.LocaleController.getString(org.telegram.messenger.R.string.EventCityNotSupported)))
                     setState { copy(isUploading = false) }
                     return@launch
                 }

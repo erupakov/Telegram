@@ -13749,4 +13749,13 @@
     <string name="messages_two">%1$d сообщений</string>
     <string name="messages_few">%1$d сообщения</string>
     <string name="messages_many">%1$d сообщений</string>
+    <!-- DIVO: localization audit -->
+    <string name="EventPublished">Мероприятие опубликовано</string>
+    <string name="EventUpdated">Мероприятие обновлено</string>
+    <string name="ParamValueToNoUnit">До %1$d</string>
+    <string name="EventApplicationsClosedSuccess">Приём заявок закрыт</string>
+    <string name="RoleSelectRequired">Выберите роль</string>
+    <string name="RegistrationFailed">Не удалось зарегистрироваться: %1$s</string>
+    <string name="EventCityNotSupported">Этот город пока не поддерживается. Выберите другой город.</string>
+    <string name="DivoNetworkError">Нет соединения. Проверьте интернет и попробуйте ещё раз.</string>
 </resources>
