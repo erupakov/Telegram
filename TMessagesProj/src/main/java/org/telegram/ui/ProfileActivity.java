@@ -6934,12 +6934,55 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         if (chatInfo == null || chatInfo.linked_chat_id == 0) {
             return;
         }
+        final long linkedChatId = chatInfo.linked_chat_id;
+        //DIVO: Teamgram may not send the discussion group along with the channel, and ChatActivity
+        // silently refuses to open an unknown chat. Load it first: from the channel's full info,
+        // then directly by id.
+        if (getMessagesController().getChat(linkedChatId) == null) {
+            loadDiscussionChat(linkedChatId, true);
+            return;
+        }
         Bundle args = new Bundle();
-        args.putLong("chat_id", chatInfo.linked_chat_id);
+        args.putLong("chat_id", linkedChatId);
         if (!getMessagesController().checkCanOpenChat(args, ProfileActivity.this)) {
             return;
         }
         presentFragment(new ChatActivity(args));
+    }
+
+    //DIVO
+    private void loadDiscussionChat(long linkedChatId, boolean fromFullChannel) {
+        TLObject req;
+        if (fromFullChannel) {
+            TLRPC.TL_channels_getFullChannel full = new TLRPC.TL_channels_getFullChannel();
+            full.channel = getMessagesController().getInputChannel(chatId);
+            req = full;
+        } else {
+            TLRPC.TL_channels_getChannels byId = new TLRPC.TL_channels_getChannels();
+            TLRPC.TL_inputChannel inputChannel = new TLRPC.TL_inputChannel();
+            inputChannel.channel_id = linkedChatId;
+            byId.id.add(inputChannel);
+            req = byId;
+        }
+        getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
+            if (response instanceof TLRPC.TL_messages_chatFull) {
+                TLRPC.TL_messages_chatFull res = (TLRPC.TL_messages_chatFull) response;
+                getMessagesController().putUsers(res.users, false);
+                getMessagesController().putChats(res.chats, false);
+            } else if (response instanceof TLRPC.messages_Chats) {
+                getMessagesController().putChats(((TLRPC.messages_Chats) response).chats, false);
+            }
+            if (getParentActivity() == null) {
+                return;
+            }
+            if (getMessagesController().getChat(linkedChatId) != null) {
+                openDiscussion();
+            } else if (fromFullChannel) {
+                loadDiscussionChat(linkedChatId, false);
+            } else {
+                BulletinFactory.of(this).createErrorBulletin(LocaleController.getString(R.string.UnknownError)).show();
+            }
+        }));
     }
 
     public boolean onMemberClick(TLRPC.ChatParticipant participant, boolean isLong, View view) {
@@ -11809,12 +11852,14 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (userBlocked) {
                             otherItem.addSubItem(block_contact, R.drawable.msg_block, LocaleController.getString(R.string.Unblock));
                         }
-                        otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
+                        //DIVO: no home screen shortcuts
+                        // otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
                     } else if (getDialogId() != UserObject.VERIFY) {
                         if (currentEncryptedChat == null) {
                             createAutoDeleteItem(context);
                         }
-                        otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
+                        //DIVO: no home screen shortcuts
+                        // otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
                         if (isBot) {
                             otherItem.addSubItem(share, R.drawable.msg_share, LocaleController.getString(R.string.BotShare));
                             shareAction = true;
@@ -11862,7 +11907,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     otherItem.setSubItemShown(start_secret_chat, DialogObject.isEmpty(getMessagesController().isUserContactBlocked(userId)));
                 }
                 if (!isBot && getContactsController().contactsDict.get(userId) != null) {
-                    otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
+                    //DIVO: no home screen shortcuts
+                    // otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
                 }
             }
         } else if (chatId != 0) {
@@ -11912,7 +11958,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         otherItem.addSubItem(delete_topic, R.drawable.msg_delete, LocaleController.getPluralString("DeleteTopics", 1));
                     }
                     if (topicId == 0) {
-                        otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
+                        //DIVO: no home screen shortcuts
+                        // otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
                     }
                     if (chat.creator) {
                         otherItem.addColoredGap();
@@ -11948,7 +11995,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         discussAction = true;
                     }
                     if (topicId == 0) {
-                        otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
+                        //DIVO: no home screen shortcuts
+                        // otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
                     }
                     if (currentChat.creator) {
                         otherItem.addColoredGap();
@@ -11986,7 +12034,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 }
                 if (topicId == 0) {
-                    otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
+                    //DIVO: no home screen shortcuts
+                    // otherItem.addSubItem(add_shortcut, R.drawable.msg_home, LocaleController.getString(R.string.AddShortcut));
                 }
                 otherItem.addSubItem(leave_group, R.drawable.msg_leave, LocaleController.getString(R.string.DeleteAndExit));
                 leaveAction = true;
