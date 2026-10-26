@@ -273,6 +273,7 @@
     <string name="CheckBackLaterOrCreateEvents">请稍后查看或
 创建一个新活动</string>
     <string name="ClosesDate">截止时间：%1$s</string>
+    <string name="StoryLinkNoUsername">要分享快拍链接，请在设置中添加公开用户名</string>
     <string name="ViewApplications">查看报名申请</string>
     <string name="ApplyNowPreview">立即报名 (仅限预览)</string>
     <plurals name="ParticipantsCount">
