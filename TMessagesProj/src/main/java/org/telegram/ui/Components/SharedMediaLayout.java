@@ -2013,7 +2013,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                         options.dismiss();
                     });
 
-                    if (info != null && !isStoriesView()) {
+                    if (false && info != null && !isStoriesView()) { //DIVO: no story archive
                         TLRPC.Chat chat = MessagesController.getInstance(profileActivity.getCurrentAccount()).getChat(info.id);
                         if (chat != null && chat.admin_rights != null && chat.admin_rights.edit_stories) {
                             options.add(R.drawable.msg_archive, getString(R.string.OpenChannelArchiveStories), () -> {
@@ -6687,7 +6687,7 @@ public class SharedMediaLayout extends FrameLayout implements NotificationCenter
                     scrollSlidingTextTabStrip.animationDuration = 420;
                 } else {
                     tabs.add(new Pair(TAB_STORIES, getString(R.string.ProfileStories)));
-                    if (isStoriesView()) {
+                    if (false && isStoriesView()) { //DIVO: no story archive
                         tabs.add(new Pair(TAB_ARCHIVED_STORIES, getString(R.string.ProfileArchivedStories)));
                     }
                 }
