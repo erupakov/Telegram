@@ -735,11 +735,11 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
         sessionsDetailRow = -1; // rowCount++;
 
         privacySectionRow = rowCount++;
-        phoneNumberRow = rowCount++;
+        phoneNumberRow = -1; //DIVO rowCount++;
         lastSeenRow = rowCount++;
-        profilePhotoRow = rowCount++;
+        profilePhotoRow = -1; //DIVO rowCount++;
         forwardsRow = rowCount++;
-        callsRow = rowCount++;
+        callsRow = -1; //DIVO rowCount++;
         groupsDetailRow = -1;
         if (!getMessagesController().premiumFeaturesBlocked() || getUserConfig().isPremium()) {
             voicesRow = rowCount++;
@@ -748,7 +748,7 @@ public class PrivacySettingsActivity extends BaseFragment implements Notificatio
             voicesRow = -1;
             noncontactsRow = -1;
         }
-        birthdayRow = rowCount++;
+        birthdayRow = -1; //DIVO rowCount++;
         giftsRow = -1; //DIVO rowCount++;
         bioRow = rowCount++;
         // DIVO: hide Saved Music
