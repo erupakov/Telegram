@@ -942,7 +942,9 @@ public class ChatEditActivity extends BaseFragment implements ImageUpdater.Image
                 });
             }
 
-            if (ChatObject.isChannelAndNotMegaGroup(currentChat) && (isChannel && ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_CHANGE_INFO))) {
+            //DIVO: channel direct messages (paid with Stars) aren't supported by the Teamgram server:
+            // saving them fails with INPUT_CONSTRUCTOR_INVALID, so the setting is hidden
+            if (false && ChatObject.isChannelAndNotMegaGroup(currentChat) && (isChannel && ChatObject.canUserDoAdminAction(currentChat, ChatObject.ACTION_CHANGE_INFO))) {
                 suggestedCell = new TextCell(context);
                 suggestedCell.setBackground(Theme.getSelectorDrawable(true));
                 suggestedCell.setTextAndValueAndIcon(
