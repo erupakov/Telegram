@@ -282,6 +282,10 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:scheme="https" android:host="api.divo.fashion" />
                 <data android:scheme="https" android:host="api-stage.divo.fashion" />
+                <!-- Only share links: the rest of the host (/api, OAuth callbacks, admin) stays in the browser -->
+                <data android:pathPrefix="/profile/" />
+                <data android:pathPrefix="/event/" />
+                <data android:path="/channel" />
                 <!--  -->
             </intent-filter>
             <intent-filter>

@@ -7,7 +7,13 @@ package org.telegram.divo.dal.network
  */
 object DivoApiConfig {
 
-    const val WEB_URL: String = "https://api.divo.fashion/"
+    /** Base of share links; stage builds share stage links, since their ids exist only on stage */
+    val WEB_URL: String
+        get() = if (org.telegram.messenger.BuildVars.DEBUG_VERSION) {
+            "https://api-stage.divo.fashion/"
+        } else {
+            "https://api.divo.fashion/"
+        }
     const val TERMS_URL = "https://www.divo.global/legal-documents/mobile-app-eula"
     const val PRIVACY_URL = "https://www.divo.global/legal-documents/privacy-policy"
 
