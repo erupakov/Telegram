@@ -429,10 +429,10 @@ while she is with another agency.</string>
     <!--onboarding screen-->
     <string name="OnboardingTitleGetSeenByTheRightPeople">Get Seen by the Right People</string>
     <string name="OnboardingSubtitleGetSeenByTheRightPeople">A professional profile that puts you in front of agencies and brands actively looking for talent</string>
-    <string name="OnboardingTitleRealCastingsRealOpportunities">Real Castings. Real Opportunities.</string>
-    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Apply to verified jobs from agencies and brands — no middlemen, no guesswork.</string>
-    <string name="OnboardingTitleDiscoveredFasterWithAI">Discovered Faster with AI.</string>
-    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO\'s AI finds the best match between talent and brands — so opportunities come to you.</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">Real Castings. Real Opportunities</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Apply to verified jobs from agencies and brands — no middlemen, no guesswork</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Discovered Faster with AI</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO\'s AI finds the best match between talent and brands — so opportunities come to you</string>
     <string name="OnboardingEnterCode">Enter Code</string>
     <string name="WelcomeToDivo">Welcome to DIVO</string>
     <string name="SignOrCreateAccount">Sign in or create your account</string>

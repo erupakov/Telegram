@@ -433,10 +433,10 @@
     <!--onboarding screen-->
     <string name="OnboardingTitleGetSeenByTheRightPeople">被对的人看见</string>
     <string name="OnboardingSubtitleGetSeenByTheRightPeople">专业的个人主页，让正在寻找合适人才的经纪公司和品牌一眼看到您</string>
-    <string name="OnboardingTitleRealCastingsRealOpportunities">真实的试镜。真正的机会。</string>
-    <string name="OnboardingSubtitleRealCastingsRealOpportunities">申请来自机构和品牌的经过验证的工作 — 没有中间商，无需猜测。</string>
-    <string name="OnboardingTitleDiscoveredFasterWithAI">AI 助力，更快被发掘。</string>
-    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO的 AI 为人才和品牌进行最佳匹配 — 让机会主动找上门。</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">真实的试镜。真正的机会</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">申请来自机构和品牌的经过验证的工作 — 没有中间商，无需猜测</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">AI 助力，更快被发掘</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO的 AI 为人才和品牌进行最佳匹配 — 让机会主动找上门</string>
     <string name="OnboardingEnterCode">输入验证码</string>
     <string name="WelcomeToDivo">欢迎来到 DIVO</string>
     <string name="SignOrCreateAccount">登录或创建您的账户</string>

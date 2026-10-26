@@ -442,10 +442,10 @@
     <!--onboarding screen-->
     <string name="OnboardingTitleGetSeenByTheRightPeople">Покажите себя нужным людям</string>
     <string name="OnboardingSubtitleGetSeenByTheRightPeople">Профессиональный профиль, который заметят агентства и бренды, активно ищущие таланты</string>
-    <string name="OnboardingTitleRealCastingsRealOpportunities">Реальные кастинги. Реальные возможности.</string>
-    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Откликайтесь на проверенные предложения от агентств и брендов — без посредников и сомнений.</string>
-    <string name="OnboardingTitleDiscoveredFasterWithAI">Быстрый поиск с помощью ИИ.</string>
-    <string name="OnboardingSubtitleDiscoveredFasterWithAI">ИИ DIVO находит идеальные совпадения между талантами и брендами — так что возможности сами находят вас.</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">Реальные кастинги. Реальные возможности</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Откликайтесь на проверенные предложения от агентств и брендов — без посредников и сомнений</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Быстрый поиск с помощью ИИ</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">ИИ DIVO находит идеальные совпадения между талантами и брендами — так что возможности сами находят вас</string>
     <string name="OnboardingEnterCode">Ввести код</string>
     <string name="WelcomeToDivo">Добро пожаловать в DIVO</string>
     <string name="SignOrCreateAccount">Войдите или создайте аккаунт</string>

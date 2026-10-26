@@ -432,11 +432,11 @@ pendant que vous êtes dans une autre agence.</string>
 
     <!--onboarding screen-->
     <string name="OnboardingTitleGetSeenByTheRightPeople">Obtenez les bonnes personnes pour vous voir</string>
-    <string name="OnboardingSubtitleGetSeenByTheRightPeople">Un profil professionnel que vous rencontrerez dans les agences et marques qui recherchent l\'activation de talents.</string>
-    <string name="OnboardingTitleRealCastingsRealOpportunities">De vrais castings. De vraies opportunités.</string>
-    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Postulez à des emplois vérifiés auprès d\'agences et de marques, sans intermédiaire ni approximation.</string>
-    <string name="OnboardingTitleDiscoveredFasterWithAI">Découvrez plus rapidement avec l\'IA.</string>
-    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO AI trouve la meilleure adéquation entre les talents et les marques – pour que les opportunités se présentent à vous.</string>
+    <string name="OnboardingSubtitleGetSeenByTheRightPeople">Un profil professionnel que vous rencontrerez dans les agences et marques qui recherchent l\'activation de talents</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">De vrais castings. De vraies opportunités</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Postulez à des emplois vérifiés auprès d\'agences et de marques, sans intermédiaire ni approximation</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Découvrez plus rapidement avec l\'IA</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO AI trouve la meilleure adéquation entre les talents et les marques – pour que les opportunités se présentent à vous</string>
     <string name="OnboardingEnterCode">Entrez le code</string>
     <string name="WelcomeToDivo">Bienvenue chez DIVO</string>
     <string name="SignOrCreateAccount">Connectez-vous ou croyez votre compte</string>
