@@ -16973,6 +16973,9 @@ public class PhotoViewer implements NotificationCenter.NotificationCenterDelegat
         if (sendPhotoType != SELECT_TYPE_AVATAR) {
             return;
         }
+        //DIVO: the round (square, fixed-ratio) avatar frame was only set on the animated open from a
+        // thumbnail; opened without one (Divo profile photo picker) the crop stayed a free rectangle
+        photoCropView.setFreeform(false);
         photoCropView.onAppear();
         photoCropView.setVisibility(View.VISIBLE);
         photoCropView.setAlpha(1.0f);
