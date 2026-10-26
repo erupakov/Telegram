@@ -22,6 +22,7 @@ class AgencySearchItemDto(
     @SerializedName("city") val city: CityDto?,
     @SerializedName("userId") val userId: Int,
     @SerializedName("role") val role: String?,
+    @SerializedName("roleLabel") val roleLabel: String?,
     @SerializedName("isPremium") val isPremium: Boolean?,
     @SerializedName("currentAgency") val currentAgency: CurrentAgencyDto?
 )
@@ -49,7 +50,8 @@ fun AgencySearchItemDto.toEntity(currentAgencyId: Int? = null): org.telegram.div
         username = null, // Backend doesn't return this yet
         photoUrl = photo?.fullUrl.orEmpty(),
         city = city?.toEntity(),
-        role = role ?: "Model",
+        // Shown as is: the backend localizes it (Модель, Новое лицо, AI creator...); raw role is the fallback for old backends
+        role = roleLabel?.takeIf { it.isNotBlank() } ?: role ?: "Model",
         isPremium = isPremium ?: false,
         birthday = birthday,
         status = status
