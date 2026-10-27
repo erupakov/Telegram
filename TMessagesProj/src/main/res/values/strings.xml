@@ -11146,4 +11146,6 @@ while she is with another agency.</string>
     <string name="DeleteProfileDescription">Are you sure you want to delete your profile? This action cannot be undone.</string>
     <string name="DeleteProfileConfirm">Delete</string>
     <string name="NoPhotosYetBottomSheet">No photos yet</string>
+    <string name="DivoAppVersion">Divo %1$s</string>
+    <string name="DivoAppVersionBuild">Divo %1$s (build %2$d)</string>
 </resources>
