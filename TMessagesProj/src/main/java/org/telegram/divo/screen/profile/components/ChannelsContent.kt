@@ -67,7 +67,15 @@ fun ChannelsContent(
     val inset = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
     val bottomPadding = if (!showBackButton) 68.dp + inset else inset + 8.dp
 
-    if (channels.isEmpty()) {
+    // Only broadcast channels belong here: a channel's discussion group registered as a channel
+    // (or any other group) is hidden once Telegram tells us what kind of chat it is
+    val account = org.telegram.messenger.UserConfig.selectedAccount
+    var hiddenGroupIds by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(emptySet<Long>()) }
+    val visibleChannels = channels.filter {
+        it.telegramChatId !in hiddenGroupIds && !isGroupChat(MessagesController.getInstance(account).getChat(it.telegramChatId))
+    }
+
+    if (visibleChannels.isEmpty()) {
         EmptyChannels(
             isOwnProfile = isOwnProfile,
             isModel = isModel,
@@ -87,13 +95,14 @@ fun ChannelsContent(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(
-                items = channels,
+                items = visibleChannels,
                 key = { it.telegramChatId }
             ) { channel ->
                 ChannelItem(
                     channel = channel,
                     isEvent = isEvent,
                     isRefreshing = isRefreshing,
+                    onResolvedAsGroup = { hiddenGroupIds = hiddenGroupIds + channel.telegramChatId },
                     onClicked = { 
                         val link = channel.inviteLink ?: "https://t.me/${channel.username}"
                         org.telegram.messenger.browser.Browser.openUrl(context, link)
@@ -109,6 +118,7 @@ private fun ChannelItem(
     channel: org.telegram.divo.entity.UserChannel,
     isEvent: Boolean,
     isRefreshing: Boolean = false,
+    onResolvedAsGroup: () -> Unit = {},
     onClicked: () -> Unit,
 ) {
     val account = org.telegram.messenger.UserConfig.selectedAccount
@@ -212,6 +222,10 @@ private fun ChannelItem(
         } else if (initialChatFull == null) {
             MessagesController.getInstance(account).loadFullChat(channel.telegramChatId, 0, true)
         }
+    }
+
+    androidx.compose.runtime.LaunchedEffect(chatObject) {
+        if (isGroupChat(chatObject)) onResolvedAsGroup()
     }
 
     val displayFollowers = LocaleController.formatPluralStringSpaced("Followers", chatParticipants)
@@ -408,4 +422,11 @@ private fun EmptyChannels(
             )
         }
     }
+}
+
+/** True for a basic group or supergroup (e.g. a channel's discussion group), false for a channel or unknown chat. */
+private fun isGroupChat(chat: org.telegram.tgnet.TLObject?): Boolean = when (chat) {
+    is TLRPC.Chat -> !org.telegram.messenger.ChatObject.isChannel(chat) || chat.megagroup
+    is TLRPC.ChatInvite -> chat.chat?.let { isGroupChat(it) } ?: !chat.broadcast
+    else -> false
 }
