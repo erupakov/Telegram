@@ -272,12 +272,18 @@ fun SubRole.identityStepConfig(): StepOneConfig = when (this) {
     )
     // Talent Actor/Dancer/Singer (D3/D4/D5) — то же + специализация
     SubRole.ACTOR,
-    SubRole.DANCER,
     SubRole.SINGER -> StepOneConfig(
         titleRes = R.string.RegFormYourIdentityTitle,
         showDateOfBirth = true,
         showGender = true,
         showSpecialisation = true,
+    )
+    // AI creator (SubRole.DANCER): no specialisation for now; the dancer list stays for later
+    SubRole.DANCER -> StepOneConfig(
+        titleRes = R.string.RegFormYourIdentityTitle,
+        showDateOfBirth = true,
+        showGender = true,
+        showSpecialisation = false,
     )
     // Fan (E) — имя + фамилия + дата + страна
     SubRole.FAN -> StepOneConfig(

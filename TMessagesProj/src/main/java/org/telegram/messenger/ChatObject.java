@@ -1970,6 +1970,7 @@ public class ChatObject {
     }
 
     public static boolean isBoostSupported(TLRPC.Chat chat) {
+        if (true) return false; //DIVO: Teamgram doesn't support boosts ("Голоса"); the code stays
         return (isChannelAndNotMegaGroup(chat) || isMegagroup(chat)) && !isMonoForum(chat) && !false;
     }
 

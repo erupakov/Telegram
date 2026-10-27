@@ -335,7 +335,7 @@ private fun ChannelItem(
             UIButton(
                 modifier = Modifier
                     .height(32.dp),
-                text = "Apply",
+                text = stringResource(R.string.RequestToJoinChannel),
                 textStyle = AppTheme.typography.textButton.copy(
                     fontSize = 14.sp
                 ),

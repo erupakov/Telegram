@@ -442,10 +442,10 @@
     <!--onboarding screen-->
     <string name="OnboardingTitleGetSeenByTheRightPeople">Покажите себя нужным людям</string>
     <string name="OnboardingSubtitleGetSeenByTheRightPeople">Профессиональный профиль, который заметят агентства и бренды, активно ищущие таланты</string>
-    <string name="OnboardingTitleRealCastingsRealOpportunities">Реальные кастинги. Реальные возможности.</string>
-    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Откликайтесь на проверенные предложения от агентств и брендов — без посредников и сомнений.</string>
-    <string name="OnboardingTitleDiscoveredFasterWithAI">Быстрый поиск с помощью ИИ.</string>
-    <string name="OnboardingSubtitleDiscoveredFasterWithAI">ИИ DIVO находит идеальные совпадения между талантами и брендами — так что возможности сами находят вас.</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">Реальные кастинги. Реальные возможности</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Откликайтесь на проверенные предложения от агентств и брендов — без посредников и сомнений</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Быстрый поиск с помощью ИИ</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">ИИ DIVO находит идеальные совпадения между талантами и брендами — так что возможности сами находят вас</string>
     <string name="OnboardingEnterCode">Ввести код</string>
     <string name="WelcomeToDivo">Добро пожаловать в DIVO</string>
     <string name="SignOrCreateAccount">Войдите или создайте аккаунт</string>
@@ -1006,6 +1006,7 @@
     <string name="ApplyAnywaySuffix">Все равно подать?</string>
     <string name="MismatchMultipleApplyAnyway">Некоторые параметры не подходят. Все равно подать?</string>
     <string name="ApplyConfirmationShareInfo">Мы передадим организатору</string>
+    <string name="ApplyConfirmationOrganizer">Организатор</string>
     <string name="ApplyConfirmationParametersTitle">Требования для участия</string>
     <string name="PortfolioLinkTitle">ССЫЛКА НА ПОРТФОЛИО</string>
     <string name="FollowersOnlineText">%1$s подписчиков</string>
@@ -13751,4 +13752,13 @@
     <string name="messages_many">%1$d сообщений</string>
     <string name="DivoAppVersion">Divo %1$s</string>
     <string name="DivoAppVersionBuild">Divo %1$s (сборка %2$d)</string>
+    <!-- DIVO: localization audit -->
+    <string name="EventPublished">Мероприятие опубликовано</string>
+    <string name="EventUpdated">Мероприятие обновлено</string>
+    <string name="ParamValueToNoUnit">До %1$d</string>
+    <string name="EventApplicationsClosedSuccess">Приём заявок закрыт</string>
+    <string name="RoleSelectRequired">Выберите роль</string>
+    <string name="RegistrationFailed">Не удалось зарегистрироваться: %1$s</string>
+    <string name="EventCityNotSupported">Этот город пока не поддерживается. Выберите другой город.</string>
+    <string name="DivoNetworkError">Нет соединения. Проверьте интернет и попробуйте ещё раз.</string>
 </resources>

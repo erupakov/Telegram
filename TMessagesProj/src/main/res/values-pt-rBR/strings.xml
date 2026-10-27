@@ -434,10 +434,10 @@ enquanto ela estiver com outra agência.</string>
     <!--onboarding screen-->
     <string name="OnboardingTitleGetSeenByTheRightPeople">Seja visto pelas pessoas certas</string>
     <string name="OnboardingSubtitleGetSeenByTheRightPeople">Um perfil profissional que o coloca de frente para agências e marcas que procuram talento ativamente</string>
-    <string name="OnboardingTitleRealCastingsRealOpportunities">Castings reais. Oportunidades reais.</string>
-    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Candidate-se a trabalhos verificados de agências e marcas — sem intermediários, sem adivinhação.</string>
-    <string name="OnboardingTitleDiscoveredFasterWithAI">Descoberto mais rápido com IA.</string>
-    <string name="OnboardingSubtitleDiscoveredFasterWithAI">A IA do DIVO encontra a melhor correspondência entre talento e marcas — para que as oportunidades cheguem até você.</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">Castings reais. Oportunidades reais</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Candidate-se a trabalhos verificados de agências e marcas — sem intermediários, sem adivinhação</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Descoberto mais rápido com IA</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">A IA do DIVO encontra a melhor correspondência entre talento e marcas — para que as oportunidades cheguem até você</string>
     <string name="OnboardingEnterCode">Inserir código</string>
     <string name="WelcomeToDivo">Bem-vindo(a) ao DIVO</string>
     <string name="SignOrCreateAccount">Faça login ou crie sua conta</string>
@@ -2017,6 +2017,7 @@ crie um novo.</string>
     <string name="ApplyAnywaySuffix">Aplicar mesmo assim?</string>
     <string name="MismatchMultipleApplyAnyway">Alguns parâmetros não coincidem. Aplicar mesmo assim?</string>
     <string name="ApplyConfirmationShareInfo">Vamos partilhar com o organizador</string>
+    <string name="ApplyConfirmationOrganizer">Organizador</string>
     <string name="ApplyConfirmationParametersTitle">Parâmetros da candidatura</string>
     <string name="PortfolioLinkTitle">LINK DO PORTFÓLIO</string>
     <string name="FollowersOnlineText">%1$s seguidores</string>
@@ -2249,4 +2250,20 @@ crie um novo.</string>
     <string name="PermissionGalleryDeniedToast">Permita o acesso a fotos e vídeos nas configurações.</string>
     <string name="DivoAppVersion">Divo %1$s</string>
     <string name="DivoAppVersionBuild">Divo %1$s (build %2$d)</string>
+    <!-- DIVO: localization audit -->
+    <string name="ChoosePhoto">Escolher foto</string>
+    <string name="ChoosePhotoOrVideo">Escolher foto ou vídeo</string>
+    <string name="Confirm">Confirmar</string>
+    <string name="EditProfileFirstName">Nome</string>
+    <string name="EditProfileLastName">Sobrenome</string>
+    <string name="EventPublished">Evento publicado</string>
+    <string name="EventUpdated">Evento atualizado</string>
+    <string name="ShareFile">Compartilhar</string>
+    <string name="ErrorOccurred">Ocorreu um erro.</string>
+    <string name="EventApplicationsClosedSuccess">Inscrições encerradas</string>
+    <string name="RoleSelectRequired">Selecione um papel</string>
+    <string name="RegistrationFailed">Falha no cadastro: %1$s</string>
+    <string name="EventCityNotSupported">Esta cidade ainda não é suportada. Escolha outra cidade.</string>
+    <string name="DivoNetworkError">Sem conexão. Verifique sua internet e tente novamente.</string>
+    <string name="RequestToJoinChannel">Pedir para entrar</string>
 </resources>

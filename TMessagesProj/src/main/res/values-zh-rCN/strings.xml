@@ -433,10 +433,10 @@
     <!--onboarding screen-->
     <string name="OnboardingTitleGetSeenByTheRightPeople">被对的人看见</string>
     <string name="OnboardingSubtitleGetSeenByTheRightPeople">专业的个人主页，让正在寻找合适人才的经纪公司和品牌一眼看到您</string>
-    <string name="OnboardingTitleRealCastingsRealOpportunities">真实的试镜。真正的机会。</string>
-    <string name="OnboardingSubtitleRealCastingsRealOpportunities">申请来自机构和品牌的经过验证的工作 — 没有中间商，无需猜测。</string>
-    <string name="OnboardingTitleDiscoveredFasterWithAI">AI 助力，更快被发掘。</string>
-    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO的 AI 为人才和品牌进行最佳匹配 — 让机会主动找上门。</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">真实的试镜。真正的机会</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">申请来自机构和品牌的经过验证的工作 — 没有中间商，无需猜测</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">AI 助力，更快被发掘</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO的 AI 为人才和品牌进行最佳匹配 — 让机会主动找上门</string>
     <string name="OnboardingEnterCode">输入验证码</string>
     <string name="WelcomeToDivo">欢迎来到 DIVO</string>
     <string name="SignOrCreateAccount">登录或创建您的账户</string>
@@ -693,6 +693,7 @@
     <string name="ApplyAnywaySuffix">仍然申请？</string>
     <string name="MismatchMultipleApplyAnyway">某些参数不符合。仍然申请？</string>
     <string name="ApplyConfirmationShareInfo">我们将与主办方分享</string>
+    <string name="ApplyConfirmationOrganizer">组织者</string>
     <string name="ApplyConfirmationParametersTitle">申请参数</string>
     <string name="PortfolioLinkTitle">作品集链接</string>
     <string name="FollowersOnlineText">%1$s 粉丝</string>
@@ -952,4 +953,20 @@
     <string name="PermissionGalleryDeniedToast">请在设置中开启照片和视频访问权限。</string>
     <string name="DivoAppVersion">Divo %1$s</string>
     <string name="DivoAppVersionBuild">Divo %1$s（构建 %2$d）</string>
+    <!-- DIVO: localization audit -->
+    <string name="ChoosePhoto">选择照片</string>
+    <string name="ChoosePhotoOrVideo">选择照片或视频</string>
+    <string name="Confirm">确认</string>
+    <string name="EditProfileFirstName">名字</string>
+    <string name="EditProfileLastName">姓氏</string>
+    <string name="EventPublished">活动已发布</string>
+    <string name="EventUpdated">活动已更新</string>
+    <string name="ShareFile">分享</string>
+    <string name="ErrorOccurred">发生错误。</string>
+    <string name="EventApplicationsClosedSuccess">已停止接受报名</string>
+    <string name="RoleSelectRequired">请选择角色</string>
+    <string name="RegistrationFailed">注册失败：%1$s</string>
+    <string name="EventCityNotSupported">暂不支持该城市，请选择其他城市。</string>
+    <string name="DivoNetworkError">无网络连接，请检查网络后重试。</string>
+    <string name="RequestToJoinChannel">申请加入</string>
 </resources>

@@ -53,7 +53,7 @@ class RoleSelectionViewModel : BaseViewModel<RoleSelectionState, RoleSelectionIn
 
     private fun onContinue() {
         val finalRole = resolveFinalSubRole(state.value) ?: run {
-            sendEffect(RoleSelectionEffect.ShowError("Please select a role"))
+            sendEffect(RoleSelectionEffect.ShowError(org.telegram.messenger.LocaleController.getString(org.telegram.messenger.R.string.RoleSelectRequired)))
             return
         }
         org.telegram.divo.analytics.DivoAnalytics.logEvent(org.telegram.divo.analytics.AnalyticsEvent.SignUpRoleSelected(finalRole.name))

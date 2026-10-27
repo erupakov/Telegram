@@ -686,6 +686,15 @@ public class Browser {
             host = host != null ? host.toLowerCase() : "";
         }
 
+        //DIVO: Divo share links (profile, event, channel) open inside the app, not in a browser
+        if (("api.divo.fashion".equals(host) || "api-stage.divo.fashion".equals(host)) && "https".equalsIgnoreCase(uri.getScheme())) {
+            List<String> segments = uri.getPathSegments();
+            String first = segments.isEmpty() ? "" : segments.get(0);
+            if ("profile".equals(first) || "event".equals(first) || "channel".equals(first)) {
+                return true;
+            }
+        }
+
         if ("ton".equals(uri.getScheme())) {
             try {
                 Intent viewIntent = new Intent(Intent.ACTION_VIEW, uri);

@@ -175,7 +175,7 @@ class FaceSearchViewModel(
             try {
                 val path = cachedFilePath
                 if (path == null) {
-                    sendEffect(ShowError("Image not cached"))
+                    sendEffect(ShowError(org.telegram.messenger.LocaleController.getString(org.telegram.messenger.R.string.ErrorOccurred)))
                     setState { copy(isSearching = false) }
                     return@launch
                 }

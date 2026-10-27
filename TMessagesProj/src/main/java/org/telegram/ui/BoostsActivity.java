@@ -594,6 +594,7 @@ public class BoostsActivity extends GradientHeaderActivity implements Notificati
 
     @Override
     public boolean onFragmentCreate() {
+        if (true) return false; //DIVO: Teamgram doesn't support boosts: the screen never opens
         getNotificationCenter().addObserver(this, NotificationCenter.boostByChannelCreated);
         getNotificationCenter().addObserver(this, NotificationCenter.chatWasBoostedByUser);
         return super.onFragmentCreate();

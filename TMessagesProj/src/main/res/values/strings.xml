@@ -429,10 +429,10 @@ while she is with another agency.</string>
     <!--onboarding screen-->
     <string name="OnboardingTitleGetSeenByTheRightPeople">Get Seen by the Right People</string>
     <string name="OnboardingSubtitleGetSeenByTheRightPeople">A professional profile that puts you in front of agencies and brands actively looking for talent</string>
-    <string name="OnboardingTitleRealCastingsRealOpportunities">Real Castings. Real Opportunities.</string>
-    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Apply to verified jobs from agencies and brands — no middlemen, no guesswork.</string>
-    <string name="OnboardingTitleDiscoveredFasterWithAI">Discovered Faster with AI.</string>
-    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO\'s AI finds the best match between talent and brands — so opportunities come to you.</string>
+    <string name="OnboardingTitleRealCastingsRealOpportunities">Real Castings. Real Opportunities</string>
+    <string name="OnboardingSubtitleRealCastingsRealOpportunities">Apply to verified jobs from agencies and brands — no middlemen, no guesswork</string>
+    <string name="OnboardingTitleDiscoveredFasterWithAI">Discovered Faster with AI</string>
+    <string name="OnboardingSubtitleDiscoveredFasterWithAI">DIVO\'s AI finds the best match between talent and brands — so opportunities come to you</string>
     <string name="OnboardingEnterCode">Enter Code</string>
     <string name="WelcomeToDivo">Welcome to DIVO</string>
     <string name="SignOrCreateAccount">Sign in or create your account</string>
@@ -11096,6 +11096,7 @@ while she is with another agency.</string>
     <string name="ApplyAnywaySuffix">Apply anyway?</string>
     <string name="MismatchMultipleApplyAnyway">Some parameters don\'t match. Apply anyway?</string>
     <string name="ApplyConfirmationShareInfo">We\'ll share with the organiser</string>
+    <string name="ApplyConfirmationOrganizer">Organiser</string>
     <string name="ApplyConfirmationParametersTitle">Parameters for Applying</string>
     <string name="PortfolioLinkTitle">PORTFOLIO LINK</string>
     <string name="FollowersOnlineText">%1$s followers</string>
@@ -11148,4 +11149,10 @@ while she is with another agency.</string>
     <string name="NoPhotosYetBottomSheet">No photos yet</string>
     <string name="DivoAppVersion">Divo %1$s</string>
     <string name="DivoAppVersionBuild">Divo %1$s (build %2$d)</string>
+    <!-- DIVO: localization audit -->
+    <string name="EventApplicationsClosedSuccess">Applications closed</string>
+    <string name="RoleSelectRequired">Please select a role</string>
+    <string name="RegistrationFailed">Registration failed: %1$s</string>
+    <string name="EventCityNotSupported">This city isn\'t supported yet. Please choose another city.</string>
+    <string name="DivoNetworkError">No connection. Check your internet and try again.</string>
 </resources>

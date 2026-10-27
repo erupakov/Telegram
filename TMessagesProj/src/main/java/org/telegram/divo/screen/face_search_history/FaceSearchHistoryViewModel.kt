@@ -50,7 +50,7 @@ class FaceSearchHistoryViewModel : BaseViewModel<State, Intent, Effect>() {
 
             if (userId == null) {
                 setState { copy(isLoading = false) }
-                sendEffect(Effect.ShowError("Unauthorized"))
+                sendEffect(Effect.ShowError(org.telegram.messenger.LocaleController.getString(org.telegram.messenger.R.string.ErrorOccurred)))
                 return@launch
             }
 

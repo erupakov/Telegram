@@ -192,7 +192,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         if (divoResponse !is DivoResult.Success) {
                             val errorMessage = divoResponse.getErrorMessage()
                             DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))
-                            sendEffect(RegFormsEffect.ShowError("Registration failed: $errorMessage"))
+                            sendEffect(RegFormsEffect.ShowError(org.telegram.messenger.LocaleController.formatString(org.telegram.messenger.R.string.RegistrationFailed, errorMessage)))
                             setState { copy(isLoading = false) }
                             return@launch
                         }
@@ -213,7 +213,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         if (divoResponse !is DivoResult.Success) {
                             val errorMessage = divoResponse.getErrorMessage()
                             DivoAnalytics.logEvent(AnalyticsEvent.SignUpError(errorMessage))
-                            sendEffect(RegFormsEffect.ShowError("Registration failed: $errorMessage"))
+                            sendEffect(RegFormsEffect.ShowError(org.telegram.messenger.LocaleController.formatString(org.telegram.messenger.R.string.RegistrationFailed, errorMessage)))
                             setState { copy(isLoading = false) }
                             return@launch
                         }

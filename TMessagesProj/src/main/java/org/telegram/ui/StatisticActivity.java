@@ -135,6 +135,7 @@ public class StatisticActivity extends BaseFragment implements NotificationCente
         args.putBoolean("start_from_boosts", startFromBoosts);
         TLRPC.ChatFull chatInfo = MessagesController.getInstance(UserConfig.selectedAccount).getChatFull(chat.id);
         if (chatInfo == null || !chatInfo.can_view_stats && !chatInfo.can_view_stars_revenue) {
+            //DIVO: no boosts; BoostsActivity refuses to open (onFragmentCreate), so nothing is shown
             return new BoostsActivity(-chat.id);
         }
         return new StatisticActivity(args);
