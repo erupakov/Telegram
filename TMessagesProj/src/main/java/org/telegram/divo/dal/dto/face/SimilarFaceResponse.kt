@@ -22,7 +22,9 @@ class SimilarFaceDto(
     @SerializedName("followersCount") val followersCount: Int?,
     @SerializedName("isFollowedByUser") val isFollowedByUser: Boolean?,
     @SerializedName("likedCount") val likedCount: Int?,
-    @SerializedName("isLikedByUser") val isLikedByUser: Boolean?
+    @SerializedName("isLikedByUser") val isLikedByUser: Boolean?,
+    // DIVO: not sent by the backend yet; the results filter loads it from the profile meanwhile
+    @SerializedName("gender") val gender: String? = null
 )
 
 fun SimilarFaceDto.toEntity() = SimilarFace(

@@ -11,6 +11,7 @@ internal data class SimilarFiltersPayload(
     val countryNames: List<String> = emptyList(),
     val similarityPercent: Int = MIN_SIMILARITY,
     val roleValue: String = "",
+    val genderValue: String = "",
     val blockParams: List<ProfileParameter> = emptyList()
 )
 
@@ -21,6 +22,7 @@ internal object SimilarFiltersSerializer {
             .put("countryNames", JSONArray(state.selectedCountries.map { it.name }))
             .put("similarityPercent", state.similarityPercent)
             .put("roleValue", state.role.value)
+            .put("genderValue", state.gender.value)
 
         val params = JSONArray()
         state.blockParams.forEach { param ->
@@ -62,6 +64,7 @@ internal object SimilarFiltersSerializer {
                 .filter { it.isNotBlank() }
 
             val roleValue = root.optString("roleValue")
+            val genderValue = root.optString("genderValue")
             val similarityPercent = root.optInt("similarityPercent", MIN_SIMILARITY)
             val blockParams = root.optJSONArray("blockParams")
                 ?.let { array ->
@@ -82,6 +85,7 @@ internal object SimilarFiltersSerializer {
                 countryNames = countryNames,
                 similarityPercent = similarityPercent,
                 roleValue = roleValue,
+                genderValue = genderValue,
                 blockParams = blockParams
             )
         }.getOrNull()

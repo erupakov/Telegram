@@ -56,6 +56,7 @@ fun SimilarFilterBottomSheet(
         countries: List<LocalCountry>,
         percent: Int,
         role: ProfileParameter,
+        gender: ProfileParameter,
         blockParams: List<ProfileParameter>
     ) -> Unit,
     onReset: () -> Unit,
@@ -66,6 +67,7 @@ fun SimilarFilterBottomSheet(
     var draftCountries by remember { mutableStateOf(uiState.selectedCountries) }
     var draftPercent by remember { mutableIntStateOf(uiState.similarityPercent) }
     var draftRole by remember { mutableStateOf(uiState.role) }
+    var draftGender by remember { mutableStateOf(uiState.gender) }
     var draftBlockParams by remember {
         mutableStateOf(uiState.blockParams.ifEmpty { uiState.getDefaultBlockParams() })
     }
@@ -111,6 +113,7 @@ fun SimilarFilterBottomSheet(
                 currentParam?.let { paramType ->
                     when (paramType) {
                         ParametersType.ROLE -> draftRole = uiState.role.copy(value = selectedValue)
+                        ParametersType.GENDER -> draftGender = draftGender.copy(value = selectedValue)
                         else -> {
                             draftBlockParams = draftBlockParams.map { item ->
                                 if (item.type == paramType) item.copy(value = selectedValue) else item
@@ -124,6 +127,7 @@ fun SimilarFilterBottomSheet(
                 currentParam?.let { paramType ->
                     when (paramType) {
                         ParametersType.ROLE -> draftRole = draftRole.copy(value = "")
+                        ParametersType.GENDER -> draftGender = draftGender.copy(value = "")
 
                         else -> {
                             draftBlockParams = draftBlockParams.map { item ->
@@ -146,6 +150,7 @@ fun SimilarFilterBottomSheet(
             draftCountries = emptyList()
             draftPercent = MIN_SIMILARITY
             draftRole = ProfileParameter(ParametersType.ROLE, "")
+            draftGender = ProfileParameter(ParametersType.GENDER, "")
             draftBlockParams = draftBlockParams.map { it.copy(value = "") }
 
             onReset()
@@ -179,6 +184,12 @@ fun SimilarFilterBottomSheet(
                 ParameterItem(
                     param = draftRole.copy(value = if (draftRole.value.isEmpty()) stringResource(R.string.AllLabel) else uiState.getFormatedRoles(draftRole)),
                     onClick = { openBottomSheet(draftRole.type, context.resources.getStringArray(R.array.ModelNewTalentAgency).toList(), draftRole.value) }
+                )
+                Spacer(Modifier.height(16.dp))
+                // Gender: "Male" / "Female" (GenderItems without its "Any gender" entry)
+                ParameterItem(
+                    param = draftGender.copy(value = draftGender.value.ifEmpty { stringResource(R.string.AllLabel) }),
+                    onClick = { openBottomSheet(draftGender.type, context.resources.getStringArray(R.array.GenderItems).drop(1), draftGender.value) }
                 )
                 Spacer(Modifier.height(16.dp))
 
@@ -224,7 +235,7 @@ fun SimilarFilterBottomSheet(
                     .padding(bottom = 16.dp),
                 text = stringResource(R.string.ApplyFilter),
                 onClick = {
-                    onApply(draftCountries, draftPercent, draftRole, draftBlockParams)
+                    onApply(draftCountries, draftPercent, draftRole, draftGender, draftBlockParams)
                     onDismiss()
                 }
             )
