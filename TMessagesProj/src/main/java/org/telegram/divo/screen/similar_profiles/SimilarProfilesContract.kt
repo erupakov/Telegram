@@ -23,6 +23,7 @@ data class State(
     val similarityPercent: Int = MIN_SIMILARITY,
 
     val role: ProfileParameter = ProfileParameter(ParametersType.ROLE, ""),
+    val gender: ProfileParameter = ProfileParameter(ParametersType.GENDER, ""),
     val blockParams: List<ProfileParameter> = listOf(),
     val isHistoryMode: Boolean = false,
 ) : ViewState {
@@ -61,6 +62,7 @@ data class State(
             if (selectedCountries.isNotEmpty()) count++
             if (similarityPercent > MIN_SIMILARITY) count++
             if (role.value.isNotEmpty()) count++
+            if (gender.value.isNotEmpty()) count++
             count += blockParams.count { it.value.isNotEmpty() }
 
             return count
@@ -80,6 +82,7 @@ sealed interface Intent : ViewIntent {
         val countries: List<LocalCountry>,
         val similarityPercent: Int,
         val role: ProfileParameter,
+        val gender: ProfileParameter,
         val blockParams: List<ProfileParameter>
     ) : Intent
     data class OnParamValueChanged(val type: ParametersType, val value: String) : Intent

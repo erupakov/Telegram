@@ -137,8 +137,8 @@ private fun SimilarProfilesContent(
         if (showBottomSheet) {
             SimilarFilterBottomSheet(
                 uiState = uiState,
-                onApply = { countries, percent, role, blockParams ->
-                    onIntent(Intent.OnApplyFilters(countries, percent, role, blockParams))
+                onApply = { countries, percent, role, gender, blockParams ->
+                    onIntent(Intent.OnApplyFilters(countries, percent, role, gender, blockParams))
                 },
                 onReset = { onIntent(Intent.OnParamsReset) },
                 onDismiss = { showBottomSheet = false },

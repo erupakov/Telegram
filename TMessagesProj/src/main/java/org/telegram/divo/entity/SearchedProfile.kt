@@ -17,4 +17,6 @@ data class SearchedProfile(
     val isModel: Boolean,
     val roleLabel: String,
     val similarity: Int?,
+    /** "male" / "female", or null when unknown */
+    val gender: String? = null,
 )

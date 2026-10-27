@@ -6,7 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withPermit
 import org.telegram.divo.analytics.AnalyticsEvent
 import org.telegram.divo.analytics.DivoAnalytics
 import org.telegram.divo.common.DivoSettings
@@ -62,6 +65,7 @@ class SimilarProfilesViewModel(
                     selectedCountries = emptyList(),
                     similarityPercent = MIN_SIMILARITY,
                     role = ProfileParameter(ParametersType.ROLE, ""),
+                    gender = ProfileParameter(ParametersType.GENDER, ""),
                     blockParams = state.value.getDefaultBlockParams()
                 )
                 DivoSettings.faceSearchSimilarityPercent = null
@@ -76,6 +80,7 @@ class SimilarProfilesViewModel(
                     selectedCountries = intent.countries,
                     similarityPercent = intent.similarityPercent,
                     role = intent.role,
+                    gender = intent.gender,
                     blockParams = intent.blockParams
                 )
                 DivoSettings.faceSearchSimilarityPercent = intent.similarityPercent
@@ -87,7 +92,32 @@ class SimilarProfilesViewModel(
                 val updatedState = newState.copy(profiles = filtered)
                 setState { updatedState }
                 saveHistory(updatedState)
+                loadMissingGendersIfNeeded()
             }
+        }
+    }
+
+    // The search results don't carry gender yet: when the gender filter is on, read it from the
+    // found users' profiles once, then filter again
+    private val genderLookupStarted = mutableSetOf<Int>()
+
+    private fun loadMissingGendersIfNeeded() {
+        if (state.value.gender.value.isEmpty()) return
+        val ids = allProfiles.filter { it.gender == null && it.id > 0 && genderLookupStarted.add(it.id) }.map { it.id }
+        if (ids.isEmpty()) return
+        viewModelScope.launch {
+            val gate = kotlinx.coroutines.sync.Semaphore(4)
+            val found = ids.map { id ->
+                async {
+                    gate.withPermit {
+                        val result = DivoApi.userRepository.getUserById(id)
+                        id to (result as? DivoResult.Success)?.value?.gender?.id?.lowercase()?.takeIf { it.isNotBlank() }
+                    }
+                }
+            }.awaitAll().toMap()
+            allProfiles = allProfiles.map { p -> found[p.id]?.let { p.copy(gender = it) } ?: p }
+            val current = state.value
+            setState { current.copy(profiles = filterProfiles(current)) }
         }
     }
 
@@ -126,6 +156,7 @@ class SimilarProfilesViewModel(
             isLoading = false
         )
         setState { newState }
+        loadMissingGendersIfNeeded()
 
         if (!hasLoggedScreenOpened) {
             hasLoggedScreenOpened = true
@@ -160,6 +191,7 @@ class SimilarProfilesViewModel(
                     isModel = RoleType.from(dto.role).isModel(),
                     roleLabel = RoleType.from(dto.role).value,
                     similarity = ((dto.score ?: 0.0) * 100).toInt(),
+                    gender = dto.gender?.lowercase()?.takeIf { it.isNotBlank() },
                 )
             }
         } catch (e: Exception) {
@@ -207,7 +239,13 @@ class SimilarProfilesViewModel(
                 profileAge != null && profileAge in minAge..maxAge
             }
 
-            countryMatch && similarityMatch && roleMatch && ageMatch
+            val selectedGenders = org.telegram.divo.entity.mapGenderToEnglish(currentState.gender.value)
+                ?.split(",")?.map { it.trim() }?.filter { it == "male" || it == "female" }.orEmpty()
+            // Both or none selected = any gender; an unknown gender doesn't match a set filter
+            val genderMatch = selectedGenders.isEmpty() || selectedGenders.size == 2 ||
+                profile.gender in selectedGenders
+
+            countryMatch && similarityMatch && roleMatch && ageMatch && genderMatch
         }
     }
 
@@ -318,12 +356,14 @@ class SimilarProfilesViewModel(
         val stateWithCoreFilters = state.value.copy(
             similarityPercent = payload.similarityPercent,
             role = ProfileParameter(ParametersType.ROLE, payload.roleValue),
+            gender = ProfileParameter(ParametersType.GENDER, payload.genderValue),
             blockParams = mergeBlockParams(state.value.getDefaultBlockParams(), payload.blockParams)
         )
         val filteredByCore = filterProfiles(stateWithCoreFilters)
         val finalInitialState = stateWithCoreFilters.copy(profiles = filteredByCore)
 
         setState { finalInitialState }
+        loadMissingGendersIfNeeded()
 
         // Обработка стран
         if (payload.countryShortNames.isNotEmpty()) {
@@ -398,6 +438,7 @@ class SimilarProfilesViewModel(
         if (s.selectedCountries.isNotEmpty()) active.add("country")
         if (s.similarityPercent > MIN_SIMILARITY) active.add("similarity")
         if (s.role.value.isNotBlank()) active.add("role")
+        if (s.gender.value.isNotBlank()) active.add("gender")
         if (s.blockParams.any { it.value.isNotBlank() }) active.add("body_params")
         return active.joinToString(",")
     }
