@@ -55,6 +55,8 @@ class UserDataDto(
     @SerializedName("customer") val customer: CustomerDto?,
     @SerializedName("agencyEmployee") val agencyEmployee: AgencyEmployeeDto?,
     @SerializedName("telegramId") val telegramId: Long?,
+    // Signed by teamgram in the link proof and stored by the backend; null until the user re-links after that
+    @SerializedName("telegramAccessHash") val telegramAccessHash: Long? = null,
     @SerializedName("additionalInfo") val additionalInfo: Map<String, Any?>? = null,
 )
 
@@ -170,8 +172,11 @@ fun UserDataDto.toEntity(channels: List<org.telegram.divo.entity.UserChannel> = 
     // phone), that data belongs to the old, deleted Telegram user and must not be used.
     val infoTgId = (info?.get(AdditionalInfoKeys.TELEGRAM_ID) as? Number)?.toLong()
     val isInfoTgDataActual = infoTgId == null || telegramId == null || infoTgId == telegramId
-    val resolvedTgAccessHash = (info?.get(AdditionalInfoKeys.TELEGRAM_ACCESS_HASH) as? Number)?.toLong()
-        ?.takeIf { isInfoTgDataActual }
+    // The backend value is preferred: it always belongs to the current telegramId. additionalInfo is written by the
+    // client at sign-up and, parsed into Map<String, Any>, may lose int64 precision (Gson reads numbers as Double)
+    val resolvedTgAccessHash = telegramAccessHash
+        ?: (info?.get(AdditionalInfoKeys.TELEGRAM_ACCESS_HASH) as? Number)?.toLong()
+            ?.takeIf { isInfoTgDataActual }
     val resolvedTgUsername = (info?.get(AdditionalInfoKeys.TELEGRAM_USERNAME) as? String)
         ?.takeIf { isInfoTgDataActual }
 
