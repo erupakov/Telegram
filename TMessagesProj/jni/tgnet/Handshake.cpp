@@ -373,6 +373,16 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
                                                   "QtZj2EMy4s9xlNKzX8XezE0MHEa6bQpnFwIDAQAB\n"
                                                   "-----END RSA PUBLIC KEY-----");
                     serverPublicKeysFingerprints.push_back(0xa9e071c1771060cd);
+                    // Divo prod server key (rotated before the prod release)
+                    serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
+                                                  "MIIBCgKCAQEA6KkPLYsv3Z71G35/z1BrPJOguH0WboVJsVU8GMOGbsNVh6XWAjaU\n"
+                                                  "zi6zT5+Tm6oPcBgbxnuMNDRHp0UCHUKqpImM09ravfQvuK+eSXtldCmILi+nOfTo\n"
+                                                  "RosmUziDNtLqoPG4V4oi+IQxmIeY/c2EQ1CKWirnqVS0aglI2bk0ipvA1eCXC2Cu\n"
+                                                  "7AiDMW82fhclwUt1EbPo0Tp1z2DSZb5uypW5Jct/4Qzzh/F2PfXepM3R2E3Rarkf\n"
+                                                  "WeCs5dyP+0wchk5C/kDKeOmelia+g7XqUf/RGhwVbGc4xvrEPUnFNQxheE53NBux\n"
+                                                  "ni99hSyXqFpBPIYEax4yJwXSVRe+xtxXowIDAQAB\n"
+                                                  "-----END RSA PUBLIC KEY-----");
+                    serverPublicKeysFingerprints.push_back(0x288da68ea22f8a5c);
                 } else {
                     serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
                                                   "MIIBCgKCAQEAvKLEOWTzt9Hn3/9Kdp/RdHcEhzmd8xXeLSpHIIzaXTLJDw8BhJy1\n"
@@ -383,6 +393,16 @@ void Handshake::processHandshakeResponse_resPQ(TLObject *message, int64_t messag
                                                   "QtZj2EMy4s9xlNKzX8XezE0MHEa6bQpnFwIDAQAB\n"
                                                   "-----END RSA PUBLIC KEY-----");
                     serverPublicKeysFingerprints.push_back(0xa9e071c1771060cd);
+                    // Divo prod server key (rotated before the prod release)
+                    serverPublicKeys.emplace_back("-----BEGIN RSA PUBLIC KEY-----\n"
+                                                  "MIIBCgKCAQEA6KkPLYsv3Z71G35/z1BrPJOguH0WboVJsVU8GMOGbsNVh6XWAjaU\n"
+                                                  "zi6zT5+Tm6oPcBgbxnuMNDRHp0UCHUKqpImM09ravfQvuK+eSXtldCmILi+nOfTo\n"
+                                                  "RosmUziDNtLqoPG4V4oi+IQxmIeY/c2EQ1CKWirnqVS0aglI2bk0ipvA1eCXC2Cu\n"
+                                                  "7AiDMW82fhclwUt1EbPo0Tp1z2DSZb5uypW5Jct/4Qzzh/F2PfXepM3R2E3Rarkf\n"
+                                                  "WeCs5dyP+0wchk5C/kDKeOmelia+g7XqUf/RGhwVbGc4xvrEPUnFNQxheE53NBux\n"
+                                                  "ni99hSyXqFpBPIYEax4yJwXSVRe+xtxXowIDAQAB\n"
+                                                  "-----END RSA PUBLIC KEY-----");
+                    serverPublicKeysFingerprints.push_back(0x288da68ea22f8a5c);
                 }
             }
 
