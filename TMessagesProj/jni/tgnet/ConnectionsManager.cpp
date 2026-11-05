@@ -1817,11 +1817,9 @@ void ConnectionsManager::initDatacenters() {
     if (!testBackend) {
         if (datacenters.find(1) == datacenters.end()) {
             datacenter = new Datacenter(instanceNum, 1);
-#ifdef NDEBUG
-            datacenter->addAddressAndPort("18.185.234.86", 10443, 0, "");
-#else
-            datacenter->addAddressAndPort("3.125.30.84", 10443, 0, "");
-#endif
+            //DIVO: prod and stage both use the Teamgram hosts
+            datacenter->addAddressAndPort("dc1.divo.global", 10443, 0, "");
+            datacenter->addAddressAndPort("dc2.divo.global", 10443, 0, "");
             //datacenter->addAddressAndPort("149.154.175.50", 443, 0, "");
             //datacenter->addAddressAndPort("2001:b28:f23d:f001:0000:0000:0000:000a", 443, 1, "");
             datacenters[1] = datacenter;
@@ -1861,7 +1859,8 @@ void ConnectionsManager::initDatacenters() {
     } else {
         if (datacenters.find(1) == datacenters.end()) {
             datacenter = new Datacenter(instanceNum, 1);
-            datacenter->addAddressAndPort("3.125.30.84", 10443, 0, "");
+            datacenter->addAddressAndPort("dc1.divo.global", 10443, 0, "");
+            datacenter->addAddressAndPort("dc2.divo.global", 10443, 0, "");
             //datacenter->addAddressAndPort("149.154.175.40", 443, 0, "");
             //datacenter->addAddressAndPort("2001:b28:f23d:f001:0000:0000:0000:000e", 443, 1, "");
             datacenters[1] = datacenter;
