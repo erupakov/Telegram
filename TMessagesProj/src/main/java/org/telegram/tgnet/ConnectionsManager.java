@@ -1159,9 +1159,16 @@ public class ConnectionsManager extends BaseController {
                     if (len > 0) {
                         ArrayList<String> addresses = new ArrayList<>(len);
                         for (int a = 0; a < len; a++) {
-                            addresses.add(array.getJSONObject(a).getString("data"));
+                            JSONObject answer = array.getJSONObject(a);
+                            //DIVO: skip CNAME records, only A records hold an address the native side can connect to
+                            if (answer.optInt("type", 1) != 1) {
+                                continue;
+                            }
+                            addresses.add(answer.getString("data"));
                         }
-                        return new ResolvedDomain(addresses, SystemClock.elapsedRealtime());
+                        if (!addresses.isEmpty()) {
+                            return new ResolvedDomain(addresses, SystemClock.elapsedRealtime());
+                        }
                     }
                 }
                 done = true;

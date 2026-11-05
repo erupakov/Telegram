@@ -580,14 +580,6 @@ void ConnectionSocket::openConnection(std::string address, uint16_t port, std::s
                 closeSocket(1, -1);
                 return;
             }
-        } else {
-            socketAddress.sin_family = AF_INET;
-            socketAddress.sin_port = htons(port);
-            if (inet_pton(AF_INET, address.c_str(), &socketAddress.sin_addr.s_addr) != 1) {
-                if (LOGS_ENABLED) DEBUG_E("connection(%p) bad ipv4 %s", this, address.c_str());
-                closeSocket(1, -1);
-                return;
-            }
         }
         uint32_t tempBuffLength;
         if (secret.size() > 17 && secret[0] == '\xee') {
@@ -605,6 +597,28 @@ void ConnectionSocket::openConnection(std::string address, uint16_t port, std::s
                     delete tempBuffer;
                 }
                 tempBuffer = new ByteArray(tempBuffLength);
+            }
+        }
+        if (!ipv6) {
+            socketAddress.sin_family = AF_INET;
+            socketAddress.sin_port = htons(port);
+            if (inet_pton(AF_INET, address.c_str(), &socketAddress.sin_addr.s_addr) != 1) {
+                //DIVO: datacenter addresses may be host names (dc1.divo.global), resolve them like proxy hosts
+#ifdef USE_DELEGATE_HOST_RESOLVE
+                if (LOGS_ENABLED) DEBUG_D("connection(%p) resolving datacenter host %s", this, address.c_str());
+                waitingForHostResolve = address;
+                ConnectionsManager::getInstance(instanceNum).delegate->getHostByName(address, instanceNum, this);
+                return;
+#else
+                struct hostent *he;
+                struct in_addr **addr_list;
+                if ((he = gethostbyname(address.c_str())) == nullptr || (addr_list = (struct in_addr **) he->h_addr_list)[0] == nullptr) {
+                    if (LOGS_ENABLED) DEBUG_E("connection(%p) bad ipv4 %s", this, address.c_str());
+                    closeSocket(1, -1);
+                    return;
+                }
+                socketAddress.sin_addr.s_addr = addr_list[0]->s_addr;
+#endif
             }
         }
     }
@@ -982,12 +996,22 @@ void ConnectionSocket::onEvent(uint32_t events) {
                         tempBuffer->bytes[0] = 0x05;
                         tempBuffer->bytes[1] = 0x01;
                         tempBuffer->bytes[2] = 0x00;
-                        tempBuffer->bytes[3] = (uint8_t) (isIpv6 ? 0x04 : 0x01);
                         uint16_t networkPort = ntohs(currentPort);
-                        inet_pton(isIpv6 ? AF_INET6 : AF_INET, currentAddress.c_str(), tempBuffer->bytes + 4);
-                        memcpy(tempBuffer->bytes + 4 + (isIpv6 ? 16 : 4), &networkPort, sizeof(uint16_t));
+                        uint32_t addressLength;
+                        if (inet_pton(isIpv6 ? AF_INET6 : AF_INET, currentAddress.c_str(), tempBuffer->bytes + 4) == 1) {
+                            tempBuffer->bytes[3] = (uint8_t) (isIpv6 ? 0x04 : 0x01);
+                            addressLength = isIpv6 ? 16 : 4;
+                        } else {
+                            //DIVO: datacenter host name, let the proxy resolve it
+                            size_t hostLength = std::min<size_t>(currentAddress.size(), 255);
+                            tempBuffer->bytes[3] = 0x03;
+                            tempBuffer->bytes[4] = (uint8_t) hostLength;
+                            memcpy(tempBuffer->bytes + 5, currentAddress.c_str(), hostLength);
+                            addressLength = (uint32_t) hostLength + 1;
+                        }
+                        memcpy(tempBuffer->bytes + 4 + addressLength, &networkPort, sizeof(uint16_t));
                         proxyAuthState = 6;
-                        if (send(socketFd, tempBuffer->bytes, 4 + (isIpv6 ? 16 : 4) + 2, 0) < 0) {
+                        if (send(socketFd, tempBuffer->bytes, 4 + addressLength + 2, 0) < 0) {
                             if (LOGS_ENABLED) DEBUG_E("connection(%p) send failed", this);
                             closeSocket(1, -1);
                             return;
