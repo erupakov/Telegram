@@ -72,7 +72,8 @@ fun CityPickerSheet(
                     // 1. Поиск по названию
                     val matchesQuery = city.name.lowercase().contains(query) ||
                             city.asciiName.lowercase().contains(query) ||
-                            city.alternateNames.lowercase().contains(query)
+                            city.alternateNames.lowercase().contains(query) ||
+                            city.ruName.lowercase().contains(query)
 
                     // 2. Поиск по стране (если список пуст — ищем везде)
                     val matchesCountry = allowedCountryCodes.isEmpty() ||
@@ -154,6 +155,9 @@ fun CityPickerSheet(
                                         item.name
                                     } else if (item.asciiName.lowercase().contains(query)) {
                                         item.asciiName
+                                    } else if (item.ruName.isNotEmpty() && item.ruName.lowercase().contains(query)) {
+                                        // GeoNames tags this one as Russian: "Дубай", not the Serbian "Дубаи"
+                                        item.ruName
                                     } else if (item.alternateNames.lowercase().contains(query)) {
                                         val alternates = item.alternateNames.split(",").map { it.trim() }
                                         val cyrillicMatches = alternates.filter { 
