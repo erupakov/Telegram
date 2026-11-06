@@ -66,6 +66,7 @@ class LocationRepository {
                                 countryCode = columns[8],
                                 population = columns[14].toIntOrNull() ?: 0,
                                 adminCode = columns[10],
+                                ruName = columns.getOrNull(19).orEmpty(),
                             )
                         )
                     }

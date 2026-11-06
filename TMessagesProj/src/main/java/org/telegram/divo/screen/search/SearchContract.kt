@@ -138,4 +138,6 @@ data class LocalCity(
     val matchedName: String? = null,
     /** GeoNames admin1 code: a US state like "NJ", often a number elsewhere. Tells same-named cities apart. */
     val adminCode: String = "",
+    /** Russian name from GeoNames language tags ("Дубай"), empty when GeoNames has none. */
+    val ruName: String = "",
 )
