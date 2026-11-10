@@ -769,14 +769,33 @@ public class MediaDataController extends BaseController {
             });
         } else {
             TLRPC.TL_messages_getAvailableReactions req = new TLRPC.TL_messages_getAvailableReactions();
-            req.hash = lastHash != null ? lastHash : reactionsUpdateHash;
+            //DIVO: with no reactions at hand ask for the full list, or a stale hash keeps it empty
+            req.hash = enabledReactionsList.isEmpty() ? 0 : (lastHash != null ? lastHash : reactionsUpdateHash);
+            if (BuildVars.LOGS_ENABLED) {
+                FileLog.d("reactions: getAvailableReactions hash=" + req.hash + " have=" + reactionsList.size());
+            }
             getConnectionsManager().sendRequest(req, (response, error) -> AndroidUtilities.runOnUIThread(() -> {
                 int date = (int) (System.currentTimeMillis() / 1000);
                 if (response instanceof TLRPC.TL_messages_availableReactionsNotModified) {
+                    if (BuildVars.LOGS_ENABLED) {
+                        FileLog.d("reactions: availableReactionsNotModified, have=" + reactionsList.size());
+                    }
                     processLoadedReactions(null, 0, date, false);
                 } else if (response instanceof TLRPC.TL_messages_availableReactions) {
                     TLRPC.TL_messages_availableReactions r = (TLRPC.TL_messages_availableReactions) response;
+                    if (BuildVars.LOGS_ENABLED) {
+                        int inactive = 0, premium = 0;
+                        for (TLRPC.TL_availableReaction reaction : r.reactions) {
+                            if (reaction.inactive) inactive++;
+                            if (reaction.premium) premium++;
+                        }
+                        FileLog.d("reactions: availableReactions hash=" + r.hash + " count=" + r.reactions.size() + " inactive=" + inactive + " premium=" + premium);
+                    }
                     processLoadedReactions(r.reactions, r.hash, date, false);
+                } else {
+                    //DIVO: an error or an unparsed answer left isLoadingReactions set, so the list never reloaded
+                    FileLog.e("reactions: getAvailableReactions failed: " + (error != null ? error.code + " " + error.text : String.valueOf(response)));
+                    isLoadingReactions = false;
                 }
             }));
         }
