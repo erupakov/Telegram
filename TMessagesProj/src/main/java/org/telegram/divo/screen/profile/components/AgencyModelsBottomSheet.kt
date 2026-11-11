@@ -121,6 +121,7 @@ fun AgencyModelsBottomSheet(
         onDismiss = onDismiss,
         isSaveMode = false,
         isApplyEnable = false,
+        showEndButton = false,
         contentPadding = PaddingValues(horizontal = 16.dp),
     ) {
         Column(

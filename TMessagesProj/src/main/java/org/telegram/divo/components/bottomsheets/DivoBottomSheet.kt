@@ -48,6 +48,8 @@ fun DivoBottomSheet(
     isSaveMode: Boolean = true,
     @DrawableRes iconClose: Int = R.drawable.ic_divo_close,
     isApplyEnable: Boolean = true,
+    /** The button on the right of the title (apply, reset or the dark close); off where only the left close is wanted. */
+    showEndButton: Boolean = true,
     onDismiss: () -> Unit,
     onSave: () -> Unit = {},
     onReset: () -> Unit = {},
@@ -79,6 +81,7 @@ fun DivoBottomSheet(
                     isSaveMode = isSaveMode,
                     iconClose = iconClose,
                     isApplyEnable = isApplyEnable,
+                    showEndButton = showEndButton,
                     onDismiss = onDismiss,
                     onSave = onSave,
                     onReset = onReset
@@ -95,6 +98,7 @@ private fun HeaderSection(
     isSaveMode: Boolean,
     @DrawableRes iconClose: Int,
     isApplyEnable: Boolean,
+    showEndButton: Boolean,
     onDismiss: () -> Unit,
     onSave: () -> Unit,
     onReset: () -> Unit
@@ -128,7 +132,9 @@ private fun HeaderSection(
             style = AppTheme.typography.bodyLarge
         )
 
-        if (isSaveMode) {
+        if (!showEndButton) {
+            // only the close button on the left
+        } else if (isSaveMode) {
             RoundedButton(
                 modifier = Modifier
                     .size(40.dp)
