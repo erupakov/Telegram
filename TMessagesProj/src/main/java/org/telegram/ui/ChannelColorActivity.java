@@ -957,9 +957,10 @@ public class ChannelColorActivity extends BaseFragment implements NotificationCe
         replyColorListRow = rowsCount++;
         replyEmojiRow = rowsCount++;
         replyHintRow = rowsCount++;
-        wallpaperThemesRow = rowsCount++;
-        wallpaperRow = rowsCount++;
-        wallpaperHintRow = rowsCount++;
+        //DIVO: no chat wallpapers
+        wallpaperThemesRow = -1;
+        wallpaperRow = -1;
+        wallpaperHintRow = -1;
         profilePreviewRow = rowsCount++;
         profileColorGridRow = rowsCount++;
         profileEmojiRow = rowsCount++;

@@ -102,9 +102,10 @@ public class GroupColorActivity extends ChannelColorActivity {
             packStickerHintRow = -1;
         }
         messagesPreviewRow = rowsCount++;
-        wallpaperThemesRow = rowsCount++;
-        wallpaperRow = rowsCount++;
-        wallpaperHintRow = rowsCount++;
+        //DIVO: no chat wallpapers
+        wallpaperThemesRow = -1;
+        wallpaperRow = -1;
+        wallpaperHintRow = -1;
     }
 
     @Override
