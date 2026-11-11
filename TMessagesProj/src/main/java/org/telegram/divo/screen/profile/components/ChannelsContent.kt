@@ -375,6 +375,7 @@ private fun EmptyChannels(
 
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .offset(y = currentOffset),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -409,17 +410,16 @@ private fun EmptyChannels(
                 lineHeight = 18.sp,
                 textAlign = TextAlign.Center,
             )
-        }
-
-        if (isOwnProfile) {
-            UIButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = bottomPadding + 8.dp)
-                    .align(Alignment.BottomCenter),
-                text = stringResource(R.string.CreateNewChannel),
-                onClick = onClick
-            )
+            if (isOwnProfile) {
+                // Right under the text: pinned to the bottom of the page it sat below the screen
+                // edge until the profile header was scrolled away
+                Spacer(modifier = Modifier.height(20.dp))
+                UIButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.CreateNewChannel),
+                    onClick = onClick
+                )
+            }
         }
     }
 }

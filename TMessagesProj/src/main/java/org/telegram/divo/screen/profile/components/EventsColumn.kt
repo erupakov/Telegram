@@ -257,6 +257,7 @@ private fun EmptyEvent(
 
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .offset(y = currentOffset),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -294,17 +295,16 @@ private fun EmptyEvent(
                     textAlign = TextAlign.Center,
                 )
             }
-        }
-
-        if (isOwnProfile) {
-            UIButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = bottomPadding)
-                    .align(Alignment.BottomCenter),
-                text = stringResource(R.string.CreateEvent),
-                onClick = onClick
-            )
+            if (isOwnProfile) {
+                // Right under the text: pinned to the bottom of the page it sat below the screen
+                // edge until the profile header was scrolled away
+                Spacer(modifier = Modifier.height(20.dp))
+                UIButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.CreateEvent),
+                    onClick = onClick
+                )
+            }
         }
     }
 }
