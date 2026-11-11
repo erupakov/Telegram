@@ -138,7 +138,7 @@ fun ToolBarContent(
         }
     )
 
-    val editOptions = remember(uiState.userId, uiState.isModel) {
+    val editOptions = remember(uiState.userId, uiState.hasWorkHistory) {
         buildList {
             add(PopupMenuItem(R.string.EditProfile, {
                 DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOptionTapped(uiState.userId, "edit_profile"))
@@ -152,7 +152,7 @@ fun ToolBarContent(
                 DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOptionTapped(uiState.userId, "edit_social_links"))
                 onEditSocialLinksClicked()
             }))
-            if (uiState.isModel) {
+            if (uiState.hasWorkHistory) {
                 add(PopupMenuItem(R.string.ManageWorkExperience, {
                     DivoAnalytics.logEvent(AnalyticsEvent.ProfileEditOptionTapped(uiState.userId, "manage_work_experience"))
                     onManageWorkExperienceClicked()

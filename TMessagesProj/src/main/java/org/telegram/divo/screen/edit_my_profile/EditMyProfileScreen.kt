@@ -56,6 +56,7 @@ import org.telegram.divo.components.inputs.RoundedButton
 import org.telegram.divo.components.navigation.TabConfig
 import org.telegram.divo.components.media.TelegramUserAvatarEditable
 import org.telegram.divo.components.inputs.UIButton
+import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.screen.work_history.WorkHistoryScreen
 import org.telegram.divo.screen.your_parameters.YourParametersScreen
 import org.telegram.divo.screen.reg_form.components.PlaceField
@@ -82,8 +83,10 @@ fun EditMyProfileScreen(
     val parametersSavedText = stringResource(R.string.ParametersSaved)
     val uiState = viewModel.state.collectAsState().value
 
-    val tabs = remember {
-        listOf(
+    // Hiring sides (agency, brand, ...) have no work history tab; the current user's role is known before the profile loads
+    val hasWorkHistory = (uiState.userFull?.role ?: DivoApi.userRepository.currentUserFlow.value?.role)?.hasWorkHistory() ?: true
+    val tabs = remember(hasWorkHistory) {
+        listOfNotNull(
             TabConfig(
                 id = ProfileDestination.BIOGRAPHY.name,
                 textResId = R.string.TabBiography,
@@ -95,14 +98,14 @@ fun EditMyProfileScreen(
             TabConfig(
                 id = ProfileDestination.EXPERIENCE.name,
                 textResId = R.string.TabExperience
-            )
+            ).takeIf { hasWorkHistory }
         )
     }
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
         initialPage = initialPage,
-        pageCount = { if (uiState.isModel) ProfileDestination.entries.size else 1 }
+        pageCount = { if (uiState.isModel) tabs.size else 1 }
     )
 
     val snackbarState = remember { AppSnackbarHostState() }
@@ -206,11 +209,11 @@ fun EditMyProfileScreen(
                         YourParametersScreen(
                             showTitle = false,
                             onSaved = {
-                                scope.launch {
-                                    val page = tabs.indexOfFirst {
-                                        it.id == ProfileDestination.EXPERIENCE.name
-                                    }.coerceAtLeast(0)
-                                    pagerState.scrollToPage(page)
+                                val page = tabs.indexOfFirst {
+                                    it.id == ProfileDestination.EXPERIENCE.name
+                                }
+                                if (page >= 0) {
+                                    scope.launch { pagerState.scrollToPage(page) }
                                 }
                             }
                         )
