@@ -37791,8 +37791,32 @@ public class ChatActivity extends BaseFragment implements
                 didPressInstantButton(cell, 10);
                 return;
             }
+            //DIVO: "Forwarded from" opens the sender's Divo profile
+            if (asForward && user != null && !user.bot) {
+                openDivoProfile(user);
+                return;
+            }
             openProfile(user, ChatObject.isForum(currentChat) || isThreadChat());
         }
+
+        //DIVO--START
+        private void openDivoProfile(TLRPC.User user) {
+            final boolean isOwn = user.id == getUserConfig().getClientUserId();
+            org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().resolveUserByTelegram(user.id, resolvedUser -> {
+                if (isFinishing()) return;
+                if (resolvedUser != null && resolvedUser.getId() > 0) {
+                    presentFragment(org.telegram.divo.screen.profile.FragmentProfileN.Companion.newInstance(resolvedUser.getId(), isOwn));
+                } else {
+                    openProfile(user);
+                }
+            }, errorMsg -> {
+                // Not a Divo user (or Divo unreachable): fall back to the Telegram profile
+                if (!isFinishing()) {
+                    openProfile(user);
+                }
+            });
+        }
+        //DIVO--END
 
         @Override
         public boolean didLongPressUserAvatar(ChatMessageCell cell, TLRPC.User user, float touchX, float touchY) {
