@@ -19125,8 +19125,11 @@ public class ChatActivity extends BaseFragment implements
         } else if (currentChat != null) {
             avatarContainer.setTitle(AndroidUtilities.removeRTL(AndroidUtilities.removeDiacritics(currentChat.title)), currentChat.scam, currentChat.fake, currentChat.verified, false, currentChat.emoji_status, animated);
         } else if (currentUser != null) {
+            String divoName = currentUser.self || currentUser.bot || MessagesController.isSupportUser(currentUser) ? null : getDivoUserName(); //DIVO
             if (currentUser.self) {
                 avatarContainer.setTitle(LocaleController.getString(R.string.SavedMessages));
+            } else if (divoName != null) { //DIVO: the name from the Divo profile, not the phone number
+                avatarContainer.setTitle(divoName, currentUser.scam, currentUser.fake, currentUser.verified, getMessagesController().isPremiumUser(currentUser), currentUser.emoji_status, animated);
             } else if (!MessagesController.isSupportUser(currentUser) && getContactsController().contactsDict.get(currentUser.id) == null && (getContactsController().contactsDict.size() != 0 || !getContactsController().isLoadingContacts())) {
                 //DIVO
                 if (!TextUtils.isEmpty(currentUser.phone) && !currentUser.phone.startsWith("999")) {
@@ -19141,6 +19144,29 @@ public class ChatActivity extends BaseFragment implements
         setParentActivityTitle(avatarContainer.getTitleTextView().getText());
         updateTitleIcons();
     }
+
+    //DIVO--START
+    private boolean divoUserNameRequested;
+
+    /** The chat partner's name from their Divo profile; null until it is known (the first call starts the lookup). */
+    private String getDivoUserName() {
+        if (currentUser == null) return null;
+        org.telegram.divo.entity.UserInfo info = org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().getCachedUserByTelegram(currentUser.id);
+        if (info != null) {
+            String name = info.getDisplayName().trim();
+            return name.isEmpty() ? null : name;
+        }
+        if (!divoUserNameRequested) {
+            divoUserNameRequested = true;
+            org.telegram.divo.dal.network.DivoApi.INSTANCE.getUserRepository().resolveUserByTelegram(currentUser.id, resolved -> {
+                if (!isFinishing() && !resolved.getDisplayName().trim().isEmpty()) {
+                    updateTitle(false);
+                }
+            });
+        }
+        return null;
+    }
+    //DIVO--END
 
     public void updateTopicTitleIcon() {
         if (UserObject.isBotForum(currentUser) && avatarContainer != null) {
