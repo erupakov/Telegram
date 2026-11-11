@@ -310,7 +310,7 @@ private fun ProfileScreenContent(
 ) {
     val pageCount = uiState.pageCount
     val pagerState = rememberPagerState(pageCount = { pageCount })
-    val pagerInfoState = rememberPagerState(pageCount = { 3 })
+    val pagerInfoState = rememberPagerState(pageCount = { uiState.destinationInfoTabs.size })
     val lazyListState = rememberLazyListState()
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 

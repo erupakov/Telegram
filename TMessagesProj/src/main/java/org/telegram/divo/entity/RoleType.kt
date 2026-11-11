@@ -16,6 +16,9 @@ enum class RoleType(val value: String) {
 
     fun isModel(): Boolean = this != AGENCY
 
+    /** Talents that agencies represent. Hiring sides (agency, brand, customer, place, media) and fans have no work history. */
+    fun hasWorkHistory(): Boolean = this == MODEL || this == NEW_FACE || this == NEW_TALENT || this == PHOTOGRAPHER || this == STYLIST
+
     companion object {
         fun from(value: String?): RoleType {
             return entries.firstOrNull { it.value == value } ?: UNKNOWN

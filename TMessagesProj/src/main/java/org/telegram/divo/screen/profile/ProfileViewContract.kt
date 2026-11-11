@@ -103,6 +103,9 @@ data class ProfileViewState(
     val isModel: Boolean
         get() = userInfo.role.isModel()
 
+    val hasWorkHistory: Boolean
+        get() = userInfo.role.hasWorkHistory()
+
     val pageCount: Int
         get() = when {
             !isModel -> 5
@@ -131,7 +134,7 @@ data class ProfileViewState(
         }
 
     val destinationInfoTabs: List<TabConfig>
-        get() = listOf(
+        get() = listOfNotNull(
             TabConfig(
                 id = ProfileInfoDestination.BIOGRAPHY.name,
                 textResId = R.string.TabBiography,
@@ -143,7 +146,7 @@ data class ProfileViewState(
             TabConfig(
                 id = ProfileInfoDestination.EXPERIENCE.name,
                 textResId = R.string.TabExperience
-            )
+            ).takeIf { hasWorkHistory }
         )
 
     val instagramUser get() = userInfo.instagramLink.trimEnd('/').substringAfterLast("/")
