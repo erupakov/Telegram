@@ -277,9 +277,12 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
                     }
                 }
                 
-                var resolvedCityId: Int? = null
                 val selectedCity = state.value.selectedCity
-                if (selectedCity != null) {
+                // A city from the bundled list is sent by its GeoNames id; the name lookup through the geocoder
+                // is left for a city not matched to the list (id 0, e.g. an old event's city)
+                val geonamesCityId = selectedCity?.id?.takeIf { it > 0 }
+                var resolvedCityId: Int? = null
+                if (selectedCity != null && geonamesCityId == null) {
                     try {
                         val geoResponse = DivoApi.geoService.searchByAddressName(selectedCity.name)
                         resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
@@ -288,13 +291,13 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
                     }
                 }
                 
-                if (resolvedCityId == null) {
+                if (resolvedCityId == null && geonamesCityId == null) {
                     sendEffect(Effect.ShowError(org.telegram.messenger.LocaleController.getString(org.telegram.messenger.R.string.EventCityNotSupported)))
                     setState { copy(isUploading = false) }
                     return@launch
                 }
                 
-                val request = state.value.toCreateEventRequest(uploadedFiles, resolvedCityId)
+                val request = state.value.toCreateEventRequest(uploadedFiles, resolvedCityId, geonamesCityId)
                 val result = state.value.editingEventId?.let { eventId ->
                     DivoApi.eventRepository.updateEvent(eventId, request)
                 } ?: DivoApi.eventRepository.createEvent(request)
