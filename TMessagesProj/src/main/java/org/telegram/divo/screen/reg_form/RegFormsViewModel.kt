@@ -297,16 +297,8 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                     val photoContainer = uploadedPhotoUuid?.let { org.telegram.divo.dal.dto.common.UuidContainerDto(it) }
                     val avatarContainer = uploadedAvatarUuid?.let { org.telegram.divo.dal.dto.common.UuidContainerDto(it) }
 
-                    // Resolve geoCityId from city name via geo API
-                    var resolvedCityId: Int? = null
-                    if (data.city != null) {
-                        try {
-                            val geoResponse = DivoApi.geoService.searchByAddressName(data.city.name)
-                            resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
+                    // The city comes from the bundled GeoNames list: sent by its GeoNames id, the backend maps it
+                    val geonamesCityId = data.city?.id?.takeIf { it > 0 }
 
                     // Build role-specific DTOs from form data
                     val modelDto: UpdateProfileModelDto? =
@@ -363,7 +355,7 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         timezone = java.util.TimeZone.getDefault().id,
                         gender = mapGenderToEnglish(data.gender) ?: "female",
                         birthday = data.dateOfBirth ?: "",
-                        geoCityId = resolvedCityId?.takeIf { it > 0 },
+                        geoCityId = null,
                         measuringSystem = org.telegram.divo.common.DivoSettings.measuringSystem,
                         subrole = mappedSubrole,
                         pushNotifications = true,
@@ -372,7 +364,8 @@ class RegFormsViewModel : BaseViewModel<RegFormsState, RegFormsIntent, RegFormsE
                         avatar = avatarContainer,
                         model = modelDto,
                         agency = agencyDto,
-                        customer = customerDto
+                        customer = customerDto,
+                        geonamesCityId = geonamesCityId,
                     )
                     
                     val updateResponse = DivoApi.userRepository.updateProfile(updateProfileRequest)

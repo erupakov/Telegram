@@ -29,6 +29,9 @@ class FeedlineSearchRequest(
     val modelParameters: ModelParametersDto? = null,
     @SerializedName("geoCityId")
     val geoCityId: Int? = null,
+    // GeoNames id of a city from cities.txt; the backend prefers it over geoCityId
+    @SerializedName("geonamesCityId")
+    val geonamesCityId: Long? = null,
     @SerializedName("countryCode")
     val countryCode: String? = null
 )

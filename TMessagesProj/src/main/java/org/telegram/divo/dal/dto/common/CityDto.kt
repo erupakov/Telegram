@@ -8,7 +8,8 @@ class CityDto(
     @SerializedName("countryCode") val countryCode: String,
     @SerializedName("countryName") val countryName: String,
     @SerializedName("areaName") val areaName: String,
-    @SerializedName("name") val name: String
+    @SerializedName("name") val name: String,
+    @SerializedName("geonamesId") val geonamesId: Long? = null,
 )
 
 fun CityDto.toEntity(): City =
@@ -17,7 +18,8 @@ fun CityDto.toEntity(): City =
         countryCode = countryCode,
         countryName = countryName,
         areaName = areaName,
-        name = name
+        name = name,
+        geonamesId = geonamesId,
     )
 
 fun City.toDto(): CityDto =
@@ -26,5 +28,6 @@ fun City.toDto(): CityDto =
         countryCode = countryCode,
         countryName = countryName,
         areaName = areaName,
-        name = name
+        name = name,
+        geonamesId = geonamesId,
     )

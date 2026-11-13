@@ -22,7 +22,9 @@ class UpdateProfileRequest(
     @SerializedName("avatar") val avatar: UuidContainerDto?,
     @SerializedName("model") val model: UpdateProfileModelDto?,
     @SerializedName("agency") val agency: UpdateProfileAgencyRequest?,
-    @SerializedName("customer") val customer: CustomerDto?
+    @SerializedName("customer") val customer: CustomerDto?,
+    // GeoNames id of the city picked from cities.txt; the backend prefers it over geoCityId
+    @SerializedName("geonamesCityId") val geonamesCityId: Long? = null,
 )
 
 class UpdateProfileModelDto(

@@ -46,8 +46,9 @@ class EditMyProfileViewModel(
                 val user = result.value
                 val matchedCountry = allCountries.find { it.shortName.equals(user.city?.countryCode, ignoreCase = true) }
                 val localCity = user.city?.let { c ->
-                    allCities.find { it.id == c.id.toLong() } ?: LocalCity(
-                        id = c.id.toLong(),
+                    // LocalCity.id is the GeoNames id; a city without one (not from GeoNames) gets id -1: kept as is on save
+                    c.geonamesId?.let { gid -> allCities.find { it.id == gid } } ?: LocalCity(
+                        id = c.geonamesId ?: -1L,
                         name = c.name,
                         asciiName = "",
                         alternateNames = "",
@@ -125,10 +126,7 @@ class EditMyProfileViewModel(
                             model = userInfo.model?.copy(description = aboutRaw),
                             photoUuid = photoUuid,
                             avatarUuid = uploadedUuid,
-                            city = state.value.city?.let {
-                                val isNewCity = it.id != userInfo.city?.id?.toLong()
-                                org.telegram.divo.entity.City(id = if (isNewCity) 0 else it.id.toInt(), name = it.name, countryCode = it.countryCode)
-                            } ?: userInfo.city
+                            city = state.value.city?.let { toProfileCity(it, userInfo.city) } ?: userInfo.city
                         )
                     )
                 } else {
@@ -148,10 +146,7 @@ class EditMyProfileViewModel(
                         fullName = fullNameStr,
                         photoUuid = photoUuid,
                         avatarUuid = uploadedUuid,
-                        city = state.value.city?.let {
-                            val isNewCity = it.id != userInfo.city?.id?.toLong()
-                            org.telegram.divo.entity.City(id = if (isNewCity) 0 else it.id.toInt(), name = it.name, countryCode = it.countryCode)
-                        } ?: userInfo.city
+                        city = state.value.city?.let { toProfileCity(it, userInfo.city) } ?: userInfo.city
                     ))
                 }
 
@@ -384,5 +379,14 @@ class EditMyProfileViewModel(
                 return EditMyProfileViewModel(isModel) as T
             }
         }
+    }
+
+    /**
+     * The picked city for update-profile: the current city when unchanged, otherwise a new one sent by its
+     * GeoNames id (id 0 = no backend id yet, see UserRepository.updateProfile).
+     */
+    private fun toProfileCity(picked: LocalCity, current: org.telegram.divo.entity.City?): org.telegram.divo.entity.City? {
+        if (picked.id <= 0 || picked.id == current?.geonamesId) return current
+        return org.telegram.divo.entity.City(id = 0, name = picked.name, countryCode = picked.countryCode, geonamesId = picked.id)
     }
 }
