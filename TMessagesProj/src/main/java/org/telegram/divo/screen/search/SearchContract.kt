@@ -33,7 +33,6 @@ data class State(
 
     val allCities: List<LocalCity> = emptyList(),
     val selectedCity: LocalCity? = null,
-    val resolvedGeoCityId: Int? = null,
 
     val allCountries: List<LocalCountry> = emptyList(),
     val selectedCountries: List<LocalCountry> = emptyList(),

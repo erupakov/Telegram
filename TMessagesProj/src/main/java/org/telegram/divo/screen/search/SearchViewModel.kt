@@ -66,7 +66,8 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
             query = s.query,
             role = roleValues,
             modelParameters = s.buildModelParameters(),
-            geoCityId = s.resolvedGeoCityId,
+            // LocalCity.id is the GeoNames id: the backend maps it to its city
+            geonamesCityId = s.selectedCity?.id?.takeIf { it > 0 },
             countryCode = s.selectedCountries.firstOrNull()?.shortName
         )) {
             is DivoResult.Success -> {
@@ -108,22 +109,11 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                 viewModelScope.launch {
                     setState { copy(isLoading = true) }
 
-                    var newGeoCityId: Int? = null
-                    if (intent.city != null) {
-                        try {
-                            val geoResponse = DivoApi.geoService.searchByAddressName(intent.city.name)
-                            newGeoCityId = geoResponse.data?.firstOrNull()?.city?.id
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-
                     setState {
                         copy(
                             isSearchConfirmed = true,
                             selectedCountries = intent.countries,
                             selectedCity = intent.city,
-                            resolvedGeoCityId = newGeoCityId,
                             role = intent.role,
                             gender = intent.gender,
                             hairLength = intent.hairLength,
@@ -148,7 +138,6 @@ class SearchViewModel : BaseViewModel<State, Intent, Effect>() {
                     copy(
                         selectedCountries = emptyList(),
                         selectedCity = null,
-                        resolvedGeoCityId = null,
                         role = ProfileParameter(ParametersType.ROLE, ""),
                         gender = ProfileParameter(ParametersType.GENDER, ""),
                         hairLength = ProfileParameter(ParametersType.HAIR_LENGTH, ""),

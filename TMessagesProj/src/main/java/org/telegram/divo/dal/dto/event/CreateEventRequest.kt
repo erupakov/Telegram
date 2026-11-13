@@ -13,7 +13,8 @@ import kotlin.collections.firstOrNull
 
 fun State.toCreateEventRequest(
     uploadedFiles: List<org.telegram.divo.entity.UploadedFile>,
-    resolvedCityId: Int
+    resolvedCityId: Int?,
+    geonamesCityId: Long? = null,
 ): CreateEventRequest {
     fun getAppearanceIds(options: List<org.telegram.divo.entity.AppearanceItem>, paramValue: String): List<Int> {
         if (paramValue.isEmpty() || paramValue.contains("All", ignoreCase = true)) {
@@ -166,7 +167,8 @@ fun State.toCreateEventRequest(
             formatted = selectedCity?.name ?: "",
             latitude = 51.507351, // FIXME: Add geolocation
             longitude = -0.127758,
-            cityId = resolvedCityId
+            cityId = resolvedCityId,
+            geonamesCityId = geonamesCityId,
         ),
         files = uploadedFiles.mapIndexed { index, file ->
             CreateEventFileRequest(
@@ -233,7 +235,9 @@ class CreateEventAddressRequest(
     @SerializedName("formatted") val formatted: String,
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double,
-    @SerializedName("cityId") val cityId: Int
+    @SerializedName("cityId") val cityId: Int?,
+    // GeoNames id of the city from cities.txt; the backend prefers it over cityId
+    @SerializedName("geonamesCityId") val geonamesCityId: Long? = null,
 )
 
 class CreateEventFileRequest(

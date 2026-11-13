@@ -89,6 +89,7 @@ class PublicationRepository(
         modelsOnly: Boolean? = null,
         modelParameters: ModelParametersDto? = null,
         geoCityId: Int? = null,
+        geonamesCityId: Long? = null,
         countryCode: String? = null,
     ): DivoResult<FeedlineSearchResult> = resultOf {
         service.searchFeedline(
@@ -106,6 +107,7 @@ class PublicationRepository(
                 modelsOnly = modelsOnly,
                 modelParameters = modelParameters,
                 geoCityId = geoCityId,
+                geonamesCityId = geonamesCityId,
                 countryCode = countryCode
             )
         ).toEntities()

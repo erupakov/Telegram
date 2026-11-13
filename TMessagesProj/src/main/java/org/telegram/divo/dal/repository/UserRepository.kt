@@ -205,8 +205,12 @@ class UserRepository(
     suspend fun updateProfile(
         userInfo: UserInfo
     ): DivoResult<UserInfo> = resultOf {
-        var resolvedCityId = userInfo.city?.id?.takeIf { it > 0 }
-        if (resolvedCityId == null && userInfo.city?.name?.isNotBlank() == true) {
+        // A city picked from the bundled list (no backend id yet) is sent by its GeoNames id:
+        // no name lookup through the geocoder
+        val city = userInfo.city
+        val geonamesCityId = if (city != null && city.id <= 0) city.geonamesId?.takeIf { it > 0 } else null
+        var resolvedCityId = city?.id?.takeIf { it > 0 }
+        if (geonamesCityId == null && resolvedCityId == null && userInfo.city?.name?.isNotBlank() == true) {
             try {
                 val geoResponse = DivoApi.geoService.searchByAddressName(userInfo.city.name)
                 resolvedCityId = geoResponse.data?.firstOrNull()?.city?.id
@@ -237,7 +241,8 @@ class UserRepository(
                 avatar = UuidContainerDto(userInfo.avatarUuid),
                 model = userInfo.model?.toDto(),
                 agency = userInfo.agency?.toDto(),
-                customer = userInfo.customer?.toDto()
+                customer = userInfo.customer?.toDto(),
+                geonamesCityId = geonamesCityId,
             )
         )
         val existingChannels = _currentUserCache.value?.channels ?: emptyList()
