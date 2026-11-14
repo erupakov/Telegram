@@ -53,7 +53,7 @@ fun MediaEngagementColumn(
                     modifier = Modifier.size(16.dp),
                     painter = painterResource(if (item.isLiked) drawable.ic_divo_favorite_selected else drawable.ic_divo_favorite),
                     contentDescription = null,
-                    tint = likeContentColor,
+                    tint = if (item.isLiked) AppTheme.colors.likeRed else likeContentColor,
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
