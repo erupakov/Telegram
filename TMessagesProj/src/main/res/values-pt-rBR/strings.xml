@@ -393,7 +393,7 @@ enquanto ela estiver com outra agência.</string>
     <string name="SortedByFilters">Filtrar por:</string>
     <string name="Model">Modelo</string>
     <string name="Agency">Agência</string>
-    <string name="NewTalent">New Face</string>
+    <string name="NewTalent">Novo talento</string>
     <plurals name="ProfilesFound">
         <item quantity="one">%d perfil encontrado</item>
         <item quantity="other">%d perfis encontrados</item>
@@ -510,7 +510,7 @@ enquanto ela estiver com outra agência.</string>
     <string name="SubRoleStudio">Estúdio</string>
     <!-- Talent (D) -->
     <string name="SubRoleModel">Modelo</string>
-    <string name="SubRoleNewTalent">New Face / Novo Talento</string>
+    <string name="SubRoleNewTalent">Novo talento</string>
     <string name="SubRoleActor">Ator ou Atriz</string>
     <string name="SubRoleDancer">AI creator</string>
     <string name="SubRoleSingerOrPerformer">Cantor(a) ou Artista</string>

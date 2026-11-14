@@ -126,7 +126,7 @@ fun mapRoleToEnglish(localizedRoles: String?): String? {
         when {
             item.equals(allRolesLabel, ignoreCase = true) || lower in listOf("all", "all_roles", "все_роли", "todos_los_roles", "tous_les_rôles", "todos_os_papéis", "所有角色") -> "all"
             item.equals(modelLocalized, ignoreCase = true) || lower in listOf("model", "модель", "modelo", "modèle", "模特") -> "model"
-            item.equals(newTalentLocalized, ignoreCase = true) || lower in listOf("new_talent", "new_face", "новое_лицо", "новое лицо", "nuevo_talento", "nouveau_talent", "novo_talento", "新面孔") -> "new_face"
+            item.equals(newTalentLocalized, ignoreCase = true) || lower in listOf("new_talent", "new_face", "новое_лицо", "новое лицо", "талант", "nuevo_talento", "nouveau_talent", "novo_talento", "新面孔", "新人才") -> "new_face"
             item.equals(agencyLocalized, ignoreCase = true) || lower in listOf("agency", "агентство", "agencia", "agence", "agência", "机构") -> "agency"
             item.equals("fan", ignoreCase = true) || lower in listOf("fan", "фан", "fã", "爱好者") -> "fan"
             else -> lower

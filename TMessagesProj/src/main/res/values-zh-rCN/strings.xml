@@ -296,7 +296,7 @@
 
     <!--models screen-->
     <string name="Models">模特</string>
-    <string name="NewTalents">新面孔</string>
+    <string name="NewTalents">新人才</string>
     <string name="Agencies">机构</string>
 
     <string name="DivoAgencyModelRepresentedBy">该模特目前由
@@ -391,7 +391,7 @@
     <string name="SortedByFilters">过滤条件：</string>
     <string name="Model">模特</string>
     <string name="Agency">机构</string>
-    <string name="NewTalent">新面孔</string>
+    <string name="NewTalent">新人才</string>
     <plurals name="ProfilesFound">
         <item quantity="one">找到 %d 个主页</item>
         <item quantity="other">找到 %d 个主页</item>
@@ -405,7 +405,7 @@
     <string-array name="ModelNewTalentAgency">
         <item>所有角色</item>
         <item>模特</item>
-        <item>新面孔</item>
+        <item>新人才</item>
         <item>机构</item>
     </string-array>
 
@@ -509,7 +509,7 @@
     <string name="SubRoleStudio">工作室</string>
     <!-- Talent (D) -->
     <string name="SubRoleModel">模特</string>
-    <string name="SubRoleNewTalent">新面孔</string>
+    <string name="SubRoleNewTalent">新人才</string>
     <string name="SubRoleActor">演员</string>
     <string name="SubRoleDancer">AI creator</string>
     <string name="SubRoleSingerOrPerformer">歌手或表演者</string>

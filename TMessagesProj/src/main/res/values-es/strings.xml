@@ -393,7 +393,7 @@ mientras esté con otra agencia.</string>
     <string name="SortedByFilters">Filtrar por:</string>
     <string name="Model">Modelo</string>
     <string name="Agency">Agencia</string>
-    <string name="NewTalent">New Face</string>
+    <string name="NewTalent">Nuevo talento</string>
     <plurals name="ProfilesFound">
         <item quantity="one">%d perfil encontrado</item>
         <item quantity="other">%d perfiles encontrados</item>

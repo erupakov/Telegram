@@ -388,7 +388,7 @@ while she is with another agency.</string>
     <string name="SortedByFilters">Filter by:</string>
     <string name="Model">Model</string>
     <string name="Agency">Agency</string>
-    <string name="NewTalent">New Face</string>
+    <string name="NewTalent">New talent</string>
     <plurals name="ProfilesFound">
         <item quantity="one">%d profile found</item>
         <item quantity="other">%d profiles found</item>

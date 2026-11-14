@@ -296,7 +296,7 @@
 
     <!--models screen-->
     <string name="Models">Модели</string>
-    <string name="NewTalents">Новые лица</string>
+    <string name="NewTalents">Таланты</string>
     <string name="Agencies">Агентства</string>
 
     <string name="DivoAgencyModelRepresentedBy">В данный момент модель
@@ -396,7 +396,7 @@
     <string name="SortedByFilters">Фильтр:</string>
     <string name="Model">Модель</string>
     <string name="Agency">Агентство</string>
-    <string name="NewTalent">Новое лицо</string>
+    <string name="NewTalent">Талант</string>
     <plurals name="ProfilesFound">
         <item quantity="one">%d профиль найден</item>
         <item quantity="few">%d профиля найдено</item>
@@ -414,7 +414,7 @@
     <string-array name="ModelNewTalentAgency">
         <item>Все роли</item>
         <item>Модель</item>
-        <item>Новое лицо</item>
+        <item>Талант</item>
         <item>Агентство</item>
     </string-array>
 
@@ -518,7 +518,7 @@
     <string name="SubRoleStudio">Студия</string>
     <!-- Talent (D) -->
     <string name="SubRoleModel">Модель</string>
-    <string name="SubRoleNewTalent">Новое лицо</string>
+    <string name="SubRoleNewTalent">Талант</string>
     <string name="SubRoleActor">Актер / Актриса</string>
     <string name="SubRoleDancer">AI creator</string>
     <string name="SubRoleSingerOrPerformer">Певец / Исполнитель</string>
