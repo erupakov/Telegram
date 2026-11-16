@@ -8,6 +8,8 @@ import androidx.compose.ui.graphics.Color
 data class AppColors(
     val splashBgColor: Color = Color(0xFFDBFE01),
     val accentOrange: Color = Color(0xFFFF772D),
+    /** A heart the viewer has liked. */
+    val likeRed: Color = Color(0xFFFF3B30),
     val buttonSecondary: Color = Color(0xFF343434),
 
     val buttonTextColor: Color = Color(0xFFFEFEFE),
