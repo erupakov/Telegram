@@ -141,6 +141,12 @@ fun FaceOverlayImage(
         }
     }
 
+    // The frame takes the photo's own proportions, so the whole photo is shown, not a square cut of it.
+    // Until the size is known (and for a photo without faces) the frame stays square and the photo fits in it.
+    val imageAspect = (detectionResult as? FaceDetectionResult.Success)
+        ?.takeIf { it.imageWidth > 0 && it.imageHeight > 0 }
+        ?.let { (it.imageWidth.toFloat() / it.imageHeight).coerceIn(0.5f, 2f) }
+
     val faceAlignment = remember(fractionX, fractionY) {
         object : Alignment {
             override fun align(
@@ -175,7 +181,7 @@ fun FaceOverlayImage(
         Box(
             modifier = modifier
                 .clip(RoundedCornerShape(32.dp))
-                .aspectRatio(1f)
+                .aspectRatio(imageAspect ?: 1f)
                 .background(AppTheme.colors.onBackground)
         ) {
             Box(
@@ -266,7 +272,7 @@ fun FaceOverlayImage(
                 DivoAsyncImage(
                     modifier = Modifier.fillMaxSize(),
                     model = imageUri,
-                    contentScale = ContentScale.Crop,
+                    contentScale = if (imageAspect != null) ContentScale.Crop else ContentScale.Fit,
                     alignment = faceAlignment
                 )
 
@@ -509,7 +515,7 @@ fun FaceOverlayImage(
                 Canvas(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(1f)
+                        .aspectRatio(imageAspect ?: 1f)
                         .clip(RoundedCornerShape(32.dp))
                 ) {
                     val canvasWidth = size.width
