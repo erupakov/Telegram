@@ -1204,14 +1204,14 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
                         items.add(ItemInner.asCheck(getString(R.string.StoryAllowScreenshots), 0, allowScreenshots));
                         pad.subtractHeight += dp(50);
                     }
-                    if (!isLive && !liveSettings) {
+                    if (false && !isLive && !liveSettings) { //DIVO: no "Post to my profile", stories are never kept
                         items.add(ItemInner.asCheck(getString(containsPrivacy ? R.string.StoryKeep : (isChannel ? R.string.StoryKeepChannel : R.string.StoryKeepGroup)), 1, keepOnMyPage));
                         pad.subtractHeight += dp(50);
                     }
                 }
 
                 if (!isLive && !liveSettings) {
-                    if (!isEdit && allowCover && whenCoverClicked != null) {
+                    if (false && !isEdit && allowCover && whenCoverClicked != null) { //DIVO: hint of the hidden "Post to my profile"
                         CharSequence info;
                         if (isLive) {
                             info = getString(containsPrivacy ? R.string.StoryLiveKeepInfo : (isChannel ? R.string.StoryLiveKeepChannelInfo : R.string.StoryLiveKeepGroupInfo));
@@ -1220,6 +1220,9 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
                         }
                         items.add(ItemInner.asShadow(info));
                         pad.subtractHeight += dp(80);
+                    } else {
+                        items.add(ItemInner.asShadow(null)); //DIVO: bottom gap under the toggles
+                        pad.subtractHeight += dp(12);
                     }
                 } else {
                     items.add(ItemInner.asShadow(null));
@@ -2617,7 +2620,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
     public StoryPrivacyBottomSheet set(boolean allowComments, boolean allowScreenshots, boolean keepOnMyPage, int price) {
         this.allowComments = allowComments;
         this.allowScreenshots = allowScreenshots;
-        this.keepOnMyPage = keepOnMyPage;
+        this.keepOnMyPage = false; //DIVO: stories are never kept on the profile
         this.commentsPrice = price;
 
         View[] viewPages = viewPager.getViewPages();
@@ -4527,7 +4530,7 @@ public class StoryPrivacyBottomSheet extends BottomSheet implements Notification
         excludedEveryoneCount = mergeUsers(excludedEveryone, excludedEveryoneByGroup).size();
 
         allowScreenshots = !MessagesController.getInstance(currentAccount).getMainSettings().getBoolean("story_noforwards", false);
-        keepOnMyPage = MessagesController.getInstance(currentAccount).getMainSettings().getBoolean("story_keep", true);
+        keepOnMyPage = false; //DIVO: stories are never kept on the profile
 //
 //        long peerId = MessagesController.getInstance(currentAccount).getMainSettings().getLong("story_sendas", 0L);
 //        if (peerId != 0) {
