@@ -22,6 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.material3.Icon
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -128,5 +131,48 @@ fun AgencyInfoSection(
                 )
             }
         }
+    }
+}
+
+/** Experience tab of a talent's own profile: work experience opens once an agency confirms them as a model. */
+@Composable
+fun AgencyConfirmationPendingSection() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(AppTheme.colors.onBackground)
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier.size(40.dp).clip(CircleShape).background(AppTheme.colors.backgroundLight),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painterResource(R.drawable.ic_divo_experience_bage),
+                contentDescription = null,
+                tint = AppTheme.colors.textPrimary.copy(0.8f)
+            )
+        }
+        Spacer(Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.TalentAgencyConfirmationTitle).uppercase(),
+            color = AppTheme.colors.textPrimary,
+            style = AppTheme.typography.helveticaNeueLtCom,
+            fontSize = 16.sp,
+            lineHeight = 22.sp,
+            textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.TalentAgencyConfirmationText),
+            color = AppTheme.colors.textPrimary.copy(0.8f),
+            style = AppTheme.typography.helveticaNeueRegular,
+            fontSize = 14.sp,
+            lineHeight = 18.sp,
+            textAlign = TextAlign.Center
+        )
     }
 }

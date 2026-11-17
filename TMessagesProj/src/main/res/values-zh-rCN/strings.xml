@@ -88,6 +88,8 @@
     <string name="AddYourParameters">添加您的参数</string>
     <string name="AddWorkHistory">添加工作记录</string>
     <string name="ThereAreNoWorkExperienceYet">暂无工作经历</string>
+    <string name="TalentAgencyConfirmationTitle">需要经纪公司确认</string>
+    <string name="TalentAgencyConfirmationText">经您的母公司或主要经纪公司确认后，即可从“新人”转为“模特”。状态将自动更新。</string>
     <string name="ThereAreNoChannels">目前没有频道</string>
     <string name="YouHaveNotCreatedChannels">您还没有创建任何频道</string>
     <string name="ThisAgencyHasNotCreatedChannels">该机构还没有创建任何频道</string>

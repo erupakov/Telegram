@@ -557,6 +557,7 @@ private fun ProfileScreenContent(
                         physicalParams = uiState.physicalParams,
                         agency = agency,
                         isOwnProfile = uiState.isOwnProfile,
+                        awaitsAgencyConfirmation = uiState.isOwnProfile && uiState.userInfo.role.awaitsAgencyConfirmation(),
                         onWorkHistoryClicked = { onIntent(ProfileIntent.OnShowWorkHistory) },
                         onAppearanceClicked = { onIntent(ProfileIntent.OnShowAppearances) },
                         onEditClicked = { onIntent(ProfileIntent.OnEditClicked(it)) }

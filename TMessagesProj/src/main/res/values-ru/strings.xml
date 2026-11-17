@@ -81,6 +81,8 @@
     <string name="AddYourParameters">Добавить параметры</string>
     <string name="AddWorkHistory">Добавить историю работы</string>
     <string name="ThereAreNoWorkExperienceYet">Опыт работы еще не добавлен</string>
+    <string name="TalentAgencyConfirmationTitle">Требуется подтверждение агентства</string>
+    <string name="TalentAgencyConfirmationText">Переход из статуса Талант в Модель возможен после подтверждения материнского или основного агентства. Статус обновится автоматически.</string>
     <string name="ThereAreNoChannels">НА ДАННЫЙ МОМЕНТ КАНАЛОВ НЕТ</string>
     <string name="YouHaveNotCreatedChannels">Вы еще не создали ни одного канала</string>
     <string name="ThisAgencyHasNotCreatedChannels">Это агентство еще не создало ни одного канала</string>
