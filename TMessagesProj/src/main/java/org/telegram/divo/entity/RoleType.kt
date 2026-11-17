@@ -17,6 +17,9 @@ enum class RoleType(val value: String) {
     fun isModel(): Boolean = this != AGENCY
 
     /** Talents that agencies represent. Hiring sides (agency, brand, customer, place, media) and fans have no work history. */
+    /** A talent (new face) becomes a model once an agency adds them to its roster. */
+    fun awaitsAgencyConfirmation(): Boolean = this == NEW_FACE || this == NEW_TALENT
+
     fun hasWorkHistory(): Boolean = this == MODEL || this == NEW_FACE || this == NEW_TALENT || this == PHOTOGRAPHER || this == STYLIST
 
     companion object {

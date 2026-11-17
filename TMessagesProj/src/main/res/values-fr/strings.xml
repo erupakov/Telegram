@@ -87,6 +87,8 @@
     <string name="AddYourParameters">Ajustez vos paramètres</string>
     <string name="AddWorkHistory">Ajouter un historique de travail</string>
     <string name="ThereAreNoWorkExperienceYet">Apprenez instantanément une expérience professionnelle</string>
+    <string name="TalentAgencyConfirmationTitle">Confirmation de l’agence requise</string>
+    <string name="TalentAgencyConfirmationText">Vous pourrez passer de Talent à Mannequin une fois confirmé(e) par votre agence mère ou principale. Votre statut sera mis à jour automatiquement.</string>
     <string name="ThereAreNoChannels">IL N\'Y A PAS DE CHAÎNES POUR LE MOMENT</string>
     <string name="YouHaveNotCreatedChannels">Vous n\'avez encore créé aucune chaîne</string>
     <string name="ThisAgencyHasNotCreatedChannels">Cette agence sans encore créer des chaînes</string>

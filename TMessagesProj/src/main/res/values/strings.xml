@@ -90,6 +90,8 @@
     <string name="AddYourParameters">Add your parameters</string>
     <string name="AddWorkHistory">Add work history</string>
     <string name="ThereAreNoWorkExperienceYet">There are no work experience yet</string>
+    <string name="TalentAgencyConfirmationTitle">Agency confirmation required</string>
+    <string name="TalentAgencyConfirmationText">You can move from Talent to Model once your mother or main agency confirms you. Your status will update automatically.</string>
     <string name="ThereAreNoChannels">THERE ARE NO CHANNELS AT THE MOMENT</string>
     <string name="YouHaveNotCreatedChannels">You haven\'t created any channels yet</string>
     <string name="ThisAgencyHasNotCreatedChannels">This agency hasn\'t created any channels yet</string>

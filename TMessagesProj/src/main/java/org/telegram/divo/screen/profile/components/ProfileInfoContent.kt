@@ -51,6 +51,8 @@ fun ProfileInfoPager(
     physicalParams: PhysicalParams,
     agency: Agency?,
     isOwnProfile: Boolean,
+    /** Own profile of a talent not yet confirmed by an agency: the Experience page shows a notice instead. */
+    awaitsAgencyConfirmation: Boolean = false,
     onWorkHistoryClicked: () -> Unit,
     onAppearanceClicked: () -> Unit,
     onEditClicked: (Int) ->Unit,
@@ -124,7 +126,7 @@ fun ProfileInfoPager(
                     when (page) {
                         0 -> BiographyContent(isOwnProfile = isOwnProfile, bio = bio, onEditClick = { onEditClicked(0) })
                         1 -> AppearanceContent(isOwnProfile = isOwnProfile, params = physicalParams, onEditClick = { onEditClicked(1) })
-                        else -> AgencyInfoSection(isOwnProfile = isOwnProfile, agency = agency, onClicked = onWorkHistoryClicked, onEditClick = { onEditClicked(2) })
+                        else -> if (awaitsAgencyConfirmation) AgencyConfirmationPendingSection() else AgencyInfoSection(isOwnProfile = isOwnProfile, agency = agency, onClicked = onWorkHistoryClicked, onEditClick = { onEditClicked(2) })
                     }
                 }
             }

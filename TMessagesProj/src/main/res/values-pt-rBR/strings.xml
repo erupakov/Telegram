@@ -88,6 +88,8 @@
     <string name="AddYourParameters">Adicione seus parâmetros</string>
     <string name="AddWorkHistory">Adicionar histórico de trabalho</string>
     <string name="ThereAreNoWorkExperienceYet">Nenhuma experiência de trabalho ainda</string>
+    <string name="TalentAgencyConfirmationTitle">Confirmação da agência necessária</string>
+    <string name="TalentAgencyConfirmationText">A mudança de Talento para Modelo é possível após a confirmação da sua agência mãe ou principal. Seu status será atualizado automaticamente.</string>
     <string name="ThereAreNoChannels">NÃO HÁ CANAIS NO MOMENTO</string>
     <string name="YouHaveNotCreatedChannels">Você ainda não criou nenhum canal</string>
     <string name="ThisAgencyHasNotCreatedChannels">Esta agência ainda não criou nenhum canal</string>
