@@ -89,7 +89,7 @@ fun FaceOverlayImage(
             val vW = viewSize.width.toFloat()
             val vH = viewSize.height.toFloat()
 
-            val scale = maxOf(vW / imageW, vH / imageH)
+            val scale = minOf(vW / imageW, vH / imageH)
             val scaledW = imageW * scale
             val scaledH = imageH * scale
             
@@ -99,8 +99,8 @@ fun FaceOverlayImage(
             val minOffsetX = vW - scaledW
             val minOffsetY = vH - scaledH
             
-            offsetX = offsetX.coerceIn(minOffsetX, 0f)
-            offsetY = offsetY.coerceIn(minOffsetY, 0f)
+            offsetX = if (minOffsetX >= 0f) minOffsetX / 2f else offsetX.coerceIn(minOffsetX, 0f)
+            offsetY = if (minOffsetY >= 0f) minOffsetY / 2f else offsetY.coerceIn(minOffsetY, 0f)
 
             val hasFaceOutside = detectionResult.faces.any { face ->
                 val left = (face.x1 * scale) + offsetX
@@ -141,12 +141,6 @@ fun FaceOverlayImage(
         }
     }
 
-    // The frame takes the photo's own proportions, so the whole photo is shown, not a square cut of it.
-    // Until the size is known (and for a photo without faces) the frame stays square and the photo fits in it.
-    val imageAspect = (detectionResult as? FaceDetectionResult.Success)
-        ?.takeIf { it.imageWidth > 0 && it.imageHeight > 0 }
-        ?.let { (it.imageWidth.toFloat() / it.imageHeight).coerceIn(0.5f, 2f) }
-
     val faceAlignment = remember(fractionX, fractionY) {
         object : Alignment {
             override fun align(
@@ -160,8 +154,8 @@ fun FaceOverlayImage(
                 val minOffsetX = space.width.toFloat() - size.width.toFloat()
                 val minOffsetY = space.height.toFloat() - size.height.toFloat()
 
-                offsetX = offsetX.coerceIn(minOffsetX, 0f)
-                offsetY = offsetY.coerceIn(minOffsetY, 0f)
+                offsetX = if (minOffsetX >= 0f) minOffsetX / 2f else offsetX.coerceIn(minOffsetX, 0f)
+                offsetY = if (minOffsetY >= 0f) minOffsetY / 2f else offsetY.coerceIn(minOffsetY, 0f)
 
                 return androidx.compose.ui.unit.IntOffset(offsetX.toInt(), offsetY.toInt())
             }
@@ -181,7 +175,7 @@ fun FaceOverlayImage(
         Box(
             modifier = modifier
                 .clip(RoundedCornerShape(32.dp))
-                .aspectRatio(imageAspect ?: 1f)
+                .aspectRatio(1f)
                 .background(AppTheme.colors.onBackground)
         ) {
             Box(
@@ -199,7 +193,7 @@ fun FaceOverlayImage(
                                 val vW = viewSize.width.toFloat()
                                 val vH = viewSize.height.toFloat()
 
-                                val scale = maxOf(vW / imageW, vH / imageH)
+                                val scale = minOf(vW / imageW, vH / imageH)
                                 val scaledW = imageW * scale
                                 val scaledH = imageH * scale
                                 
@@ -209,8 +203,8 @@ fun FaceOverlayImage(
                                 val minOffsetX = vW - scaledW
                                 val minOffsetY = vH - scaledH
                                 
-                                offsetX = offsetX.coerceIn(minOffsetX, 0f)
-                                offsetY = offsetY.coerceIn(minOffsetY, 0f)
+                                offsetX = if (minOffsetX >= 0f) minOffsetX / 2f else offsetX.coerceIn(minOffsetX, 0f)
+                                offsetY = if (minOffsetY >= 0f) minOffsetY / 2f else offsetY.coerceIn(minOffsetY, 0f)
 
                                 val clickedIndex = detectionResult.faces.indexOfFirst { face ->
                                     val left = (face.x1 * scale) + offsetX
@@ -240,7 +234,7 @@ fun FaceOverlayImage(
                                 val vW = viewSize.width.toFloat()
                                 val vH = viewSize.height.toFloat()
 
-                                val scale = maxOf(vW / imageW, vH / imageH)
+                                val scale = minOf(vW / imageW, vH / imageH)
                                 val scaledW = imageW * scale
                                 val scaledH = imageH * scale
 
@@ -272,7 +266,8 @@ fun FaceOverlayImage(
                 DivoAsyncImage(
                     modifier = Modifier.fillMaxSize(),
                     model = imageUri,
-                    contentScale = if (imageAspect != null) ContentScale.Crop else ContentScale.Fit,
+                    // The whole photo fits in the square frame (no crop); face boxes use the same fit scale below
+                    contentScale = ContentScale.Fit,
                     alignment = faceAlignment
                 )
 
@@ -285,7 +280,7 @@ fun FaceOverlayImage(
                         val viewWidth = size.width
                         val viewHeight = size.height
 
-                        val scale = maxOf(viewWidth / imageWidth, viewHeight / imageHeight)
+                        val scale = minOf(viewWidth / imageWidth, viewHeight / imageHeight)
                         val scaledImageWidth = imageWidth * scale
                         val scaledImageHeight = imageHeight * scale
 
@@ -295,8 +290,8 @@ fun FaceOverlayImage(
                         val minOffsetX = viewWidth - scaledImageWidth
                         val minOffsetY = viewHeight - scaledImageHeight
 
-                        offsetX = offsetX.coerceIn(minOffsetX, 0f)
-                        offsetY = offsetY.coerceIn(minOffsetY, 0f)
+                        offsetX = if (minOffsetX >= 0f) minOffsetX / 2f else offsetX.coerceIn(minOffsetX, 0f)
+                        offsetY = if (minOffsetY >= 0f) minOffsetY / 2f else offsetY.coerceIn(minOffsetY, 0f)
 
                         data class FaceDrawData(
                             val sqLeft: Float,
@@ -515,7 +510,7 @@ fun FaceOverlayImage(
                 Canvas(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .aspectRatio(imageAspect ?: 1f)
+                        .aspectRatio(1f)
                         .clip(RoundedCornerShape(32.dp))
                 ) {
                     val canvasWidth = size.width
