@@ -306,8 +306,8 @@ private fun EventDetailsContent(
                                         scope = scope,
                                         type = DivoShareType.EVENT,
                                         id = uiState.eventDetails?.id,
-                                        customMessage = "${uiState.eventDetails?.title} - ${uiState.eventDetails?.creator?.roleLabel}",
-                                        imageUrl = uiState.eventDetails?.creator?.photo?.fullUrl
+                                        customMessage = "${uiState.eventDetails?.title} - ${uiState.eventDetails?.displayOrganizer?.roleLabel}",
+                                        imageUrl = uiState.eventDetails?.displayOrganizer?.photo?.fullUrl
                                     )
                                 },
                             painter = painterResource(R.drawable.ic_divo_share_model),
@@ -340,8 +340,8 @@ private fun EventDetailsContent(
                                 scope = scope,
                                 type = DivoShareType.EVENT,
                                 id = uiState.eventDetails?.id,
-                                customMessage = "${uiState.eventDetails?.title} - ${uiState.eventDetails?.creator?.roleLabel}",
-                                imageUrl = uiState.eventDetails?.creator?.photo?.fullUrl
+                                customMessage = "${uiState.eventDetails?.title} - ${uiState.eventDetails?.displayOrganizer?.roleLabel}",
+                                imageUrl = uiState.eventDetails?.displayOrganizer?.photo?.fullUrl
                             )
                         }
                     )
@@ -424,15 +424,15 @@ private fun EventDetailsContent(
                     )
                 }
 
-                val organizerName = uiState.eventDetails?.creator?.fullName
+                val organizerName = uiState.eventDetails?.displayOrganizer?.fullName
                 if (!organizerName.isNullOrBlank()) {
                     item(key = "organizer") {
                         Spacer(Modifier.height(16.dp))
                         OrganizerCard(
-                            avatarModel = uiState.eventDetails?.creator?.avatar?.fullUrl ?: uiState.eventDetails?.creator?.photo?.fullUrl,
+                            avatarModel = uiState.eventDetails?.displayOrganizer?.avatar?.fullUrl ?: uiState.eventDetails?.displayOrganizer?.photo?.fullUrl,
                             name = organizerName,
                             status = "",
-                            isVerified = uiState.eventDetails?.creator?.isVerified == true
+                            isVerified = uiState.eventDetails?.displayOrganizer?.isVerified == true
                         )
                     }
                 }

@@ -39,6 +39,7 @@ class EventDetailsDto(
     @SerializedName("files") val files: List<EventFileDto>?,
     @SerializedName("modelAttributes") val modelAttributes: EventModelAttributesDto?,
     @SerializedName("creator") val creator: EventCreatorDto?,
+    @SerializedName("organizer") val organizer: EventCreatorDto? = null,
     @SerializedName("previousEventsFromSameOrigin") val previousEventsFromSameOrigin: List<PreviousEventDto>?
 )
 
@@ -126,6 +127,7 @@ fun EventDetailsDto.toEntity() = EventDetails(
     files = files?.map { it.toEntity() } ?: emptyList(),
     modelAttributes = modelAttributes?.toEntity(),
     creator = creator?.toEntity(),
+    organizer = organizer?.toEntity(),
     previousEventsFromSameOrigin = previousEventsFromSameOrigin?.map { it.toEntity() } ?: emptyList()
 )
 

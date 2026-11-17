@@ -73,8 +73,8 @@ fun EventItemView(
 
         Box {
             val backgroundUrl = event.files.firstOrNull()?.fullUrl
-                ?: event.creator?.avatar?.fullUrl
-                ?: event.creator?.photo?.fullUrl.orEmpty()
+                ?: event.displayOrganizer?.avatar?.fullUrl
+                ?: event.displayOrganizer?.photo?.fullUrl.orEmpty()
             
             EventItemBackground(
                 url = backgroundUrl,
@@ -133,7 +133,7 @@ fun EventItemView(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     DivoAsyncImage(
-                        model = event.creator?.avatar?.fullUrl ?: event.creator?.photo?.fullUrl,
+                        model = event.displayOrganizer?.avatar?.fullUrl ?: event.displayOrganizer?.photo?.fullUrl,
                         modifier = Modifier
                             .size(20.dp)
                             .clip(CircleShape),
@@ -149,14 +149,14 @@ fun EventItemView(
                     Spacer(Modifier.width(8.dp))
                     Text(
                         modifier = Modifier.weight(1f, fill = false),
-                        text = event.creator?.fullName.orEmpty(),
+                        text = event.displayOrganizer?.fullName.orEmpty(),
                         style = AppTheme.typography.helveticaNeueRegular,
                         fontSize = 10.sp,
                         color = Color.White,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    if (event.creator?.isVerified == true) {
+                    if (event.displayOrganizer?.isVerified == true) {
                         Spacer(Modifier.width(4.dp))
                         Image(
                             painter = painterResource(id = R.drawable.ic_divo_verified),

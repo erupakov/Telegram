@@ -29,9 +29,15 @@ data class EventDetails(
     val address: EventAddress?,
     val files: List<EventFile>,
     val modelAttributes: EventModelAttributes?,
+    /** The real author: "my event" checks and the creatorId filter use it. */
     val creator: EventCreator?,
+    /** Who the event is shown as organized by (the agency for an agency employee's event); null on old backends. */
+    val organizer: EventCreator? = null,
     val previousEventsFromSameOrigin: List<PreviousEvent>
-)
+) {
+    /** Organizer card (name, avatar, verified badge): the organizer, else the creator. */
+    val displayOrganizer: EventCreator? get() = organizer ?: creator
+}
 
 data class PreviousEvent(
     val id: Int,

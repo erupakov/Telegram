@@ -41,6 +41,8 @@ class EventDto(
     @SerializedName("isFavourite") val isFavourite: Boolean?,
     @SerializedName("favoritesCount") val favoritesCount: Int?,
     @SerializedName("creator") val creator: EventCreatorDto?,
+    // Who the event is shown as organized by: the agency account for an agency employee's event, else the creator
+    @SerializedName("organizer") val organizer: EventCreatorDto? = null,
     @SerializedName("files") val files: List<EventFileDto>?,
     @SerializedName("address") val address: AgencyAddressDto?,
     @SerializedName("modelAttributes") val modelAttributes: EventModelAttributesDto?
@@ -101,6 +103,7 @@ fun EventDto.toEntity() = Event(
     isFavourite = isFavourite ?: false,
     favoritesCount = favoritesCount ?: 0,
     creator = creator?.toEntity(),
+    organizer = organizer?.toEntity(),
     files = files?.map { it.toEntity() } ?: emptyList(),
 )
 
