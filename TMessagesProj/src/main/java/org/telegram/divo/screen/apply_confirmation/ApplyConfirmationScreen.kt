@@ -237,7 +237,7 @@ fun ApplyConfirmationScreen(
                                     )
                                     Spacer(modifier = Modifier.height(12.dp))
                                     // The event's organizer (this used to show the applicant's own profile)
-                                    OrganizerInfoCard(creator = event.creator)
+                                    OrganizerInfoCard(creator = event.displayOrganizer)
 
                                     Spacer(modifier = Modifier.height(24.dp))
                                     Text(
@@ -254,7 +254,7 @@ fun ApplyConfirmationScreen(
 
                                 // Overlapping Logo
                                 DivoAsyncImage(
-                                    model = event.creator?.photo?.fullUrl,
+                                    model = event.displayOrganizer?.photo?.fullUrl,
                                     modifier = Modifier
                                         .size(68.dp)
                                         .align(Alignment.TopCenter)

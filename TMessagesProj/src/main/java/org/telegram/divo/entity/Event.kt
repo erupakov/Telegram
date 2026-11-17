@@ -28,9 +28,15 @@ data class Event(
     val isLikedByUser: Boolean,
     val isFavourite: Boolean = false,
     val favoritesCount: Int = 0,
+    /** The real author: "my event" checks and the creatorId filter use it. */
     val creator: EventCreator?,
+    /** Who the event is shown as organized by (the agency for an agency employee's event); null on old backends. */
+    val organizer: EventCreator? = null,
     val files: List<EventFile>,
-)
+) {
+    /** Organizer card (name, avatar, verified badge): the organizer, else the creator. */
+    val displayOrganizer: EventCreator? get() = organizer ?: creator
+}
 
 data class EventCreator(
     val id: Int,
