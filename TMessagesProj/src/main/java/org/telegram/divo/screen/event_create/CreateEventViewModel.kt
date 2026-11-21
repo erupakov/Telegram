@@ -87,8 +87,10 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
                 val rest = galleryUris.drop(1)
                 copy(galleryUris = listOf(intent.uri) + rest)
             }
-            is Intent.OnEventDateChanged -> setState { copy(eventDate = intent.value) }
-            is Intent.OnEventTimeChanged -> setState { copy(eventTime = intent.value) }
+            is Intent.OnEventDateChanged -> setState { copy(eventDate = intent.value, eventDateTo = eventDateTo.ifBlank { intent.value }).clampEndToStart() }
+            is Intent.OnEventTimeChanged -> setState { copy(eventTime = intent.value, eventTimeTo = eventTimeTo.ifBlank { intent.value }).clampEndToStart() }
+            is Intent.OnEventDateToChanged -> setState { copy(eventDateTo = intent.value).clampEndToStart() }
+            is Intent.OnEventTimeToChanged -> setState { copy(eventTimeTo = intent.value).clampEndToStart() }
             is Intent.OnCountriesChanged -> setState { copy(selectedCountries = intent.countries, selectedCity = null) }
             is Intent.OnCitySelected -> setState {
                 val country = allCountries.find { it.shortName.equals(intent.city.countryCode, ignoreCase = true) }
@@ -171,6 +173,7 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
         }
 
         val (datePart, timePart) = formatDateFromApi(eventDate)
+        val (dateToPart, timeToPart) = formatDateFromApi(event.dateTo.orEmpty())
         val (deadlineDatePart, deadlineTimePart) = formatDateFromApi(deadlineDate)
 
         val sortedFiles = event.files.sortedBy { it.order }
@@ -224,6 +227,8 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             selectedEventType = eventTypes.find { it.title == event.type } ?: selectedEventType,
             eventDate = datePart,
             eventTime = timePart,
+            eventDateTo = dateToPart,
+            eventTimeTo = timeToPart,
             selectedCountries = countries,
             selectedCity = cityObj,
             deadlineDate = deadlineDatePart,
@@ -344,6 +349,52 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             val list = DivoApi.locationRepository.getCities()
             setState { copy(allCities = list) }
         }
+    }
+
+    /**
+     * The event can't end before it starts. The end picker is bounded by the start date,
+     * this keeps the end in sync when the start itself moves past the end (or data is odd).
+     */
+    private fun State.clampEndToStart(): State {
+        if (eventDate.isBlank() || eventTime.isBlank() || eventDateTo.isBlank() || eventTimeTo.isBlank()) return this
+        val from = dateTimeToMillis(eventDate, eventTime) ?: return this
+        val to = dateTimeToMillis(eventDateTo, eventTimeTo) ?: return this
+        if (to >= from) return this
+        return copy(eventDateTo = eventDate, eventTimeTo = eventTime)
+    }
+
+    private fun dateTimeToMillis(date: String, time: String): Long? {
+        val dateFormats = listOf("dd.MM.yyyy")
+        var parsedDate: java.util.Date? = null
+        for (format in dateFormats) {
+            try {
+                val sdf = java.text.SimpleDateFormat(format, java.util.Locale.US)
+                parsedDate = sdf.parse(date)
+                if (parsedDate != null) break
+            } catch (_: Exception) {}
+        }
+        if (parsedDate == null) return null
+
+        val timeFormats = listOf("hh:mm a", "HH:mm a", "HH:mm")
+        var parsedTime: java.util.Date? = null
+        for (format in timeFormats) {
+            try {
+                val sdf = java.text.SimpleDateFormat(format, java.util.Locale.US)
+                parsedTime = sdf.parse(time)
+                if (parsedTime != null) break
+            } catch (_: Exception) {}
+        }
+        if (parsedTime == null) return null
+
+        val calendar = java.util.Calendar.getInstance()
+        calendar.time = parsedDate
+        val timeCal = java.util.Calendar.getInstance()
+        timeCal.time = parsedTime
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, timeCal.get(java.util.Calendar.HOUR_OF_DAY))
+        calendar.set(java.util.Calendar.MINUTE, timeCal.get(java.util.Calendar.MINUTE))
+        calendar.set(java.util.Calendar.SECOND, 0)
+        calendar.set(java.util.Calendar.MILLISECOND, 0)
+        return calendar.timeInMillis
     }
 
     private fun loadCountries(): Job {

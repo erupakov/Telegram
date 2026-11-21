@@ -229,6 +229,9 @@
     <string name="EventTime">活动时间 *</string>
     <string name="EventDatePlaceholder">2000年1月1日</string>
     <string name="EventTimePlaceholder">00:00</string>
+    <string name="EventEndDate">活动结束日期 *</string>
+    <string name="EventEndTime">活动结束时间 *</string>
+    <string name="EventEndDatePlaceholder">2000年1月1日</string>
     <string name="EventChooseCountry">选择国家/地区</string>
     <string name="EventContinue">继续</string>
     <string name="EventStepProgress">第 %1$d/%2$d 步</string>

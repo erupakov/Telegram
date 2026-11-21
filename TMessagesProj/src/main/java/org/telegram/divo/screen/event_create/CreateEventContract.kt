@@ -27,6 +27,8 @@ data class State(
     val selectedCity: LocalCity? = null,
     val eventDate: String = "",
     val eventTime: String = "",
+    val eventDateTo: String = "",
+    val eventTimeTo: String = "",
 
     // Second page
     val role: ProfileParameter = ProfileParameter(ParametersType.ROLE, ""),
@@ -71,6 +73,8 @@ data class State(
                 eventDescription.trim().isNotEmpty() &&
                 eventDate.isNotBlank() &&
                 eventTime.isNotBlank() &&
+                eventDateTo.isNotBlank() &&
+                eventTimeTo.isNotBlank() &&
                 selectedCountries.isNotEmpty() &&
                 selectedCity != null
 
@@ -102,6 +106,8 @@ sealed interface Intent : ViewIntent {
     data class OnAvatarSelected(val uri: Uri) : Intent
     data class OnEventDateChanged(val value: String) : Intent
     data class OnEventTimeChanged(val value: String) : Intent
+    data class OnEventDateToChanged(val value: String) : Intent
+    data class OnEventTimeToChanged(val value: String) : Intent
     data class OnCountriesChanged(val countries: List<LocalCountry>) : Intent
     data class OnCitySelected(val city: LocalCity) : Intent
 

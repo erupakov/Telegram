@@ -163,6 +163,8 @@ fun CreateEventScreenView(
                             onAvatarSelected = { onIntent(Intent.OnAvatarSelected(it)) },
                             onEventDateChanged = { onIntent(Intent.OnEventDateChanged(it)) },
                             onEventTimeChanged = { onIntent(Intent.OnEventTimeChanged(it)) },
+                            onEventDateToChanged = { onIntent(Intent.OnEventDateToChanged(it)) },
+                            onEventTimeToChanged = { onIntent(Intent.OnEventTimeToChanged(it)) },
                             onCountriesChanged = { onIntent(Intent.OnCountriesChanged(it)) },
                             onCitySelected = { onIntent(Intent.OnCitySelected(it)) }
                         )
