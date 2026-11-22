@@ -43,6 +43,8 @@ fun FirstPage(
     onAvatarSelected: (Uri) -> Unit,
     onEventDateChanged: (String) -> Unit,
     onEventTimeChanged: (String) -> Unit,
+    onEventDateToChanged: (String) -> Unit,
+    onEventTimeToChanged: (String) -> Unit,
     onCountriesChanged: (List<LocalCountry>) -> Unit,
     onCitySelected: (LocalCity) -> Unit
 ) {
@@ -51,6 +53,8 @@ fun FirstPage(
     var showEventTypesSheet by rememberSaveable { mutableStateOf(false) }
     var showDatePickerSheet by rememberSaveable { mutableStateOf(false) }
     var showTimePickerSheet by rememberSaveable { mutableStateOf(false) }
+    var showDateToPickerSheet by rememberSaveable { mutableStateOf(false) }
+    var showTimeToPickerSheet by rememberSaveable { mutableStateOf(false) }
 
     val selectedAvatarUri = state.galleryUris.firstOrNull()
 
@@ -114,7 +118,7 @@ fun FirstPage(
             horizontalContentPadding = 16.dp
         )
         Spacer(Modifier.height(16.dp))
-        // Date & Time
+        // Start date & time
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             DateTimeField(
                 modifier = Modifier.weight(1f),
@@ -131,6 +135,26 @@ fun FirstPage(
                 placeholder = stringResource(R.string.EventTimePlaceholder),
                 trailingIcon = R.drawable.ic_divo_clock_20,
                 onClick = { showTimePickerSheet = true },
+            )
+        }
+        Spacer(Modifier.height(16.dp))
+        // End date & time
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            DateTimeField(
+                modifier = Modifier.weight(1f),
+                date = state.eventDateTo,
+                title = stringResource(R.string.EventEndDate),
+                placeholder = stringResource(R.string.EventEndDatePlaceholder),
+                trailingIcon = R.drawable.ic_divo_calendar_20,
+                onClick = { showDateToPickerSheet = true }
+            )
+            DateTimeField(
+                modifier = Modifier.weight(1f),
+                date = state.eventTimeTo,
+                title = stringResource(R.string.EventEndTime),
+                placeholder = stringResource(R.string.EventTimePlaceholder),
+                trailingIcon = R.drawable.ic_divo_clock_20,
+                onClick = { showTimeToPickerSheet = true }
             )
         }
         Spacer(Modifier.height(16.dp))
@@ -211,6 +235,31 @@ fun FirstPage(
             onTimeSelected = { time ->
                 onEventTimeChanged(time)
                 showTimePickerSheet = false
+            }
+        )
+    }
+
+    if (showDateToPickerSheet) {
+        EventDatePickerSheet(
+            initialDate = state.eventDateTo.ifBlank { state.eventDate },
+            minDate = state.eventDate,
+            title = stringResource(R.string.EventEndDate),
+            onDismiss = { showDateToPickerSheet = false },
+            onDateSelected = { date ->
+                onEventDateToChanged(date)
+                showDateToPickerSheet = false
+            }
+        )
+    }
+
+    if (showTimeToPickerSheet) {
+        EventTimePickerSheet(
+            initialTime = state.eventTimeTo.ifBlank { state.eventTime },
+            title = stringResource(R.string.EventEndTime),
+            onDismiss = { showTimeToPickerSheet = false },
+            onTimeSelected = { time ->
+                onEventTimeToChanged(time)
+                showTimeToPickerSheet = false
             }
         )
     }

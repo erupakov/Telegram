@@ -142,7 +142,12 @@ fun State.toCreateEventRequest(
     }
 
     val formattedDate = formatDateForApi(eventDate, eventTime)
-    val formattedDateTo = formatDateForApi(eventDate, eventTime, hoursOffset = 4)
+    // The event end date is picked in the UI; fall back to start + 4h only if it is missing
+    val formattedDateTo = if (eventDateTo.isNotBlank() && eventTimeTo.isNotBlank()) {
+        formatDateForApi(eventDateTo, eventTimeTo)
+    } else {
+        formatDateForApi(eventDate, eventTime, hoursOffset = 4)
+    }
     val formattedDeadline = if (deadlineDate.isNotEmpty()) {
         formatDateForApi(deadlineDate, deadlineTime)
     } else {
@@ -154,7 +159,7 @@ fun State.toCreateEventRequest(
         description = eventDescription,
         typeId = selectedEventType?.id ?: 1, // FIXME: Add proper typeId mapping
         date = formattedDate,
-        dateTo = formattedDateTo, // Event doesn't have an end date in UI currently, so using start date + 4h
+        dateTo = formattedDateTo,
         isPublic = isPublicEvent,
         ndaRequired = isNdaRequired,
         applicationDeadline = formattedDeadline,

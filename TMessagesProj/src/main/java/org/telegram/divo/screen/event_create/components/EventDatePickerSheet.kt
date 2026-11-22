@@ -40,6 +40,7 @@ import java.util.Locale
 @Composable
 fun EventDatePickerSheet(
     initialDate: String = "",
+    minDate: String = "",
     maxDate: String = "",
     title: String? = null,
     onDismiss: () -> Unit,
@@ -51,23 +52,28 @@ fun EventDatePickerSheet(
     val todayDay   = now.get(Calendar.DAY_OF_MONTH)
 
     val allMonths = (1..12).map { Month.of(it).getDisplayName(TextStyle.FULL, DivoLanguageManager.getSystemLocale()) }
-    val maxCalendar = remember(maxDate) {
-        if (maxDate.isNotBlank()) {
-            try {
-                val sdf = java.text.SimpleDateFormat("dd.MM.yyyy", Locale.US)
-                val date = sdf.parse(maxDate)
-                if (date != null) {
-                    val cal = Calendar.getInstance()
-                    cal.time = date
-                    return@remember cal
-                }
-            } catch (e: Exception) {}
+    fun parseCalendar(dateStr: String): Calendar? {
+        if (dateStr.isBlank()) return null
+        return try {
+            val sdf = java.text.SimpleDateFormat("dd.MM.yyyy", Locale.US)
+            val date = sdf.parse(dateStr)
+            if (date != null) {
+                val cal = Calendar.getInstance()
+                cal.time = date
+                cal
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
         }
-        null
     }
+    val minCalendar = remember(minDate) { parseCalendar(minDate) }
+    val maxCalendar = remember(maxDate) { parseCalendar(maxDate) }
 
+    val minYear = maxOf(todayYear, minCalendar?.get(Calendar.YEAR) ?: todayYear)
     val maxYear = maxCalendar?.get(Calendar.YEAR) ?: (todayYear + 10)
-    val yearsList = (todayYear..maxYear).map { it.toString() }
+    val yearsList = if (minYear <= maxYear) (minYear..maxYear).map { it.toString() } else listOf(minYear.toString())
 
     val parsedCalendar = remember(initialDate) {
         val cal = Calendar.getInstance()
@@ -89,11 +95,13 @@ fun EventDatePickerSheet(
     val minMonthForSelectedYear by remember(selectedYearIndex) {
         derivedStateOf {
             val selYear = yearsList.getOrNull(selectedYearIndex)?.toIntOrNull() ?: todayYear
-            if (selYear == todayYear) todayMonth else 0
+            val todayMin = if (selYear == todayYear) todayMonth else 0
+            val minCal = minCalendar
+            if (minCal != null && selYear == minCal.get(Calendar.YEAR)) maxOf(todayMin, minCal.get(Calendar.MONTH)) else todayMin
         }
     }
 
-    val monthsList by remember(selectedYearIndex, maxCalendar, minMonthForSelectedYear) {
+    val monthsList by remember(selectedYearIndex, minCalendar, maxCalendar, minMonthForSelectedYear) {
         derivedStateOf {
             val selYear = yearsList.getOrNull(selectedYearIndex)?.toIntOrNull() ?: todayYear
             val maxMonth = if (maxCalendar != null && selYear == maxCalendar.get(Calendar.YEAR)) {
@@ -126,14 +134,20 @@ fun EventDatePickerSheet(
         derivedStateOf { minMonthForSelectedYear + selectedMonthIndex }
     }
 
-    val minDayForSelected by remember(selectedYearIndex, actualSelectedMonth) {
+    val minDayForSelected by remember(selectedYearIndex, actualSelectedMonth, minCalendar) {
         derivedStateOf {
             val selYear = yearsList.getOrNull(selectedYearIndex)?.toIntOrNull() ?: todayYear
-            if (selYear == todayYear && actualSelectedMonth == todayMonth) todayDay else 1
+            val todayMin = if (selYear == todayYear && actualSelectedMonth == todayMonth) todayDay else 1
+            val minCal = minCalendar
+            if (minCal != null && selYear == minCal.get(Calendar.YEAR) && actualSelectedMonth == minCal.get(Calendar.MONTH)) {
+                maxOf(todayMin, minCal.get(Calendar.DAY_OF_MONTH))
+            } else {
+                todayMin
+            }
         }
     }
 
-    val daysList by remember(actualSelectedMonth, selectedYearIndex, maxCalendar, minDayForSelected) {
+    val daysList by remember(actualSelectedMonth, selectedYearIndex, minCalendar, maxCalendar, minDayForSelected) {
         derivedStateOf {
             val selYear = yearsList.getOrNull(selectedYearIndex)?.toIntOrNull() ?: todayYear
             
