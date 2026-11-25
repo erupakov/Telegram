@@ -46,7 +46,8 @@ fun FirstPage(
     onEventDateToChanged: (String) -> Unit,
     onEventTimeToChanged: (String) -> Unit,
     onCountriesChanged: (List<LocalCountry>) -> Unit,
-    onCitySelected: (LocalCity) -> Unit
+    onCitySelected: (LocalCity) -> Unit,
+    onEventAddressChanged: (String) -> Unit
 ) {
     var showCountrySheet by rememberSaveable { mutableStateOf(false) }
     var showCitySheet by rememberSaveable { mutableStateOf(false) }
@@ -173,6 +174,22 @@ fun FirstPage(
             } ?: "",
             placeholder = stringResource(R.string.CityLabel),
             onClick = { showCitySheet = true }
+        )
+        Spacer(Modifier.height(16.dp))
+        SectionHeader(text = stringResource(R.string.EventAddressTitle))
+        Spacer(Modifier.height(6.dp))
+        DivoTextField(
+            value = state.eventAddress,
+            onValueChange = onEventAddressChanged,
+            placeholder = stringResource(R.string.EventAddressPlaceholder),
+            backgroundColor = AppTheme.colors.onBackground,
+            cornerRadius = 16.dp,
+            height = 46.dp,
+            placeholderColor = AppTheme.colors.textPrimary.copy(0.4f),
+            textStyle = AppTheme.typography.bodyLarge.copy(
+                color = AppTheme.colors.textPrimary
+            ),
+            horizontalContentPadding = 16.dp
         )
         Spacer(Modifier.height(72.dp))
     }

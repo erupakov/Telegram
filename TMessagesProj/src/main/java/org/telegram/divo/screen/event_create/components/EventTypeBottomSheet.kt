@@ -83,6 +83,17 @@ private fun OptionsBlock(
         ) { index, item ->
             val isSelected = selectedItem == item
 
+            // The API returns types grouped by category: draw a header when a new group starts
+            val category = item.category
+            if (category != null && category != items.getOrNull(index - 1)?.category) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = category,
+                    style = AppTheme.typography.bodyMedium,
+                    color = AppTheme.colors.textPrimary.copy(0.6f)
+                )
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier

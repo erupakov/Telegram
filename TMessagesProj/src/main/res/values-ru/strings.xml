@@ -231,6 +231,9 @@
     <string name="EventEndTime">Время завершения мероприятия *</string>
     <string name="EventEndDatePlaceholder">01 янв 2000</string>
     <string name="EventChooseCountry">Выберите страну</string>
+    <string name="EventAddressTitle">Адрес</string>
+    <string name="EventAddressPlaceholder">Улица, дом, квартира</string>
+    <string name="EventLocationLabel">Место проведения</string>
     <string name="EventContinue">Продолжить</string>
     <string name="EventStepProgress">Шаг %1$d/%2$d</string>
     <string name="EventWhoCanApply">Кто может участвовать</string>

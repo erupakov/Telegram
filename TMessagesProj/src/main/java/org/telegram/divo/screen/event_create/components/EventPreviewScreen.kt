@@ -3,7 +3,6 @@ package org.telegram.divo.screen.event_create.components
 import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,10 +24,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -43,11 +39,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -58,7 +52,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.rememberAsyncImagePainter
 import dev.chrisbanes.haze.HazeProgressive
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -279,12 +272,6 @@ fun EventPreviewScreen(
                         )
                     }
 
-                    if (state.galleryUris.drop(1).isNotEmpty()) {
-                        item(key = "gallery") {
-                            Spacer(Modifier.height(20.dp))
-                            PreviewThumbnailRow(uris = state.galleryUris.drop(1))
-                        }
-                    }
                 }
 
                 PreviewBottomBar(
@@ -508,23 +495,6 @@ private fun PreviewHeader(
                 }
             }
             Spacer(Modifier.height(20.dp))
-        }
-    }
-}
-
-@Composable
-private fun PreviewThumbnailRow(uris: List<Uri>) {
-    LazyRow(modifier = Modifier.fillMaxWidth()) {
-        itemsIndexed(uris) { _, uri ->
-            Image(
-                painter = rememberAsyncImagePainter(uri),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .width(134.dp)
-                    .height(136.dp)
-                    .clip(RoundedCornerShape(0.dp))
-            )
         }
     }
 }

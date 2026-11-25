@@ -29,6 +29,7 @@ data class State(
     val eventTime: String = "",
     val eventDateTo: String = "",
     val eventTimeTo: String = "",
+    val eventAddress: String = "",
 
     // Second page
     val role: ProfileParameter = ProfileParameter(ParametersType.ROLE, ""),
@@ -108,6 +109,7 @@ sealed interface Intent : ViewIntent {
     data class OnEventTimeChanged(val value: String) : Intent
     data class OnEventDateToChanged(val value: String) : Intent
     data class OnEventTimeToChanged(val value: String) : Intent
+    data class OnEventAddressChanged(val value: String) : Intent
     data class OnCountriesChanged(val countries: List<LocalCountry>) : Intent
     data class OnCitySelected(val city: LocalCity) : Intent
 

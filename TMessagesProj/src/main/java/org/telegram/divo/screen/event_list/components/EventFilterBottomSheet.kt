@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -528,8 +528,20 @@ private fun EventTypePickerSheet(
                         }
                     }
                 }
-                items(eventTypes) { type ->
+                itemsIndexed(eventTypes) { index, type ->
                     val isSelected = type.id in selectedIds.value
+
+                    // The API returns types grouped by category: draw a header when a new group starts
+                    val category = type.category
+                    if (category != null && category != eventTypes.getOrNull(index - 1)?.category) {
+                        Text(
+                            text = category,
+                            style = AppTheme.typography.bodyMedium,
+                            color = AppTheme.colors.textPrimary.copy(0.6f),
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                        )
+                    }
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

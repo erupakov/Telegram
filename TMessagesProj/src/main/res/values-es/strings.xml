@@ -234,6 +234,9 @@ un modelo</string>
     <string name="EventEndTime">Hora de fin del evento *</string>
     <string name="EventEndDatePlaceholder">01 Ene 2000</string>
     <string name="EventChooseCountry">Elige un país</string>
+    <string name="EventAddressTitle">Dirección</string>
+    <string name="EventAddressPlaceholder">Calle, número, piso</string>
+    <string name="EventLocationLabel">Ubicación</string>
     <string name="EventContinue">Continuar</string>
     <string name="EventStepProgress">Paso %1$d/%2$d</string>
     <string name="EventWhoCanApply">Quién puede aplicar</string>
