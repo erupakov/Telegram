@@ -15,5 +15,6 @@ fun EventTypesResponse.toEntities() = data?.items?.map { it.toEntity() } ?: empt
 
 fun EventTypeDto.toEntity() = EventType(
     id = id,
-    title = title.orEmpty()
+    title = title.orEmpty(),
+    category = category
 )

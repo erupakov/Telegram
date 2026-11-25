@@ -16,6 +16,7 @@ import org.telegram.divo.dal.network.DivoApi
 import org.telegram.divo.dal.network.DivoResult
 import org.telegram.divo.dal.network.getErrorMessage
 import org.telegram.divo.entity.City
+import org.telegram.divo.entity.EventAddress
 import org.telegram.divo.entity.EventDetails
 import org.telegram.divo.entity.LocalCountry
 import org.telegram.divo.entity.UploadedFile
@@ -91,6 +92,7 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             is Intent.OnEventTimeChanged -> setState { copy(eventTime = intent.value, eventTimeTo = eventTimeTo.ifBlank { intent.value }).clampEndToStart() }
             is Intent.OnEventDateToChanged -> setState { copy(eventDateTo = intent.value).clampEndToStart() }
             is Intent.OnEventTimeToChanged -> setState { copy(eventTimeTo = intent.value).clampEndToStart() }
+            is Intent.OnEventAddressChanged -> setState { copy(eventAddress = intent.value) }
             is Intent.OnCountriesChanged -> setState { copy(selectedCountries = intent.countries, selectedCity = null) }
             is Intent.OnCitySelected -> setState {
                 val country = allCountries.find { it.shortName.equals(intent.city.countryCode, ignoreCase = true) }
@@ -229,6 +231,7 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             eventTime = timePart,
             eventDateTo = dateToPart,
             eventTimeTo = timeToPart,
+            eventAddress = buildAddressText(address),
             selectedCountries = countries,
             selectedCity = cityObj,
             deadlineDate = deadlineDatePart,
@@ -361,6 +364,19 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
         val to = dateTimeToMillis(eventDateTo, eventTimeTo) ?: return this
         if (to >= from) return this
         return copy(eventDateTo = eventDate, eventTimeTo = eventTime)
+    }
+
+    /** Rebuilds the flat address text (street/house/apt + city) from the stored address of an edited event. */
+    private fun buildAddressText(address: EventAddress?): String {
+        if (address == null) return ""
+        val street = listOfNotNull(address.street, address.house, address.apartment)
+            .filter { it.isNotBlank() }
+            .joinToString(" ")
+        val lines = listOfNotNull(
+            street.takeIf { it.isNotBlank() },
+            address.cityName.takeIf { it.isNotBlank() }
+        )
+        return if (lines.isNotEmpty()) lines.joinToString(", ") else (address.formatted ?: "")
     }
 
     private fun dateTimeToMillis(date: String, time: String): Long? {

@@ -233,6 +233,9 @@
     <string name="EventEndTime">活动结束时间 *</string>
     <string name="EventEndDatePlaceholder">2000年1月1日</string>
     <string name="EventChooseCountry">选择国家/地区</string>
+    <string name="EventAddressTitle">地址</string>
+    <string name="EventAddressPlaceholder">街道、门牌、房间</string>
+    <string name="EventLocationLabel">地点</string>
     <string name="EventContinue">继续</string>
     <string name="EventStepProgress">第 %1$d/%2$d 步</string>
     <string name="EventWhoCanApply">报名要求</string>

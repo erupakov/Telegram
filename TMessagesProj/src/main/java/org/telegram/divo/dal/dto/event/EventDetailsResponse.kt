@@ -45,7 +45,8 @@ class EventDetailsDto(
 
 class EventTypeDto(
     @SerializedName("id") val id: Int,
-    @SerializedName("title") val title: String?
+    @SerializedName("title") val title: String?,
+    @SerializedName("category") val category: String? = null
 )
 
 class EventGenderDto(

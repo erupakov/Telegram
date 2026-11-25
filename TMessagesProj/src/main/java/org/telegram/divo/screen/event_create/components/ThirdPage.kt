@@ -151,18 +151,6 @@ fun ThirdPage(
             text = stringResource(R.string.EventVisibleToAllUsers)
         )
 
-        Spacer(Modifier.height(16.dp))
-
-        // Photo gallery
-        SectionHeader(text = stringResource(R.string.EventPhotoGallery))
-        Spacer(Modifier.height(14.dp))
-
-        GallerySection(
-            uris = state.galleryUris.drop(1),
-            onPhotosAdded = { onIntent(Intent.OnGalleryPhotosAdded(it)) },
-            onPhotoRemoved = { onIntent(Intent.OnGalleryPhotoRemoved(it)) }
-        )
-
         Spacer(Modifier.height(if (isEdit) 140.dp else 76.dp))
     }
 

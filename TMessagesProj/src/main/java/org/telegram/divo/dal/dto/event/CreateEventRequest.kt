@@ -157,7 +157,8 @@ fun State.toCreateEventRequest(
     return CreateEventRequest(
         title = eventName,
         description = eventDescription,
-        typeId = selectedEventType?.id ?: 1, // FIXME: Add proper typeId mapping
+        // id 1 is a retired legacy type; fall back to the first active type from the classifier
+        typeId = selectedEventType?.id ?: eventTypes.firstOrNull()?.id ?: 1,
         date = formattedDate,
         dateTo = formattedDateTo,
         isPublic = isPublicEvent,
@@ -166,12 +167,12 @@ fun State.toCreateEventRequest(
         maxAttendees = maxParticipants,
         requirements = eventRequirements,
         address = CreateEventAddressRequest(
-            street = "Some street", // FIXME: Add address fields to UI
-            house = "100B",
-            apartment = "123",
-            formatted = selectedCity?.name ?: "",
-            latitude = 51.507351, // FIXME: Add geolocation
-            longitude = -0.127758,
+            street = eventAddress.trim(), // Free-form address entered by the user
+            house = "",
+            apartment = "",
+            formatted = eventAddress.trim().ifBlank { selectedCity?.name.orEmpty() },
+            latitude = 0.0, // FIXME: Add geolocation
+            longitude = 0.0,
             cityId = resolvedCityId,
             geonamesCityId = geonamesCityId,
         ),

@@ -166,7 +166,8 @@ fun CreateEventScreenView(
                             onEventDateToChanged = { onIntent(Intent.OnEventDateToChanged(it)) },
                             onEventTimeToChanged = { onIntent(Intent.OnEventTimeToChanged(it)) },
                             onCountriesChanged = { onIntent(Intent.OnCountriesChanged(it)) },
-                            onCitySelected = { onIntent(Intent.OnCitySelected(it)) }
+                            onCitySelected = { onIntent(Intent.OnCitySelected(it)) },
+                            onEventAddressChanged = { onIntent(Intent.OnEventAddressChanged(it)) }
                         )
                     }
                     1 -> {

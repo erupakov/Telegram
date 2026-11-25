@@ -63,6 +63,8 @@ import org.telegram.divo.components.bottomsheets.DivoWithdrawBottomSheet
 import org.telegram.divo.components.navigation.TransparentToolBarBackground
 import org.telegram.divo.components.navigation.TransparentToolBarContent
 import org.telegram.divo.screen.event_details.components.AboutCard
+import org.telegram.divo.screen.event_details.components.AddressCard
+import org.telegram.divo.screen.event_details.components.displayText
 import org.telegram.divo.screen.event_details.components.CancelEventConfirmationDialog
 import org.telegram.divo.screen.event_details.components.CapacityCard
 import org.telegram.divo.screen.event_details.components.CloseApplicationsConfirmationDialog
@@ -72,7 +74,6 @@ import org.telegram.divo.screen.event_details.components.OrganizerCard
 import org.telegram.divo.screen.event_details.components.ParametersCard
 import org.telegram.divo.screen.event_details.components.PreviousEvents
 import org.telegram.divo.screen.event_details.components.RequirementsCard
-import org.telegram.divo.screen.event_details.components.ThumbnailRow
 import org.telegram.divo.screen.event_details.components.isEventClosed
 import org.telegram.divo.screen.gallery.GalleryItem
 import org.telegram.divo.style.AppTheme
@@ -416,6 +417,19 @@ private fun EventDetailsContent(
                     item(key = "empty_item") {  }
                 }
 
+                uiState.eventDetails?.address?.let { address ->
+                    val addressText = address.displayText()
+                    if (addressText.isNotBlank()) {
+                        item(key = "address") {
+                            Spacer(Modifier.height(20.dp))
+                            AddressCard(
+                                address = address,
+                                text = addressText
+                            )
+                        }
+                    }
+                }
+
                 item(key = "capacity") {
                     Spacer(Modifier.height(20.dp))
                     CapacityCard(
@@ -464,19 +478,6 @@ private fun EventDetailsContent(
                         )
                     }
                 }
-
-                uiState.eventDetails?.files
-                    ?.drop(1)
-                    ?.takeIf { it.isNotEmpty() }
-                    ?.let { eventFiles ->
-                        item(key = "gallery") {
-                            Spacer(Modifier.height(20.dp))
-                            ThumbnailRow(
-                                files = eventFiles,
-                                onClicked = { items, index -> onIntent(EventDetailsIntent.OnPhotoClick(items, index)) }
-                            )
-                        }
-                    }
 
                 uiState.eventDetails?.previousEventsFromSameOrigin?.let {
                     if (it.isNotEmpty()) {
