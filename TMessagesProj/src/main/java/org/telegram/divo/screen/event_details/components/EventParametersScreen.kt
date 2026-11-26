@@ -32,6 +32,8 @@ import org.telegram.divo.common.utils.labelRes
 import org.telegram.divo.components.inputs.RoundedButton
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.entity.EventModelAttributes
+import org.telegram.divo.entity.SelectionFormat
+import org.telegram.divo.entity.TargetGender
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -81,10 +83,19 @@ fun EventParametersScreen(
                     .background(AppTheme.colors.onBackground)
                     .padding(horizontal = 16.dp)
             ) {
-                ParameterItem(
-                    label = stringResource(R.string.LabelGender),
-                    value = params?.genders?.joinToString(", ").orEmpty()
-                )
+                // Replaces the old candidate-gender field: target gender of the casting
+                if (!params?.targetGender.isNullOrBlank()) {
+                    ParameterItem(
+                        label = stringResource(R.string.LabelTargetGender),
+                        value = TargetGender.labelFor(params.targetGender) ?: params.targetGender.orEmpty()
+                    )
+                }
+                if (!params?.selectionFormat.isNullOrBlank()) {
+                    ParameterItem(
+                        label = stringResource(R.string.LabelSelectionFormat),
+                        value = SelectionFormat.labelFor(params.selectionFormat) ?: params.selectionFormat.orEmpty()
+                    )
+                }
                 if (params?.ageFrom != null && params.ageTo != null) {
                     ParameterItem(
                         label = stringResource(R.string.LabelAge),
@@ -217,9 +228,7 @@ private fun ParameterItem(
                 modifier = Modifier.weight(0.35f),
                 text = label,
                 style = AppTheme.typography.bodyLarge,
-                color = AppTheme.colors.textPrimary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                color = AppTheme.colors.textPrimary
             )
             Text(
                 modifier = Modifier.weight(0.65f),
@@ -227,8 +236,6 @@ private fun ParameterItem(
                 style = AppTheme.typography.bodyLarge,
                 color = AppTheme.colors.textPrimary.copy(0.6f),
                 lineHeight = 16.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.End,
             )
         }

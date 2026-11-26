@@ -104,6 +104,9 @@
     <string name="SelectGender">Выберите пол</string>
     <string name="LabelGender">Пол</string>
     <string name="AllGendersLabel">Любой пол</string>
+    <string name="LabelSelectionFormat">Формат отбора</string>
+    <string name="LabelTargetGender">Гендер</string>
+    <string name="EventChooseSelectionFormat">Выберите формат отбора</string>
     <string name="LabelAge">Возраст</string>
     <string name="LabelHeight">Рост (см)</string>
     <string name="LabelHeightImperial">Рост (дюйм)</string>
@@ -135,6 +138,25 @@
         <item>Мужской</item>
         <item>Женский</item>
     </string-array>
+
+    <string-array name="SelectionFormatItems">
+        <item>Открытый кастинг</item>
+        <item>Go-See / по приглашению</item>
+        <item>Онлайн / селф-тейп</item>
+        <item>Кастинг клиента</item>
+        <item>Кастинг агентства</item>
+    </string-array>
+
+    <string-array name="TargetGenderItems">
+        <item>Женский</item>
+        <item>Мужской</item>
+        <item>Небинарный</item>
+        <item>Трансгендерная женщина</item>
+        <item>Трансгендерный мужчина</item>
+        <item>Свой вариант</item>
+        <item>Другой</item>
+    </string-array>
+
 
     <string-array name="BreastSizeItems">
         <item>A</item>

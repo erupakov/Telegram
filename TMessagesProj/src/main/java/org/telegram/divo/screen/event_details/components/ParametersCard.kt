@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.utils.MeasuringUnits
@@ -25,6 +24,8 @@ import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.labelRes
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.entity.EventModelAttributes
+import org.telegram.divo.entity.SelectionFormat
+import org.telegram.divo.entity.TargetGender
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -59,10 +60,13 @@ fun ParametersCard(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    ParameterItem(
-                        label = stringResource(R.string.LabelGender),
-                        value = param.genders.joinToString(", ")
-                    )
+                    // Replaces the old candidate-gender field: target gender of the casting
+                    if (!param.targetGender.isNullOrBlank()) {
+                        ParameterItem(
+                            label = stringResource(R.string.LabelTargetGender),
+                            value = TargetGender.labelFor(param.targetGender) ?: param.targetGender
+                        )
+                    }
                     ParameterItem(
                         label = stringResource(ParametersType.WEIGHT.labelRes()),
                         value = MeasuringUnits.formatStoredRange(
@@ -95,6 +99,13 @@ fun ParametersCard(
                 }
             }
 
+            if (!param.selectionFormat.isNullOrBlank()) {
+                ParameterItem(
+                    label = stringResource(R.string.LabelSelectionFormat),
+                    value = SelectionFormat.labelFor(param.selectionFormat) ?: param.selectionFormat
+                )
+            }
+
             Spacer(Modifier.height(3.dp))
             Text(
                 text = stringResource(R.string.SeeMore),
@@ -124,9 +135,7 @@ private fun ParameterItem(
                 modifier = Modifier.weight(1f),
                 text = label,
                 style = AppTheme.typography.bodyLarge.copy(fontSize = 12.sp),
-                color = AppTheme.colors.textPrimary.copy(0.6f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                color = AppTheme.colors.textPrimary.copy(0.6f)
             )
             Text(
                 modifier = Modifier.weight(1f),
@@ -134,9 +143,7 @@ private fun ParameterItem(
                 style = AppTheme.typography.bodyLarge.copy(fontSize = 12.sp),
                 color = AppTheme.colors.textPrimary,
                 lineHeight = 16.sp,
-                textAlign = TextAlign.End,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                textAlign = TextAlign.End
             )
         }
         Divider()

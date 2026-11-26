@@ -110,6 +110,9 @@ passer le profil.</string>
     <string name="SelectGender">Sélectionnez un genre</string>
     <string name="LabelGender">Genre</string>
     <string name="AllGendersLabel">Tous les genres</string>
+    <string name="LabelSelectionFormat">Format de sélection</string>
+    <string name="LabelTargetGender">Genre</string>
+    <string name="EventChooseSelectionFormat">Choisissez le format de sélection</string>
     <string name="LabelAge">Âge</string>
     <string name="LabelHeight">Hauteur (cm)</string>
     <string name="LabelHeightImperial">Hauteur (po)</string>
@@ -141,6 +144,25 @@ passer le profil.</string>
         <item>Masculin</item>
         <item>Féminin</item>
     </string-array>
+
+    <string-array name="SelectionFormatItems">
+        <item>Open Call</item>
+        <item>Go-See / sur invitation</item>
+        <item>En ligne / self-tape</item>
+        <item>Casting client</item>
+        <item>Casting agence</item>
+    </string-array>
+
+    <string-array name="TargetGenderItems">
+        <item>Féminin</item>
+        <item>Masculin</item>
+        <item>Non binaire</item>
+        <item>Femme transgenre</item>
+        <item>Homme transgenre</item>
+        <item>Personnalisé</item>
+        <item>Autre</item>
+    </string-array>
+
 
     <string-array name="BreastSizeItems">
         <item>A</item>

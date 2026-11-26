@@ -111,6 +111,9 @@
     <string name="SelectGender">选择性别</string>
     <string name="LabelGender">性别</string>
     <string name="AllGendersLabel">所有性别</string>
+    <string name="LabelSelectionFormat">选拔形式</string>
+    <string name="LabelTargetGender">性别</string>
+    <string name="EventChooseSelectionFormat">选择选拔形式</string>
     <string name="LabelAge">年龄</string>
     <string name="LabelHeight">身高 (cm)</string>
     <string name="LabelHeightImperial">身高 (英寸)</string>
@@ -142,6 +145,25 @@
         <item>男性</item>
         <item>女性</item>
     </string-array>
+
+    <string-array name="SelectionFormatItems">
+        <item>公开招募</item>
+        <item>Go-See / 仅限邀请</item>
+        <item>线上 / 自拍试镜</item>
+        <item>客户试镜</item>
+        <item>经纪公司试镜</item>
+    </string-array>
+
+    <string-array name="TargetGenderItems">
+        <item>女性</item>
+        <item>男性</item>
+        <item>非二元</item>
+        <item>跨性别女性</item>
+        <item>跨性别男性</item>
+        <item>自定义</item>
+        <item>其他</item>
+    </string-array>
+
 
     <string-array name="BreastSizeItems">
         <item>A</item>

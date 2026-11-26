@@ -195,7 +195,9 @@ enum class ParametersType(
     BREAST_SIZE(R.string.ChooseBreastSize),
     COUNTRY(R.string.CountryLabel),
     ROLE(R.string.RoleLabel),
-    SPECIALISATION(R.string.RegFormSpecialisationLabel)
+    SPECIALISATION(R.string.RegFormSpecialisationLabel),
+    SELECTION_FORMAT(R.string.LabelSelectionFormat),
+    TARGET_GENDER(R.string.LabelTargetGender)
 }
 
 @Preview

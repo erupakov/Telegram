@@ -47,6 +47,9 @@ data class State(
     val eventRequirements: String = "",
     val isNdaRequired: Boolean = false,
     val maxParticipants: Int = 100,
+    // Server-side identifiers, localized labels are resolved in the UI
+    val selectionFormat: String = "",
+    val targetGender: String = "",
 
     // Third page
     val deadlineDate: String = "",
@@ -115,7 +118,6 @@ sealed interface Intent : ViewIntent {
 
     // Second page
     data class OnRoleChanged(val param: ProfileParameter) : Intent
-    data class OnGenderChanged(val param: ProfileParameter) : Intent
     data class OnHairLengthChanged(val param: ProfileParameter) : Intent
     data class OnHairColorChanged(val param: ProfileParameter) : Intent
     data class OnEyeColorChanged(val param: ProfileParameter) : Intent
@@ -124,6 +126,8 @@ sealed interface Intent : ViewIntent {
     data class OnRequirementsChanged(val value: String) : Intent
     data class OnNdaToggled(val value: Boolean) : Intent
     data class OnMaxParticipantsChanged(val value: Int) : Intent
+    data class OnSelectionFormatChanged(val value: String) : Intent
+    data class OnTargetGenderChanged(val value: String) : Intent
 
     // Third page
     data class OnDeadlineDateChanged(val value: String) : Intent
