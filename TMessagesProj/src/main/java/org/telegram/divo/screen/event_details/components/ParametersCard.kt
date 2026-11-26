@@ -17,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.telegram.divo.common.utils.MeasuringUnits
@@ -136,9 +135,7 @@ private fun ParameterItem(
                 modifier = Modifier.weight(1f),
                 text = label,
                 style = AppTheme.typography.bodyLarge.copy(fontSize = 12.sp),
-                color = AppTheme.colors.textPrimary.copy(0.6f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                color = AppTheme.colors.textPrimary.copy(0.6f)
             )
             Text(
                 modifier = Modifier.weight(1f),
@@ -146,9 +143,7 @@ private fun ParameterItem(
                 style = AppTheme.typography.bodyLarge.copy(fontSize = 12.sp),
                 color = AppTheme.colors.textPrimary,
                 lineHeight = 16.sp,
-                textAlign = TextAlign.End,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                textAlign = TextAlign.End
             )
         }
         Divider()

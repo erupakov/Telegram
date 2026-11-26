@@ -228,9 +228,7 @@ private fun ParameterItem(
                 modifier = Modifier.weight(0.35f),
                 text = label,
                 style = AppTheme.typography.bodyLarge,
-                color = AppTheme.colors.textPrimary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                color = AppTheme.colors.textPrimary
             )
             Text(
                 modifier = Modifier.weight(0.65f),
@@ -238,8 +236,6 @@ private fun ParameterItem(
                 style = AppTheme.typography.bodyLarge,
                 color = AppTheme.colors.textPrimary.copy(0.6f),
                 lineHeight = 16.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.End,
             )
         }
