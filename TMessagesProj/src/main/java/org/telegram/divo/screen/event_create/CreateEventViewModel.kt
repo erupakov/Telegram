@@ -104,7 +104,6 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
 
             // Second page
             is Intent.OnRoleChanged -> setState { copy(role = intent.param) }
-            is Intent.OnGenderChanged -> setState { copy(gender = intent.param) }
             is Intent.OnHairLengthChanged -> setState { copy(hairLength = intent.param) }
             is Intent.OnHairColorChanged -> setState { copy(hairColor = intent.param) }
             is Intent.OnEyeColorChanged -> setState { copy(eyeColor = intent.param) }
@@ -118,6 +117,8 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             is Intent.OnRequirementsChanged -> setState { copy(eventRequirements = intent.value) }
             is Intent.OnNdaToggled -> setState { copy(isNdaRequired = intent.value) }
             is Intent.OnMaxParticipantsChanged -> setState { copy(maxParticipants = intent.value) }
+            is Intent.OnSelectionFormatChanged -> setState { copy(selectionFormat = intent.value) }
+            is Intent.OnTargetGenderChanged -> setState { copy(targetGender = intent.value) }
 
             // Third page
             is Intent.OnDeadlineDateChanged -> setState { copy(deadlineDate = intent.value) }
@@ -256,7 +257,9 @@ class CreateEventViewModel : BaseViewModel<State, Intent, Effect>() {
             galleryUris = gallery,
             existingGalleryFiles = sortedFiles,
             maxParticipants = event.maxAttendees ?: maxParticipants,
-            eventRequirements = event.requirements ?: event.description.orEmpty()
+            eventRequirements = event.requirements ?: event.description.orEmpty(),
+            selectionFormat = attrs?.selectionFormat.orEmpty(),
+            targetGender = attrs?.targetGender.orEmpty()
         )
     }
 

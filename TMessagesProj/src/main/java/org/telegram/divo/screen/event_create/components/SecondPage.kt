@@ -23,6 +23,9 @@ import org.telegram.divo.components.bottomsheets.ParameterBottomSheet
 import org.telegram.divo.components.items.ParameterItem
 import org.telegram.divo.components.items.ParametersBlock
 import org.telegram.divo.components.items.ParametersType
+import org.telegram.divo.components.items.ProfileParameter
+import org.telegram.divo.entity.SelectionFormat
+import org.telegram.divo.entity.TargetGender
 import org.telegram.divo.screen.event_create.Intent
 import org.telegram.divo.screen.event_create.State
 import org.telegram.divo.style.AppTheme
@@ -41,13 +44,15 @@ fun SecondPage(
     var showParametersSheet by remember { mutableStateOf(false) }
     var currentParam by remember { mutableStateOf<ParametersType?>(null) }
     var currentOptions by remember { mutableStateOf<List<String>?>(null) }
+    var currentMultiSelect by remember { mutableStateOf(true) }
     var currentValue by remember { mutableStateOf("") }
 
     var showParticipantsSheet by remember { mutableStateOf(false) }
 
-    val openSheet = { type: ParametersType, options: List<String>?, value: String ->
+    val openSheet = { type: ParametersType, options: List<String>?, value: String, isMultiSelect: Boolean ->
         currentParam = type
         currentOptions = options
+        currentMultiSelect = isMultiSelect
         currentValue = value
         showParametersSheet = true
     }
@@ -68,7 +73,25 @@ fun SecondPage(
                 openSheet(
                     ParametersType.ROLE,
                     context.resources.getStringArray(R.array.ModelNewTalentAgency).toList(),
-                    state.role.value
+                    state.role.value,
+                    true
+                )
+            }
+        )
+
+        Spacer(Modifier.height(16.dp))
+
+        // How the casting takes place (server-side identifier, localized label shown)
+        EventItem(
+            title = stringResource(R.string.LabelSelectionFormat),
+            value = SelectionFormat.labelFor(state.selectionFormat).orEmpty(),
+            placeholder = stringResource(R.string.EventChooseSelectionFormat),
+            onClick = {
+                openSheet(
+                    ParametersType.SELECTION_FORMAT,
+                    SelectionFormat.options(),
+                    SelectionFormat.labelFor(state.selectionFormat).orEmpty(),
+                    false
                 )
             }
         )
@@ -111,15 +134,16 @@ fun SecondPage(
         Spacer(Modifier.height(6.dp))
 
         ParameterItem(
-            param = state.gender.copy(
-                value = if (state.gender.value.isEmpty()) stringResource(R.string.AllGendersLabel)
-                        else state.gender.getFormatedOptions()
+            param = ProfileParameter(
+                type = ParametersType.TARGET_GENDER,
+                value = TargetGender.labelFor(state.targetGender).orEmpty()
             ),
             onClick = {
                 openSheet(
-                    ParametersType.GENDER,
-                    context.resources.getStringArray(R.array.GenderItems).toList(),
-                    state.gender.value
+                    ParametersType.TARGET_GENDER,
+                    TargetGender.options(),
+                    TargetGender.labelFor(state.targetGender).orEmpty(),
+                    false
                 )
             }
         )
@@ -128,7 +152,7 @@ fun SecondPage(
 
         ParametersBlock(
             items = draftBlockParams,
-            onClick = { param -> openSheet(param.type, null, param.value) }
+            onClick = { param -> openSheet(param.type, null, param.value, true) }
         )
 
         Spacer(Modifier.height(16.dp))
@@ -142,7 +166,8 @@ fun SecondPage(
                 openSheet(
                     ParametersType.HAIR_LENGTH,
                     listOf(context.getString(R.string.AllLengthsLabel)) + state.hairLengthOptions.map { it.title.orEmpty() },
-                    state.hairLength.value
+                    state.hairLength.value,
+                    true
                 )
             }
         )
@@ -158,7 +183,8 @@ fun SecondPage(
                 openSheet(
                     ParametersType.HAIR_COLOR,
                     listOf(context.getString(R.string.AllColorsLabel)) + state.hairColorOptions.map { it.title.orEmpty() },
-                    state.hairColor.value
+                    state.hairColor.value,
+                    true
                 )
             }
         )
@@ -174,7 +200,8 @@ fun SecondPage(
                 openSheet(
                     ParametersType.EYE_COLOR,
                     listOf(context.getString(R.string.AllColorsLabel)) + state.eyeColorOptions.map { it.title.orEmpty() },
-                    state.eyeColor.value
+                    state.eyeColor.value,
+                    true
                 )
             }
         )
@@ -190,7 +217,8 @@ fun SecondPage(
                 openSheet(
                     ParametersType.SKIN_COLOR,
                     listOf(context.getString(R.string.AllColorsLabel)) + state.skinColorOptions.map { it.title.orEmpty() },
-                    state.skinColor.value
+                    state.skinColor.value,
+                    true
                 )
             }
         )
@@ -210,7 +238,7 @@ fun SecondPage(
         ParameterBottomSheet(
             paramType = currentParam,
             options = currentOptions,
-            isMultiSelect = true,
+            isMultiSelect = currentMultiSelect,
             initialValue = currentValue,
             iconClose = R.drawable.ic_divo_back,
             useNumericRangeUi = true,
@@ -219,11 +247,12 @@ fun SecondPage(
                 currentParam?.let { type ->
                     val intent = when (type) {
                         ParametersType.ROLE -> Intent.OnRoleChanged(state.role.copy(value = selectedValue))
-                        ParametersType.GENDER -> Intent.OnGenderChanged(state.gender.copy(value = selectedValue))
                         ParametersType.HAIR_LENGTH -> Intent.OnHairLengthChanged(state.hairLength.copy(value = selectedValue))
                         ParametersType.HAIR_COLOR -> Intent.OnHairColorChanged(state.hairColor.copy(value = selectedValue))
                         ParametersType.EYE_COLOR -> Intent.OnEyeColorChanged(state.eyeColor.copy(value = selectedValue))
                         ParametersType.SKIN_COLOR -> Intent.OnSkinColorChanged(state.skinColor.copy(value = selectedValue))
+                        ParametersType.SELECTION_FORMAT -> Intent.OnSelectionFormatChanged(SelectionFormat.idFor(selectedValue).orEmpty())
+                        ParametersType.TARGET_GENDER -> Intent.OnTargetGenderChanged(TargetGender.idFor(selectedValue).orEmpty())
                         else -> {
                             val updated = draftBlockParams.find { it.type == type }?.copy(value = selectedValue)
                             updated?.let { Intent.OnBlockParamChanged(it) }
@@ -237,11 +266,12 @@ fun SecondPage(
                 currentParam?.let { type ->
                     val intent = when (type) {
                         ParametersType.ROLE -> Intent.OnRoleChanged(state.role.copy(value = ""))
-                        ParametersType.GENDER -> Intent.OnGenderChanged(state.gender.copy(value = ""))
                         ParametersType.HAIR_LENGTH -> Intent.OnHairLengthChanged(state.hairLength.copy(value = ""))
                         ParametersType.HAIR_COLOR -> Intent.OnHairColorChanged(state.hairColor.copy(value = ""))
                         ParametersType.EYE_COLOR -> Intent.OnEyeColorChanged(state.eyeColor.copy(value = ""))
                         ParametersType.SKIN_COLOR -> Intent.OnSkinColorChanged(state.skinColor.copy(value = ""))
+                        ParametersType.SELECTION_FORMAT -> Intent.OnSelectionFormatChanged("")
+                        ParametersType.TARGET_GENDER -> Intent.OnTargetGenderChanged("")
                         else -> {
                             val updated = draftBlockParams.find { it.type == type }?.copy(value = "")
                             updated?.let { Intent.OnBlockParamChanged(it) }

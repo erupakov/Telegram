@@ -25,6 +25,8 @@ import org.telegram.divo.common.compose.clickableWithoutRipple
 import org.telegram.divo.common.utils.labelRes
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.entity.EventModelAttributes
+import org.telegram.divo.entity.SelectionFormat
+import org.telegram.divo.entity.TargetGender
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -59,10 +61,13 @@ fun ParametersCard(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    ParameterItem(
-                        label = stringResource(R.string.LabelGender),
-                        value = param.genders.joinToString(", ")
-                    )
+                    // Replaces the old candidate-gender field: target gender of the casting
+                    if (!param.targetGender.isNullOrBlank()) {
+                        ParameterItem(
+                            label = stringResource(R.string.LabelTargetGender),
+                            value = TargetGender.labelFor(param.targetGender) ?: param.targetGender
+                        )
+                    }
                     ParameterItem(
                         label = stringResource(ParametersType.WEIGHT.labelRes()),
                         value = MeasuringUnits.formatStoredRange(
@@ -93,6 +98,13 @@ fun ParametersCard(
                         )
                     )
                 }
+            }
+
+            if (!param.selectionFormat.isNullOrBlank()) {
+                ParameterItem(
+                    label = stringResource(R.string.LabelSelectionFormat),
+                    value = SelectionFormat.labelFor(param.selectionFormat) ?: param.selectionFormat
+                )
             }
 
             Spacer(Modifier.height(3.dp))

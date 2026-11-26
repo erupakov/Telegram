@@ -86,7 +86,11 @@ class EventModelAttributesDto(
     @SerializedName("hairLength") val hairLength: List<EventTypeDto>?,
     @SerializedName("eyeColor") val eyeColor: List<EventTypeDto>?,
     @SerializedName("skinColor") val skinColor: List<EventTypeDto>?,
-    @SerializedName("measuringSystem") val measuringSystem: String?
+    @SerializedName("measuringSystem") val measuringSystem: String?,
+    // How the casting takes place (open_call, go_see_invite_only, …); null on old events
+    @SerializedName("selectionFormat") val selectionFormat: String? = null,
+    // Target gender of the casting (female, male, non_binary, …); null on old events
+    @SerializedName("targetGender") val targetGender: String? = null
 )
 
 class EventRangeDto(
@@ -165,5 +169,7 @@ fun EventModelAttributesDto.toEntity() = EventModelAttributes(
     hairLengths = hairLength?.mapNotNull { it.title } ?: emptyList(),
     eyeColors = eyeColor?.mapNotNull { it.title } ?: emptyList(),
     skinColors = skinColor?.mapNotNull { it.title } ?: emptyList(),
-    measuringSystem = measuringSystem
+    measuringSystem = measuringSystem,
+    selectionFormat = selectionFormat,
+    targetGender = targetGender
 )

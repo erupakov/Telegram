@@ -329,7 +329,9 @@ private fun State.toEventModelAttributes(): EventModelAttributes {
         hairLengths = parseList(hairLength.value),
         eyeColors = parseList(eyeColor.value),
         skinColors = parseList(skinColor.value),
-        measuringSystem = DivoSettings.measuringSystem
+        measuringSystem = DivoSettings.measuringSystem,
+        selectionFormat = selectionFormat.takeIf { it.isNotBlank() },
+        targetGender = targetGender.takeIf { it.isNotBlank() }
     )
 }
 

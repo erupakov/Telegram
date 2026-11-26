@@ -32,6 +32,8 @@ import org.telegram.divo.common.utils.labelRes
 import org.telegram.divo.components.inputs.RoundedButton
 import org.telegram.divo.components.items.ParametersType
 import org.telegram.divo.entity.EventModelAttributes
+import org.telegram.divo.entity.SelectionFormat
+import org.telegram.divo.entity.TargetGender
 import org.telegram.divo.style.AppTheme
 import org.telegram.messenger.R
 
@@ -81,10 +83,19 @@ fun EventParametersScreen(
                     .background(AppTheme.colors.onBackground)
                     .padding(horizontal = 16.dp)
             ) {
-                ParameterItem(
-                    label = stringResource(R.string.LabelGender),
-                    value = params?.genders?.joinToString(", ").orEmpty()
-                )
+                // Replaces the old candidate-gender field: target gender of the casting
+                if (!params?.targetGender.isNullOrBlank()) {
+                    ParameterItem(
+                        label = stringResource(R.string.LabelTargetGender),
+                        value = TargetGender.labelFor(params.targetGender) ?: params.targetGender.orEmpty()
+                    )
+                }
+                if (!params?.selectionFormat.isNullOrBlank()) {
+                    ParameterItem(
+                        label = stringResource(R.string.LabelSelectionFormat),
+                        value = SelectionFormat.labelFor(params.selectionFormat) ?: params.selectionFormat.orEmpty()
+                    )
+                }
                 if (params?.ageFrom != null && params.ageTo != null) {
                     ParameterItem(
                         label = stringResource(R.string.LabelAge),

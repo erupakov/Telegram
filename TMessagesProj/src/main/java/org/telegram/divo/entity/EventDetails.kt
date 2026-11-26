@@ -81,5 +81,9 @@ data class EventModelAttributes(
     val hairLengths: List<String>,
     val eyeColors: List<String>,
     val skinColors: List<String>,
-    val measuringSystem: String?
+    val measuringSystem: String?,
+    /** How the casting takes place: open_call, go_see_invite_only, online_self_tape, client_casting, agency_casting */
+    val selectionFormat: String? = null,
+    /** Target gender of the casting: female, male, non_binary, transgender_female, transgender_male, custom, other */
+    val targetGender: String? = null
 )

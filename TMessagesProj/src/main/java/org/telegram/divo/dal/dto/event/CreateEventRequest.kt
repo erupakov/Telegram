@@ -198,7 +198,9 @@ fun State.toCreateEventRequest(
         hairColor = getAppearanceIds(hairColorOptions, hairColor.value),
         hairLength = getAppearanceIds(hairLengthOptions, hairLength.value),
         eyeColor = getAppearanceIds(eyeColorOptions, eyeColor.value),
-        skinColor = getAppearanceIds(skinColorOptions, skinColor.value)
+        skinColor = getAppearanceIds(skinColorOptions, skinColor.value),
+        selectionFormat = selectionFormat.takeIf { it.isNotBlank() },
+        targetGender = targetGender.takeIf { it.isNotBlank() }
     )
 }
 
@@ -231,7 +233,11 @@ class CreateEventRequest(
     @SerializedName("hairColor") val hairColor: List<Int>?,
     @SerializedName("hairLength") val hairLength: List<Int>?,
     @SerializedName("eyeColor") val eyeColor: List<Int>?,
-    @SerializedName("skinColor") val skinColor: List<Int>?
+    @SerializedName("skinColor") val skinColor: List<Int>?,
+    // How the casting takes place; one of the server's selection format ids
+    @SerializedName("selectionFormat") val selectionFormat: String? = null,
+    // Target gender of the casting; one of the server's target gender ids
+    @SerializedName("targetGender") val targetGender: String? = null
 )
 
 class CreateEventAddressRequest(
