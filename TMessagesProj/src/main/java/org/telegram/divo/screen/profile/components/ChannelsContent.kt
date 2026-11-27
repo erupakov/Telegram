@@ -104,7 +104,7 @@ fun ChannelsContent(
                     isRefreshing = isRefreshing,
                     onResolvedAsGroup = { hiddenGroupIds = hiddenGroupIds + channel.telegramChatId },
                     onClicked = { 
-                        val link = channel.inviteLink ?: "https://t.me/${channel.username}"
+                        val link = channel.inviteLink ?: "https://t.divo.global/${channel.username}"
                         org.telegram.messenger.browser.Browser.openUrl(context, link)
                     }
                 )
