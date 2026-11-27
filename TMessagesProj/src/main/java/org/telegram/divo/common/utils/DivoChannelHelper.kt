@@ -19,7 +19,7 @@ object DivoChannelHelper {
         scope.launch {
             try {
                 val resolvedUsername = username?.takeIf { it.isNotBlank() }
-                val resolvedInviteLink = inviteLink?.takeIf { it.isNotBlank() } ?: resolvedUsername?.let { "https://t.me/$it" }
+                val resolvedInviteLink = inviteLink?.takeIf { it.isNotBlank() } ?: resolvedUsername?.let { "https://t.divo.global/$it" }
                 
                 DivoApi.userRepository.addChannel(
                     telegramChatId = chatId,
